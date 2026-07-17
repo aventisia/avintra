@@ -52,6 +52,7 @@ type NodeDataType = {
   selectedAgent?: { [key: string]: string };
   selectedModel?: { [key: string]: string };
   selectedBlock?: { [key: string]: string };
+  loopId?: string;
 };
 
 export type {

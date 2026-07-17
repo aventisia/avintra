@@ -47,6 +47,11 @@ const createNodesAndEdgesUtil = (
     case "forLoopNode":
       nodesAndEdgesObj = createForLoopNode(newNodeData, sourceNode.id);
       break;
+    case "breakLoopNode":
+    case "continueLoopNode":
+    case "flowExitNode":
+      nodesAndEdgesObj = createActivityNode(newNodeData, sourceNode);
+      break;
     case "activityNode":
       nodesAndEdgesObj = createActivityNode(newNodeData, sourceNode);
       break;

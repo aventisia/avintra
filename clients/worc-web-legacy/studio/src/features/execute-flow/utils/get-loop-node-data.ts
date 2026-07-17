@@ -19,5 +19,6 @@ export function getLoopNodeData(
         ? loopTypeInput.value
         : "ConditionalLoop",
     mergeBranchesNodeId: nodeObj?.data?.mergeBranchesNodeId ?? "",
+    controlAction: undefined,
   };
 }

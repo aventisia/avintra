@@ -20,8 +20,11 @@ import {
 } from "lucide-react";
 import {
   BlockNodeIcon,
+  BreakLoopNodeIcon,
   CallAgentIcon,
   ConditionalNodeIcon,
+  ContinueLoopNodeIcon,
+  ExitFlowNodeIcon,
   LoopNodeIcon,
 } from "./LogicalNodeIcons";
 import { NodesCategoryL1Icon } from "./NodesCategoryL1Icon";
@@ -52,6 +55,9 @@ export const iconMapper: { [key: string]: JSX.Element } = {
   // Logical Nodes
   ConditionalNodeIcon: <ConditionalNodeIcon />,
   LoopNodeIcon: <LoopNodeIcon />,
+  BreakLoopNodeIcon: <BreakLoopNodeIcon />,
+  ContinueLoopNodeIcon: <ContinueLoopNodeIcon />,
+  ExitFlowNodeIcon: <ExitFlowNodeIcon />,
 
   CallAgentIcon: <CallAgentIcon />,
   BlockNodeIcon: <BlockNodeIcon />,

@@ -1,4 +1,11 @@
-import {  BoxesIcon, Repeat2Icon, SplitIcon } from "lucide-react";
+import {
+  ArrowRightCircle,
+  BoxesIcon,
+  Power,
+  Repeat2Icon,
+  Slash,
+  SplitIcon,
+} from "lucide-react";
 import NewAgentIcon from "./NewAgentIcon";
 
 
@@ -42,4 +49,30 @@ const BlockNodeIcon = () => {
   );
 };
 
-export { ConditionalNodeIcon, LoopNodeIcon, CallAgentIcon, BlockNodeIcon };
+const BreakLoopNodeIcon = () => (
+  <IconContainer>
+    <Slash className="h-5 w-5 " />
+  </IconContainer>
+);
+
+const ContinueLoopNodeIcon = () => (
+  <IconContainer>
+    <ArrowRightCircle className="h-5 w-5 " />
+  </IconContainer>
+);
+
+const ExitFlowNodeIcon = () => (
+  <IconContainer>
+    <Power className="h-5 w-5 " />
+  </IconContainer>
+);
+
+export {
+  ConditionalNodeIcon,
+  LoopNodeIcon,
+  CallAgentIcon,
+  BlockNodeIcon,
+  BreakLoopNodeIcon,
+  ContinueLoopNodeIcon,
+  ExitFlowNodeIcon,
+};
