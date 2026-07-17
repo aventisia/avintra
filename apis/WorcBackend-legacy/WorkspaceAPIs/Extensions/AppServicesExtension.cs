@@ -77,6 +77,7 @@ public static class AppServicesExtension
         config.Apply(new ConversationMappingProfile());
         config.Apply(new ConversationMessageMappingProfile());
         config.Apply(new AdminConversationMappingProfile());
+        config.Apply(new SearchByQueryMappingProfile());
         config.Apply(new KnowledgeBaseMappingProfile());
         config.Apply(new KnowledgeBaseFileMappingProfile());
         config.Apply(new JobExecutionLogMappingProfile());
@@ -111,6 +112,7 @@ public static class AppServicesExtension
         services.AddScoped<IProjectTemplateService, ProjectTemplateService>();
         services.AddScoped<IPublicTemplateService, PublicTemplateService>();
         services.AddScoped<IFlowVersionService, FlowVersionService>();
+        services.AddScoped<ISearchByQueryService, SearchByQueryService>();
         services.AddScoped<IFlowVersionHistoryService, FlowVersionHistoryService>();
         services.AddScoped<IMachinesTableService, MachinesTableService>();
         services.AddScoped<IMachineFlowService, MachineFlowService>();
