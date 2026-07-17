@@ -91,6 +91,7 @@ export const useDefineQueueForm = () => {
       inputSchema: "[]",
       routeToQueues: [],
       viewType: "DocumentProcessing",
+      credentialId: null,
       // outputDataSchemaFile: undefined,
 
       isDisabled: false,
@@ -131,7 +132,7 @@ export const useDefineQueueForm = () => {
       type: queueData?.type ?? "Agent",
       routeToQueues: queueData?.routeToQueues ?? [],
       viewType: queueData?.viewType || "DocumentProcessing",
-
+      credentialId: queueData?.credentialId || null,
       isUniqueReferencesEnforced: queueData?.isUniqueReferencesEnforced,
       isStoredEncrypted: queueData?.isStoredEncrypted,
       // shouldRetryFailedItems: queueData?.shouldRetryFailedItems,
