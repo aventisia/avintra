@@ -4,7 +4,7 @@ namespace WorkspaceAPIs.DTOs;
 /// Represents machine data returned by machine APIs.
 /// </summary>
 /// <remarks>
-/// Same DTO will be used for table row, machine record and exporting machine data to CSV. 
+/// Same DTO will be used for table row and exporting machine data to CSV. 
 /// Display attributes are used to define the column names for the exported CSV file.
 /// </remarks>
 public class MachinesTableRowDto

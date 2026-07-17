@@ -16,7 +16,7 @@ public interface IMachinesTableService
     /// </summary>
     /// <param name="machineId">The unique identifier of the machine.</param>
     /// <returns>A service response containing the machine details.</returns>
-    Task<ServiceResponse<MachinesTableRowDto>> GetMachineAsync(Guid machineId);
+    Task<ServiceResponse<MachineRecordDto>> GetMachineAsync(Guid machineId);
 
     /// <summary>
     /// Insert a new machine.
@@ -45,13 +45,6 @@ public interface IMachinesTableService
     /// <param name="machineIds">A collection of machine IDs to be deleted.</param>
     /// <returns>A service response containing the number of machines deleted.</returns>
     Task<ServiceResponse<long>> DeleteMachinesAsync(IEnumerable<Guid> machineIds);
-
-    /// <summary>
-    /// Synchronize machine's flow versions
-    /// </summary>
-    /// <param name="updateMachineFlowVersionsDto">The machine and flow versions details.</param>
-    /// <returns>A service response indicating whether the operation was successful.</returns>
-    Task<ServiceResponse<bool>> SyncMachineFlowVersionsAsync(UpdateMachineFlowVersionsDto updateMachineFlowVersionsDto);
 
     // TODO: Need to check
 

@@ -34,4 +34,10 @@ export interface AddMachineDto {
    * Optional IP address of the machine (supports IPv4 or IPv6, max length 100).
    */
   ipAddress?: string;
+
+  /**
+   * Many-to-Many relationship: Represents the list of flow version identifiers associated with the machine.
+   * Each identifier is a GUID that uniquely represents a flow version.
+   */
+  flowVersionIds: string[];
 }

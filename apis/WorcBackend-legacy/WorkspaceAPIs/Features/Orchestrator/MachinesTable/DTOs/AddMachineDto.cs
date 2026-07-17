@@ -38,4 +38,10 @@ public class AddMachineDto
     /// </summary>
     [StringLength(100)]
     public string? IpAddress { get; set; }
+
+    /// <summary>
+    /// Many-to-Many relationship: Represents the list of flow version identifiers associated with the machine.
+    /// Each identifier is a GUID that uniquely represents a flow version.
+    /// </summary>
+    public List<Guid> FlowVersionIds { get; set; } = new List<Guid>();
 }

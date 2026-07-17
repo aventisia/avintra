@@ -10,7 +10,6 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { useDtCrudQueryAction } from "@/react-toolkit/hooks/useDtCrudQueryAction";
 import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
@@ -33,15 +32,10 @@ export const MachinesTable = () => {
   useDocumentTitle(TABLE_HEADING);
 
   // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(
-    TABLE_KEY,
-    columnVisibilityState,
-  );
+  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
   // Fetch machines data
   const { data } = useFetchMachines();
-
-  useDtCrudQueryAction(data?.data);
 
   // Create a React table for machines data
   const table = useDataTable(
@@ -66,18 +60,10 @@ export const MachinesTable = () => {
               <div className="flex items-center gap-2">
                 <DTSearchBox
                   table={table}
-                  searchColumns={[
-                    "name",
-                    "status",
-                    "username",
-                    "environment",
-                    "operatingSystem",
-                  ]}
+                  searchColumns={["name", "status", "username", "environment", "operatingSystem"]}
                   placeholder="Search by name, status, username, env, or OS..."
                 />
-                <DTViewOptions
-                  {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
-                />
+                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
                 <DTCreateButton buttonText="Add Machine" />
               </div>
             </div>
@@ -86,20 +72,13 @@ export const MachinesTable = () => {
             <div className="flex flex-col gap-2">
               <MachineStats data={data?.data} />
               <HorizontalScrollWrapper>
-                <DataTable
-                  table={table}
-                  columnsLength={machinesTableColumns.length}
-                />
+                <DataTable table={table} columnsLength={machinesTableColumns.length} />
               </HorizontalScrollWrapper>
             </div>
           </MachineCrudDialog>
 
           {/* Data table Pagination component */}
-          <DTPagination
-            table={table}
-            singularLabel="machine"
-            pluralLabel="machines"
-          />
+          <DTPagination table={table} singularLabel="machine" pluralLabel="machines" />
 
           {/* Bulk actions for data table */}
           <MachinesBulkActions table={table} />

@@ -1,15 +1,11 @@
-import {
-  CheckAvailabilityDto,
-  IHttpResponse,
-  TrueFalseResultDto,
-} from "@aventisia/ui/dtos";
+import { CheckAvailabilityDto, IHttpResponse, TrueFalseResultDto } from "@aventisia/ui/dtos";
 import { ISelectOption } from "@aventisia/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { AssignMachineDto } from "../../agents-table/dtos/assign-machine-dto";
 import type { AddMachineDto } from "../dtos/add-machine.dto";
-import type { UpdateMachineFlowVersionsDto } from "../dtos/assign-agent-dto";
+import type { MachineRecordDto } from "../dtos/machine-record.dto";
 import { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
 import type { SelectAgentTableDto } from "../dtos/select-agent-table-dto";
 import type { UpdateMachineDto } from "../dtos/update-machine.dto";
@@ -30,7 +26,7 @@ const getMachines = () => {
  */
 const getMachine = (machineId: string) => {
   return axiosInstance
-    .get<IHttpResponse<MachinesTableRowDto>>(`${baseAPIURL}/${machineId}`)
+    .get<IHttpResponse<MachineRecordDto>>(`${baseAPIURL}/${machineId}`)
     .then((res) => res.data);
 };
 
@@ -71,19 +67,6 @@ const deleteMachines = (ids: string[]) => {
 };
 
 /**
- * Synchronizes flow versions assigned to a machine.
- */
-const syncMachineFlowVersions = (
-  updateMachineFlowVersionsDto: UpdateMachineFlowVersionsDto,
-) => {
-  return axiosInstance
-    .post<
-      IHttpResponse<boolean>
-    >(`${baseAPIURL}/sync-flow-versions`, updateMachineFlowVersionsDto)
-    .then((res) => res.data);
-};
-
-/**
  * For insert or update machine optimistic mutation
  */
 const insertOrUpdateMachine = (mutateObj: AddMachineDto | UpdateMachineDto) => {
@@ -96,9 +79,7 @@ const insertOrUpdateMachine = (mutateObj: AddMachineDto | UpdateMachineDto) => {
  */
 const getFlowVersionsByMachineOSId = (osID: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<SelectAgentTableDto[]>
-    >(`${baseAPIURL}/${osID}/flow-versions`)
+    .get<IHttpResponse<SelectAgentTableDto[]>>(`${baseAPIURL}/${osID}/flow-versions`)
     .then((res) => res.data);
 };
 
@@ -117,32 +98,24 @@ const getMachineSelectOptions = () => {
  */
 const findMachinesByKeyword = (searchKey: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<MachinesTableRowDto[]>
-    >(`${baseAPIURL}/search/${searchKey}`)
+    .get<IHttpResponse<MachinesTableRowDto[]>>(`${baseAPIURL}/search/${searchKey}`)
     .then((res) => {
-      const adaptedData: AssignMachineDto[] = (res.data?.data ?? []).map(
-        (machine) => ({
-          id: machine.id ?? "",
-          tenantId: machine.tenantId ?? "",
-          agentId: "",
-          name: machine.name,
-          isDisabled: machine.isDisabled ?? false,
-          createdBy: machine.createdBy ?? "",
-          createdOn: machine.createdOn
-            ? new Date(machine.createdOn)
-            : new Date(),
-          lastModifiedBy: machine.lastModifiedBy ?? "",
-          lastModifiedOn: machine.lastModifiedOn
-            ? new Date(machine.lastModifiedOn)
-            : new Date(),
-          type: machine.operatingSystem,
-          environment: machine.environment,
-          isAssigned: false,
-          osId: machine.osID,
-          status: machine.status,
-        }),
-      );
+      const adaptedData: AssignMachineDto[] = (res.data?.data ?? []).map((machine) => ({
+        id: machine.id ?? "",
+        tenantId: "",
+        agentId: "",
+        name: machine.name,
+        isDisabled: machine.isDisabled ?? false,
+        createdBy: machine.createdBy ?? "",
+        createdOn: machine.createdOn ? new Date(machine.createdOn) : new Date(),
+        lastModifiedBy: machine.lastModifiedBy ?? "",
+        lastModifiedOn: machine.lastModifiedOn ? new Date(machine.lastModifiedOn) : new Date(),
+        type: machine.operatingSystem,
+        environment: machine.environment,
+        isAssigned: false,
+        osId: machine.osID,
+        status: machine.status,
+      }));
 
       return {
         ...res.data,
@@ -169,9 +142,7 @@ const getNewMachineAgents = () => {
  */
 const isMachineNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
-    .post<
-      IHttpResponse<TrueFalseResultDto>
-    >(`${baseAPIURL}/is-available`, postObj)
+    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj)
     .then((res) => res.data);
 };
 
@@ -182,7 +153,6 @@ export {
   updateMachine,
   deleteMachine,
   deleteMachines,
-  syncMachineFlowVersions,
   insertOrUpdateMachine,
   getFlowVersionsByMachineOSId,
   getMachineSelectOptions,

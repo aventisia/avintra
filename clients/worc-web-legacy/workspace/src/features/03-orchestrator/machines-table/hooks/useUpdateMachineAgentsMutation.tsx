@@ -1,7 +1,6 @@
 import { toast } from "@aventisia/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { syncMachineFlowVersions } from "../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import { useAssignAgentsStore } from "../stores/assign-agents-store";
 
@@ -13,7 +12,16 @@ export const useUpdateMachineAgentsMutation = () => {
   }));
 
   return useMutation({
-    mutationFn: syncMachineFlowVersions,
+    mutationFn: async ({ machineId, flowVersionIds }: { machineId: string; flowVersionIds: string[] }) => {
+      const response = await fetch(`/api/machines/${machineId}/agents`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ flowVersionIds }),
+      });
+      return response.json();
+    },
 
     onSuccess: (httpResponse) => {
       toast.success(httpResponse?.message ?? "Machine updated successfully.", {

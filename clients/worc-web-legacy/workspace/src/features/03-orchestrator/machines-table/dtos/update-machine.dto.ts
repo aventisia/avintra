@@ -41,6 +41,12 @@ export interface UpdateMachineDto {
   ipAddress?: string;
 
   /**
+   * Many-to-Many relationship: Represents the list of flow version identifiers associated with the machine.
+   * Each identifier is a GUID that uniquely represents a flow version.
+   */
+  flowVersionIds: string[];
+
+  /**
    * Gets or sets a flag indicating whether the machine is disabled.
    */
   isDisabled: boolean;

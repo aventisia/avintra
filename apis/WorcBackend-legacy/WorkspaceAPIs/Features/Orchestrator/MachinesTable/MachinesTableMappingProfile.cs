@@ -16,6 +16,29 @@ public class MachinesTableMappingProfile : IRegister
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
 
+        // For - Retrieves machine by its ID
+        config.NewConfig<Machine, MachineRecordDto>()
+            .Map(dest => dest.MachineFlowVersions, src => src.MachineFlowVersions)
+            .Map(dest => dest.CreatedBy,
+                src => src.CreatedByUser != null
+                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
+                    : null)
+            .Map(dest => dest.LastModifiedBy,
+                src => src.LastModifiedByUser != null
+                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
+                    : null);
+
+        // For - Retrieves machine by its ID (assigned flow versions)
+        config.NewConfig<Machine_FlowVersion, MachineFlowVersion>()
+            .Map(dest => dest.FlowVersionId, src => src.FlowVersionId)
+            .Map(dest => dest.FlowId, src => src.FlowVersion != null ? src.FlowVersion.FlowId : Guid.Empty)
+            .Map(dest => dest.FlowName,
+                src => src.FlowVersion != null && src.FlowVersion.Flow != null
+                    ? src.FlowVersion.Flow.Name
+                    : string.Empty)
+            .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
+            .Map(dest => dest.IsPublished, src => src.FlowVersion != null && src.FlowVersion.IsPublished);
+
         // For - Insert new machine
         config.NewConfig<AddMachineDto, Machine>()
             .Map(dest => dest.OsID, src => src.OsID.Trim().ToLowerInvariant())

@@ -67,18 +67,19 @@ public class MachinesTableService : IMachinesTableService
     }
 
     // Retrieve an machine by its ID
-    public async Task<ServiceResponse<MachinesTableRowDto>> GetMachineAsync(Guid machineId)
+    public async Task<ServiceResponse<MachineRecordDto>> GetMachineAsync(Guid machineId)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = ServiceResponse<MachinesTableRowDto>.Create("Failed to fetch machine", 500);
+        var serviceResponse = ServiceResponse<MachineRecordDto>.Create("Failed to fetch machine", 500);
 
         try
         {
             // Retrieve the record
             var machine = await _unitOfWork.MachineRepo
                             .GetByConditionAsync(w => w.Id == machineId)
+                            .Include(i => i.MachineFlowVersions)
                             .AsNoTracking()
-                            .ProjectToType<MachinesTableRowDto>()
+                            .ProjectToType<MachineRecordDto>()
                             .FirstOrDefaultAsync();
 
             // Record not found, return
@@ -95,7 +96,7 @@ public class MachinesTableService : IMachinesTableService
             // machine.LastCheckedIn = clientStatusDto != null ? clientStatusDto.LastSeen : DateTimeOffset.UtcNow;
 
             // Task successful
-            return serviceResponse.Update(null, 200, machine.Adapt<MachinesTableRowDto>());
+            return serviceResponse.Update(null, 200, machine);
         }
         catch (Exception ex)
         {
@@ -137,6 +138,17 @@ public class MachinesTableService : IMachinesTableService
 
             // Insert machine
             await _unitOfWork.MachineRepo.InsertAsync(newMachine);
+
+            // Add Machine_FlowVersion for the provided FlowVersionIds
+            if (addMachineDto.FlowVersionIds != null && addMachineDto.FlowVersionIds.Any())
+            {
+                var distinctFlowVersionIds = MachinesTableHelpers.GetDistinctGuids(addMachineDto.FlowVersionIds);
+                var machineFlowVersions = MachinesTableHelpers.CreateMachineFlowVersions(newMachine.Id, distinctFlowVersionIds);
+
+                // Insert Machine_FlowVersion records
+                if (machineFlowVersions.Any())
+                    await _unitOfWork.Machine_FlowVersionRepo.InsertAsync(machineFlowVersions);
+            }
 
             // If saving changes fails, return
             if (!await _unitOfWork.SaveAsync())
@@ -194,6 +206,40 @@ public class MachinesTableService : IMachinesTableService
 
             // Update machine
             _unitOfWork.MachineRepo.Update(machine);
+
+            // Update Machine_FlowVersion for the provided FlowVersionIds
+            if (updateMachineDto.FlowVersionIds != null)
+            {
+                var distinctFlowVersionIds = MachinesTableHelpers.GetDistinctGuids(updateMachineDto.FlowVersionIds);
+
+                // Retrieve existing Machine_FlowVersion records for the machine
+                var existingMachineFlowVersions = await _unitOfWork.Machine_FlowVersionRepo
+                    .GetByConditionAsync(w => w.MachineId == machine.Id)
+                    .ToListAsync();
+
+                var existingFlowVersionIds = existingMachineFlowVersions
+                    .Select(s => s.FlowVersionId)
+                    .ToHashSet();
+
+                // Remove Machine_FlowVersion records that are no longer requested
+                var machineFlowVersionsToRemove = existingMachineFlowVersions
+                    .Where(w => !distinctFlowVersionIds.Contains(w.FlowVersionId))
+                    .ToList();
+
+                if (machineFlowVersionsToRemove.Any())
+                    _unitOfWork.Machine_FlowVersionRepo.Delete(machineFlowVersionsToRemove);
+
+                // Get new FlowVersionIds that need to be added
+                var newFlowVersionIds = distinctFlowVersionIds
+                    .Where(flowVersionId => !existingFlowVersionIds.Contains(flowVersionId))
+                    .ToList();
+
+                // Create new Machine_FlowVersion records for the new FlowVersionIds
+                var newMachineFlowVersions = MachinesTableHelpers.CreateMachineFlowVersions(machine.Id, newFlowVersionIds);
+
+                if (newMachineFlowVersions.Any())
+                    await _unitOfWork.Machine_FlowVersionRepo.InsertAsync(newMachineFlowVersions);
+            }
 
             // If saving changes fails, return
             if (!await _unitOfWork.SaveAsync())
@@ -308,92 +354,6 @@ public class MachinesTableService : IMachinesTableService
             _logger.LogError(ex, "Error occurred while deleting machines with IDs {MachineIds}", string.Join(", ", machineIds));
             return serviceResponse;
         }
-    }
-
-    // TODO: Synchronize machine's flow versions
-    public async Task<ServiceResponse<bool>> SyncMachineFlowVersionsAsync(UpdateMachineFlowVersionsDto updateMachineFlowVersionsDto)
-    {
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to update machine flow versions. Please try again."
-        };
-
-        try
-        {
-            // Remove duplicates from the provided flow version IDs and convert to a list.
-            var requestedFlowVersionIds = (updateMachineFlowVersionsDto.FlowVersionIds ?? Enumerable.Empty<Guid>()).Distinct().ToList();
-
-            // Retrieve the machine details based on the provided machineId.
-            var machine = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w => w.Id == updateMachineFlowVersionsDto.MachineId)
-                .Include(m => m.MachineFlowVersions)
-                .FirstOrDefaultAsync();
-
-            if (machine == null)
-            {
-                // If machine does not exist, return failure.
-                _logger.LogInformation("Machine not found.");
-                serviceResponse.Message = "The machine does not exist.";
-                return serviceResponse;
-            }
-
-            var validFlowVersions = await _unitOfWork.FlowVersionRepo
-                .GetByConditionAsync(w =>
-                    requestedFlowVersionIds.Contains(w.Id) &&
-                    w.IsPublished &&
-                    !w.IsArchived)
-                .Select(s => s.Id)
-                .ToListAsync();
-
-            var invalidFlowVersionIds = requestedFlowVersionIds.Except(validFlowVersions).ToList();
-            if (invalidFlowVersionIds.Any())
-            {
-                serviceResponse.StatusCode = 400;
-                serviceResponse.Message = $"The following flow version IDs are invalid, unpublished, or archived: {string.Join(", ", invalidFlowVersionIds)}";
-                return serviceResponse;
-            }
-
-            var existingMachineFlows = machine.MachineFlowVersions.ToList();
-            var existingFlowVersionIds = existingMachineFlows.Select(s => s.FlowVersionId).ToHashSet();
-
-            // Compute set differences to keep existing mappings untouched, remove deprecated ones, and add only missing ones.
-            var flowVersionIdsToAdd = requestedFlowVersionIds.Where(w => !existingFlowVersionIds.Contains(w)).ToList();
-            var machineFlowsToRemove = existingMachineFlows.Where(w => !requestedFlowVersionIds.Contains(w.FlowVersionId)).ToList();
-
-            if (machineFlowsToRemove.Any())
-            {
-                _unitOfWork.Machine_FlowVersionRepo.Delete(machineFlowsToRemove);
-            }
-
-            if (flowVersionIdsToAdd.Any())
-            {
-                var machineFlowsToAdd = flowVersionIdsToAdd
-                    .Select(flowVersionId => new Machine_FlowVersion
-                    {
-                        MachineId = machine.Id,
-                        FlowVersionId = flowVersionId
-                    })
-                    .ToList();
-
-                await _unitOfWork.Machine_FlowVersionRepo.InsertAsync(machineFlowsToAdd);
-            }
-
-            if ((machineFlowsToRemove.Any() || flowVersionIdsToAdd.Any()) && !await _unitOfWork.SaveAsync())
-            {
-                return serviceResponse;
-            }
-
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = $"Machine flow versions updated successfully. Added: {flowVersionIdsToAdd.Count}, removed: {machineFlowsToRemove.Count}.";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An unexpected error occurred while updating machine flow versions.");
-        }
-
-        return serviceResponse;
     }
 
     // TODO: Need to check below methods

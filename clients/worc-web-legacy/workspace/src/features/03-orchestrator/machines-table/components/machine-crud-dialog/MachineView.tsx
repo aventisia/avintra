@@ -137,12 +137,6 @@ export const MachineView = () => {
         />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow label="Last Checked In" value={formatDate(machine.lastCheckedIn, true)} />
-        {machine.connectionId && (
-          <>
-            <Separator className="h-[0.5px]" />
-            <ViewInfoRow label="Connection ID" value={machine.connectionId} mono={true} />
-          </>
-        )}
       </ViewInfoRowsCard>
 
       <AuditTrailCard

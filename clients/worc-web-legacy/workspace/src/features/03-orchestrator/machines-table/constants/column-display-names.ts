@@ -1,6 +1,6 @@
 import { KeyValueLookupType } from "@aventisia/ui/types";
 
-import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
+import { MachineStatusEnum } from "@/react-toolkit/enums/machine-status-enum";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
@@ -28,10 +28,10 @@ export const getColumnName = (key: string): string => {
   return column?.value ?? key;
 };
 
-export const statusColor: { [key in MachineStatusTypesEnum]: string } = {
-  [MachineStatusTypesEnum.Online]: "bg-green-200 text-green-700",
-  [MachineStatusTypesEnum.Offline]: "bg-slate-200 text-slate-600",
-  [MachineStatusTypesEnum.Idle]: "bg-orange-200 text-orange-600",
-  [MachineStatusTypesEnum.Running]: "bg-primary",
-  [MachineStatusTypesEnum.Stopped]: "bg-red-200 text-red-600",
+export const statusColor: { [key in MachineStatusEnum]: string } = {
+  [MachineStatusEnum.Online]: "bg-green-200 text-green-700",
+  [MachineStatusEnum.Offline]: "bg-slate-200 text-slate-600",
+  [MachineStatusEnum.Idle]: "bg-orange-200 text-orange-600",
+  [MachineStatusEnum.Running]: "bg-primary",
+  [MachineStatusEnum.Stopped]: "bg-red-200 text-red-600",
 };
