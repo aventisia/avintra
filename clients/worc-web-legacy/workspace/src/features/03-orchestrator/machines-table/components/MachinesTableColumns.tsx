@@ -1,5 +1,6 @@
-import { Checkbox } from "@aventisia/ui";
+import { Checkbox, CopyableText } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
+import { FALLBACK_VALUE } from "@aventisia/ui/constants";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { formatDate, maskIP } from "@aventisia/ui/utils";
 import type { ColumnDef } from "@tanstack/react-table";
@@ -99,7 +100,8 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
     ),
     cell: ({ row }) => {
       const formattedDate = formatDateValue(row.getValue("lastCheckedIn"));
-      if (!formattedDate || formattedDate === "01 Jan 0001") return "-";
+      if (!formattedDate || formattedDate === "01 Jan 0001")
+        return FALLBACK_VALUE;
       return formattedDate;
     },
   },
@@ -135,12 +137,13 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div
+      <CopyableText
         title={row.getValue("osID")}
-        className="w-auto max-w-32 truncate font-medium"
-      >
-        {row.getValue("osID")}
-      </div>
+        textClassName="w-auto max-w-32 truncate text-md font-mono"
+        iconClassName="size-3"
+        value={row.getValue("osID")}
+        ariaLabel="copy os unique id"
+      />
     ),
   },
   {
@@ -201,7 +204,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
     ),
     cell: ({ row }) => {
       const ipAddress = row.getValue<string>("ipAddress");
-      if (!ipAddress || ipAddress === "0.0.0.0") return "-";
+      if (!ipAddress || ipAddress === "0.0.0.0") return FALLBACK_VALUE;
       return maskIP(ipAddress);
     },
   },
