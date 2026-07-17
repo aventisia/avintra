@@ -11,11 +11,13 @@ import {
   TextareaField,
 } from "@aventisia/ui/form";
 import { useListOptimisticMutation } from "@aventisia/ui/hooks";
-import { useEffect, useRef } from "react";
+import { ISelectOption } from "@aventisia/ui/types";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
 
+import { getCredSelectOptions } from "../../apis/app-secret-apis";
 import {
   queueOptimisticMutationFn,
   searchQueues,
@@ -56,6 +58,25 @@ export const QueueCrudForm = () => {
   } = useDefineQueueForm();
 
   // const jData = form.watch("inputSchema");
+  const [selectOptions, setSelectOptions] = useState<ISelectOption[]>([]);
+
+  const [, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    // Set loading state
+    setLoading(true);
+
+    // Fetch credentials list.
+    getCredSelectOptions()
+      .then((data) => {
+        setSelectOptions(data?.data as ISelectOption[]);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch ", err);
+        setLoading(false);
+      });
+  }, []);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     event.preventDefault();
@@ -139,20 +160,30 @@ export const QueueCrudForm = () => {
     >
       {/* queue Id */}
       {isReadMode && <InputField {...idProps} />}
+      <div className="grid grid-cols-2 gap-2">
+        {/* Type */}
+        {crudAction === "create" ? (
+          <SelectField {...typeProps} />
+        ) : (
+          form.getValues("type") !== "" && <SelectField {...typeProps} />
+        )}
 
+        {/* View Type */}
+        {crudAction === "create" ? (
+          <SelectField {...viewTypeProps} />
+        ) : (
+          form.getValues("viewType") !== "" && (
+            <SelectField {...viewTypeProps} />
+          )
+        )}
+      </div>
       {/* Name */}
       <InputField
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
+        autoFocus
       />
-
-      {/* Type */}
-      {crudAction === "create" ? (
-        <SelectField {...typeProps} />
-      ) : (
-        form.getValues("type") !== "" && <SelectField {...typeProps} />
-      )}
       {/* Description */}
       <TextareaField {...descriptionProps} />
       <SwitchField
@@ -165,7 +196,6 @@ export const QueueCrudForm = () => {
         description="Store in encrypted format"
         label="Store in encrypted format"
       />
-
       {/* autor etry  */}
       {/* <div className="flex flex-col gap-2">
         <div className="ml-1 flex justify-between">
@@ -199,7 +229,6 @@ export const QueueCrudForm = () => {
           </div>
         ) : null}
       </div> */}
-
       {/* additional options */}
       <div className="flex flex-col gap-3">
         <Input
@@ -228,7 +257,6 @@ export const QueueCrudForm = () => {
           </pre>
         </div>
       </div>
-
       <AsyncMultiSelectField<string>
         fetcher={(query) =>
           searchQueues(query).then((res) => res.data.map((q) => q.name) || [])
@@ -240,8 +268,23 @@ export const QueueCrudForm = () => {
         queryKeyBase={"searchQueues"}
         label="Route Queues"
       />
-
-      <SelectField {...viewTypeProps} />
+      {crudAction === "create" ? (
+        <SelectField
+          selectOptions={selectOptions ?? []}
+          name="credentialId"
+          label="Credential Id"
+          disabled={isReadMode}
+        />
+      ) : (
+        form.getValues("credentialId") && (
+          <SelectField
+            selectOptions={selectOptions ?? []}
+            name="credentialId"
+            label="Credential Id"
+            disabled={isReadMode}
+          />
+        )
+      )}{" "}
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
       {/* AutherCard */}
@@ -253,7 +296,6 @@ export const QueueCrudForm = () => {
           lastModifiedOn={form.getValues("lastModifiedOn")}
         />
       )}
-
       {/* Submit button */}
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">

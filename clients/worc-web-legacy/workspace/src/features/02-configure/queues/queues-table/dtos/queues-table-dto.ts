@@ -109,6 +109,8 @@ export interface QueuesTableDto {
    */
   accessLevel: ResourceAccessTypeEnum;
 
+  credentialId?: string;
+
   /**
    * Indicates whether the queue is disabled.
    */
