@@ -109,6 +109,7 @@ export const WorkItemDetails = () => {
             data={workItemData?.data}
             extractedData={extractedData}
             setExtractedData={setExtractedData}
+            credentialId={myCurrentQueue?.credentialId}
           />
         );
       default:

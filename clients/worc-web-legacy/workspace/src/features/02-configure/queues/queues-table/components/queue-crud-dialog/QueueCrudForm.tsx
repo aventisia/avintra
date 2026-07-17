@@ -18,10 +18,7 @@ import { z } from "zod";
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
 
 import { getCredSelectOptions } from "../../apis/app-secret-apis";
-import {
-  queueOptimisticMutationFn,
-  searchQueues,
-} from "../../apis/queues-table-apis";
+import { queueOptimisticMutationFn, searchQueues } from "../../apis/queues-table-apis";
 import {
   descriptionProps,
   idProps,
@@ -121,11 +118,11 @@ export const QueueCrudForm = () => {
     mutate: mutatequeue,
     isPending,
     isSuccess,
-  } = useListOptimisticMutation<
-    QueuesTableDto,
-    QueuesTableDto | boolean,
-    QueuesTableDto
-  >([rowId], queueOptimisticMutationFn, queryKey);
+  } = useListOptimisticMutation<QueuesTableDto, QueuesTableDto | boolean, QueuesTableDto>(
+    [rowId],
+    queueOptimisticMutationFn,
+    queryKey,
+  );
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof queueZodSchema>) => {
@@ -172,9 +169,7 @@ export const QueueCrudForm = () => {
         {crudAction === "create" ? (
           <SelectField {...viewTypeProps} />
         ) : (
-          form.getValues("viewType") !== "" && (
-            <SelectField {...viewTypeProps} />
-          )
+          form.getValues("viewType") !== "" && <SelectField {...viewTypeProps} />
         )}
       </div>
       {/* Name */}
@@ -243,11 +238,7 @@ export const QueueCrudForm = () => {
 
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <FormLabelExt
-              label="Work Item schema"
-              isRequired
-              disabled={isReadMode}
-            />
+            <FormLabelExt label="Work Item schema" isRequired disabled={isReadMode} />
             <Button onClick={handleClick} type="button" variant={"link"}>
               Browse File
             </Button>
@@ -258,9 +249,7 @@ export const QueueCrudForm = () => {
         </div>
       </div>
       <AsyncMultiSelectField<string>
-        fetcher={(query) =>
-          searchQueues(query).then((res) => res.data.map((q) => q.name) || [])
-        }
+        fetcher={(query) => searchQueues(query).then((res) => res.data.map((q) => q.name) || [])}
         filters={undefined}
         getItemId={(item) => item}
         getItemLabel={(item) => item}
@@ -268,23 +257,14 @@ export const QueueCrudForm = () => {
         queryKeyBase={"searchQueues"}
         label="Route Queues"
       />
-      {crudAction === "create" ? (
-        <SelectField
-          selectOptions={selectOptions ?? []}
-          name="credentialId"
-          label="Credential Id"
-          disabled={isReadMode}
-        />
-      ) : (
-        form.getValues("credentialId") && (
-          <SelectField
-            selectOptions={selectOptions ?? []}
-            name="credentialId"
-            label="Credential Id"
-            disabled={isReadMode}
-          />
-        )
-      )}{" "}
+
+      <SelectField
+        selectOptions={selectOptions ?? []}
+        name="credentialId"
+        label="Credential Id"
+        disabled={isReadMode}
+      />
+
       {/* Is Disabled */}
       {crudAction !== "create" && <SwitchField {...isDisabledProps} />}
       {/* AutherCard */}
@@ -302,9 +282,7 @@ export const QueueCrudForm = () => {
           <SubmitButton
             className="min-w-[5rem]"
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
-            secondaryText={
-              crudAction === "create" ? "Creating..." : "Saving..."
-            }
+            secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
             isPending={isPending}
             disabled={!isDirty || !isAvailable || isCheckPending}
           />
