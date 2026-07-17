@@ -112,6 +112,11 @@ public class QueuesTableDto
     public ResourceAccessTypeEnum AccessLevel { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the credential used to access resources associated with the queue.
+    /// </summary>
+    public Guid? CredentialId { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
     /// <remarks>

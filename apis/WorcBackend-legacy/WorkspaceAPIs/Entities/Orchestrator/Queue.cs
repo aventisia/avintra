@@ -85,6 +85,11 @@ public class Queue : BaseEntity, IMustHaveTenant
     public bool IsTenantWideAccess { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the credential used to access resources associated with the queue.
+    /// </summary>
+    public Guid? CredentialId { get; set; }
+
+    /// <summary>
     /// Configures the many-to-many relationship between queue transactions and queues.
     /// </summary>
     public virtual ICollection<QueueTransaction>? QueueTransactions { get; set; }

@@ -886,6 +886,16 @@ public class QueueWorkItemService : IQueueWorkItemService
                 return serviceResponse;
             }
 
+            if (queueWorkItem.Status == QueueTransactionStatusTypesEnum.Completed)
+            {
+                await _queueTransactionEventService.CreateQueueTransactionEventAsync(new QueueTransactionEventDto()
+                {
+                    QueueTransactionId = queueWorkItem.Id,
+                    EventType = QueueTransactionEventEnum.Closed,
+                    Data = queueWorkItem.Queue != null ? queueWorkItem.Queue.Name : string.Empty,
+                });
+            }
+
             // Return successful response
             serviceResponse.Message = "Queue workitem updated successfully.";
             serviceResponse.Data = queueWorkItem.Adapt<QueueWorkItemDto>();
@@ -1057,7 +1067,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Update the existing work item to point to the destination queue
             workItem.QueueId = destinationQueue.Id;
             workItem.Queue = null;
-            
+
             // Mark the existing work item as updated
             _unitOfWork.QueueTransactionRepo.Update(workItem);
 
