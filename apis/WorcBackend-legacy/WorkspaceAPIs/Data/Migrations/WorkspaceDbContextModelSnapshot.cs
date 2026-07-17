@@ -1501,6 +1501,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("QueueId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("SourceQueueTransactionId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Status")
                         .HasColumnType("text");
 

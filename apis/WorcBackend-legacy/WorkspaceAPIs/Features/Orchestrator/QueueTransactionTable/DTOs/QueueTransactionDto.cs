@@ -35,6 +35,12 @@ public class QueueTransactionDto
     public List<string>? FileUrls { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier of the source queue transaction from which this transaction was created during a queue routing operation.
+    /// This reference is used to trace the origin of the transaction.
+    /// </summary>
+    public Guid? SourceQueueTransactionId { get; set; }
+
+    /// <summary>
     /// Gets or sets the identifier for the queue to which this transaction belongs.
     /// </summary>
     public required Guid QueueId { get; set; }

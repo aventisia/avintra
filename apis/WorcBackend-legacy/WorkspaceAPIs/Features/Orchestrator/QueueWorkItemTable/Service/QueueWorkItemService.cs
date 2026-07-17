@@ -922,12 +922,12 @@ public class QueueWorkItemService : IQueueWorkItemService
         try
         {
             // Retrieve the work item to be moved, including its source queue information
-            var workItem = await _unitOfWork.QueueTransactionRepo
+            var existingWorkItem = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w => w.Id == routeQueueWorkItemRequestDto.Id)
                 .Include(i => i.Queue)
                 .SingleOrDefaultAsync();
 
-            if (workItem == null)
+            if (existingWorkItem == null)
             {
                 _logger.LogWarning("Work item {WorkItemId} was not found.", routeQueueWorkItemRequestDto.Id);
                 serviceResponse.Message = "Work item not found.";
@@ -977,16 +977,25 @@ public class QueueWorkItemService : IQueueWorkItemService
             }
 
             // Ensure the work item contains payload data
-            if (string.IsNullOrWhiteSpace(workItem.PayloadData))
+            if (string.IsNullOrWhiteSpace(existingWorkItem.PayloadData))
             {
                 serviceResponse.Message = "Work item payload is empty.";
                 return serviceResponse;
             }
 
-            // Parse the work item payload as a JSON object and wrap it in an array for validation
-            var payloadArray = new JArray(JObject.Parse(workItem.PayloadData));
+            // Parse the existing payload and wrap it into an array for validation logic.
+            var payloadArray = new JArray(JObject.Parse(existingWorkItem.PayloadData));
 
-            // var movedItems = new List<QueueTransaction>();
+            // Prepare the new work item that will be inserted into the destination queue.
+            var routedQueueTransaction = new QueueTransaction()
+            {
+                QueueId = destinationQueue.Id,
+                SourceQueueTransactionId = existingWorkItem.Id,
+                Description = existingWorkItem.Description,
+                Status = QueueTransactionStatusTypesEnum.Pending,
+                FileUrls = existingWorkItem.FileUrls,
+                CreatedBy = _username
+            };
             var hasErrors = false;
 
             // Validate and transform the payload
@@ -1014,7 +1023,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                     {
                         errors.Add($"Missing required field: {field.Name}");
                         hasErrors = true;
-                        _logger.LogWarning("Validation failed for work item {WorkItemId}. Missing required field '{FieldName}'.", workItem.Id, field.Name);
+                        _logger.LogWarning("Validation failed for work item {WorkItemId}. Missing required field '{FieldName}'.", existingWorkItem.Id, field.Name);
                     }
 
                     // Collect unique identifier values for duplicate detection
@@ -1035,7 +1044,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                     if (existingUniqueKeys.Contains(key))
                     {
                         hasErrors = true;
-                        _logger.LogWarning("Duplicate work item detected while moving work item {WorkItemId}. Unique key: {UniqueKey}", workItem.Id, key);
+                        _logger.LogWarning("Duplicate work item detected while moving work item {WorkItemId}. Unique key: {UniqueKey}", existingWorkItem.Id, key);
                     }
 
                     existingUniqueKeys.Add(key);
@@ -1051,7 +1060,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                     }
 
                     // Update payload only if schema transformation modifies the data
-                    workItem.PayloadData = serializedPayload;
+                    routedQueueTransaction.PayloadData = serializedPayload;
                 }
             }
 
@@ -1064,29 +1073,53 @@ public class QueueWorkItemService : IQueueWorkItemService
                 return serviceResponse;
             }
 
-            // Update the existing work item to point to the destination queue
-            workItem.QueueId = destinationQueue.Id;
-            workItem.Queue = null;
+            // Mark the original work item as completed.
+            existingWorkItem.Status = QueueTransactionStatusTypesEnum.Completed;
 
-            // Mark the existing work item as updated
-            _unitOfWork.QueueTransactionRepo.Update(workItem);
+            // Update the existing work item.
+            _unitOfWork.QueueTransactionRepo.Update(existingWorkItem);
 
+            // Persist the status update.
             if (!await _unitOfWork.SaveAsync())
             {
                 _logger.LogError(
                     "Failed to save changes while moving work item {WorkItemId} to queue '{DestinationQueue}'.",
-                    workItem.Id,
+                    existingWorkItem.Id,
                     destinationQueue.Name);
+
                 serviceResponse.Data = false;
                 return serviceResponse;
             }
 
+            // Record routing and closure events for the original work item.
             await _queueTransactionEventService.CreateQueueTransactionEventAsync(new QueueTransactionEventDto()
             {
-                QueueTransactionId = workItem.Id,
+                QueueTransactionId = existingWorkItem.Id,
                 EventType = QueueTransactionEventEnum.QueueTransactionRouted,
                 Data = destinationQueue.Name,
             });
+
+            await _queueTransactionEventService.CreateQueueTransactionEventAsync(new QueueTransactionEventDto()
+            {
+                QueueTransactionId = existingWorkItem.Id,
+                EventType = QueueTransactionEventEnum.Closed,
+                Data = destinationQueue.Name,
+            });
+
+            // Insert the new work item into the destination queue.
+            await _unitOfWork.QueueTransactionRepo.InsertAsync(routedQueueTransaction);
+
+            // Persist the new work item.
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogError(
+                    "Failed to save changes while moving work item {WorkItemId} to queue '{DestinationQueue}'.",
+                    existingWorkItem.Id,
+                    destinationQueue.Name);
+
+                serviceResponse.Data = false;
+                return serviceResponse;
+            }
 
             serviceResponse.StatusCode = 200;
             serviceResponse.Data = true;
