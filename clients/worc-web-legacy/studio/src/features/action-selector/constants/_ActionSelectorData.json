@@ -116,9 +116,30 @@
             "label": "Break Loop",
             "description": "Breaks out of the current loop in the workflow execution.",
             "docsLink": "https://docs.aventisia.com",
+            "icon": "BreakLoopNodeIcon",
             "img": "/assets/BreakLoop.svg",
             "supportedPlatforms": ["cloud", "windows"],
             "doNotRenderIf": ["production"]
+          },
+          {
+            "type": "continueLoopNode",
+            "name": "ContinueLoopActivity",
+            "label": "Continue Loop",
+            "description": "Skips the remainder of the current loop iteration and proceeds to the next one.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "ContinueLoopNodeIcon",
+            "img": "/assets/BreakLoop.svg",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "flowExitNode",
+            "name": "ExitFlowActivity",
+            "label": "Exit Flow",
+            "description": "Terminates the current flow execution immediately.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "ExitFlowNodeIcon",
+            "img": "/assets/BreakLoop.svg",
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",

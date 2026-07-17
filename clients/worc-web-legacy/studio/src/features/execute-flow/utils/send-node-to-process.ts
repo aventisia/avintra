@@ -8,6 +8,7 @@ import { NodeDataType } from "@/types/node-data-type";
 
 import {
   ConditionalNodeData,
+  LoopControlAction,
   LoopNodeData,
   WebSocketCommandType,
   getActivityNodeData,
@@ -41,6 +42,91 @@ const getConditionalExecutionGroupFromLS = () => {
 const getLoopExecutionGroupFromLS = () => {
   const storedGroup = localStorage.getItem("loopExecutionGroup");
   return storedGroup ? (JSON.parse(storedGroup) as LoopNodeData[]) : [];
+};
+
+const cacheLoopIdForNode = (nodeId: string, loopId: string) => {
+  const nodes = getNodesFromLS();
+  if (!nodes.some((node) => node.id === nodeId)) return;
+  const updatedNodes = nodes.map((node) =>
+    node.id === nodeId
+      ? {
+          ...node,
+          data: {
+            ...node.data,
+            loopId,
+          },
+        }
+      : node,
+  );
+  localStorage.setItem("nodes", JSON.stringify(updatedNodes));
+};
+
+const findNearestLoopBranchEndNode = (startNodeId: string) => {
+  const nodes = getNodesFromLS();
+  const edges = getEdgesFromLS();
+  const visited = new Set<string>();
+  const queue: string[] = [startNodeId];
+
+  while (queue.length > 0) {
+    const currentId = queue.shift();
+    if (!currentId || visited.has(currentId)) continue;
+    visited.add(currentId);
+
+    const currentNode = nodes.find((node) => node.id === currentId);
+    if (
+      currentNode?.type === "branchEndNode" &&
+      currentNode.data?.groupType === "LoopBranch"
+    ) {
+      return currentNode;
+    }
+
+    edges
+      .filter((edge) => edge.source === currentId)
+      .forEach((edge) => {
+        if (!visited.has(edge.target)) {
+          queue.push(edge.target);
+        }
+      });
+  }
+
+  return undefined;
+};
+
+const resolveLoopIdForControlNode = (node: Node<NodeDataType>) => {
+  const existingLoopId = node.data?.loopId;
+  if (existingLoopId) return existingLoopId;
+
+  const branchEndNode = findNearestLoopBranchEndNode(node.id);
+  const loopId = branchEndNode?.data?.customParentId as string;
+  if (!loopId) return undefined;
+
+  cacheLoopIdForNode(node.id, loopId);
+  return loopId;
+};
+
+const setLoopControlAction = (loopId: string, action: LoopControlAction) => {
+  const loopGroup = getLoopExecutionGroupFromLS();
+  const updatedGroup = loopGroup.map((item) =>
+    item.id === loopId ? { ...item, controlAction: action } : item,
+  );
+  localStorage.setItem("loopExecutionGroup", JSON.stringify(updatedGroup));
+};
+
+const handleLoopControlNode = (
+  node: Node<NodeDataType>,
+  action: LoopControlAction,
+  sendCommand: (command: WebSocketCommandType, data?: string) => void,
+) => {
+  if (action === "break") {
+    const loopId = resolveLoopIdForControlNode(node);
+    if (loopId) {
+      setLoopControlAction(loopId, action);
+    } else {
+      console.warn("Unable to resolve loop for break node", node.id);
+    }
+  }
+
+  sendNextNodeToProcess(sendCommand, node.id);
 };
 
 // Send next node Id to process
@@ -244,12 +330,11 @@ const processLoopNode = (
   // Invalid node
   if (!node || node.type !== "forLoopNode") return;
 
-  // Get execution group
-  const currentExecutionGroup = getLoopExecutionGroupFromLS().find(
+  let currentExecutionGroup = getLoopExecutionGroupFromLS().find(
     (item) => item.id === node.id,
   ) as LoopNodeData;
 
-  // Set execution group
+  // Set execution group when first encountered
   if (!currentExecutionGroup) {
     // Get loop node data
     const loopNodeData = getLoopNodeData(node);
@@ -262,6 +347,8 @@ const processLoopNode = (
       "loopExecutionGroup",
       JSON.stringify(newExecutionGroup),
     );
+
+    currentExecutionGroup = loopNodeData;
   }
 
   // Get next node id from edges
@@ -270,6 +357,14 @@ const processLoopNode = (
       (edge) => edge.source === node.id && edge.type != "loopBack",
     )?.target ?? "nextNodeId";
 
+  if (currentExecutionGroup?.controlAction === "break") {
+    const updatedGroup = getLoopExecutionGroupFromLS().filter(
+      (item) => item.id !== node.id,
+    );
+    localStorage.setItem("loopExecutionGroup", JSON.stringify(updatedGroup));
+    sendNodeToProcess(nextNodeId, sendCommand);
+    return;
+  }
   // Send loop node to check condition
   sendCommand(
     "check-loop-condition",
@@ -458,10 +553,25 @@ const sendNodeToProcess = async (
       }
       return;
     }
+    case "breakLoopNode":
+      handleLoopControlNode(
+        nodeToProcess as Node<NodeDataType>,
+        "break",
+        sendCommand,
+      );
+      return;
+    case "continueLoopNode":
+      handleLoopControlNode(
+        nodeToProcess as Node<NodeDataType>,
+        "continue",
+        sendCommand,
+      );
+      return;
     case "forLoopNode": // loop. Check condition
       // TODO: We need to change the name from "forLoopNode" to "LoopNode" only.
       processLoopNode(nodeToProcess as Node<LoopNodeDataType>, sendCommand);
       return;
+    case "flowExitNode":
     case "flowEndNode": {
       //Execution is complete
       const executionStack = JSON.parse(

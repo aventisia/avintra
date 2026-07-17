@@ -4,10 +4,13 @@ import { BlockNode } from "@/components/nodes/BlockNode";
 import { BranchEndNode } from "@/components/nodes/BranchEndNode";
 import { BranchNode } from "@/components/nodes/BranchNode";
 import { BranchNode1 } from "@/components/nodes/BranchNode1";
+import { BreakLoopNode } from "@/components/nodes/BreakLoopNode";
 import { CallAgentNode } from "@/components/nodes/CallAgentNode";
 import { CloudConnectorNode } from "@/components/nodes/CloudConnectorNode";
 import { ConditionalNode } from "@/components/nodes/ConditionalNode";
+import { ContinueLoopNode } from "@/components/nodes/ContinueLoopNode";
 import { FlowEndNode } from "@/components/nodes/FlowEndNode";
+import { FlowExitNode } from "@/components/nodes/FlowExitNode";
 import { ForLoopNode } from "@/components/nodes/ForLoopNode";
 import { IfElseNode } from "@/components/nodes/IfElseNode";
 import { MergeBranchesNode } from "@/components/nodes/MergeBranchesNode";
@@ -21,6 +24,7 @@ export const CustomNodeTypeObj = {
   plusFirstNode: PlusNode, // Used to add the first node & flowEndNode in the flow.
   plusNode: PlusNode, // Used to add first node in a branch.
   flowEndNode: FlowEndNode,
+  flowExitNode: FlowExitNode,
   branchStartNode: BranchNode,
   branchEndNode: BranchEndNode,
   mergeBranchesNode: MergeBranchesNode,
@@ -34,6 +38,8 @@ export const CustomNodeTypeObj = {
   whileLoopNode: IfElseNode, // TODO
   forLoopNode: ForLoopNode, // TODO
   forEachLoopNode: IfElseNode, // TODO
+  breakLoopNode: BreakLoopNode,
+  continueLoopNode: ContinueLoopNode,
 
   // ------------------------------------Base node types
   triggerNode: TriggerNode,
