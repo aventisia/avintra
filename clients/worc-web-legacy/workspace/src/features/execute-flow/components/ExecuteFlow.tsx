@@ -1,4 +1,5 @@
 import { Button } from "@aventisia/ui/buttons";
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
 import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
@@ -7,7 +8,6 @@ import { Edge, Node } from "@xyflow/react";
 import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
-import { IS_TAURI } from "@/constants/constants";
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";

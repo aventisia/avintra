@@ -1,4 +1,5 @@
 // import { Sidebar } from "@aventisia/ui/layout";
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { cn } from "@aventisia/ui/lib";
 import { ScrollArea } from "@aventisia/ui/scroll";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
@@ -7,7 +8,6 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { DotPattern } from "@/components/layout/DotPattern";
-import { IS_TAURI } from "@/constants/constants";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
 // import {
 //   useCheckForUpdate,

@@ -1,5 +1,6 @@
 import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
+import { FALLBACK_VALUE } from "@aventisia/ui/constants";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { cn } from "@aventisia/ui/lib";
 import { ColumnDef } from "@tanstack/react-table";
@@ -72,7 +73,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("flowVersionNumber") ?? "-"}
+        {row.getValue("flowVersionNumber") ?? FALLBACK_VALUE}
       </div>
     ),
   },
@@ -123,7 +124,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
               new Date(row.getValue("startTimeStamp")),
               "dd MMM yyyy h:mm:ss a",
             )
-          : "-"}
+          : FALLBACK_VALUE}
       </div>
     ),
   },
@@ -144,7 +145,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
               new Date(row.getValue("endTimeStamp")),
               "dd MMM yyyy h:mm:ss a",
             )
-          : "-"}
+          : FALLBACK_VALUE}
       </div>
     ),
   },
@@ -161,7 +162,9 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       const duration = Number(row.getValue("duration"));
       return (
         <div className="w-auto truncate font-medium">
-          {duration > 0 ? formatSecondsToCompactDuration(duration) : "-"}
+          {duration > 0
+            ? formatSecondsToCompactDuration(duration)
+            : FALLBACK_VALUE}
         </div>
       );
     },
@@ -177,7 +180,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("creditsConsumed") ?? "-"}
+        {row.getValue("creditsConsumed") ?? FALLBACK_VALUE}
       </div>
     ),
   },
@@ -195,7 +198,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
         title={row.getValue("remarks") ?? ""}
         className="max-w-36 truncate font-medium"
       >
-        {row.getValue("remarks") ?? "-"}
+        {row.getValue("remarks") ?? FALLBACK_VALUE}
       </div>
     ),
   },
@@ -210,7 +213,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("triggerType") ?? "-"}
+        {row.getValue("triggerType") ?? FALLBACK_VALUE}
       </div>
     ),
   },
@@ -225,7 +228,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="max-w-40 truncate font-medium">
-        {row.getValue("createdByName") ?? "-"}
+        {row.getValue("createdByName") ?? FALLBACK_VALUE}
       </div>
     ),
   },
@@ -243,7 +246,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       <div className="w-auto truncate font-medium">
         {row.getValue("createdAt")
           ? format(new Date(row.getValue("createdAt")), "dd MMM yyyy h:mm:ss a")
-          : "-"}
+          : FALLBACK_VALUE}
       </div>
     ),
   },
@@ -259,7 +262,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="max-w-40 truncate font-medium">
-        {row.getValue("executionLocation") ?? "-"}
+        {row.getValue("executionLocation") ?? FALLBACK_VALUE}
       </div>
     ),
   },
@@ -305,7 +308,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("priority") ?? "-"}
+        {row.getValue("priority") ?? FALLBACK_VALUE}
       </div>
     ),
   },

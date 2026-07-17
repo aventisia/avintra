@@ -1,6 +1,6 @@
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { DETAIL_TABLE_KEY } from "../../constants";
@@ -106,7 +106,7 @@ export const getKBFilesTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="w-24 font-medium">
-        {row.original.createdOn ? dateFormatter(row.original.createdOn) : "NA"}
+        {formatDate(row.original.createdOn)}
       </div>
     ),
   },

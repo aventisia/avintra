@@ -1,9 +1,9 @@
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { toast } from "@aventisia/ui/sonner";
 import { invoke } from "@tauri-apps/api/core";
 import { Edge, Node } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 
-import { IS_TAURI } from "@/constants/constants";
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";

@@ -1,9 +1,8 @@
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { check } from "@tauri-apps/plugin-updater";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
-
-import { IS_TAURI } from "@/constants/constants";
 
 export const useCheckForUpdate = () => {
   // Access the setAppBanner function from the base layout store

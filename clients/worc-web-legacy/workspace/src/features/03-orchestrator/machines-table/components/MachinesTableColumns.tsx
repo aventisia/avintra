@@ -1,7 +1,7 @@
 import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter, maskIP } from "@aventisia/ui/utils";
+import { formatDate, maskIP } from "@aventisia/ui/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
@@ -12,7 +12,7 @@ import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 const formatDateValue = (value: unknown) => {
   if (!value) return null;
   const date = value instanceof Date ? value : new Date(String(value));
-  return Number.isNaN(date.getTime()) ? null : dateFormatter(date);
+  return Number.isNaN(date.getTime()) ? null : formatDate(date);
 };
 
 /**

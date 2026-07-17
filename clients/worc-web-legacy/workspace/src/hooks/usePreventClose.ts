@@ -1,5 +1,4 @@
-import { IS_TAURI } from "@/constants/constants";
-
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useEffect, useRef } from "react";
 

@@ -1,7 +1,8 @@
 import { Checkbox } from "@aventisia/ui";
+import { FALLBACK_VALUE } from "@aventisia/ui/constants";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { CountriesEnum, CurrenciesEnum } from "@aventisia/ui/enums";
-import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
+import { formatDate, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
@@ -99,10 +100,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("renewalDate")}
       />
     ),
-    cell: ({ row }) =>
-      row.getValue("renewalDate")
-        ? dateFormatter(row.getValue<Date>("renewalDate"))
-        : "-",
+    cell: ({ row }) => formatDate(row.getValue<Date>("renewalDate")),
   },
   {
     accessorKey: "currency",
@@ -143,10 +141,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("effectiveDate")}
       />
     ),
-    cell: ({ row }) =>
-      row.getValue("effectiveDate")
-        ? dateFormatter(row.getValue<Date>("effectiveDate"))
-        : "-",
+    cell: ({ row }) => formatDate(row.getValue<Date>("effectiveDate")),
   },
   {
     accessorKey: "expiresOn",
@@ -157,10 +152,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("expiresOn")}
       />
     ),
-    cell: ({ row }) =>
-      row.getValue("expiresOn")
-        ? dateFormatter(row.getValue<Date>("expiresOn"))
-        : "-",
+    cell: ({ row }) => formatDate(row.getValue<Date>("expiresOn")),
   },
 
   // BUSINESS
@@ -173,7 +165,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("domain")}
       />
     ),
-    cell: ({ row }) => row.getValue("domain") || "-",
+    cell: ({ row }) => row.getValue("domain") || FALLBACK_VALUE,
   },
   {
     accessorKey: "country",
@@ -185,7 +177,8 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
       />
     ),
     cell: ({ row }) =>
-      getEnumValueByKey(CountriesEnum, row.getValue("country")),
+      getEnumValueByKey(CountriesEnum, row.getValue("country")) ??
+      FALLBACK_VALUE,
   },
   {
     accessorKey: "numberOfEmployees",
@@ -196,7 +189,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("numberOfEmployees")}
       />
     ),
-    cell: ({ row }) => row.getValue("numberOfEmployees") ?? "-",
+    cell: ({ row }) => row.getValue("numberOfEmployees") ?? FALLBACK_VALUE,
   },
   {
     accessorKey: "industry",
@@ -207,7 +200,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("industry")}
       />
     ),
-    cell: ({ row }) => row.getValue("industry") || "-",
+    cell: ({ row }) => row.getValue("industry") || FALLBACK_VALUE,
   },
 
   // METRICS
@@ -220,7 +213,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("publishAgent")}
       />
     ),
-    cell: ({ row }) => row.getValue("publishAgent"),
+    cell: ({ row }) => row.getValue("publishAgent") || FALLBACK_VALUE,
   },
   {
     accessorKey: "totalJobs",
@@ -231,7 +224,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("totalJobs")}
       />
     ),
-    cell: ({ row }) => row.getValue("totalJobs"),
+    cell: ({ row }) => row.getValue("totalJobs") ?? FALLBACK_VALUE,
   },
   {
     accessorKey: "totalUsers",
@@ -313,7 +306,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("createdBy")}
       />
     ),
-    cell: ({ row }) => row.getValue("createdBy") || "-",
+    cell: ({ row }) => row.getValue("createdBy") || FALLBACK_VALUE,
   },
   {
     accessorKey: "createdOn",
@@ -324,10 +317,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("createdOn")}
       />
     ),
-    cell: ({ row }) =>
-      row.getValue("createdOn")
-        ? dateFormatter(row.getValue<Date>("createdOn"))
-        : "-",
+    cell: ({ row }) => formatDate(row.getValue("createdOn")),
   },
   {
     accessorKey: "lastModifiedBy",
@@ -338,7 +328,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("lastModifiedBy")}
       />
     ),
-    cell: ({ row }) => row.getValue("lastModifiedBy") || "-",
+    cell: ({ row }) => row.getValue("lastModifiedBy") || FALLBACK_VALUE,
   },
   {
     accessorKey: "lastModifiedOn",
@@ -349,10 +339,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
         title={getColumnName("lastModifiedOn")}
       />
     ),
-    cell: ({ row }) =>
-      row.getValue("lastModifiedOn")
-        ? dateFormatter(row.getValue<Date>("lastModifiedOn"))
-        : "-",
+    cell: ({ row }) => formatDate(row.getValue<Date>("lastModifiedOn")),
   },
 
   // ACTIONS

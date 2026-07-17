@@ -1,6 +1,7 @@
+import { IS_TAURI } from "@aventisia/ui/constants";
+
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { ContentHeader } from "@/components/ui/ContentHeader";
-import { IS_TAURI } from "@/constants/constants";
 //import { SocialButtons } from "@/components/ui/SocialButtons";
 import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 

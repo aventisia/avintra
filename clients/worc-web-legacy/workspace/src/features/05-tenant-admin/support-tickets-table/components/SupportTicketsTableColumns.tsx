@@ -1,13 +1,12 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Key } from "react";
 
 import { TABLE_KEY } from "../constants/constants";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
-
 import { SupportTicketsTableCellLink } from "./SupportTicketsTableCellLink";
 
 /**
@@ -101,7 +100,7 @@ export const supportTicketsTableColumns: ColumnDef<SupportTicketsTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="hidden">{dateFormatter(row.getValue("createdOn"))}</div>
+      <div className="hidden">{formatDate(row.getValue("createdOn"))}</div>
     ),
   },
   {

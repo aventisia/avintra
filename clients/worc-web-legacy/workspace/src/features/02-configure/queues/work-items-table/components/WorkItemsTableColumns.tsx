@@ -1,12 +1,11 @@
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
 import { statusColor } from "../constants/column-display-names";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
-
 import { WorkItemRowActions } from "./WorkItemRowActions";
 
 /**
@@ -67,7 +66,7 @@ export const workItemsTableColumns: ColumnDef<QueueWorkItemDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("createdOn"))}
+        {formatDate(row.getValue("createdOn"))}
       </div>
     ),
   },

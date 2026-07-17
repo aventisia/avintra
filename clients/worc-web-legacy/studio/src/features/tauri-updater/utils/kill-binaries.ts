@@ -1,4 +1,4 @@
-import { IS_TAURI } from "@/constants";
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { toast } from "@aventisia/ui/sonner";
 
 export async function killBinaries(): Promise<boolean> {

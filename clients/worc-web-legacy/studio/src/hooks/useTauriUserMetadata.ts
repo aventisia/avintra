@@ -1,9 +1,9 @@
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
-import { IS_TAURI } from "@/constants";
 
 /**
  * useTauriUserMetadata

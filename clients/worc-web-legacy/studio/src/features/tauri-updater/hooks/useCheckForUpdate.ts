@@ -1,4 +1,4 @@
-import { IS_TAURI } from "@/constants";
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { check } from "@tauri-apps/plugin-updater";
 import { useEffect } from "react";

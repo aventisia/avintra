@@ -1,4 +1,5 @@
 import { Badge } from "@aventisia/ui/badge";
+import { FALLBACK_VALUE } from "@aventisia/ui/constants";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { KeyValueLookupType } from "@aventisia/ui/types";
 import { ColumnDef } from "@tanstack/react-table";
@@ -25,7 +26,7 @@ export const generateDTColumns = (
     ),
     cell: (info) => (
       <div className="w-40 truncate font-medium">
-        {String(info.getValue() ?? "-")}
+        {String(info.getValue() ?? FALLBACK_VALUE)}
       </div>
     ),
   }));

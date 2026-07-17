@@ -6,7 +6,7 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import { NavLink } from "react-router-dom";
 
 import { QueryTabs } from "@/components/QueryTab";
@@ -117,7 +117,7 @@ export const KnowledgeBaseTable = () => {
                       </div>
                       <div className="border-t py-2.5 h-7 w-full">
                         <p className="text-xs text-muted-foreground">
-                          Created on {dateFormatter(row.getValue("createdOn"))}
+                          Created on {formatDate(row.getValue("createdOn"))}
                         </p>
                       </div>
                     </div>

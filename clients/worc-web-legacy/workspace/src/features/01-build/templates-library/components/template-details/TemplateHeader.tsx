@@ -1,12 +1,12 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import { DotSeparator, LoadingSpinner, Separator } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { Button } from "@aventisia/ui/buttons";
 import { useDocumentTitle } from "@aventisia/ui/hooks";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import { Clock, Download, Tag, User2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useCloneTemplateMutation } from "../../hooks/useCloneTemplateMutation";
@@ -73,8 +73,7 @@ export function TemplateHeader({ template }: { template: UseTemplateDTO }) {
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
                 <span className="leading-4">
-                  Updated on{" "}
-                  {dateFormatter(template?.lastModifiedOn || new Date())}
+                  Updated on {formatDate(template?.lastModifiedOn)}
                 </span>
               </div>
 

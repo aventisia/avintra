@@ -1,9 +1,10 @@
-import NewAgentIcon from "@/components/NewAgentIcon";
-
 import { DotSeparator, Separator } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { Card, CardContent, CardHeader, CardTitle } from "@aventisia/ui/cards";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { FALLBACK_VALUE } from "@aventisia/ui/constants";
+import { formatDate } from "@aventisia/ui/utils";
+
+import NewAgentIcon from "@/components/NewAgentIcon";
 
 import { UseTemplateDTO } from "../../dtos/use-template-dto";
 import { useDownloadFile } from "../../hooks/useFileDownload";
@@ -47,13 +48,13 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
           <div className="grid grid-cols-3 gap-2">
             <span className="text-muted-foreground">Created</span>
             <span className="col-span-2">
-              {dateFormatter(template?.createdOn || new Date())}{" "}
+              {formatDate(template?.createdOn)}{" "}
             </span>
           </div>
           <div className="grid grid-cols-3 gap-2">
             <span className="text-muted-foreground">Updated</span>
             <span className="col-span-2">
-              {dateFormatter(template?.lastModifiedOn || new Date())}{" "}
+              {formatDate(template?.lastModifiedOn)}{" "}
             </span>
           </div>
           <Separator />
@@ -88,28 +89,30 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
                   <div className="grid grid-cols-3 gap-2">
                     <span className="text-muted-foreground">Provider</span>
                     <span className="col-span-2">
-                      {parsedPromptSchema.modelConfig.provider || "-"}
+                      {parsedPromptSchema.modelConfig.provider ||
+                        FALLBACK_VALUE}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
                     <span className="text-muted-foreground">Model</span>
                     <span className="col-span-2">
-                      {parsedPromptSchema.modelConfig.model || "-"}
+                      {parsedPromptSchema.modelConfig.model || FALLBACK_VALUE}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
                     <span className="text-muted-foreground">Temperature</span>
                     <span className="col-span-2">
-                      {parsedPromptSchema.modelConfig.temperature ?? "-"}
+                      {parsedPromptSchema.modelConfig.temperature ??
+                        FALLBACK_VALUE}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2">
                     <span className="text-muted-foreground">Top P</span>
                     <span className="col-span-2">
-                      {parsedPromptSchema.modelConfig.top_p ?? "-"}
+                      {parsedPromptSchema.modelConfig.top_p ?? FALLBACK_VALUE}
                     </span>
                   </div>
 
@@ -145,7 +148,7 @@ export function TemplateMetaAside({ template }: { template: UseTemplateDTO }) {
                   <span className="col-span-2 break-words">
                     {tool.actions.length > 0
                       ? tool.actions.map((action) => action.action).join(", ")
-                      : "-"}
+                      : FALLBACK_VALUE}
                   </span>
                 </div>
               </div>

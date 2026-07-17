@@ -1,10 +1,10 @@
-import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
-
 import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
+
+import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
@@ -190,7 +190,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("createdOn"))}
+        {formatDate(row.getValue("createdOn"))}
       </div>
     ),
   },

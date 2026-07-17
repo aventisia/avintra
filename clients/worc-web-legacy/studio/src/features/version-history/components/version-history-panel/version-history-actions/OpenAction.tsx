@@ -1,8 +1,8 @@
-import { IS_TAURI } from "@/constants";
-import { useGetVersionHistoryItemData } from "@/features/version-history/hooks/useGetVersionHistoryItemData";
-
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { SimpleDDMenuItem } from "@aventisia/ui/dropdown-menu";
 import { ExternalLink } from "lucide-react";
+
+import { useGetVersionHistoryItemData } from "@/features/version-history/hooks/useGetVersionHistoryItemData";
 
 export default function OpenAction({ id }: { id: string }) {
   const { agentData } = useGetVersionHistoryItemData(id);

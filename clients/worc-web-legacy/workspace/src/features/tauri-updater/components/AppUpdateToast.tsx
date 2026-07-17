@@ -1,7 +1,5 @@
-import { IS_TAURI } from "@/constants/constants";
-import { Progress } from "@/features/05-tenant-admin/tenant/shared/Progress";
-
 import { Button } from "@aventisia/ui/buttons";
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { toast } from "@aventisia/ui/sonner";
 import {
   ArrowDownTrayIcon,
@@ -11,6 +9,8 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { useEffect, useRef, useState } from "react";
+
+import { Progress } from "@/features/05-tenant-admin/tenant/shared/Progress";
 
 import { useAppUpdater } from "../hooks/useAppUpdater";
 
