@@ -6,10 +6,12 @@ namespace WorkspaceAPIs.Controllers;
 public class UploadedDocController : BaseApiController
 {
     private readonly IUploadFileService _uploadFileService;
+    private readonly IFileUploadService _fileUploadService;
 
-    public UploadedDocController(IUploadFileService uploadFileService)
+    public UploadedDocController(IUploadFileService uploadFileService, IFileUploadService fileUploadService)
     {
         _uploadFileService = uploadFileService;
+        _fileUploadService = fileUploadService;
     }
 
     // Upload multiple files
@@ -49,5 +51,12 @@ public class UploadedDocController : BaseApiController
         }
 
         return File(fileDetailsResponse.Data.Content, fileDetailsResponse.Data.ContentType, fileDetailsResponse.Data.Name);
+    }
+
+    // Get file data URL
+    [HttpGet("data-uri")]
+    public async Task<ActionResult<ServiceResponse<string>>> GetDataUrl([FromQuery] Guid? credentialId, [FromQuery] string fileUrl)
+    {
+        return ResultHelper(await _fileUploadService.GetDataUrlAsync(credentialId, fileUrl));
     }
 }

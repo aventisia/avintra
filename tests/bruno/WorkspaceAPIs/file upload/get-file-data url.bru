@@ -1,0 +1,16 @@
+meta {
+  name: Get file data url
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/file/data-uri?credentialId=1&fileUrl=https://aventisia.sharepoint.com/sites/AventisiasProducts/Shared Documents/Product Development/Aventisia Brand Guidelines.pdf
+  body: none
+  auth: none
+}
+
+params:query {
+  credentialId: 1
+  fileUrl: https://aventisia.sharepoint.com/sites/AventisiasProducts/Shared Documents/Product Development/Aventisia Brand Guidelines.pdf
+}
