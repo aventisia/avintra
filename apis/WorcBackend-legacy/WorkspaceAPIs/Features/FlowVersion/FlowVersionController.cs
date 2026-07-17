@@ -47,7 +47,7 @@ public class FlowVersionController : BaseApiController
         return ResultHelper(await _flowVersionService.DeleteFlowVersionAsync(id));
     }
 
-    // Searches flow versions by flow name/version, with filtering by publish state and flow type.
+    // TODO: To-be deprecated. Searches flow versions by flow name/version, with filtering by publish state and flow type.
     [HttpGet("search")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<SearchFlowVersionResDto>>>> SearchFlowVersion(
         [FromQuery] string query,

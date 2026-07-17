@@ -24,7 +24,7 @@ type ViewFieldProps = Omit<ComponentPropsWithoutRef<"p">, "children"> & {
  */
 export const ViewField = ({ label, value, className, ...props }: ViewFieldProps) => {
   return (
-    <div className="rounded-lg border border-border/70 bg-muted/20 p-2.5">
+    <div className="rounded-lg border border-border/70 bg-muted/20 px-3 py-2.5">
       <p className="text-2xs text-muted-foreground">{label}</p>
       <p className={cn("mt-0.5 truncate text-sm font-medium", className)} {...props}>
         {value ?? FALLBACK_VALUE}

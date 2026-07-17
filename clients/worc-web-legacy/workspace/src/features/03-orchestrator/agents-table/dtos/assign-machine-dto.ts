@@ -1,5 +1,5 @@
 import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
-import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
+import { MachineStatusEnum } from "@/react-toolkit/enums/machine-status-enum";
 import type { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
 /**
@@ -31,7 +31,7 @@ export interface AssignMachineDto {
   /**
    * Gets or sets the status of the machine. Max-100
    */
-  status: MachineStatusTypesEnum;
+  status: MachineStatusEnum;
 
   jobId?: string;
 }

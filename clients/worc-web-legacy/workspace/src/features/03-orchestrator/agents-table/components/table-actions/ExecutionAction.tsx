@@ -1,8 +1,3 @@
-import { useCreateJobMutation } from "@/features/03-orchestrator/agents-table/hooks/useCreateJobMutation";
-import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
-import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import { LoadingSpinner } from "@aventisia/ui";
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
@@ -11,20 +6,21 @@ import { Tooltip } from "@aventisia/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
 
+import { useCreateJobMutation } from "@/features/03-orchestrator/agents-table/hooks/useCreateJobMutation";
+import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
+import { MachineStatusEnum } from "@/react-toolkit/enums/machine-status-enum";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+
 import { useAssignMachineStore } from "../../stores/assign-machine-store";
 
 type ExecutionActionProps = {
   rowId: string;
   isDisabled?: boolean;
   jobId?: string;
-  executionState: MachineStatusTypesEnum;
+  executionState: MachineStatusEnum;
 };
 
-export const ExecutionAction = ({
-  rowId,
-  executionState,
-  jobId,
-}: ExecutionActionProps) => {
+export const ExecutionAction = ({ rowId, executionState, jobId }: ExecutionActionProps) => {
   const { flowVersionId } = useAssignMachineStore(
     useShallow((s) => ({
       flowVersionId: s.flowVersionId,
@@ -86,9 +82,7 @@ export const ExecutionAction = ({
               <LoadingSpinner className="h-[1rem] w-[1rem] animate-spin text-primary" />
             ) : (
               <>
-                <PlayIcon
-                  className={cn("h-[1.125rem] w-[1.125rem] text-green-500/80")}
-                />
+                <PlayIcon className={cn("h-[1.125rem] w-[1.125rem] text-green-500/80")} />
               </>
             )}
           </Button>
