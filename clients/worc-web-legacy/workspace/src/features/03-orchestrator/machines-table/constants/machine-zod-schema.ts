@@ -8,10 +8,7 @@ import {
 } from "@aventisia/ui/utils";
 import { z } from "zod";
 
-import {
-  getOsIdError,
-  isValidMachineOsId,
-} from "../utils/machine-form-validation-util";
+import { getOsIdError, isValidMachineOsId } from "../utils/machine-form-validation-util";
 
 /**
  * Represents the Zod schema to add/update machine.
@@ -45,11 +42,21 @@ export const machineZodSchema = z
       .string()
       .trim()
       .refine(
-        (value) =>
-          value.length === 0 || ipv4Regex.test(value) || ipv6Regex.test(value),
+        (value) => value.length === 0 || ipv4Regex.test(value) || ipv6Regex.test(value),
         ipAddressError(),
       ),
     name: z.string().default(""), // Read-only preview for UI purposes only. Backend generates final name.
+    flowVersionIds: z
+      .array(
+        z.union([
+          z.string(),
+          z.object({
+            flowVersionId: z.string().trim().min(1),
+          }),
+        ]),
+      )
+      .default([]),
+
     isDisabled: z.boolean().default(false),
   })
   .superRefine((value, context) => {

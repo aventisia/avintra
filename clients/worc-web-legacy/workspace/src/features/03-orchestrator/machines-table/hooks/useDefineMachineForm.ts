@@ -1,6 +1,5 @@
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
@@ -9,9 +8,8 @@ import { useShallow } from "zustand/react/shallow";
 import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
 import { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
-import { DATA_QUERY_KEY } from "../constants";
+import { getMachine } from "../apis/machines-table-apis";
 import { machineZodSchema } from "../constants/machine-zod-schema";
-import { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
 import { buildMachineNamePreview } from "../utils/build-machine-name-util";
 
 /**
@@ -31,9 +29,6 @@ export const useDefineMachineForm = () => {
     })),
   );
 
-  // Get query client
-  const queryClient = useQueryClient();
-
   // Define form with zod schema
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
   const form = useForm<z.infer<typeof machineZodSchema>>({
@@ -47,6 +42,7 @@ export const useDefineMachineForm = () => {
       username: "",
       hostname: "",
       ipAddress: "",
+      flowVersionIds: [],
       isDisabled: false,
       name: "",
     },
@@ -59,32 +55,56 @@ export const useDefineMachineForm = () => {
 
   // Fetch machine data when rowId changes
   useEffect(() => {
-    // Get machines data from query client
-    const machinesData = queryClient.getQueryData<{
-      data: MachinesTableRowDto[];
-    }>(DATA_QUERY_KEY);
+    let isActive = true;
 
-    // Get machine data by id
-    const machineData = machinesData?.data.find((item) => item.id === rowId);
+    const resetMachineForm = async () => {
+      if (crudAction === "update" && rowId) {
+        try {
+          const machineRecordResponse = await getMachine(rowId);
 
-    // Set machine data to form
-    form.reset({
-      id: rowId,
-      environment: machineData?.environment ?? EnvironmentTypesEnum.Development,
-      operatingSystem: machineData?.operatingSystem ?? OsTypesEnum.Windows,
-      osID: machineData?.osID ?? "",
-      username: machineData?.username ?? "",
-      hostname: machineData?.hostname ?? "",
-      ipAddress: machineData?.ipAddress ?? "",
-      isDisabled: machineData?.isDisabled ?? false,
-      name: machineData?.name ?? "",
-    });
+          if (!isActive) {
+            return;
+          }
 
-    // Focus first editable field after reset.
-    setTimeout(() => {
-      form.setFocus("osID", { shouldSelect: false });
-    }, 0);
-  }, [rowId, form, queryClient]);
+          const machineData = machineRecordResponse?.data;
+
+          form.reset({
+            id: machineData?.id ?? rowId,
+            environment: machineData?.environment ?? EnvironmentTypesEnum.Development,
+            operatingSystem: machineData?.operatingSystem ?? OsTypesEnum.Windows,
+            osID: machineData?.osID ?? "",
+            username: machineData?.username ?? "",
+            hostname: machineData?.hostname ?? "",
+            ipAddress: machineData?.ipAddress ?? "",
+            flowVersionIds: machineData?.machineFlowVersions ?? [],
+            isDisabled: machineData?.isDisabled ?? false,
+            name: machineData?.name ?? "",
+          });
+        } catch {
+          if (!isActive) {
+            return;
+          }
+
+          form.reset();
+        }
+
+        return;
+      }
+
+      form.reset();
+
+      // Focus first editable field after reset.
+      setTimeout(() => {
+        form.setFocus("osID", { shouldSelect: false });
+      }, 0);
+    };
+
+    resetMachineForm();
+
+    return () => {
+      isActive = false;
+    };
+  }, [rowId, crudAction, form]);
 
   const [environment, operatingSystem, osID, username] = useWatch({
     control: form.control,

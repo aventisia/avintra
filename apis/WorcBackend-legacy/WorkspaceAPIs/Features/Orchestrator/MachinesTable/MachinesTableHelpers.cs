@@ -2,6 +2,23 @@ namespace WorkspaceAPIs.Helpers;
 
 public static class MachinesTableHelpers
 {
+    public static List<Guid> GetDistinctGuids(List<Guid> flowVersionIds)
+    {
+        return flowVersionIds
+            .Where(flowVersionId => flowVersionId != Guid.Empty)
+            .Distinct()
+            .ToList();
+    }
+
+    public static List<Machine_FlowVersion> CreateMachineFlowVersions(Guid machineId, List<Guid> flowVersionIds)
+    {
+        return flowVersionIds.Select(flowVersionId => new Machine_FlowVersion
+        {
+            MachineId = machineId,
+            FlowVersionId = flowVersionId
+        }).ToList();
+    }
+
     public static string BuildMachineName(
         EnvironmentTypesEnum environment,
         OsTypesEnum operatingSystem,

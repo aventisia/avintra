@@ -1,10 +1,18 @@
 import { SubmitButton } from "@aventisia/ui/buttons";
-import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
+import {
+  AsyncMultiSelectField,
+  Form,
+  InputField,
+  SelectField,
+  SwitchField,
+} from "@aventisia/ui/form";
 import { useTableRowOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect } from "react";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";
 
+import { searchFlowVersions } from "@/features/search-by-query/apis/search-flow-version.api";
+import { FlowVersionSearchResultDto } from "@/features/search-by-query/dtos/flow-version-search-result.dto";
 import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
 import { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
@@ -29,8 +37,7 @@ import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
 
 export const MachineCrudForm = () => {
   // Define machine form
-  const { form, rowId, crudAction, isDirty, isValid, setShowDialog } =
-    useDefineMachineForm();
+  const { form, rowId, crudAction, isDirty, isValid, setShowDialog } = useDefineMachineForm();
 
   const operatingSystem = useWatch({
     control: form.control,
@@ -50,6 +57,12 @@ export const MachineCrudForm = () => {
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof machineZodSchema>) => {
+    const flowVersionIds = (formData.flowVersionIds ?? [])
+      .map((flowVersion) =>
+        typeof flowVersion === "string" ? flowVersion : flowVersion.flowVersionId,
+      )
+      .filter((id): id is string => Boolean(id));
+
     const machinePayload: AddMachineDto = {
       environment: formData.environment as EnvironmentTypesEnum,
       operatingSystem: formData.operatingSystem as OsTypesEnum,
@@ -57,6 +70,7 @@ export const MachineCrudForm = () => {
       username: formData.username,
       hostname: formData.hostname,
       ipAddress: formData.ipAddress || undefined,
+      flowVersionIds,
     };
 
     // Create or update the machine
@@ -76,11 +90,7 @@ export const MachineCrudForm = () => {
 
   // Return the form
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-    >
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="px-2.5 pb-5">
       {/* Machine Id */}
       {crudAction === "update" && <InputField {...idProps} disabled />}
 
@@ -106,6 +116,19 @@ export const MachineCrudForm = () => {
 
       {/* Backend-generated machine name preview */}
       <InputField {...nameProps} disabled />
+
+      {/* Flow Versions */}
+      <AsyncMultiSelectField<FlowVersionSearchResultDto>
+        fetcher={(query) => searchFlowVersions(query).then((res) => res.data || [])}
+        name="flowVersionIds"
+        label="Assign Agents"
+        queryKeyBase={["machine-form-flow-versions", rowId]}
+        getItemId={(item) => item.flowVersionId}
+        getItemLabel={(item) => `${item.flowName}_v${item.versionNumber}`}
+        filters={undefined}
+        placeholder="Search agents..."
+        description="Select one or more agents to assign to this machine."
+      />
 
       {/* Disable machine (update mode only) */}
       {crudAction === "update" && <SwitchField {...isDisabledProps} />}

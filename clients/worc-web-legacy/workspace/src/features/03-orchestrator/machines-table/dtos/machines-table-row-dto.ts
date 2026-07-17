@@ -1,5 +1,5 @@
 import type { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
-import type { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
+import type { MachineStatusEnum } from "@/react-toolkit/enums/machine-status-enum";
 import type { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
 /**
@@ -9,120 +9,86 @@ import type { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
  */
 export interface MachinesTableRowDto {
   /**
-   * Gets or sets the primary key of the machine record.
-   *
-   * Not making it required because same DTO is used for insert and update.
+   * Gets or sets the unique identifier of the machine.
    */
-  id?: string;
+  id: string;
 
   /**
-   * Gets or sets the tenant id where the machine belongs.
-   */
-  tenantId?: string;
-
-  /**
-   * Gets or sets the machine name. Max-255.
+   * Gets or sets the generated unique machine name.
    */
   name: string;
 
   /**
-   * Gets or sets the machine IP address. Max-100.
-   */
-  ipAddress?: string;
-
-  /**
-   * Gets or sets the host name of the machine. Max-255.
-   */
-  hostname: string;
-
-  /**
-   * Gets or sets the desktop app username on the machine. Max-255.
-   */
-  username: string;
-
-  /**
-   * Gets or sets the unique operating system identifier of the machine. Max-100.
-   */
-  osID: string;
-
-  /**
-   * Gets or sets the operating system type of the machine.
-   */
-  operatingSystem: OsTypesEnum;
-
-  /**
-   * Gets or sets the status of the machine.
-   */
-  status: MachineStatusTypesEnum;
-
-  /**
-   * Gets or sets the environment of the machine.
+   * Represents the environment of the machine, e.g., Development, UAT, Production.
    */
   environment: EnvironmentTypesEnum;
 
   /**
-   * Gets or sets the currently running flow version task, if any.
+   * Represents the operating system of the machine, e.g., Windows, Linux.
    */
-  currentTask?: string;
+  operatingSystem: OsTypesEnum;
 
   /**
-   * Represents the availability of the machine for another task. True if available, False if not.
+   * Gets or sets the identifier that uniquely represents the operating system (max length 100).
    */
-  isAvailable?: boolean;
+  osID: string;
 
   /**
-   * Represents the timestamp of when the machine was last checked in
+   * Represents the username of the machine (max length 255).
    */
-  lastCheckedIn?: Date;
+  username: string;
 
   /**
-   * Gets or sets the machine connection identifier.
+   * Represents the host name of the machine (max length 255).
    */
-  connectionId?: string;
+  hostname: string;
 
   /**
-   * Represents the license used for assignment controls in UI, when available.
+   * Optional IP address of the machine (supports IPv4 or IPv6, max length 100).
    */
-  licenseId?: string;
+  ipAddress?: string;
+
+  /**
+   * Represents the timestamp of when the machine was last checked in.
+   */
+  lastCheckedIn: string;
+
+  /**
+   * Represents the status of the machine.
+   */
+  status: MachineStatusEnum;
+
+  /**
+   * Gets or sets the number of flow versions associated with the machine.
+   */
+  flowVersionCount: number;
 
   /**
    * Gets or sets a flag indicating whether the user record is disabled.
-   * Note: It's important to have this property nullable because we need to differentiate between true, false, and null.
    */
-  isDisabled?: boolean;
+  isDisabled: boolean;
 
   /**
-   * Gets or sets the username of the user who created the machine record. Max-254
+   * Gets or sets the username of the user who created the user record.
+   * This property is intended for use in responses only and should not be included in requests.
    */
-  createdBy?: string;
+  createdBy: string;
 
   /**
-   * Gets or sets the date and time when the machine record was created.
+   * Gets or sets the date and time when the user record was created.
+   * This property is intended for use in responses only and should not be included in requests.
    */
-  createdOn?: Date;
+  createdOn: Date;
 
   /**
-   * Gets or sets the username of the user who last modified the machine record. Max-254
+   * Gets or sets the username of the user who last modified the user record.
+   * This property is intended for use in responses only and should not be included in requests.
    */
-  lastModifiedBy?: string;
+  lastModifiedBy: string;
 
   /**
-   * Gets or sets the date and time when the machine record was last modified.
+   * Gets or sets the date and time when the user record was last modified.
+   * This property is intended for use in responses only and should not be included in requests.
    */
-  lastModifiedOn?: Date;
-
-  /**
-   * Gets or sets initials of the user who created the machine record.
-   */
-  createdByUserInitials?: string;
-
-  /**
-   * Gets the count of the flow versions assigned to the machine.
-   */
-  flowVersionCount?: number;
-
-  /**
-   * Gets the identifiers of the flow versions assigned to the machine.
-   */
-  flowVersionIds?: string[];
+  lastModifiedOn: Date;
 }

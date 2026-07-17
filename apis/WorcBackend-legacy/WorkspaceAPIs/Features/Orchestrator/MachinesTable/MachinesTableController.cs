@@ -19,7 +19,7 @@ public class MachinesTableController : BaseApiController
 
     // Retrieve machine by its ID.
     [HttpGet("{machineId}")]
-    public async Task<ActionResult<ServiceResponse<MachinesTableRowDto>>> GetMachine(Guid machineId)
+    public async Task<ActionResult<ServiceResponse<MachineRecordDto>>> GetMachine(Guid machineId)
     {
         return ResultHelper(await _machinesTableService.GetMachineAsync(machineId));
     }
@@ -50,13 +50,6 @@ public class MachinesTableController : BaseApiController
     public async Task<ActionResult<ServiceResponse<long>>> DeleteMachines([FromBody] IEnumerable<Guid> machineIds)
     {
         return ResultHelper(await _machinesTableService.DeleteMachinesAsync(machineIds));
-    }
-
-    // Synchronize machine's flow versions
-    [HttpPost("sync-flow-versions")]
-    public async Task<ActionResult<ServiceResponse<bool>>> SyncMachineFlowVersions([FromBody] UpdateMachineFlowVersionsDto updateMachineFlowVersionsDto)
-    {
-        return ResultHelper(await _machinesTableService.SyncMachineFlowVersionsAsync(updateMachineFlowVersionsDto));
     }
 
     // TODO: Need to check later. This endpoint should be in the TenantUser/FlowVersionController, not in the MachinesTableController. It is used to retrieve the list of flow versions associated with a specific machine for the TenantUser role.

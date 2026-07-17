@@ -4,7 +4,7 @@ import { Monitor, MonitorCheck, MonitorCog } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
-import { MachineStatusTypesEnum } from "@/react-toolkit/enums/machine-status-types-enum";
+import { MachineStatusEnum } from "@/react-toolkit/enums/machine-status-enum";
 import { OsTypesEnum } from "@/react-toolkit/enums/os-types-enum";
 
 import type { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
@@ -35,25 +35,17 @@ export const MachineStats = ({ data }: MachineStatsProps) => {
 
     // Count machines in each status
     const statusCounts = {
-      online: statuses.count((x) => x.status === MachineStatusTypesEnum.Online),
-      offline: statuses.count(
-        (x) => x.status === MachineStatusTypesEnum.Offline,
-      ),
-      running: statuses.count(
-        (x) => x.status === MachineStatusTypesEnum.Running,
-      ),
-      idle: statuses.count((x) => x.status === MachineStatusTypesEnum.Idle),
+      online: statuses.count((x) => x.status === MachineStatusEnum.Online),
+      offline: statuses.count((x) => x.status === MachineStatusEnum.Offline),
+      running: statuses.count((x) => x.status === MachineStatusEnum.Running),
+      idle: statuses.count((x) => x.status === MachineStatusEnum.Idle),
     };
 
     // Count environments and distinct environments
     const environmentCounts = {
-      dev: statuses.count(
-        (x) => x.environment === EnvironmentTypesEnum.Development,
-      ),
+      dev: statuses.count((x) => x.environment === EnvironmentTypesEnum.Development),
       uat: statuses.count((x) => x.environment === EnvironmentTypesEnum.UAT),
-      prod: statuses.count(
-        (x) => x.environment === EnvironmentTypesEnum.Production,
-      ),
+      prod: statuses.count((x) => x.environment === EnvironmentTypesEnum.Production),
     };
 
     // Count distinct machine statuses
