@@ -58,6 +58,7 @@ public class Machine : BaseEntity, IMustHaveTenant
     public DateTime LastCheckedIn { get; set; }
 
     /// <summary>
+    /// TODO: To be removed since it will be fetched from connection hub
     /// Represents the status of the machine. Possible values are: Idle, Online, Offline, Running, Stopped
     /// </summary>
     [Required]
