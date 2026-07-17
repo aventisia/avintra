@@ -526,6 +526,11 @@ public class QueueTableService : IQueueTableService
                 queue.RouteToQueues = queuesTableDto.RouteToQueues;
             }
 
+            if (queuesTableDto.CredentialId != null && queue.CredentialId != queuesTableDto.CredentialId)
+            {
+                queue.CredentialId = queuesTableDto.CredentialId;
+            }
+
             if (queuesTableDto.IsDisabled.HasValue && queue.IsDisabled != queuesTableDto.IsDisabled.Value)
             {
                 queue.IsDisabled = queuesTableDto.IsDisabled.Value;
