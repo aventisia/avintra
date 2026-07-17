@@ -1,8 +1,8 @@
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { invoke } from "@tauri-apps/api/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { IS_TAURI } from "@/constants/constants";
 import { JobStatusEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-enum";
 import { ExecutionNode } from "@/types/execution-types";
 

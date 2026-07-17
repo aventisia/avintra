@@ -1,12 +1,12 @@
+import { IS_TAURI } from "@aventisia/ui/constants";
+import { useShallow } from "zustand/react/shallow";
+
 import { TauriAppFooter } from "@/components/layout/TauriAppFooter";
 import { LeftContainer } from "@/components/ui/LeftContainer";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
-import { IS_TAURI } from "@/constants/constants";
 import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
-
-import { useShallow } from "zustand/react/shallow";
 
 import { useValidateUserSessionForLoginPage } from "../hooks/useValidateUserSessionForLoginPage";
 import { useLoginStore } from "../stores/login-store";

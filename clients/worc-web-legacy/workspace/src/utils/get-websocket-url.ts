@@ -1,4 +1,5 @@
-import { IS_TAURI } from "@/constants/constants";
+import { IS_TAURI } from "@aventisia/ui/constants";
+
 import { ClientTypesEnum } from "@/enums/client-type-enum";
 
 /**

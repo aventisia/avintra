@@ -1,6 +1,6 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
+import { formatDate, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
@@ -172,9 +172,7 @@ export const triggersTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("effectiveDate")
-          ? dateFormatter(row.getValue("effectiveDate"))
-          : "NA"}
+        {formatDate(row.getValue("effectiveDate"))}
       </div>
     ),
   },
@@ -205,9 +203,7 @@ export const triggersTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("createdOn")
-          ? dateFormatter(row.getValue("createdOn"))
-          : "NA"}
+        {formatDate(row.getValue("createdOn"))}
       </div>
     ),
   },
@@ -238,9 +234,7 @@ export const triggersTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("lastModifiedOn")
-          ? dateFormatter(row.getValue("lastModifiedOn"))
-          : "NA"}
+        {formatDate(row.getValue("lastModifiedOn"))}
       </div>
     ),
   },

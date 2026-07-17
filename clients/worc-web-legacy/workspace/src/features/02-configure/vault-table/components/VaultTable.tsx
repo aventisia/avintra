@@ -7,7 +7,7 @@ import {
   getDataTablePreferences,
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 
@@ -165,7 +165,7 @@ export const VaultTable = () => {
                         </span>
                         <DotSeparator />
                         <span className="text-2xs text-muted-foreground">
-                          Created on {dateFormatter(row.getValue("createdOn"))}
+                          Created on {formatDate(row.getValue("createdOn"))}
                         </span>
                       </div>
                     </div>

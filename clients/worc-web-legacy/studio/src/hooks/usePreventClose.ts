@@ -1,8 +1,8 @@
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { IS_TAURI } from "@/constants";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 /**

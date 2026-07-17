@@ -1,6 +1,6 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
@@ -102,7 +102,7 @@ export const KBTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("createdOn"))}
+        {formatDate(row.getValue("createdOn"))}
       </div>
     ),
   },

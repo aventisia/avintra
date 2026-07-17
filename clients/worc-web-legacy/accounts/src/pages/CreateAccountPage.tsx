@@ -1,7 +1,7 @@
-import { IS_TAURI } from "@/constants/constants";
-import { CreateAccountMain } from "@/features/sign-up/components/CreateAccountMain";
-
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { useEffect } from "react";
+
+import { CreateAccountMain } from "@/features/sign-up/components/CreateAccountMain";
 
 export default function CreateAccountPage() {
   // Check if the app is running in the Tauri desktop environment.

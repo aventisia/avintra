@@ -1,4 +1,5 @@
-import { IS_TAURI } from "@/constants";
+import { IS_TAURI } from "@aventisia/ui/constants";
+
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { loadJsonFromTauriResources } from "@/utils/tauri-resource-loader";
 

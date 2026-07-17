@@ -1,6 +1,7 @@
-import { IS_TAURI } from "@/constants";
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { useEffect } from "react";
+
 import { TAURI_RELAUNCH_URL_KEY, TAURI_UPDATE_STORE } from "..";
 
 export const useRedirectOnRelaunch = () => {

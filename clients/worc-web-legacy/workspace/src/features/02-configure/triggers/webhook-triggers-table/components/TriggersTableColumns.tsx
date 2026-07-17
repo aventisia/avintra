@@ -1,6 +1,6 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
@@ -125,9 +125,7 @@ export const triggersTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("createdOn")
-          ? dateFormatter(row.getValue("createdOn"))
-          : "NA"}
+        {formatDate(row.getValue("createdOn"))}
       </div>
     ),
   },
@@ -158,9 +156,7 @@ export const triggersTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("lastModifiedOn")
-          ? dateFormatter(row.getValue("lastModifiedOn"))
-          : "NA"}
+        {formatDate(row.getValue("lastModifiedOn"))}
       </div>
     ),
   },

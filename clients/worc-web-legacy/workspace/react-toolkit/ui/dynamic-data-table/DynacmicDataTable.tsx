@@ -1,27 +1,27 @@
 import { Checkbox } from "@aventisia/ui";
 import {
-  DataTable,
-  DataTableSkeleton,
   DTColumnHeader,
   DTPagination,
   DTViewOptions,
+  DataTable,
+  DataTableSkeleton,
 } from "@aventisia/ui/data-table";
 import { KeyValueLookupType } from "@aventisia/ui/types";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import {
   ColumnDef,
+  Table,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
-  Table,
   useReactTable,
 } from "@tanstack/react-table";
 import { isDate } from "date-fns";
 import Enumerable from "linq";
 import { useMemo, useState } from "react";
 
-import { ColumnHeaderMap, TABLE_KEY } from "./constants";
 import { SearchDataTable } from "./SearchDataTable";
+import { ColumnHeaderMap, TABLE_KEY } from "./constants";
 
 export type DynacmicDataTableProps<TData> = {
   TableHeading: () => React.ReactNode;
@@ -159,7 +159,7 @@ export function GenerateColumnsForDataTable<TData>(
       cell: (info) => (
         <div className="w-auto truncate font-medium">
           {isDate(info.getValue()) && formatDates
-            ? dateFormatter(info.getValue<Date>())
+            ? formatDate(info.getValue<Date>())
             : String(info.getValue())}
         </div>
       ),

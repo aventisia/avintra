@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { useEffect, useRef } from "react";
 import { useBlocker } from "react-router-dom";
-
-import { IS_TAURI } from "@/constants/constants";
 
 const EXECUTION_WARNING_MSG =
   "Agent execution is in progress. Please stop the execution or wait for it to complete.";

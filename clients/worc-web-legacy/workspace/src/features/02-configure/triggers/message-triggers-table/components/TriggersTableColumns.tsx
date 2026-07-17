@@ -1,6 +1,7 @@
 import { Checkbox } from "@aventisia/ui";
+import { FALLBACK_VALUE } from "@aventisia/ui/constants";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
+import { formatDate, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
@@ -79,7 +80,7 @@ export const triggersTableColumns = (
         {getEnumValueByKey(
           EmailTriggerProviderEnum,
           row.getValue("provider"),
-        ) ?? "-"}
+        ) ?? FALLBACK_VALUE}
       </div>
     ),
   },
@@ -167,9 +168,7 @@ export const triggersTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("expiryDateTime")
-          ? dateFormatter(row.getValue("expiryDateTime"))
-          : "NA"}
+        {formatDate(row.getValue("expiryDateTime"))}
       </div>
     ),
   },
@@ -200,9 +199,7 @@ export const triggersTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("createdOn")
-          ? dateFormatter(row.getValue("createdOn"))
-          : "NA"}
+        {formatDate(row.getValue("createdOn"))}
       </div>
     ),
   },
@@ -233,9 +230,7 @@ export const triggersTableColumns = (
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.getValue("lastModifiedOn")
-          ? dateFormatter(row.getValue("lastModifiedOn"))
-          : "NA"}
+        {formatDate(row.getValue("lastModifiedOn"))}
       </div>
     ),
   },

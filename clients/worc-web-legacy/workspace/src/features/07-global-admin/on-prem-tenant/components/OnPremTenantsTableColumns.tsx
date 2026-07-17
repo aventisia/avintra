@@ -2,7 +2,7 @@ import { Checkbox } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { cn } from "@aventisia/ui/lib";
-import { dateFormatter, getEnumValueByKey } from "@aventisia/ui/utils";
+import { formatDate, getEnumValueByKey } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { formatSecondsToCompactDuration } from "@/features/03-orchestrator/jobs-table/utils/format-time-utils";
@@ -114,7 +114,7 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("contractStartDate"))}
+        {formatDate(row.getValue("contractStartDate"))}
       </div>
     ),
   },
@@ -129,7 +129,7 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("contractRenewalDate"))}
+        {formatDate(row.getValue("contractRenewalDate"))}
       </div>
     ),
   },
@@ -185,7 +185,7 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("createdOn"))}
+        {formatDate(row.getValue("createdOn"))}
       </div>
     ),
   },

@@ -1,7 +1,7 @@
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
 
-import { IS_TAURI } from "@/constants/constants";
 import { UpdateBanner } from "@/features/tauri-updater";
 
 const banners: Record<string, React.ReactNode> = {
@@ -10,7 +10,7 @@ const banners: Record<string, React.ReactNode> = {
   info: <div>info</div>, // TODO: Replace with actual info banner component
 };
 
-const AppHeader: React.FC = () => {
+const AppBanner: React.FC = () => {
   const { appBanner } = useBaseLayoutStore(
     useShallow((state) => ({
       appBanner: state.appBanner,
@@ -20,4 +20,4 @@ const AppHeader: React.FC = () => {
   return typeof appBanner === "string" ? (banners[appBanner] ?? null) : null;
 };
 
-export default AppHeader;
+export default AppBanner;

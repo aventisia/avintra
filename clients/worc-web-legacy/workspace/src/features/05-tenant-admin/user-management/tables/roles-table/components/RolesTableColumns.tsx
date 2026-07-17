@@ -1,12 +1,11 @@
 import { Checkbox } from "@aventisia/ui";
 import { DTColumnHeader } from "@aventisia/ui/data-table";
-import { dateFormatter } from "@aventisia/ui/utils";
+import { formatDate } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { RoleTableDTO } from "../dtos/roles-table-dto";
-
 import { RoleRowActions } from "./role-row-actions/RoleRowActions";
 
 /**
@@ -123,7 +122,7 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("createdOn"))}
+        {formatDate(row.getValue("createdOn"))}
       </div>
     ),
   },
@@ -154,7 +153,7 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {dateFormatter(row.getValue("lastUpdatedOn"))}
+        {formatDate(row.getValue("lastUpdatedOn"))}
       </div>
     ),
   },

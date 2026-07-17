@@ -1,10 +1,10 @@
+import { LoadingSpinner, Separator } from "@aventisia/ui";
+import { Button } from "@aventisia/ui/buttons";
+import { formatDate } from "@aventisia/ui/utils";
+
 import { formatCurrency } from "@/features/05-tenant-admin/tenant/constants/currency-symbol-map";
 import { CurrentPlanDto } from "@/features/05-tenant-admin/tenant/dtos/current-plan-dto";
 import { useCreditTopUpMutation } from "@/features/05-tenant-admin/tenant/hooks/useCreditTopUpMutation";
-
-import { LoadingSpinner, Separator } from "@aventisia/ui";
-import { Button } from "@aventisia/ui/buttons";
-import { dateFormatter } from "@aventisia/ui/utils";
 
 import CalendarOutlineIcon from "../../../assets/calendar-outline-icon.svg";
 
@@ -41,7 +41,7 @@ const NextPaymentDetails = ({ plan }: NextPaymentDetailsProps) => {
           <div className="text-sm">
             <p className="text-muted-foreground">Due/Renewal Date</p>
             <p className="font-medium">
-              {dateFormatter(plan?.nextPayment?.dueDate || new Date())}
+              {formatDate(plan?.nextPayment?.dueDate)}
             </p>
           </div>
         </div>

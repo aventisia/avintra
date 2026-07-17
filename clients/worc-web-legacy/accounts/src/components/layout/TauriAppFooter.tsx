@@ -1,6 +1,5 @@
-import { IS_TAURI } from "@/constants/constants";
-
 import { DotSeparator } from "@aventisia/ui";
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 

@@ -1,7 +1,8 @@
-import { IS_TAURI } from "@/constants";
-import { UpdateBanner } from "@/features/tauri-updater";
+import { IS_TAURI } from "@aventisia/ui/constants";
 import { useBaseLayoutStore } from "@aventisia/ui/stores";
 import { useShallow } from "zustand/react/shallow";
+
+import { UpdateBanner } from "@/features/tauri-updater";
 
 const banners: Record<string, React.ReactNode> = {
   update: IS_TAURI ? <UpdateBanner /> : null,
