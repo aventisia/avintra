@@ -660,7 +660,7 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
         var metadataUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/items/{itemId}";
 
         // Execute GET request to retrieve file metadata
-        var metadataResponse = await HttpClientHelper.GetAsync(metadataUrl);
+        var metadataResponse = await HttpClientHelper.GetAsync(metadataUrl, accessToken);
 
         // Extract relevant metadata properties, providing defaults if they are missing
         var root = metadataResponse.RootElement;

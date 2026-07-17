@@ -35,4 +35,12 @@ public interface IFileUploadService
     /// </summary>
     /// <returns>A response indicating whether the upload was successful or not.</returns>
     Task<ServiceResponse<bool>> UploadFileLocalToCloudAsync();
+
+    /// <summary>
+    /// Retrieves the data URL for the specified file.
+    /// </summary>
+    /// <param name="credentialId">The credential identifier used to authorize access to the file.</param>
+    /// <param name="fileUrl">The URL of the file.</param>
+    /// <returns>Returns the data URL of the specified file.</returns>
+    Task<ServiceResponse<string>> GetDataUrlAsync(Guid? credentialId, string fileUrl);
 }
