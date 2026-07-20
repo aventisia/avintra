@@ -13,10 +13,10 @@ import {
   MonitorIcon,
   NetworkIcon,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
+import { FlowVersionNavLink } from "@/react-toolkit/ui/FlowVersionNavLink";
 import {
   AuditTrailCard,
   ViewBadge,
@@ -138,21 +138,15 @@ export const MachineView = () => {
             {machine.machineFlowVersions.map((flowVersion, index) => (
               <div key={flowVersion.flowVersionId} className="flex flex-col gap-1.5">
                 {index > 0 && <Separator className="h-[0.5px]" />}
-                <div className="flex flex-row gap-1.5 justify-between">
-                  <NavLink
+                <div className="flex flex-row items-center gap-1.5 justify-between">
+                  <FlowVersionNavLink
                     to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${flowVersion.flowId}&v=${flowVersion.flowVersionId}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`View ${flowVersion.flowName} v${flowVersion.versionNumber} in Agent Builder`}
-                    className="group inline-flex h-auto w-auto text-sm cursor-pointer truncate font-normal text-foreground hover:text-primary"
-                  >
-                    <span className="inline-flex items-center gap-1 border-b-[0.1rem] border-transparent group-hover:border-primary">
-                      <span className="truncate max-w-[20rem]">{flowVersion.flowName}</span>
-                      <span className="bg-slate-100 border group-hover:text-primary text-2xs rounded-xl px-1.5 py-[1px] text-muted-foreground">
-                        v{flowVersion.versionNumber}
-                      </span>
-                    </span>
-                  </NavLink>
+                    flowName={flowVersion.flowName}
+                    flowVersionNumber={`v${flowVersion.versionNumber}`}
+                  />
                   <MachineFlowVersionRowActions
                     machineId={machine.id}
                     flowId={flowVersion.flowId}

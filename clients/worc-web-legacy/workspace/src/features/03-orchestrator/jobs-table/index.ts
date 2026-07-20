@@ -38,7 +38,6 @@ export * from "./components/DateRangeFilter";
 export * from "./components/JobsBulkActions";
 export * from "./components/JobsStats";
 export * from "./components/JobsTable";
-export * from "./components/JobsTableCellLink";
 export * from "./components/JobsTableColumns";
 export * from "./components/jobs-crud-dialog/JobCrudDialog";
 export * from "./components/jobs-crud-dialog/JobCrudForm";
