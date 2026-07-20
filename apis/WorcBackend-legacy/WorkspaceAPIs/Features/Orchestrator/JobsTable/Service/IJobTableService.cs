@@ -24,8 +24,9 @@ public interface IJobTableService
     /// Inserts a new job.
     /// </summary>
     /// <param name="jobInsertDto">The data needed to create the new job.</param>
+    /// <param name="providedTenantId">Optional tenant ID to associate with the job. If not provided, the current tenant's ID will be used.</param>
     /// <returns>A task representing the service response containing the details of the newly created job.</returns>
-    Task<ServiceResponse<JobRecordDto>> InsertJobAsync(JobInsertDto jobInsertDto);
+    Task<ServiceResponse<JobRecordDto>> InsertJobAsync(JobInsertDto jobInsertDto, Guid? providedTenantId = null);
 
     /// <summary>
     /// Updates an existing job.

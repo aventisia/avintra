@@ -144,11 +144,11 @@ export const MachineView = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`View ${flowVersion.flowName} v${flowVersion.versionNumber} in Agent Builder`}
-                    flowName={flowVersion.flowName}
+                    flowName={flowVersion.flowName ?? "NAME_NOT_FOUND"}
                     flowVersionNumber={`v${flowVersion.versionNumber}`}
                   />
                   <MachineFlowVersionRowActions
-                    machineId={machine.id}
+                    machineName={machine.name}
                     flowId={flowVersion.flowId}
                     flowVersionId={flowVersion.flowVersionId}
                   />

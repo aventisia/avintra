@@ -76,9 +76,7 @@ export const HeaderActionMenu: React.FC = () => {
       });
     } catch (error) {
       // Inform the user about the failure
-      toast.error(
-        `Failed to launch the UI Inspector. Please try again. ${error}`,
-      );
+      toast.error(`Failed to launch the UI Inspector. Please try again. ${error}`);
     }
   };
 
@@ -90,10 +88,7 @@ export const HeaderActionMenu: React.FC = () => {
       <HeaderActionMenuTrigger />
 
       {/* Header actions menu content */}
-      <DropdownMenuContent
-        align="end"
-        className="mt-0 w-[13rem] min-w-[13rem] mlg:mt-4"
-      >
+      <DropdownMenuContent align="end" className="mt-0 flex w-fit min-w-[12rem] flex-col mlg:mt-4">
         {/* <FlowLogHeader /> */}
         <ExecutionLogsTrigger />
 

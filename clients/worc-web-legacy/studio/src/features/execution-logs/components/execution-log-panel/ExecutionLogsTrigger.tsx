@@ -21,11 +21,6 @@ export const ExecutionLogsTrigger = () => {
   };
 
   return (
-    <a
-      href={import.meta.env.VITE_STUDIO_PATH + withQueryParams("execution-log")}
-      onClick={handleClick}
-    >
-      <SimpleDDMenuItem size="md" Icon={LogsIcon} content="Execution Logs" />
-    </a>
+    <SimpleDDMenuItem size="md" Icon={LogsIcon} content="Execution Logs" onClick={handleClick} />
   );
 };
