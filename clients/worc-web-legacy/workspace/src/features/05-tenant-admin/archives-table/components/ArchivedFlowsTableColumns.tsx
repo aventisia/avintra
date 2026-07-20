@@ -3,11 +3,12 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { formatDate } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { FlowVersionNavLink } from "@/react-toolkit/ui/FlowVersionNavLink";
+
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { ArchivedFlowsTableDto } from "../dtos/archived-flows-table-dto";
 import { ArchivedFlowRowActions } from "./ArchivedFlowRowActions";
-import { ArchivedFlowsTableCellLink } from "./ArchivedFlowsTableCellLink";
 
 /**
  * Array of table columns for the flows table.
@@ -19,8 +20,7 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -40,37 +40,25 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("name")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
     ),
     cell: ({ row }) => (
-      <div className="flex max-w-80 items-center gap-3 ">
-        <ArchivedFlowsTableCellLink
-          rowId={row.original.id}
-          refId={row.original.refId}
-          cellValue={row.getValue("name")}
-        />
-        <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
-          v{row.original.versionNumber ?? 0}
-        </p>
-      </div>
+      <FlowVersionNavLink
+        to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.refId}&v=${row.original.id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={`View ${row.original.name} v${row.original.versionNumber} in Agent Builder`}
+        flowName={row.original.name ?? "NAME_NOT_FOUND"}
+        flowVersionNumber={`v${row.original.versionNumber}`}
+      />
     ),
   },
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("type")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("type")}</div>
-    ),
+    cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("type")}</div>,
   },
   {
     accessorKey: "lastModifiedBy",
@@ -107,10 +95,7 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
     id: "actions",
     cell: ({ row }) => (
       // Render the archived flows row actions component
-      <ArchivedFlowRowActions
-        rowId={row.original.id}
-        refId={row.original.refId}
-      />
+      <ArchivedFlowRowActions rowId={row.original.id} refId={row.original.refId} />
     ),
   },
 ];
