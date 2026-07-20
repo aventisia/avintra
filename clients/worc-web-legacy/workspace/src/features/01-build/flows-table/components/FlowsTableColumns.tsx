@@ -4,10 +4,11 @@ import { DTColumnHeader } from "@aventisia/ui/data-table";
 import { formatDate } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
+import { FlowVersionNavLink } from "@/react-toolkit/ui/FlowVersionNavLink";
+
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
-import { FlowsTableCellLink } from "./FlowsTableCellLink";
 import { FlowRowActions } from "./flow-row-actions/FlowRowActions";
 
 const flowTypeLabelOverrides: Record<string, string> = {
@@ -19,16 +20,13 @@ const flowTypeLabelOverrides: Record<string, string> = {
  * Array of table columns for the flows table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
-export const flowsTableColumns = (
-  isSharedTab: boolean,
-): ColumnDef<FlowsTableDto>[] => [
+export const flowsTableColumns = (isSharedTab: boolean): ColumnDef<FlowsTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -48,21 +46,16 @@ export const flowsTableColumns = (
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("name")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
     ),
     cell: ({ row }) => (
-      <div className="flex max-w-80 items-center gap-3 ">
-        <FlowsTableCellLink
-          rowId={row.original.id || "rowId"}
-          cellValue={row.getValue("name")}
+      <div className="flex items-center gap-3 ">
+        <FlowVersionNavLink
+          to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.id}`}
+          title={`Open ${row.original.name} v${row.original.versionNumber} in Agent Builder`}
+          flowName={row.original.name ?? "NAME_NOT_FOUND"}
+          flowVersionNumber={`v${row.original.versionNumber}`}
         />
-        <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
-          v{row.original.versionNumber ?? 0}
-        </p>
         {isSharedTab && (
           <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
@@ -74,11 +67,7 @@ export const flowsTableColumns = (
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("type")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
     ),
     cell: ({ row }) => {
       const typeValue = String(row.getValue("type"));
@@ -123,24 +112,16 @@ export const flowsTableColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("flowCommentCount")}
-      </div>
+      <div className="w-auto truncate font-medium">{row.getValue("flowCommentCount")}</div>
     ),
   },
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("createdBy")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("createdBy")}
-      </div>
+      <div className="w-auto truncate font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
@@ -154,9 +135,7 @@ export const flowsTableColumns = (
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {formatDate(row.getValue("createdOn"))}
-      </div>
+      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
     ),
   },
   {

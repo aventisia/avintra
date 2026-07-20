@@ -52,7 +52,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
         target="_blank"
         rel="noopener noreferrer"
         title={`View ${row.original.flowName} v${row.original.flowVersionNumber} in Agent Builder`}
-        flowName={row.original.flowName}
+        flowName={row.original.flowName ?? "NAME_NOT_FOUND"}
         flowVersionNumber={row.original.flowVersionNumber}
       />
     ),

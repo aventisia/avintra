@@ -5,11 +5,11 @@ import { formatDate } from "@aventisia/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+import { FlowVersionNavLink } from "@/react-toolkit/ui/FlowVersionNavLink";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
-import { TableCellLink } from "./TableCellLink";
 import { TableActions } from "./table-actions/TableActions";
 
 const flowTypeLabelOverrides: Record<string, string> = {
@@ -27,8 +27,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -48,34 +47,23 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("name")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
     ),
     cell: ({ row }) => (
-      <div className="flex max-w-80 items-center gap-3 ">
-        <TableCellLink
-          rowId={row.original.refId || "rowId"}
-          versionId={row.original.id || "rowId"}
-          cellValue={row.getValue("name")}
-          type={row.original.type || ""}
-        />
-        <p className="bg-muted border text-nowrap py-1 px-1.5  text-2xs leading-none  text-primary rounded-full">
-          v{row.original.versionNumber ?? 0}
-        </p>
-      </div>
+      <FlowVersionNavLink
+        to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.refId}&v=${row.original.id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={`View ${row.original.name} v${row.original.versionNumber} in Agent Builder`}
+        flowName={row.original.name ?? "NAME_NOT_FOUND"}
+        flowVersionNumber={`v${row.original.versionNumber}`}
+      />
     ),
   },
   {
     accessorKey: "type",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("type")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("type")} />
     ),
     cell: ({ row }) => {
       const typeValue = String(row.getValue("type"));
@@ -89,16 +77,11 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "machineCount",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("machineCount")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("machineCount")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">
-        {row.original.type == FlowTypesEnum.Agent ||
-        row.original.type == FlowTypesEnum.ChatAgent
+        {row.original.type == FlowTypesEnum.Agent || row.original.type == FlowTypesEnum.ChatAgent
           ? row.getValue("machineCount")
           : "NA"}
       </div>
@@ -131,11 +114,7 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("status")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("status")} />
     ),
     cell: ({ row }) => {
       const { isDisabled, machineCount } = row.original;
@@ -167,31 +146,19 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("createdBy")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate max-w-72 font-medium">
-        {row.getValue("createdBy")}
-      </div>
+      <div className="w-auto truncate max-w-72 font-medium">{row.getValue("createdBy")}</div>
     ),
   },
   {
     accessorKey: "createdOn",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("createdOn")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdOn")} />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {formatDate(row.getValue("createdOn"))}
-      </div>
+      <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
     ),
   },
   {
