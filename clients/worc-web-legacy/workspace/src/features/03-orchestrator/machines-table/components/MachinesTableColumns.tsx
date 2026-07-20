@@ -1,7 +1,7 @@
 import { Checkbox, CopyableText } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { FALLBACK_VALUE } from "@aventisia/ui/constants";
-import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { DTColumnHeader, DTOpenViewCell } from "@aventisia/ui/data-table";
 import { formatDate, maskIP } from "@aventisia/ui/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 
@@ -49,9 +49,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
     ),
     cell: ({ row }) => (
-      <div title={row.getValue("name")} className="w-auto max-w-60 truncate font-medium">
-        {row.getValue("name")}
-      </div>
+      <DTOpenViewCell rowId={row.original.id} cellContent={row.getValue("name")} />
     ),
   },
   {
