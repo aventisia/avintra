@@ -52,11 +52,7 @@ public class MachinesTableController : BaseApiController
         return ResultHelper(await _machinesTableService.DeleteMachinesAsync(machineIds));
     }
 
-    // TODO: Need to check later. This endpoint should be in the TenantUser/FlowVersionController, not in the MachinesTableController. It is used to retrieve the list of flow versions associated with a specific machine for the TenantUser role.
-
-
-    // TODO: Need to check later
-    // Searches for machines based on the specified search keyword.
+    // TODO: machine_tables feature refactor. Searches for machines based on the specified search keyword.
     [HttpGet("search/{searchKey}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<MachinesTableRowDto>>>> FindMachinesByKeyword(string searchKey)
     {

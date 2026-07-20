@@ -1,8 +1,4 @@
-import {
-  InputFieldProps,
-  SelectFieldProps,
-  SwitchFieldProps,
-} from "@aventisia/ui/form";
+import { InputFieldProps, SelectFieldProps, SwitchFieldProps } from "@aventisia/ui/form";
 import { enumToArray } from "@aventisia/ui/utils";
 
 import { EnvironmentTypesEnum } from "@/react-toolkit/enums/environment-types-enum";
@@ -37,14 +33,10 @@ const osUniqueIdPlaceholders: Record<string, string> = {
 };
 
 // OS Unique Id
-export const getOsUniqueIdProps = (
-  operatingSystem: string,
-): InputFieldProps => ({
+export const getOsUniqueIdProps = (operatingSystem: string): InputFieldProps => ({
   name: "osID",
   label: "OS Unique ID",
-  placeholder:
-    osUniqueIdPlaceholders[operatingSystem] ??
-    "00000000-0000-0000-0000-000000000000",
+  placeholder: osUniqueIdPlaceholders[operatingSystem] ?? "00000000-0000-0000-0000-000000000000",
   isRequired: true,
   description:
     "Enter the OS installation ID of the machine that needs to be registered. This can be found on the login screen of the desktop app on the machine.",
@@ -80,8 +72,7 @@ export const ipAddressProps: InputFieldProps = {
 export const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
   label: "Disable Machine",
-  description:
-    "Disable this machine to prevent it from being used for job assignments.",
+  description: "Disable this machine to prevent it from being used for job assignments.",
 };
 
 // Backend-generated machine name preview

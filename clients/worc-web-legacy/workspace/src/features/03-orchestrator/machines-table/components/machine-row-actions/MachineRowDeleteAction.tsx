@@ -10,18 +10,17 @@ interface MachineRowDeleteActionProps {
   rowId: string;
 }
 
-export const MachineRowDeleteAction = ({
-  rowId,
-}: MachineRowDeleteActionProps) => {
+export const MachineRowDeleteAction = ({ rowId }: MachineRowDeleteActionProps) => {
   // Get showAlert handler
   const { showCustomAlertDialog } = useShowAlertHandler();
 
   // Get mutation function to delete the machine
-  const { mutate } = useTableRowOptimisticMutation<
-    string,
-    boolean,
-    MachinesTableRowDto
-  >("delete", [rowId], deleteMachine, DATA_QUERY_KEY);
+  const { mutate } = useTableRowOptimisticMutation<string, boolean, MachinesTableRowDto>(
+    "delete",
+    [rowId],
+    deleteMachine,
+    DATA_QUERY_KEY,
+  );
 
   // Return Delete alert dialog trigger
   return (

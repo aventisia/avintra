@@ -1,10 +1,10 @@
-import { CopyableText, NoContentMessage, Separator } from "@aventisia/ui";
+import { CopyableText, LoadingSpinner, NoContentMessage, Separator } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { FALLBACK_VALUE } from "@aventisia/ui/constants";
 import { cn } from "@aventisia/ui/lib";
 import { useDTCrudDialogStore } from "@aventisia/ui/stores";
 import { formatDate, maskIP } from "@aventisia/ui/utils";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import {
   BanIcon,
   CheckCircleIcon,
@@ -12,11 +12,11 @@ import {
   MonitorCogIcon,
   MonitorIcon,
   NetworkIcon,
-  ServerIcon,
 } from "lucide-react";
-import { useMemo } from "react";
+import { NavLink } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import NewAgentIcon from "@/components/NewAgentIcon";
 import {
   AuditTrailCard,
   ViewBadge,
@@ -28,15 +28,17 @@ import {
 } from "@/react-toolkit/ui/view-record";
 import { ViewDefaultCard } from "@/react-toolkit/ui/view-record/ViewDefaultCard";
 
-import { DATA_QUERY_KEY } from "../../constants";
+import { getMachine } from "../../apis/machines-table-apis";
 import { statusColor } from "../../constants/column-display-names";
-import type { MachinesTableRowDto } from "../../dtos/machines-table-row-dto";
+import type { MachineRecordDto } from "../../dtos/machine-record.dto";
+import { MachineFlowVersionRowActions } from "./MachineFlowVersionRowActions";
 
 /**
  * MachineView component displays the details of a machine in a read-only view.
- * It fetches the machine data from the query cache using the rowId from the crud dialog store.
+ * It fetches the machine data from the API using the rowId from the crud dialog store.
  * If the machine data is not found, it displays a message indicating that the record is not available.
- * Otherwise, it renders the machine details including profile, environment, OS type, connection status, and audit trail.
+ * Otherwise, it renders the machine details including profile, environment, OS type, connection status,
+ * assigned flow versions/agents with their metadata, and audit trail.
  * The component uses various UI components such as CopyableText, Badge, and ViewInfoRowsCard to present the information in a structured manner.
  *
  * @returns {JSX.Element} The rendered MachineView component.
@@ -51,15 +53,24 @@ export const MachineView = () => {
     })),
   );
 
-  // Get the query client to access the cached data
-  const queryClient = useQueryClient();
+  // Fetch the machine data from the API
+  const { data: response, isLoading } = useQuery({
+    queryKey: ["machine", rowId],
+    queryFn: () => getMachine(rowId),
+    enabled: !!rowId,
+  });
 
-  // Fetch the machine data from the cached query data using the rowId
-  const machine = useMemo(() => {
-    const queryData = queryClient.getQueryData<{ data: MachinesTableRowDto[] }>(DATA_QUERY_KEY);
+  const machine = response?.data as MachineRecordDto | undefined;
 
-    return queryData?.data.find((item) => item.id === rowId);
-  }, [queryClient, rowId]);
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex h-[calc(100vh-4rem)] flex-col text-sm gap-3 items-center justify-center">
+        <LoadingSpinner className="size-8 text-primary" />
+        Loading machine details...
+      </div>
+    );
+  }
 
   // If the machine data is not found, display a message indicating that the record is not available
   if (!machine) {
@@ -90,7 +101,7 @@ export const MachineView = () => {
           />
           <CopyableText
             className="mt-0.5 w-full"
-            textClassName="font-mono text-sm font-medium text-muted-foreground"
+            textClassName="font-mono max-w-[24rem] text-sm font-medium text-muted-foreground"
             value={machine.id ?? FALLBACK_VALUE}
             ariaLabel="copy machine id"
           />
@@ -109,19 +120,51 @@ export const MachineView = () => {
 
         {/* OS Unique Id, Hostname, Username, and IP Address section */}
         <div className="grid grid-cols-2 gap-2">
-          <ViewFieldWithCopy label="OS Unique Id" value={machine.osID} />
+          <ViewFieldWithCopy textClassName="font-mono" label="OS Unique Id" value={machine.osID} />
           <ViewField label="Hostname" value={machine.hostname} />
           <ViewField label="Username" value={machine.username} />
           <ViewField label="IP Address" value={maskIP(machine.ipAddress)} />
         </div>
       </ViewDefaultCard>
 
-      {/* Runtime section */}
+      {/* Agents section */}
       <ViewInfoRowsCard
-        title="Runtime"
-        icon={<ServerIcon className="size-3.5 text-muted-foreground" />}
+        title="Agents"
+        className="border-primary-100"
+        icon={<NewAgentIcon className="size-3.5 text-primary" />}
       >
-        <ViewInfoRow label="Assigned Agents" value={machine.flowVersionCount} />
+        {machine.machineFlowVersions && machine.machineFlowVersions.length > 0 ? (
+          <div className="flex flex-col gap-2.5 py-1">
+            {machine.machineFlowVersions.map((flowVersion, index) => (
+              <div key={flowVersion.flowVersionId} className="flex flex-col gap-1.5">
+                {index > 0 && <Separator className="h-[0.5px]" />}
+                <div className="flex flex-row gap-1.5 justify-between">
+                  <NavLink
+                    to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${flowVersion.flowId}&v=${flowVersion.flowVersionId}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={`View ${flowVersion.flowName} v${flowVersion.versionNumber} in Agent Builder`}
+                    className="group inline-flex h-auto w-auto text-sm cursor-pointer truncate font-normal text-foreground hover:text-primary"
+                  >
+                    <span className="inline-flex items-center gap-1 border-b-[0.1rem] border-transparent group-hover:border-primary">
+                      <span className="truncate max-w-[20rem]">{flowVersion.flowName}</span>
+                      <span className="bg-slate-100 border group-hover:text-primary text-2xs rounded-xl px-1.5 py-[1px] text-muted-foreground">
+                        v{flowVersion.versionNumber}
+                      </span>
+                    </span>
+                  </NavLink>
+                  <MachineFlowVersionRowActions
+                    machineId={machine.id}
+                    flowId={flowVersion.flowId}
+                    flowVersionId={flowVersion.flowVersionId}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ViewInfoRow label="Assigned Agents" value="No agents assigned" />
+        )}
       </ViewInfoRowsCard>
 
       {/* Connection section */}

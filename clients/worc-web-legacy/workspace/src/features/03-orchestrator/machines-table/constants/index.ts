@@ -25,16 +25,9 @@ const getDialogHeadingDescription = (crudAction: CrudActionType) => {
   }
 };
 
-export {
-  DATA_QUERY_KEY,
-  getDialogHeadingDescription,
-  TABLE_HEADING,
-  TABLE_KEY,
-};
+export { DATA_QUERY_KEY, getDialogHeadingDescription, TABLE_HEADING, TABLE_KEY };
 
-export const sortAsAssignedFirst = <
-  T extends { isAssigned: boolean; name: string },
->(
+export const sortAsAssignedFirst = <T extends { isAssigned: boolean; name: string }>(
   a: T,
   b: T,
 ) => {

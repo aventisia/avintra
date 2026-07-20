@@ -43,7 +43,7 @@ export const ViewBadge = ({
       variant={variant}
       title={title ?? text}
       className={cn(
-        "flex items-center gap-1.5 border-slate-300 px-[0.55rem] py-[0.23rem]",
+        "flex items-center max-w-[16rem] gap-1.5 border-slate-300 px-[0.55rem] py-[0.23rem]",
         viewStyle === "enabled" && "border-primary-100 bg-primary-50 text-primary-500",
         viewStyle === "disabled" && "border-red-200 bg-red-100 text-red-500",
         className,
@@ -60,7 +60,7 @@ export const ViewBadge = ({
           )}
         />
       )}
-      {text}
+      <span className="truncate">{text}</span>
     </Badge>
   );
 };

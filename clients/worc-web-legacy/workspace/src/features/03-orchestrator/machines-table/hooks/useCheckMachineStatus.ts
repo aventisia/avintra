@@ -2,6 +2,8 @@ import { HubConnection } from "@microsoft/signalr";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 
+// TODO: machine_tables feature refactor
+
 /**
  * useCheckMachineStatus
  *
@@ -13,9 +15,7 @@ import { useEffect } from "react";
  * @example
  * useCheckMachineStatus(connection);
  */
-export default function useCheckMachineStatus(
-  connection: HubConnection | null,
-) {
+export default function useCheckMachineStatus(connection: HubConnection | null) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
