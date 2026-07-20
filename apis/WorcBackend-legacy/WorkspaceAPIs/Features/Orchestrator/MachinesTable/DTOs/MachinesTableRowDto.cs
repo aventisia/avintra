@@ -66,7 +66,7 @@ public class MachinesTableRowDto
     /// <summary>
     /// Represents the status of the machine.
     /// </summary>
-    public MachineStatusEnum Status { get; set; } = MachineStatusEnum.Idle;
+    public MachineStatusEnum Status { get; set; } = MachineStatusEnum.Offline;
 
     /// <summary>
     /// Gets or sets the number of flow versions associated with the machine.

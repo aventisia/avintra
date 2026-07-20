@@ -30,13 +30,10 @@ namespace WorkspaceAPIs.MappingProfiles
                 .Map(dest => dest.IsAssigned, src => true)
                 .Map(dest => dest.Name, src => src.Machine != null ? src.Machine.Name : string.Empty)
                 .Map(dest => dest.OSId, src => src.Machine != null ? src.Machine.OsID : string.Empty)
-                .Map(dest => dest.Status, src => src.Machine != null ? src.Machine.Status : MachineStatusEnum.Offline)
                 .Map(dest => dest.CreatedBy, src => (string?)null)
                 .Map(dest => dest.LastModifiedBy, src => (string?)null)
                 .Map(dest => dest.CreatedOn, src => (DateTimeOffset?)null)
                 .Map(dest => dest.LastModifiedOn, src => (DateTimeOffset?)null);
-
-            // New Mapping for Agents to SelectOptionDto (For dropdowns or select lists)
         }
     }
 }
