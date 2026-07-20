@@ -132,7 +132,6 @@ public class MachinesTableService : IMachinesTableService
             // Mapping
             var newMachine = addMachineDto.Adapt<Machine>();
             newMachine.Name = MachinesTableHelpers.BuildMachineName(newMachine.Environment, newMachine.OperatingSystem, newMachine.OsID, newMachine.Username);
-            newMachine.Status = MachineStatusEnum.Offline;
             newMachine.CreatedByUserId = _userId;
             newMachine.LastModifiedByUserId = _userId;
 
@@ -357,101 +356,6 @@ public class MachinesTableService : IMachinesTableService
     }
 
     // TODO: Need to check below methods
-
-    // TODO: Need to check. Retrieve flow version list
-    public async Task<ServiceResponse<IEnumerable<AssignFlowVersionDto>>> GetFlowVersionsByMachineOSIdAsync(string osId)
-    {
-        // Initialize the response with a failed result
-        var serviceResponse = new ServiceResponse<IEnumerable<AssignFlowVersionDto>>
-        {
-            Data = null,
-            Message = "Failed to retrieve flow versions. Please try again."
-        };
-
-        try
-        {
-            // Retrieve machine by os id
-            var machine = await _unitOfWork.MachineRepo
-                    .GetByConditionAsync(w => w.OsID.ToLower() == osId.ToLower())
-                    .Include(i => i.MachineFlowVersions)
-                    .FirstOrDefaultAsync();
-            // Return an error if the machine doesn't exist
-            if (machine == null)
-            {
-                _logger.LogInformation("Machine with OS ID {OSId} not found for user {UserId}.", osId, _userId);
-                serviceResponse.Message = "The machine does not exist.";
-                return serviceResponse;
-            }
-
-            // Retrieve all flow versions
-            var flowVersions = await _unitOfWork.Machine_FlowVersionRepo
-                    .GetByConditionAsync(w =>
-                        w.MachineId == machine.Id &&
-                        w.FlowVersion.IsPublished &&
-                        !w.FlowVersion.IsArchived
-                    )
-                    .Include(i => i.FlowVersion)
-                        .ThenInclude(i2 => i2.Flow)
-                    .ProjectToType<AssignFlowVersionDto>()
-                    .ToListAsync();
-
-            var clientDataStores = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
-
-            // Iterate through each flow version in the collection
-            foreach (var flowVersion in flowVersions)
-            {
-                // Find the status of the flow version by matching the executing flow version id.
-                var clientDataStore = clientDataStores.FirstOrDefault(w => w.AgentId != null && w.AgentId == flowVersion.Id);
-
-                // Set the flow version status based on whether a matching status was found
-                flowVersion.Status = clientDataStore?.Status == MachineStatusEnum.Running ? AgentExecutionStatus.Executing : AgentExecutionStatus.Stopped;
-                flowVersion.JobId = (clientDataStore?.Status == MachineStatusEnum.Running) ? clientDataStore.JobId : null;
-            }
-
-            // Return the flow versions along with their assignment status
-            serviceResponse.Data = flowVersions;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Flow versions retrieved successfully";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An unexpected error occurred while retrieving flow versions for machine OSId {osId}.", osId);
-            return serviceResponse;
-        }
-
-        return serviceResponse;
-    }
-
-    // TODO: Need to check. Retrieve machine select-option
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetMachineToSelectOptionAsync()
-    {
-        // Initialize serviceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
-        {
-            Data = null,
-            Message = "Failed to retrieve machines, please try again."
-        };
-
-        try
-        {
-            // Retrieve the machines and map them to SelectOptionDto
-            var machinesToSelect = await _unitOfWork.MachineRepo.GetAllAsync()
-                .ProjectToType<SelectOptionDto>()
-                .AsNoTracking()
-                .ToListAsync();
-
-            // Set the serviceResponse
-            serviceResponse.Data = machinesToSelect;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Machines retrieved successfully";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while retrieving the machine list.");
-        }
-
-        return serviceResponse;
-    }
 
     // TODO: Need to check. Searches for machines created by the current user that match the specified search keyword.
     public async Task<ServiceResponse<IEnumerable<MachinesTableRowDto>>> FindMachinesByKeywordAsync(string searchKey)

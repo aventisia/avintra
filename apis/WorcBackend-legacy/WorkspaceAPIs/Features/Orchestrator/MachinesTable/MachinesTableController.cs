@@ -53,20 +53,7 @@ public class MachinesTableController : BaseApiController
     }
 
     // TODO: Need to check later. This endpoint should be in the TenantUser/FlowVersionController, not in the MachinesTableController. It is used to retrieve the list of flow versions associated with a specific machine for the TenantUser role.
-    // Retrieve flow version list by machine os ID.
-    [HttpGet("{osId}/flow-versions")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<AssignFlowVersionDto>>>> GetFlowVersionsByMachineOSId(string osId)
-    {
-        return ResultHelper(await _machinesTableService.GetFlowVersionsByMachineOSIdAsync(osId));
-    }
 
-    // TODO: Need to check later
-    // Retrieve the select-option list of machines
-    [HttpGet("select-option")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetMachineToSelectOption()
-    {
-        return ResultHelper(await _machinesTableService.GetMachineToSelectOptionAsync());
-    }
 
     // TODO: Need to check later
     // Searches for machines based on the specified search keyword.

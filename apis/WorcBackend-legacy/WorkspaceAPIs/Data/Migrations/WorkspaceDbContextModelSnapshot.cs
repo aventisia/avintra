@@ -947,10 +947,6 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 

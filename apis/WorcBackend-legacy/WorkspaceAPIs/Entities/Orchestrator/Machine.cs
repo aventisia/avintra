@@ -58,13 +58,6 @@ public class Machine : BaseEntity, IMustHaveTenant
     public DateTime LastCheckedIn { get; set; }
 
     /// <summary>
-    /// TODO: To be removed since it will be fetched from connection hub
-    /// Represents the status of the machine. Possible values are: Idle, Online, Offline, Running, Stopped
-    /// </summary>
-    [Required]
-    public required MachineStatusEnum Status { get; set; }
-
-    /// <summary>
     /// Many-to-Many relationship with Flow version, representing the machine's associated flow versions
     /// </summary>
     public virtual ICollection<Machine_FlowVersion> MachineFlowVersions { get; set; } = new List<Machine_FlowVersion>();

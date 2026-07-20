@@ -49,19 +49,6 @@ public interface IMachinesTableService
     // TODO: Need to check
 
     /// <summary>
-    /// Retrieves a list of flow versions assigned to a machine asynchronously.
-    /// </summary>
-    /// <param name="osId">The OS ID of the machine for which assigned flow versions will be retrieved.</param>
-    /// <returns>A service response containing a list of flow versions assigned to the specified machine.</returns>
-    Task<ServiceResponse<IEnumerable<AssignFlowVersionDto>>> GetFlowVersionsByMachineOSIdAsync(string osId);
-
-    /// <summary>
-    /// Retrieves a list of machines formatted as select options.
-    /// </summary>
-    /// <returns>A service response containing a list of select options for machines, including labels, values, and descriptions.</returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetMachineToSelectOptionAsync();
-
-    /// <summary>
     /// Searches for machines whose properties match the specified search keyword.
     /// </summary>
     /// <param name="searchKey">The keyword used to search machine details (e.g., name or identifier).</param>

@@ -81,7 +81,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<ProjectTemplate>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ProjectTemplateStatusesEnum>());
         modelBuilder.Entity<ProjectTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<TemplateAccessTypesEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.OperatingSystem).HasConversion(new EnumToStringConverter<OsTypesEnum>());
-        modelBuilder.Entity<Machine>().Property(e => e.Status).HasConversion(new EnumToStringConverter<MachineStatusEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());
         modelBuilder.Entity<Queue>().Property(e => e.Type).HasConversion(new EnumToStringConverter<QueueTypesEnum>());
         modelBuilder.Entity<Queue>().Property(e => e.ViewType).HasConversion(new EnumToStringConverter<QueueViewTypeEnum>());
