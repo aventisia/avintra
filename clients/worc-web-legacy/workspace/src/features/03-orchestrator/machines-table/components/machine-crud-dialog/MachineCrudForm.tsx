@@ -121,7 +121,7 @@ export const MachineCrudForm = () => {
       <AsyncMultiSelectField<FlowVersionSearchResultDto>
         fetcher={(query) => searchFlowVersions(query).then((res) => res.data || [])}
         name="flowVersionIds"
-        label="Assign Agents"
+        label="Machine Agents"
         queryKeyBase={["machine-form-flow-versions", rowId]}
         getItemId={(item) => item.flowVersionId}
         getItemLabel={(item) => `${item.flowName}_v${item.versionNumber}`}

@@ -46,7 +46,7 @@ public interface IMachinesTableService
     /// <returns>A service response containing the number of machines deleted.</returns>
     Task<ServiceResponse<long>> DeleteMachinesAsync(IEnumerable<Guid> machineIds);
 
-    // TODO: Need to check
+    // TODO: machine_tables feature refactor. Move below to SearchByQuery feature
 
     /// <summary>
     /// Searches for machines whose properties match the specified search keyword.

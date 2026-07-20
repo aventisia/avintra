@@ -26,8 +26,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
     header: ({ table }) => (
       <Checkbox
         checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
+          table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")
         }
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
@@ -47,17 +46,10 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("name")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
     ),
     cell: ({ row }) => (
-      <div
-        title={row.getValue("name")}
-        className="w-auto max-w-60 truncate font-medium"
-      >
+      <div title={row.getValue("name")} className="w-auto max-w-60 truncate font-medium">
         {row.getValue("name")}
       </div>
     ),
@@ -65,16 +57,10 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   {
     accessorKey: "status",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("status")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("status")} />
     ),
     cell: ({ row }) => (
-      <Badge className={statusColor[row.original.status]}>
-        {row.getValue("status")}
-      </Badge>
+      <Badge className={statusColor[row.original.status]}>{row.getValue("status")}</Badge>
     ),
   },
   {
@@ -100,19 +86,14 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
     ),
     cell: ({ row }) => {
       const formattedDate = formatDateValue(row.getValue("lastCheckedIn"));
-      if (!formattedDate || formattedDate === "01 Jan 0001")
-        return FALLBACK_VALUE;
+      if (!formattedDate || formattedDate === "01 Jan 0001") return FALLBACK_VALUE;
       return formattedDate;
     },
   },
   {
     accessorKey: "environment",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("environment")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("environment")} />
     ),
     cell: ({ row }) => row.getValue("environment"),
   },
@@ -130,11 +111,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   {
     accessorKey: "osID",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("osID")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("osID")} />
     ),
     cell: ({ row }) => (
       <CopyableText
@@ -149,17 +126,10 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   {
     accessorKey: "username",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("username")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("username")} />
     ),
     cell: ({ row }) => (
-      <div
-        title={row.getValue("username")}
-        className="w-auto max-w-40 truncate font-medium"
-      >
+      <div title={row.getValue("username")} className="w-auto max-w-40 truncate font-medium">
         {row.getValue("username")}
       </div>
     ),
@@ -167,17 +137,10 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   {
     accessorKey: "hostname",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("hostname")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("hostname")} />
     ),
     cell: ({ row }) => (
-      <div
-        title={row.getValue("hostname")}
-        className="w-auto max-w-40 truncate font-medium"
-      >
+      <div title={row.getValue("hostname")} className="w-auto max-w-40 truncate font-medium">
         {row.getValue("hostname")}
       </div>
     ),
@@ -185,22 +148,14 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   {
     accessorKey: "isDisabled",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("isDisabled")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("isDisabled")} />
     ),
     cell: ({ row }) => (row.getValue<boolean>("isDisabled") ? "Yes" : "No"),
   },
   {
     accessorKey: "ipAddress",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("ipAddress")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("ipAddress")} />
     ),
     cell: ({ row }) => {
       const ipAddress = row.getValue<string>("ipAddress");
@@ -211,17 +166,10 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   {
     accessorKey: "createdBy",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("createdBy")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
     ),
     cell: ({ row }) => (
-      <div
-        title={row.getValue("createdBy")}
-        className="w-auto max-w-40 truncate font-medium"
-      >
+      <div title={row.getValue("createdBy")} className="w-auto max-w-40 truncate font-medium">
         {row.getValue("createdBy")}
       </div>
     ),
@@ -248,10 +196,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div
-        title={row.getValue("lastModifiedBy")}
-        className="w-auto max-w-40 truncate font-medium"
-      >
+      <div title={row.getValue("lastModifiedBy")} className="w-auto max-w-40 truncate font-medium">
         {row.getValue("lastModifiedBy")}
       </div>
     ),
@@ -270,11 +215,6 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => (
-      <MachineRowActions
-        osID={row.original.osID ?? ""}
-        rowId={row.original.id ?? "rowId"}
-      />
-    ),
+    cell: ({ row }) => <MachineRowActions rowId={row.original.id ?? "rowId"} />,
   },
 ];

@@ -12,6 +12,8 @@ type ViewInfoRowsCardProps = ComponentPropsWithoutRef<"div"> & {
   title: string;
   /** Optional icon rendered before the section title. */
   icon?: ReactNode;
+  /** Additional classes for the section title. */
+  headerClassName?: string;
   /** Additional classes for the body wrapper. */
   bodyClassName?: string;
 };
@@ -27,12 +29,18 @@ export const ViewInfoRowsCard = ({
   icon,
   children,
   className,
+  headerClassName,
   bodyClassName,
   ...props
 }: ViewInfoRowsCardProps) => {
   return (
     <div className={cn("rounded-lg border bg-card px-4 pb-2 pt-4", className)} {...props}>
-      <div className="flex items-center gap-2 text-2xs font-medium uppercase tracking-wider text-foreground">
+      <div
+        className={cn(
+          "flex items-center gap-2 text-2xs font-medium uppercase tracking-wider text-foreground",
+          headerClassName,
+        )}
+      >
         {icon}
         {title}
       </div>

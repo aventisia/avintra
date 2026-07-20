@@ -1,9 +1,5 @@
 import { Separator } from "@aventisia/ui";
-import {
-  DTBulkActions,
-  DTBulkDeleteAction,
-  DTSelectionInfo,
-} from "@aventisia/ui/data-table";
+import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@aventisia/ui/data-table";
 import { useTableRowOptimisticMutation } from "@aventisia/ui/hooks";
 import { useShowAlertHandler } from "@aventisia/ui/hooks";
 import { Table } from "@tanstack/react-table";
@@ -27,17 +23,15 @@ export function MachinesBulkActions({ table }: MachinesBulkActionsProps) {
     .filter((id): id is string => id !== undefined);
 
   // Construct entity name for alert dialog
-  const entityName =
-    selectedRowIds.length > 1 ? `${selectedRowIds.length} machines` : `machine`;
+  const entityName = selectedRowIds.length > 1 ? `${selectedRowIds.length} machines` : `machine`;
 
   // Get mutation function to delete the machine
-  const { mutate } = useTableRowOptimisticMutation<
-    string[],
-    number,
-    MachinesTableRowDto
-  >("delete-multiple", selectedRowIds, deleteMachines, DATA_QUERY_KEY);
-
-  // TODO: Rollback selection if there is an error
+  const { mutate } = useTableRowOptimisticMutation<string[], number, MachinesTableRowDto>(
+    "delete-multiple",
+    selectedRowIds,
+    deleteMachines,
+    DATA_QUERY_KEY,
+  );
 
   return (
     <>

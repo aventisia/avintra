@@ -40,10 +40,10 @@ public class MachinesTableService : IMachinesTableService
                             .ProjectToType<MachinesTableRowDto>()
                             .ToListAsync();
 
-            // TODO: Need to check. Retrieve the list of machine statuses for the current tenant
+            // TODO: machine_tables feature refactor. Retrieve the list of machine statuses for the current tenant
             var clientStatusDtos = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
 
-            // TODO: Need to check. Iterate through each machine in the 'machines' collection
+            // TODO: machine_tables feature refactor. Iterate through each machine in the 'machines' collection
             foreach (var machine in machines)
             {
                 // Find the status of the machine by matching its ClientId with the current machine's Id
@@ -86,13 +86,13 @@ public class MachinesTableService : IMachinesTableService
             if (machine == null)
                 return serviceResponse.Update("Machine not found", 404);
 
-            // TODO: Need to check. Attempt to retrieve the client status from the store based on the machine's unique ID
+            // TODO: machine_tables feature refactor Attempt to retrieve the client status from the store based on the machine's unique ID
             var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machine.Id);
 
-            // TODO: Need to check. If the client status is found, update the machine's status to match the stored status. If no status is found, mark the machine as 'Offline'.
+            // TODO: machine_tables feature refactor If the client status is found, update the machine's status to match the stored status. If no status is found, mark the machine as 'Offline'.
             machine.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusEnum.Offline;
 
-            // TODO: Need to check. (Optional) Update the machine's 'LastCheckedIn' timestamp if a valid status is found.
+            // TODO: machine_tables feature refactor (Optional) Update the machine's 'LastCheckedIn' timestamp if a valid status is found.
             // machine.LastCheckedIn = clientStatusDto != null ? clientStatusDto.LastSeen : DateTimeOffset.UtcNow;
 
             // Task successful
@@ -271,10 +271,10 @@ public class MachinesTableService : IMachinesTableService
             if (machine == null)
                 return serviceResponse.Update("Machine not found", 404);
 
-            // TODO: Need to check. Attempt to retrieve the client status from the store based on the machine's unique ID
+            // TODO: machine_tables feature refactor Attempt to retrieve the client status from the store based on the machine's unique ID
             var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machine.Id);
 
-            // TODO: Need to check. Check if the client status was found (i.e., the machine exists in the store)
+            // TODO: machine_tables feature refactor Check if the client status was found (i.e., the machine exists in the store)
             if (clientStatusDto != null)
             {
                 // If the machine was found, remove it from the client status store using its connection ID
@@ -319,10 +319,10 @@ public class MachinesTableService : IMachinesTableService
             if (machines.Count != machineIds.Count())
                 return serviceResponse.Update("Some machines not found", 404);
 
-            // TODO: Need to check. Attempt to retrieve the list of machine statuses for the current tenant
+            // TODO: machine_tables feature refactor Attempt to retrieve the list of machine statuses for the current tenant
             var machineStatusesList = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
 
-            // TODO: Need to check. Iterate through each machine in the 'machines' collection that we need to process
+            // TODO: machine_tables feature refactor Iterate through each machine in the 'machines' collection that we need to process
             foreach (var machine in machines)
             {
                 // Find the machine's current status based on its unique client ID
@@ -336,7 +336,7 @@ public class MachinesTableService : IMachinesTableService
                 }
             }
 
-            // TODO: Check machine relationship with other entities
+            // TODO: machine_tables feature refactor. Check machine relationship with other entities
 
             // Delete machines
             _unitOfWork.MachineRepo.Delete(machines);
@@ -355,9 +355,9 @@ public class MachinesTableService : IMachinesTableService
         }
     }
 
-    // TODO: Need to check below methods
+    // TODO: machine_tables feature refactor. Need to check below methods
 
-    // TODO: Need to check. Searches for machines created by the current user that match the specified search keyword.
+    // TODO: machine_tables feature refactor machine_tables feature refactor Searches for machines created by the current user that match the specified search keyword.
     public async Task<ServiceResponse<IEnumerable<MachinesTableRowDto>>> FindMachinesByKeywordAsync(string searchKey)
     {
         var serviceResponse = new ServiceResponse<IEnumerable<MachinesTableRowDto>>
