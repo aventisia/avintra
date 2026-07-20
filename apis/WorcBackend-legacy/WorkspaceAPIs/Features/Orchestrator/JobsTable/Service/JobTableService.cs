@@ -115,7 +115,7 @@ public class JobTableService : IJobTableService
     }
 
     // Inserts a new job.
-    public async Task<ServiceResponse<JobRecordDto>> InsertJobAsync(JobInsertDto jobInsertDto)
+    public async Task<ServiceResponse<JobRecordDto>> InsertJobAsync(JobInsertDto jobInsertDto, Guid? providedTenantId = null)
     {
         // Initialize the response with a default error message.
         var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to create job", 500);
@@ -125,6 +125,35 @@ public class JobTableService : IJobTableService
             // CANNOT CREATE THE JOB: Execution is disabled for the on-prem tenant
             if (_environmentConfig.OnPremExecutionDisabled)
                 return serviceResponse.Update("Execution is currently disabled. Please contact Aventisia Support.", 503);
+
+            // IMPORTANT: TenantId is set to the current tenant's ID to ensure multi-tenancy support.
+            // Since Job entity does not have IMustHaveTenant interface, we are manually setting the TenantId here
+            // Due to BackgroundService creates the job and at that time the current tenant is not available using TenantResolverService
+            var tenantId = _currentTenantService.CurrentTenantId;
+
+            // Non-manual triggers require CreatedByName and CreatedById to be provided
+            // TODO: Based on the trigger typw we should validate if the CreatedById is correct or not
+            // If you are going to validate and fetch the data using CreatedById then we don't need to get 
+            // CreatedByName from the request. We can fetch the name from the database based on the CreatedById. 
+            // But for now, we will validate both CreatedByName and CreatedById.
+            var isManualJobCreation = jobInsertDto.TriggerType == TriggerTypesEnum.Manual;
+            if (!isManualJobCreation)
+            {
+                // If createdByUser not provided, return
+                if (string.IsNullOrEmpty(jobInsertDto.CreatedByName))
+                    return serviceResponse.Update("CreatedByName is required for non-manual triggers.", 400);
+
+                // If createdById not provided, return
+                if (!jobInsertDto.CreatedById.HasValue)
+                    return serviceResponse.Update("CreatedByID is required for non-manual triggers.", 400);
+
+                // If providedTenantId is null, return
+                if (!providedTenantId.HasValue)
+                    return serviceResponse.Update("Tenant ID is required for non-manual triggers.", 400);
+
+                // Set the tenantId to the providedTenantId
+                tenantId = providedTenantId.Value;
+            }
 
             // Retrieve the FlowVersion record
             var flowVersion = await _unitOfWork.FlowVersionRepo
@@ -147,6 +176,17 @@ public class JobTableService : IJobTableService
             // If FlowVersion record not found, log and return
             if (flowVersion == null)
                 return serviceResponse.Update("Agent not found.", 404);
+
+            // Published flow versions needs ExecutionLocation to be provided
+            if (flowVersion.IsFlowVersionPublished)
+            {
+                // TODO: We should validate whether the ExecutionLocation provided is valid or not. 
+                // But sometime it can be a machine name or a web server name. so it will be difficult to validate. 
+                // We'll have to solve this
+                // If ExecutionLocation not provided, return
+                if (string.IsNullOrEmpty(jobInsertDto.ExecutionLocation))
+                    return serviceResponse.Update("Machine name is required for published agents.", 400);
+            }
 
             // TODO: Need to check this
             // Machine? machine = null;
@@ -176,6 +216,8 @@ public class JobTableService : IJobTableService
 
             // Default mapping
             var newJob = jobInsertDto.Adapt<Job>();
+            newJob.TenantId = tenantId; // Set the TenantId to the current or providedTenantId
+            newJob.FlowVersionHistoryId = flowVersion.FlowVersionHistoryId;
             newJob.RetryCount = 0; // Default retry count to 0, will be updated below if JobId is provided
 
             // Manual mapping: Set RetryCount (if JobId is provided)
@@ -193,11 +235,8 @@ public class JobTableService : IJobTableService
                 newJob.RetryCount = existingJobs;
             }
 
-            // Manual mapping: Set the FlowVersionHistoryId
-            newJob.FlowVersionHistoryId = flowVersion.FlowVersionHistoryId;
-
             // Manual mapping: Set CreatedByName and CreatedById
-            if (jobInsertDto.TriggerType == TriggerTypesEnum.Manual)
+            if (isManualJobCreation)
             {
                 // Retrieve user record
                 var userRecord = await _unitOfWork.WorkspaceUserRepo

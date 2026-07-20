@@ -62,7 +62,7 @@ public class Job
     /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
-    public JobStatusEnum Status { get; set; }
+    public JobStatusEnum Status { get; set; } = JobStatusEnum.Created;
 
     /// <summary>
     /// Gets or sets the unique identifier of the machine where the job is running.

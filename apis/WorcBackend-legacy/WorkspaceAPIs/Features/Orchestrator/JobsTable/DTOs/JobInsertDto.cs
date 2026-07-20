@@ -17,12 +17,12 @@ public class JobInsertDto
     /// <summary>
     /// Gets or sets the trigger type for the job.
     /// </summary>
-    public TriggerTypesEnum TriggerType { get; set; } = TriggerTypesEnum.Manual;
+    public TriggerTypesEnum? TriggerType { get; set; } = TriggerTypesEnum.Manual;
 
     /// <summary>
     /// Gets or sets the priority level of the job.
     /// </summary>
-    public JobPriorityEnum Priority { get; set; } = JobPriorityEnum.Normal;
+    public JobPriorityEnum? Priority { get; set; } = JobPriorityEnum.Normal;
 
     /// <summary>
     /// Gets or sets the name of the user or trigger that created the job.
@@ -33,7 +33,7 @@ public class JobInsertDto
     /// <remarks>
     /// Username will be saved in the format "Full Name (email)" for manual triggers and "trigger_[Full trigger name]" for automated triggers.
     /// </remarks>
-    public required string CreatedByName { get; set; }
+    public string? CreatedByName { get; set; }
 
     /// <summary>
     /// Gets or sets the unique identifier of the user or trigger that created the job.
@@ -41,7 +41,7 @@ public class JobInsertDto
     /// This is not a relationship to the User entity or trigger entity, but rather a reference to the entity that triggered the job. 
     /// It is used for tracking and auditing purposes.
     /// </summary>
-    public required Guid CreatedById { get; set; }
+    public Guid? CreatedById { get; set; }
 
     /// <summary>
     /// Gets or sets the environment from where the job is being initiated or the platform (machine name or web server) where the job is going to be executed
@@ -52,7 +52,7 @@ public class JobInsertDto
     /// The MachineId (machine local or virtual machine where the job is supposed to run) is going to be env_os_osid_[username], which is a unique identifier for the machine.
     /// For example, dev_windows_f9e58876-0de0-452b-8f80-0dfc0e2b88cd_[gaurav], prod_linux_12345678-0de0-452b-8f80-0dfc0e2b88cd_[john doe]
     /// </remarks>
-    public required string ExecutionLocation { get; set; }
+    public string? ExecutionLocation { get; set; }
 
     /// <summary>
     /// Gets or sets the input payload for the job in JSON format.

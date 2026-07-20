@@ -13,8 +13,10 @@ import {
   PlayIcon,
 } from "@heroicons/react/24/solid";
 
+import { useInsertJobMutation } from "@/features/03-orchestrator/jobs-table/hooks/useInsertJobMutation";
+
 interface MachineFlowVersionRowActionsProps extends React.PropsWithChildren {
-  machineId: string;
+  machineName: string;
   flowId: string;
   flowVersionId: string;
   className?: string;
@@ -26,11 +28,14 @@ interface MachineFlowVersionRowActionsProps extends React.PropsWithChildren {
  * and a "View" action to view the flow version in the agent builder.
  */
 export const MachineFlowVersionRowActions: React.FC<MachineFlowVersionRowActionsProps> = ({
-  machineId,
+  machineName,
   flowId,
   flowVersionId,
   className,
 }) => {
+  // Get insert job mutation and its pending state
+  const { insertJobMutation } = useInsertJobMutation();
+
   // Handle view flow version in agent builder action (open in new tab)
   const handleViewFlowVersionAction = () => {
     window.open(
@@ -39,10 +44,12 @@ export const MachineFlowVersionRowActions: React.FC<MachineFlowVersionRowActions
     );
   };
 
-  // TODO: machine_tables feature refactor. Handle execute/create job action for the flow version
+  // Create manual job for the flow version (execute action)
   const handleExecuteFlowVersionAction = () => {
-    console.log("Machine Id:", machineId);
-    // TODO: machine_tables feature refactor. Implement execute flow version action
+    insertJobMutation({
+      flowVersionId,
+      executionLocation: machineName,
+    });
   };
 
   return (
