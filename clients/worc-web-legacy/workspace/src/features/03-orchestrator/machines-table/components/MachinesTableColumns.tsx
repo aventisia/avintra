@@ -1,7 +1,7 @@
 import { Checkbox, CopyableText } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { FALLBACK_VALUE } from "@aventisia/ui/constants";
-import { DTColumnHeader, DTOpenViewCell } from "@aventisia/ui/data-table";
+import { DTColumnHeader, DTOpenViewCell, createDTActionsColumn } from "@aventisia/ui/data-table";
 import { formatDate, maskIP } from "@aventisia/ui/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 
@@ -22,7 +22,7 @@ const formatDateValue = (value: unknown) => {
  */
 export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   {
-    accessorKey: "id",
+    accessorKey: "selectRow",
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -212,7 +212,21 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
     cell: ({ row }) => formatDateValue(row.getValue("lastModifiedOn")),
   },
   {
-    id: "actions",
-    cell: ({ row }) => <MachineRowActions rowId={row.original.id ?? "rowId"} />,
+    accessorKey: "id",
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("id")} />
+    ),
+    cell: ({ row }) => (
+      <CopyableText
+        title={row.getValue("id")}
+        textClassName="w-auto max-w-32 truncate text-md font-mono"
+        iconClassName="size-3"
+        value={row.getValue("id")}
+        ariaLabel="copy machine id"
+      />
+    ),
   },
+  createDTActionsColumn<MachinesTableRowDto>({
+    renderCell: (row) => <MachineRowActions rowId={row.id ?? "rowId"} />,
+  }),
 ];
