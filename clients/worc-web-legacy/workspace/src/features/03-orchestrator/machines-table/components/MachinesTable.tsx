@@ -10,8 +10,6 @@ import {
 } from "@aventisia/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@aventisia/ui/hooks";
 
-import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
-
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -70,9 +68,7 @@ export const MachinesTable = () => {
             {/* Data table to render data */}
             <div className="flex flex-col gap-2">
               <MachineStats data={data?.data} />
-              <HorizontalScrollWrapper>
-                <DataTable table={table} columnsLength={machinesTableColumns.length} />
-              </HorizontalScrollWrapper>
+              <DataTable table={table} columnsLength={machinesTableColumns.length} />
             </div>
           </MachineCrudDialog>
 

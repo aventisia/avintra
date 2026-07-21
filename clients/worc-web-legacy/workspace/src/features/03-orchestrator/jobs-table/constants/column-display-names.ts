@@ -4,7 +4,7 @@ import { JobStatusEnum } from "..";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "id", value: "Select Row" },
+  { key: "selectRow", value: "Select Row" },
   { key: "flowName", value: "Agent" },
   { key: "status", value: "Status" },
   { key: "startTimeStamp", value: "Started At" },
@@ -19,8 +19,9 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "createdByName", value: "Created By" },
   { key: "createdAt", value: "Created At" },
   { key: "executionLocation", value: "Execution Location" },
-  { key: "flowVersionId", value: "Agent ID" },
   { key: "remarks", value: "Remarks" },
+  { key: "flowVersionId", value: "Agent ID" },
+  { key: "id", value: "Job ID" },
 ];
 
 // Get the column display name for the given column key.

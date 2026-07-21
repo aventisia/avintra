@@ -45,15 +45,14 @@ export const AppLayout = () => {
   const location = useLocation();
 
   // Get the state and actions from the base layout store
-  const { sidebarExpand, appBanner, setViteEnvVars, setSidebarMenuSections } =
-    useBaseLayoutStore(
-      useShallow((state) => ({
-        sidebarExpand: state.sidebarExpand,
-        appBanner: state.appBanner,
-        setViteEnvVars: state.setViteEnvVars,
-        setSidebarMenuSections: state.setSidebarMenuSections,
-      })),
-    );
+  const { sidebarExpand, appBanner, setViteEnvVars, setSidebarMenuSections } = useBaseLayoutStore(
+    useShallow((state) => ({
+      sidebarExpand: state.sidebarExpand,
+      appBanner: state.appBanner,
+      setViteEnvVars: state.setViteEnvVars,
+      setSidebarMenuSections: state.setSidebarMenuSections,
+    })),
+  );
   const { isLoading: isAppLoading } = useAppLoaderStore(
     useShallow((state) => ({ isLoading: state.isLoading })),
   );
@@ -156,13 +155,7 @@ export const AppLayout = () => {
     setAllowedRoutes([...allowedRoutes, "/account"]);
 
     setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
-  }, [
-    isPending,
-    setAllowedRoutes,
-    setSidebarMenuSections,
-    setViteEnvVars,
-    userSession,
-  ]);
+  }, [isPending, setAllowedRoutes, setSidebarMenuSections, setViteEnvVars, userSession]);
 
   useEffect(() => {
     //Navigate user to first option of filteredSidebarMenu
@@ -178,10 +171,7 @@ export const AppLayout = () => {
     const currentPath = location.pathname;
 
     const hasAccess = allowedRoutes.some(
-      (route) =>
-        currentPath == route ||
-        currentPath.startsWith(`${route}/`) ||
-        currentPath == "/",
+      (route) => currentPath == route || currentPath.startsWith(`${route}/`) || currentPath == "/",
     );
 
     if (!hasAccess) {
@@ -194,9 +184,7 @@ export const AppLayout = () => {
     if (isPending || !userSession) return;
 
     // Check if the user has exactly one "TD" role
-    const hasSingleTD =
-      userSession.userRoles.includes("TD") &&
-      userSession.userRoles.length === 1;
+    const hasSingleTD = userSession.userRoles.includes("TD") && userSession.userRoles.length === 1;
     if (IS_TAURI) {
       setConnectWebsocket(!hasSingleTD && osID != "");
     } else {
@@ -204,9 +192,7 @@ export const AppLayout = () => {
     }
 
     //If TU role user login through web display message to use Desktop app
-    const hasSingleTU =
-      userSession.userRoles.includes("TU") &&
-      userSession.userRoles.length === 1;
+    const hasSingleTU = userSession.userRoles.includes("TU") && userSession.userRoles.length === 1;
 
     if (!IS_TAURI && hasSingleTU) {
       navigate("/assist");
@@ -240,10 +226,10 @@ export const AppLayout = () => {
           >
             <main
               className={cn(
-                "px-3 md:px-7 py-0 transition-[margin] duration-500",
+                "px-3 md:px-7 py-0 transition-all duration-500",
                 sidebarExpand
-                  ? "md:ml-[--sidebar-max-width]"
-                  : "md:ml-[--sidebar-min-width]",
+                  ? "md:ml-[--sidebar-max-width] md:w-[calc(100vw-var(--sidebar-max-width))]"
+                  : "md:ml-[--sidebar-min-width] md:w-[calc(100vw-var(--sidebar-min-width))]",
               )}
             >
               <Outlet />

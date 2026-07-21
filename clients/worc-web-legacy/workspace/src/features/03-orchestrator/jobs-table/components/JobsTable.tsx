@@ -14,8 +14,6 @@ import { Tabs, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { HorizontalScrollWrapper } from "@/react-toolkit/ui/HorizontalScrollWrapper";
-
 import {
   DateRangeFilter,
   HISTORY_JOB_STATUSES,
@@ -74,22 +72,13 @@ export const JobsTable = () => {
   useDocumentTitle(TABLE_HEADING);
 
   // Get data-table preferences from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(
-    TABLE_KEY,
-    columnVisibilityState,
-  );
+  const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
   // Fetch Jobs data
   const { data } = useFetchJobsList();
 
   // Create a React table for Jobs data
-  const table = useDataTable(
-    jobsTableColumns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  const table = useDataTable(jobsTableColumns, data?.data || [], columnVisibility, sortState, true);
 
   useEffect(() => {
     const statusColumn = table.getColumn("status");
@@ -118,11 +107,7 @@ export const JobsTable = () => {
                 <Tabs value={tabValue} onValueChange={handleTabSelect}>
                   <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
                     {tabs.map((tab) => (
-                      <TabsTrigger
-                        value={tab}
-                        key={tab}
-                        className="w-full rounded-lg py-0.5"
-                      >
+                      <TabsTrigger value={tab} key={tab} className="w-full rounded-lg py-0.5">
                         {tab}
                       </TabsTrigger>
                     ))}
@@ -136,9 +121,7 @@ export const JobsTable = () => {
                   placeholder="Search agent, version or status..."
                 />
                 <DateRangeFilter />
-                <DTViewOptions
-                  {...{ table, columnDisplayNames, tableKey: TABLE_KEY }}
-                />
+                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
                 {tabValue == "History" ? (
                   <DTExportButton fileName={TABLE_KEY} table={table} />
                 ) : null}
@@ -149,18 +132,11 @@ export const JobsTable = () => {
             <div className="flex flex-col gap-2">
               {tabValue === "History" && (
                 <JobsStats
-                  data={data?.data.filter((job) =>
-                    HISTORY_JOB_STATUSES.includes(job.status),
-                  )}
+                  data={data?.data.filter((job) => HISTORY_JOB_STATUSES.includes(job.status))}
                 />
               )}
 
-              <HorizontalScrollWrapper>
-                <DataTable
-                  table={table}
-                  columnsLength={jobsTableColumns.length}
-                />
-              </HorizontalScrollWrapper>
+              <DataTable table={table} columnsLength={jobsTableColumns.length} />
             </div>
           </JobCrudDialog>
           {tabValue === "Scheduled" && <JobsBulkActions table={table} />}{" "}

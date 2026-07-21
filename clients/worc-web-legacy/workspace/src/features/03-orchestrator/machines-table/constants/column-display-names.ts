@@ -4,7 +4,7 @@ import { MachineStatusEnum } from "@/react-toolkit/enums/machine-status-enum";
 
 /** Array of column names and their corresponding display names. */
 export const columnDisplayNames: KeyValueLookupType[] = [
-  { key: "id", value: "Select Row" },
+  { key: "selectRow", value: "Select Row" },
   { key: "name", value: "Name" },
   { key: "status", value: "Status" },
   { key: "flowVersionCount", value: "Agents" },
@@ -20,6 +20,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "createdOn", value: "Added At" },
   { key: "lastModifiedBy", value: "Last Modified By" },
   { key: "lastModifiedOn", value: "Last Modified At" },
+  { key: "id", value: "Machine ID" },
 ];
 
 // Get the column display name for the given column key.

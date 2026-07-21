@@ -1,7 +1,7 @@
-import { Checkbox } from "@aventisia/ui";
+import { Checkbox, CopyableText } from "@aventisia/ui";
 import { Badge } from "@aventisia/ui/badge";
 import { FALLBACK_VALUE } from "@aventisia/ui/constants";
-import { DTColumnHeader } from "@aventisia/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@aventisia/ui/data-table";
 import { cn } from "@aventisia/ui/lib";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -19,8 +19,7 @@ import {
 
 export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   {
-    id: "id",
-    accessorKey: "id",
+    accessorKey: "selectRow",
     header: ({ table }) => (
       <Checkbox
         checked={
@@ -270,10 +269,36 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     ),
   },
   {
-    id: "actions",
+    accessorKey: "flowVersionId",
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("flowVersionId")} />
+    ),
     cell: ({ row }) => (
-      // Render the job row actions component
-      <JobRowActions status={row.original.status} rowId={row.original.id} />
+      <CopyableText
+        title={row.getValue("flowVersionId")}
+        textClassName="w-auto max-w-32 truncate text-md font-mono"
+        iconClassName="size-3"
+        value={row.getValue("flowVersionId")}
+        ariaLabel="copy flow version id"
+      />
     ),
   },
+  {
+    accessorKey: "id",
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("id")} />
+    ),
+    cell: ({ row }) => (
+      <CopyableText
+        title={row.getValue("id")}
+        textClassName="w-auto max-w-32 truncate text-md font-mono"
+        iconClassName="size-3"
+        value={row.getValue("id")}
+        ariaLabel="copy job id"
+      />
+    ),
+  },
+  createDTActionsColumn<JobsTableRowDto>({
+    renderCell: (row) => <JobRowActions status={row.status} rowId={row.id ?? "rowId"} />,
+  }),
 ];
