@@ -1,15 +1,12 @@
 import { Button } from "@aventisia/ui/buttons";
 import { cn } from "@aventisia/ui/lib";
+import { toast } from "@aventisia/ui/sonner";
 import { Tooltip } from "@aventisia/ui/tooltip";
-import {
-  Node,
-  NodeProps,
-  NodeToolbar,
-  Position,
-  useReactFlow,
-} from "@xyflow/react";
-import { ExpandIcon, ShrinkIcon } from "lucide-react";
+import { Node, NodeProps, NodeToolbar, Position, useReactFlow } from "@xyflow/react";
+import { ExpandIcon, ExternalLinkIcon, ShrinkIcon } from "lucide-react";
 import { memo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
@@ -17,6 +14,10 @@ import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsEx
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 import { useNodeHover } from "@/hooks/useNodeHover";
+import { useBreadcrumbStore } from "@/stores/breadcrumb-store";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
 import { NodeDataType } from "@/types/node-data-type";
 
 import OpenNodeLog from "../node-container/OpenNodeLog";
@@ -27,20 +28,60 @@ import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
 type BlockNodeType = Node<NodeDataType, "blockNode">;
 
 export const BlockNode = memo(
-  ({
-    data,
-    selected,
-    sourcePosition,
-    targetPosition,
-    id,
-  }: NodeProps<BlockNodeType>) => {
+  ({ data, selected, sourcePosition, targetPosition, id }: NodeProps<BlockNodeType>) => {
     const { updateNodeData } = useReactFlow();
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    const { pushBreadcrumb } = useBreadcrumbStore();
+    const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
+    const name = useReactFlowViewStore(useShallow((state) => state.name));
+
+    const { isSavePending } = useReactFlowExtStore(
+      useShallow((state) => ({
+        isSavePending: state.isSavePending,
+      })),
+    );
 
     const { toggleGroupExpand } = useGroupToggle();
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
 
     const isExecutionLog = useIsExecutionLogsRoute();
     const isAgentHistory = useIsVersionHistoryRoute();
+
+    const handleOpenSubFlow = () => {
+      if (isSavePending) {
+        toast.warning("Please save changes before opening a subflow");
+        return;
+      }
+
+      const block = data.selectedBlock;
+      if (!block || !block.flowId || !block.id) return;
+
+      const currentFlowId = searchParams.get("f") || currentFlow.id;
+      const currentVersionId = searchParams.get("v") || currentFlow.versionId;
+      const currentJobId = searchParams.get("j");
+      const currentFlowName = isExecutionLog ? name : currentFlow.name;
+
+      if (currentFlowId) {
+        pushBreadcrumb({
+          flowId: currentFlowId,
+          versionId: currentVersionId,
+          name: currentFlowName || "Main Flow",
+          jobId: currentJobId || undefined,
+        });
+      }
+
+      const nextParams: Record<string, string> = {
+        f: block.flowId,
+        v: block.id,
+      };
+
+      if (isExecutionLog && currentJobId) {
+        nextParams.j = currentJobId;
+      }
+
+      setSearchParams(nextParams);
+    };
 
     useEffect(() => {
       if (data.type !== "blockNode") return;
@@ -79,6 +120,16 @@ export const BlockNode = memo(
           </OpenNodeConfig>
 
           <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>
+            {data?.selectedBlock && (
+              <button
+                onClick={handleOpenSubFlow}
+                className="p-1 hover:bg-slate-100 rounded text-slate-600 hover:text-primary transition-colors flex items-center gap-1 text-xs font-medium"
+                title="Open Block"
+              >
+                <ExternalLinkIcon size={14} />
+                <span>Open</span>
+              </button>
+            )}
             {!isExecutionLog && !isAgentHistory && data?.isGroupHead && (
               <Tooltip content={data?.isExpanded ? "Collapse" : "Expand"}>
                 <Button
