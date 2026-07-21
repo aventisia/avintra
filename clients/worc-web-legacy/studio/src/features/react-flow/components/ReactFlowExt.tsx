@@ -19,11 +19,7 @@ import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/react-toolkit/ui/resizable";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -39,6 +35,7 @@ import "../styles/override-node-style.css";
 import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
 import { BackgroundExt } from "./BackgroundExt";
+import { FlowBreadcrumbs } from "./FlowBreadcrumbs";
 import { MiniMapExt } from "./MiniMapExt";
 import { ReactFlowDialogWrapper } from "./ReactFlowDialogWrapper";
 import { TestChatAgent } from "./TestChatAgent";
@@ -104,8 +101,7 @@ export const ReactFlowExt = () => {
   const { onNodesDelete } = useOnNodeDelete();
 
   // Setter functions for context menu node
-  const { setSelectedNode, setSelectedEdge, setMenu } =
-    useContextMenuActionsStore();
+  const { setSelectedNode, setSelectedEdge, setMenu } = useContextMenuActionsStore();
 
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
@@ -120,29 +116,16 @@ export const ReactFlowExt = () => {
     return () => clearTimeout(timer);
   }, [isTestChatOpen, fitView]);
 
-  const calculateMenuPosition = (
-    event: MouseEvent | React.MouseEvent<Element, MouseEvent>,
-  ) => {
+  const calculateMenuPosition = (event: MouseEvent | React.MouseEvent<Element, MouseEvent>) => {
     const pane = reactFlowWrapper.current?.getBoundingClientRect();
     if (!pane) return null;
 
     return {
-      top:
-        event.clientY < pane.height - 300
-          ? event.clientY - pane.top
-          : undefined,
-      left:
-        event.clientX < pane.width - 250
-          ? event.clientX - pane.left
-          : undefined,
-      right:
-        event.clientX >= pane.width - 250
-          ? pane.width - event.clientX + pane.left
-          : undefined,
+      top: event.clientY < pane.height - 300 ? event.clientY - pane.top : undefined,
+      left: event.clientX < pane.width - 250 ? event.clientX - pane.left : undefined,
+      right: event.clientX >= pane.width - 250 ? pane.width - event.clientX + pane.left : undefined,
       bottom:
-        event.clientY >= pane.height - 300
-          ? pane.height - event.clientY + pane.top
-          : undefined,
+        event.clientY >= pane.height - 300 ? pane.height - event.clientY + pane.top : undefined,
     };
   };
 
@@ -200,18 +183,16 @@ export const ReactFlowExt = () => {
     setMenu(null);
   }, [setMenu]);
 
-  const handleSelectionChange = useCallback(
-    ({ nodes }: OnSelectionChangeParams) => {
-      setSelectedNode(nodes[0] || null);
-    },
-    [],
-  );
+  const handleSelectionChange = useCallback(({ nodes }: OnSelectionChangeParams) => {
+    setSelectedNode(nodes[0] || null);
+  }, []);
 
   // Render ReactFlow component
   return (
     <ResizablePanelGroup orientation="horizontal" className="!bg-slate-200">
       <ResizablePanel minSize={"50%"}>
         <div ref={reactFlowWrapper} className="relative h-full w-full">
+          <FlowBreadcrumbs />
           <ReactFlow
             fitView
             minZoom={0.1}
@@ -260,9 +241,7 @@ export const ReactFlowExt = () => {
               flowVersionId={currentFlow.versionId}
               mode="temporary"
               defaultActions={
-                recommendActions?.defaultActions
-                  ? recommendActions?.defaultActions
-                  : []
+                recommendActions?.defaultActions ? recommendActions?.defaultActions : []
               }
             />
           </ResizablePanel>

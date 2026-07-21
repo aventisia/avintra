@@ -60,6 +60,8 @@ export const useFetchFlowToLoad = () => {
   // Get react flow hook for fitView
   const { fitView } = useReactFlow();
 
+  const { isImport } = useImportStore(useShallow((state) => ({ isImport: state.upload })));
+
   // Ensures hydration runs only once
   const hasHydratedRef = useRef(false);
 
@@ -79,9 +81,11 @@ export const useFetchFlowToLoad = () => {
   useEffect(() => {
     setIsFlowLoading(isLoading);
   }, [isLoading, setIsFlowLoading]);
-  const { isImport } = useImportStore(
-    useShallow((state) => ({ isImport: state.upload })),
-  );
+
+  // Reset hydration when the URL changes
+  useEffect(() => {
+    hasHydratedRef.current = false;
+  }, [flowId, versionId]);
 
   // One-time hydration from server data
   useEffect(() => {
@@ -136,9 +140,7 @@ export const useFetchFlowToLoad = () => {
     }
 
     // Parse input/output
-    const inputOutputObj = JSON.parse(
-      flowData.inputOutputObject || JSON.stringify([]),
-    );
+    const inputOutputObj = JSON.parse(flowData.inputOutputObject || JSON.stringify([]));
 
     if (flow) {
       setFlowVariablesObject(flowVarObjs);

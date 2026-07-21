@@ -1,0 +1,52 @@
+import { Panel } from "@xyflow/react";
+import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
+import { Breadcrumb, useBreadcrumbStore } from "@/stores/breadcrumb-store";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
+
+export const FlowBreadcrumbs = () => {
+  const [, setSearchParams] = useSearchParams();
+  const { trail, sliceBreadcrumb } = useBreadcrumbStore();
+
+  const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
+  const name = useReactFlowViewStore(useShallow((state) => state.name));
+
+  if (trail.length === 0) return null;
+
+  const handleCrumbClick = (crumb: Breadcrumb, index: number) => {
+    const params = new URLSearchParams();
+    if (crumb.flowId) params.set("f", crumb.flowId);
+    if (crumb.versionId) params.set("v", crumb.versionId);
+    if (crumb.jobId) params.set("j", crumb.jobId); // Preserve job execution context
+
+    setSearchParams(params);
+    sliceBreadcrumb(index);
+  };
+
+  // Fallback to name for the execution log view
+  const activeFlowName = currentFlow?.name || name || "Unknown Flow";
+
+  return (
+    <Panel position="top-left">
+      <div className="flex items-center gap-2 bg-white py-1 px-2 rounded-md shadow-md border border-slate-200">
+        {trail.map((crumb, index) => (
+          <div
+            key={`${crumb.flowId}-${crumb.versionId || ""}-${crumb.jobId || index}`}
+            className="flex items-center gap-2"
+          >
+            <button
+              onClick={() => handleCrumbClick(crumb, index)}
+              className="text-xs font-medium text-slate-500 hover:text-primary transition-colors"
+            >
+              {crumb.name}
+            </button>
+            <span className="text-slate-400">/</span>
+          </div>
+        ))}
+        <span className="text-xs font-bold text-slate-800">{activeFlowName}</span>
+      </div>
+    </Panel>
+  );
+};
