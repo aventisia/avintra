@@ -24,24 +24,6 @@ public class JobInsertDto
     /// </summary>
     public JobPriorityEnum? Priority { get; set; } = JobPriorityEnum.Normal;
 
-    /// <summary>
-    /// Gets or sets the name of the user or trigger that created the job.
-    /// This could be a username for manual triggers or a trigger name for automated triggers. 
-    /// This is not a relationship to the User entity or trigger entity, but rather a reference to the entity that initiated/created the job. 
-    /// It is used for tracking and auditing purposes. 
-    /// </summary>
-    /// <remarks>
-    /// Username will be saved in the format "Full Name (email)" for manual triggers and "trigger_[Full trigger name]" for automated triggers.
-    /// </remarks>
-    public string? CreatedByName { get; set; }
-
-    /// <summary>
-    /// Gets or sets the unique identifier of the user or trigger that created the job.
-    /// This could be a user ID for manual triggers or a trigger ID for automated triggers. It is optional and may be null.
-    /// This is not a relationship to the User entity or trigger entity, but rather a reference to the entity that triggered the job. 
-    /// It is used for tracking and auditing purposes.
-    /// </summary>
-    public Guid? CreatedById { get; set; }
 
     /// <summary>
     /// Gets or sets the environment from where the job is being initiated or the platform (machine name or web server) where the job is going to be executed
@@ -60,9 +42,9 @@ public class JobInsertDto
     public JsonDocument? JobInputData { get; set; }
 
     /// <summary>
-    /// Gets or sets the optional job id to create the job with retryCount > 0.
-    /// If provided, the job id will remain the same but retry count > 0. Also, jobId should exist in the database for the same flowVersionId.
+    /// Optional existing job id to create the job with retryCount > 0.
+    /// If provided, the job id will remain the same but retry count > 0. Also, the existing job id should exist in the database for the same flowVersionId.
     /// If not provided, a new job id will be generated and retry count will be 0.
     /// </summary>
-    public Guid? JobId { get; set; }
+    public Guid? ExistingJobId { get; set; }
 }
