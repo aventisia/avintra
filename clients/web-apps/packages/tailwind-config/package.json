@@ -1,0 +1,22 @@
+{
+  "name": "@avplatform/tailwind-config",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./tailwind.config.ts",
+  "types": "./tailwind.config.ts",
+  "exports": {
+    ".": "./tailwind.config.ts",
+    "./tailwind.config": "./tailwind.config.ts",
+    "./postcss.config": "./postcss.config.js",
+    "./tailwind.css": "./tailwind.css",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "license": "ISC"
+}

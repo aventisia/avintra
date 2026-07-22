@@ -1,0 +1,19 @@
+{
+  "name": "@avplatform/vite-config",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "types": "./index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react-swc": "^4.0.0",
+    "vite-plugin-eslint2": "^5.0.3"
+  },
+  "peerDependencies": {
+    "vite": "^7.0.0"
+  }
+}
