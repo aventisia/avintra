@@ -1,4 +1,4 @@
-import { cn } from "@aventisia/ui/lib";
+import { cn } from "@avplatform/ui/lib";
 
 interface AppLogoProps {
   /** Set to true, if want to show aventisia logo */
@@ -32,10 +32,7 @@ const AppLogo = ({
   return (
     <a
       href={import.meta.env.BASE_URL}
-      className={cn(
-        "flex items-center justify-center gap-2 font-medium",
-        className,
-      )}
+      className={cn("flex items-center justify-center gap-2 font-medium", className)}
     >
       <img className={cn(className)} src={logoSrc} alt="Logo" />
     </a>

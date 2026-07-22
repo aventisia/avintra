@@ -1,6 +1,6 @@
-import { Label } from "@aventisia/ui/label";
-import { cn } from "@aventisia/ui/lib";
-import { RadioGroupItem } from "@aventisia/ui/radio-group";
+import { Label } from "@avplatform/ui/label";
+import { cn } from "@avplatform/ui/lib";
+import { RadioGroupItem } from "@avplatform/ui/radio-group";
 import React from "react";
 
 interface BaseProps {
@@ -40,8 +40,7 @@ const CustomRadioItem = ({
           "p-6 border-2 rounded-lg  transition-all h-full w-full",
           className,
           highlightSelected && "cursor-pointer",
-          highlightSelected &&
-            (selected == value ? " border-primary" : "hover:border-gray-300"),
+          highlightSelected && (selected == value ? " border-primary" : "hover:border-gray-300"),
         )}
       >
         {children}

@@ -1,4 +1,4 @@
-import { IS_TAURI } from "@aventisia/ui/constants";
+import { IS_TAURI } from "@avplatform/ui/constants";
 import { useShallow } from "zustand/react/shallow";
 
 import { TauriAppFooter } from "@/components/layout/TauriAppFooter";

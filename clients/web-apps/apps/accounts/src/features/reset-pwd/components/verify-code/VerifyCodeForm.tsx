@@ -1,7 +1,7 @@
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { InputOtpField } from "@aventisia/ui/form";
-import { Form } from "@aventisia/ui/form";
-import { toast } from "@aventisia/ui/sonner";
+import { SubmitButton } from "@avplatform/ui/buttons";
+import { InputOtpField } from "@avplatform/ui/form";
+import { Form } from "@avplatform/ui/form";
+import { toast } from "@avplatform/ui/sonner";
 import { z } from "zod";
 
 import { verificationCodeProps } from "../../constants/form-field-props";
@@ -11,8 +11,7 @@ import { useVerifyCodeMutation } from "../../hooks/useVerifyCodeMutation";
 
 export const VerifyCodeForm = () => {
   // Define form
-  const { form, isSubmitting, verifyCodeData, setStepNo } =
-    useDefineVerifyCodeForm();
+  const { form, isSubmitting, verifyCodeData, setStepNo } = useDefineVerifyCodeForm();
 
   // Get mutation
   const { checkCodeMutation, isCheckPending } = useVerifyCodeMutation();

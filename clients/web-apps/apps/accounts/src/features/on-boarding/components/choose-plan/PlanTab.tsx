@@ -1,7 +1,7 @@
 // components/PlanTab.tsx
-import { Button } from "@aventisia/ui/buttons";
-import { RadioGroup } from "@aventisia/ui/radio-group";
-import { ScrollArea } from "@aventisia/ui/scroll";
+import { Button } from "@avplatform/ui/buttons";
+import { RadioGroup } from "@avplatform/ui/radio-group";
+import { ScrollArea } from "@avplatform/ui/scroll";
 import { useShallow } from "zustand/react/shallow";
 
 import type { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
@@ -39,12 +39,7 @@ export default function PlanTab({ data, planFrequency }: PlanTabProps) {
           }}
         >
           {data?.map((plan) => (
-            <PlanItem
-              key={plan.id}
-              plan={plan}
-              planFrequency={planFrequency}
-              selectedId={planId}
-            />
+            <PlanItem key={plan.id} plan={plan} planFrequency={planFrequency} selectedId={planId} />
           ))}
         </RadioGroup>
       </ScrollArea>

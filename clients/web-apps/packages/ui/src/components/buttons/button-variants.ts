@@ -18,7 +18,7 @@ export const buttonVariants = cva(
         ghost:
           "border border-transparent hover:bg-accent hover:text-accent-foreground focus-visible:border-primary focus-visible:ring-ring",
         dropdownItem:
-          "relative w-full cursor-default select-none !justify-start rounded-md border border-transparent bg-transparent !px-2 py-1.5 outline-none focus:border-accent focus:!bg-accent focus:text-accent-foreground focus:ring-transparent data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+          "relative cursor-default select-none !justify-start rounded-md border border-transparent bg-transparent !px-2 py-1.5 outline-none focus:border-accent focus:!bg-accent focus:text-accent-foreground focus:ring-transparent data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         dropdownCautionItem:
           "relative w-full cursor-default select-none !justify-start rounded-md border border-transparent bg-transparent !px-2 py-1.5 text-destructive outline-none focus:border-destructive focus:!bg-destructive focus:text-white focus:ring-transparent data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
         link: "!h-auto !p-0 font-normal text-primary underline-offset-4 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 hover:underline",

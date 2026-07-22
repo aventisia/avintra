@@ -1,4 +1,4 @@
-import { cn } from "@aventisia/ui/lib";
+import { cn } from "@avplatform/ui/lib";
 
 interface ContentFooterProps {
   children?: React.ReactNode;

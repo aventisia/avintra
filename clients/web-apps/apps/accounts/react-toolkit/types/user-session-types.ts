@@ -1,4 +1,4 @@
-import type { DeploymentType } from "@aventisia/ui/types";
+import type { DeploymentType } from "@avplatform/ui/types";
 
 interface IUserSessionStore {
   tenantId: string;

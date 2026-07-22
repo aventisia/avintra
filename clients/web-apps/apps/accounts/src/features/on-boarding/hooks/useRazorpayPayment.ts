@@ -1,4 +1,4 @@
-import { toast } from "@aventisia/ui/sonner";
+import { toast } from "@avplatform/ui/sonner";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -22,11 +22,7 @@ export const useRazorpayPayment = () => {
   // Load Razorpay checkout script dynamically
   useEffect(() => {
     // Check if the Razorpay script is already present on the page
-    if (
-      document.querySelector(
-        `script[src="https://checkout.razorpay.com/v1/checkout.js"]`,
-      )
-    ) {
+    if (document.querySelector(`script[src="https://checkout.razorpay.com/v1/checkout.js"]`)) {
       // If already loaded, set Razorpay as ready
       setIsRazorpayReady(true);
       return;

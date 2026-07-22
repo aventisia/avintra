@@ -2,7 +2,7 @@ import type {
   FloatingLabelInputFieldProps,
   InputFieldProps,
   InputOtpFieldProps,
-} from "@aventisia/ui/form";
+} from "@avplatform/ui/form";
 
 const className = "h-11 text-md";
 const labelClassName = "text-md";

@@ -1,11 +1,11 @@
-import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
-
-import { LoadingSpinner } from "@aventisia/ui";
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { cn } from "@aventisia/ui/lib";
+import { LoadingSpinner } from "@avplatform/ui";
+import { buttonVariants } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 import { CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+
+import { AppLogo } from "@/react-toolkit/layout/AppLogo";
+import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 
 const PaymentProcessingLoader = ({
   showRedirectMessage,
@@ -54,9 +54,7 @@ const PaymentProcessingLoader = ({
           <div className="flex flex-col items-center gap-5">
             <CheckCircle className="text-green-600 h-12 w-12 animate-pulse" />
             <div className="flex flex-col gap-1 items-center">
-              <p className="text-2xl font-semibold text-green-600">
-                Payment Successful!
-              </p>
+              <p className="text-2xl font-semibold text-green-600">Payment Successful!</p>
               <p className="text-base  text-muted-foreground">
                 {countdown == 0
                   ? "Redirecting in few seconds"

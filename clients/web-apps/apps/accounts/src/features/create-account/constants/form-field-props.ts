@@ -1,7 +1,4 @@
-import type {
-  FloatingLabelInputFieldProps,
-  InputOtpFieldProps,
-} from "@aventisia/ui/form";
+import type { FloatingLabelInputFieldProps, InputOtpFieldProps } from "@avplatform/ui/form";
 
 const className = "h-11 text-md";
 const labelClassName = "text-md";

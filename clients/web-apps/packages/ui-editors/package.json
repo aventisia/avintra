@@ -1,0 +1,58 @@
+{
+  "name": "@avplatform/ui-editors",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./code": "./src/Code.tsx",
+    "./codemirror": "./src/CodeMirrorEditor.tsx",
+    "./monaco": "./src/MonacoEditor.tsx",
+    "./form": "./src/form/index.ts",
+    "./styles/*": "./src/styles/*",
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "format": "prettier --write . && eslint --fix .",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc -b",
+    "pregit": "prettier --write . && eslint --fix . && tsc -b"
+  },
+  "peerDependencies": {
+    "@avplatform/ui": "*",
+    "@codemirror/lang-cpp": "^6.0.3",
+    "@codemirror/lang-css": "^6.3.1",
+    "@codemirror/lang-go": "^6.0.1",
+    "@codemirror/lang-html": "^6.4.11",
+    "@codemirror/lang-java": "^6.0.2",
+    "@codemirror/lang-javascript": "^6.2.5",
+    "@codemirror/lang-json": "^6.0.2",
+    "@codemirror/lang-markdown": "^6.5.0",
+    "@codemirror/lang-php": "^6.0.2",
+    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/lang-rust": "^6.0.2",
+    "@codemirror/lang-sass": "^6.0.2",
+    "@codemirror/lang-sql": "^6.10.0",
+    "@codemirror/lang-vue": "^0.1.3",
+    "@codemirror/lang-xml": "^6.1.0",
+    "@codemirror/lang-yaml": "^6.1.3",
+    "@codemirror/legacy-modes": "^6.5.3",
+    "@monaco-editor/react": "^4.7.0",
+    "@uiw/react-codemirror": "^4.23.6",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.52.1"
+  },
+  "devDependencies": {
+    "@avplatform/eslint-config": "*",
+    "@avplatform/tailwind-config": "*",
+    "@avplatform/typescript-config": "*",
+    "@avplatform/ui": "*",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

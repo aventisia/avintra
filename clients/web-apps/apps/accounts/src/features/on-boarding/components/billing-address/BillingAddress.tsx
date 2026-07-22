@@ -9,9 +9,7 @@ export const BillingAddress = () => {
   // Return component
   return (
     <ContentContainer className="fadeInRTL">
-      <h2 className="flex items-center text-3xl font-medium text-foreground ">
-        Billing Address
-      </h2>
+      <h2 className="flex items-center text-3xl font-medium text-foreground ">Billing Address</h2>
 
       {/* Company Info Form */}
 

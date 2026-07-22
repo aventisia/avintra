@@ -1,7 +1,7 @@
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { InputOtpField } from "@aventisia/ui/form";
-import { Form } from "@aventisia/ui/form";
-import { toast } from "@aventisia/ui/sonner";
+import { SubmitButton } from "@avplatform/ui/buttons";
+import { InputOtpField } from "@avplatform/ui/form";
+import { Form } from "@avplatform/ui/form";
+import { toast } from "@avplatform/ui/sonner";
 import * as z from "zod";
 
 import { verificationCodeProps } from "../../constants/form-field-props";
@@ -11,8 +11,7 @@ import { useDefineTwoFAForm } from "../../hooks/useDefineTwoFAForm";
 
 export const TwoFAForm = () => {
   // Define form
-  const { form, isSubmitting, twoFACodeData, resetLoginProcess } =
-    useDefineTwoFAForm();
+  const { form, isSubmitting, twoFACodeData, resetLoginProcess } = useDefineTwoFAForm();
 
   // Get mutation
   const { check2FACodeMutation, isCheckPending } = useCheck2FACodeMutation();

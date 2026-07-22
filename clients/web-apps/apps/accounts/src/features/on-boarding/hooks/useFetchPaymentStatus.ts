@@ -1,4 +1,4 @@
-import { toast } from "@aventisia/ui/sonner";
+import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
@@ -28,9 +28,7 @@ import { useChoosePlanStore } from "../stores/choose-plan-store";
  * - `refetch`: Function to manually trigger a re-check.
  */
 export const useFetchPaymentStatus = () => {
-  const { paymentId } = useChoosePlanStore(
-    useShallow((state) => ({ paymentId: state.paymentId })),
-  );
+  const { paymentId } = useChoosePlanStore(useShallow((state) => ({ paymentId: state.paymentId })));
 
   // State to manage whether checking should continue
   const [shouldCheck, setShouldCheck] = useState(true);
@@ -72,9 +70,7 @@ export const useFetchPaymentStatus = () => {
             localStorage.clear(); // Clear payment info from LS
 
             setTimeout(() => {
-              window.location.assign(
-                import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview",
-              );
+              window.location.assign(import.meta.env.VITE_WORKSPACE_PATH + "tenant/overview");
             }, 500); // Delay for a smooth transition
           }
         }, 1000); // Update every second

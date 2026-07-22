@@ -17,12 +17,10 @@ const alphaNumericError = (label: string) =>
   `${label} can only contain letters, number and a single space between words`;
 
 /** Output: ${label} can only contain letters, number and underscore */
-const variableError = (label: string) =>
-  `${label} can only contain letters, number and underscore`;
+const variableError = (label: string) => `${label} can only contain letters, number and underscore`;
 
 /** Checks whether field contains no-whitespaces or not */
-const noWhitespaceError = (label: string) =>
-  `${label} does not allow whitespace`;
+const noWhitespaceError = (label: string) => `${label} does not allow whitespace`;
 
 /** Output: ${label} can only contain minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character */
 const pwdError = (label: string) =>

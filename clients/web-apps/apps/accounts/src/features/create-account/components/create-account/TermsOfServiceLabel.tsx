@@ -1,5 +1,5 @@
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { cn } from "@aventisia/ui/lib";
+import { buttonVariants } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 
 export const TermsOfServiceLabel = () => {
   return (

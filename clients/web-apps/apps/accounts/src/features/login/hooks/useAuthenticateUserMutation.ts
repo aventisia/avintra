@@ -1,3 +1,8 @@
+import { toast } from "@avplatform/ui/sonner";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
 import {
   ADD_TENANT,
   NO_ACTIVE_SUBSCRIPTION,
@@ -5,11 +10,6 @@ import {
   TWO_FA_ENABLED,
 } from "@/react-toolkit/constants";
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
-
-import { toast } from "@aventisia/ui/sonner";
-import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
-import { useShallow } from "zustand/react/shallow";
 
 import { authenticateUser } from "../apis/login-apis";
 import { useLoginStore } from "../stores/login-store";
@@ -19,77 +19,73 @@ export const useAuthenticateUserMutation = () => {
   const navigate = useNavigate();
 
   // Get store state and actions
-  const { loginData, setStepNo, setTwoFACodeData, resetLoginProcess } =
-    useLoginStore(
-      useShallow((state) => ({
-        loginData: state.loginData,
-        setStepNo: state.setStepNo,
-        setTwoFACodeData: state.setTwoFACodeData,
-        resetLoginProcess: state.resetLoginProcess,
-      })),
-    );
+  const { loginData, setStepNo, setTwoFACodeData, resetLoginProcess } = useLoginStore(
+    useShallow((state) => ({
+      loginData: state.loginData,
+      setStepNo: state.setStepNo,
+      setTwoFACodeData: state.setTwoFACodeData,
+      resetLoginProcess: state.resetLoginProcess,
+    })),
+  );
 
   // Define mutation
-  const { mutate: authenticateUserMutation, isPending: isAuthPending } =
-    useMutation({
-      mutationFn: authenticateUser,
-      onSuccess: ({ data, message }) => {
-        // Password  has expired
-        if (message.includes(PWD_EXPIRED)) {
-          // Ask to reset password
-          toast.warning("Password expired", {
-            description: message,
-          });
+  const { mutate: authenticateUserMutation, isPending: isAuthPending } = useMutation({
+    mutationFn: authenticateUser,
+    onSuccess: ({ data, message }) => {
+      // Password  has expired
+      if (message.includes(PWD_EXPIRED)) {
+        // Ask to reset password
+        toast.warning("Password expired", {
+          description: message,
+        });
 
-          return;
-        }
+        return;
+      }
 
-        // TwoFA is enabled
-        if (message.includes(TWO_FA_ENABLED)) {
-          // Set verification code id
-          setTwoFACodeData({
-            email: data.email,
-            requestType: data.requestType,
-            codeId: data.verificationCodeId,
-          });
+      // TwoFA is enabled
+      if (message.includes(TWO_FA_ENABLED)) {
+        // Set verification code id
+        setTwoFACodeData({
+          email: data.email,
+          requestType: data.requestType,
+          codeId: data.verificationCodeId,
+        });
 
-          // Move to stepNo-3 (TwoFA)
-          setStepNo(3);
+        // Move to stepNo-3 (TwoFA)
+        setStepNo(3);
 
-          return;
-        }
+        return;
+      }
 
-        // ----------User is authenticated Now----------
+      // ----------User is authenticated Now----------
 
-        // Check if backend message indicates incomplete tenant setup
-        if (message.includes(ADD_TENANT)) {
-          window.location.href =
-            import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
-        } else if (message.includes(NO_ACTIVE_SUBSCRIPTION)) {
-          window.location.href =
-            import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
-        } else {
-          // Reset login process
-          resetLoginProcess();
-
-          // Set authenticated user locally
-          setUserSessionLocally(data);
-
-          // Redirect to workspace app
-          const params = new URLSearchParams(window.location.search);
-          const redirect = params.get("redirect");
-          const destination = redirect
-            ? decodeURIComponent(redirect)
-            : import.meta.env.VITE_WORKSPACE_PATH;
-
-          navigate("/redirect?msg=Logging in...&url=" + destination);
-        }
-      },
-      onError: (error) => {
-        toast.error(error.toString());
+      // Check if backend message indicates incomplete tenant setup
+      if (message.includes(ADD_TENANT)) {
+        window.location.href = import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
+      } else if (message.includes(NO_ACTIVE_SUBSCRIPTION)) {
+        window.location.href = import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
+      } else {
+        // Reset login process
         resetLoginProcess();
-      },
-    });
+
+        // Set authenticated user locally
+        setUserSessionLocally(data);
+
+        // Redirect to workspace app
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get("redirect");
+        const destination = redirect
+          ? decodeURIComponent(redirect)
+          : import.meta.env.VITE_WORKSPACE_PATH;
+
+        navigate("/redirect?msg=Logging in...&url=" + destination);
+      }
+    },
+    onError: (error) => {
+      toast.error(error.toString());
+      resetLoginProcess();
+    },
+  });
 
   // Define resend code handler
   const resend2FACodeHandler = () => {

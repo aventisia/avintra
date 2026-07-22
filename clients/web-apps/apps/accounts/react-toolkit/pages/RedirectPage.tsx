@@ -1,11 +1,11 @@
-import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
-
-import { LoadingSpinner } from "@aventisia/ui";
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { cn } from "@aventisia/ui/lib";
+import { LoadingSpinner } from "@avplatform/ui";
+import { buttonVariants } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+
+import { AppLogo } from "@/react-toolkit/layout/AppLogo";
+import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 
 interface RedirectPageProps {
   className?: string;

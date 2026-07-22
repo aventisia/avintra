@@ -1,4 +1,9 @@
 {
   "files": [],
-  "references": [{ "path": "./apps/accounts" }, { "path": "./packages/ui" }]
+  "references": [
+    { "path": "./apps/accounts" },
+    { "path": "./packages/ui" },
+    { "path": "./packages/ui-editors" },
+    { "path": "./packages/layout" }
+  ]
 }

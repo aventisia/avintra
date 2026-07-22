@@ -1,6 +1,6 @@
-import { reqError } from "@/react-toolkit/utils/error-message-list";
-
 import * as z from "zod";
+
+import { reqError } from "@/react-toolkit/utils/error-message-list";
 
 export const pwdLoginZodSchema = z.object({
   email: z

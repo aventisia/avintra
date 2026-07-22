@@ -1,11 +1,10 @@
-import { Input } from "@aventisia/ui";
-import { FloatingLabelInputField } from "@aventisia/ui/form";
+import { Input } from "@avplatform/ui";
+import { FloatingLabelInputField } from "@avplatform/ui/form";
 import { CheckIcon, XIcon } from "lucide-react";
 import { useId, useMemo, useState } from "react";
 import type { FieldPath, FieldValues } from "react-hook-form";
 
-interface FloatingLabelPasswordFieldProps
-  extends React.ComponentPropsWithoutRef<typeof Input> {
+interface FloatingLabelPasswordFieldProps extends React.ComponentPropsWithoutRef<typeof Input> {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
 
@@ -16,9 +15,7 @@ interface FloatingLabelPasswordFieldProps
   labelClassName?: string;
 }
 
-export default function FloatingLabelPasswordField({
-  ...props
-}: FloatingLabelPasswordFieldProps) {
+export default function FloatingLabelPasswordField({ ...props }: FloatingLabelPasswordFieldProps) {
   const id = useId();
   const [password, setPassword] = useState("");
 
@@ -81,9 +78,7 @@ export default function FloatingLabelPasswordField({
                 <div
                   key={i}
                   className={`h-1 flex-1 rounded-full transition-colors duration-300 ease-in-out ${
-                    i < strengthScore
-                      ? getStrengthColor(strengthScore)
-                      : "bg-gray-200"
+                    i < strengthScore ? getStrengthColor(strengthScore) : "bg-gray-200"
                   }`}
                 />
               ))}
@@ -91,37 +86,21 @@ export default function FloatingLabelPasswordField({
           </div>
 
           {/* Strength description */}
-          <p
-            id={`${id}-description`}
-            className="text-foreground mb-2 text-sm font-medium"
-          >
+          <p id={`${id}-description`} className="text-foreground mb-2 text-sm font-medium">
             {getStrengthText(strengthScore)}. Must contain:
           </p>
 
           {/* Requirement list */}
-          <ul
-            className="space-y-1.5 grid grid-cols-2"
-            aria-label="Password requirements"
-          >
+          <ul className="space-y-1.5 grid grid-cols-2" aria-label="Password requirements">
             {strength.map((req, index) => (
               <li key={index} className="flex items-center gap-2">
                 {req.met ? (
-                  <CheckIcon
-                    size={16}
-                    className="text-emerald-500"
-                    aria-hidden="true"
-                  />
+                  <CheckIcon size={16} className="text-emerald-500" aria-hidden="true" />
                 ) : (
-                  <XIcon
-                    size={16}
-                    className="text-muted-foreground/80"
-                    aria-hidden="true"
-                  />
+                  <XIcon size={16} className="text-muted-foreground/80" aria-hidden="true" />
                 )}
                 <span
-                  className={`text-xs ${
-                    req.met ? "text-emerald-600" : "text-muted-foreground"
-                  }`}
+                  className={`text-xs ${req.met ? "text-emerald-600" : "text-muted-foreground"}`}
                 >
                   {req.text}
                   <span className="sr-only">

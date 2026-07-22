@@ -1,6 +1,6 @@
-import { CountriesEnum } from "@aventisia/ui/enums";
-import type { InputFieldProps, SelectFieldProps } from "@aventisia/ui/form";
-import { enumToArray } from "@aventisia/ui/utils";
+import { CountriesEnum } from "@avplatform/ui/enums";
+import type { InputFieldProps, SelectFieldProps } from "@avplatform/ui/form";
+import { enumToArray } from "@avplatform/ui/utils";
 
 //Role
 const roleProps: InputFieldProps = {

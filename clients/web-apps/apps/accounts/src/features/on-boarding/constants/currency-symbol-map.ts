@@ -7,10 +7,7 @@ export const currencySymbols: Record<string, string> = {
 };
 
 // Helper function to format a number based on currency code
-export const formatCurrency = (
-  amount: number,
-  currencyCode: string,
-): string => {
+export const formatCurrency = (amount: number, currencyCode: string): string => {
   // Use the currency code to determine the locale
   const locale = getLocaleForCurrency(currencyCode);
 

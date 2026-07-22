@@ -1,9 +1,9 @@
-import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
-
-import { LoadingSpinner } from "@aventisia/ui";
+import { LoadingSpinner } from "@avplatform/ui";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+
+import { AppLogo } from "@/react-toolkit/layout/AppLogo";
+import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 
 import { useValidateEntraTokenMutation } from "./useValidateEntraTokenMutation";
 

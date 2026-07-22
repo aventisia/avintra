@@ -1,8 +1,8 @@
-import { ContentFooter } from "@/components/ui/ContentFooter";
-
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { cn } from "@aventisia/ui/lib";
+import { buttonVariants } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 import { useNavigate } from "react-router-dom";
+
+import { ContentFooter } from "@/components/ui/ContentFooter";
 
 export const GoToCreateAccount = () => {
   // Get navigate

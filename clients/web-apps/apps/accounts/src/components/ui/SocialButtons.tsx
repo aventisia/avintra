@@ -1,4 +1,4 @@
-import { Button } from "@aventisia/ui/buttons";
+import { Button } from "@avplatform/ui/buttons";
 
 const SocialButtons = () => {
   return (

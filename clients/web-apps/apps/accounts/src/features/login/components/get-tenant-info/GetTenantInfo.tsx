@@ -1,4 +1,4 @@
-import { IS_TAURI } from "@aventisia/ui/constants";
+import { IS_TAURI } from "@avplatform/ui/constants";
 
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { ContentHeader } from "@/components/ui/ContentHeader";

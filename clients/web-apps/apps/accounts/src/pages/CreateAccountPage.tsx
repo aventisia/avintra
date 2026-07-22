@@ -1,4 +1,4 @@
-import { IS_TAURI } from "@aventisia/ui/constants";
+import { IS_TAURI } from "@avplatform/ui/constants";
 import { useEffect } from "react";
 
 import { CreateAccountMain } from "@/features/sign-up/components/CreateAccountMain";

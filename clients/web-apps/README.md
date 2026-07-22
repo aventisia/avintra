@@ -28,13 +28,13 @@ npm run dev
 
 ## Available scripts
 
-| Script | Description |
-| --- | --- |
-| `npm run dev` | Start all apps in development mode with hot reload. |
-| `npm run build` | Type-check and build all apps for production. |
-| `npm run typecheck` | Type-check all packages and apps. |
-| `npm run lint` | Lint all packages and apps. |
-| `npm run format` | Format all source files with Prettier. |
+| Script              | Description                                         |
+| ------------------- | --------------------------------------------------- |
+| `npm run dev`       | Start all apps in development mode with hot reload. |
+| `npm run build`     | Type-check and build all apps for production.       |
+| `npm run typecheck` | Type-check all packages and apps.                   |
+| `npm run lint`      | Lint all packages and apps.                         |
+| `npm run format`    | Format all source files with Prettier.              |
 
 ## Environment variables
 

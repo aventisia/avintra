@@ -7,8 +7,7 @@ import { cn } from "@/ui/lib";
 
 /** SubmitButton props interface */
 export interface SubmitButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   /** Mutation/form (isPending/isSubmitting) state can be passed to show loading animation */
   isPending: boolean;
   /** Button's text to show when "isPending" prop is false. Default value is Submit */

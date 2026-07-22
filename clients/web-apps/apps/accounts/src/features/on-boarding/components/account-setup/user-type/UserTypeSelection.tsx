@@ -1,10 +1,10 @@
-import CustomRadioItem from "@/components/ui/CustomRadioItem";
-import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
-
-import { Button } from "@aventisia/ui/buttons";
-import { RadioGroup } from "@aventisia/ui/radio-group";
+import { Button } from "@avplatform/ui/buttons";
+import { RadioGroup } from "@avplatform/ui/radio-group";
 import { Building2, User } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
+import CustomRadioItem from "@/components/ui/CustomRadioItem";
+import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
 
 import { ContentContainer } from "../ContentContainer";
 import { ContentHeader } from "../ContentHeader";
@@ -34,11 +34,7 @@ export default function UserTypeSelection() {
       />
 
       {/* Radio Group */}
-      <RadioGroup
-        value={userType}
-        onValueChange={setUserType}
-        className="flex w-full"
-      >
+      <RadioGroup value={userType} onValueChange={setUserType} className="flex w-full">
         <CustomRadioItem
           value="individual"
           selected={userType}
@@ -47,9 +43,7 @@ export default function UserTypeSelection() {
           <div className="bg-slate-100 p-2 rounded-lg">
             <User
               className={`w-7 h-7 ${
-                userType === "individual"
-                  ? "text-primary"
-                  : "text-muted-foreground"
+                userType === "individual" ? "text-primary" : "text-muted-foreground"
               }`}
             />
           </div>
@@ -67,15 +61,11 @@ export default function UserTypeSelection() {
           <div className="bg-slate-100 p-2 rounded-lg">
             <Building2
               className={`w-7 h-7 ${
-                userType === "organization"
-                  ? "text-primary"
-                  : "text-muted-foreground"
+                userType === "organization" ? "text-primary" : "text-muted-foreground"
               }`}
             />
           </div>
-          <div className="font-semibold text-md text-gray-900">
-            Organization
-          </div>
+          <div className="font-semibold text-md text-gray-900">Organization</div>
           <span className="font-normal leading-3.5 text-muted-foreground ">
             For companies, teams, or groups managing multiple users.
           </span>
@@ -83,11 +73,7 @@ export default function UserTypeSelection() {
       </RadioGroup>
 
       {/* Proceed Button */}
-      <Button
-        className="w-full mt-5"
-        onClick={handleProceed}
-        disabled={!userType}
-      >
+      <Button className="w-full mt-5" onClick={handleProceed} disabled={!userType}>
         Continue
       </Button>
     </ContentContainer>

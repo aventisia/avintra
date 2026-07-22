@@ -1,7 +1,7 @@
-import { AlertDialogWrapper } from "@aventisia/ui/alert-dialog";
-import { SonnerToaster } from "@aventisia/ui/sonner";
-import "@aventisia/ui/styles/sonner.css";
-import { TooltipProvider } from "@aventisia/ui/tooltip";
+import { AlertDialogWrapper } from "@avplatform/ui/alert-dialog";
+import { SonnerToaster } from "@avplatform/ui/sonner";
+import "@avplatform/ui/styles/sonner.css";
+import { TooltipProvider } from "@avplatform/ui/tooltip";
 import React from "react";
 import ReactDOM from "react-dom/client";
 

@@ -1,3 +1,9 @@
+import { Button, SubmitButton } from "@avplatform/ui/buttons";
+import { Form } from "@avplatform/ui/form";
+import { SelectField } from "@avplatform/ui/form";
+import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
 import { countryProps } from "@/features/on-boarding/constants/company-form-field-props";
 import { userInfoSchema } from "@/features/on-boarding/constants/user-info-zod-schema";
 import { useDefineUserInfoForm } from "@/features/on-boarding/hooks/useDefineUserInfoForm";
@@ -5,12 +11,6 @@ import { useUpdateTenantInfoMutation } from "@/features/on-boarding/hooks/useUpd
 import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
 import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
-
-import { Button, SubmitButton } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { SelectField } from "@aventisia/ui/form";
-import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
 
 /**
  * Component for the create account form.
@@ -31,8 +31,7 @@ export const UserInfoForm = () => {
     })),
   );
 
-  const { updateTenantInfoMutation, isCreationPending } =
-    useUpdateTenantInfoMutation();
+  const { updateTenantInfoMutation, isCreationPending } = useUpdateTenantInfoMutation();
 
   // Define submit handler
   const onSubmit = async (formData: z.infer<typeof userInfoSchema>) => {

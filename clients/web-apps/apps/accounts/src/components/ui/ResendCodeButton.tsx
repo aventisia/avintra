@@ -1,4 +1,4 @@
-import { Button } from "@aventisia/ui/buttons";
+import { Button } from "@avplatform/ui/buttons";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -8,11 +8,7 @@ interface ResendCodeButtonProps {
   resendCodeFn: () => void;
 }
 
-const ResendCodeButton = ({
-  isPending,
-  disabled,
-  resendCodeFn,
-}: ResendCodeButtonProps) => {
+const ResendCodeButton = ({ isPending, disabled, resendCodeFn }: ResendCodeButtonProps) => {
   const maxTime: number = 120; // Set initial timer
   const [timer, setTimer] = useState(maxTime);
 
@@ -35,8 +31,7 @@ const ResendCodeButton = ({
       .toString()
       .padStart(2, "0");
 
-  const formattedSeconds = (seconds: number) =>
-    (seconds % 60).toString().padStart(2, "0");
+  const formattedSeconds = (seconds: number) => (seconds % 60).toString().padStart(2, "0");
 
   return (
     <Button

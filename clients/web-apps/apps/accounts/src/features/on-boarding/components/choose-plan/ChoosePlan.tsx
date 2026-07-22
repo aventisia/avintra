@@ -1,17 +1,17 @@
-import { ContentContainer } from "@/features/on-boarding/components/account-setup/ContentContainer";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
-
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@aventisia/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@aventisia/ui/tabs";
+} from "@avplatform/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { ContentContainer } from "@/features/on-boarding/components/account-setup/ContentContainer";
+import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
 import { useFetchSubscriptionPlans } from "../../hooks/useFetchSubscriptionPlans";
 import { useChoosePlanStore } from "../../stores/choose-plan-store";
@@ -31,25 +31,18 @@ export const ChoosePlan = () => {
   const paramCurrency = searchParams.get("currency") || "";
   const frequency = searchParams.get("frequency") || "";
 
-  const {
-    planId,
-    planFrequency,
-    currency,
-    setCurrency,
-    setPlanId,
-    setPlanFrequency,
-  } = useChoosePlanStore(
-    useShallow((state) => ({
-      planFrequency: state.planFrequency,
-      setPlanFrequency: state.setPlanFrequency,
-      planId: state.planId,
-      setPlanId: state.setPlanId,
-      currency: state.currency,
-      setCurrency: state.setCurrency,
-    })),
-  );
-  const storedCountryData =
-    typeof window !== "undefined" ? localStorage.getItem("country") : null;
+  const { planId, planFrequency, currency, setCurrency, setPlanId, setPlanFrequency } =
+    useChoosePlanStore(
+      useShallow((state) => ({
+        planFrequency: state.planFrequency,
+        setPlanFrequency: state.setPlanFrequency,
+        planId: state.planId,
+        setPlanId: state.setPlanId,
+        currency: state.currency,
+        setCurrency: state.setCurrency,
+      })),
+    );
+  const storedCountryData = typeof window !== "undefined" ? localStorage.getItem("country") : null;
 
   const { data, isLoading } = useFetchSubscriptionPlans(
     `?currency=${currency}&frequency=${planFrequency}`,
@@ -66,19 +59,12 @@ export const ChoosePlan = () => {
     if (storedCountryData) {
       setCurrency(storedCountryData == "India" ? "INR" : "USD");
     }
-  }, [
-    paramCurrency,
-    frequency,
-    setPlanFrequency,
-    setCurrency,
-    storedCountryData,
-  ]);
+  }, [paramCurrency, frequency, setPlanFrequency, setCurrency, storedCountryData]);
 
   useEffect(() => {
     if (plan && data?.data) {
       const queryPlanId =
-        data.data.find((item) => item.name.toLowerCase() == plan.toLowerCase())
-          ?.id || "";
+        data.data.find((item) => item.name.toLowerCase() == plan.toLowerCase())?.id || "";
       setPlanId(queryPlanId);
     }
   }, [data?.data, plan, setPlanId]);
@@ -92,8 +78,7 @@ export const ChoosePlan = () => {
 
   useEffect(() => {
     if (selectedPlanName && data?.data) {
-      const queryPlanId =
-        data.data.find((item) => item.name == selectedPlanName)?.id || "";
+      const queryPlanId = data.data.find((item) => item.name == selectedPlanName)?.id || "";
       setPlanId(queryPlanId);
     }
   }, [data?.data, selectedPlanName, setPlanId]);
@@ -102,9 +87,7 @@ export const ChoosePlan = () => {
     <ContentContainer className="fadeInRTL">
       <Tabs
         value={planFrequency}
-        onValueChange={(value) =>
-          setPlanFrequency(value as (typeof PLAN_INTERVALS)[number])
-        }
+        onValueChange={(value) => setPlanFrequency(value as (typeof PLAN_INTERVALS)[number])}
         className="w-full"
       >
         <div className="flex items-center justify-between w-full">

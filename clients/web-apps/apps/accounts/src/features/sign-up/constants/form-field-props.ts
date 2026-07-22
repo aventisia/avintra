@@ -1,7 +1,4 @@
-import type {
-  FloatingLabelInputFieldProps,
-  InputOtpFieldProps,
-} from "@aventisia/ui/form";
+import type { FloatingLabelInputFieldProps, InputOtpFieldProps } from "@avplatform/ui/form";
 
 const className = "h-11 text-md";
 const labelClassName = "text-md";
@@ -49,10 +46,4 @@ const verificationCodeProps: InputOtpFieldProps = {
   children: "", // Add an empty children property
 };
 
-export {
-  emailProps,
-  firstNameProps,
-  lastNameProps,
-  pwdProps,
-  verificationCodeProps,
-};
+export { emailProps, firstNameProps, lastNameProps, pwdProps, verificationCodeProps };

@@ -1,0 +1,23 @@
+ol[data-sonner-toaster="true"] {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sonner-toaster {
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  width: 16rem;
+}
+
+.sonner-toaster svg {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.sonner-toaster div:nth-child(1) {
+  font-size: 0.75rem;
+}
+
+.sonner-toaster-sm div:nth-child(1) {
+  font-size: 0.7rem;
+}

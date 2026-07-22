@@ -1,4 +1,4 @@
-import { toast } from "@aventisia/ui/sonner";
+import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 

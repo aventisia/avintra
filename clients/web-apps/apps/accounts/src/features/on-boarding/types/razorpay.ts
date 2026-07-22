@@ -50,10 +50,7 @@ declare global {
   interface Window {
     Razorpay: new (options: RazorpayOptions) => {
       open: () => void;
-      on: (
-        event: "payment.failed",
-        callback: (response: RazorpayErrorResponse) => void,
-      ) => void;
+      on: (event: "payment.failed", callback: (response: RazorpayErrorResponse) => void) => void;
     };
   }
 }

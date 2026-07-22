@@ -1,12 +1,12 @@
-import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
-import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
-
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
+import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
+import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 
 import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "../constants";
 

@@ -1,17 +1,10 @@
-import {
-  SESSION_EXPIRED_LS_KEY,
-} from "@/react-toolkit/constants";
-import type { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
-import type {
-  IJwtPayload,
-  IUserSessionStore,
-} from "@/react-toolkit/types/user-session-types";
-
 import { jwtDecode } from "jwt-decode";
 
-const setUserSessionLocally = (
-  userSession: UserSessionDto,
-): IUserSessionStore => {
+import { SESSION_EXPIRED_LS_KEY } from "@/react-toolkit/constants";
+import type { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
+import type { IJwtPayload, IUserSessionStore } from "@/react-toolkit/types/user-session-types";
+
+const setUserSessionLocally = (userSession: UserSessionDto): IUserSessionStore => {
   // Decode jwt basis env. DO NOT REMOVE DEV CONDITION
   const decodedJwt = jwtDecode<IJwtPayload>(userSession.accessToken);
 

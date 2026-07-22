@@ -1,4 +1,4 @@
-import { Button } from "@aventisia/ui/buttons";
+import { Button } from "@avplatform/ui/buttons";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 
@@ -25,9 +25,7 @@ export const PwdLoginHeader = () => {
         >
           <ArrowLeftIcon className="h-4 w-4" />
         </Button>
-        <h2 className="text-md ml-3 w-full truncate">
-          {verifyEmailData?.email}
-        </h2>
+        <h2 className="text-md ml-3 w-full truncate">{verifyEmailData?.email}</h2>
       </div>
       <h1 className="text-3xl font-medium">Enter password</h1>
     </div>

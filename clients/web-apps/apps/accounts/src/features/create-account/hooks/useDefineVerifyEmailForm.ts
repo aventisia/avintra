@@ -8,14 +8,13 @@ import { useCreateAccountStore } from "../stores/create-account-store";
 
 export const useDefineVerifyEmailForm = () => {
   // Get create account store state
-  const { createAccountData, verifyEmailData, setStepNo } =
-    useCreateAccountStore(
-      useShallow((state) => ({
-        setStepNo: state.setStepNo,
-        createAccountData: state.createAccountData,
-        verifyEmailData: state.verifyEmailData,
-      })),
-    );
+  const { createAccountData, verifyEmailData, setStepNo } = useCreateAccountStore(
+    useShallow((state) => ({
+      setStepNo: state.setStepNo,
+      createAccountData: state.createAccountData,
+      verifyEmailData: state.verifyEmailData,
+    })),
+  );
 
   // Define form with zod schema
   const form = useForm<z.infer<typeof verifyEmailZodSchema>>({
