@@ -86,9 +86,9 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "FileUrl",
-      "label": "File URL",
-      "description": "Optional URL of a file associated with the work item.",
+      "name": "FileUrls",
+      "label": "File URLs",
+      "description": "Optional URLs of files associated with the work item, separated by commas.",
       "defaultValue": "",
       "required": false
     },

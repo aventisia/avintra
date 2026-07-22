@@ -1,6 +1,5 @@
 import { cn } from "@aventisia/ui/lib";
 import { json } from "@codemirror/lang-json";
-import { EditorView } from "@codemirror/view";
 import CodeMirror from "@uiw/react-codemirror";
 import React, { useEffect, useRef } from "react";
 
@@ -20,7 +19,6 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   className,
 }) => {
   const formattedOnLoad = useRef(false);
-  const viewRef = useRef<EditorView | null>(null);
 
   // json formatter
   const formatJson = (raw?: string) => {
@@ -64,20 +62,11 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
       }}
       placeholder={placeholder}
       theme="light"
-      contentEditable={disabled}
-      aria-disabled={disabled}
       onBlur={() => {
         // Format on blur
         const formatted = formatJson(value);
         if (formatted) onChange?.(formatted);
       }}
-      onFocus={() => {
-        viewRef.current?.focus();
-      }}
-      onCreateEditor={(view) => {
-        viewRef.current = view;
-      }}
-      tabIndex={0}
       className={cn(
         "flex min-h-20 w-full rounded-lg border border-input bg-background text-sm shadow-sm shadow-black/5 ring-offset-background transition-shadow placeholder:text-muted-foreground focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
         disabled &&

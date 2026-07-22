@@ -54,7 +54,7 @@ export const JobUpdateForm = () => {
 
       {isClosingStatusEnabled && <SelectField {...closingStatusProps} />}
 
-      <TextareaField {...remarksProps} isRequired={isClosingStatusEnabled} />
+      {isClosingStatusEnabled && <TextareaField {...remarksProps} />}
 
       <div className="!mt-5 flex w-full justify-end">
         <SubmitButton

@@ -132,5 +132,6 @@ export const remarksProps: TextareaFieldProps = {
   name: "remarks",
   label: "Remarks",
   className: "min-h-[6rem]",
+  required: true,
   description: "Provide a reason or note. Required when closing a job.",
 };
