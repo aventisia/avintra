@@ -117,7 +117,6 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
         textClassName="w-auto max-w-32 truncate text-md font-mono"
         iconClassName="size-3"
         value={row.getValue("osID")}
-        ariaLabel="copy os unique id"
       />
     ),
   },
@@ -222,7 +221,6 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
         textClassName="w-auto max-w-32 truncate text-md font-mono"
         iconClassName="size-3"
         value={row.getValue("id")}
-        ariaLabel="copy machine id"
       />
     ),
   },

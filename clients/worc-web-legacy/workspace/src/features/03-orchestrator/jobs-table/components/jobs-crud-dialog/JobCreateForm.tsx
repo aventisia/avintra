@@ -1,16 +1,11 @@
 import { SubmitButton } from "@aventisia/ui/buttons";
-import {
-  AsyncSingleSelectField,
-  Form,
-  InputField,
-  SelectField,
-  SwitchField,
-} from "@aventisia/ui/form";
+import { Form, InputField, SelectField, SwitchField } from "@aventisia/ui/form";
 import { useTableRowOptimisticMutation } from "@aventisia/ui/hooks";
 import { useEffect, useMemo, useRef } from "react";
 import { useWatch } from "react-hook-form";
 
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
+import { AsyncSingleSelectField } from "@/react-toolkit/ui/async-select";
 
 import { insertJob } from "../../apis/jobs-table-apis";
 import { JobCreateFormData } from "../../constants/job-create-zod-schema";
@@ -84,7 +79,7 @@ export const JobCreateForm = () => {
   // Focus the agent search input when the dialog opens so focus is not stuck on the close button.
   useEffect(() => {
     if (agentSelectWrapperRef.current) {
-      const input = agentSelectWrapperRef.current.querySelector("input[type=\"text\"]");
+      const input = agentSelectWrapperRef.current.querySelector('input[type="text"]');
       if (input instanceof HTMLInputElement) {
         input.focus();
       }
@@ -95,7 +90,7 @@ export const JobCreateForm = () => {
   // so the user can reach it with a single click/tab instead of two.
   useEffect(() => {
     if (!executeOnCloud && executionLocationWrapperRef.current) {
-      const input = executionLocationWrapperRef.current.querySelector("input[type=\"text\"]");
+      const input = executionLocationWrapperRef.current.querySelector('input[type="text"]');
       if (input instanceof HTMLInputElement) {
         input.focus();
       }
