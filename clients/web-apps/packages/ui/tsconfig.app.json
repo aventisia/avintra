@@ -1,0 +1,11 @@
+{
+  "extends": "@avplatform/typescript-config/vite.json",
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "paths": {
+      "@/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["src"]
+}
