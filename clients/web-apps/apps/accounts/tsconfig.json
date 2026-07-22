@@ -1,10 +1,15 @@
 {
   "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
+      "@/react-toolkit/*": ["./react-toolkit/*"], // SHOULD BE FIRST
       "@/ui/*": ["../../packages/ui/src/*"],
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"] // SHOULD BE SECOND
     }
   }
 }
