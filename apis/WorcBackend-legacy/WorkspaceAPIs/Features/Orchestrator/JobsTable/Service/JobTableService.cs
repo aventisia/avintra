@@ -132,21 +132,14 @@ public class JobTableService : IJobTableService
             var tenantId = _currentTenantService.CurrentTenantId;
 
             // Non-manual triggers require CreatedByName and CreatedById to be provided
-            // TODO: Based on the trigger typw we should validate if the CreatedById is correct or not
-            // If you are going to validate and fetch the data using CreatedById then we don't need to get 
-            // CreatedByName from the request. We can fetch the name from the database based on the CreatedById. 
+            // TODO: Based on the trigger type we should validate if the CreatedById is correct or not
+            // If you are going to validate and fetch the data using CreatedById then we don't need to get
+            // CreatedByName from the request. We can fetch the name from the database based on the CreatedById.
             // But for now, we will validate both CreatedByName and CreatedById.
+            // NOTE: JobInsertDto no longer carries CreatedByName/CreatedById; extend it if non-manual triggers need them.
             var isManualJobCreation = jobInsertDto.TriggerType == TriggerTypesEnum.Manual;
             if (!isManualJobCreation)
             {
-                // If createdByUser not provided, return
-                if (string.IsNullOrEmpty(jobInsertDto.CreatedByName))
-                    return serviceResponse.Update("CreatedByName is required for non-manual triggers.", 400);
-
-                // If createdById not provided, return
-                if (!jobInsertDto.CreatedById.HasValue)
-                    return serviceResponse.Update("CreatedByID is required for non-manual triggers.", 400);
-
                 // If providedTenantId is null, return
                 if (!providedTenantId.HasValue)
                     return serviceResponse.Update("Tenant ID is required for non-manual triggers.", 400);
@@ -220,12 +213,12 @@ public class JobTableService : IJobTableService
             newJob.FlowVersionHistoryId = flowVersion.FlowVersionHistoryId;
             newJob.RetryCount = 0; // Default retry count to 0, will be updated below if JobId is provided
 
-            // Manual mapping: Set RetryCount (if JobId is provided)
-            if (jobInsertDto.JobId.HasValue)
+            // Manual mapping: Set RetryCount (if ExistingJobId is provided)
+            if (jobInsertDto.ExistingJobId.HasValue)
             {
-                // Find the existing job with the same JobId and FlowVersionId to determine the retry count
+                // Find the existing job with the same ExistingJobId and FlowVersionId to determine the retry count
                 var existingJobs = await _unitOfWork.JobRepo
-                                .GetByConditionAsync(w => w.Id == jobInsertDto.JobId && w.FlowVersionId == jobInsertDto.FlowVersionId)
+                                .GetByConditionAsync(w => w.Id == jobInsertDto.ExistingJobId && w.FlowVersionId == jobInsertDto.FlowVersionId)
                                 .CountAsync();
 
                 // If no existing job found, log and return
@@ -324,7 +317,7 @@ public class JobTableService : IJobTableService
 
             // TODO: Need to check this.
             // // Checks if the job status is the same as the stored status (no change).
-            // bool isStatusUnchanged = job.Status == jobUpdateDto.Status;
+            // bool isStatusUnchanged = job.Status == jobUpdateDto.ClosingStatus;
 
             // // Map the updated values from DTO to the job entity
             // jobUpdateDto.Adapt(job);

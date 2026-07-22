@@ -1,42 +1,51 @@
 import { reqError } from "@aventisia/ui/utils";
 import { z } from "zod";
 
-import { JobPriorityEnum, JobStatusEnum, TriggerTypesEnum } from "..";
+import { JobPriorityEnum, JobStatusEnum } from "..";
 
-const jsonStringSchema = z
-  .string()
-  .optional()
-  .refine(
-    (value) => {
-      if (!value || value.trim() === "") return true;
-      try {
-        JSON.parse(value);
-        return true;
-      } catch {
-        return false;
-      }
-    },
-    { message: "Invalid JSON" },
-  );
+import { CLOSING_JOB_STATUSES } from "./variables";
 
-export const jobInsertZodSchema = z.object({
-  id: z.string(),
-  flowVersionId: z.string().min(1, { message: reqError("Agent Id") }),
-  triggerType: z.nativeEnum(TriggerTypesEnum, {
-    message: reqError("Trigger Type"),
-  }),
-  priority: z.nativeEnum(JobPriorityEnum, {
-    message: reqError("Priority"),
-  }),
-  status: z.nativeEnum(JobStatusEnum).optional(),
-  retryCount: z.coerce.number().int().min(0),
-  createdByName: z.string().optional(),
-  createdById: z.string().optional(),
-  executionLocation: z
-    .string()
-    .min(1, { message: reqError("Execution Location") }),
-  remarks: z.string().optional(),
-  jobInputData: jsonStringSchema,
-  jobOutputData: jsonStringSchema,
-  lastNodeLog: jsonStringSchema,
-});
+/**
+ * Zod schema for the update job form. Only the fields shown in the update
+ * dialog are validated.
+ */
+export const jobUpdateZodSchema = z
+  .object({
+    id: z.string(),
+    priority: z.nativeEnum(JobPriorityEnum, {
+      message: reqError("Priority"),
+    }),
+    remarks: z.string().default(""),
+    isClosingStatusEnabled: z.boolean().default(false),
+    closingStatus: z.nativeEnum(JobStatusEnum).optional(),
+  })
+  .superRefine((value, context) => {
+    if (!value.isClosingStatusEnabled) return;
+
+    if (!value.closingStatus) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["closingStatus"],
+        message: reqError("Closing Status"),
+      });
+      return;
+    }
+
+    if (!CLOSING_JOB_STATUSES.includes(value.closingStatus)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["closingStatus"],
+        message: "Selected status is not a valid closing status.",
+      });
+    }
+
+    if (!value.remarks || value.remarks.trim() === "") {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["remarks"],
+        message: reqError("Remarks"),
+      });
+    }
+  });
+
+export type JobUpdateFormData = z.infer<typeof jobUpdateZodSchema>;

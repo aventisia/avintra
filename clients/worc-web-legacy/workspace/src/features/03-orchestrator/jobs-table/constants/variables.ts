@@ -3,6 +3,18 @@ import { CrudActionType } from "@aventisia/ui/types";
 import { JobStatusEnum } from "..";
 
 /**
+ * Default JSON payload shown in the create job form. It acts as a placeholder
+ * example; if the user does not edit it, it will not be submitted to the API.
+ */
+const DEFAULT_JOB_INPUT_DATA = JSON.stringify(
+  {
+    exampleKey: "exampleValue",
+  },
+  null,
+  2,
+);
+
+/**
  * The unique key for the jobs query to be used in the query client. ["jobs"]
  */
 const DATA_QUERY_KEY = ["jobs"];
@@ -40,10 +52,23 @@ const HISTORY_JOB_STATUSES = [
   JobStatusEnum.Killed,
 ];
 
+/**
+ * The job statuses that can be selected when manually closing a job from the edit form.
+ */
+const CLOSING_JOB_STATUSES = [
+  JobStatusEnum.Completed,
+  JobStatusEnum.Failed,
+  JobStatusEnum.Aborted,
+  JobStatusEnum.Canceled,
+  JobStatusEnum.Killed,
+];
+
 export {
+  DEFAULT_JOB_INPUT_DATA,
   DATA_QUERY_KEY,
   TABLE_HEADING,
   TABLE_KEY,
   HISTORY_JOB_STATUSES,
+  CLOSING_JOB_STATUSES,
   getDialogHeadingDescription,
 };

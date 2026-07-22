@@ -34,9 +34,8 @@ public class JobTableMappingProfile : IRegister
         // TODO: JobInputData, JobOutputData, LastNodeLog mapping will be handled in the service layer as they are stored as JSON strings in the database and need to be deserialized into JsonDocument objects.
 
         // Mapping JobInsertDto -> Job
+        // NOTE: ExecutedBy, RefId, and ExecutedOn are set explicitly in the service layer for manual jobs.
         config.NewConfig<JobInsertDto, Job>()
-            .Map(dest => dest.ExecutedBy, src => src.CreatedByName)
-            .Map(dest => dest.RefId, src => src.CreatedById)
             .Map(dest => dest.ExecutedOn, src => src.ExecutionLocation)
             .IgnoreNullValues(true);
         // TODO: JobInputData, FlowVersionHistoryId, RetryCount mapping will be handled in the service layer as it is stored as a JSON string in the database and needs to be serialized from JsonDocument.
@@ -44,6 +43,7 @@ public class JobTableMappingProfile : IRegister
         // Mapping JobUpdateDto -> Job
         config.NewConfig<JobUpdateDto, Job>()
             .Map(dest => dest.Remark, src => src.Remarks)
+            .Map(dest => dest.Status, src => src.ClosingStatus)
             .IgnoreNullValues(true);
         // TODO: JobOutputData mapping will be handled in the service layer as it is stored as a JSON string in the database and needs to be serialized from JsonDocument.
 

@@ -11,9 +11,9 @@ public class JobUpdateDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the status of the job.
+    /// Gets or sets the closing status of the job.
     /// </summary>
-    public JobStatusEnum? Status { get; set; }
+    public JobStatusEnum? ClosingStatus { get; set; }
 
     /// <summary>
     /// Gets or sets the remarks or additional information related to the job execution or status.
