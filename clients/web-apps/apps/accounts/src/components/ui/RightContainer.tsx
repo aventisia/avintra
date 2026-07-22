@@ -1,4 +1,4 @@
-import { cn } from "@aventisia/ui/lib";
+import { cn } from "@avplatform/ui/lib";
 
 interface RightContainerProps {
   heading: string;
@@ -33,17 +33,11 @@ const RightContainer = ({
     >
       <div className="absolute w-full">
         <div className="mt-0 flex flex-col gap-3 px-[5.5rem] py-16">
-          <h2 className="text-5xl font-medium leading-[3.5rem] text-secondary">
-            {heading}
-          </h2>
+          <h2 className="text-5xl font-medium leading-[3.5rem] text-secondary">{heading}</h2>
           <p className="text-muted-foreground">{subHeading}</p>
         </div>
         <div className="-mt-6 ml-[5rem] overflow-hidden rounded-[1rem] border-[0.35rem] border-white shadow lg:w-[60vw] xl:w-[70vw]">
-          <img
-            className="rounded-[1rem] object-cover"
-            src={imgSrc}
-            alt="Image"
-          />
+          <img className="rounded-[1rem] object-cover" src={imgSrc} alt="Image" />
         </div>
       </div>
     </div>

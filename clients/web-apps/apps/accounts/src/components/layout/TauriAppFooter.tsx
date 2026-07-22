@@ -1,5 +1,5 @@
-import { DotSeparator } from "@aventisia/ui";
-import { IS_TAURI } from "@aventisia/ui/constants";
+import { DotSeparator } from "@avplatform/ui";
+import { IS_TAURI } from "@avplatform/ui/constants";
 import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 
@@ -16,9 +16,7 @@ const TauriAppFooter = () => {
     const getUserMetadata = async () => {
       if (IS_TAURI) {
         try {
-          const data = (await invoke(
-            "get_user_metadata",
-          )) as unknown as UserMetaData;
+          const data = (await invoke("get_user_metadata")) as unknown as UserMetaData;
 
           setMetadata(data || null);
         } catch (err) {
@@ -47,9 +45,7 @@ const TauriAppFooter = () => {
             <DotSeparator />
             <p>
               <span className="text-slate-500/80">OS ID:</span>{" "}
-              <span className="text-slate-500">
-                {metadata?.os_id ? metadata?.os_id : "NA"}
-              </span>
+              <span className="text-slate-500">{metadata?.os_id ? metadata?.os_id : "NA"}</span>
             </p>
           </div>
         </div>

@@ -1,7 +1,7 @@
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { InputOtpField } from "@aventisia/ui/form";
-import { Form } from "@aventisia/ui/form";
-import { toast } from "@aventisia/ui/sonner";
+import { SubmitButton } from "@avplatform/ui/buttons";
+import { InputOtpField } from "@avplatform/ui/form";
+import { Form } from "@avplatform/ui/form";
+import { toast } from "@avplatform/ui/sonner";
 import * as z from "zod";
 
 import { verificationCodeProps } from "../../constants/form-field-props";
@@ -15,8 +15,7 @@ export const VerifyEmailForm = () => {
     useDefineVerifyEmailForm();
 
   // Get mutation to create account
-  const { createAccountMutation, isCreationPending } =
-    useCreateAccountMutation();
+  const { createAccountMutation, isCreationPending } = useCreateAccountMutation();
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof verifyEmailZodSchema>) => {

@@ -1,4 +1,4 @@
-import { Button } from "@aventisia/ui/buttons";
+import { Button } from "@avplatform/ui/buttons";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
 

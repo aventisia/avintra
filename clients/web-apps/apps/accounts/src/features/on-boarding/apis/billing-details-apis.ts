@@ -1,15 +1,13 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import type { IHttpResponse } from "@avplatform/ui/dtos";
 
-import type { IHttpResponse } from "@aventisia/ui/dtos";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import type { BillingDetailsDto } from "../dtos/billing-details-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/billing-detail`;
 
 export const getBillingDetails = () =>
-  axiosInstance
-    .get<IHttpResponse<BillingDetailsDto>>(`${baseAPIURL}`)
-    .then((res) => res.data);
+  axiosInstance.get<IHttpResponse<BillingDetailsDto>>(`${baseAPIURL}`).then((res) => res.data);
 
 export const insertBillingDetails = (postObj: BillingDetailsDto) =>
   axiosInstance

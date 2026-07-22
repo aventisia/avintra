@@ -1,3 +1,7 @@
+import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
 import {
   ADD_TENANT,
@@ -5,10 +9,6 @@ import {
   SESSION_EXPIRED_LS_KEY,
 } from "@/react-toolkit/constants";
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
-
-import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 
 /**
  * Custom hook to validate the user session for the login page.
@@ -35,8 +35,7 @@ export const useValidateUserSessionForLoginPage = () => {
         httpResponse.message.includes(ADD_TENANT) ||
         httpResponse.message.includes(NO_ACTIVE_SUBSCRIPTION)
       ) {
-        window.location.href =
-          import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
+        window.location.href = import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
       } else {
         //User already onboarded. Redirect url in redirect query or default to wroc
         const params = new URLSearchParams(window.location.search);

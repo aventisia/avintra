@@ -1,6 +1,6 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import type { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
 import { useChoosePlanStore } from "../stores/choose-plan-store";
@@ -17,9 +17,7 @@ const DEFAULT_BILLING = {
   gstNumber: "",
 };
 
-export const useChargeSummary = (
-  plan: SubscriptionPlanDTO | undefined,
-) => {
+export const useChargeSummary = (plan: SubscriptionPlanDTO | undefined) => {
   const { billingData } = useChoosePlanStore((state) => ({
     billingData: state.billingData,
   }));

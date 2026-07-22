@@ -1,12 +1,8 @@
-import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
-
-import { SubmitButton } from "@aventisia/ui/buttons";
-import {
-  CheckboxField,
-  FloatingLabelInputField,
-  Form,
-} from "@aventisia/ui/form";
+import { SubmitButton } from "@avplatform/ui/buttons";
+import { CheckboxField, FloatingLabelInputField, Form } from "@avplatform/ui/form";
 import * as z from "zod";
+
+import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
 
 import FloatingLabelPasswordField from "../../../../components/ui/FloatingLabelPasswordField";
 import { createAccountZodSchema } from "../../constants/create-account-zod-schema";

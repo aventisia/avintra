@@ -15,10 +15,7 @@ export const OnBoardingMain = () => {
 
   if (paymentId)
     return (
-      <PaymentProcessingLoader
-        countdown={countdown}
-        showRedirectMessage={showRedirectMessage}
-      />
+      <PaymentProcessingLoader countdown={countdown} showRedirectMessage={showRedirectMessage} />
     );
 
   switch (onBoardingStep) {

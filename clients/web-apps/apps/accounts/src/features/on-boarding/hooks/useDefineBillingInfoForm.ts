@@ -1,9 +1,9 @@
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { billingInfoSchema } from "../constants/billing-info-zod-schema";
 import { useChoosePlanStore } from "../stores/choose-plan-store";
@@ -25,8 +25,7 @@ export const useDefineBillingInfoForm = () => {
   // Try loading from localStorage
   const storedBillingData = getParsedBillingFromStorage(userSession?.tenantId);
 
-  const storedCountryData =
-    typeof window !== "undefined" ? localStorage.getItem("country") : null;
+  const storedCountryData = typeof window !== "undefined" ? localStorage.getItem("country") : null;
 
   let parsedStoredData: Partial<z.infer<typeof billingInfoSchema>> = {};
 
@@ -49,21 +48,13 @@ export const useDefineBillingInfoForm = () => {
         parsedStoredData.organizationName ??
         userSession?.tenantName ??
         "",
-      addressLine1:
-        billingData?.addressLine1 ?? parsedStoredData.addressLine1 ?? "",
-      addressLine2:
-        billingData?.addressLine2 ?? parsedStoredData.addressLine2 ?? "",
+      addressLine1: billingData?.addressLine1 ?? parsedStoredData.addressLine1 ?? "",
+      addressLine2: billingData?.addressLine2 ?? parsedStoredData.addressLine2 ?? "",
       city: billingData?.city ?? parsedStoredData.city ?? "",
       state: billingData?.state ?? parsedStoredData.state ?? "",
       isWillingToFileGst:
-        billingData?.isWillingToFileGst ??
-        parsedStoredData.isWillingToFileGst ??
-        false,
-      country:
-        storedCountryData ??
-        billingData?.country ??
-        parsedStoredData.country ??
-        "India",
+        billingData?.isWillingToFileGst ?? parsedStoredData.isWillingToFileGst ?? false,
+      country: storedCountryData ?? billingData?.country ?? parsedStoredData.country ?? "India",
       gstNumber: billingData?.gstNumber ?? parsedStoredData.gstNumber ?? "",
       postalCode: billingData?.postalCode ?? parsedStoredData.postalCode ?? "",
     },

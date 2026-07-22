@@ -12,15 +12,9 @@ type Props = {
   highlightSelected?: boolean;
 };
 
-export const PlanItem = ({
-  plan,
-  planFrequency,
-  selectedId,
-  highlightSelected = true,
-}: Props) => {
+export const PlanItem = ({ plan, planFrequency, selectedId, highlightSelected = true }: Props) => {
   const isSelected = selectedId === plan.id;
-  const timeUnit =
-    planFrequency === "monthly" || plan.name == "Starter" ? "month" : "year";
+  const timeUnit = planFrequency === "monthly" || plan.name == "Starter" ? "month" : "year";
 
   return (
     <CustomRadioItem
@@ -36,9 +30,7 @@ export const PlanItem = ({
           <h6 className="text-base font-medium ">{plan.name}</h6>
 
           <div className="flex gap-1 items-baseline">
-            <p className="text-base">
-              {formatCurrency(plan.price, plan.currency)}
-            </p>
+            <p className="text-base">{formatCurrency(plan.price, plan.currency)}</p>
             <span className="text-sm text-muted-foreground">/{timeUnit}</span>
           </div>
         </div>

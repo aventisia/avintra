@@ -22,9 +22,7 @@ const useDocumentTitle = (title: string) => {
       docTitle +
       " - " +
       (import.meta.env.VITE_APP_NAME
-        ? import.meta.env.VITE_APP_NAME +
-          " | " +
-          import.meta.env.VITE_COMPANY_NAME
+        ? import.meta.env.VITE_APP_NAME + " | " + import.meta.env.VITE_COMPANY_NAME
         : import.meta.env.VITE_COMPANY_NAME);
   }, [docTitle]);
 

@@ -1,7 +1,7 @@
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { InputField } from "@aventisia/ui/form";
-import { Form } from "@aventisia/ui/form";
-import { toast } from "@aventisia/ui/sonner";
+import { SubmitButton } from "@avplatform/ui/buttons";
+import { InputField } from "@avplatform/ui/form";
+import { Form } from "@avplatform/ui/form";
+import { toast } from "@avplatform/ui/sonner";
 import * as z from "zod";
 
 import { pwdProps } from "../../constants/form-field-props";
@@ -16,8 +16,7 @@ export const PwdLoginForm = () => {
     useDefinePwdLoginForm();
 
   // Get mutation
-  const { authenticateUserMutation, isAuthPending } =
-    useAuthenticateUserMutation();
+  const { authenticateUserMutation, isAuthPending } = useAuthenticateUserMutation();
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof pwdLoginZodSchema>) => {

@@ -1,8 +1,8 @@
+import { buttonVariants } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
+
 import { HeaderContainer } from "@/components/layout/HeaderContainer";
 import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-
-import { buttonVariants } from "@aventisia/ui/buttons";
-import { cn } from "@aventisia/ui/lib";
 
 export const LoginHeader = () => {
   return (

@@ -1,6 +1,6 @@
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { InputField } from "@aventisia/ui/form";
-import { Form } from "@aventisia/ui/form";
+import { SubmitButton } from "@avplatform/ui/buttons";
+import { InputField } from "@avplatform/ui/form";
+import { Form } from "@avplatform/ui/form";
 import * as z from "zod";
 
 import { emailProps } from "../../constants/form-field-props";

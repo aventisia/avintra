@@ -1,9 +1,9 @@
+import { toast } from "@avplatform/ui/sonner";
+
 import type { IHttpResponse } from "@/react-toolkit/dtos/http-response";
 import type { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
-
-import { toast } from "@aventisia/ui/sonner";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/me`;
 
@@ -41,9 +41,7 @@ const refreshSession = () => {
 
 /** Logs off from current session for current device */
 const logOffFromCurrentSession = () => {
-  return axiosInstance
-    .put<IHttpResponse<boolean>>(`${baseAPIURL}/logoff`)
-    .then((res) => res.data);
+  return axiosInstance.put<IHttpResponse<boolean>>(`${baseAPIURL}/logoff`).then((res) => res.data);
 };
 
 export { getMySession, logOffFromCurrentSession, refreshSession };

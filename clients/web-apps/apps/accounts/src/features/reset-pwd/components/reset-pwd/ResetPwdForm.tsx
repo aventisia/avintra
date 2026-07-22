@@ -1,13 +1,10 @@
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { FloatingLabelInputField, FormLabel } from "@aventisia/ui/form";
-import { CheckboxField } from "@aventisia/ui/form";
-import { Form } from "@aventisia/ui/form";
+import { SubmitButton } from "@avplatform/ui/buttons";
+import { FloatingLabelInputField, FormLabel } from "@avplatform/ui/form";
+import { CheckboxField } from "@avplatform/ui/form";
+import { Form } from "@avplatform/ui/form";
 import { z } from "zod";
 
-import {
-  confirmNewPwdProps,
-  newPwdProps,
-} from "../../constants/form-field-props";
+import { confirmNewPwdProps, newPwdProps } from "../../constants/form-field-props";
 import { resetPwdZodSchema } from "../../constants/reset-pwd-zod-schema";
 import { useDefineResetPwdForm } from "../../hooks/useDefineResetPwdForm";
 import { useResetPwdMutation } from "../../hooks/useResetPwdMutation";
@@ -45,9 +42,7 @@ export const ResetPwdForm = () => {
       <CheckboxField
         name="logoffFromAllSessions"
         label={
-          <FormLabel className="text-md font-normal">
-            Logout from all active sessions
-          </FormLabel>
+          <FormLabel className="text-md font-normal">Logout from all active sessions</FormLabel>
         }
       />
 

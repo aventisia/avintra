@@ -1,10 +1,10 @@
+import { toast } from "@avplatform/ui/sonner";
+import axios from "axios";
+
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { INVALID_CREDS, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
 import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
 import { sleep } from "@/react-toolkit/utils/sleep-util";
-
-import { toast } from "@aventisia/ui/sonner";
-import axios from "axios";
 
 /**
  * Creates an Axios instance with predefined configuration.
@@ -31,8 +31,7 @@ const SKIP_REFRESH_URLS = [
   "/me/logoff",
 ];
 
-const shouldSkipRefresh = (url: string) =>
-  SKIP_REFRESH_URLS.some((path) => url.endsWith(path));
+const shouldSkipRefresh = (url: string) => SKIP_REFRESH_URLS.some((path) => url.endsWith(path));
 
 // Shared state for managing token refresh
 let isRefreshing = false;

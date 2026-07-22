@@ -1,6 +1,6 @@
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import type { IHttpResponse } from "@avplatform/ui/dtos";
 
-import type { IHttpResponse } from "@aventisia/ui/dtos";
+import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import type { PaymentStatusDto } from "../dtos/payment-status-dto";
 

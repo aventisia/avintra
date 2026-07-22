@@ -1,10 +1,6 @@
-import { CountriesEnum } from "@aventisia/ui/enums";
-import type {
-  InputFieldProps,
-  SelectFieldProps,
-  SwitchFieldProps,
-} from "@aventisia/ui/form";
-import { enumToArray } from "@aventisia/ui/utils";
+import { CountriesEnum } from "@avplatform/ui/enums";
+import type { InputFieldProps, SelectFieldProps, SwitchFieldProps } from "@avplatform/ui/form";
+import { enumToArray } from "@avplatform/ui/utils";
 
 // Pin Code
 const pinCodeProps: InputFieldProps = {

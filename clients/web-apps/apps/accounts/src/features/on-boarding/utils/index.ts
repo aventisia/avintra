@@ -7,10 +7,7 @@ function displayValue(value: number) {
   if (value === 0) return "N/A";
   return value.toLocaleString();
 }
-function getCreditsLabel(
-  maxCredits: number,
-  planFrequency: PlanFrequency,
-): string {
+function getCreditsLabel(maxCredits: number, planFrequency: PlanFrequency): string {
   const timeUnit = planFrequency === "monthly" ? "month" : "year";
 
   const creditLabel = maxCredits === 1 ? "credit" : "credits";
@@ -85,9 +82,4 @@ const setBillingDataInStorage = (tenantId?: string, formData?: any) => {
   }
 };
 
-export {
-  getCreditsLabel,
-  displayValue,
-  getParsedBillingFromStorage,
-  setBillingDataInStorage,
-};
+export { getCreditsLabel, displayValue, getParsedBillingFromStorage, setBillingDataInStorage };

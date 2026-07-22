@@ -1,12 +1,12 @@
-import { organizationNameProps } from "@/features/on-boarding/constants/company-form-field-props";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
-
-import { Button, SubmitButton } from "@aventisia/ui/buttons";
-import { Form } from "@aventisia/ui/form";
-import { InputField, SelectField, SwitchField } from "@aventisia/ui/form";
-import { ScrollArea } from "@aventisia/ui/scroll";
+import { Button, SubmitButton } from "@avplatform/ui/buttons";
+import { Form } from "@avplatform/ui/form";
+import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
+import { ScrollArea } from "@avplatform/ui/scroll";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { organizationNameProps } from "@/features/on-boarding/constants/company-form-field-props";
+import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { billingInfoSchema } from "../../constants/billing-info-zod-schema";
 import {
@@ -21,17 +21,13 @@ import {
 } from "../../constants/form-field-props";
 import { useDefineBillingInfoForm } from "../../hooks/useDefineBillingInfoForm";
 import { useChoosePlanStore } from "../../stores/choose-plan-store";
-import {
-  getParsedBillingFromStorage,
-  setBillingDataInStorage,
-} from "../../utils";
+import { getParsedBillingFromStorage, setBillingDataInStorage } from "../../utils";
 
 /**
  * Component for the billing form.
  */
 export const BillingForm = () => {
-  const { form, isSubmitting, isIndividualUser, disableCountryDD } =
-    useDefineBillingInfoForm();
+  const { form, isSubmitting, isIndividualUser, disableCountryDD } = useDefineBillingInfoForm();
 
   const { setStepNo, setBillingData } = useChoosePlanStore(
     useShallow((state) => ({
@@ -80,9 +76,7 @@ export const BillingForm = () => {
           {/* Additional validation field */}
           {applyGST && isGSTRegistered && <InputField {...gstNumberProps} />}
           {/* Address Line 1 */}
-          {!isIndividualUser && (
-            <InputField disabled {...organizationNameProps} />
-          )}{" "}
+          {!isIndividualUser && <InputField disabled {...organizationNameProps} />}{" "}
           {/* Address Line 1 */}
           <InputField {...addressLine1Props} />
           {/* Address Line 2 */}

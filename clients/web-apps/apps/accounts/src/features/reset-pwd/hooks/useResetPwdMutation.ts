@@ -1,4 +1,4 @@
-import { toast } from "@aventisia/ui/sonner";
+import { toast } from "@avplatform/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";

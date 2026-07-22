@@ -1,15 +1,11 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { lazy } from "react";
+import { Navigate, RouterProvider, createBrowserRouter } from "react-router-dom";
+
 import { AccountsUILayout } from "@/components/layout/AccountsUILayout";
 import { ErrorPage } from "@/react-toolkit/pages/ErrorPage";
 import { NotFoundWithLayoutPage } from "@/react-toolkit/pages/NotFoundWithLayoutPage";
 import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
-
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { lazy } from "react";
-import {
-  Navigate,
-  RouterProvider,
-  createBrowserRouter,
-} from "react-router-dom";
 
 // Lazy load pages
 const CreateAccountPage = lazy(() => import("@/pages/CreateAccountPage"));

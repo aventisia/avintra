@@ -1,4 +1,4 @@
-import { cn } from "@aventisia/ui/lib";
+import { cn } from "@avplatform/ui/lib";
 import { CheckCircleIcon } from "@heroicons/react/24/solid";
 
 /**

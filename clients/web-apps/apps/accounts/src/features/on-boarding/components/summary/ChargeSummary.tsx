@@ -1,5 +1,5 @@
-import { LoadingSpinner, Separator } from "@aventisia/ui";
-import { Button } from "@aventisia/ui/buttons";
+import { LoadingSpinner, Separator } from "@avplatform/ui";
+import { Button } from "@avplatform/ui/buttons";
 
 import { formatCurrency } from "../../constants/currency-symbol-map";
 import type { SubscriptionPlanDTO } from "../../dtos/subscription-plans-dto";
@@ -14,11 +14,9 @@ const ChargeSummary = ({
   plan: SubscriptionPlanDTO | undefined;
   planFrequency: PlanFrequency;
 }) => {
-  const { basePrice, tax, total, isTaxApplicable, effectiveBilling, GST } =
-    useChargeSummary(plan);
+  const { basePrice, tax, total, isTaxApplicable, effectiveBilling, GST } = useChargeSummary(plan);
 
-  const { isPending, insertSubscriptionMutation } =
-    useInsertSubscriptionMutation();
+  const { isPending, insertSubscriptionMutation } = useInsertSubscriptionMutation();
 
   const handleSubscription = () => {
     insertSubscriptionMutation({
@@ -42,10 +40,7 @@ const ChargeSummary = ({
           value={formatCurrency(basePrice, plan?.currency ?? "USD")}
         />
         {isTaxApplicable && (
-          <SummaryRow
-            label="Tax"
-            value={formatCurrency(tax, plan?.currency ?? "USD")}
-          />
+          <SummaryRow label="Tax" value={formatCurrency(tax, plan?.currency ?? "USD")} />
         )}
         <Separator />
         <SummaryRow
@@ -56,11 +51,7 @@ const ChargeSummary = ({
       </div>
 
       {total === 0 ? (
-        <Button
-          className="mt-2 w-full"
-          disabled={isPending}
-          onClick={handleSubscription}
-        >
+        <Button className="mt-2 w-full" disabled={isPending} onClick={handleSubscription}>
           {isPending ? (
             <>
               <LoadingSpinner className="h-4 w-4 mr-2" />
@@ -71,11 +62,7 @@ const ChargeSummary = ({
           )}
         </Button>
       ) : (
-        <Button
-          disabled={isPending}
-          onClick={handleSubscription}
-          className="mt-2 w-full"
-        >
+        <Button disabled={isPending} onClick={handleSubscription} className="mt-2 w-full">
           {isPending ? (
             <>
               <LoadingSpinner className="h-4 w-4 mr-2" />

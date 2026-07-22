@@ -1,9 +1,9 @@
-import { ContentFooter } from "@/components/ui/ContentFooter";
-
-import { Button } from "@aventisia/ui/buttons";
+import { Button } from "@avplatform/ui/buttons";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
+
+import { ContentFooter } from "@/components/ui/ContentFooter";
 
 import { useResetPwdStore } from "../stores/reset-pwd-store";
 

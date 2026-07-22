@@ -20,9 +20,7 @@ const variableRegex = new RegExp(/^[a-zA-Z_][a-zA-Z0-9_]*$/);
 const noWhitespaceRegex = new RegExp(/^[^\s]*$/);
 
 /** Checks whether field contains minimum 8 characters, at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character or not*/
-const pwdRegex = new RegExp(
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/,
-);
+const pwdRegex = new RegExp(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/);
 
 export {
   emailRegex,

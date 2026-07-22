@@ -1,4 +1,4 @@
-import type { InputFieldProps, InputOtpFieldProps } from "@aventisia/ui/form";
+import type { InputFieldProps, InputOtpFieldProps } from "@avplatform/ui/form";
 
 const className = "h-11 text-md";
 

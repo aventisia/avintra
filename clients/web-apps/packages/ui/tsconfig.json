@@ -2,9 +2,14 @@
   "extends": "./tsconfig.app.json",
   "compilerOptions": {
     "composite": true,
+    "noEmit": false,
+    "declaration": true,
+    "declarationMap": true,
+    "outDir": "./node_modules/.tmp/types",
     "paths": {
       "@/ui/*": ["./src/*"]
-    }
+    },
+    "emitDeclarationOnly": true
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]

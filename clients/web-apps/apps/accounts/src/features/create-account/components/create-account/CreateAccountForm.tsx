@@ -1,10 +1,10 @@
-import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
-
-import { SubmitButton } from "@aventisia/ui/buttons";
-import { FloatingLabelInputField } from "@aventisia/ui/form";
-import { CheckboxField } from "@aventisia/ui/form";
-import { Form } from "@aventisia/ui/form";
+import { SubmitButton } from "@avplatform/ui/buttons";
+import { FloatingLabelInputField } from "@avplatform/ui/form";
+import { CheckboxField } from "@avplatform/ui/form";
+import { Form } from "@avplatform/ui/form";
 import * as z from "zod";
+
+import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
 
 import { createAccountZodSchema } from "../../constants/create-account-zod-schema";
 import {
