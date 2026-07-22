@@ -12,7 +12,22 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@avplatform/ui": "*"
+    "@aventisia/ui": "^0.0.104",
+    "@avplatform/ui": "*",
+    "@heroicons/react": "^2.1.5",
+    "@hookform/resolvers": "^3.9.0",
+    "@tanstack/react-query": "^5.51.1",
+    "@tanstack/react-table": "^8.19.3",
+    "@tauri-apps/api": "^2.9.0",
+    "axios": "^1.7.2",
+    "jwt-decode": "^4.0.0",
+    "lucide-react": "^0.428.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-hook-form": "^7.52.1",
+    "react-router-dom": "^6.24.1",
+    "zod": "^3.23.8",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@avplatform/eslint-config": "*",
