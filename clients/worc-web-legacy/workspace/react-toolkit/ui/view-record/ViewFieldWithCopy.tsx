@@ -37,7 +37,6 @@ export const ViewFieldWithCopy = ({
         className={cn("mt-0.5 w-full", className)}
         textClassName={cn("text-sm font-medium", textClassName)}
         value={value ?? FALLBACK_VALUE}
-        ariaLabel={`Copy ${label}`}
         {...props}
       />
     </div>

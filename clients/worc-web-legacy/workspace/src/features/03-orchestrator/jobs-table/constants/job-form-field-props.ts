@@ -1,5 +1,4 @@
 import {
-  AsyncSingleSelectFieldProps,
   InputFieldProps,
   SelectFieldProps,
   SwitchFieldProps,
@@ -17,6 +16,7 @@ import {
   MachineSearchQueryFilters,
 } from "@/features/search-by-query/types/search-filters";
 import { FlowTypesEnum } from "@/react-toolkit/enums/flow-types-enum";
+import { AsyncSingleSelectFieldProps } from "@/react-toolkit/ui/async-select/AsyncSingleSelectField";
 
 import { JobPriorityEnum, JobStatusEnum, TriggerTypesEnum } from "..";
 import { CLOSING_JOB_STATUSES } from "./variables";

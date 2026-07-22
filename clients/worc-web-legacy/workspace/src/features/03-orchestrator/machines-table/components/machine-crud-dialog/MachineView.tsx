@@ -97,13 +97,11 @@ export const MachineView = () => {
             title={`Machine Name: ${machine.name}`}
             textClassName="truncate max-w-[24rem] text-base font-medium leading-tight"
             value={machine.name}
-            ariaLabel="copy machine name"
           />
           <CopyableText
             className="mt-0.5 w-full"
             textClassName="font-mono max-w-[24rem] text-sm font-medium text-muted-foreground"
             value={machine.id ?? FALLBACK_VALUE}
-            ariaLabel="copy machine id"
           />
         </div>
 

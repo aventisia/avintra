@@ -279,7 +279,6 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
         textClassName="w-auto max-w-32 truncate text-md font-mono"
         iconClassName="size-3"
         value={row.getValue("flowVersionId")}
-        ariaLabel="copy flow version id"
       />
     ),
   },
@@ -294,7 +293,6 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
         textClassName="w-auto max-w-32 truncate text-md font-mono"
         iconClassName="size-3"
         value={row.getValue("id")}
-        ariaLabel="copy job id"
       />
     ),
   },
