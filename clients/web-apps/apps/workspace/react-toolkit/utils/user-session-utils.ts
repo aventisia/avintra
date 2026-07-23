@@ -1,7 +1,7 @@
+import { SESSION_EXPIRED_LS_KEY } from "@avplatform/ui/constants";
 import { UserSessionDto } from "@avplatform/ui/dtos/response/user-session-dto";
 import { jwtDecode } from "jwt-decode";
 
-import { SESSION_EXPIRED_LS_KEY } from "@/react-toolkit/constants";
 import { IJwtPayload, IUserSessionStore } from "@/react-toolkit/types/user-session-types";
 
 const setUserSessionLocally = (userSession: UserSessionDto): IUserSessionStore => {
