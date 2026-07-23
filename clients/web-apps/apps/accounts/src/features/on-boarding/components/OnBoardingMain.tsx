@@ -1,6 +1,6 @@
 import { AccountSetupMain } from "@/features/on-boarding/components/account-setup/AccountSetupMain";
-import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
-import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
+import { useValidateUserSession } from "@/hooks/useValidateUserSession";
+import { RedirectPage } from "@/pages/default-pages";
 
 import { useFetchPaymentStatus } from "../hooks/useFetchPaymentStatus";
 import { ChoosePlanMain } from "./ChoosePlanMain";

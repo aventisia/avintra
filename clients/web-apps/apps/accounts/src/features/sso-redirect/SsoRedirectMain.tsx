@@ -1,9 +1,8 @@
+import { AppLogo } from "@avplatform/layout/logo";
+import { MinimalFooter } from "@avplatform/layout/minimal-footer";
 import { LoadingSpinner } from "@avplatform/ui";
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-
-import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 
 import { useValidateEntraTokenMutation } from "./useValidateEntraTokenMutation";
 

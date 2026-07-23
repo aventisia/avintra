@@ -1,4 +1,4 @@
-import type { DeploymentType } from "@avplatform/ui/types";
+import type { DeploymentType } from "@/ui/types/deployment-types";
 
 interface IUserSessionStore {
   tenantId: string;

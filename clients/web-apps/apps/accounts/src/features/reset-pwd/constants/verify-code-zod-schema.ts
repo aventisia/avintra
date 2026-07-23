@@ -1,12 +1,6 @@
+import { maxLenError, minLenError, numericError, reqError } from "@avplatform/ui/utils";
+import { numericRegex } from "@avplatform/ui/utils";
 import * as z from "zod";
-
-import {
-  maxLenError,
-  minLenError,
-  numericError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { numericRegex } from "@/react-toolkit/utils/regex-list";
 
 export const verifyCodeZodSchema = z.object({
   verificationCode: z

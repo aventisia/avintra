@@ -1,11 +1,10 @@
+import { AppLogo } from "@avplatform/layout/logo";
+import { MinimalFooter } from "@avplatform/layout/minimal-footer";
 import { LoadingSpinner } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-
-import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 
 const PaymentProcessingLoader = ({
   showRedirectMessage,

@@ -1,4 +1,5 @@
 import { toast } from "@avplatform/ui/sonner";
+import { setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
@@ -8,8 +9,7 @@ import {
   NO_ACTIVE_SUBSCRIPTION,
   PWD_EXPIRED,
   TWO_FA_ENABLED,
-} from "@/react-toolkit/constants";
-import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
+} from "@/constants/variables";
 
 import { authenticateUser } from "../apis/login-apis";
 import { useLoginStore } from "../stores/login-store";

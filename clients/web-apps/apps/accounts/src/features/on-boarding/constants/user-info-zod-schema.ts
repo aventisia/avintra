@@ -1,7 +1,6 @@
+import { nameError, reqError } from "@avplatform/ui/utils";
+import { nameRegex } from "@avplatform/ui/utils";
 import { z } from "zod";
-
-import { nameError, reqError } from "@/react-toolkit/utils/error-message-list";
-import { nameRegex } from "@/react-toolkit/utils/regex-list";
 
 export const userInfoSchema = z.object({
   country: z

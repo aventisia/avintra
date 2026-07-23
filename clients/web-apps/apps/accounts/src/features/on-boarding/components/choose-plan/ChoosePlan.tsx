@@ -1,3 +1,4 @@
+import { useDocumentTitle } from "@avplatform/ui/hooks";
 import {
   Select,
   SelectContent,
@@ -11,7 +12,6 @@ import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ContentContainer } from "@/features/on-boarding/components/account-setup/ContentContainer";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
 import { useFetchSubscriptionPlans } from "../../hooks/useFetchSubscriptionPlans";
 import { useChoosePlanStore } from "../../stores/choose-plan-store";

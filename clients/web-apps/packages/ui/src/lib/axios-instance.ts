@@ -1,10 +1,10 @@
+import { INVALID_CREDS, REQUEST_TIMEOUT } from "@avplatform/ui/constants";
 import { toast } from "@avplatform/ui/sonner";
+import { sleep } from "@avplatform/ui/utils";
 import axios from "axios";
 
-import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { INVALID_CREDS, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
-import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
-import { sleep } from "@/react-toolkit/utils/sleep-util";
+import { refreshSession } from "@/ui/apis/accounts-me-apis";
+import { redirectToLoginOn401Util } from "@/ui/utils/redirect-util";
 
 /**
  * Creates an Axios instance with predefined configuration.

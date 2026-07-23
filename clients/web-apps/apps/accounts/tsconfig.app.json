@@ -5,10 +5,9 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "baseUrl": ".",
     "paths": {
-      "@/react-toolkit/*": ["./react-toolkit/*"], // SHOULD BE FIRST
       "@/ui/*": ["../../packages/ui/src/*"],
-      "@/*": ["./src/*"] // SHOULD BE SECOND
+      "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "react-toolkit"]
+  "include": ["src", "../../packages/ui/src/**/*", "../../packages/layout/src/**/*"]
 }

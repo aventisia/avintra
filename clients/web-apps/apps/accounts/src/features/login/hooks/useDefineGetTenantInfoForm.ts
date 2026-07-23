@@ -1,8 +1,7 @@
+import { USER_NAME_LS_KEY } from "@avplatform/ui/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
-import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 
 import { tenantInfoZodSchema } from "../constants/tenant-info-zod-schema";
 

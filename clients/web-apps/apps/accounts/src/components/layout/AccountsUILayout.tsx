@@ -3,7 +3,7 @@ import { Suspense, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
+import { RedirectPage } from "@/pages/default-pages";
 
 const AccountsUILayout = () => {
   // Get the state and actions from the base layout store

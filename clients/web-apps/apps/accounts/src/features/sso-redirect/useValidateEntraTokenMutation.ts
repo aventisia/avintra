@@ -1,8 +1,8 @@
+import { setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
-import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/react-toolkit/constants";
-import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
+import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 
 import { validateEntraToken } from "./sso-redirect-apis";
 

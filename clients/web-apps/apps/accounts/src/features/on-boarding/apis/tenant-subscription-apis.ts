@@ -1,6 +1,5 @@
 import type { IHttpResponse } from "@avplatform/ui/dtos";
-
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import type { PaymentInfoDto } from "../dtos/payment-info-dto";
 import type { PurchasePlanDto } from "../dtos/purchase-plan-dto";

@@ -1,9 +1,9 @@
 import { toast } from "@avplatform/ui/sonner";
 
-import type { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import type { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { redirectToLoginOn401Util } from "@/react-toolkit/utils/redirect-util";
+import type { IHttpResponse } from "@/ui/dtos";
+import type { UserSessionDto } from "@/ui/dtos/response/user-session-dto";
+import { axiosInstance } from "@/ui/lib/axios-instance";
+import { redirectToLoginOn401Util } from "@/ui/utils/redirect-util";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/me`;
 

@@ -1,4 +1,4 @@
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { ContentContainer } from "../ContentContainer";
 import { ContentHeader } from "../ContentHeader";

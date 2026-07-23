@@ -1,6 +1,5 @@
+import { reqError } from "@avplatform/ui/utils";
 import * as z from "zod";
-
-import { reqError } from "@/react-toolkit/utils/error-message-list";
 
 export const tenantInfoZodSchema = z.object({
   email: z

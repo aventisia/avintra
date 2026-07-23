@@ -1,10 +1,9 @@
+import { isEmailAvailable } from "@avplatform/ui/apis/accounts-auth-apis";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-
-import { isEmailAvailable } from "@/react-toolkit/apis/accounts-auth-apis";
 
 import { createAccountZodSchema, emailSchema } from "../constants/create-account-zod-schema";
 import { useCreateAccountStore } from "../stores/create-account-store";

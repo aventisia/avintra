@@ -1,9 +1,8 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { VerificationCodeRequestTypesEnum } from "@avplatform/ui/enums";
 import { InputField } from "@avplatform/ui/form";
 import { Form } from "@avplatform/ui/form";
 import { z } from "zod";
-
-import { VerificationCodeRequestTypesEnum } from "@/react-toolkit/enums/verification-code-request-types-enum";
 
 import { emailProps } from "../../constants/form-field-props";
 import { provideEmailZodSchema } from "../../constants/provide-email-zod-schema";

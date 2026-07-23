@@ -1,6 +1,5 @@
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useShallow } from "zustand/react/shallow";
-
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import type { SubscriptionPlanDTO } from "../dtos/subscription-plans-dto";
 import { useChoosePlanStore } from "../stores/choose-plan-store";

@@ -1,12 +1,6 @@
+import { maxLenError, minLenError, pwdError, reqError } from "@avplatform/ui/utils";
+import { pwdRegex } from "@avplatform/ui/utils";
 import * as z from "zod";
-
-import {
-  maxLenError,
-  minLenError,
-  pwdError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { pwdRegex } from "@/react-toolkit/utils/regex-list";
 
 export const resetPwdZodSchema = z
   .object({
