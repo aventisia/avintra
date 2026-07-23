@@ -1,9 +1,9 @@
+import { INVALID_CREDS, REQUEST_TIMEOUT } from "@avplatform/ui/constants";
 import { toast } from "@avplatform/ui/sonner";
 import { redirectToLoginOn401Util, sleep } from "@avplatform/ui/utils";
 import axios from "axios";
 
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import { INVALID_CREDS, REQUEST_TIMEOUT } from "@/react-toolkit/constants";
 
 const getErrorMessageFromResponseData = (responseData: unknown): string => {
   // Standard: errors are plain text strings

@@ -1,8 +1,7 @@
 import { NotFoundPage } from "@avplatform/layout";
+import { CrudActionTypeLong } from "@avplatform/ui/constants";
 import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
-
-import { CrudActionTypeLong } from "@/react-toolkit/constants";
 
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";

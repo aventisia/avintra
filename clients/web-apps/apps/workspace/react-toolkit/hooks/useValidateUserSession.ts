@@ -1,3 +1,4 @@
+import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@avplatform/ui/constants";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -5,8 +6,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
 import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
-
-import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "../constants";
 
 /**
  * Custom hook to validate user session and handle session refresh.
