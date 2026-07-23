@@ -1,5 +1,6 @@
 namespace WorkspaceAPIs.Entities;
 
+[Table("Machine_FlowVersion")]
 public class Machine_FlowVersion : IMustHaveTenant
 {
     public Guid TenantId { get; set; }
