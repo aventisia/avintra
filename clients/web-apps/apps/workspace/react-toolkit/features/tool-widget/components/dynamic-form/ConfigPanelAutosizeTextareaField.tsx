@@ -1,0 +1,86 @@
+import {
+  BaseFieldProps,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabelExt,
+  FormMessage,
+} from "@avplatform/ui/form";
+import { cn } from "@avplatform/ui/lib";
+import { useRef } from "react";
+import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
+
+import { ConfigPanelAutosizeTextarea } from "@/features/dynamic-config-panel";
+
+interface ConfigPanelAutosizeTextareaFieldProps
+  extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeTextarea>, BaseFieldProps {
+  /** The name of the form field. */
+  name: FieldPath<FieldValues>;
+}
+
+/**
+ * A custom autosize textarea form field component with label (if provided)
+ */
+const ConfigPanelAutosizeTextareaField = ({
+  name,
+  minHeight,
+  maxHeight = 200,
+  label,
+  isRequired,
+  description,
+  className,
+  disabled,
+  ...props
+}: ConfigPanelAutosizeTextareaFieldProps) => {
+  const caretRef = useRef<number>(0);
+
+  // Get the form context
+  const { control } = useFormContext<FieldValues>();
+
+  const { field: textareaField } = useController({
+    name,
+    control,
+  });
+
+  // Set caret position on blur
+  const handleCaretChange = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    caretRef.current = e.currentTarget.selectionStart ?? 0;
+  };
+
+  // Render the AutosizeTextareaField component
+  return (
+    <div className="group relative">
+      <FormField
+        {...{ name, textareaField }}
+        render={({ field }) => (
+          <FormItem>
+            {label && <FormLabelExt {...{ label, disabled, isRequired, description }} />}
+
+            <FormControl>
+              <ConfigPanelAutosizeTextarea
+                size="sm"
+                minHeight={minHeight}
+                maxHeight={maxHeight}
+                className={cn("h-8", className)}
+                disabled={disabled}
+                {...field}
+                onBlur={(e) => {
+                  field.onBlur();
+                  handleCaretChange(e);
+                }}
+                ref={field.ref}
+                {...props}
+              />
+            </FormControl>
+
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    </div>
+  );
+};
+
+ConfigPanelAutosizeTextareaField.displayName = "ConfigPanelAutosizeTextareaField";
+
+export { ConfigPanelAutosizeTextareaField, type ConfigPanelAutosizeTextareaFieldProps };

@@ -1,0 +1,166 @@
+import { SubmitButton } from "@avplatform/ui/buttons";
+import { Form, InputField, TextareaField } from "@avplatform/ui/form";
+import { ScrollArea } from "@avplatform/ui/scroll";
+import { toast } from "@avplatform/ui/sonner";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { z } from "zod";
+
+import {
+  ingestVectorStoreInput,
+  registerKnowledgeBaseText,
+  updateKnowledgeBaseFileStatus,
+} from "../../apis/knowledge-base-file-apis";
+import { DETAIL_DATA_QUERY_KEY } from "../../constants";
+import {
+  chunkOverlapProps,
+  chunkSizeProps,
+  textContentProps,
+} from "../../constants/kb-add-text-feild-props";
+import { kbAddTextSchema } from "../../constants/kb-add-text-zod-schema";
+import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
+import { useDefineKBAddTextForm } from "../../hooks/useDefineKBAddTextForm";
+import FileUploadDisclaimer from "./FileUploadDisclaimer";
+
+export const KBAddTextForm = ({
+  knowledgeBaseId,
+  knowledgeBaseName,
+  knowledgeBase,
+  onCompleted,
+}: {
+  knowledgeBaseId: string;
+  knowledgeBaseName: string;
+  knowledgeBase?: KnowledgeBaseTableDto;
+  onCompleted: () => void;
+}) => {
+  const { form } = useDefineKBAddTextForm();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      form.setFocus("textContent");
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [form]);
+
+  const generateFileNameFromText = (text: string, wordLimit = 5) => {
+    if (!text) return "untitled.txt";
+
+    const words = text.trim().split(/\s+/).slice(0, wordLimit).join(" ");
+
+    return (
+      words
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, "") // remove special chars
+        .replace(/\s+/g, "-") + ".txt"
+    );
+  };
+
+  const { mutate: submitText, isPending } = useMutation({
+    mutationFn: async (data: z.infer<typeof kbAddTextSchema>) => {
+      if (!knowledgeBase) {
+        throw new Error("Knowledge base configuration is not available");
+      }
+
+      const fileName = generateFileNameFromText(data.textContent, 5);
+
+      const registered = await registerKnowledgeBaseText(knowledgeBaseId, {
+        textContent: data.textContent,
+        fileName,
+        chunkSize: data.chunkSize,
+        chunkOverlap: data.chunkOverlap,
+      });
+
+      const registeredFileId = registered.data?.id;
+
+      try {
+        const ingestResult = await ingestVectorStoreInput({
+          vector_store: knowledgeBase.vectorStore,
+          embedding_provider: knowledgeBase.embeddingProvider,
+          embedding_model: knowledgeBase.embeddingModel,
+          input: data.textContent,
+          metadata: {
+            kb_name: knowledgeBaseName,
+            doc_name: registered.data!.fileName,
+          },
+          chunk_size: data.chunkSize,
+          chunk_overlap: data.chunkOverlap,
+          store_credential_id: knowledgeBase.storeCredentialId,
+          embedding_credential_id: knowledgeBase.embeddingCredentialId,
+          ref_type: "KnowledgeBase",
+          ref_id: knowledgeBaseId,
+          ref_name: knowledgeBaseName,
+          action: "KnowledgeBaseTextIngest",
+        });
+
+        const chunksCreated = (ingestResult as { chunks_created?: number })?.chunks_created ?? 0;
+
+        if (registeredFileId) {
+          await updateKnowledgeBaseFileStatus(knowledgeBaseId, registeredFileId, {
+            status: "Completed",
+            chunksCount: chunksCreated,
+          });
+        }
+      } catch (ingestError) {
+        if (registeredFileId) {
+          await updateKnowledgeBaseFileStatus(knowledgeBaseId, registeredFileId, {
+            status: "Failed",
+            chunksCount: 0,
+            errorMessage: ingestError instanceof Error ? ingestError.message : "Ingestion failed",
+          });
+        }
+        throw ingestError;
+      }
+    },
+    onSuccess: async () => {
+      toast.success("Text added to knowledge base successfully");
+      await queryClient.invalidateQueries({
+        queryKey: [...DETAIL_DATA_QUERY_KEY, knowledgeBaseId],
+      });
+      onCompleted();
+    },
+    onError: (error) => {
+      toast.error((error as Error).message || "Failed to add text");
+    },
+  });
+
+  const onSubmit = (data: z.infer<typeof kbAddTextSchema>) => {
+    submitText(data);
+  };
+
+  return (
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="space-y-0 p-0 ">
+      <div className="flex flex-col justify-between">
+        <ScrollArea className="h-[calc(40rem-7.5rem)] p-4 pt-3 ">
+          <div className="space-y-4 px-1">
+            {/* Query */}
+            <TextareaField {...textContentProps} autoFocus />
+
+            {/* Number of chunks */}
+            <div className="grid grid-cols-2 gap-4">
+              <InputField {...chunkSizeProps} />
+
+              <InputField {...chunkOverlapProps} />
+            </div>
+
+            <FileUploadDisclaimer />
+          </div>
+        </ScrollArea>
+
+        <div className="flex h-16 border-t px-4 justify-end items-center">
+          <SubmitButton
+            size={"sm"}
+            type="submit"
+            isPending={isPending}
+            primaryText="Submit"
+            secondaryText="Chunking..."
+            disabled={isPending}
+          />
+        </div>
+      </div>
+    </Form>
+  );
+};

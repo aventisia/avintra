@@ -43,4 +43,4 @@ interface IJwtPayload {
   type: DeploymentType;
 }
 
-export { type IUserSessionStore, type IJwtPayload };
+export type { IUserSessionStore, IJwtPayload };

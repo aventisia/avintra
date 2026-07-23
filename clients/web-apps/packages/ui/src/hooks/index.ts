@@ -9,3 +9,4 @@ export * from "./useQueryData";
 export * from "./useShowAlertHandler";
 export * from "./useTableRowOptimisticMutation";
 export * from "./useToggle";
+export * from "./useDebounce";

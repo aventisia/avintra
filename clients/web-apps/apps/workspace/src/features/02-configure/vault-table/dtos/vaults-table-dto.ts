@@ -1,0 +1,81 @@
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+
+import { VaultAppsEnum } from "../enums/vault-apps-enum";
+
+/**
+ * Represents a data transfer object (DTO) for an app secret.
+ */
+export interface VaultsTableDto {
+  /**
+   * Gets or sets the unique identifier of the app secret.
+   *
+   * Optional because same DTO is used for insert and update.
+   */
+  id?: string;
+
+  /**
+   * Gets or sets the name of the secret.
+   */
+  name: string;
+
+  /**
+   * Gets or sets the type of the secret.
+   * Used to determine the structure of the data field.
+   */
+  type: VaultAppsEnum;
+  // If backend sends arbitrary string values, use:
+  // type: string;
+
+  /**
+   * Gets or sets the secret data.
+   * Structure depends on the type.
+   */
+  data: Record<string, unknown>;
+
+  /**
+   * Gets or sets an optional description of the secret.
+   */
+  description?: string;
+
+  /**
+   * Gets or sets a value indicating whether
+   * the app secret is accessible tenant-wide.
+   */
+  isTenantWideAccess?: boolean;
+
+  /**
+   * Gets or sets the permission level granted to the user.
+   */
+  accessLevel?: ResourceAccessTypeEnum;
+
+  /**
+   * Gets or sets a value indicating whether
+   * the app secret is disabled.
+   *
+   * Nullable to differentiate between
+   * true, false, and undefined.
+   */
+  isDisabled?: boolean | null;
+
+  /**
+   * Gets or sets the username of the user
+   * who created the record.
+   */
+  createdBy?: string;
+
+  /**
+   * Gets or sets the creation date and time.
+   */
+  createdOn?: Date | string;
+
+  /**
+   * Gets or sets the username of the user
+   * who last modified the record.
+   */
+  lastModifiedBy?: string;
+
+  /**
+   * Gets or sets the last modified date and time.
+   */
+  lastModifiedOn?: Date | string;
+}

@@ -5,6 +5,8 @@ export * from "./request/check-availability-dto";
 export * from "./request/check-verification-code-dto";
 export * from "./request/create-verification-code-dto";
 export * from "./request/email-dto";
+export * from "./request/pwd-update-dto";
+export * from "./request/terminate-session-dto";
 export * from "./response/created-verification-code-dto";
 export * from "./response/record-inserted-dto";
 export * from "./response/select-option-dto";

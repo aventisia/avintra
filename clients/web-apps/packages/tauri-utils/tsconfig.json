@@ -1,0 +1,11 @@
+{
+  "extends": "@avplatform/typescript-config/vite.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@avplatform/ui/*": ["../ui/src/*"]
+    }
+  },
+  "include": ["src", "../ui/src/**/*"],
+  "references": [{ "path": "../ui" }]
+}
