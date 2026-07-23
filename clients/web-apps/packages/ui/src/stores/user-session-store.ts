@@ -17,3 +17,4 @@ const useUserSessionStore = create<UserSessionStore>((set) => ({
 }));
 
 export { useUserSessionStore };
+export type { IUserSessionStore };

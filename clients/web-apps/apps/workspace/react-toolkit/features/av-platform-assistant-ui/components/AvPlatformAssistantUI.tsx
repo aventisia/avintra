@@ -1,0 +1,257 @@
+import {
+  AssistantRuntimeProvider,
+  SuggestionAdapter,
+  Suggestions,
+  ThreadMessageLike,
+  useAui,
+  useLocalRuntime,
+} from "@assistant-ui/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+// API imports are kept as they are internal domain logic for this specific feature
+import { createAssistantUIModelAdapter } from "../adapters/create-assistant-ui-model-adapter";
+import { createHistoryAdapter } from "../adapters/history-adaptor";
+import { insertConversation } from "../apis/assist-conversations-apis";
+import { useThreadConfigStore } from "../stores/assitant-ui-store";
+import { Thread } from "./thread";
+
+export interface AvPlatformAssistantUIProps {
+  /**
+   * Operational mode:
+   * 'production': Persists to the database. Lazily allocates a conversation ID on first message.
+   * 'temporary': Ephemeral dev/test mode. Bypasses history storage entirely.
+   */
+  mode?: "production" | "temporary";
+  /** Explicit flow version ID (Required). */
+  flowVersionId: string;
+  /** Explicit conversation ID. If omitted in 'production', a new one is requested lazily. */
+  conversationId?: string;
+  /** If true, blocks new message creation and only loads historical logs. */
+  readOnly?: boolean;
+  /** Archival visual state flag. */
+  archived?: boolean;
+  /** Visual thread title. */
+  title?: string;
+  /** Visual thread description. */
+  description?: string;
+  /** Optional fallback suggestions for empty threads. */
+  defaultActions?: string[];
+  /** Injected historical messages. */
+  initialMessages?: readonly ThreadMessageLike[];
+  /** Callback fired when a new chat session is allocated lazily. Parent should update the URL/state. */
+  onConversationAllocated?: (newConversationId: string) => void;
+  /** Callback fired when a workflow execution completes. */
+  onRequestComplete?: () => void;
+  /** Styling wrapper classes. */
+  className?: string;
+}
+
+/**
+ * Universal Standalone Chat Assistant Interface.
+ * 100% decoupled from global stores, routers, and query clients.
+ */
+export const AvPlatformAssistantUI = ({
+  mode = "production",
+  flowVersionId,
+  conversationId,
+  readOnly = false,
+  archived = false,
+  defaultActions = [],
+  className = "flex h-full flex-col w-full bg-background",
+  onConversationAllocated,
+  onRequestComplete,
+  ...props
+}: AvPlatformAssistantUIProps) => {
+  const { setConfig } = useThreadConfigStore();
+
+  useEffect(() => {
+    if (archived || readOnly) {
+      setConfig({ archived, readOnly });
+    } else {
+      setConfig({ archived: false, readOnly: false });
+    }
+  }, [archived, readOnly, setConfig]);
+
+  // Track active DB conversation internally.
+  const [activeConversationId, setActiveConversationId] = useState<string | undefined>(
+    conversationId,
+  );
+
+  // 1. Append a unique key to ensure the initial empty session is uniquely keyed
+  const [sessionKey, setSessionKey] = useState<string>(
+    conversationId || `new-session-${window.crypto.randomUUID()}`,
+  );
+
+  // Sync internal state if the parent swaps the ID via props (chat switching)
+  useEffect(() => {
+    if (conversationId !== activeConversationId) {
+      setActiveConversationId(conversationId);
+      // 2. Generate a fresh key whenever navigating to an empty conversation state
+      setSessionKey(conversationId || `new-session-${window.crypto.randomUUID()}`);
+    }
+  }, [conversationId, activeConversationId]);
+
+  return (
+    <div className={className}>
+      <RuntimeWrapper
+        key={`${mode}-${flowVersionId}-${sessionKey}`}
+        mode={mode}
+        conversationId={activeConversationId}
+        flowVersionId={flowVersionId}
+        readOnly={readOnly}
+        archived={archived}
+        defaultActions={defaultActions}
+        onRequestComplete={onRequestComplete}
+        // Bubble the lazy allocation event up, and set it to internal state
+        onConversationAllocated={(newId) => {
+          setActiveConversationId(newId);
+          onConversationAllocated?.(newId);
+        }}
+        {...props}
+      />
+    </div>
+  );
+};
+
+// --- Internal Context Wrapper ---
+
+type RuntimeWrapperProps = Omit<
+  AvPlatformAssistantUIProps,
+  "className" | "onConversationAllocated"
+> & {
+  conversationId?: string;
+  onConversationAllocated?: (newId: string) => void;
+};
+
+/**
+ * Context isolation wrapper. Hooks into assistant-ui's React Contexts safely.
+ */
+const RuntimeWrapper = ({
+  mode,
+  conversationId,
+  flowVersionId,
+  title,
+  description,
+  readOnly,
+  initialMessages = [],
+  defaultActions = [],
+  onRequestComplete,
+  onConversationAllocated,
+}: RuntimeWrapperProps) => {
+  const activeSuggestionsRef = useRef<string[]>([]);
+  const queryClient = useQueryClient();
+
+  const handleSuggestionsUpdate = useCallback((actions: string[]) => {
+    activeSuggestionsRef.current = Array.isArray(actions) ? actions : [];
+  }, []);
+
+  // Use a ref to maintain the latest ID without causing react stale closures in the adapters
+  const conversationIdRef = useRef<string | undefined>(conversationId);
+  useEffect(() => {
+    conversationIdRef.current = conversationId;
+  }, [conversationId]);
+
+  // Concurrency lock: prevents multiple API calls if `append` and `run` trigger simultaneously
+  const allocatingPromiseRef = useRef<Promise<string | undefined> | null>(null);
+
+  /**
+   * Lazily fetches or allocates a conversation ID.
+   * @param allocateIfMissing If true, makes an API call to create an ID if one doesn't exist.
+   */
+  const getConversationId = useCallback(
+    async (allocateIfMissing: boolean = false): Promise<string | undefined> => {
+      // 1. Return immediately if we already have it
+      if (conversationIdRef.current) return conversationIdRef.current;
+      // 2. Bail if we shouldn't allocate
+      if (!allocateIfMissing || mode === "temporary" || readOnly) return undefined;
+      // 3. Return the ongoing allocation promise if one is already in flight (Concurrency Lock)
+      if (allocatingPromiseRef.current) return allocatingPromiseRef.current;
+
+      // 4. Initiate database creation
+      allocatingPromiseRef.current = (async () => {
+        try {
+          const res = await insertConversation(flowVersionId);
+          const newId = res.data?.id;
+          if (newId) {
+            conversationIdRef.current = newId;
+            onConversationAllocated?.(newId);
+            queryClient.invalidateQueries({
+              queryKey: ["chat-agents", "active"],
+            });
+
+            return newId;
+          }
+        } catch (err) {
+          console.error("Database lazy allocation sequence failed:", err);
+        } finally {
+          allocatingPromiseRef.current = null; // Release lock
+        }
+        return undefined;
+      })();
+
+      return allocatingPromiseRef.current;
+    },
+    [mode, readOnly, flowVersionId, onConversationAllocated, queryClient],
+  );
+
+  /**
+   * Database Storage Adapter.
+   * Nullified entirely for temporary mode.
+   * Nullified if readOnly AND no conversationId (prevents overwriting initialMessages).
+   */
+  const historyAdapter = useMemo(() => {
+    if (mode === "temporary") return undefined;
+
+    //  If we are in read-only mode and have no ID, bypass the DB completely.
+    // This allows `initialMessages` to render without the DB adapter wiping them out.
+    if (readOnly && !conversationIdRef.current) return undefined;
+
+    return createHistoryAdapter(getConversationId, flowVersionId, !!readOnly);
+  }, [getConversationId, flowVersionId, mode, readOnly]);
+  /**
+   * Dynamic Suggestion Engine.
+   */
+  const suggestionAdapter: SuggestionAdapter = useMemo(
+    () => ({
+      async generate() {
+        const standardItems = activeSuggestionsRef.current || [];
+        return standardItems.map((prompt) => ({ prompt }));
+      },
+    }),
+    [],
+  );
+
+  /**
+   * Execution API Runtime.
+   */
+  const runtime = useLocalRuntime(
+    useMemo(
+      () =>
+        createAssistantUIModelAdapter({
+          flowVersionId,
+          getConversationId, // Pass the dynamic getter
+          onRequestComplete,
+          onSuggestionsUpdate: handleSuggestionsUpdate,
+        }),
+      [flowVersionId, getConversationId, onRequestComplete, handleSuggestionsUpdate],
+    ),
+    {
+      initialMessages,
+      adapters: {
+        suggestion: suggestionAdapter,
+        ...(historyAdapter ? { history: historyAdapter } : {}),
+      },
+    },
+  );
+
+  const aui = useAui({
+    suggestions: Suggestions(defaultActions),
+  });
+
+  return (
+    <AssistantRuntimeProvider aui={aui} runtime={runtime}>
+      <Thread title={title} description={description} />
+    </AssistantRuntimeProvider>
+  );
+};

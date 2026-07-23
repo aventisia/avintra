@@ -6,7 +6,6 @@ export default {
   // Add specific or override config here
   content: [
     "./src/**/*.{html,js,jsx,ts,tsx,md,mdx}",
-    "./react-toolkit/**/*.{html,js,jsx,ts,tsx,md,mdx}",
     "../../packages/ui/src/**/*.{html,js,jsx,ts,tsx,md,mdx}",
   ],
 };

@@ -1,0 +1,20 @@
+/** Column visibility initial state for the jobs table. */
+export const columnVisibilityState = {
+  id: false,
+  flowName: true,
+  flowVersionNumber: true,
+  status: true,
+  startTimeStamp: true,
+  endTimeStamp: true,
+  duration: true,
+  creditsConsumed: true,
+  remarks: true,
+  isFlowVersionPublished: true,
+  retryCount: true,
+  triggerType: true,
+  priority: true,
+  createdByName: true,
+  createdAt: true,
+  executionLocation: true,
+  flowVersionId: true,
+};

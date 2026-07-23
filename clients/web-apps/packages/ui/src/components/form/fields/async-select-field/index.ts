@@ -3,7 +3,7 @@ export { AsyncSingleSelectField } from "./AsyncSingleSelectField";
 export { AsyncMultiSelectField } from "./AsyncMultiSelectField";
 
 // Hooks
-export { useDebouncedSearch } from "@/ui/components";
+export { useDebouncedSearch } from "../../../async-select/useDebouncedSearch";
 
 // Types
 export type {
@@ -12,6 +12,6 @@ export type {
   AsyncMultiSelectProps,
   UseDebouncedSearchParams,
   UseDebouncedSearchReturn,
-} from "@/ui/components";
+} from "../../../async-select/types";
 export type { AsyncSingleSelectFieldProps } from "./AsyncSingleSelectField";
 export type { AsyncMultiSelectFieldProps } from "./AsyncMultiSelectField";

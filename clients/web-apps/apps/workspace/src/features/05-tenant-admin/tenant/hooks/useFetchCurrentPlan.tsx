@@ -1,0 +1,25 @@
+import { toast } from "@avplatform/ui/sonner";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+
+import { getTenantCurrentPlan } from "../apis/tenant-info-apis";
+
+/**
+ * Custom hook to fetch Current Plan using react query.
+ * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
+ */
+export const useFetchCurrentPlan = () => {
+  // Get Current Plan using react query
+  const { data, isFetching, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["CURRENT_PLAN"],
+    queryFn: getTenantCurrentPlan,
+  });
+
+  // Show toast on fetch error
+  useEffect(() => {
+    if (isError) toast.error(error.toString());
+  }, [error, isError]);
+
+  // Return isFetching and isLoading flag
+  return { data, isFetching, isLoading, refetch };
+};

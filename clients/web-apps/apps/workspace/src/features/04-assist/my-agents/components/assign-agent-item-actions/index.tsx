@@ -1,0 +1,27 @@
+import { DropdownMenuContent } from "@avplatform/ui/dropdown-menu";
+import { DropdownMenu } from "@avplatform/ui/dropdown-menu";
+
+import { AgentsActionsTrigger } from "./AgentsActionsTrigger";
+import { AgentsRemoveAction } from "./AgentsRemoveAction";
+
+interface AgentsListItemActionsProps {
+  id: string;
+}
+
+/**
+ * Renders the actions dropdown menu for a flow list item in the flows list.
+ */
+export const AgentsListItemActions = ({ id }: AgentsListItemActionsProps) => {
+  return (
+    // Dropdown menu for flow table row action
+    <DropdownMenu>
+      {/* Trigger for dropdown menu */}
+      <AgentsActionsTrigger />
+
+      {/* Dropdown menu content */}
+      <DropdownMenuContent align="end" className="w-[6rem] min-w-[6rem]">
+        <AgentsRemoveAction agentId={id} />
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
