@@ -42,7 +42,7 @@ def hasChangesInPath(path) {
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,docs,accounts,workspace,studio,aspnet_toolkit)')
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,docs,web_apps,studio,aspnet_toolkit). web_apps covers accounts and workspace apps.')
     }
     stages {
         stage('Detect Changes') {
@@ -60,8 +60,7 @@ pipeline {
                         env.BUILD_WORKSPACE_API = reposToBuild.contains('workspace_api') ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = reposToBuild.contains('llmpipeline_api') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
-                        env.BUILD_ACCOUNTS_CLIENT = reposToBuild.contains('accounts') ? 'true' : 'false'
-                        env.BUILD_WORKSPACE_CLIENT = reposToBuild.contains('workspace') ? 'true' : 'false'
+                        env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace')) ? 'true' : 'false'
                         env.BUILD_STUDIO_CLIENT = reposToBuild.contains('studio') ? 'true' : 'false'
                         env.BUILD_ASPNET_TOOLKIT = reposToBuild.contains('aspnet_toolkit') ? 'true' : 'false'
                     } else {
@@ -75,8 +74,7 @@ pipeline {
                         env.BUILD_WORKSPACE_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
-                        env.BUILD_ACCOUNTS_CLIENT = hasChangesInPath('clients/worc-web-legacy/accounts') ? 'true' : 'false'
-                        env.BUILD_WORKSPACE_CLIENT = hasChangesInPath('clients/worc-web-legacy/workspace') ? 'true' : 'false'
+                        env.BUILD_WEB_APPS = hasChangesInPath('clients/web-apps') ? 'true' : 'false'
                         env.BUILD_STUDIO_CLIENT = hasChangesInPath('clients/worc-web-legacy/studio') ? 'true' : 'false'
                         env.BUILD_ASPNET_TOOLKIT = aspnetToolkitChanged ? 'true' : 'false'
                     }
@@ -88,8 +86,7 @@ pipeline {
                     - Workspace API: ${env.BUILD_WORKSPACE_API}
                     - LLM Pipeline API: ${env.BUILD_LLMPIPELINE_API}
                     - Docs Client: ${env.BUILD_DOCS_CLIENT}
-                    - Accounts Client: ${env.BUILD_ACCOUNTS_CLIENT}
-                    - Workspace Client: ${env.BUILD_WORKSPACE_CLIENT}
+                    - Web Apps: ${env.BUILD_WEB_APPS}
                     - Studio Client: ${env.BUILD_STUDIO_CLIENT}
                     """.stripIndent()
                 }
@@ -247,7 +244,7 @@ pipeline {
                     }
                     agent any
                     tools {
-                        nodejs 'NodeJS 20.18.1'
+                        nodejs 'NodeJS 22.18.0'
                     }
                     stages {
                         stage('Install - Docs') {
@@ -284,84 +281,56 @@ pipeline {
                     }
                 }
                 
-                stage('Accounts Client') {
+                stage('Web Apps') {
                     when {
-                        expression { env.BUILD_ACCOUNTS_CLIENT == 'true' }
+                        expression { env.BUILD_WEB_APPS == 'true' }
                     }
                     agent any
                     tools {
-                        nodejs 'NodeJS 20.18.1'
+                        nodejs 'NodeJS 22.18.0'
                     }
                     stages {
-                        stage('Install - Accounts Client') {
+                        stage('Install - Web Apps') {
                             steps {
-                                dir('clients/worc-web-legacy/accounts') {
-                                    echo 'Installing Accounts Client dependencies...'
+                                dir('clients/web-apps') {
+                                    echo 'Installing web-apps dependencies...'
                                     sh 'npm ci'
                                 }
                             }
                         }
-                        stage('Build - Accounts Client') {
+                        stage('Build - Web Apps') {
                             steps {
-                                dir('clients/worc-web-legacy/accounts') {
-                                    echo 'Building Accounts Client...'
-                                    sh "npm run build -- --mode=${getBuildMode(env.BRANCH_NAME)}"
+                                dir('clients/web-apps') {
+                                    echo 'Building web-apps...'
+                                    sh "npm run build -- -- --mode=${getBuildMode(env.BRANCH_NAME)}"
                                 }
                             }
                         }
-                        stage('Deploy - Accounts Client') {
+                        stage('Deploy - Accounts App') {
                             steps {
                                 script {
                                     sshagent(credentials: ['aventisia_vps_ssh']) {
                                         def targetServers = getTargetServers(env.BRANCH_NAME)
-                                        echo "Deploying Accounts Client to ${targetServers.size()} server(s)..."
+                                        echo "Deploying Accounts App to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/accounts/dist/* admin@${server}:/var/www/aventisia.com/clients/accounts/"
-                                            echo "Successfully deployed Accounts Client to ${server}"
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/web-apps/apps/accounts/dist/* admin@${server}:/var/www/aventisia.com/clients/accounts/"
+                                            echo "Successfully deployed Accounts App to ${server}"
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                }
-                
-                stage('Workspace Client') {
-                    when {
-                        expression { env.BUILD_WORKSPACE_CLIENT == 'true' }
-                    }
-                    agent any
-                    tools {
-                        nodejs 'NodeJS 20.18.1'
-                    }
-                    stages {
-                        stage('Install - Workspace Client') {
-                            steps {
-                                dir('clients/worc-web-legacy/workspace') {
-                                    echo 'Installing Workspace Client dependencies...'
-                                    sh 'npm ci'
-                                }
-                            }
-                        }
-                        stage('Build - Workspace Client') {
-                            steps {
-                                dir('clients/worc-web-legacy/workspace') {
-                                    echo 'Building Workspace Client...'
-                                    sh "npm run build -- --mode=${getBuildMode(env.BRANCH_NAME)}"
-                                }
-                            }
-                        }
-                        stage('Deploy - Workspace Client') {
+                        stage('Deploy - Workspace App') {
                             steps {
                                 script {
                                     sshagent(credentials: ['aventisia_vps_ssh']) {
                                         def targetServers = getTargetServers(env.BRANCH_NAME)
-                                        echo "Deploying Workspace Client to ${targetServers.size()} server(s)..."
+                                        echo "Deploying Workspace App to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/workspace/dist/* admin@${server}:/var/www/aventisia.com/clients/workspace/"
-                                            echo "Successfully deployed Workspace Client to ${server}"
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/web-apps/apps/workspace/dist/* admin@${server}:/var/www/aventisia.com/clients/workspace/"
+                                            echo "Successfully deployed Workspace App to ${server}"
                                         }
                                     }
                                 }
@@ -376,7 +345,7 @@ pipeline {
                     }
                     agent any
                     tools {
-                        nodejs 'NodeJS 20.18.1'
+                        nodejs 'NodeJS 22.18.0'
                     }
                     stages {
                         stage('Install - Studio Client') {
