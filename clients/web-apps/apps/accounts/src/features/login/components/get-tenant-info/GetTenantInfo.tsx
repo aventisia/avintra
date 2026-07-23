@@ -1,9 +1,9 @@
 import { IS_TAURI } from "@avplatform/ui/constants";
+//import { SocialButtons } from "@/components/ui/SocialButtons";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { ContentHeader } from "@/components/ui/ContentHeader";
-//import { SocialButtons } from "@/components/ui/SocialButtons";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
 // import { SeparatorWithText } from "@/react-toolkit/ui/SeparatorWithText";
 import { GetTenantInfoForm } from "./GetTenantInfoForm";

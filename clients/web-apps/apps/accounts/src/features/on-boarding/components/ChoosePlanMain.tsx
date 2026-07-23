@@ -1,3 +1,5 @@
+import { AppLogo } from "@avplatform/layout/logo";
+import { MinimalFooter } from "@avplatform/layout/minimal-footer";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { useShallow } from "zustand/react/shallow";
@@ -6,8 +8,6 @@ import { HeaderContainer } from "@/components/layout/HeaderContainer";
 import { LeftContainer } from "@/components/ui/LeftContainer";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
-import { AppLogo } from "@/react-toolkit/layout/AppLogo";
-import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
 
 import { useChoosePlanStore } from "../stores/choose-plan-store";
 import { BillingAddress } from "./billing-address/BillingAddress";

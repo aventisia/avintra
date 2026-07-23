@@ -1,12 +1,6 @@
+import { maxLenError, nameError, numericError, reqError } from "@avplatform/ui/utils";
+import { nameRegex, numericRegex } from "@avplatform/ui/utils";
 import { z } from "zod";
-
-import {
-  maxLenError,
-  nameError,
-  numericError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { nameRegex, numericRegex } from "@/react-toolkit/utils/regex-list";
 
 export const billingInfoSchema = z
   .object({

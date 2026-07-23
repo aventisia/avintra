@@ -1,5 +1,5 @@
-import type { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import type { IHttpResponse } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import type { PwdResetDto } from "../dtos/pwd-reset-dto";
 

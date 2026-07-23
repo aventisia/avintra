@@ -1,4 +1,5 @@
 import { Button, SubmitButton } from "@avplatform/ui/buttons";
+import { USER_NAME_LS_KEY } from "@avplatform/ui/constants";
 import { Form } from "@avplatform/ui/form";
 import { SelectField } from "@avplatform/ui/form";
 import { z } from "zod";
@@ -10,7 +11,6 @@ import { useDefineUserInfoForm } from "@/features/on-boarding/hooks/useDefineUse
 import { useUpdateTenantInfoMutation } from "@/features/on-boarding/hooks/useUpdateTenantInfoMutation";
 import { useCompanyInfoStore } from "@/features/on-boarding/stores/company-info-store";
 import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
-import { USER_NAME_LS_KEY } from "@/react-toolkit/constants";
 
 /**
  * Component for the create account form.

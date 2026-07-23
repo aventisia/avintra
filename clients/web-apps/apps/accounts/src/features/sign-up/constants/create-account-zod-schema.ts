@@ -1,13 +1,6 @@
+import { maxLenError, minLenError, nameError, pwdError, reqError } from "@avplatform/ui/utils";
+import { nameRegex, pwdRegex } from "@avplatform/ui/utils";
 import * as z from "zod";
-
-import {
-  maxLenError,
-  minLenError,
-  nameError,
-  pwdError,
-  reqError,
-} from "@/react-toolkit/utils/error-message-list";
-import { nameRegex, pwdRegex } from "@/react-toolkit/utils/regex-list";
 
 export const emailSchema = z
   .string()

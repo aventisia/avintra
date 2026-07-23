@@ -1,4 +1,4 @@
-import { SESSION_EXPIRED_LS_KEY } from "@/react-toolkit/constants";
+import { SESSION_EXPIRED_LS_KEY } from "@avplatform/ui/constants";
 
 /**
  * Redirects the user to the login page if a 401 Unauthorized response is detected.

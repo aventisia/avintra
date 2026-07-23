@@ -1,6 +1,6 @@
-import type { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import type { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import type { IHttpResponse } from "@avplatform/ui/dtos";
+import type { UserSessionDto } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import type { CreateAccountDto } from "../dtos/create-account-dto";
 

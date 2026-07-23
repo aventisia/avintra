@@ -1,14 +1,11 @@
+import { refreshSession } from "@avplatform/ui/apis/accounts-me-apis";
+import { SESSION_EXPIRED_LS_KEY } from "@avplatform/ui/constants";
+import { setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
-import {
-  ADD_TENANT,
-  NO_ACTIVE_SUBSCRIPTION,
-  SESSION_EXPIRED_LS_KEY,
-} from "@/react-toolkit/constants";
-import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
+import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
 
 /**
  * Custom hook to validate the user session for the login page.

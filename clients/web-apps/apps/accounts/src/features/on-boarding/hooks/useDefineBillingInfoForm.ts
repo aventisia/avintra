@@ -1,9 +1,8 @@
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { billingInfoSchema } from "../constants/billing-info-zod-schema";
 import { useChoosePlanStore } from "../stores/choose-plan-store";

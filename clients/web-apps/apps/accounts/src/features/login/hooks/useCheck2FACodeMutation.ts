@@ -1,9 +1,8 @@
 import { toast } from "@avplatform/ui/sonner";
+import { setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-
-import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
 
 import { checkTwoFAVerificationCode } from "../apis/login-apis";
 import { useLoginStore } from "../stores/login-store";

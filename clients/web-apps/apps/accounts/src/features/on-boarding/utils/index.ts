@@ -1,4 +1,4 @@
-import { BILLING_INFO_KEY } from "@/react-toolkit/constants";
+import { BILLING_INFO_KEY } from "@/constants/variables";
 
 import type { PlanFrequency } from "../types/plan-type";
 

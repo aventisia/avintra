@@ -1,5 +1,6 @@
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+
 import { ContentContainer } from "@/components/ui/ContentContainer";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
 import { GoToResetPwd } from "./GoToResetPwd";
 import { PwdLoginForm } from "./PwdLoginForm";

@@ -9,8 +9,7 @@ export default defineConfig((): UserConfig => {
     resolve: {
       alias: [
         { find: "@/ui", replacement: path.resolve(__dirname, "../../packages/ui/src") },
-        { find: "@/react-toolkit", replacement: path.resolve(__dirname, "./react-toolkit") }, // SHOULD BE FIRST
-        { find: "@", replacement: path.resolve(__dirname, "./src") }, // SHOULD BE SECOND
+        { find: "@", replacement: path.resolve(__dirname, "./src") },
       ],
     },
   };

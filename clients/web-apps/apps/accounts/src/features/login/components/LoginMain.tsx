@@ -1,3 +1,4 @@
+import { MinimalFooter } from "@avplatform/layout/minimal-footer";
 import { IS_TAURI } from "@avplatform/ui/constants";
 import { useShallow } from "zustand/react/shallow";
 
@@ -5,8 +6,7 @@ import { TauriAppFooter } from "@/components/layout/TauriAppFooter";
 import { LeftContainer } from "@/components/ui/LeftContainer";
 import { PageContainer } from "@/components/ui/PageContainer";
 import { RightContainer } from "@/components/ui/RightContainer";
-import { MinimalFooter } from "@/react-toolkit/layout/MinimalFooter";
-import { RedirectPage } from "@/react-toolkit/pages/RedirectPage";
+import { RedirectPage } from "@/pages/default-pages";
 
 import { useValidateUserSessionForLoginPage } from "../hooks/useValidateUserSessionForLoginPage";
 import { useLoginStore } from "../stores/login-store";

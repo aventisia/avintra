@@ -1,11 +1,12 @@
+import { USER_NAME_LS_KEY } from "@avplatform/ui/constants";
+import { useCarryParams } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
+import { setUserSessionLocally } from "@avplatform/ui/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
-import { ADD_TENANT, USER_NAME_LS_KEY } from "@/react-toolkit/constants";
-import { useCarryParams } from "@/react-toolkit/hooks/useForwardQueryParams";
-import { setUserSessionLocally } from "@/react-toolkit/utils/user-session-utils";
+import { ADD_TENANT } from "@/constants/variables";
 
 import { createAccount } from "../apis/create-account-apis";
 import { useCreateAccountStore } from "../stores/create-account-store";

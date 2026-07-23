@@ -1,8 +1,7 @@
+import { checkVerificationCode } from "@avplatform/ui/apis/accounts-auth-apis";
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
-
-import { checkVerificationCode } from "@/react-toolkit/apis/accounts-auth-apis";
 
 import { useResetPwdStore } from "../stores/reset-pwd-store";
 

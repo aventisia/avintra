@@ -1,7 +1,6 @@
+import { maxLenError, nameError, reqError } from "@avplatform/ui/utils";
+import { nameRegex } from "@avplatform/ui/utils";
 import { z } from "zod";
-
-import { maxLenError, nameError, reqError } from "@/react-toolkit/utils/error-message-list";
-import { nameRegex } from "@/react-toolkit/utils/regex-list";
 
 /**
  * Zod schema to validate domain names using the built-in URL parser.

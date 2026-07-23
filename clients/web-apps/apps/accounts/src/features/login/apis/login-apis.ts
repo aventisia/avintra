@@ -1,7 +1,7 @@
-import type { IHttpResponse } from "@/react-toolkit/dtos/http-response";
-import type { CheckVerificationCodeDto } from "@/react-toolkit/dtos/request/check-verification-code-dto";
-import type { UserSessionDto } from "@/react-toolkit/dtos/response/user-session-dto";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import type { IHttpResponse } from "@avplatform/ui/dtos";
+import type { CheckVerificationCodeDto } from "@avplatform/ui/dtos";
+import type { UserSessionDto } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import type { PwdLoginDto } from "../dtos/pwd-login-dto";
 

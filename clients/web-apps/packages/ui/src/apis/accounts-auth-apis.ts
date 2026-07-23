@@ -1,13 +1,12 @@
-import type { CheckAvailabilityDto } from "@avplatform/ui/dtos";
-import type { TrueFalseResultDto } from "@avplatform/ui/dtos";
-import type { IHttpResponse } from "@avplatform/ui/dtos";
-
-import type { CheckVerificationCodeDto } from "@/react-toolkit/dtos/request/check-verification-code-dto";
-import type { CreateVerificationCodeDto } from "@/react-toolkit/dtos/request/create-verification-code-dto";
-import type { EmailDto } from "@/react-toolkit/dtos/request/email-dto";
-import type { CreatedVerificationCodeDto } from "@/react-toolkit/dtos/response/created-verification-code-dto";
-import type { TenantInfoDto } from "@/react-toolkit/dtos/response/tenant-info-dto";
-import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import type { CheckAvailabilityDto } from "@/ui/dtos";
+import type { IHttpResponse } from "@/ui/dtos";
+import type { CheckVerificationCodeDto } from "@/ui/dtos/request/check-verification-code-dto";
+import type { CreateVerificationCodeDto } from "@/ui/dtos/request/create-verification-code-dto";
+import type { EmailDto } from "@/ui/dtos/request/email-dto";
+import type { CreatedVerificationCodeDto } from "@/ui/dtos/response/created-verification-code-dto";
+import type { TenantInfoDto } from "@/ui/dtos/response/tenant-info-dto";
+import type { TrueFalseResultDto } from "@/ui/dtos/response/true-false-result-dto";
+import { axiosInstance } from "@/ui/lib/axios-instance";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/auth`;
 

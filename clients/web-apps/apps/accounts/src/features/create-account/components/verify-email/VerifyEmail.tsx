@@ -1,6 +1,7 @@
+import { useDocumentTitle } from "@avplatform/ui/hooks";
+
 import { ContentContainer } from "@/components/ui/ContentContainer";
 import { ContentHeader } from "@/components/ui/ContentHeader";
-import { useDocumentTitle } from "@/react-toolkit/hooks/useDocumentTitle";
 
 import { BackToCreateAccount } from "./BackToCreateAccount";
 import { ResendVerifyEmailCode } from "./ResendVerifyEmailCode";

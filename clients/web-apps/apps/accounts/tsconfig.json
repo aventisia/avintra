@@ -4,9 +4,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/react-toolkit/*": ["./react-toolkit/*"], // SHOULD BE FIRST
       "@/ui/*": ["../../packages/ui/src/*"],
-      "@/*": ["./src/*"] // SHOULD BE SECOND
+      "@/*": ["./src/*"]
     }
   }
 }

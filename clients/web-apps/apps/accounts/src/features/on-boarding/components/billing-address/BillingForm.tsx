@@ -2,11 +2,11 @@ import { Button, SubmitButton } from "@avplatform/ui/buttons";
 import { Form } from "@avplatform/ui/form";
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { ScrollArea } from "@avplatform/ui/scroll";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { organizationNameProps } from "@/features/on-boarding/constants/company-form-field-props";
-import { useUserSessionStore } from "@/react-toolkit/stores/user-session-store";
 
 import { billingInfoSchema } from "../../constants/billing-info-zod-schema";
 import {
