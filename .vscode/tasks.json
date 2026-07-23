@@ -4,18 +4,18 @@
     {
       "label": "accounts",
       "type": "shell",
-      "command": "npm run dev",
+      "command": "npx turbo run dev --filter=accounts",
       "options": {
-        "cwd": "${workspaceFolder}/clients/worc-web-legacy/accounts"
+        "cwd": "${workspaceFolder}/clients/web-apps/apps/accounts"
       },
       "isBackground": true
     },
     {
       "label": "workspace",
       "type": "shell",
-      "command": "npm run dev",
+      "command": "npx turbo run dev --filter=workspace",
       "options": {
-        "cwd": "${workspaceFolder}/clients/worc-web-legacy/workspace"
+        "cwd": "${workspaceFolder}/clients/web-apps"
       },
       "isBackground": true
     },
