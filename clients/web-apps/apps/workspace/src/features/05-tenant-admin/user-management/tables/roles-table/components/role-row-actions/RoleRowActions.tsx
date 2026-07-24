@@ -12,10 +12,10 @@ export const RoleRowActions = ({ rowId }: RoleRowActionsProps) => {
     // Dropdown menu for User table row action */}
     <DataTableRowActions>
       {/* View the User details */}
-      <DTRowAction rowId={rowId} crudAction="read" />
+      <DTRowAction rowId={rowId} crudAction="read" entity="role" />
 
       {/* Edit User details */}
-      <DTRowAction rowId={rowId} crudAction="update" />
+      <DTRowAction rowId={rowId} crudAction="update" entity="role" />
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />

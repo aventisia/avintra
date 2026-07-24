@@ -1,5 +1,6 @@
 import { TagInput } from "@avplatform/ui";
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import {
   DatePickerField,
   Form,
@@ -14,6 +15,7 @@ import {
 } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
@@ -39,10 +41,19 @@ import { AgentsSelector } from "./AgentsSelector";
 import { TimezoneSelector } from "./TimezoneSelector";
 import { TriggerTimeScheduleInputs } from "./TriggerTimeScheduleInputs";
 
-export const TriggerCrudForm = () => {
+interface TriggerCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define trigger form
-  const { form, rowId, isDirty, crudAction, setShowDialog, refineFormData, isEffectivePassed } =
-    useDefineTriggerForm();
+  const { form, isDirty, refineFormData, isEffectivePassed } = useDefineTriggerForm({
+    rowId,
+    crudAction,
+  });
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
@@ -69,13 +80,13 @@ export const TriggerCrudForm = () => {
     });
 
     // Close the dialog if not creating the record
-    if (crudAction !== "create") setShowDialog(false);
+    if (crudAction !== "create") onCloseConfirmed();
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if (crudAction === "create" && isSuccess) setShowDialog(false);
-  }, [isSuccess, crudAction, setShowDialog]);
+    if (crudAction === "create" && isSuccess) onCloseConfirmed();
+  }, [isSuccess, crudAction, onCloseConfirmed]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";

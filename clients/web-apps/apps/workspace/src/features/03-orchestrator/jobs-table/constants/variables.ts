@@ -1,4 +1,4 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 import { JobStatusEnum } from "..";
 
@@ -29,7 +29,7 @@ const TABLE_HEADING = "Jobs";
  */
 const TABLE_KEY = "jobs";
 
-const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return { heading: "Create Job", description: "" };

@@ -36,10 +36,10 @@ export const FlowRowActions = ({
       <FlowRowOpenAction rowId={rowId} />
 
       {/* View the flow details */}
-      {actions?.read && <DTRowAction rowId={rowId} crudAction="read" />}
+      {actions?.read && <DTRowAction rowId={rowId} crudAction="read" entity="flow" />}
 
       {/* Edit flow details */}
-      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" />}
+      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="flow" />}
 
       {/* Share Access */}
       {actions?.share && (

@@ -1,7 +1,8 @@
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { DatabaseOptionsEnum } from "@avplatform/ui/enums/database-options-enum";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -16,12 +17,17 @@ import { tenantNameSchema, tenantZodSchema } from "../constants/tenant-zod-schem
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { useDateRangePickerStore } from "../stores/date-range-store";
 
+interface UseDefineTenantFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
  * Custom hook for defining a tenant form.
  *
  * @returns An object containing the form, form methods, and other related values.
  */
-export const useDefineTenantForm = () => {
+export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
   // Set tenant name state (required for avaialbility check)
   const [tenantName, setTenantName] = useState("");
 
@@ -32,18 +38,7 @@ export const useDefineTenantForm = () => {
     })),
   );
 
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty } = useCrudDialogDirty();
 
   const { dateRange } = useDateRangePickerStore(
     useShallow((state) => ({ dateRange: state.dateRange })),
@@ -91,7 +86,7 @@ export const useDefineTenantForm = () => {
   // Destructor form values and methods
   const {
     watch,
-    formState: { isSubmitting, isDirty },
+    formState: { isDirty },
   } = form;
 
   // Fetch tenant data when rowId changes
@@ -182,23 +177,21 @@ export const useDefineTenantForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
-  // Reset availability message when dialog closes
+  // Reset availability message when component unmounts
   useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+    return () => {
+      setAvailabilityMessage(null);
+    };
+  }, [setAvailabilityMessage]);
 
   // Return form and methods
   return {
     form,
     watch,
-    isSubmitting,
     isDirty,
-    rowId,
-    crudAction,
-    setShowDialog,
     refineFormData,
     isAvailable,
     isCheckPending,

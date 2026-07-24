@@ -23,14 +23,17 @@ export const STRemarkEditForm = ({
   initialContent = "",
   onCancel,
 }: STRemarkFormEditProps) => {
-  const { form, isDirty, remarksQueryKey, rowId, refineFormData } = useDefineSTRemarkEditForm();
+  const { form, isDirty, remarksQueryKey, refineFormData } = useDefineSTRemarkEditForm({
+    rowId: id,
+    crudAction: "update",
+  });
 
   // Define optimistic mutation to create/update the support ticket remark
   const { mutate: mutateSupportTicketRemark } = useListOptimisticMutation<
     SupportTicketRemarksDto,
     SupportTicketRemarksDto | boolean,
     SupportTicketRemarksDto
-  >([rowId], supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
+  >([id], supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
 
   // Define submit handler
   const onSubmit = async (formData: z.infer<typeof supportTicketRemarksZodSchema>) => {

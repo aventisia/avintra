@@ -1,10 +1,10 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 export const DATA_QUERY_KEY = ["roles"];
 export const TABLE_HEADING = "Roles";
 export const TABLE_KEY = "roles";
 
-export const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+export const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return { heading: "Add Role", description: "" };

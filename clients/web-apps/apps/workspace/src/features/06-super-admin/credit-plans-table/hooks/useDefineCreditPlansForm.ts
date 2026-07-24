@@ -1,5 +1,6 @@
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -11,10 +12,18 @@ import { CREDIT_PLANS_QUERY_KEY } from "../constants";
 import { creditPlansZodSchema } from "../constants/credit-plans-zod-schema";
 import { CreditPlansTableDto } from "../dtos/credit-plans-table-dto";
 
+interface UseDefineCreditPlansFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
- * Custom hook for defining a model form.
+ * Custom hook for defining a credit plan form.
  */
-export const useDefineCreditPlansForm = () => {
+export const useDefineCreditPlansForm = ({
+  rowId,
+  crudAction,
+}: UseDefineCreditPlansFormOptions) => {
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -22,18 +31,7 @@ export const useDefineCreditPlansForm = () => {
     })),
   );
 
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get query client
   const queryClient = useQueryClient();
@@ -78,10 +76,12 @@ export const useDefineCreditPlansForm = () => {
     });
 
     // Focus the name field after reset.
-    setTimeout(() => {
-      form.setFocus("serviceType", { shouldSelect: false });
-    }, 0);
-  }, [rowId, form, userSession, queryClient]);
+    if (crudAction === "create") {
+      setTimeout(() => {
+        form.setFocus("serviceType", { shouldSelect: false });
+      }, 0);
+    }
+  }, [rowId, crudAction, form, queryClient]);
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof creditPlansZodSchema>) => {
@@ -90,16 +90,14 @@ export const useDefineCreditPlansForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   // Return form and methods
   return {
     form,
     isDirty,
-    rowId,
-    crudAction,
-    setShowDialog,
     refineFormData,
+    userSession,
   };
 };

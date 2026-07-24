@@ -17,7 +17,6 @@ import { useSearchParams } from "react-router-dom";
 import {
   DateRangeFilter,
   HISTORY_JOB_STATUSES,
-  JobCrudDialog,
   JobStatusEnum,
   JobsBulkActions,
   JobsStats,
@@ -99,46 +98,42 @@ export const JobsTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          <JobCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <DTHeading heading={TABLE_HEADING} />
-                <Tabs value={tabValue} onValueChange={handleTabSelect}>
-                  <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
-                    {tabs.map((tab) => (
-                      <TabsTrigger value={tab} key={tab} className="w-full rounded-lg py-0.5">
-                        {tab}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </Tabs>
-              </div>
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumns={["flowName", "flowVersionNumber", "status"]}
-                  placeholder="Search agent, version or status..."
-                />
-                <DateRangeFilter />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                {tabValue == "History" ? (
-                  <DTExportButton fileName={TABLE_KEY} table={table} />
-                ) : null}
-                <DTCreateButton buttonText="Create Job" />
-              </div>
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <Tabs value={tabValue} onValueChange={handleTabSelect}>
+                <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
+                  {tabs.map((tab) => (
+                    <TabsTrigger value={tab} key={tab} className="w-full rounded-lg py-0.5">
+                      {tab}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+              </Tabs>
             </div>
-            {/* Data table to render data */}
-            <div className="flex flex-col gap-2">
-              {tabValue === "History" && (
-                <JobsStats
-                  data={data?.data.filter((job) => HISTORY_JOB_STATUSES.includes(job.status))}
-                />
-              )}
+            <div className="flex items-center gap-2">
+              <DTSearchBox
+                table={table}
+                searchColumns={["flowName", "flowVersionNumber", "status"]}
+                placeholder="Search agent, version or status..."
+              />
+              <DateRangeFilter />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              {tabValue == "History" ? <DTExportButton fileName={TABLE_KEY} table={table} /> : null}
+              <DTCreateButton buttonText="Create Job" entity="job" />
+            </div>
+          </div>
+          {/* Data table to render data */}
+          <div className="flex flex-col gap-2">
+            {tabValue === "History" && (
+              <JobsStats
+                data={data?.data.filter((job) => HISTORY_JOB_STATUSES.includes(job.status))}
+              />
+            )}
 
-              <DataTable table={table} columnsLength={jobsTableColumns.length} />
-            </div>
-          </JobCrudDialog>
+            <DataTable table={table} columnsLength={jobsTableColumns.length} />
+          </div>
           {tabValue === "Scheduled" && <JobsBulkActions table={table} />}{" "}
           {/* Data table Pagination component */}
           <DTPagination table={table} singularLabel="job" pluralLabel="jobs" />

@@ -11,8 +11,8 @@ interface JobRowActionsProps {
 export const JobRowActions = ({ rowId }: JobRowActionsProps) => {
   return (
     <DataTableRowActions>
-      <DTRowAction rowId={rowId} crudAction="read" />
-      <DTRowAction rowId={rowId} crudAction="update" />
+      <DTRowAction rowId={rowId} crudAction="read" entity="job" />
+      <DTRowAction rowId={rowId} crudAction="update" entity="job" />
       <DropdownMenuSeparator />
       <JobRowDeleteAction rowId={rowId} />
     </DataTableRowActions>

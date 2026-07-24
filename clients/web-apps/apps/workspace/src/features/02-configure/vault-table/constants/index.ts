@@ -1,4 +1,4 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 import { QueryTabItem } from "@/components/QueryTab";
 
@@ -27,7 +27,7 @@ const TABLE_VIEW_TABS = [
   { label: "Shared", value: "shared" },
 ] as QueryTabItem[];
 
-const getDialogHeadingDescription = (action: CrudActionType) => {
+const getDialogHeadingDescription = (action: DialogCrudAction) => {
   switch (action) {
     case "create":
       return { heading: "Add Credential", description: "" };

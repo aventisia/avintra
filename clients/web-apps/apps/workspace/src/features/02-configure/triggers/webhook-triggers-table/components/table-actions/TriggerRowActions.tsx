@@ -32,9 +32,9 @@ export const TriggerRowActions = ({
     // Dropdown menu for Trigger table row action */}
     <DataTableRowActions className="w-36 min-w-36">
       {/* View the Trigger details */}
-      {actions?.read && <DTRowAction rowId={rowId} crudAction="read" />}
+      {actions?.read && <DTRowAction rowId={rowId} crudAction="read" entity="webhookTrigger" />}
       {/* Edit Trigger details */}
-      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" />}
+      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="webhookTrigger" />}
       {/* Share Access */}
       {actions?.share && (
         <ResourceShareRowAction

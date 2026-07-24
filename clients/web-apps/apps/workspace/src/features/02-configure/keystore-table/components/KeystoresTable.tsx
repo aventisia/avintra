@@ -20,7 +20,6 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchKeystores } from "../hooks/useFetchKeystores";
 import { useTableTab } from "../hooks/useTableTab";
 import { keystoresTableColumns } from "./KeystoresTableColumns";
-import { KeystoreCrudDialog } from "./keystore-crud-dialog/KeystoreCrudDialog";
 import { KeystoresBulkActions } from "./keystore-row-actions/KeystoresBulkActions";
 
 /**
@@ -58,25 +57,22 @@ export const KeystoresTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <KeystoreCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <DTHeading heading={TABLE_HEADING} />
-                <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
-              </div>
-              <div className="flex items-center gap-2">
-                <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search keys..." />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                {isPersonal && <DTCreateButton />}
-              </div>
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
             </div>
-            <HorizontalScrollWrapper>
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={keystoresTableColumnsArray.length} />
-            </HorizontalScrollWrapper>
-          </KeystoreCrudDialog>
+            <div className="flex items-center gap-2">
+              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search keys..." />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              {isPersonal && <DTCreateButton entity="keystore" />}
+            </div>
+          </div>
+          <HorizontalScrollWrapper>
+            {/* Data table to render data */}
+            <DataTable table={table} columnsLength={keystoresTableColumnsArray.length} />
+          </HorizontalScrollWrapper>
           {/* Data table Pagination component */}
           <DTPagination table={table} />
           {/* Resource Share Dialog component */}

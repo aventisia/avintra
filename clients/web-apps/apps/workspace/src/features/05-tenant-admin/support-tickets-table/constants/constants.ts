@@ -1,4 +1,4 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 /**
  * The unique key for the supportTickets query to be used in the query client. ["supportTickets"]
@@ -18,7 +18,7 @@ const TABLE_HEADING = "Support tickets";
 
 const TABLE_KEY = "support-tickets";
 
-const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return { heading: "Create Support ticket", description: "" };

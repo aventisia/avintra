@@ -8,10 +8,8 @@ import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-
 import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
 
 import { useTableTab } from "../../hooks/useTableTab";
-import { AddTriggerRowAction } from "./AddTriggerRowAction";
 import { AssignAgentsRowAction } from "./AssignAgentsRowAction";
 import { AssignUsersRowAction } from "./AssignUsersRowAction";
-import { OpenQueueRowAction } from "./OpenQueueRowAction";
 import { QueueRowDeleteAction } from "./QueueRowDeleteAction";
 import { UploadItemsRowAction } from "./UploadItemsRowAction";
 
@@ -38,11 +36,8 @@ export const QueueRowActions = ({
   return (
     // Dropdown menu for Queue table row action */}
     <DataTableRowActions className="w-36 min-w-36">
-      {/* View the Queue details */}
-      {actions?.read && <OpenQueueRowAction rowId={rowId} name={queueName} />}
-
       {/* Edit Queue details */}
-      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" />}
+      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="queue" />}
 
       {actions?.update ? (
         type == "User" ? (
@@ -51,8 +46,6 @@ export const QueueRowActions = ({
           <AssignAgentsRowAction rowId={rowId} queueName={queueName} />
         )
       ) : null}
-
-      {actions?.update && <AddTriggerRowAction rowId={rowId} />}
 
       {actions?.update && <UploadItemsRowAction rowId={rowId} />}
 

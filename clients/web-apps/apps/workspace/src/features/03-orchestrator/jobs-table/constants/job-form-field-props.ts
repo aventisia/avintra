@@ -19,7 +19,14 @@ import {
 } from "@/features/search-by-query/types/search-filters";
 
 import { JobPriorityEnum, JobStatusEnum, TriggerTypesEnum } from "..";
-import { CLOSING_JOB_STATUSES } from "./variables";
+
+const CLOSING_JOB_STATUSES = [
+  JobStatusEnum.Completed,
+  JobStatusEnum.Failed,
+  JobStatusEnum.Aborted,
+  JobStatusEnum.Canceled,
+  JobStatusEnum.Killed,
+];
 
 export const idProps: InputFieldProps = {
   name: "id",

@@ -1,5 +1,6 @@
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -21,7 +22,7 @@ import { useTableTab } from "./useTableTab";
  * Manages the state, validation, and data transformations for the Time Trigger form.
  * Handles synchronizing Data Table selections with the form inputs and preparing payloads.
  */
-export const useDefineTriggerForm = () => {
+export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: CrudActionType }) => {
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -29,18 +30,7 @@ export const useDefineTriggerForm = () => {
     })),
   );
 
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get query client
   const queryClient = useQueryClient();
@@ -154,24 +144,19 @@ export const useDefineTriggerForm = () => {
 
   // Syncs the internal React Hook Form dirty state with the global global store
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   // Clean up and invalidate related queries when the dialog is closed
   useEffect(() => {
-    if (!showDialog) {
-      queryClient.invalidateQueries({
-        queryKey: ["select-trigger-agent", rowId],
-      });
-    }
-  }, [queryClient, rowId, showDialog]);
+    queryClient.invalidateQueries({
+      queryKey: ["select-trigger-agent", rowId],
+    });
+  }, [queryClient, rowId]);
 
   return {
     form,
     isDirty,
-    rowId,
-    crudAction,
-    setShowDialog,
     refineFormData,
     isEffectivePassed,
   };

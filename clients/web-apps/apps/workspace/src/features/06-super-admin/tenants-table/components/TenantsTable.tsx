@@ -20,7 +20,6 @@ import { PlanFilter } from "./PlanFilter";
 import { SATenantStats } from "./SATenantStats";
 import { TenantsBulkActions } from "./TenantsBulkActions";
 import { tenantsTableColumns } from "./TenantsTableColumns";
-import { TenantCrudDialog } from "./tenant-crud-dialog/TenantCrudDialog";
 
 /**
  * Renders a table of tenants.
@@ -51,33 +50,26 @@ export const TenantsTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <TenantCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <DTHeading heading={TABLE_HEADING} />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumns={["name"]}
-                  placeholder="Search tenants..."
-                />
-                <DateRangeFilter />
-                <PlanFilter table={table} data={data.data} columnId="activePlan" />{" "}
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                <DTCreateButton />
-              </div>
+            <div className="flex items-center gap-2">
+              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search tenants..." />
+              <DateRangeFilter />
+              <PlanFilter table={table} data={data.data} columnId="activePlan" />{" "}
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              <DTCreateButton entity="tenant" />
             </div>
-            <div className="flex flex-col gap-2">
-              <SATenantStats data={data?.data} />
+          </div>
+          <div className="flex flex-col gap-2">
+            <SATenantStats data={data?.data} />
 
-              <HorizontalScrollWrapper>
-                {/* Data table to render data */}
-                <DataTable table={table} columnsLength={tenantsTableColumns.length} />
-              </HorizontalScrollWrapper>
-            </div>
-          </TenantCrudDialog>
+            <HorizontalScrollWrapper>
+              {/* Data table to render data */}
+              <DataTable table={table} columnsLength={tenantsTableColumns.length} />
+            </HorizontalScrollWrapper>
+          </div>
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 

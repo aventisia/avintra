@@ -20,8 +20,8 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchTriggers } from "../hooks/useFetchTriggers";
 import { useTableTab } from "../hooks/useTableTab";
 import { triggersTableColumns } from "./TriggersTableColumns";
+
 // import { TriggerBulkActions } from "./table-actions/TriggerBulkActions";
-import { TriggerCrudDialog } from "./trigger-crud-dialog/TriggerCrudDialog";
 
 /**
  * Renders a table of triggers.
@@ -56,29 +56,26 @@ export const TriggersTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <TriggerCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <DTHeading heading={TABLE_HEADING} />
-                <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />{" "}
-              </div>
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumns={["name"]}
-                  placeholder="Search triggers..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                {isPersonal && <DTCreateButton />}
-              </div>
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />{" "}
             </div>
-            <HorizontalScrollWrapper>
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={triggersTableColumnsArray.length} />
-            </HorizontalScrollWrapper>
-          </TriggerCrudDialog>
+            <div className="flex items-center gap-2">
+              <DTSearchBox
+                table={table}
+                searchColumns={["name"]}
+                placeholder="Search triggers..."
+              />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              {isPersonal && <DTCreateButton entity="timeTrigger" />}
+            </div>
+          </div>
+          <HorizontalScrollWrapper>
+            {/* Data table to render data */}
+            <DataTable table={table} columnsLength={triggersTableColumnsArray.length} />
+          </HorizontalScrollWrapper>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

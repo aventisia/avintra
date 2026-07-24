@@ -3,7 +3,6 @@ import { Button } from "@avplatform/ui/buttons";
 import { DataTableSkeleton } from "@avplatform/ui/data-table";
 import { Form } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
@@ -28,18 +27,20 @@ import { STDetailsSideComponent } from "../support-ticket-details/STDetailsSideC
 import { STStatusUpdateAction } from "./STStatusUpdateAction";
 
 export const SupportTicketEditForm = () => {
+  // Get support ticket id from URL params
+  const location = useLocation();
+  const id = new URLSearchParams(location.search).get("st") ?? "";
+
   // Define support ticket edit form with support ticket remark form
-  const { form, isDirty, remarksQueryKey, crudAction, rowId, refineFormData } =
-    useDefineSTRemarkForm();
+  const { form, isDirty, remarksQueryKey, refineFormData } = useDefineSTRemarkForm({
+    rowId: id,
+    crudAction: "update",
+  });
 
   const sanitizeHtml = useSanitizer();
 
   // // Get the query client for cache management
   const queryClient = useQueryClient();
-
-  // Get support ticket id from URL params
-  const location = useLocation();
-  const id = new URLSearchParams(location.search).get("st") ?? "";
 
   // Fetch support ticket data
   const { data, isFetching, isLoading, refetch } = useFetchSupportTicket(id);
@@ -48,13 +49,6 @@ export const SupportTicketEditForm = () => {
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
-    })),
-  );
-
-  // Get crud dialog store action to set crudAction
-  const { setCrudDialogOptions } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      setCrudDialogOptions: state.setCrudDialogOptions,
     })),
   );
 
@@ -81,7 +75,7 @@ export const SupportTicketEditForm = () => {
     SupportTicketRemarksDto,
     SupportTicketRemarksDto | boolean,
     SupportTicketRemarksDto
-  >([rowId], supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
+  >([id], supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
 
   // function to handle cancel button click
   const handleCancel = () => setEditingCommentId(null);
@@ -104,7 +98,7 @@ export const SupportTicketEditForm = () => {
 
     await mutateSupportTicketRemark({
       payload: refineFormData(formData) as unknown as SupportTicketRemarksDto,
-      crudAction: crudAction,
+      crudAction: "update",
     });
 
     await refetch();
@@ -119,11 +113,11 @@ export const SupportTicketEditForm = () => {
       refetch();
       setSupportTicketsState([], null, false);
     }
-    if (data?.data && (crudAction === "create" || crudAction === "update")) {
+    if (data?.data) {
       setRemarks(data.data.supportTicketRemarks ?? []);
       setRemarkCount(data.data.remarkCount ?? 0);
     }
-  }, [data, crudAction, refetch, isSelectedSTDataChanged]);
+  }, [data, refetch, isSelectedSTDataChanged]);
 
   // Show loading skeleton while loading or fetching data
   if (isLoading || isFetching) {
@@ -246,18 +240,7 @@ export const SupportTicketEditForm = () => {
               onUpdate={refetch}
             />
           )}
-          <Button
-            type="submit"
-            onClick={() => {
-              setCrudDialogOptions({
-                showDialog: false,
-                rowId,
-                crudAction: "create",
-              });
-            }}
-            disabled={!isDirty}
-            className="min-w-[5rem]"
-          >
+          <Button type="submit" disabled={!isDirty} className="min-w-[5rem]">
             Add Comment
           </Button>
         </div>

@@ -17,7 +17,6 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchOnPremTenants } from "../hooks/useFetchOnPremTenants";
 import { OnPremTenantsBulkActions } from "./OnPremTenantsBulkActions";
 import { onPremTenantsTableColumns } from "./OnPremTenantsTableColumns";
-import { OnPremTenantCrudDialog } from "./on-prem-tenant-crud-dialog/OnPremTenantCrudDialog";
 
 /**
  * Renders a table of on-prem tenants.
@@ -48,30 +47,23 @@ export const OnPremTenantsTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <OnPremTenantCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <DTHeading heading={TABLE_HEADING} />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumns={["name"]}
-                  placeholder="Search tenants..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                <DTCreateButton buttonText="Create" />
-              </div>
+            <div className="flex items-center gap-2">
+              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search tenants..." />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              <DTCreateButton buttonText="Create" entity="onPremTenant" />
             </div>
+          </div>
 
-            <HorizontalScrollWrapper>
-              <div className="pr-0.5">
-                {/* Data table to render data */}
-                <DataTable table={table} columnsLength={onPremTenantsTableColumns.length} />
-              </div>
-            </HorizontalScrollWrapper>
-          </OnPremTenantCrudDialog>
+          <HorizontalScrollWrapper>
+            <div className="pr-0.5">
+              {/* Data table to render data */}
+              <DataTable table={table} columnsLength={onPremTenantsTableColumns.length} />
+            </div>
+          </HorizontalScrollWrapper>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

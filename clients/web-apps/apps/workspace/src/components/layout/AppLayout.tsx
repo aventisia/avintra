@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { WorkspaceCrudDialogProvider } from "@/components/crud-dialog";
 import { DotPattern } from "@/components/layout/DotPattern";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
 // import {
@@ -238,6 +239,7 @@ export const AppLayout = () => {
           {import.meta.env.MODE !== "production" && <ChatAssistant />}
         </div>
       )}
+      <WorkspaceCrudDialogProvider />
     </>
   );
 };

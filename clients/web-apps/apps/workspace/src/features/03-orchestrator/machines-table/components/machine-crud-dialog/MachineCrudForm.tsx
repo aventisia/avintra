@@ -1,5 +1,6 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { AsyncMultiSelectField } from "@avplatform/ui/components/form/fields/AsyncMultiSelectField";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { EnvironmentTypesEnum } from "@avplatform/ui/enums/environment-types-enum";
 import { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
 import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
@@ -30,9 +31,16 @@ import { MachinesTableRowDto } from "../../dtos/machines-table-row-dto";
 import type { UpdateMachineDto } from "../../dtos/update-machine.dto";
 import { useDefineMachineForm } from "../../hooks/useDefineMachineForm";
 
-export const MachineCrudForm = () => {
+interface MachineCrudFormProps {
+  rowId: string;
+  crudAction: "create" | "update";
+}
+
+export const MachineCrudForm = ({ rowId, crudAction }: MachineCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define machine form
-  const { form, rowId, crudAction, isDirty, isValid, setShowDialog } = useDefineMachineForm();
+  const { form, isDirty, isValid } = useDefineMachineForm({ rowId, crudAction });
 
   const operatingSystem = useWatch({
     control: form.control,
@@ -80,8 +88,8 @@ export const MachineCrudForm = () => {
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if (isSuccess) setShowDialog(false);
-  }, [isSuccess, setShowDialog]);
+    if (isSuccess) onCloseConfirmed();
+  }, [isSuccess, onCloseConfirmed]);
 
   // Return the form
   return (

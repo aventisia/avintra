@@ -1,7 +1,8 @@
 import { Button } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
-import { useNavigate } from "react-router-dom";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { z } from "zod";
 
 import { supportTicketsOptimisticMutationFn } from "../../apis/suport-tickets-table-apis";
@@ -12,11 +13,15 @@ import { SupportTicketsTableDto } from "../../dtos/SupportTicketsTableDto";
 import { useDefineSupportTicketForm } from "../../hooks/useDefineSupportTicketForm";
 import { RichTextAreaField } from "../richtextarea/RichTextAreaField";
 
-export const SupportTicketCrudForm = () => {
-  const { form, rowId, isDirty, crudAction, refineFormData } = useDefineSupportTicketForm();
+interface SupportTicketCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
 
-  // Get the navigate function to redirect to the support tickets table page
-  const navigate = useNavigate();
+export const SupportTicketCrudForm = ({ rowId, crudAction }: SupportTicketCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
+  const { form, isDirty, refineFormData } = useDefineSupportTicketForm({ rowId, crudAction });
 
   // Define optimistic mutation to crete the support ticket
   const { mutate: mutateSupportTicket } = useListOptimisticMutation<
@@ -36,8 +41,8 @@ export const SupportTicketCrudForm = () => {
     //reset form
     await form.reset();
 
-    // Redirect to the support tickets table page
-    await navigate("/tenant/support/tickets");
+    // Close the dialog
+    onCloseConfirmed();
   };
 
   return (

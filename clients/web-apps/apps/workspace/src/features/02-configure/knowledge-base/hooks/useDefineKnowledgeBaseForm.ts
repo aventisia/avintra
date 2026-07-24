@@ -1,6 +1,7 @@
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -17,30 +18,27 @@ import { KnowledgeBaseTableDto } from "../dtos/knowledge-base-table-dto";
 import { VectorStoreEnum } from "../enums/vector-store-enum";
 import { useTableTab } from "./useTableTab";
 
+interface UseDefineKnowledgeBaseFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
  * Custom hook for defining a knowledge base form.
  */
-export const useDefineKnowledgeBaseForm = () => {
+export const useDefineKnowledgeBaseForm = ({
+  rowId,
+  crudAction,
+}: UseDefineKnowledgeBaseFormOptions) => {
   // Set knowledge base name state (required for availability check)
   const [knowledgeBaseName, setKnowledgeBaseName] = useState("");
+
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
-    })),
-  );
-
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
     })),
   );
 
@@ -113,7 +111,7 @@ export const useDefineKnowledgeBaseForm = () => {
         ? new Date(knowledgeBaseData?.lastModifiedOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, userSession]);
+  }, [rowId, form, queryClient, userSession, queryKey]);
 
   // Get check availability state and methods
   const {
@@ -150,21 +148,21 @@ export const useDefineKnowledgeBaseForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   // Reset availability message when dialog closes
   useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+    return () => {
+      setAvailabilityMessage(null);
+    };
+  }, [setAvailabilityMessage]);
 
   // Return form and methods
   return {
     form,
     isDirty,
-    rowId,
     crudAction,
-    setShowDialog,
     refineFormData,
     isAvailable,
     availabilityMessage,

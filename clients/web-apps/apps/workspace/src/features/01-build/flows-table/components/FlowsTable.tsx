@@ -22,7 +22,6 @@ import { useFetchFlows } from "../hooks/useFetchFlows";
 import { useTableTab } from "../hooks/useTableTab";
 import { FlowsBulkActions } from "./FlowsBulkActions";
 import { flowsTableColumns } from "./FlowsTableColumns";
-import { FlowCrudDialog } from "./flow-crud-dialog/FlowCrudDialog";
 
 /**
  * Renders a table of flows.
@@ -60,29 +59,22 @@ export const FlowsTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <FlowCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <DTHeading heading={TABLE_HEADING} />
-                <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
-              </div>
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumns={["name"]}
-                  placeholder="Search agents..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                {isPersonal && <DTCreateButton />}{" "}
-              </div>
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
             </div>
-            <HorizontalScrollWrapper>
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={flowsTableColumnsArray.length} />
-            </HorizontalScrollWrapper>
-          </FlowCrudDialog>
+            <div className="flex items-center gap-2">
+              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search agents..." />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              {isPersonal && <DTCreateButton entity="flow" />}{" "}
+            </div>
+          </div>
+          <HorizontalScrollWrapper>
+            {/* Data table to render data */}
+            <DataTable table={table} columnsLength={flowsTableColumnsArray.length} />
+          </HorizontalScrollWrapper>
           {/* Data table Pagination component */}
           <DTPagination table={table} />
           {/* Resource Share Dialog */}

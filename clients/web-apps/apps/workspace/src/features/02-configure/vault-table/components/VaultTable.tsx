@@ -1,6 +1,6 @@
 import { DotSeparator } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
 import {
+  DTCreateButton,
   DTHeading,
   DTPagination,
   DTSearchBox,
@@ -8,8 +8,6 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { formatDate } from "@avplatform/ui/utils";
-import { PlusIcon } from "@heroicons/react/24/outline";
-import { useShallow } from "zustand/react/shallow";
 
 import { QueryTabs } from "@/components/QueryTab";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
@@ -19,11 +17,9 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { VaultAppsEnum } from "../enums/vault-apps-enum";
 import { useFetchVaults } from "../hooks/useFetchVaults";
 import { useTableTab } from "../hooks/useTableTab";
-import { useVaultDialogStore } from "../stores/vault-dialog-store";
 import { vaultAppIconMapper } from "../vault-config/constants/vault-app-icon-mapper";
 import { VaultTableSkeleton } from "./VaultTableSkeleton";
 import { vaultsTableColumns } from "./VaultsTableColumns";
-import { VaultCrudDialog } from "./vault-crud-dialog/VaultCrudDialog";
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
 import { VaultsBulkActions } from "./vault-row-actions/VaultsBulkActions";
 
@@ -39,14 +35,6 @@ export const VaultTable = () => {
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
-  const { setShowDialog, setAction, setRowId, setType } = useVaultDialogStore(
-    useShallow((state) => ({
-      setShowDialog: state.setShowDialog,
-      setType: state.setType,
-      setAction: state.setAction,
-      setRowId: state.setRowId,
-    })),
-  );
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { isPersonal, queryKey, isShared } = useTableTab();
 
@@ -81,21 +69,7 @@ export const VaultTable = () => {
 
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
-              {isPersonal && (
-                <Button
-                  size={"xs"}
-                  className="gap-2 text-sm tracking-wide"
-                  onClick={() => {
-                    setShowDialog(true);
-                    setAction("create");
-                    setRowId("");
-                    setType("");
-                  }}
-                >
-                  <PlusIcon className="h-4 w-4" />
-                  Add Credential
-                </Button>
-              )}
+              {isPersonal && <DTCreateButton buttonText="Add Credential" entity="vault" />}
             </div>
           </div>
           {/* DT with only rows and custom design */}
@@ -105,11 +79,6 @@ export const VaultTable = () => {
                 <div
                   key={row.id}
                   className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200"
-                  onClick={() => {
-                    setShowDialog(true);
-                    setRowId(row.original.id || "");
-                    setAction("read");
-                  }}
                 >
                   {/* Left icon with rounded border */}
                   <div className="flex items-center space-x-4">
@@ -186,7 +155,6 @@ export const VaultTable = () => {
         // Show data table skeleton while fetching the configs data
         <VaultTableSkeleton />
       )}
-      <VaultCrudDialog />
     </>
   );
 };

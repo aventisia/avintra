@@ -1,8 +1,6 @@
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { ArrowUpRightIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
 import React from "react";
-import { useShallow } from "zustand/react/shallow";
 
 interface DTRemarkEditActionProps {
   rowId: string;
@@ -23,13 +21,6 @@ export const DTRemarkEditAction: React.FC<DTRemarkEditActionProps> = ({
   setEditingCommentId,
   onEdit,
 }) => {
-  // Get store state and actions
-  const { setCrudDialogOptions } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      setCrudDialogOptions: state.setCrudDialogOptions,
-    })),
-  );
-
   // Return the Edit or View dropdown menu item
   return (
     <SimpleDDMenuItem
@@ -37,11 +28,6 @@ export const DTRemarkEditAction: React.FC<DTRemarkEditActionProps> = ({
       content={crudAction === "read" ? "View" : "Edit"}
       Icon={crudAction === "read" ? ArrowUpRightIcon : PencilSquareIcon}
       onClick={() => {
-        setCrudDialogOptions({
-          showDialog: false,
-          rowId,
-          crudAction: crudAction,
-        });
         setEditingCommentId(rowId);
         if (crudAction === "update") {
           onEdit();

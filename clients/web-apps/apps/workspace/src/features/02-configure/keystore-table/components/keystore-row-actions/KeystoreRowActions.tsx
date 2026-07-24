@@ -32,10 +32,10 @@ export const KeystoreRowActions = ({
     // Dropdown menu for keystore table row action */}
     <DataTableRowActions className="w-36 min-w-36">
       {/* View the keystore details */}
-      {actions?.read && <DTRowAction rowId={rowId} crudAction="read" />}
+      {actions?.read && <DTRowAction rowId={rowId} crudAction="read" entity="keystore" />}
 
       {/* Edit keystore details */}
-      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" />}
+      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="keystore" />}
 
       {/* Share Access */}
       {actions?.share && (

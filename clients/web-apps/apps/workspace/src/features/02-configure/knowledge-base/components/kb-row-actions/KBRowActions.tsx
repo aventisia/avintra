@@ -48,7 +48,7 @@ export const KBRowActions = ({
         />
       )}
       {/* Edit KB details */}
-      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" />}
+      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="knowledgeBase" />}
       {/* Share Access */}
       {actions?.share && (
         <ResourceShareRowAction

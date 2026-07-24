@@ -17,7 +17,6 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchCreditPlans } from "../hooks/useFetchCreditPlans";
 import { CreditsBulkActions } from "./CreditBulkActions";
 import { creditPlansTableColumns } from "./CreditPlansTableColumns";
-import { CreditPlansCrudDialog } from "./credit-plans-crud-dialog/CreditPlanCrudDialog";
 
 /**
  * Renders a table of credits.
@@ -47,28 +46,25 @@ export const CreditPlansTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <CreditPlansCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <DTHeading heading={TABLE_HEADING} />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumns={["serviceType"]}
-                  placeholder="Search plan..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                <DTCreateButton buttonText="Create Plan" />
-              </div>
+            <div className="flex items-center gap-2">
+              <DTSearchBox
+                table={table}
+                searchColumns={["serviceType"]}
+                placeholder="Search plan..."
+              />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              <DTCreateButton buttonText="Create Plan" entity="creditPlan" />
             </div>
+          </div>
 
-            <HorizontalScrollWrapper>
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={creditPlansTableColumns.length} />
-            </HorizontalScrollWrapper>
-          </CreditPlansCrudDialog>
+          <HorizontalScrollWrapper>
+            {/* Data table to render data */}
+            <DataTable table={table} columnsLength={creditPlansTableColumns.length} />
+          </HorizontalScrollWrapper>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

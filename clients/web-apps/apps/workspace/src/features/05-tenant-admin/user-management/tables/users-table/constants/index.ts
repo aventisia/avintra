@@ -1,4 +1,4 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 /**
  * The unique key for the users query to be used in the query client. ["users"]
@@ -12,7 +12,7 @@ const TABLE_HEADING = "Users";
 
 const TABLE_KEY = "users";
 
-const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return { heading: "Invite User", description: "" };

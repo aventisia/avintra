@@ -1,4 +1,5 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import {
   DatePickerField,
   Form,
@@ -13,6 +14,7 @@ import {
 } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { ISelectOption } from "@avplatform/ui/types";
+import { type CrudActionType } from "@avplatform/ui/types";
 import {
   applyTimeZoneOffset,
   getTimezoneOptions,
@@ -44,20 +46,24 @@ import { useTableTab } from "../../hooks/useTableTab.ts";
 import { AgentsSelector } from "./AgentsSelector.tsx";
 import { TimezoneSelector } from "./TimezoneSelector.tsx";
 
-export const TriggerCrudForm = () => {
+interface TriggerCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define trigger form
   const {
     form,
-    rowId,
     isDirty,
-    crudAction,
     // isAvailable,
     // availabilityMessage,
     // isCheckPending,
     // handleInputChange,
-    setShowDialog,
     refineFormData,
-  } = useDefineTriggerForm();
+  } = useDefineTriggerForm({ rowId, crudAction });
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
@@ -106,13 +112,13 @@ export const TriggerCrudForm = () => {
     });
 
     // Close the dialog if not creating/updating the record
-    if (crudAction == "read") setShowDialog(false);
+    if (crudAction == "read") onCloseConfirmed();
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if ((crudAction === "create" || crudAction === "update") && isSuccess) setShowDialog(false);
-  }, [isSuccess, crudAction, setShowDialog]);
+    if ((crudAction === "create" || crudAction === "update") && isSuccess) onCloseConfirmed();
+  }, [isSuccess, crudAction, onCloseConfirmed]);
   const timezone = form.watch("timezone");
 
   // sync expiry date with selected timezone

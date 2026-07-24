@@ -1,4 +1,5 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
 import { useEffect } from "react";
@@ -17,11 +18,16 @@ import { JobUpdateDto } from "../../dtos/job-update-dto";
 import { JobsTableRowDto } from "../../dtos/jobs-table-row-dto";
 import { useDefineJobUpdateForm } from "../../hooks/useDefineJobUpdateForm";
 
+interface JobUpdateFormProps {
+  rowId: string;
+}
+
 /**
  * Form for updating an existing job.
  */
-export const JobUpdateForm = () => {
-  const { form, isDirty, isValid, rowId, setShowDialog, refineFormData } = useDefineJobUpdateForm();
+export const JobUpdateForm = ({ rowId }: JobUpdateFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+  const { form, isDirty, isValid, refineFormData } = useDefineJobUpdateForm({ rowId });
 
   const isClosingStatusEnabled = form.watch("isClosingStatusEnabled");
 
@@ -41,8 +47,8 @@ export const JobUpdateForm = () => {
   };
 
   useEffect(() => {
-    if (isSuccess) setShowDialog(false);
-  }, [isSuccess, setShowDialog]);
+    if (isSuccess) onCloseConfirmed();
+  }, [isSuccess, onCloseConfirmed]);
 
   return (
     <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="px-2.5 pb-5">

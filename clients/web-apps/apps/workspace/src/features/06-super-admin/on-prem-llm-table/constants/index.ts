@@ -1,4 +1,4 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 const ONPREM_LLM_QUERY_KEY = ["on_prem_llm"];
 
@@ -6,7 +6,7 @@ const TABLE_HEADING = "On-prem Models";
 
 const TABLE_KEY = "on-prem-llms";
 
-const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return { heading: "Add Model", description: "" };

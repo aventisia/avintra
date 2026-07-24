@@ -12,10 +12,42 @@ type AlignType = "start" | "center" | "end";
 type CrudActionType = "create" | "read" | "update" | "delete" | "delete-multiple";
 
 /**
+ * CRUD action types valid for opening a dialog (excludes delete actions).
+ */
+type DialogCrudAction = "create" | "read" | "update";
+
+/**
+ * Known entity keys that can be rendered by the global URL-driven CRUD dialog.
+ * Add new entities here and register their Content component in the workspace
+ * CrudDialogProvider registry to keep type safety.
+ */
+type CrudEntityKey =
+  | "machine"
+  | "job"
+  | "flow"
+  | "queue"
+  | "keystore"
+  | "knowledgeBase"
+  | "vault"
+  | "emailTrigger"
+  | "messageTrigger"
+  | "timeTrigger"
+  | "webhookTrigger"
+  | "creditPlan"
+  | "onPremLLM"
+  | "subscriptionPlan"
+  | "tenant"
+  | "supportTicket"
+  | "onPremTenant"
+  | "tenantInstance"
+  | "user"
+  | "role";
+
+/**
  * Represents the type for specifying the order by which to sort data.
  * The value can be either "asc" for ascending order or "desc" for descending order.
  * Use this type when you need to specify the sorting order of data, such as in database queries or sorting functions.
  */
 type OrderByType = "asc" | "desc";
 
-export type { AlignType, CrudActionType, OrderByType };
+export type { AlignType, CrudActionType, CrudEntityKey, DialogCrudAction, OrderByType };

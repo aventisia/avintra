@@ -1,6 +1,4 @@
 import { type Table, flexRender } from "@tanstack/react-table";
-import { useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 import { ScrollArea } from "@/ui/components/scroll";
 import {
@@ -11,15 +9,6 @@ import {
   TableExtHeader,
   TableExtRow,
 } from "@/ui/components/table";
-import { useDTCrudDialogStore } from "@/ui/stores";
-import { type CrudActionType } from "@/ui/types";
-
-import { useDataTableQueryParams } from ".";
-
-const crudActionMapper: Record<string, string> = {
-  edit: "update",
-  view: "read",
-};
 
 interface DataTableProps<TData> {
   table: Table<TData>;
@@ -27,40 +16,6 @@ interface DataTableProps<TData> {
 }
 
 export function DataTable<TData>({ table, columnsLength }: DataTableProps<TData>) {
-  // Get store state and actions
-  const { setCrudDialogOptions } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      setCrudDialogOptions: state.setCrudDialogOptions,
-    })),
-  );
-
-  // Get CRUD action and row ID
-  const { crudActionParam, rowIdParam } = useDataTableQueryParams();
-
-  // Set default dialog options
-  useEffect(() => {
-    if (crudActionParam && crudActionParam === "create") {
-      setCrudDialogOptions({
-        showDialog: true,
-        rowId: window.crypto.randomUUID(),
-        crudAction: crudActionParam as CrudActionType,
-      });
-    }
-
-    if (
-      crudActionParam &&
-      rowIdParam &&
-      (crudActionParam === "view" || crudActionParam === "edit")
-    ) {
-      setCrudDialogOptions({
-        showDialog: true,
-        rowId: rowIdParam,
-        crudAction: crudActionMapper[crudActionParam] as CrudActionType,
-      });
-    }
-  }, [crudActionParam, rowIdParam, setCrudDialogOptions]);
-
-  // Return the rendered DataTable component.
   return (
     <ScrollArea
       className="w-full overflow-hidden rounded-lg border bg-background"
@@ -68,7 +23,6 @@ export function DataTable<TData>({ table, columnsLength }: DataTableProps<TData>
       showVerticalScrollbar={false}
     >
       <TableExt className="bg-background">
-        {/* Render the table header. */}
         <TableExtHeader className="bg-background">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableExtRow key={headerGroup.id} className="hover:bg-transparent">
@@ -91,7 +45,6 @@ export function DataTable<TData>({ table, columnsLength }: DataTableProps<TData>
           ))}
         </TableExtHeader>
 
-        {/* Render the table body. */}
         <TableExtBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (

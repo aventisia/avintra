@@ -1,6 +1,8 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { AutherCard, Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
@@ -26,10 +28,16 @@ import { subPlansZodSchema } from "../../constants/sub-plans-zod-schema";
 import { SubPlansTableDto } from "../../dtos/sub-plans-table-dto";
 import { useDefineSubPlansForm } from "../../hooks/useDefineSubPlansForm";
 
-export const SubPlansCrudForm = () => {
+interface SubPlansCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const SubPlansCrudForm = ({ rowId, crudAction }: SubPlansCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define Subscription plan form
-  const { form, rowId, isDirty, crudAction, setShowDialog, refineFormData } =
-    useDefineSubPlansForm();
+  const { form, isDirty, refineFormData } = useDefineSubPlansForm({ rowId, crudAction });
 
   // Define optimistic mutation to crete or update the subscription plan
   const {
@@ -51,13 +59,13 @@ export const SubPlansCrudForm = () => {
     });
 
     // Close the dialog if not creating the record
-    if (crudAction !== "create") setShowDialog(false);
+    if (crudAction !== "create") onCloseConfirmed();
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if (crudAction === "create" && isSuccess) setShowDialog(false);
-  }, [isSuccess, crudAction, setShowDialog]);
+    if (crudAction === "create" && isSuccess) onCloseConfirmed();
+  }, [isSuccess, crudAction, onCloseConfirmed]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";

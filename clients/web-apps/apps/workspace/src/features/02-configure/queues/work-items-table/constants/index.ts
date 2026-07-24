@@ -1,4 +1,4 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 /**
  * The unique key for the queues query to be used in the query client. ["queues"]
@@ -12,7 +12,7 @@ export const TABLE_HEADING = "Work Items";
 
 export const TABLE_KEY = "work-items";
 
-export const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+export const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return { heading: "Add Works Items", description: "" };

@@ -1,4 +1,4 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 const ON_PREM_TENANT_QUERY_KEY = ["ON_PREM_TENANT"];
 
@@ -6,7 +6,7 @@ const TABLE_HEADING = "On-prem Tenants";
 
 const TABLE_KEY = "onPremTenant";
 
-const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return { heading: "Create On-prem Tenant", description: "" };

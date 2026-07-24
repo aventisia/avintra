@@ -7,7 +7,6 @@ import { format } from "date-fns";
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
-import { QueuesTableCellLink } from "./QueuesTableCellLink";
 import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
 
 /**
@@ -44,11 +43,9 @@ export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableD
     ),
     cell: ({ row }) => (
       <div className="flex  items-center max-w-80 gap-3 ">
-        <QueuesTableCellLink rowId={row.original.id} name={row.original.name}>
-          {row.getValue<string>("name")}
-        </QueuesTableCellLink>
+        <span className="w-auto truncate font-medium">{row.getValue<string>("name")}</span>
         {isSharedTab && (
-          <p className="bg-muted border text-nowrap p-1  text-2xs leading-none  text-primary rounded-full">
+          <p className="bg-muted border text-nowrap p-1 text-2xs leading-none text-primary rounded-full">
             {row.original.accessLevel?.replace(/([A-Z])/g, " $1")}
           </p>
         )}

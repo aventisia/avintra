@@ -1,6 +1,7 @@
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
@@ -12,27 +13,19 @@ import { AccessType, PERMISSIONS } from "../constants/permissions-and-acesses";
 import { addRoleFormZodSchema, roleNameSchema } from "../constants/role-zod-schema";
 import { useFetchRoleById } from "./useFetchRoleById";
 
-export const useDefineRoleForm = () => {
+interface UseDefineRoleFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const useDefineRoleForm = ({ rowId, crudAction }: UseDefineRoleFormOptions) => {
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
     })),
   );
 
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { rowId, crudAction, showDialog },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      isFormDirty: state.isFormDirty,
-
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty, onCloseConfirmed } = useCrudDialogDirty();
 
   const { data } = useFetchRoleById(crudAction == "create" ? "" : rowId);
 
@@ -85,20 +78,20 @@ export const useDefineRoleForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
+  // Reset availability message when component unmounts
   useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+    return () => {
+      setAvailabilityMessage(null);
+    };
+  }, [setAvailabilityMessage]);
 
   return {
     form,
     isSubmitting,
     isDirty,
-    rowId,
-    crudAction,
-    setShowDialog,
     data,
     isAvailable,
     isCheckPending,
@@ -107,5 +100,6 @@ export const useDefineRoleForm = () => {
     setAvailabilityMessage,
     setValue,
     errors,
+    onCloseConfirmed,
   };
 };

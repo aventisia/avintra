@@ -1,6 +1,7 @@
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -13,30 +14,24 @@ import { keystoreNameSchema, keystoreZodSchema } from "../constants/keystore-zod
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 import { useTableTab } from "./useTableTab";
 
+interface UseDefineKeystoreFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
  * Custom hook for defining a keystore form.
  */
-export const useDefineKeystoreForm = () => {
-  // Set keystore name state (required for avaialbility check)
+export const useDefineKeystoreForm = ({ rowId, crudAction }: UseDefineKeystoreFormOptions) => {
+  // Set keystore name state (required for availability check)
   const [keystoreName, setKeystoreName] = useState("");
+
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
-    })),
-  );
-
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
     })),
   );
 
@@ -101,7 +96,7 @@ export const useDefineKeystoreForm = () => {
         ? new Date(keystoreData?.lastModifiedOn)
         : new Date(),
     });
-  }, [rowId, form, queryClient, userSession]);
+  }, [rowId, form, queryClient, userSession, queryKey]);
 
   // Get check availability state and methods
   const {
@@ -130,21 +125,21 @@ export const useDefineKeystoreForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   // Reset availability message when dialog closes
   useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+    return () => {
+      setAvailabilityMessage(null);
+    };
+  }, [setAvailabilityMessage]);
 
   // Return form and methods
   return {
     form,
     isDirty,
-    rowId,
     crudAction,
-    setShowDialog,
     refineFormData,
     isAvailable,
     availabilityMessage,

@@ -1,6 +1,8 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SwitchField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
@@ -18,20 +20,17 @@ import { tenantInstanceZodSchema } from "../../constants/tenant-instance-zod-sch
 import { OnPremInstanceDto } from "../../dtos/tenant-instance-dto";
 import { useDefineTenantInstanceForm } from "../../hooks/useDefineTenantInstanceForm";
 
-export const TenantInstanceCrudForm = () => {
+interface TenantInstanceCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const TenantInstanceCrudForm = ({ rowId, crudAction }: TenantInstanceCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define on-prem tenant instance form
-  const {
-    form,
-    rowId,
-    id,
-    isDirty,
-    crudAction,
-    isAvailable,
-    availabilityMessage,
-    isCheckPending,
-    handleInputChange,
-    setShowDialog,
-  } = useDefineTenantInstanceForm();
+  const { form, id, isDirty, isAvailable, availabilityMessage, isCheckPending, handleInputChange } =
+    useDefineTenantInstanceForm({ rowId, crudAction });
 
   // Define optimistic mutation to crete or update the tenant
   const {
@@ -55,14 +54,14 @@ export const TenantInstanceCrudForm = () => {
       crudAction: crudAction,
     });
 
-    // Close the dialog if not creating the record
-    if (crudAction !== "create") setShowDialog(false);
+    // Close the dialog
+    onCloseConfirmed();
   };
 
-  // Close dialog and reset form when mutation is successful
+  // Close dialog when mutation is successful
   useEffect(() => {
-    if (crudAction === "create" && isSuccess) setShowDialog(false);
-  }, [isSuccess, crudAction, setShowDialog]);
+    if (isSuccess) onCloseConfirmed();
+  }, [isSuccess, onCloseConfirmed]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";

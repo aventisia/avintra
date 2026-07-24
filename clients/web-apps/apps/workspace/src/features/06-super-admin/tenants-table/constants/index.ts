@@ -1,4 +1,4 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 /**
  * The unique key for the tenants query to be used in the query client. ["tenants"]
@@ -12,7 +12,7 @@ const TABLE_HEADING = "Tenants";
 
 const TABLE_KEY = "tenants";
 
-const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return { heading: "Create Tenant", description: "" };

@@ -1,32 +1,25 @@
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { EnvironmentTypesEnum } from "@avplatform/ui/enums/environment-types-enum";
 import { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
 
 import { getMachine } from "../apis/machines-table-apis";
 import { machineZodSchema } from "../constants/machine-zod-schema";
 import { buildMachineNamePreview } from "../utils/build-machine-name-util";
 
+interface UseDefineMachineFormOptions {
+  rowId: string;
+  crudAction: "create" | "update";
+}
+
 /**
  * Custom hook for defining a machine form.
  */
-export const useDefineMachineForm = () => {
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+export const useDefineMachineForm = ({ rowId, crudAction }: UseDefineMachineFormOptions) => {
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Define form with zod schema
   /* IMPORTANT NOTE: It is important to set default value to all fields to avoid error - "A component is changing an uncontrolled input to be controlled". */
@@ -128,16 +121,13 @@ export const useDefineMachineForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   // Return form and methods
   return {
     form,
     isDirty,
     isValid,
-    rowId,
-    crudAction,
-    setShowDialog,
   };
 };

@@ -1,6 +1,8 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
@@ -18,21 +20,25 @@ import { useDefineKnowledgeBaseForm } from "../../hooks/useDefineKnowledgeBaseFo
 import { useTableTab } from "../../hooks/useTableTab";
 import { EmbeddingConfigField } from "./EmbeddingConfigField";
 
-export const KBCrudForm = () => {
+interface KBCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const KBCrudForm = ({ rowId, crudAction }: KBCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define knowledge base form
   const {
     form,
     isDirty,
-    rowId,
-    crudAction,
     isAvailable,
     availabilityMessage,
     setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
-    setShowDialog,
     refineFormData,
-  } = useDefineKnowledgeBaseForm();
+  } = useDefineKnowledgeBaseForm({ rowId, crudAction });
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
@@ -60,13 +66,13 @@ export const KBCrudForm = () => {
     setAvailabilityMessage(null);
 
     // Close the dialog if not creating the record
-    if (crudAction !== "create") setShowDialog(false);
+    if (crudAction !== "create") onCloseConfirmed();
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if (crudAction === "create" && isSuccess) setShowDialog(false);
-  }, [isSuccess, crudAction, setShowDialog]);
+    if (crudAction === "create" && isSuccess) onCloseConfirmed();
+  }, [isSuccess, crudAction, onCloseConfirmed]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";
