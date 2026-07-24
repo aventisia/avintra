@@ -16,7 +16,6 @@ import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchUsers } from "../hooks/useFetchUsers";
 import { usersTableColumns } from "./UsersTableColumns";
-import { UserCrudDialog } from "./user-crud-dialog/UserCrudDialog";
 import { UsersBulkActions } from "./user-row-actions/UsersBulkActions";
 
 /**
@@ -48,28 +47,25 @@ export const UsersTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <UserCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <DTHeading heading={TABLE_HEADING} />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumns={["firstName"]}
-                  placeholder="Search users..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                <DTCreateButton buttonText="Invite" />
-              </div>
+            <div className="flex items-center gap-2">
+              <DTSearchBox
+                table={table}
+                searchColumns={["firstName"]}
+                placeholder="Search users..."
+              />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              <DTCreateButton buttonText="Invite" entity="user" />
             </div>
+          </div>
 
-            <HorizontalScrollWrapper>
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={usersTableColumns.length} />
-            </HorizontalScrollWrapper>
-          </UserCrudDialog>
+          <HorizontalScrollWrapper>
+            {/* Data table to render data */}
+            <DataTable table={table} columnsLength={usersTableColumns.length} />
+          </HorizontalScrollWrapper>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

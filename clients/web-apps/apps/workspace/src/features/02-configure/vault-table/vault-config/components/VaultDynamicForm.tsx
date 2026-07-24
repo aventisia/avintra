@@ -1,6 +1,8 @@
 import { LoadingSpinner, Separator } from "@avplatform/ui";
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SwitchField } from "@avplatform/ui/form";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
@@ -14,8 +16,14 @@ import { useUpdateCredMutation } from "../hooks/useUpdateCredMutation";
 import { useVaultDynamicForm } from "../hooks/useVaultDynamicForm";
 import { AppSelector } from "./AppSelector";
 
-const VaultDynamicForm = () => {
+interface VaultDynamicFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   const [showOutputFields, setShowOutputFields] = useState(false);
+  const { onCloseConfirmed } = useCrudDialogDirty();
 
   const {
     form,
@@ -30,13 +38,12 @@ const VaultDynamicForm = () => {
     watch,
     convertToObject,
     action,
-    rowId,
     availabilityMessage,
     handleInputChange,
     isAvailable,
     isCheckPending,
     isDirty,
-  } = useVaultDynamicForm();
+  } = useVaultDynamicForm({ rowId, crudAction });
 
   // Watch all form values
   const watchedValues = watch();
@@ -50,9 +57,13 @@ const VaultDynamicForm = () => {
     setShowOutputFields(renderedOutputFields.map((field) => field.name).length > 0);
   }, [isFormReady, vaultConfig, watchedValues]);
 
-  const { mutate } = useAddCredMutation();
+  const { mutate, isSuccess: isCreateSuccess } = useAddCredMutation();
 
-  const { mutate: updateMutation, isPending: isUpdating } = useUpdateCredMutation();
+  const {
+    mutate: updateMutation,
+    isPending: isUpdating,
+    isSuccess: isUpdateSuccess,
+  } = useUpdateCredMutation();
 
   const isType = watch("selectedType")?.value;
 
@@ -82,6 +93,13 @@ const VaultDynamicForm = () => {
       });
     }
   };
+
+  // Close dialog after successful create or update
+  useEffect(() => {
+    if ((action === "create" && isCreateSuccess) || (action === "update" && isUpdateSuccess)) {
+      onCloseConfirmed();
+    }
+  }, [action, isCreateSuccess, isUpdateSuccess, onCloseConfirmed]);
 
   const isReadOnly = action == "read";
 

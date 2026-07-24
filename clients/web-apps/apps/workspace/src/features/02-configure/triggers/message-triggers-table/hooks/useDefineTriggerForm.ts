@@ -1,6 +1,7 @@
 // import { useCheckAvailability } from "@avplatform/ui/hooks";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -20,7 +21,7 @@ import { useTableTab } from "./useTableTab";
 /**
  * Custom hook for defining a trigger form.
  */
-export const useDefineTriggerForm = () => {
+export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: CrudActionType }) => {
   // Trigger name state for availability check
   // const [triggerName, setTriggerName] = useState("");
 
@@ -32,18 +33,7 @@ export const useDefineTriggerForm = () => {
   );
   // const defaultFrequency = (val: string) =>
   //   ["30", "90", "180", "365"].includes(val);
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get query client
   const queryClient = useQueryClient();
@@ -150,26 +140,13 @@ export const useDefineTriggerForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
-
-  // Reset availability message and invalidate agents list when dialog closes
-  useEffect(() => {
-    if (!showDialog) {
-      // setAvailabilityMessage(null);
-      queryClient.invalidateQueries({
-        queryKey: ["select-trigger-agent", rowId],
-      });
-    }
-  }, [queryClient, rowId, showDialog]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   // Return form, validation state, and methods
   return {
     form,
     isDirty,
-    rowId,
-    crudAction,
-    setShowDialog,
     refineFormData,
     // isAvailable,
     // availabilityMessage,

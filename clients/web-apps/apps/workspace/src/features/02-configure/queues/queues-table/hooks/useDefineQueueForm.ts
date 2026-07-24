@@ -1,6 +1,7 @@
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -15,30 +16,24 @@ import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
 import { useTableTab } from "./useTableTab";
 
+interface UseDefineQueueFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
  * Custom hook for defining a queue form.
  */
-export const useDefineQueueForm = () => {
+export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOptions) => {
   // Set queue name state (required for avaialbility check)
   const [queueName, setqueueName] = useState("");
+
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
-    })),
-  );
-
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
     })),
   );
 
@@ -178,21 +173,21 @@ export const useDefineQueueForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
-  // Reset availability message when dialog closes
+  // Reset availability message when dialog unmounts
   useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+    return () => {
+      setAvailabilityMessage(null);
+    };
+  }, [setAvailabilityMessage]);
 
   // Return form and methods
   return {
     form,
     isDirty,
-    rowId,
     crudAction,
-    setShowDialog,
     refineFormData,
     isAvailable,
     availabilityMessage,

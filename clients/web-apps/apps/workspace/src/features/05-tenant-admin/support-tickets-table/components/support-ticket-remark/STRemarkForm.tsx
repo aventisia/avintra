@@ -27,14 +27,17 @@ interface STRemarkFormProps {
  * @returns {JSX.Element} - Rendered component.
  */
 export const STRemarkForm = ({ id, remarkCount, setRemarkCount, refetch }: STRemarkFormProps) => {
-  const { form, isDirty, remarksQueryKey, rowId, refineFormData } = useDefineSTRemarkForm();
+  const { form, isDirty, remarksQueryKey, refineFormData } = useDefineSTRemarkForm({
+    rowId: id,
+    crudAction: "create",
+  });
 
   // Define optimistic mutation to create/update the support ticket remark
   const { mutate: mutateSupportTicketRemark } = useListOptimisticMutation<
     SupportTicketRemarksDto,
     SupportTicketRemarksDto | boolean,
     SupportTicketRemarksDto
-  >([rowId], supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
+  >([id], supportTicketRemarksOptimisticMutationFn, remarksQueryKey);
 
   // Define submit handler
   const onSubmit = async (formData: z.infer<typeof supportTicketRemarksZodSchema>) => {

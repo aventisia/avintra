@@ -1,6 +1,8 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { DatePickerField, Form, InputField, SwitchField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
@@ -25,20 +27,24 @@ import { onPremTenantZodSchema } from "../../constants/on-prem-tenant-zod-schema
 import { OnPremTenantDto } from "../../dtos/on-prem-tenant-dto";
 import { useDefineOnPremTenantForm } from "../../hooks/useDefineOnPremTenantForm";
 
-export const OnPremTenantCrudForm = () => {
+interface OnPremTenantCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const OnPremTenantCrudForm = ({ rowId, crudAction }: OnPremTenantCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define on-prem tenant form
   const {
     form,
-    rowId,
     isDirty,
-    crudAction,
     isAvailable,
     availabilityMessage,
     isCheckPending,
     handleInputChange,
-    setShowDialog,
     refineFormData,
-  } = useDefineOnPremTenantForm();
+  } = useDefineOnPremTenantForm({ rowId, crudAction });
 
   // Define optimistic mutation to crete or update the tenant
   const {
@@ -59,14 +65,14 @@ export const OnPremTenantCrudForm = () => {
       crudAction: crudAction,
     });
 
-    // Close the dialog if not creating the record
-    if (crudAction !== "create") setShowDialog(false);
+    // Close the dialog
+    onCloseConfirmed();
   };
 
-  // Close dialog and reset form when mutation is successful
+  // Close dialog when mutation is successful
   useEffect(() => {
-    if (crudAction === "create" && isSuccess) setShowDialog(false);
-  }, [isSuccess, crudAction, setShowDialog]);
+    if (isSuccess) onCloseConfirmed();
+  }, [isSuccess, onCloseConfirmed]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";

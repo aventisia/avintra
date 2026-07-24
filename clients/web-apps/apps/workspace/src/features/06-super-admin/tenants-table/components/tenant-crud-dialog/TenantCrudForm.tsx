@@ -1,4 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { DatabaseOptionsEnum } from "@avplatform/ui/enums/database-options-enum";
 import {
   AutherCard,
@@ -11,6 +12,7 @@ import {
   TextareaField,
 } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { z } from "zod";
 
 import { tenantOptimisticMutationFn } from "../../apis/tenants-table-apis";
@@ -42,22 +44,26 @@ import { tenantZodSchema } from "../../constants/tenant-zod-schema";
 import { TenantsTableDto } from "../../dtos/tenants-table-dto";
 import { useDefineTenantForm } from "../../hooks/useDefineTenantForm";
 
-export const TenantCrudForm = () => {
+interface TenantCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const TenantCrudForm = ({ rowId, crudAction }: TenantCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define tenant form
   const {
     form,
     watch,
     isDirty,
-    rowId,
-    crudAction,
-    setShowDialog,
     refineFormData,
     isAvailable,
     availabilityMessage,
     setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
-  } = useDefineTenantForm();
+  } = useDefineTenantForm({ rowId, crudAction });
 
   // Define optimistic mutation to crete or update the tenant
   const { mutate: mutateTenant } = useListOptimisticMutation<
@@ -78,7 +84,7 @@ export const TenantCrudForm = () => {
     setAvailabilityMessage(null);
 
     // Close the dialog
-    setShowDialog(false);
+    onCloseConfirmed();
   };
 
   // Watch form fields

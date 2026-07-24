@@ -1,7 +1,9 @@
 //Refactored Select to show description in options
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { AutherCard, Form, InputField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
@@ -20,20 +22,24 @@ import { FlowsTableDto } from "../../dtos/flows-table-dto";
 import { useDefineFlowForm } from "../../hooks/useDefineFlowForm";
 import { useTableTab } from "../../hooks/useTableTab";
 
-export const FlowCrudForm = () => {
+interface FlowCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const FlowCrudForm = ({ rowId, crudAction }: FlowCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define flow form
   const {
     form,
-    rowId,
     isDirty,
-    crudAction,
     isAvailable,
     availabilityMessage,
     isCheckPending,
     handleInputChange,
-    setShowDialog,
     refineFormData,
-  } = useDefineFlowForm();
+  } = useDefineFlowForm({ rowId, crudAction });
 
   // Use this in place FLOWS_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
@@ -58,13 +64,13 @@ export const FlowCrudForm = () => {
     });
 
     // Close the dialog if not creating the record
-    if (crudAction !== "create") setShowDialog(false);
+    if (crudAction !== "create") onCloseConfirmed();
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if (crudAction === "create" && isSuccess) setShowDialog(false);
-  }, [isSuccess, crudAction, setShowDialog]);
+    if (crudAction === "create" && isSuccess) onCloseConfirmed();
+  }, [isSuccess, crudAction, onCloseConfirmed]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";

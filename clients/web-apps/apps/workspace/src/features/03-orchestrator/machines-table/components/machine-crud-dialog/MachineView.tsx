@@ -1,5 +1,6 @@
 import { CopyableText, LoadingSpinner, NoContentMessage, Separator } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
+import { Button } from "@avplatform/ui/buttons";
 import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
 import {
   AuditTrailCard,
@@ -12,8 +13,8 @@ import {
 } from "@avplatform/ui/components/view-record";
 import { ViewDefaultCard } from "@avplatform/ui/components/view-record/ViewDefaultCard";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
+import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
 import { cn } from "@avplatform/ui/lib";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { formatDate, maskIP } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -23,8 +24,8 @@ import {
   MonitorCogIcon,
   MonitorIcon,
   NetworkIcon,
+  PlusIcon,
 } from "lucide-react";
-import { useShallow } from "zustand/react/shallow";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 
@@ -43,16 +44,11 @@ import { MachineFlowVersionRowActions } from "./MachineFlowVersionRowActions";
  *
  * @returns {JSX.Element} The rendered MachineView component.
  */
-export const MachineView = () => {
-  // Get the rowId from the crud dialog store
-  const {
-    crudDialogOptions: { rowId },
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-    })),
-  );
+interface MachineViewProps {
+  rowId: string;
+}
 
+export const MachineView = ({ rowId }: MachineViewProps) => {
   // Fetch the machine data from the API
   const { data: response, isLoading } = useQuery({
     queryKey: ["machine", rowId],
@@ -61,6 +57,25 @@ export const MachineView = () => {
   });
 
   const machine = response?.data as MachineRecordDto | undefined;
+
+  const { openCrudDialog } = useCrudDialogUrlState();
+
+  const handleCreateJob = () => {
+    if (!machine?.id) return;
+
+    const backParams = new URLSearchParams();
+    backParams.set("e", "machine");
+    backParams.set("rid", machine.id);
+    backParams.set("ca", "view");
+
+    openCrudDialog({
+      entity: "job",
+      crudAction: "create",
+      rowId: window.crypto.randomUUID(),
+      back: backParams.toString(),
+      extraParams: { mid: machine.id },
+    });
+  };
 
   // Show loading state
   if (isLoading) {
@@ -89,6 +104,17 @@ export const MachineView = () => {
   // Render the machine details in a read-only view
   return (
     <ViewContainer>
+      <div className="flex justify-end px-2.5 pt-2">
+        <Button
+          size="xs"
+          variant="outline"
+          className="gap-2 text-sm tracking-wide"
+          onClick={handleCreateJob}
+        >
+          <PlusIcon className="h-4 w-4" />
+          Create Job
+        </Button>
+      </div>
       <ViewDefaultCard>
         {/* Machine profile section */}
         <div className="flex flex-col gap-1">

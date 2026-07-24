@@ -17,10 +17,10 @@ export const CreditPlansRowActions = ({ rowId }: ModelRowActionsProps) => {
       {/* <DropdownMenuSeparator /> */}
 
       {/* View the model details */}
-      <DTRowAction rowId={rowId} crudAction="read" />
+      <DTRowAction rowId={rowId} crudAction="read" entity="creditPlan" />
 
       {/* Edit model details */}
-      <DTRowAction rowId={rowId} crudAction="update" />
+      <DTRowAction rowId={rowId} crudAction="update" entity="creditPlan" />
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />

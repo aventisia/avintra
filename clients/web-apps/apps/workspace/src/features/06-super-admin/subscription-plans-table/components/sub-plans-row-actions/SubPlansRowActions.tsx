@@ -12,10 +12,10 @@ export const SubPlansRowActions = ({ rowId }: SubPlansRowActionsProps) => {
     // Dropdown menu for plans table row action */}
     <DataTableRowActions>
       {/* View the plans details */}
-      <DTRowAction rowId={rowId} crudAction="read" />
+      <DTRowAction rowId={rowId} crudAction="read" entity="subscriptionPlan" />
 
       {/* Edit plans details */}
-      <DTRowAction rowId={rowId} crudAction="update" />
+      <DTRowAction rowId={rowId} crudAction="update" entity="subscriptionPlan" />
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />

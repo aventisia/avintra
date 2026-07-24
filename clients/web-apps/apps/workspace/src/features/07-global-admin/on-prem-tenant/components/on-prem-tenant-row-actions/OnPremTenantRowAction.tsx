@@ -17,10 +17,10 @@ export const OnPremTenantRowAction = ({ rowId, name }: OnPremTenantRowActionProp
       <TenantInstanceOpenAction rowId={rowId} cellValue={name} />
 
       {/* View the tenant details */}
-      <DTRowAction rowId={rowId} crudAction="read" />
+      <DTRowAction rowId={rowId} crudAction="read" entity="onPremTenant" />
 
       {/* Edit tenant details */}
-      <DTRowAction rowId={rowId} crudAction="update" />
+      <DTRowAction rowId={rowId} crudAction="update" entity="onPremTenant" />
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />

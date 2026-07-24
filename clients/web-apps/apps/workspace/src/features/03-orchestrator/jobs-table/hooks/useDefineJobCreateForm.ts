@@ -1,4 +1,4 @@
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -14,20 +14,17 @@ import {
   parseJsonEditorValue,
 } from "..";
 
+interface UseDefineJobCreateFormOptions {
+  defaultMachineId?: string;
+}
+
 /**
  * Custom hook for defining the create job form.
  */
-export const useDefineJobCreateForm = () => {
-  const {
-    crudDialogOptions: { rowId },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore((state) => ({
-    crudDialogOptions: state.crudDialogOptions,
-    setShowDialog: state.setShowDialog,
-    toggleFormDirty: state.toggleFormDirty,
-  }));
-
+export const useDefineJobCreateForm = ({
+  defaultMachineId,
+}: UseDefineJobCreateFormOptions = {}) => {
+  const { setIsDirty } = useCrudDialogDirty();
   const queryClient = useQueryClient();
 
   const form = useForm<JobCreateFormData>({
@@ -37,8 +34,8 @@ export const useDefineJobCreateForm = () => {
       flowVersionId: "",
       triggerType: TriggerTypesEnum.Manual,
       priority: JobPriorityEnum.Normal,
-      executeOnCloud: true,
-      executionLocation: "",
+      executeOnCloud: !defaultMachineId,
+      executionLocation: defaultMachineId ?? "",
       jobInputData: DEFAULT_JOB_INPUT_DATA,
       existingJobId: "",
     },
@@ -50,7 +47,7 @@ export const useDefineJobCreateForm = () => {
 
   useEffect(() => {
     form.reset();
-  }, [form, queryClient, rowId]);
+  }, [form, queryClient]);
 
   const refineFormData = (formData: JobCreateFormData): JobInsertDto => ({
     flowVersionId: formData.flowVersionId,
@@ -66,15 +63,13 @@ export const useDefineJobCreateForm = () => {
   });
 
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   return {
     form,
     isDirty,
     isValid,
-    rowId,
-    setShowDialog,
     refineFormData,
   };
 };

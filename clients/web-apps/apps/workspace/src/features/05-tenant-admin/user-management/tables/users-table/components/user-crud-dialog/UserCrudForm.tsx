@@ -1,6 +1,8 @@
 import { Button } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { AutherCard, Form, InputField, SwitchField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { z } from "zod";
 
 import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
@@ -25,7 +27,14 @@ import { useDefineUserForm } from "../../hooks/useDefineUserForm";
 import { useFetchUserRoles } from "../../hooks/useFetchUserRoles";
 import { UnlockAccountField } from "./UnlockAccountField";
 
-export const UserCrudForm = () => {
+interface UserCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const UserCrudForm = ({ rowId, crudAction }: UserCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Fetch user roles to populate the user roles multi-selector
   const { data: userRoles } = useFetchUserRoles();
 
@@ -33,16 +42,13 @@ export const UserCrudForm = () => {
   const {
     form,
     isDirty,
-    rowId,
-    crudAction,
     isAvailable,
     availabilityMessage,
     setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
-    setShowDialog,
     refineFormData,
-  } = useDefineUserForm();
+  } = useDefineUserForm({ rowId, crudAction });
 
   // Define optimistic mutation to crete or update the user
   const { mutate: mutateUser } = useListOptimisticMutation<
@@ -63,7 +69,7 @@ export const UserCrudForm = () => {
     setAvailabilityMessage(null);
 
     // Close the dialog
-    setShowDialog(false);
+    onCloseConfirmed();
   };
 
   // Is form in read mode?

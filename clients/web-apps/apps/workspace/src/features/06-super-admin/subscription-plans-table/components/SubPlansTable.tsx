@@ -17,7 +17,6 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchSubPlans } from "../hooks/useFetchSubPlans";
 import { SubPlansBulkActions } from "./SubPlansBulkActions";
 import { subPlansTableColumns } from "./SubPlansTableColumns";
-import { SubPlansCrudDialog } from "./sub-plans-crud-dialog/SubPlansCrudDialog";
 
 /**
  * Renders a table of Subscription Plans.
@@ -48,24 +47,21 @@ export const SubPlansTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <SubPlansCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <DTHeading heading={TABLE_HEADING} />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search plans..." />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                <DTCreateButton buttonText="Create Plan" />
-              </div>
+            <div className="flex items-center gap-2">
+              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search plans..." />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              <DTCreateButton buttonText="Create Plan" entity="subscriptionPlan" />
             </div>
+          </div>
 
-            <HorizontalScrollWrapper>
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={subPlansTableColumns.length} />
-            </HorizontalScrollWrapper>
-          </SubPlansCrudDialog>
+          <HorizontalScrollWrapper>
+            {/* Data table to render data */}
+            <DataTable table={table} columnsLength={subPlansTableColumns.length} />
+          </HorizontalScrollWrapper>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

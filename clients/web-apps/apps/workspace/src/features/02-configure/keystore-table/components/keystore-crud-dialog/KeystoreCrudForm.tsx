@@ -1,6 +1,8 @@
 import { Button } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { z } from "zod";
 
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
@@ -20,21 +22,25 @@ import { KeystoresTableDto } from "../../dtos/keystores-table-dto";
 import { useDefineKeystoreForm } from "../../hooks/useDefineKeystoreForm";
 import { useTableTab } from "../../hooks/useTableTab";
 
-export const KeystoreCrudForm = () => {
+interface KeystoreCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const KeystoreCrudForm = ({ rowId, crudAction }: KeystoreCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define keystore form
   const {
     form,
     isDirty,
-    rowId,
-    crudAction,
     isAvailable,
     availabilityMessage,
     setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
-    setShowDialog,
     refineFormData,
-  } = useDefineKeystoreForm();
+  } = useDefineKeystoreForm({ rowId, crudAction });
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
@@ -58,7 +64,7 @@ export const KeystoreCrudForm = () => {
     setAvailabilityMessage(null);
 
     // Close the dialog
-    setShowDialog(false);
+    onCloseConfirmed();
   };
 
   // Is form in read mode?

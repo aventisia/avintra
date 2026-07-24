@@ -43,7 +43,7 @@ export * from "./components/JobsStats";
 export * from "./components/JobsTable";
 export * from "./components/JobsTableColumns";
 export * from "./components/jobs-crud-dialog/JobCreateForm";
-export * from "./components/jobs-crud-dialog/JobCrudDialog";
+export * from "./components/jobs-crud-dialog/JobCrudDialogContent";
 export * from "./components/jobs-crud-dialog/JobUpdateForm";
 export * from "./components/jobs-row-actions/JobRowAbortAction";
 export * from "./components/jobs-row-actions/JobRowActions";

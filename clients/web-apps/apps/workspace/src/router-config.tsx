@@ -1,6 +1,4 @@
 import { NotFoundPage } from "@avplatform/layout";
-import { CrudActionTypeLong } from "@avplatform/ui/constants";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 
 import { AppErrorPage } from "./components/layout/AppErrorPage";
@@ -8,7 +6,6 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
-import { STCreatePage } from "./features/05-tenant-admin/support-tickets-table/components/support-ticket-create-page/STCreatePage";
 import { SupportTicketEditForm } from "./features/05-tenant-admin/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
 import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALayout";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
@@ -77,7 +74,7 @@ const routerConfig: RouteObject[] = [
             element: <Navigate to="queues" replace />,
           },
           {
-            path: "queues/:id?/:a?",
+            path: "queues",
             element: <QueuesPage />,
           },
           {
@@ -110,11 +107,11 @@ const routerConfig: RouteObject[] = [
             ],
           },
           {
-            path: "keystore/:id?/:a?",
+            path: "keystore",
             element: <KeystorePage />,
           },
           {
-            path: "vault/:id?/:a?",
+            path: "vault",
             element: <VaultPage />,
           },
           {
@@ -145,7 +142,7 @@ const routerConfig: RouteObject[] = [
             element: <PublishedAgentsPage />,
           },
           {
-            path: "machines/:id?/:a?",
+            path: "machines",
             element: <MachinesPage />,
           },
           {
@@ -254,10 +251,6 @@ const routerConfig: RouteObject[] = [
                 path: "ticket/details",
                 element: <SupportTicketEditForm />,
               },
-              {
-                path: "ticket/create",
-                element: <STCreatePage />,
-              },
             ],
           },
         ],
@@ -352,24 +345,4 @@ const routerConfig: RouteObject[] = [
 
 export const router = createBrowserRouter(routerConfig, {
   basename: import.meta.env.BASE_URL,
-});
-
-router.subscribe((state) => {
-  const currentMatch = state.matches[state.matches.length - 1];
-  const id = currentMatch.params["id"];
-  const action = currentMatch.params["a"];
-
-  useDTCrudDialogStore.subscribe(
-    (state) => state,
-    (state) => {
-      if (!!id && !!action && !!CrudActionTypeLong[action]) {
-        state.setCrudDialogOptions({
-          rowId: id ?? window.crypto.randomUUID(),
-          crudAction: CrudActionTypeLong[action],
-          showDialog: true,
-        });
-        state.setShowDialog(true);
-      }
-    },
-  );
 });

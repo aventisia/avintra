@@ -1,6 +1,7 @@
 import { Input } from "@avplatform/ui";
 import { Button, SubmitButton } from "@avplatform/ui/buttons";
 import { AsyncMultiSelectField } from "@avplatform/ui/components/form/fields/AsyncMultiSelectField";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import {
   AutherCard,
   Form,
@@ -12,6 +13,7 @@ import {
 } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { ISelectOption } from "@avplatform/ui/types";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 
@@ -32,8 +34,14 @@ import { QueuesTableDto } from "../../dtos/queues-table-dto";
 import { useDefineQueueForm } from "../../hooks/useDefineQueueForm";
 import { useTableTab } from "../../hooks/useTableTab";
 
-export const QueueCrudForm = () => {
+interface QueueCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { onCloseConfirmed } = useCrudDialogDirty();
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -43,16 +51,13 @@ export const QueueCrudForm = () => {
   const {
     form,
     isDirty,
-    rowId,
-    crudAction,
     isAvailable,
     availabilityMessage,
     setAvailabilityMessage,
     isCheckPending,
     handleInputChange,
-    setShowDialog,
     refineFormData,
-  } = useDefineQueueForm();
+  } = useDefineQueueForm({ rowId, crudAction });
 
   // const jData = form.watch("inputSchema");
   const [selectOptions, setSelectOptions] = useState<ISelectOption[]>([]);
@@ -136,13 +141,13 @@ export const QueueCrudForm = () => {
     setAvailabilityMessage(null);
 
     // Close the dialog if not creating the record
-    if (crudAction !== "create") setShowDialog(false);
+    if (crudAction !== "create") onCloseConfirmed();
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if (crudAction === "create" && isSuccess) setShowDialog(false);
-  }, [isSuccess, crudAction, setShowDialog]);
+    if (crudAction === "create" && isSuccess) onCloseConfirmed();
+  }, [isSuccess, crudAction, onCloseConfirmed]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";

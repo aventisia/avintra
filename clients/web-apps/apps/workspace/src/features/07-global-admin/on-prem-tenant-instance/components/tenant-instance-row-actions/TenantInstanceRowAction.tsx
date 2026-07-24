@@ -17,10 +17,10 @@ export const TenantInstanceRowAction = ({ rowId, name }: TenantInstanceRowAction
       <TenantInstanceOpenAction rowId={rowId} name={name} />
 
       {/* View the tenant details */}
-      <DTRowAction rowId={rowId} crudAction="read" />
+      <DTRowAction rowId={rowId} crudAction="read" entity="tenantInstance" />
 
       {/* Edit tenant details */}
-      <DTRowAction rowId={rowId} crudAction="update" />
+      <DTRowAction rowId={rowId} crudAction="update" entity="tenantInstance" />
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />

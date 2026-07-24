@@ -13,10 +13,10 @@ export const TenantRowActions = ({ rowId }: TenantRowActionsProps) => {
     // Dropdown menu for tenant table row action */}
     <DataTableRowActions>
       {/* View the tenant details */}
-      <DTRowAction rowId={rowId} crudAction="read" />
+      <DTRowAction rowId={rowId} crudAction="read" entity="tenant" />
 
       {/* Edit tenant details */}
-      <DTRowAction rowId={rowId} crudAction="update" />
+      <DTRowAction rowId={rowId} crudAction="update" entity="tenant" />
 
       <TenantSwitchRowAction rowId={rowId} />
 

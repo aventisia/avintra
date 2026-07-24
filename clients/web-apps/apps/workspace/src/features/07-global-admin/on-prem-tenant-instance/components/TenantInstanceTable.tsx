@@ -27,7 +27,6 @@ import { useTenantRoute } from "../hooks/useTenantRoute";
 import { TenantInstanceBulkActions } from "./TenantInstanceBulkActions";
 import { tenantInstanceTableColumns } from "./TenantInstanceTableColumns";
 import { TenantStats } from "./TenantStats";
-import { TenantInstanceCrudDialog } from "./tenant-instance-crud-dialog/TenantInstanceCrudDialog";
 
 /**
  * Renders a table of on-prem tenants.
@@ -59,43 +58,38 @@ export const TenantInstanceTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <TenantInstanceCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink asChild>
-                      <NavLink to="/ga/on-prem-tenants">On-prem Tenants</NavLink>
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage className="max-w-96 truncate capitalize">
-                      {tname}
-                    </BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink asChild>
+                    <NavLink to="/ga/on-prem-tenants">On-prem Tenants</NavLink>
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="max-w-96 truncate capitalize">{tname}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                <DTCreateButton buttonText="Create" />
+            <div className="flex items-center gap-2">
+              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              <DTCreateButton buttonText="Create" entity="tenantInstance" />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <TenantStats />
+
+            <HorizontalScrollWrapper>
+              <div className="pr-0.5">
+                {/* Data table to render data */}
+                <DataTable table={table} columnsLength={tenantInstanceTableColumns.length} />
               </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <TenantStats />
-
-              <HorizontalScrollWrapper>
-                <div className="pr-0.5">
-                  {/* Data table to render data */}
-                  <DataTable table={table} columnsLength={tenantInstanceTableColumns.length} />
-                </div>
-              </HorizontalScrollWrapper>
-            </div>
-          </TenantInstanceCrudDialog>
+            </HorizontalScrollWrapper>
+          </div>
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

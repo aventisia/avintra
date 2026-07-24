@@ -16,7 +16,6 @@ import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchOnPremLLMs } from "../hooks/useFetchOnPremLLM";
 import { OnPremLLMBulkActions } from "./OnPremLLMTableBulkAction";
 import { onPremLLMsTableColumns } from "./OnPremLLMTableColumns";
-import { OnPremCrudDialog } from "./on-prem-crud-dialog/OnPremCrudDialog";
 
 export const OnPremLLMTable = () => {
   // Set the document title
@@ -41,22 +40,19 @@ export const OnPremLLMTable = () => {
     <>
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
-          {/* Crud ops dialog */}
-          <OnPremCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <DTHeading heading={TABLE_HEADING} />
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <DTHeading heading={TABLE_HEADING} />
 
-              <div className="flex items-center gap-2">
-                <DTSearchBox table={table} searchColumns={["llm"]} placeholder="Search Model..." />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                <DTCreateButton buttonText="Add Model" />
-              </div>
+            <div className="flex items-center gap-2">
+              <DTSearchBox table={table} searchColumns={["llm"]} placeholder="Search Model..." />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              <DTCreateButton buttonText="Add Model" entity="onPremLLM" />
             </div>
+          </div>
 
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={onPremLLMsTableColumns.length} />
-          </OnPremCrudDialog>
+          {/* Data table to render data */}
+          <DataTable table={table} columnsLength={onPremLLMsTableColumns.length} />
 
           {/* Data table Pagination component */}
           <DTPagination table={table} />

@@ -22,7 +22,6 @@ import { useTableTab } from "../hooks/useTableTab";
 import { queuesTableColumns } from "./QueuesTableColumns";
 import AssignAgentsDialog from "./assign-agents/AssignAgentsDialog";
 import AssignUsersDialog from "./assign-users/AssignUsersDialog";
-import { QueueCrudDialog } from "./queue-crud-dialog/QueueCrudDialog";
 import { QueueBulkActions } from "./queue-row-actions/QueueBulkActions";
 import UploadItemsDialog from "./queue-upload-items/UploadItemsDialog";
 
@@ -62,28 +61,22 @@ export const QueuesTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           <AssignAgentsDialog />
           <AssignUsersDialog />
-          <QueueCrudDialog>
-            {/* Table toolbar */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <DTHeading heading={TABLE_HEADING} />
-                <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
-              </div>
-              <div className="flex items-center gap-2">
-                <DTSearchBox
-                  table={table}
-                  searchColumns={["name"]}
-                  placeholder="Search queues..."
-                />
-                <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-                {isPersonal && <DTCreateButton />}
-              </div>
+          {/* Table toolbar */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
             </div>
-            <HorizontalScrollWrapper>
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={queuesTableColumnsArray.length} />
-            </HorizontalScrollWrapper>
-          </QueueCrudDialog>
+            <div className="flex items-center gap-2">
+              <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search queues..." />
+              <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
+              {isPersonal && <DTCreateButton entity="queue" />}
+            </div>
+          </div>
+          <HorizontalScrollWrapper>
+            {/* Data table to render data */}
+            <DataTable table={table} columnsLength={queuesTableColumnsArray.length} />
+          </HorizontalScrollWrapper>
           <UploadItemsDialog />
           {/* Data table Pagination component */}
           <DTPagination table={table} />

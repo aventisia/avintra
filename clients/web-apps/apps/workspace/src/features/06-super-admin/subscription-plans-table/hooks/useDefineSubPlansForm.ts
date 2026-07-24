@@ -1,5 +1,6 @@
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -11,10 +12,15 @@ import { PLANS_QUERY_KEY } from "../constants";
 import { subPlansZodSchema } from "../constants/sub-plans-zod-schema";
 import { SubPlansTableDto } from "../dtos/sub-plans-table-dto";
 
+interface UseDefineSubPlansFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
  * Custom hook for defining a Subscription Plans form.
  */
-export const useDefineSubPlansForm = () => {
+export const useDefineSubPlansForm = ({ rowId, crudAction }: UseDefineSubPlansFormOptions) => {
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -22,18 +28,7 @@ export const useDefineSubPlansForm = () => {
     })),
   );
 
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get query client
   const queryClient = useQueryClient();
@@ -99,10 +94,12 @@ export const useDefineSubPlansForm = () => {
     });
 
     // Focus the name field after reset.
-    setTimeout(() => {
-      form.setFocus("name", { shouldSelect: false });
-    }, 0);
-  }, [rowId, form, queryClient, userSession]);
+    if (crudAction === "create") {
+      setTimeout(() => {
+        form.setFocus("name", { shouldSelect: false });
+      }, 0);
+    }
+  }, [rowId, crudAction, form, queryClient, userSession]);
 
   // Refine form data based on crud action
   const refineFormData = (formData: z.infer<typeof subPlansZodSchema>) => {
@@ -115,16 +112,14 @@ export const useDefineSubPlansForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   // Return form and methods
   return {
     form,
     isDirty,
-    rowId,
-    crudAction,
-    setShowDialog,
     refineFormData,
+    userSession,
   };
 };

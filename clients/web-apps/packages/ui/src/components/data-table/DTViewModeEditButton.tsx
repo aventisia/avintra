@@ -1,38 +1,32 @@
 import { PencilIcon } from "lucide-react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { useShallow } from "zustand/react/shallow";
 
 import { Button } from "@/ui/components/buttons";
-import { useDataTableQueryParams } from "@/ui/components/data-table";
+import { useCrudDialogUrlState } from "@/ui/components/data-table";
 import { Tooltip } from "@/ui/components/tooltip";
-import { useDTCrudDialogStore } from "@/ui/stores";
+import { type CrudEntityKey } from "@/ui/types";
+
+interface DTViewModeEditButtonProps {
+  /** Entity key must match the currently open dialog entity. */
+  entity: CrudEntityKey;
+  rowId: string;
+}
 
 /**
  * A button component that triggers the edit mode for the current row in the data table.
  * This should be used inside the DialogHeader in the read mode of the data table's CRUD dialog.
  */
-export const DTViewModeEditButton = () => {
-  // Get crud dialog store state
-  const { crudDialogOptions, setCrudDialogOptions } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setCrudDialogOptions: state.setCrudDialogOptions,
-    })),
-  );
+export const DTViewModeEditButton = ({ entity, rowId }: DTViewModeEditButtonProps) => {
+  const { openCrudDialog } = useCrudDialogUrlState();
 
-  // Get set function for crudAction query param
-  const { setCrudAction } = useDataTableQueryParams();
-
-  // handleEdit function
   const handleEdit = () => {
-    setCrudAction("update");
-    setCrudDialogOptions({
-      ...crudDialogOptions,
+    openCrudDialog({
+      entity,
       crudAction: "update",
+      rowId,
     });
   };
 
-  // Register the Ctrl+Alt+E hotkey to trigger the edit action
   useHotkeys("ctrl+alt+e", handleEdit, { preventDefault: true });
 
   return (

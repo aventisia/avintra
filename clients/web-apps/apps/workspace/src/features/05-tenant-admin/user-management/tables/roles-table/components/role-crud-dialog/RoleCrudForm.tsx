@@ -1,6 +1,8 @@
 import { Button } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, FormMessage, InputField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
@@ -16,13 +18,17 @@ import { RoleTableDTO } from "../../dtos/roles-table-dto";
 import { useDefineRoleForm } from "../../hooks/useDefineRoleForm";
 import PermissionsGrid from "./PermissionsGird";
 
-const RoleCrudForm = () => {
+interface RoleCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const RoleCrudForm = ({ rowId, crudAction }: RoleCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   const {
     form,
     isSubmitting,
-    rowId,
-    crudAction,
-    setShowDialog,
     data,
     availabilityMessage,
     handleInputChange,
@@ -32,7 +38,7 @@ const RoleCrudForm = () => {
     setValue,
     isDirty,
     errors,
-  } = useDefineRoleForm();
+  } = useDefineRoleForm({ rowId, crudAction });
 
   const [rolePermissions, setRolePermissions] = useState(data?.data.rolePermissions);
 
@@ -64,7 +70,7 @@ const RoleCrudForm = () => {
 
     setAvailabilityMessage(null);
 
-    setShowDialog(false);
+    onCloseConfirmed();
   };
 
   // Is form in read mode?
@@ -109,5 +115,3 @@ const RoleCrudForm = () => {
     </Form>
   );
 };
-
-export default RoleCrudForm;

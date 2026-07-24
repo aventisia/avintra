@@ -1,6 +1,7 @@
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -13,10 +14,15 @@ import { ONPREM_LLM_QUERY_KEY } from "../constants";
 import { onPremLLMNameSchema, onPremLLMZodSchema } from "../constants/on-prem-llms-zod-schema";
 import { OnPremModelDto } from "../dtos/on-prem-llm-table-dto";
 
+interface UseDefineOnPremLLMFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
  * Custom hook for defining a model form.
  */
-export const useDefineOnPremLLMForm = () => {
+export const useDefineOnPremLLMForm = ({ rowId, crudAction }: UseDefineOnPremLLMFormOptions) => {
   // Set model name state (required for availability check)
   const [modelName, setModelName] = useState("");
 
@@ -27,18 +33,7 @@ export const useDefineOnPremLLMForm = () => {
     })),
   );
 
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get query client
   const queryClient = useQueryClient();
@@ -103,10 +98,12 @@ export const useDefineOnPremLLMForm = () => {
       });
 
     // Focus the name field after reset.
-    setTimeout(() => {
-      form.setFocus("name", { shouldSelect: false });
-    }, 0);
-  }, [rowId, form, queryClient, userSession]);
+    if (crudAction === "create") {
+      setTimeout(() => {
+        form.setFocus("name", { shouldSelect: false });
+      }, 0);
+    }
+  }, [rowId, crudAction, form, queryClient, userSession]);
 
   // Get check availability state and methods
   const {
@@ -134,25 +131,25 @@ export const useDefineOnPremLLMForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
-  // Reset availability message when dialog closes
+  // Reset availability message when component unmounts
   useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+    return () => {
+      setAvailabilityMessage(null);
+    };
+  }, [setAvailabilityMessage]);
 
   // Return form and methods
   return {
     form,
     isDirty,
-    rowId,
-    crudAction,
-    setShowDialog,
     refineFormData,
     isAvailable,
     availabilityMessage,
     isCheckPending,
     handleInputChange,
+    userSession,
   };
 };

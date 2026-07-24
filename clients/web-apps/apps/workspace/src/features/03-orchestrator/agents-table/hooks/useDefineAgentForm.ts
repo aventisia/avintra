@@ -1,5 +1,6 @@
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -13,10 +14,15 @@ import { AgentsTableDto } from "../dtos/agents-table-dto";
 import { useMachinesSelectTableStore } from "../stores/machines-select-table-store";
 import { useFetchMachines } from "./useFetchMachines";
 
+interface UseDefineAgentFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
  * Custom hook for defining a agent form.
  */
-export const useDefineAgentForm = () => {
+export const useDefineAgentForm = ({ rowId, crudAction }: UseDefineAgentFormOptions) => {
   // Set agent name state (required for avaialbility check)
   const [agentName, setAgentName] = useState("");
 
@@ -27,18 +33,7 @@ export const useDefineAgentForm = () => {
     })),
   );
 
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty, onCloseConfirmed } = useCrudDialogDirty();
 
   // Get query client
   const queryClient = useQueryClient();
@@ -152,18 +147,15 @@ export const useDefineAgentForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   // Return form and methods
   return {
     form,
     isDirty,
     agentName,
-    rowId,
-    crudAction,
-    setShowDialog,
     refineFormData,
-    toggleFormDirty,
+    onCloseConfirmed,
   };
 };

@@ -1,5 +1,6 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { AsyncSingleSelectField } from "@avplatform/ui/components/form/fields/AsyncSingleSelectField";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
 import { useEffect, useMemo, useRef } from "react";
@@ -24,11 +25,21 @@ import { JobsTableRowDto } from "../../dtos/jobs-table-row-dto";
 import { useDefineJobCreateForm } from "../../hooks/useDefineJobCreateForm";
 import { getSelectedId } from "../../utils/job-form-utils";
 
+interface JobCreateFormProps {
+  /** Optional machine id to pre-select as the execution location. */
+  defaultMachineId?: string;
+  /** Optional callback invoked when the job is created successfully. */
+  onSuccess?: () => void;
+}
+
 /**
  * Form for creating a new job.
  */
-export const JobCreateForm = () => {
-  const { form, isDirty, isValid, rowId, setShowDialog, refineFormData } = useDefineJobCreateForm();
+export const JobCreateForm = ({ defaultMachineId, onSuccess }: JobCreateFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+  const { form, isDirty, isValid, refineFormData } = useDefineJobCreateForm({
+    defaultMachineId,
+  });
   const agentSelectWrapperRef = useRef<HTMLDivElement | null>(null);
   const executionLocationWrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -63,7 +74,7 @@ export const JobCreateForm = () => {
     isSuccess,
   } = useTableRowOptimisticMutation<JobInsertDto, JobsTableRowDto, JobsTableRowDto>(
     "create",
-    [rowId],
+    [],
     insertJob,
     DATA_QUERY_KEY,
   );
@@ -73,8 +84,14 @@ export const JobCreateForm = () => {
   };
 
   useEffect(() => {
-    if (isSuccess) setShowDialog(false);
-  }, [isSuccess, setShowDialog]);
+    if (!isSuccess) return;
+
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      onCloseConfirmed();
+    }
+  }, [isSuccess, onSuccess, onCloseConfirmed]);
 
   // Focus the agent search input when the dialog opens so focus is not stuck on the close button.
   useEffect(() => {

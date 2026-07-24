@@ -1,13 +1,13 @@
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { CheckAvailabilityDto } from "@avplatform/ui/dtos";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
 
 import { isTenantInstanceNameAvailable } from "../apis/tenant-instance-apis";
 import { TENANT_INSTANCE_QUERY_KEY } from "../constants";
@@ -17,26 +17,20 @@ import {
 } from "../constants/tenant-instance-zod-schema";
 import { OnPremInstanceDto } from "../dtos/tenant-instance-dto";
 
+interface UseDefineTenantInstanceFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
  * Custom hook for defining a OnPremTenant form.
  */
-export const useDefineTenantInstanceForm = () => {
+export const useDefineTenantInstanceForm = ({ rowId }: UseDefineTenantInstanceFormOptions) => {
   const { tid } = useParams();
   // Set tenant name state (required for availability check)
   const [tenantName, setTenantName] = useState("");
 
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { showDialog, rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get query client
   const queryClient = useQueryClient();
@@ -106,22 +100,21 @@ export const useDefineTenantInstanceForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
-  // Reset availability message when dialog closes
+  // Reset availability message when component unmounts
   useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+    return () => {
+      setAvailabilityMessage(null);
+    };
+  }, [setAvailabilityMessage]);
 
   // Return form and methods
   return {
     form,
     isDirty,
-    rowId,
     id: tid,
-    crudAction,
-    setShowDialog,
     isAvailable,
     availabilityMessage,
     isCheckPending,

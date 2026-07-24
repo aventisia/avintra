@@ -1,6 +1,8 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
@@ -20,19 +22,22 @@ import { onPremLLMZodSchema } from "../../constants/on-prem-llms-zod-schema";
 import { OnPremModelDto } from "../../dtos/on-prem-llm-table-dto";
 import { useDefineOnPremLLMForm } from "../../hooks/useDefineOnPremLLMForm";
 
-export const OnPremCrudForm = () => {
+interface OnPremCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const OnPremCrudForm = ({ rowId, crudAction }: OnPremCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
   const {
     form,
-    rowId,
     isDirty,
-    crudAction,
     isAvailable,
     availabilityMessage,
     isCheckPending,
     handleInputChange,
-    setShowDialog,
     refineFormData,
-  } = useDefineOnPremLLMForm();
+  } = useDefineOnPremLLMForm({ rowId, crudAction });
 
   // Define optimistic mutation to crete or update the on prem model
   const {
@@ -54,13 +59,13 @@ export const OnPremCrudForm = () => {
     });
 
     // Close the dialog if not creating the record
-    if (crudAction !== "create") setShowDialog(false);
+    if (crudAction !== "create") onCloseConfirmed();
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if (crudAction === "create" && isSuccess) setShowDialog(false);
-  }, [isSuccess, crudAction, setShowDialog]);
+    if (crudAction === "create" && isSuccess) onCloseConfirmed();
+  }, [isSuccess, crudAction, onCloseConfirmed]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";

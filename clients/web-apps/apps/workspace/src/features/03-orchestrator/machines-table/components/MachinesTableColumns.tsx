@@ -49,7 +49,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
     ),
     cell: ({ row }) => (
-      <DTOpenViewCell rowId={row.original.id} cellContent={row.getValue("name")} />
+      <DTOpenViewCell rowId={row.original.id} cellContent={row.getValue("name")} entity="machine" />
     ),
   },
   {

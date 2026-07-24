@@ -1,4 +1,4 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 const BILLING_HISOTRY_QUERY_KEY = ["billing_history"];
 
@@ -6,7 +6,7 @@ const TABLE_HEADING = "Billing History";
 
 const TABLE_KEY = "billing-history";
 
-const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return { heading: "Create History", description: "" };

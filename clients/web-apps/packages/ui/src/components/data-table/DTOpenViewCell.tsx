@@ -1,36 +1,22 @@
-import { useShallow } from "zustand/react/shallow";
-
-import { useDataTableQueryParams } from "@/ui/components/data-table";
-import { useDTCrudDialogStore } from "@/ui/stores";
+import { useCrudDialogUrlState } from "@/ui/components/data-table";
+import { type CrudEntityKey } from "@/ui/types";
 
 interface DTOpenViewCellProps {
   rowId: string;
   cellContent: string;
+  entity: CrudEntityKey;
 }
-/**
- * A component that renders a cell in a data table which, when clicked, opens a read view of the corresponding row.
- */
-export const DTOpenViewCell = ({ rowId, cellContent }: DTOpenViewCellProps) => {
-  // Get set function for crudAction query param
-  const { setCrudDialogOptions } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      setCrudDialogOptions: state.setCrudDialogOptions,
-    })),
-  );
 
-  // Get set function for crudAction query param
-  const { setCrudAction, setRowId } = useDataTableQueryParams();
+export const DTOpenViewCell = ({ rowId, cellContent, entity }: DTOpenViewCellProps) => {
+  const { openCrudDialog } = useCrudDialogUrlState();
 
-  // Function to handle opening the read view of the machine
   const handleOpenRead = () => {
     if (!rowId) return;
 
-    setCrudAction("read");
-    setRowId(rowId);
-    setCrudDialogOptions({
-      showDialog: true,
-      rowId,
+    openCrudDialog({
+      entity,
       crudAction: "read",
+      rowId,
     });
   };
 

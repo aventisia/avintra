@@ -1,4 +1,4 @@
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -15,23 +15,18 @@ import {
   jobUpdateZodSchema,
 } from "..";
 
+interface UseDefineJobUpdateFormOptions {
+  rowId: string;
+}
+
 /**
  * Custom hook for defining the update job form.
  *
  * Row data for update is read from the existing jobs list cache (queryClient)
  * instead of fetching it again from the server.
  */
-export const useDefineJobUpdateForm = () => {
-  const {
-    crudDialogOptions: { rowId },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore((state) => ({
-    crudDialogOptions: state.crudDialogOptions,
-    setShowDialog: state.setShowDialog,
-    toggleFormDirty: state.toggleFormDirty,
-  }));
-
+export const useDefineJobUpdateForm = ({ rowId }: UseDefineJobUpdateFormOptions) => {
+  const { setIsDirty } = useCrudDialogDirty();
   const queryClient = useQueryClient();
 
   const form = useForm<JobUpdateFormData>({
@@ -94,15 +89,13 @@ export const useDefineJobUpdateForm = () => {
   });
 
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   return {
     form,
     isDirty,
     isValid,
-    rowId,
-    setShowDialog,
     refineFormData,
   };
 };

@@ -1,11 +1,12 @@
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useCheckAvailability } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { reqError } from "@avplatform/ui/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ZodTypeAny, z } from "zod";
-import { useShallow } from "zustand/react/shallow";
 
 import {
   DCPFieldSchemaType,
@@ -20,11 +21,15 @@ import { vaultNameSchema } from "../../constants/vault-zod-schema";
 import { VaultsTableDto } from "../../dtos/vaults-table-dto";
 import { VaultAppsEnum } from "../../enums/vault-apps-enum";
 import { useTableTab } from "../../hooks/useTableTab";
-import { useVaultDialogStore } from "../../stores/vault-dialog-store";
 import { appToCredentialNameMapper } from "../constants/app-to-credential-name-mapper";
 import { vaultAppsSelectOptions } from "../constants/vault-app-select-options";
 
-export const useVaultDynamicForm = () => {
+interface UseVaultDynamicFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOptions) => {
   // Set credential name state (required for availability check)
   const [credName, setCredName] = useState("");
 
@@ -39,17 +44,8 @@ export const useVaultDynamicForm = () => {
     z.ZodObject<Record<string, ZodTypeAny>>
   >(() => z.object({}));
 
-  // Get vault unique name state (required to get config panel data)
-  const { showDialog, action, type, rowId, setShowDialog } = useVaultDialogStore(
-    useShallow((state) => ({
-      type: state.type,
-      showDialog: state.showDialog,
-      rowId: state.rowId,
-      action: state.action,
-      setShowDialog: state.setShowDialog,
-      setType: state.setType,
-    })),
-  );
+  const { setIsDirty } = useCrudDialogDirty();
+
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
   // Get query client
@@ -132,7 +128,6 @@ export const useVaultDynamicForm = () => {
     isCheckPending,
     handleInputChange,
     availabilityMessage,
-    setAvailabilityMessage,
     checkAvailabilityMutation,
   } = useCheckAvailability<z.infer<typeof vaultConfigZodSchema>, z.ZodString>({
     defaultInputValue: credName,
@@ -159,7 +154,7 @@ export const useVaultDynamicForm = () => {
 
       setCredName(name);
 
-      if (action == "create") checkAvailabilityMutation({ userInput: name });
+      if (crudAction == "create") checkAvailabilityMutation({ userInput: name });
 
       form.reset({
         selectedType: Object.values(vaultAppsSelectOptions).find(
@@ -185,26 +180,25 @@ export const useVaultDynamicForm = () => {
     watch,
   } = form;
 
+  // Save the form dirty state
   useEffect(() => {
-    if (!showDialog) setAvailabilityMessage(null);
-  }, [setAvailabilityMessage, showDialog]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   return {
     form,
     isDirty,
     control,
     rowId,
-    setShowDialog,
     inputKeys,
     outputKeys,
     isFormReady,
-    type,
     watch,
     vaultConfig,
     vaultConfigZodSchema,
     isLoading,
     convertToObject,
-    action,
+    action: crudAction,
     isAvailable,
     isCheckPending,
     handleInputChange,

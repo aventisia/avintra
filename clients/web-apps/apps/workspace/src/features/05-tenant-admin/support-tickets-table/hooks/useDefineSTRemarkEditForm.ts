@@ -1,5 +1,6 @@
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -12,10 +13,18 @@ import { supportTicketRemarksZodSchema } from "../constants/support-ticket-zod-s
 import { SupportTicketRemarksDto } from "../dtos/SupportTicketRemarksDto";
 import { useSupportTicketsTableStore } from "../stores/support-tickets-table-store";
 
+interface UseDefineSTRemarkEditFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
  * Custom hook for defining a support ticket remark edit form.
  */
-export const useDefineSTRemarkEditForm = () => {
+export const useDefineSTRemarkEditForm = ({
+  rowId,
+  crudAction,
+}: UseDefineSTRemarkEditFormOptions) => {
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -23,16 +32,7 @@ export const useDefineSTRemarkEditForm = () => {
     })),
   );
 
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { rowId, crudAction },
-    toggleFormDirty,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get selected support ticket id from url params
   const location = useLocation();
@@ -118,15 +118,14 @@ export const useDefineSTRemarkEditForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   // Return form and methods
   return {
     form,
     isDirty,
     remarksQueryKey,
-    rowId,
     refineFormData,
   };
 };

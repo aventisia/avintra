@@ -1,4 +1,5 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import {
   Form,
   FormControl,
@@ -10,6 +11,7 @@ import {
   SwitchField,
 } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
@@ -34,22 +36,26 @@ import InputWithCopy from "./InputWithCopy.tsx";
 
 // import { generateApiKey } from "../../apis/api-key-apis.ts";
 
-export const TriggerCrudForm = () => {
+interface TriggerCrudFormProps {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
+export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => {
+  const { onCloseConfirmed } = useCrudDialogDirty();
+
   // Define trigger form
   const {
     form,
-    rowId,
     isDirty,
-    crudAction,
     // isAvailable,
     // availabilityMessage,
     // isCheckPending,
     // handleInputChange,
-    setShowDialog,
     refineFormData,
     queryClient,
     objectToArray,
-  } = useDefineTriggerForm();
+  } = useDefineTriggerForm({ rowId, crudAction });
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
@@ -74,13 +80,13 @@ export const TriggerCrudForm = () => {
     });
 
     // Close the dialog if not creating/updating the record
-    if (crudAction == "read") setShowDialog(false);
+    if (crudAction == "read") onCloseConfirmed();
   };
 
   // Close dialog and reset form when mutation is successful
   useEffect(() => {
-    if (crudAction === "update" && isSuccess) setShowDialog(false);
-  }, [isSuccess, crudAction, setShowDialog]);
+    if (crudAction === "update" && isSuccess) onCloseConfirmed();
+  }, [isSuccess, crudAction, onCloseConfirmed]);
 
   // Is form in read mode?
   const isReadMode = crudAction === "read";

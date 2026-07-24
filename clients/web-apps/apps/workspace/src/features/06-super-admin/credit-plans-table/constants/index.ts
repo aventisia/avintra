@@ -1,4 +1,4 @@
-import { CrudActionType } from "@avplatform/ui/types";
+import { DialogCrudAction } from "@avplatform/ui/types";
 
 const CREDIT_PLANS_QUERY_KEY = ["credit_plans"];
 
@@ -6,7 +6,7 @@ const TABLE_HEADING = "Credit Plans";
 
 const TABLE_KEY = "credit-plans";
 
-const getDialogHeadingDescription = (crudAction: CrudActionType) => {
+const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
   switch (crudAction) {
     case "create":
       return { heading: "Create Plan", description: "" };

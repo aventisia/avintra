@@ -1,5 +1,6 @@
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
+import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -11,10 +12,15 @@ import { DATA_QUERY_KEY } from "../constants/constants";
 import { supportTicketZodSchema } from "../constants/support-ticket-zod-schema";
 import { SupportTicketsTableDto } from "../dtos/SupportTicketsTableDto";
 
+interface UseDefineSupportTicketFormOptions {
+  rowId: string;
+  crudAction: CrudActionType;
+}
+
 /**
  * Custom hook for defining a support ticket form.
  */
-export const useDefineSupportTicketForm = () => {
+export const useDefineSupportTicketForm = ({ rowId }: UseDefineSupportTicketFormOptions) => {
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -22,18 +28,7 @@ export const useDefineSupportTicketForm = () => {
     })),
   );
 
-  // Get data-table crud dialog store state and actions
-  const {
-    crudDialogOptions: { rowId, crudAction },
-    toggleFormDirty,
-    setShowDialog,
-  } = useDTCrudDialogStore(
-    useShallow((state) => ({
-      crudDialogOptions: state.crudDialogOptions,
-      setShowDialog: state.setShowDialog,
-      toggleFormDirty: state.toggleFormDirty,
-    })),
-  );
+  const { setIsDirty } = useCrudDialogDirty();
 
   // Get query client
   const queryClient = useQueryClient();
@@ -108,16 +103,13 @@ export const useDefineSupportTicketForm = () => {
 
   // Save the form dirty state
   useEffect(() => {
-    toggleFormDirty(isDirty);
-  }, [isDirty, toggleFormDirty]);
+    setIsDirty(isDirty);
+  }, [isDirty, setIsDirty]);
 
   // Return form and methods
   return {
     form,
     isDirty,
-    rowId,
-    crudAction,
-    setShowDialog,
     refineFormData,
   };
 };
