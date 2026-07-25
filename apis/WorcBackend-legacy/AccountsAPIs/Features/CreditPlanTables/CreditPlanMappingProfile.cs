@@ -20,7 +20,6 @@ public class CreditPlanMappingProfile : IRegister
         config.NewConfig<CreditPlan, SelectOptionDto>()
             .Map(dest => dest.Label, src => src.ServiceType.ToString())
             .Map(dest => dest.Value, src => src.Id)
-            .Map(dest => dest.Description, src => GetEnumDescriptionUtil.GetEnumDescription(src.ServiceType))
-            .Map(dest => dest.Disabled, src => src.IsDisabled);
+            .Map(dest => dest.Description, src => GetEnumDescriptionUtil.GetEnumDescription(src.ServiceType));
     }
 }

@@ -26,7 +26,6 @@ public class SubscriptionPlanMappingProfile : IRegister
         // Get subscription plans in SelectOptionDto format
         config.NewConfig<SubscriptionPlan, SelectOptionDto>()
             .Map(dest => dest.Label, src => src.Name)
-            .Map(dest => dest.Value, src => src.Id)
-            .Map(dest => dest.Disabled, src => src.IsDisabled);
+            .Map(dest => dest.Value, src => src.Id);
     }
 }

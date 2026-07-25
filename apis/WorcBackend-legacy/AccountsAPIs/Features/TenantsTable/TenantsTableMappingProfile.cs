@@ -22,7 +22,6 @@ public class TenantsTableMappingProfile : IRegister
         // Get tenants in SelectOptionDto format
         config.NewConfig<Tenant, SelectOptionDto>()
             .Map(dest => dest.Label, src => src.Name)
-            .Map(dest => dest.Value, src => src.Id)
-            .Map(dest => dest.Disabled, src => src.IsDefault);
+            .Map(dest => dest.Value, src => src.Id);
     }
 }

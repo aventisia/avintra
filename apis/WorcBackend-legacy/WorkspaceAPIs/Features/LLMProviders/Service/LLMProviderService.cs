@@ -236,9 +236,7 @@ public class LLMProviderService : ILLMProviderService
         {
             Value = value ?? string.Empty,
             Label = label ?? string.Empty,
-            Description = description,
-            Disabled = false,
-            Fixed = false
+            Description = description
         };
     }
     // Helper method to remove the prefix before the first "/" if it exists
