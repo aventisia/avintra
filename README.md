@@ -1,71 +1,141 @@
-avplatform monorepo
+# Aventisia WORC Platform Monorepo
 
-## Overview
+This repository contains the source code, shared libraries, clients, and deployment configuration for the **Aventisia WORC Platform** — an automation, AI, and workflow orchestration platform.
 
-This repository contains the source code and deployment configurations for the avplatform, a comprehensive solution for managing various services and applications.
+## Repository Structure
 
-# Login to private registry (if needed)
+```
+.
+├── apis/                       # Backend APIs and services
+│   ├── WorcBackend/            # New .NET 8 solution (Accounts.API, Worc.API, Domain, Infrastructure, Shared)
+│   ├── WorcBackend-legacy/     # Legacy .NET 8 backend (AccountsAPIs, WorkspaceAPIs, AspNetToolkit)
+│   └── llmpipeline/            # FastAPI Python service for text extraction, OCR, LLM pipelines
+│
+├── clients/                    # Frontend and desktop applications
+│   ├── web-apps/               # Turborepo + npm workspaces (Vite + React + TypeScript)
+│   │   ├── apps/accounts       # Identity / accounts web app
+│   │   ├── apps/workspace      # Workspace / flow builder web app
+│   │   └── packages/*          # Shared packages (ui, layout, ui-editors, eslint-config, etc.)
+│   ├── worc-web-legacy/        # Legacy Vite + React apps (accounts, workspace, studio)
+│   ├── desktop-app/            # Tauri-based cross-platform desktop app
+│   ├── docs/                   # Nextra-based documentation site
+│   └── NodeExecutor/           # Windows desktop workflow executor (WPF / .NET Framework 4.8)
+│
+├── shared/                     # Shared cross-platform .NET libraries
+│   ├── ExecutorLibrary/        # Flow execution engine
+│   ├── NodeLibrary/            # Node definitions and execution strategies
+│   └── NodeToJson/             # Node-to-JSON conversion utility
+│
+├── tests/                      # Test collections
+│   └── bruno/                  # Bruno API test collections
+│
+└── deploy/                     # Deployment assets
+    └── nginx/                  # Nginx reverse proxy / static file server
+```
 
-sudo docker login acr.aventisia.com
+## Quick Start
 
-sudo docker network create avplatform-net
+### Prerequisites
 
-## How to build and push images to `acr.aventisia.com`
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Node.js 18+](https://nodejs.org/) with npm
+- [Python 3.12+](https://www.python.org/) (for `llmpipeline`)
+- [Docker](https://www.docker.com/) (for containerized builds)
 
-Make sure you are logged in to `acr.aventisia.com` by running the command `sudo docker login acr.aventisia.com`
+### Running Local Development
 
 ```sh
-# Step 1: Install dependencies for client apps
+# Web apps monorepo
+npm --prefix clients/web-apps install
+npm --prefix clients/web-apps run dev
+
+# New .NET backend
+dotnet run --project apis/WorcBackend/Accounts.API
+dotnet run --project apis/WorcBackend/Worc.API
+
+# Legacy .NET backend
+dotnet run --project apis/WorcBackend-legacy/AccountsAPIs
+dotnet run --project apis/WorcBackend-legacy/WorkspaceAPIs
+
+# LLM Pipeline Python API
+cd apis/llmpipeline
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+> See the individual `README.md` files inside each top-level directory for detailed setup, build, and run instructions.
+
+## Docker Build & Push
+
+Login to the private registry if needed:
+
+```sh
+sudo docker login acr.aventisia.com
+```
+
+### 1. Install and build legacy web clients
+
+```sh
 npm --prefix clients/worc-web-legacy/accounts install
 npm --prefix clients/worc-web-legacy/workspace install
 npm --prefix clients/worc-web-legacy/studio install --force
-npm --prefix clients/worc-web-legacy/ml-model-builder install
 
-# Step 2: Run npm audit fix if needed
-npm --prefix clients/worc-web-legacy/accounts audit fix
-npm --prefix clients/worc-web-legacy/workspace audit fix
-npm --prefix clients/worc-web-legacy/studio audit fix --force
-npm --prefix clients/worc-web-legacy/ml-model-builder audit fix
-
-# Step 3: Build clients to generate static files (change mode as needed)
 npm --prefix clients/worc-web-legacy/accounts run build --mode=production
 npm --prefix clients/worc-web-legacy/workspace run build --mode=production
 npm --prefix clients/worc-web-legacy/studio run build --mode=production
-npm --prefix clients/worc-web-legacy/ml-model-builder run build --mode=production
+```
 
-# Step 4: Build images for frontend and backend services
-sudo docker build -f deploy/nginx/Dockerfile -t acr.aventisia.com/avplatform/frontend:0.1.0 .
+### 2. Build Docker images from the repository root
+
+```sh
+# Nginx frontend
+sudo docker build -f deploy/nginx/Dockerfile -t acr.aventisia.com/avplatform/frontend:0.4.0 .
+
+# Legacy .NET APIs
 sudo docker build -f apis/WorcBackend-legacy/AccountsAPIs/Dockerfile -t acr.aventisia.com/avplatform/accounts-apis:0.1.0 .
 sudo docker build -f apis/WorcBackend-legacy/WorkspaceAPIs/Dockerfile -t acr.aventisia.com/avplatform/workspace-apis:0.1.0 .
-# Build fastapi llmpipline separately to optimize the build image
-cd apis/llmpipeline && sudo docker build -t acr.aventisia.com/avplatform/llmpipeline-apis:0.1.0 . && cd ../..
 
-# Step 6: Push images to private registry
-sudo docker push acr.aventisia.com/avplatform/frontend:0.1.0
+# LLM Pipeline
+cd apis/llmpipeline && sudo docker build -t acr.aventisia.com/avplatform/llmpipeline-apis:0.1.0 . && cd ../..
+```
+
+### 3. Push images
+
+```sh
+sudo docker push acr.aventisia.com/avplatform/frontend:0.4.0
 sudo docker push acr.aventisia.com/avplatform/accounts-apis:0.1.0
 sudo docker push acr.aventisia.com/avplatform/workspace-apis:0.1.0
 sudo docker push acr.aventisia.com/avplatform/llmpipeline-apis:0.1.0
 ```
 
-> Detailed deployment instructions for individual services can be found in their respective directories.
+## Retag and Push to Azure Container Registry
 
-## Retag and push images to `aventisiaacr.azurecr.io`
-
-Whenever we have stable version of the images in `acr.aventisia.com`, we need to retag and push them to `aventisiaacr.azurecr.io` for clients on premises production deployment.
+When images are stable in `acr.aventisia.com`, retag and push them to `aventisiaacr.azurecr.io` for on-premises / production deployments:
 
 ```sh
-# Retagging the image for azurecr.io
-sudo docker tag acr.aventisia.com/avplatform/frontend:0.1.0 aventisiaacr.azurecr.io/avplatform/frontend:0.1.0
+sudo docker tag acr.aventisia.com/avplatform/frontend:0.4.0 aventisiaacr.azurecr.io/avplatform/frontend:0.4.0
 sudo docker tag acr.aventisia.com/avplatform/accounts-apis:0.1.0 aventisiaacr.azurecr.io/avplatform/accounts-apis:0.1.0
 sudo docker tag acr.aventisia.com/avplatform/workspace-apis:0.1.0 aventisiaacr.azurecr.io/avplatform/workspace-apis:0.1.0
 sudo docker tag acr.aventisia.com/avplatform/llmpipeline-apis:0.1.0 aventisiaacr.azurecr.io/avplatform/llmpipeline-apis:0.1.0
 
-# Login to aventisiaacr.azurecr.io using the ACR Token username and password
-sudo docker login aventisiaacr.azurecr.io -u internal-pushpull-token -p <acr_tokeen_password>
+sudo docker login aventisiaacr.azurecr.io -u internal-pushpull-token -p <acr_token_password>
 
-# Pushing the retagged images to azurecr.io
-sudo docker push aventisiaacr.azurecr.io/avplatform/frontend:0.1.0
+sudo docker push aventisiaacr.azurecr.io/avplatform/frontend:0.4.0
 sudo docker push aventisiaacr.azurecr.io/avplatform/accounts-apis:0.1.0
 sudo docker push aventisiaacr.azurecr.io/avplatform/workspace-apis:0.1.0
 sudo docker push aventisiaacr.azurecr.io/avplatform/llmpipeline-apis:0.1.0
 ```
+
+## Network Setup
+
+```sh
+sudo docker network create avplatform-net
+```
+
+## Documentation
+
+- Project overview and per-service instructions are available in each directory's `README.md`.
+- API test collections are located under `tests/bruno/` and can be opened with [Bruno](https://www.usebruno.com/).
+- Product documentation is built from `clients/docs/` using [Nextra](https://nextra.site/).
