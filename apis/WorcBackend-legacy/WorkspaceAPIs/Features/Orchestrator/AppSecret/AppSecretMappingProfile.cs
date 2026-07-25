@@ -24,8 +24,8 @@ public class AppSecretMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
 
-        // Get app secret in SelectOptionDto format
-        config.NewConfig<AppSecret, SelectOptionDto>()
+        // Get app secret in SelectOption format
+        config.NewConfig<AppSecret, SelectOption>()
             .Map(dest => dest.Value, src => src.Id)
             .Map(dest => dest.Label, src => src.Name)
             .Map(dest => dest.Description, src => src.Description);

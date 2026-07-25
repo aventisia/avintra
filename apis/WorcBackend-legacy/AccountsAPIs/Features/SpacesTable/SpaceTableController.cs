@@ -21,7 +21,7 @@ public class SpaceTableController : BaseApiController
 
     // Gets a list of spaces for selection options
     [HttpGet("option-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetSelectableSpaceOptions()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetSelectableSpaceOptions()
     {
         return ResultHelper(await _spaceTableService.GetSelectableSpaceOptionsAsync());
     }

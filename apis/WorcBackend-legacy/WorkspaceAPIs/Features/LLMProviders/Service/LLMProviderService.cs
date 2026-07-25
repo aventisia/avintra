@@ -19,9 +19,9 @@ public class LLMProviderService : ILLMProviderService
     }
 
     // Retrieves models based on the specified LLM provider type and credentials.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetAllModelsAsync(LLMProviderModelRequestDto requestDto)
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetAllModelsAsync(LLMProviderModelRequestDto requestDto)
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             Message = "Failed to retrieve models. Please try again later."
@@ -109,9 +109,9 @@ public class LLMProviderService : ILLMProviderService
         }
     }
 
-    private async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetModelsAsync(LLMProviderModelRequestDto lLMProviderModelRequestDto, RestClient client)
+    private async Task<ServiceResponse<IEnumerable<SelectOption>>> GetModelsAsync(LLMProviderModelRequestDto lLMProviderModelRequestDto, RestClient client)
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>();
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>();
 
         try
         {
@@ -201,8 +201,8 @@ public class LLMProviderService : ILLMProviderService
         return serviceResponse;
     }
 
-    // General method to map a JToken to SelectOptionDto based on the provider type
-    private SelectOptionDto MapToSelectOptionDto(JToken item, LLMProviderTypesEnum providerType)
+    // General method to map a JToken to SelectOption based on the provider type
+    private SelectOption MapToSelectOptionDto(JToken item, LLMProviderTypesEnum providerType)
     {
         var value = providerType switch
         {
@@ -232,7 +232,7 @@ public class LLMProviderService : ILLMProviderService
             _ => throw new NotImplementedException($"No description extraction logic defined for {providerType}")
         };
 
-        return new SelectOptionDto
+        return new SelectOption
         {
             Value = value ?? string.Empty,
             Label = label ?? string.Empty,

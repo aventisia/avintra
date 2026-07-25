@@ -23,8 +23,8 @@ public class SubscriptionPlanMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
 
-        // Get subscription plans in SelectOptionDto format
-        config.NewConfig<SubscriptionPlan, SelectOptionDto>()
+        // Get subscription plans in SelectOption format
+        config.NewConfig<SubscriptionPlan, SelectOption>()
             .Map(dest => dest.Label, src => src.Name)
             .Map(dest => dest.Value, src => src.Id);
     }

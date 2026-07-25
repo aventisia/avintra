@@ -1302,9 +1302,9 @@ namespace WorkspaceAPIs.Services
 
 
         // Retrieve project templates for select-option dropdown
-        public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetProjectTemplatesForSelectOptionsAsync(ProjectTemplateTypesEnum? type)
+        public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetProjectTemplatesForSelectOptionsAsync(ProjectTemplateTypesEnum? type)
         {
-            var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+            var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
             {
                 Data = null,
                 Message = "Failed to retrieve templates. Please try again later."
@@ -1323,9 +1323,9 @@ namespace WorkspaceAPIs.Services
                     .OrderByDescending(o => o.UsageCount)
                     .ToListAsync();
 
-                // Map to SelectOptionDto (e.g., Id and Name for dropdown)
+                // Map to SelectOption (e.g., Id and Name for dropdown)
                 serviceResponse.Data = projectTemplates
-                    .Select(s => new SelectOptionDto
+                    .Select(s => new SelectOption
                     {
                         Label = s.Name,
                         Description = s.Schema,

@@ -53,10 +53,10 @@ public class SpaceTableService : ISpaceTableService
     }
 
     // Retrieves all spaces from the database.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableSpaceOptionsAsync()
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableSpaceOptionsAsync()
     {
         // Initialize the response object with a default failure state
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             Message = "Failed to retrieve spaces optins. Please try again."
@@ -67,11 +67,11 @@ public class SpaceTableService : ISpaceTableService
             // Retrieve all space entities along with the user who created them
             var spaceEntities = await _unitOfWork.SpaceRepo
                 .GetAllAsync()
-                .ProjectToType<SelectOptionDto>()
+                .ProjectToType<SelectOption>()
                 .ToListAsync();
 
-            // Map the space entities to SelectOptionDto objects
-            serviceResponse.Data = spaceEntities.Adapt<IEnumerable<SelectOptionDto>>();
+            // Map the space entities to SelectOption objects
+            serviceResponse.Data = spaceEntities.Adapt<IEnumerable<SelectOption>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Spaces retrieved successfully.";
 

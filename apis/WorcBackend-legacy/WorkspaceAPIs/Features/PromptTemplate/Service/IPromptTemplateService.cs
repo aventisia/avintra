@@ -72,7 +72,7 @@ public interface IPromptTemplateService
     /// Retrieves a list of prompt templates formatted as select options.
     /// </summary>
     /// <returns>
-    /// A collection of <see cref="SelectOptionDto"/> representing prompt templates for use in dropdowns or selection controls.
+    /// A collection of <see cref="SelectOption"/> representing prompt templates for use in dropdowns or selection controls.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPromptTemplateOptionsAsync();
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetPromptTemplateOptionsAsync();
 }

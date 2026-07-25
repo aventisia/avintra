@@ -28,7 +28,7 @@ public class SubscriptionPlanController : BaseApiController
 
     // Gets a list of subscription plans for selection options.
     [HttpGet("option-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetSelectableSubscriptionPlanOptions(SubscriptionPlanTypeEnum? type)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetSelectableSubscriptionPlanOptions(SubscriptionPlanTypeEnum? type)
     {
         return ResultHelper(await _subscriptionPlanService.GetSelectableSubscriptionPlanOptionsAsync(type));
     }

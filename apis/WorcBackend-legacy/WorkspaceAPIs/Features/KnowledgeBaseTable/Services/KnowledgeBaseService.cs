@@ -115,9 +115,9 @@ public class KnowledgeBaseService : IKnowledgeBaseService
     /// <summary>
     /// Retrieves tenant-wide knowledge bases in select-option format.
     /// </summary>
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableKnowledgeBaseOptionsAsync()
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableKnowledgeBaseOptionsAsync()
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             StatusCode = 400,
@@ -149,7 +149,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                     )
                 )
                 .OrderBy(kb => kb.Name)
-                .Select(kb => new SelectOptionDto
+                .Select(kb => new SelectOption
                 {
                     Value = kb.Name, // Use Name as Value for select options since KBs are tenant-wide and Name is unique within a tenant
                     Label = kb.Name,

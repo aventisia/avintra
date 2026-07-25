@@ -20,14 +20,14 @@ public interface ITenantsTableService
     /// </summary>
     /// <param name="tenantType">The type of tenant to filter the results. If null, all tenant types are included.</param>
     /// <returns>A task representing the asynchronous operation, containing a service response with an enumerable of select option DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetTenantOptionListAsync(TenantTypesEnum? tenantType);
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetTenantOptionListAsync(TenantTypesEnum? tenantType);
 
     /// <summary>
     /// Asynchronously retrieves a collection of tenant options based on the specified tenant type.
     /// </summary>
     /// <param name="SearchSelectOptionDto">The type of tenant to filter the results. If null, all tenant types are included.</param>
     /// <returns>A task representing the asynchronous operation, containing a service response with an enumerable of select option DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> SearchTenantOptionListAsync(SearchSelectOptionDto searchOption);
+    Task<ServiceResponse<IEnumerable<SelectOption>>> SearchTenantOptionListAsync(SearchSelectOptionDto searchOption);
 
     /// <summary>
     /// Checks the availability of a tenant name.

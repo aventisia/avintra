@@ -77,7 +77,7 @@ public class TimeTriggerController : BaseApiController
 
     // // Retrieve the select-option list of triggers
     // [HttpGet("select-option")]
-    // public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetAgentToSelectOptionAsync()
+    // public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetAgentToSelectOptionAsync()
     // {
     //     return ResultHelper(await triggerService.GetTriggerToSelectOptionAsync());
     // }

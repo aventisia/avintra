@@ -57,7 +57,7 @@ public interface ITenantRoleManagementService
     /// Retrieves a list of account roles formatted as select options (e.g., for dropdowns).
     /// </summary>
     /// <returns>
-    /// A service response containing a collection of <see cref="SelectOptionDto"/> representing available account roles.
+    /// A service response containing a collection of <see cref="SelectOption"/> representing available account roles.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetRoleOptionListAsync();
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetRoleOptionListAsync();
 }

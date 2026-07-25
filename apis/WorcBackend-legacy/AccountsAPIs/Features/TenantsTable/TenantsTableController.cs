@@ -28,14 +28,14 @@ public class TenantsTableController : BaseApiController
 
     // Retrieves a list of tenant options.
     [HttpGet("tenants-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetTenantOptionListAsync(TenantTypesEnum? tenantType)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetTenantOptionListAsync(TenantTypesEnum? tenantType)
     {
         return ResultHelper(await _tenantsTableService.GetTenantOptionListAsync(tenantType));
     }
 
     // Retrieves a list of tenant options.
     [HttpPost("tenants-to-search-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> SearchTenantOptionList(SearchSelectOptionDto searchOptionDto)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> SearchTenantOptionList(SearchSelectOptionDto searchOptionDto)
     {
         return ResultHelper(await _tenantsTableService.SearchTenantOptionListAsync(searchOptionDto));
     }

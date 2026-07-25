@@ -516,10 +516,10 @@ public class PromptTemplateService : IPromptTemplateService
 
 
     // Retrieves all prompt templates and maps them into select option DTOs.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetPromptTemplateOptionsAsync()
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetPromptTemplateOptionsAsync()
     {
         // Initialize response with default failure state
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             Message = "Failed to retrieve prompt templates, please try again."
@@ -534,7 +534,7 @@ public class PromptTemplateService : IPromptTemplateService
                     (w.AccessType == PromptTemplateAccessTypeEnum.Self && w.CreatedByUserId == _currentTenantService.CurrentUserId) ||
                     w.AccessType == PromptTemplateAccessTypeEnum.Public
                 )
-                .ProjectToType<SelectOptionDto>()
+                .ProjectToType<SelectOption>()
                 .AsNoTracking()
                 .ToListAsync();
 

@@ -517,10 +517,10 @@ public class RoleManagementService : IRoleManagementService
     }
 
     //Retrieves a list of account roles formatted as select options
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetRoleOptionListAsync(Guid tenantId)
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetRoleOptionListAsync(Guid tenantId)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             StatusCode = 400
@@ -536,7 +536,7 @@ public class RoleManagementService : IRoleManagementService
                         .ToListAsync();
 
             // Task successful
-            serviceResponse.Data = roles.Adapt<IEnumerable<SelectOptionDto>>();
+            serviceResponse.Data = roles.Adapt<IEnumerable<SelectOption>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Roles retrieved successfully";
         }

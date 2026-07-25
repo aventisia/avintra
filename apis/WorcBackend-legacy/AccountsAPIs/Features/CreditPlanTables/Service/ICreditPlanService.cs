@@ -17,9 +17,9 @@ public interface ICreditPlanService
     /// Retrieves a list of credit plans formatted as selectable options, typically used in dropdowns or selection lists.
     /// </summary>
     /// <returns>
-    /// A task representing the asynchronous operation. The result contains a collection of <see cref="SelectOptionDto"/> representing available credit plans.
+    /// A task representing the asynchronous operation. The result contains a collection of <see cref="SelectOption"/> representing available credit plans.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableCreditPlanOptionsAsync();
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableCreditPlanOptionsAsync();
 
     /// <summary>
     /// Retrieves the details of a specific credit plan by its unique identifier.

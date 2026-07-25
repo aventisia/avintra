@@ -65,5 +65,5 @@ public interface ITimeTriggerService
     /// Retrieves a list of triggers formatted as select options.
     /// </summary>
     /// <returns>A service response containing a list of select options for triggers, including labels, values, and descriptions.</returns>
-    //Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetTriggerToSelectOptionAsync();
+    //Task<ServiceResponse<IEnumerable<SelectOption>>> GetTriggerToSelectOptionAsync();
 }

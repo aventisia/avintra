@@ -52,10 +52,10 @@ public class CreditPlanService : ICreditPlanService
     }
 
     // Retrieves credit plans formatted as select options for UI dropdowns or selection controls
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableCreditPlanOptionsAsync()
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableCreditPlanOptionsAsync()
     {
         // Initialize service response with failure defaults
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             Message = "Failed to retrieve credit plan options. Please try again."
@@ -68,8 +68,8 @@ public class CreditPlanService : ICreditPlanService
                 .GetAllAsync()
                 .ToListAsync();
 
-            // Map to SelectOptionDto for UI consumption
-            serviceResponse.Data = creditPlans.Adapt<IEnumerable<SelectOptionDto>>();
+            // Map to SelectOption for UI consumption
+            serviceResponse.Data = creditPlans.Adapt<IEnumerable<SelectOption>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit plan options retrieved successfully.";
 

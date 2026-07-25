@@ -26,9 +26,9 @@ public interface IAppSecretService
     /// </summary>
     /// <param name="type"> An optional <see cref="AppSecretTypesEnum"/> value to filter the secrets by type. If not provided, all secret types are included. </param>
     /// <returns>
-    /// A task representing the asynchronous operation. The result contains a collection of <see cref="SelectOptionDto"/> representing available app secrets.
+    /// A task representing the asynchronous operation. The result contains a collection of <see cref="SelectOption"/> representing available app secrets.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableAppSecretOptionsAsync(AppSecretTypesEnum? type);
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableAppSecretOptionsAsync(AppSecretTypesEnum? type);
 
     /// <summary>
     /// Retrieves details of a specific app secret by its ID.

@@ -121,6 +121,6 @@ public interface IProjectTemplateService
     /// optionally filtered by type.
     /// </summary>
     /// <param name="type">Optional type of project templates to filter.</param>
-    /// <returns>A ServiceResponse containing a list of SelectOptionDto.</returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetProjectTemplatesForSelectOptionsAsync(ProjectTemplateTypesEnum? type = null);
+    /// <returns>A ServiceResponse containing a list of SelectOption.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetProjectTemplatesForSelectOptionsAsync(ProjectTemplateTypesEnum? type = null);
 }

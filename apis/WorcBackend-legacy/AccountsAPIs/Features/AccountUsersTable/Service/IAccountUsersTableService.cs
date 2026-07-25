@@ -42,7 +42,7 @@ public interface IAccountUsersTableService
     /// Note: OM, TU will have no access to user management on gloabl or tenant level
     /// </remarks>
     /// <returns>A task that represents the asynchronous operation. The task result contains the service response with a collection of select option DTOs.</returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetAccountRolesAsync();
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetAccountRolesAsync();
 
     /// <summary>
     /// Updates the roles of an account user. Removes unassinged ones and add new ones if there is any requirement

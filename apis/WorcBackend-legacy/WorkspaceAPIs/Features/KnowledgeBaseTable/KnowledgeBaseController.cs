@@ -31,7 +31,7 @@ public class KnowledgeBaseController : BaseApiController
 
     // Retrieves knowledge bases in select-option format for dropdowns.
     [HttpGet("kb-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetSelectableKnowledgeBaseOptions()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetSelectableKnowledgeBaseOptions()
     {
         return ResultHelper(await _knowledgeBaseService.GetSelectableKnowledgeBaseOptionsAsync());
     }

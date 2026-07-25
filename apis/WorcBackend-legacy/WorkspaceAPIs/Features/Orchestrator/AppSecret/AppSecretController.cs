@@ -35,7 +35,7 @@ public class AppSecretController : BaseApiController
 
     // Get app secrets for selection.
     [HttpGet("option-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetSelectableAppSecretOptions(AppSecretTypesEnum? type)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetSelectableAppSecretOptions(AppSecretTypesEnum? type)
     {
         return ResultHelper(await _appSecretService.GetSelectableAppSecretOptionsAsync(type));
     }
