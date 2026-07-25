@@ -43,7 +43,6 @@ const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
     label: option.label,
     value: option.value,
     description: option.description,
-    disable: option.disable,
   }));
 
   useEffect(() => {
