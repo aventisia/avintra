@@ -107,6 +107,12 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 - Break complex logic into small isolated blocks.
 - Add a concise comment before non-trivial blocks to improve scanability and maintenance.
 
+## Feature Utilities
+
+- If a utility function is required for a feature, keep it inside that feature's `utils/` folder.
+- Name the file to match its purpose and use the `.util.ts` suffix (for example, `decode-prefilled-option.util.ts`).
+- Only place utilities in shared/package-level `utils/` folders when they are genuinely reused across multiple features.
+
 ## Form and Display Rules
 
 - Keep feature utility functions in that feature's `utils` folder whenever possible.
