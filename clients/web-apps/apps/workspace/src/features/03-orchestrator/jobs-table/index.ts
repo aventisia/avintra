@@ -20,6 +20,7 @@ export * from "./constants/variables";
 
 // utils
 export * from "./utils/date-range-selector-utils";
+export * from "./utils/decode-prefilled-option.util";
 export * from "./utils/format-time-utils";
 export * from "./utils/job-form-utils";
 

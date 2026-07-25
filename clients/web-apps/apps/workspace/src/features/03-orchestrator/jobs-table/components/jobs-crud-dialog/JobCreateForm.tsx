@@ -3,6 +3,7 @@ import { AsyncSingleSelectField } from "@avplatform/ui/components/form/fields/As
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
+import { type ISelectOption } from "@avplatform/ui/types";
 import { useEffect, useMemo, useRef } from "react";
 import { useWatch } from "react-hook-form";
 
@@ -23,11 +24,12 @@ import { DATA_QUERY_KEY } from "../../constants/variables";
 import { JobInsertDto } from "../../dtos/job-insert-dto";
 import { JobsTableRowDto } from "../../dtos/jobs-table-row-dto";
 import { useDefineJobCreateForm } from "../../hooks/useDefineJobCreateForm";
-import { getSelectedId } from "../../utils/job-form-utils";
 
 interface JobCreateFormProps {
-  /** Optional machine id to pre-select as the execution location. */
-  defaultMachineId?: string;
+  /** Optional machine option to pre-select as the execution location. */
+  defaultMachineOption?: ISelectOption;
+  /** Optional agent option to pre-select for the job. */
+  defaultFlowVersionOption?: ISelectOption;
   /** Optional callback invoked when the job is created successfully. */
   onSuccess?: () => void;
 }
@@ -35,10 +37,15 @@ interface JobCreateFormProps {
 /**
  * Form for creating a new job.
  */
-export const JobCreateForm = ({ defaultMachineId, onSuccess }: JobCreateFormProps) => {
+export const JobCreateForm = ({
+  defaultMachineOption,
+  defaultFlowVersionOption,
+  onSuccess,
+}: JobCreateFormProps) => {
   const { onCloseConfirmed } = useCrudDialogDirty();
   const { form, isDirty, isValid, refineFormData } = useDefineJobCreateForm({
-    defaultMachineId,
+    defaultMachineOption,
+    defaultFlowVersionOption,
   });
   const agentSelectWrapperRef = useRef<HTMLDivElement | null>(null);
   const executionLocationWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -59,12 +66,22 @@ export const JobCreateForm = ({ defaultMachineId, onSuccess }: JobCreateFormProp
   });
 
   const flowVersionIdFilters = useMemo(
-    () => ({ machineId: getSelectedId(selectedExecutionLocation, "value") }),
+    () => ({
+      machineId:
+        selectedExecutionLocation && typeof selectedExecutionLocation === "object"
+          ? (selectedExecutionLocation as ISelectOption).value
+          : (selectedExecutionLocation as string) || null,
+    }),
     [selectedExecutionLocation],
   );
 
   const executionLocationFilters = useMemo(
-    () => ({ flowVersionId: getSelectedId(selectedFlowVersionId, "value") }),
+    () => ({
+      flowVersionId:
+        selectedFlowVersionId && typeof selectedFlowVersionId === "object"
+          ? (selectedFlowVersionId as ISelectOption).value
+          : (selectedFlowVersionId as string) || null,
+    }),
     [selectedFlowVersionId],
   );
 

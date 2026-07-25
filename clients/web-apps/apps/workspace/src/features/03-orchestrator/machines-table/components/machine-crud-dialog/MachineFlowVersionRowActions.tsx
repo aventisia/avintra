@@ -1,4 +1,5 @@
 import { buttonVariants } from "@avplatform/ui/buttons";
+import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,12 +14,12 @@ import {
   PlayIcon,
 } from "@heroicons/react/24/solid";
 
-import { useInsertJobMutation } from "@/features/03-orchestrator/jobs-table/hooks/useInsertJobMutation";
-
 interface MachineFlowVersionRowActionsProps extends React.PropsWithChildren {
+  machineId: string;
   machineName: string;
   flowId: string;
   flowVersionId: string;
+  flowVersionLabel: string;
   className?: string;
 }
 
@@ -28,13 +29,14 @@ interface MachineFlowVersionRowActionsProps extends React.PropsWithChildren {
  * and a "View" action to view the flow version in the agent builder.
  */
 export const MachineFlowVersionRowActions: React.FC<MachineFlowVersionRowActionsProps> = ({
+  machineId,
   machineName,
   flowId,
   flowVersionId,
+  flowVersionLabel,
   className,
 }) => {
-  // Get insert job mutation and its pending state
-  const { insertJobMutation } = useInsertJobMutation();
+  const { openCrudDialog } = useCrudDialogUrlState();
 
   // Handle view flow version in agent builder action (open in new tab)
   const handleViewFlowVersionAction = () => {
@@ -44,11 +46,22 @@ export const MachineFlowVersionRowActions: React.FC<MachineFlowVersionRowActions
     );
   };
 
-  // Create manual job for the flow version (execute action)
+  // Open the create job form pre-filled with this machine and flow version.
   const handleExecuteFlowVersionAction = () => {
-    insertJobMutation({
-      flowVersionId,
-      executionLocation: machineName,
+    const backParams = new URLSearchParams();
+    backParams.set("e", "machine");
+    backParams.set("rid", machineId);
+    backParams.set("ca", "view");
+
+    openCrudDialog({
+      entity: "job",
+      crudAction: "create",
+      rowId: window.crypto.randomUUID(),
+      back: backParams.toString(),
+      extraParams: {
+        mid: `${machineId}||${machineName}`,
+        fv: `${flowVersionId}||${flowVersionLabel}`,
+      },
     });
   };
 

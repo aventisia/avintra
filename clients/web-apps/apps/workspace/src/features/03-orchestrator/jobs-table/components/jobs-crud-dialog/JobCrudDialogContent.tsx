@@ -2,6 +2,7 @@ import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
 import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useSearchParams } from "react-router-dom";
 
+import { decodePrefilledOption } from "../../utils/decode-prefilled-option.util";
 import { JobCreateForm } from "./JobCreateForm";
 import { JobUpdateForm } from "./JobUpdateForm";
 
@@ -17,7 +18,8 @@ export const JobCrudDialogContent = ({ crudAction, rowId }: JobCrudDialogContent
   const [searchParams] = useSearchParams();
   const { goBack, closeCrudDialog, back } = useCrudDialogUrlState();
 
-  const defaultMachineId = searchParams.get("mid");
+  const defaultMachineOption = decodePrefilledOption(searchParams.get("mid"));
+  const defaultFlowVersionOption = decodePrefilledOption(searchParams.get("fv"));
 
   const handleJobCreated = () => {
     if (back) {
@@ -30,7 +32,8 @@ export const JobCrudDialogContent = ({ crudAction, rowId }: JobCrudDialogContent
   if (crudAction === "create") {
     return (
       <JobCreateForm
-        defaultMachineId={defaultMachineId ?? undefined}
+        defaultMachineOption={defaultMachineOption}
+        defaultFlowVersionOption={defaultFlowVersionOption}
         onSuccess={handleJobCreated}
       />
     );
