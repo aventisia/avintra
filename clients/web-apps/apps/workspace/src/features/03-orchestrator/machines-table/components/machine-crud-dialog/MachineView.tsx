@@ -1,6 +1,5 @@
 import { CopyableText, LoadingSpinner, NoContentMessage, Separator } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { Button } from "@avplatform/ui/buttons";
 import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
 import {
   AuditTrailCard,
@@ -13,7 +12,6 @@ import {
 } from "@avplatform/ui/components/view-record";
 import { ViewDefaultCard } from "@avplatform/ui/components/view-record/ViewDefaultCard";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
 import { cn } from "@avplatform/ui/lib";
 import { formatDate, maskIP } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -24,7 +22,6 @@ import {
   MonitorCogIcon,
   MonitorIcon,
   NetworkIcon,
-  PlusIcon,
 } from "lucide-react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
@@ -58,25 +55,6 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
 
   const machine = response?.data as MachineRecordDto | undefined;
 
-  const { openCrudDialog } = useCrudDialogUrlState();
-
-  const handleCreateJob = () => {
-    if (!machine?.id) return;
-
-    const backParams = new URLSearchParams();
-    backParams.set("e", "machine");
-    backParams.set("rid", machine.id);
-    backParams.set("ca", "view");
-
-    openCrudDialog({
-      entity: "job",
-      crudAction: "create",
-      rowId: window.crypto.randomUUID(),
-      back: backParams.toString(),
-      extraParams: { mid: machine.id },
-    });
-  };
-
   // Show loading state
   if (isLoading) {
     return (
@@ -104,17 +82,6 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
   // Render the machine details in a read-only view
   return (
     <ViewContainer>
-      <div className="flex justify-end px-2.5 pt-2">
-        <Button
-          size="xs"
-          variant="outline"
-          className="gap-2 text-sm tracking-wide"
-          onClick={handleCreateJob}
-        >
-          <PlusIcon className="h-4 w-4" />
-          Create Job
-        </Button>
-      </div>
       <ViewDefaultCard>
         {/* Machine profile section */}
         <div className="flex flex-col gap-1">
@@ -171,11 +138,13 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
                     flowName={flowVersion.label}
                     flowVersionNumber={`v${flowVersion.versionNumber}`}
                   />
-                  {flowVersion.flowId && (
+                  {flowVersion.flowId && machine.id && (
                     <MachineFlowVersionRowActions
+                      machineId={machine.id}
                       machineName={machine.name}
                       flowId={flowVersion.flowId}
                       flowVersionId={flowVersion.value}
+                      flowVersionLabel={flowVersion.label}
                     />
                   )}
                 </div>

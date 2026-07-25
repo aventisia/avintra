@@ -1,3 +1,4 @@
+import { type ISelectOption } from "@avplatform/ui/types";
 import { reqError, uuidv4Regex } from "@avplatform/ui/utils";
 import { z } from "zod";
 
@@ -46,7 +47,7 @@ const extractSelectedId = (value: unknown, idKey: string): unknown => {
 export const jobCreateZodSchema = z
   .object({
     flowVersionId: z.preprocess(
-      (value) => extractSelectedId(value, "flowVersionId"),
+      (value) => extractSelectedId(value, "value"),
       z.string().min(1, { message: reqError("Agent") }),
     ),
     triggerType: z.nativeEnum(TriggerTypesEnum, {
@@ -57,7 +58,7 @@ export const jobCreateZodSchema = z
     }),
     executeOnCloud: z.boolean().default(true),
     executionLocation: z.preprocess(
-      (value) => extractSelectedId(value, "machineId"),
+      (value) => extractSelectedId(value, "value"),
       z.string().default(""),
     ),
     jobInputData: optionalJsonStringSchema,
@@ -75,4 +76,14 @@ export const jobCreateZodSchema = z
     }
   });
 
-export type JobCreateFormData = z.infer<typeof jobCreateZodSchema>;
+type JobCreateFormData = {
+  flowVersionId: string | ISelectOption;
+  triggerType: TriggerTypesEnum;
+  priority: JobPriorityEnum;
+  executeOnCloud: boolean;
+  executionLocation: string | ISelectOption;
+  jobInputData: string;
+  existingJobId?: string;
+};
+
+export type { JobCreateFormData };
