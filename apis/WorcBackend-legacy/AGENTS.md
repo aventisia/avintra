@@ -37,7 +37,15 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
   - `Service` or `Services`
   - `DTOs`
   - `Entities`
+  - `Helpers` (when helper logic is required for the feature)
   - Mapping profiles live alongside the feature or in a dedicated `MappingProfiles` folder.
+
+## Feature Helpers
+
+- If a helper method is required for a feature, keep it inside that feature's `Helpers/` folder.
+- Name the file to match its purpose and use the `Helpers` suffix (for example, `MachinesTableHelpers.cs`).
+- Use `public static` methods in a `public static class` so the logic is stateless and easy to unit test.
+- Only place helpers in shared/toolkit folders when they are genuinely reused across multiple features or projects.
 
 ## Entities and DTOs
 
