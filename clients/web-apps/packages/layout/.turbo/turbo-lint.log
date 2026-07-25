@@ -1,4 +1,4 @@
 
-> @aventisia/layout@0.0.0 lint
+> @avplatform/layout@0.0.0 lint
 > eslint . --max-warnings 0
 
