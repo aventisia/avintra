@@ -1,30 +1,41 @@
-# React + TypeScript + Vite
+# Legacy Studio Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite application for the Aventisia studio / flow-builder experience.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This is the **legacy** studio client used by the avplatform deployment. It is served as static files through the Nginx frontend container (`deploy/nginx`).
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```sh
+cd clients/worc-web-legacy/studio
+npm install --force
+npm run dev
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+The dev server runs on port `3006`.
+
+## Build for Production
+
+```sh
+npm run build
+```
+
+Static output is written to `dist/` and copied into the Nginx image by `deploy/nginx/Dockerfile`.
+
+## Project Scripts
+
+| Script      | Description                            |
+| ----------- | -------------------------------------- |
+| `dev`       | Start the Vite dev server (port 3006)  |
+| `build`     | Type-check and build for production    |
+| `format`    | Run Prettier and ESLint --fix          |
+| `lint`      | Run ESLint                             |
+| `preview`   | Preview the production build             |
+
+## Notes
+
+- This app is part of the legacy frontend suite alongside `accounts` and `workspace`.
+- `--force` may be required during install to resolve legacy peer dependencies.
+- For the modern web-apps monorepo, see `clients/web-apps/`.

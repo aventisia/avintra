@@ -1,69 +1,47 @@
-# React + TypeScript + Vite
+# Accounts App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite application for Aventisia identity and account flows.
 
-Currently, two official plugins are available:
+## Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This app is part of the `clients/web-apps` Turborepo monorepo. It handles login, registration, tenant management, subscriptions, and other account-level features for the Aventisia WORC Platform.
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Run from the monorepo root:
 
-```js
-export default tseslint.config([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```sh
+cd clients/web-apps
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The accounts app runs on port `3001` by default.
 
-```js
-// eslint.config.js
-import reactDom from "eslint-plugin-react-dom";
-import reactX from "eslint-plugin-react-x";
+## Available Scripts
 
-export default tseslint.config([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+| Script          | Description                                     |
+| --------------- | ----------------------------------------------- |
+| `dev`           | Start the Vite dev server (port 3001)           |
+| `build`         | Type-check and build for production               |
+| `typecheck`     | Run TypeScript compiler in build mode           |
+| `lint`          | Run ESLint                                      |
+| `format`        | Format files with Prettier                      |
+| `preview`       | Preview the production build                    |
+
+## Shared Dependencies
+
+This app imports shared packages from the monorepo:
+
+- `@avplatform/ui` — shared UI components
+- `@avplatform/layout` — shared layout components
+- `@avplatform/eslint-config`, `@avplatform/typescript-config`, `@avplatform/vite-config`, `@avplatform/tailwind-config` — shared tooling
+
+## Environment Variables
+
+Per-environment defaults can be committed in `.env.<environment>` files. Local overrides should go in `.env.<environment>.local` and are ignored by git.
+
+## Notes
+
+- For shared component documentation, see `clients/web-apps/packages/ui/README.md`.
+- For the overall monorepo setup, see `clients/web-apps/README.md`.
