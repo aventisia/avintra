@@ -25,14 +25,14 @@ public class SearchByQueryService : ISearchByQueryService
     }
 
     // Searches flow versions
-    public async Task<ServiceResponse<IEnumerable<FlowVersionSearchResultDto>>> SearchFlowVersionAsync(
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> SearchFlowVersionAsync(
         string searchKey,
         FlowTypesEnum type,
         bool includePublishedOnly,
         Guid? machineId)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = ServiceResponse<IEnumerable<FlowVersionSearchResultDto>>.Create("Failed to search agents", 500);
+        var serviceResponse = ServiceResponse<IEnumerable<SelectOptionDto>>.Create("Failed to search agents", 500);
 
         try
         {
@@ -62,7 +62,7 @@ public class SearchByQueryService : ISearchByQueryService
             {
                 var topFlowVersions = await flowVersionsQuery
                                         .Take(10)
-                                        .ProjectToType<FlowVersionSearchResultDto>()
+                                        .ProjectToType<SelectOptionDto>()
                                         .AsNoTracking()
                                         .ToListAsync();
 
@@ -72,7 +72,7 @@ public class SearchByQueryService : ISearchByQueryService
             // Retrieve matching flow versions accessible to the current user
             var flowVersions = await flowVersionsQuery
                                 .Where(w => EF.Functions.ILike(w.Flow.Name, $"%{trimmedSearchKey}%"))
-                                .ProjectToType<FlowVersionSearchResultDto>()
+                                .ProjectToType<SelectOptionDto>()
                                 .AsNoTracking()
                                 .ToListAsync();
 
@@ -87,12 +87,12 @@ public class SearchByQueryService : ISearchByQueryService
     }
 
     // Searches machines by unique name and optional flow version identifier
-    public async Task<ServiceResponse<IEnumerable<MachineSearchResultDto>>> SearchMachineAsync(
+    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> SearchMachineAsync(
         string? searchKey,
         Guid? flowVersionId)
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = ServiceResponse<IEnumerable<MachineSearchResultDto>>.Create("Failed to search machines", 500);
+        var serviceResponse = ServiceResponse<IEnumerable<SelectOptionDto>>.Create("Failed to search machines", 500);
 
         try
         {
@@ -118,20 +118,20 @@ public class SearchByQueryService : ISearchByQueryService
                 machinesQuery = machinesQuery
                     .Where(w => w.MachineFlowVersions != null && w.MachineFlowVersions.Any(a => a.FlowVersionId == flowVersionId.Value));
 
-            // Retrieve matching machines
+            // Retrieve matching machines projected to select options
             var machines = await machinesQuery
-                .ProjectToType<MachineSearchResultDto>()
+                .ProjectToType<SelectOptionDto>()
                 .AsNoTracking()
                 .ToListAsync();
 
-            // TODO: Need to check this status codebase. Get current machine statuses
+            // Get current machine statuses
             var clientStatusDtos = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
 
-            // TODO: Need to check this status codebase.  Map live status for each machine
+            // Map live status into the option description
             foreach (var machine in machines)
             {
-                var clientStatusDto = clientStatusDtos.FirstOrDefault(status => status.ClientId == machine.MachineId);
-                machine.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusEnum.Offline;
+                var clientStatusDto = clientStatusDtos.FirstOrDefault(status => status.ClientId.ToString() == machine.Value);
+                machine.Description = clientStatusDto != null ? clientStatusDto.Status.ToString() : MachineStatusEnum.Offline.ToString();
             }
 
             // Task complete

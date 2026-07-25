@@ -94,8 +94,18 @@ public class MachineRecordDto
     public DateTimeOffset LastModifiedOn { get; set; }
 }
 
-public class MachineFlowVersion : FlowVersionSearchResultDto
+/// <summary>
+/// Represents an assigned flow version on a machine as a select option.
+/// </summary>
+public class MachineFlowVersion : SelectOptionDto
 {
-    // This class inherits from FlowVersionSearchResultDto to include all properties of a flow version search result.
-    // Additional properties specific to the machine-flow version relationship can be added here if needed in the future.
+    /// <summary>
+    /// Gets or sets the optional identifier of the parent flow.
+    /// </summary>
+    public Guid? FlowId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the version number of the flow version.
+    /// </summary>
+    public int VersionNumber { get; set; }
 }

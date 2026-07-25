@@ -160,22 +160,24 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
         {machine.machineFlowVersions && machine.machineFlowVersions.length > 0 ? (
           <div className="flex flex-col gap-2.5 py-1">
             {machine.machineFlowVersions.map((flowVersion, index) => (
-              <div key={flowVersion.flowVersionId} className="flex flex-col gap-1.5">
+              <div key={flowVersion.value} className="flex flex-col gap-1.5">
                 {index > 0 && <Separator className="h-[0.5px]" />}
                 <div className="flex flex-row items-center gap-1.5 justify-between">
                   <FlowVersionNavLink
-                    to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${flowVersion.flowId}&v=${flowVersion.flowVersionId}`}
+                    to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${flowVersion.flowId}&v=${flowVersion.value}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    title={`View ${flowVersion.flowName} v${flowVersion.versionNumber} in Agent Builder`}
-                    flowName={flowVersion.flowName ?? "NAME_NOT_FOUND"}
+                    title={`View ${flowVersion.label} in Agent Builder`}
+                    flowName={flowVersion.label}
                     flowVersionNumber={`v${flowVersion.versionNumber}`}
                   />
-                  <MachineFlowVersionRowActions
-                    machineName={machine.name}
-                    flowId={flowVersion.flowId}
-                    flowVersionId={flowVersion.flowVersionId}
-                  />
+                  {flowVersion.flowId && (
+                    <MachineFlowVersionRowActions
+                      machineName={machine.name}
+                      flowId={flowVersion.flowId}
+                      flowVersionId={flowVersion.value}
+                    />
+                  )}
                 </div>
               </div>
             ))}

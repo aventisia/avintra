@@ -5,12 +5,12 @@ import { EnvironmentTypesEnum } from "@avplatform/ui/enums/environment-types-enu
 import { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
 import { Form, InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
+import { ISelectOption } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { searchFlowVersions } from "@/features/search-by-query/apis/search-flow-version.api";
-import { FlowVersionSearchResultDto } from "@/features/search-by-query/dtos/flow-version-search-result.dto";
 
 import { insertOrUpdateMachine } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -61,9 +61,7 @@ export const MachineCrudForm = ({ rowId, crudAction }: MachineCrudFormProps) => 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof machineZodSchema>) => {
     const flowVersionIds = (formData.flowVersionIds ?? [])
-      .map((flowVersion) =>
-        typeof flowVersion === "string" ? flowVersion : flowVersion.flowVersionId,
-      )
+      .map((flowVersion) => (typeof flowVersion === "string" ? flowVersion : flowVersion.value))
       .filter((id): id is string => Boolean(id));
 
     const machinePayload: AddMachineDto = {
@@ -121,13 +119,13 @@ export const MachineCrudForm = ({ rowId, crudAction }: MachineCrudFormProps) => 
       <InputField {...nameProps} disabled />
 
       {/* Flow Versions */}
-      <AsyncMultiSelectField<FlowVersionSearchResultDto>
+      <AsyncMultiSelectField<ISelectOption>
         fetcher={(query) => searchFlowVersions(query).then((res) => res.data ?? [])}
         name="flowVersionIds"
         label="Machine Agents"
         queryKeyBase={["machine-form-flow-versions", rowId]}
-        getItemId={(item) => item.flowVersionId}
-        getItemLabel={(item) => `${item.flowName}_v${item.versionNumber}`}
+        getItemId={(item) => item.value}
+        getItemLabel={(item) => item.label}
         filters={undefined}
         placeholder="Search agents..."
         description="Select one or more agents to assign to this machine."

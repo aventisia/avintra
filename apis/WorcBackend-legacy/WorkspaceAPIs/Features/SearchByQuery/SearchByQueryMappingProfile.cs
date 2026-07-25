@@ -4,14 +4,14 @@ public class SearchByQueryMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
-        // Mapping for flow version search results
-        config.NewConfig<FlowVersion, FlowVersionSearchResultDto>()
-            .Map(dest => dest.FlowVersionId, src => src.Id)
-            .Map(dest => dest.FlowName, src => src.Flow!.Name);
+        config.NewConfig<FlowVersion, SelectOptionDto>()
+            .Map(dest => dest.Value, src => src.Id.ToString())
+            .Map(dest => dest.Label, src => $"{src.Flow!.Name}_v{src.VersionNumber}")
+            .Map(dest => dest.Description, src => src.IsPublished ? "Published" : "Draft");
 
-        // Mapping for machine search results
-        config.NewConfig<Machine, MachineSearchResultDto>()
-            .Map(dest => dest.MachineId, src => src.Id)
-            .Map(dest => dest.MachineName, src => src.Name);
+        config.NewConfig<Machine, SelectOptionDto>()
+            .Map(dest => dest.Value, src => src.Id.ToString())
+            .Map(dest => dest.Label, src => src.Name)
+            .Map(dest => dest.Description, src => MachineStatusEnum.Offline.ToString());
     }
 }
