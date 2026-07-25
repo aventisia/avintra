@@ -1,9 +1,9 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
+import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import { FlowVersionSearchResultDto } from "../dtos/flow-version-search-result.dto";
 import { FlowVersionSearchQueryFilters } from "../types/search-filters";
 
 /**
@@ -13,7 +13,7 @@ import { FlowVersionSearchQueryFilters } from "../types/search-filters";
  * @param type - Optional flow type to filter results (default: Agent).
  * @param includePublishedOnly - Whether to include only published flow versions (default: true).
  * @param filters - Optional filters such as a linked machine identifier.
- * @returns Service response containing matching flow versions.
+ * @returns Service response containing matching flow versions as select options.
  */
 const searchFlowVersions = (
   query: string = "",
@@ -22,7 +22,7 @@ const searchFlowVersions = (
   filters: FlowVersionSearchQueryFilters = { machineId: null },
 ) => {
   return axiosInstance
-    .get<IHttpResponse<FlowVersionSearchResultDto[]>>(
+    .get<IHttpResponse<ISelectOption[]>>(
       `${import.meta.env.VITE_WORKSPACE_API_PATH}/search/flow-version`,
       {
         params: {

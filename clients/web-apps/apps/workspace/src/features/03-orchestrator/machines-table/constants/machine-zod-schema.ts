@@ -51,7 +51,7 @@ export const machineZodSchema = z
         z.union([
           z.string(),
           z.object({
-            flowVersionId: z.string().trim().min(1),
+            value: z.string().trim().min(1),
           }),
         ]),
       )

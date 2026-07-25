@@ -30,14 +30,19 @@ public class MachinesTableMappingProfile : IRegister
 
         // For - Extension_Retrieves machine by its ID (assigned flow versions)
         config.NewConfig<Machine_FlowVersion, MachineFlowVersion>()
-            .Map(dest => dest.FlowVersionId, src => src.FlowVersionId)
-            .Map(dest => dest.FlowId, src => src.FlowVersion != null ? src.FlowVersion.FlowId : Guid.Empty)
-            .Map(dest => dest.FlowName,
+            .Map(dest => dest.Value, src => src.FlowVersionId.ToString())
+            .Map(dest => dest.Label,
                 src => src.FlowVersion != null && src.FlowVersion.Flow != null
-                    ? src.FlowVersion.Flow.Name
+                    ? $"{src.FlowVersion.Flow.Name}_v{src.FlowVersion.VersionNumber}"
                     : string.Empty)
-            .Map(dest => dest.VersionNumber, src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0)
-            .Map(dest => dest.IsPublished, src => src.FlowVersion != null && src.FlowVersion.IsPublished);
+            .Map(dest => dest.Description,
+                src => src.FlowVersion != null && src.FlowVersion.IsPublished ? "Published" : "Draft")
+            .Map(dest => dest.FlowId,
+                src => src.FlowVersion != null && src.FlowVersion.Flow != null
+                    ? (Guid?)src.FlowVersion.FlowId
+                    : null)
+            .Map(dest => dest.VersionNumber,
+                src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0);
 
         // For - Insert new machine
         config.NewConfig<AddMachineDto, Machine>()

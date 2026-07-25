@@ -1,8 +1,8 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import { MachineSearchResultDto } from "../dtos/machine-search-result.dto";
 import { MachineSearchQueryFilters } from "../types/search-filters";
 
 /**
@@ -10,11 +10,11 @@ import { MachineSearchQueryFilters } from "../types/search-filters";
  *
  * @param query - Search keyword for the machine name.
  * @param filters - Optional filters such as a linked flow version identifier.
- * @returns Service response containing matching machines.
+ * @returns Service response containing matching machines as select options.
  */
 const searchMachines = (query: string = "", filters: MachineSearchQueryFilters) => {
   return axiosInstance
-    .get<IHttpResponse<MachineSearchResultDto[]>>(
+    .get<IHttpResponse<ISelectOption[]>>(
       `${import.meta.env.VITE_WORKSPACE_API_PATH}/search/machine`,
       {
         params: {

@@ -6,13 +6,12 @@ import {
   SwitchFieldProps,
   TextareaFieldProps,
 } from "@avplatform/ui/form";
+import { ISelectOption } from "@avplatform/ui/types";
 import { enumToArray } from "@avplatform/ui/utils";
 
 import { JsonEditorFieldProps } from "@/components/json-editor/JsonEditorField";
 import { searchFlowVersions } from "@/features/search-by-query/apis/search-flow-version.api";
 import { searchMachines } from "@/features/search-by-query/apis/search-machine.api";
-import { FlowVersionSearchResultDto } from "@/features/search-by-query/dtos/flow-version-search-result.dto";
-import { MachineSearchResultDto } from "@/features/search-by-query/dtos/machine-search-result.dto";
 import {
   FlowVersionSearchQueryFilters,
   MachineSearchQueryFilters,
@@ -36,7 +35,7 @@ export const idProps: InputFieldProps = {
 };
 
 export const flowVersionIdProps: AsyncSingleSelectFieldProps<
-  FlowVersionSearchResultDto,
+  ISelectOption,
   FlowVersionSearchQueryFilters
 > = {
   name: "flowVersionId",
@@ -48,8 +47,8 @@ export const flowVersionIdProps: AsyncSingleSelectFieldProps<
       (res) => res.data ?? [],
     ),
   filters: { machineId: null },
-  getItemId: (item) => item.flowVersionId,
-  getItemLabel: (item) => `${item.flowName}_v${item.versionNumber}`,
+  getItemId: (item) => item.value,
+  getItemLabel: (item) => item.label,
   placeholder: "Search published agent...",
   description: "Search and select a published agent that the job should execute.",
 };
@@ -104,7 +103,7 @@ export const enableClosingStatusProps: SwitchFieldProps = {
 };
 
 export const executionLocationProps: AsyncSingleSelectFieldProps<
-  MachineSearchResultDto,
+  ISelectOption,
   MachineSearchQueryFilters
 > = {
   name: "executionLocation",
@@ -114,8 +113,8 @@ export const executionLocationProps: AsyncSingleSelectFieldProps<
   fetcher: (query, filters) =>
     searchMachines(query, filters ?? undefined).then((res) => res.data ?? []),
   filters: { flowVersionId: null },
-  getItemId: (item) => item.machineId,
-  getItemLabel: (item) => item.machineName,
+  getItemId: (item) => item.value,
+  getItemLabel: (item) => item.label,
   placeholder: "Search machine...",
   description: "Search and select a registered machine to execute the job.",
 };

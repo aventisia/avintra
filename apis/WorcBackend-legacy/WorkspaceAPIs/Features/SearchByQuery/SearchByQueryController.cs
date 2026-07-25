@@ -14,7 +14,7 @@ public class SearchByQueryController : BaseApiController
 
     // Searches flow version
     [HttpGet("flow-version")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<FlowVersionSearchResultDto>>>> SearchFlowVersion(
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> SearchFlowVersion(
         [FromQuery] string query,
         [FromQuery] FlowTypesEnum type = FlowTypesEnum.Agent,
         [FromQuery] bool includePublishedOnly = true,
@@ -25,7 +25,7 @@ public class SearchByQueryController : BaseApiController
 
     // Searches machine by unique name with optional flow version filter
     [HttpGet("machine")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<MachineSearchResultDto>>>> SearchMachine(
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> SearchMachine(
         [FromQuery] string? query,
         [FromQuery] Guid? flowVersionId)
     {

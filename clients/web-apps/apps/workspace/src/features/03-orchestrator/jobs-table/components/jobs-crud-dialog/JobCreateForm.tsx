@@ -59,12 +59,12 @@ export const JobCreateForm = ({ defaultMachineId, onSuccess }: JobCreateFormProp
   });
 
   const flowVersionIdFilters = useMemo(
-    () => ({ machineId: getSelectedId(selectedExecutionLocation, "machineId") }),
+    () => ({ machineId: getSelectedId(selectedExecutionLocation, "value") }),
     [selectedExecutionLocation],
   );
 
   const executionLocationFilters = useMemo(
-    () => ({ flowVersionId: getSelectedId(selectedFlowVersionId, "flowVersionId") }),
+    () => ({ flowVersionId: getSelectedId(selectedFlowVersionId, "value") }),
     [selectedFlowVersionId],
   );
 
@@ -122,12 +122,7 @@ export const JobCreateForm = ({ defaultMachineId, onSuccess }: JobCreateFormProp
         <SelectField {...priorityProps} />
 
         <div ref={agentSelectWrapperRef}>
-          <AsyncSingleSelectField
-            {...flowVersionIdProps}
-            filters={flowVersionIdFilters}
-            getItemId={(item) => item.flowVersionId}
-            getItemLabel={(item) => `${item.flowName}_v${item.versionNumber}`}
-          />
+          <AsyncSingleSelectField {...flowVersionIdProps} filters={flowVersionIdFilters} />
         </div>
 
         <SwitchField {...executeOnCloudProps} />
@@ -137,8 +132,6 @@ export const JobCreateForm = ({ defaultMachineId, onSuccess }: JobCreateFormProp
             <AsyncSingleSelectField
               {...executionLocationProps}
               filters={executionLocationFilters}
-              getItemId={(item) => item.machineId}
-              getItemLabel={(item) => item.machineName}
             />
           </div>
         )}

@@ -1,8 +1,18 @@
 import type { EnvironmentTypesEnum } from "@avplatform/ui/enums/environment-types-enum";
 import type { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import type { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
+import type { ISelectOption } from "@avplatform/ui/types";
 
-import type { FlowVersionSearchResultDto } from "@/features/search-by-query/dtos/flow-version-search-result.dto";
+/**
+ * Represents an assigned flow version on a machine as a select option.
+ */
+export interface MachineFlowVersionDto extends ISelectOption {
+  /** The identifier of the parent flow. */
+  flowId: string;
+
+  /** The version number of the flow version. */
+  versionNumber: number;
+}
 
 /**
  * Represents machine record data returned by the "get by id" machine API.
@@ -38,7 +48,7 @@ export interface MachineRecordDto {
   /** The status of the machine. */
   status: MachineStatusEnum;
 
-  /** The flow versions associated with the machine. */
+  /** The flow versions associated with the machine as select options. */
   machineFlowVersions: MachineFlowVersionDto[];
 
   /** Flag indicating whether the machine record is disabled. */
@@ -55,10 +65,4 @@ export interface MachineRecordDto {
 
   /** The date and time when the machine record was last modified (response only). */
   lastModifiedOn: Date;
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface MachineFlowVersionDto extends FlowVersionSearchResultDto {
-  // This interface inherits from FlowVersionSearchResultDto to include all properties of a flow version search result.
-  // Additional properties specific to the machine-flow version relationship can be added here if needed in the future.
 }
