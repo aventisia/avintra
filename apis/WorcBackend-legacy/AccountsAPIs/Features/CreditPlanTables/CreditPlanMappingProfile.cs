@@ -16,8 +16,8 @@ public class CreditPlanMappingProfile : IRegister
                    .Ignore(dest => dest.LastModifiedOn)
                    .IgnoreNullValues(true);
 
-        // Get credit plans in SelectOptionDto format
-        config.NewConfig<CreditPlan, SelectOptionDto>()
+        // Get credit plans in SelectOption format
+        config.NewConfig<CreditPlan, SelectOption>()
             .Map(dest => dest.Label, src => src.ServiceType.ToString())
             .Map(dest => dest.Value, src => src.Id)
             .Map(dest => dest.Description, src => GetEnumDescriptionUtil.GetEnumDescription(src.ServiceType));

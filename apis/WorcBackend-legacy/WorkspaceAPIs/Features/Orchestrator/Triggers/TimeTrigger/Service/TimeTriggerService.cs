@@ -891,10 +891,10 @@ public class TimeTriggerService(
     }
 
     // // Retrieve trigger select-option
-    // public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetTriggerToSelectOptionAsync()
+    // public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetTriggerToSelectOptionAsync()
     // {
     //     // Initialize serviceResponse with failed response
-    //     var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+    //     var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
     //     {
     //         Data = null,
     //         Message = "Failed to retrieve triggers, please try again."
@@ -902,9 +902,9 @@ public class TimeTriggerService(
 
     //     try
     //     {
-    //         // Retrieve the triggers and map them to SelectOptionDto
+    //         // Retrieve the triggers and map them to SelectOption
     //         var triggersToSelect = await _unitOfWork.TriggerRepo.GetAllAsync()
-    //             .ProjectToType<SelectOptionDto>()
+    //             .ProjectToType<SelectOption>()
     //             .AsNoTracking()
     //             .ToListAsync();
 

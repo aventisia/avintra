@@ -10,6 +10,6 @@ public interface ILLMProviderService
     /// Retrieves all LLM provider models.
     /// </summary>
     /// <param name="request">The request object containing provider-specific model data.</param>
-    /// <returns>A ServiceResponse containing a collection of SelectOptionDto objects representing the available models.</returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetAllModelsAsync(LLMProviderModelRequestDto request);
+    /// <returns>A ServiceResponse containing a collection of SelectOption objects representing the available models.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetAllModelsAsync(LLMProviderModelRequestDto request);
 }

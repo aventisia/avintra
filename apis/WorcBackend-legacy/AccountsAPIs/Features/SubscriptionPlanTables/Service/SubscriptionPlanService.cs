@@ -130,10 +130,10 @@ public class SubscriptionPlanService : ISubscriptionPlanService
     }
 
     // Retrieves all subscription plans as selectable options for UI components.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableSubscriptionPlanOptionsAsync(SubscriptionPlanTypeEnum? subscriptionPlanType)
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableSubscriptionPlanOptionsAsync(SubscriptionPlanTypeEnum? subscriptionPlanType)
     {
         // Initialize response with default failure message
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             Message = "Failed to retrive subscription plan options. Please try again."
@@ -149,8 +149,8 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             // If a subscription plan type filter is provided, apply it to the list
             if (subscriptionPlanType.HasValue) subscriptionPlans = subscriptionPlans.Where(w => w.Type == subscriptionPlanType).ToList();
 
-            // Convert subscription plans to SelectOptionDto for UI consumption
-            serviceResponse.Data = subscriptionPlans.Adapt<IEnumerable<SelectOptionDto>>();
+            // Convert subscription plans to SelectOption for UI consumption
+            serviceResponse.Data = subscriptionPlans.Adapt<IEnumerable<SelectOption>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Subscription plan options retrived successfully.";
 

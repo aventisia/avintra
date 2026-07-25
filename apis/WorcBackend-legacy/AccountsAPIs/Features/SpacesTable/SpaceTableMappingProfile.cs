@@ -27,8 +27,8 @@ public class SpaceTableMappingProfile : IRegister
                    .Ignore(dest => dest.LastModifiedOn)
                    .IgnoreNullValues(true);
 
-        // Get spaces in SelectOptionDto format
-        config.NewConfig<Space, SelectOptionDto>()
+        // Get spaces in SelectOption format
+        config.NewConfig<Space, SelectOption>()
             .Map(dest => dest.Label, src => src.Name)
             .Map(dest => dest.Value, src => src.Id)
             .Map(dest => dest.Description, src => src.Description);

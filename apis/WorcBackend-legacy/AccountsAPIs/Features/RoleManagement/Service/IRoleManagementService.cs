@@ -60,7 +60,7 @@ public interface IRoleManagementService
     /// </summary>
     /// <param name="tenantId">The unique identifier of the tenant whose roles should be retrieved.</param>
     /// <returns>
-    /// A service response containing a collection of <see cref="SelectOptionDto"/> representing available account roles.
+    /// A service response containing a collection of <see cref="SelectOption"/> representing available account roles.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetRoleOptionListAsync(Guid tenantId);
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetRoleOptionListAsync(Guid tenantId);
 }

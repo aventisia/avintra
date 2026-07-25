@@ -220,10 +220,10 @@ public class TenantsTableService : ITenantsTableService
     }
 
     // Retrieves a list of tenant options.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetTenantOptionListAsync(TenantTypesEnum? tenantType)
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetTenantOptionListAsync(TenantTypesEnum? tenantType)
     {
         // Initialize the service response with a default null data and an error message
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             Message = "Failed to retrieve tenants. Please try again."
@@ -240,8 +240,8 @@ public class TenantsTableService : ITenantsTableService
                 tenants = tenants.Where(a => a.Type == tenantType).ToList();
             }
 
-            // Map the filtered tenant list to SelectOptionDto and update the response
-            serviceResponse.Data = tenants.Adapt<IEnumerable<SelectOptionDto>>();
+            // Map the filtered tenant list to SelectOption and update the response
+            serviceResponse.Data = tenants.Adapt<IEnumerable<SelectOption>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenants retrieved successfully.";
         }
@@ -256,10 +256,10 @@ public class TenantsTableService : ITenantsTableService
     }
 
     // Retrieves a list of tenant options.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> SearchTenantOptionListAsync(SearchSelectOptionDto searchOption)
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> SearchTenantOptionListAsync(SearchSelectOptionDto searchOption)
     {
         // Initialize the service response with a default null data and an error message
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             Message = "Failed to retrieve tenants. Please try again."
@@ -271,8 +271,8 @@ public class TenantsTableService : ITenantsTableService
             var tenants = await _unitOfWork.TenantRepo.GetByConditionAsync(t =>
             t.IsEditable && !t.IsDefault && (string.IsNullOrWhiteSpace(searchOption.UserInput) || t.Name.ToLower().Contains(searchOption.UserInput.ToLower()))).ToListAsync();
 
-            // Map the filtered tenant list to SelectOptionDto and update the response
-            serviceResponse.Data = tenants.Adapt<IEnumerable<SelectOptionDto>>();
+            // Map the filtered tenant list to SelectOption and update the response
+            serviceResponse.Data = tenants.Adapt<IEnumerable<SelectOption>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenants retrieved successfully.";
         }

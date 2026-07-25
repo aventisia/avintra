@@ -23,8 +23,8 @@ public class PromptTemplateMappingProfile : IRegister
             .Map(dest => dest.LastModifiedBy, src =>
                 src.LastModifiedByUser != null ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}" : null);
 
-        // New Mapping for PromptTemplate to SelectOptionDto(For dropdowns or select lists)
-        config.NewConfig<PromptTemplate, SelectOptionDto>()
+        // New Mapping for PromptTemplate to SelectOption(For dropdowns or select lists)
+        config.NewConfig<PromptTemplate, SelectOption>()
                 .Map(dest => dest.Value, src => src.Id)
                 .Map(dest => dest.Label, src => src.Name)
                 .Map(dest => dest.Description, src => src.Description);

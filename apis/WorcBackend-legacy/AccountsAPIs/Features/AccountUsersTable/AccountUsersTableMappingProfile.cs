@@ -19,8 +19,8 @@ public class AccountUsersTableMappingProfile : IRegister
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
                     : null);
 
-        // Get roles in SelectOptionDto format
-        config.NewConfig<AccountRole, SelectOptionDto>()
+        // Get roles in SelectOption format
+        config.NewConfig<AccountRole, SelectOption>()
             .Map(dest => dest.Label, src => src.FullName)
             .Map(dest => dest.Value, src => src.FullName)
             .Map(dest => dest.Description, src => src.Description);

@@ -23,7 +23,7 @@ public class CreditPlanController : BaseApiController
 
     // Gets a list of credit plans for selection options.
     [HttpGet("option-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetSelectableCreditPlanOptions()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetSelectableCreditPlanOptions()
     {
         return ResultHelper(await _creditPlanService.GetSelectableCreditPlanOptionsAsync());
     }

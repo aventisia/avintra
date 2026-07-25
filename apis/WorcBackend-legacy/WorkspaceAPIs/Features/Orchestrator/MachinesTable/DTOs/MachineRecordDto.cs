@@ -97,7 +97,7 @@ public class MachineRecordDto
 /// <summary>
 /// Represents an assigned flow version on a machine as a select option.
 /// </summary>
-public class MachineFlowVersion : SelectOptionDto
+public class MachineFlowVersion : SelectOption
 {
     /// <summary>
     /// Gets or sets the optional identifier of the parent flow.

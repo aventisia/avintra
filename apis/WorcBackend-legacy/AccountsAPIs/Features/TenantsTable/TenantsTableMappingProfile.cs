@@ -19,8 +19,8 @@ public class TenantsTableMappingProfile : IRegister
             .Ignore(dest => dest.LastModifiedOn)
             .IgnoreNullValues(true);
 
-        // Get tenants in SelectOptionDto format
-        config.NewConfig<Tenant, SelectOptionDto>()
+        // Get tenants in SelectOption format
+        config.NewConfig<Tenant, SelectOption>()
             .Map(dest => dest.Label, src => src.Name)
             .Map(dest => dest.Value, src => src.Id);
     }

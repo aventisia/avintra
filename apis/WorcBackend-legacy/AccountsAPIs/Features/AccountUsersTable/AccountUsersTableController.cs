@@ -42,7 +42,7 @@ public class AccountUsersTableController : BaseApiController
 
     // Retrieves the account roles basis current user top role.
     [HttpGet("roles-to-select")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetAccountRoles()
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetAccountRoles()
     {
         return ResultHelper(await _accountUsersTableService.GetAccountRolesAsync());
     }

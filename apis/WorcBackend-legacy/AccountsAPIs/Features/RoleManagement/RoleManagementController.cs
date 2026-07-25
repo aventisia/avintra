@@ -63,7 +63,7 @@ public class RoleManagementController : BaseApiController
 
     // Retrieves the roles options for.
     [HttpGet("option-to-select/{tenantId}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetRoleOptionList(Guid tenantId)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetRoleOptionList(Guid tenantId)
     {
         return ResultHelper(await _roleManagementService.GetRoleOptionListAsync(tenantId));
     }

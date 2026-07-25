@@ -1062,12 +1062,12 @@
       <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="..\AspNetToolkit\DTOs\CheckAvailabilityDto.cs" Offset="135-139" Line="6" Message="Auto-property accessor 'UserInput.set' is never used" />
       <Issue TypeId="UnusedType.Global" File="..\AspNetToolkit\DTOs\RecordInsertedDto.cs" Offset="159-176" Line="6" Message="Class 'RecordInsertedDto' is never used" />
       <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\DTOs\RecordInsertedDto.cs" Offset="298-300" Line="11" Message="Property 'Id' is never used" />
-      <Issue TypeId="ClassNeverInstantiated.Global" File="..\AspNetToolkit\DTOs\SelectOptionDto.cs" Offset="141-156" Line="6" Message="Class 'SelectOptionDto' is never instantiated" />
-      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="..\AspNetToolkit\DTOs\SelectOptionDto.cs" Offset="323-327" Line="11" Message="Auto-property accessor 'Label.set' is never used" />
-      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="..\AspNetToolkit\DTOs\SelectOptionDto.cs" Offset="490-494" Line="16" Message="Auto-property accessor 'Value.set' is never used" />
-      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="..\AspNetToolkit\DTOs\SelectOptionDto.cs" Offset="670-674" Line="21" Message="Auto-property accessor 'Description.set' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\DTOs\SelectOptionDto.cs" Offset="847-855" Line="26" Message="Property 'Disabled' is never used" />
-      <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\DTOs\SelectOptionDto.cs" Offset="1090-1095" Line="32" Message="Property 'Fixed' is never used" />
+      <Issue TypeId="ClassNeverInstantiated.Global" File="..\AspNetToolkit\DTOs\SelectOption.cs" Offset="141-156" Line="6" Message="Class 'SelectOption' is never instantiated" />
+      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="..\AspNetToolkit\DTOs\SelectOption.cs" Offset="323-327" Line="11" Message="Auto-property accessor 'Label.set' is never used" />
+      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="..\AspNetToolkit\DTOs\SelectOption.cs" Offset="490-494" Line="16" Message="Auto-property accessor 'Value.set' is never used" />
+      <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="..\AspNetToolkit\DTOs\SelectOption.cs" Offset="670-674" Line="21" Message="Auto-property accessor 'Description.set' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\DTOs\SelectOption.cs" Offset="847-855" Line="26" Message="Property 'Disabled' is never used" />
+      <Issue TypeId="UnusedMember.Global" File="..\AspNetToolkit\DTOs\SelectOption.cs" Offset="1090-1095" Line="32" Message="Property 'Fixed' is never used" />
       <Issue TypeId="UnusedAutoPropertyAccessor.Global" File="..\AspNetToolkit\DTOs\TrueFalseResultDto.cs" Offset="276-280" Line="11" Message="Auto-property accessor 'Result.get' is never used" />
       <Issue TypeId="CheckNamespace" File="..\AspNetToolkit\DTOs\UserAvatarBaseDto.cs" Offset="10-28" Line="1" Message="Namespace does not correspond to file location, must be: 'AspNetToolkit.DTOs'" />
       <Issue TypeId="UnusedType.Global" File="..\AspNetToolkit\DTOs\UserAvatarBaseDto.cs" Offset="134-151" Line="6" Message="Class 'UserAvatarBaseDto' is never used" />

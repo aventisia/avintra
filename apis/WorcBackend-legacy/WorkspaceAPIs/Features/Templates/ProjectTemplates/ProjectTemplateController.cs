@@ -130,7 +130,7 @@ public class ProjectTemplateController : BaseApiController
 
     // Retrieves a list of project templates for select-option dropdowns,optionally filtered by template type.
     [HttpGet("select-option")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOptionDto>>>> GetProjectTemplatesForSelectOptions([FromQuery] ProjectTemplateTypesEnum? type = null)
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetProjectTemplatesForSelectOptions([FromQuery] ProjectTemplateTypesEnum? type = null)
     {
         return ResultHelper(await _projectTemplateService.GetProjectTemplatesForSelectOptionsAsync(type));
     }

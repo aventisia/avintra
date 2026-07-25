@@ -396,10 +396,10 @@ public class AccountUsersTableService : IAccountUsersTableService
     }
 
     // Retrieves the account roles basis current user top role.
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetAccountRolesAsync()
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetAccountRolesAsync()
     {
         // Initialize ServiceResponse with failed response
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             StatusCode = 400
@@ -414,7 +414,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             var roles = await _roleManager.Roles.Where(w => allowedRoles.Contains(w.Name)).OrderBy(o => o.Seq).ToListAsync();
 
             // Task successful
-            serviceResponse.Data = roles.Adapt<IEnumerable<SelectOptionDto>>();
+            serviceResponse.Data = roles.Adapt<IEnumerable<SelectOption>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Users retrieved successfully";
         }

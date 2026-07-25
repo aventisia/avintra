@@ -30,9 +30,9 @@ public interface ISubscriptionPlanService
     /// </summary>
     /// <param name="subscriptionPlanType">An optional filter to return only subscription plans of a specific type.</param>
     /// <returns>
-    /// A task representing the asynchronous operation. The result contains a collection of <see cref="SelectOptionDto"/> representing available subscription plans.
+    /// A task representing the asynchronous operation. The result contains a collection of <see cref="SelectOption"/> representing available subscription plans.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableSubscriptionPlanOptionsAsync(SubscriptionPlanTypeEnum? subscriptionPlanType);
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableSubscriptionPlanOptionsAsync(SubscriptionPlanTypeEnum? subscriptionPlanType);
 
     /// <summary>
     /// Retrieves the details of a specific subscription plan by its unique identifier.

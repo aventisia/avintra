@@ -17,9 +17,9 @@ public interface ISpaceTableService
     /// Retrieves a list of spaces formatted as selectable options, typically used in dropdowns or selection lists.
     /// </summary>
     /// <returns>
-    /// A task representing the asynchronous operation. The result contains a collection of <see cref="SelectOptionDto"/> representing available space options.
+    /// A task representing the asynchronous operation. The result contains a collection of <see cref="SelectOption"/> representing available space options.
     /// </returns>
-    Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableSpaceOptionsAsync();
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableSpaceOptionsAsync();
 
     /// <summary>
     /// Retrieves the details of a specific space by its unique identifier.

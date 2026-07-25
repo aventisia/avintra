@@ -161,10 +161,10 @@ public class AppSecretService : IAppSecretService
     }
 
     // Retrieve credentials as selectable options (e.g., for a dropdown)
-    public async Task<ServiceResponse<IEnumerable<SelectOptionDto>>> GetSelectableAppSecretOptionsAsync(AppSecretTypesEnum? type)
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableAppSecretOptionsAsync(AppSecretTypesEnum? type)
     {
         // Initialize service response with default failure message
-        var serviceResponse = new ServiceResponse<IEnumerable<SelectOptionDto>>
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
         {
             Data = null,
             Message = "Failed to fetch credentials list. Please try again later."
@@ -193,7 +193,7 @@ public class AppSecretService : IAppSecretService
                 .ToListAsync();
 
             // Assign the options to the service response
-            serviceResponse.Data = accessibleSecrets.Adapt<IEnumerable<SelectOptionDto>>();
+            serviceResponse.Data = accessibleSecrets.Adapt<IEnumerable<SelectOption>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credentials list fetched successfully.";
         }
