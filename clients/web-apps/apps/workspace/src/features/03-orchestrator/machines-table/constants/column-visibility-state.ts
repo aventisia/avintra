@@ -1,4 +1,4 @@
-/** Column visibility initial state for the projects table. */
+/** Column visibility initial state for the machines table. */
 export const columnVisibilityState = {
   selectRow: false,
   name: true,
@@ -17,11 +17,4 @@ export const columnVisibilityState = {
   lastModifiedBy: true,
   lastModifiedOn: true,
   id: true,
-};
-
-export const agentSelectTableColumnVisibilityState = {
-  id: true,
-  name: false,
-  versionNumber: true,
-  isAssigned: false,
 };

@@ -40,10 +40,10 @@ public class MachinesTableService : IMachinesTableService
                             .ProjectToType<MachinesTableRowDto>()
                             .ToListAsync();
 
-            // TODO: machine_tables feature refactor. Retrieve the list of machine statuses for the current tenant
+            // Retrieve live machine statuses for the current tenant
             var clientStatusDtos = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
 
-            // TODO: machine_tables feature refactor. Iterate through each machine in the 'machines' collection
+            // Apply live status and last-seen timestamp to each machine
             foreach (var machine in machines)
             {
                 // Find the status of the machine by matching its ClientId with the current machine's Id
@@ -72,7 +72,7 @@ public class MachinesTableService : IMachinesTableService
         }
     }
 
-    // Retrieve an machine by its ID
+    // Retrieves a machine by its ID.
     public async Task<ServiceResponse<MachineRecordDto>> GetMachineAsync(Guid machineId)
     {
         // Initialize ServiceResponse with failed response
@@ -92,7 +92,7 @@ public class MachinesTableService : IMachinesTableService
             if (machine == null)
                 return serviceResponse.Update("Machine not found", 404);
 
-            // TODO: machine_tables feature refactor Attempt to retrieve the client status from the store based on the machine's unique ID
+            // Enrich the machine record with live connection status
             var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machine.Id);
 
             if (clientStatusDto != null)
@@ -117,7 +117,7 @@ public class MachinesTableService : IMachinesTableService
         }
     }
 
-    // Insert new machine
+    // Inserts a new machine.
     public async Task<ServiceResponse<MachinesTableRowDto>> InsertMachineAsync(AddMachineDto addMachineDto)
     {
         // Initialize ServiceResponse with a failed response
@@ -175,7 +175,7 @@ public class MachinesTableService : IMachinesTableService
         }
     }
 
-    // Update an existing machine
+    // Updates an existing machine.
     public async Task<ServiceResponse<MachinesTableRowDto>> UpdateMachineAsync(UpdateMachineDto updateMachineDto)
     {
         // Initialize ServiceResponse with a failed response
@@ -266,7 +266,7 @@ public class MachinesTableService : IMachinesTableService
         }
     }
 
-    // Deletes a machine by its ID
+    // Deletes an existing machine.
     public async Task<ServiceResponse<bool>> DeleteMachineAsync(Guid machineId)
     {
         // Initialize ServiceResponse with failed response
@@ -283,15 +283,14 @@ public class MachinesTableService : IMachinesTableService
             if (machine == null)
                 return serviceResponse.Update("Machine not found", 404);
 
-            // TODO: machine_tables feature refactor Attempt to retrieve the client status from the store based on the machine's unique ID
-            var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machine.Id);
+            // Check if the machine has active or pending jobs
+            if (await HasActiveJobsAsync(machine.Id))
+                return serviceResponse.Update("Machine cannot be deleted because it has active or pending jobs.", 409);
 
-            // TODO: machine_tables feature refactor Check if the client status was found (i.e., the machine exists in the store)
+            // Remove the machine from the live client status store if connected
+            var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machine.Id);
             if (clientStatusDto != null)
-            {
-                // If the machine was found, remove it from the client status store using its connection ID
                 await _clientStatusStore.RemoveClientByConnectionAsync(clientStatusDto.ConnectionId);
-            }
 
             // Delete machine
             _unitOfWork.MachineRepo.Delete(machine);
@@ -331,24 +330,25 @@ public class MachinesTableService : IMachinesTableService
             if (machines.Count != machineIds.Count())
                 return serviceResponse.Update("Some machines not found", 404);
 
-            // TODO: machine_tables feature refactor Attempt to retrieve the list of machine statuses for the current tenant
-            var machineStatusesList = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
-
-            // TODO: machine_tables feature refactor Iterate through each machine in the 'machines' collection that we need to process
+            // Check if any machine has active or pending jobs
+            var machineIdsWithActiveJobs = new List<Guid>();
             foreach (var machine in machines)
             {
-                // Find the machine's current status based on its unique client ID
-                var clientStatusDto = machineStatusesList.FirstOrDefault(w => w.ClientId == machine.Id);
-
-                // Check if the machine's status was found in the store
-                if (clientStatusDto != null)
-                {
-                    // If a status was found, attempt to remove the machine from the store by its connection ID
-                    await _clientStatusStore.RemoveClientByConnectionAsync(clientStatusDto.ConnectionId);
-                }
+                if (await HasActiveJobsAsync(machine.Id))
+                    machineIdsWithActiveJobs.Add(machine.Id);
             }
 
-            // TODO: machine_tables feature refactor. Check machine relationship with other entities
+            if (machineIdsWithActiveJobs.Count > 0)
+                return serviceResponse.Update($"{machineIdsWithActiveJobs.Count} machine(s) cannot be deleted because they have active or pending jobs.", 409);
+
+            // Remove the machines from the live client status store if connected
+            var machineStatusesList = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
+            foreach (var machine in machines)
+            {
+                var clientStatusDto = machineStatusesList.FirstOrDefault(w => w.ClientId == machine.Id);
+                if (clientStatusDto != null)
+                    await _clientStatusStore.RemoveClientByConnectionAsync(clientStatusDto.ConnectionId);
+            }
 
             // Delete machines
             _unitOfWork.MachineRepo.Delete(machines);
@@ -367,45 +367,21 @@ public class MachinesTableService : IMachinesTableService
         }
     }
 
-    // TODO: machine_tables feature refactor. Need to check below methods
-
-    // TODO: machine_tables feature refactor machine_tables feature refactor Searches for machines created by the current user that match the specified search keyword.
-    public async Task<ServiceResponse<IEnumerable<MachinesTableRowDto>>> FindMachinesByKeywordAsync(string searchKey)
+    /// <summary>
+    /// Determines whether the specified machine has active or pending jobs.
+    /// </summary>
+    private async Task<bool> HasActiveJobsAsync(Guid machineId)
     {
-        var serviceResponse = new ServiceResponse<IEnumerable<MachinesTableRowDto>>
+        var terminalStatuses = new[]
         {
-            Data = null,
-            Message = "Failed to retrieve machines. Please try again."
+            JobStatusEnum.Completed,
+            JobStatusEnum.Failed,
+            JobStatusEnum.Canceled,
+            JobStatusEnum.Aborted
         };
 
-        try
-        {
-            // Normalize search key for case-insensitive comparison
-            var normalizedKey = searchKey?.ToLower() ?? string.Empty;
-
-            // Query machines created by the current user and match the search key
-            var machines = await _unitOfWork.MachineRepo
-                .GetByConditionAsync(w => w.Name.ToLower().Contains(normalizedKey))
-                .OrderByDescending(o => o.CreatedOn)
-                .Include(i => i.CreatedByUser)
-                .Include(i => i.LastModifiedByUser)
-                .Include(i => i.MachineFlowVersions)
-                    .ThenInclude(i2 => i2.FlowVersion)
-                    .ThenInclude(i3 => i3.Flow)
-                .AsNoTracking()
-                .ToListAsync();
-
-            serviceResponse.Data = machines.Adapt<IEnumerable<MachinesTableRowDto>>();
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Machines retrieved successfully.";
-            _logger.LogInformation("Machines retrieved successfully using search key: {SearchKey}", searchKey);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while searching machines with key: {SearchKey}", searchKey);
-        }
-
-        return serviceResponse;
+        return await _unitOfWork.JobRepo
+            .GetByConditionAsync(w => w.MachineId == machineId && !terminalStatuses.Contains(w.Status))
+            .AnyAsync();
     }
-
 }

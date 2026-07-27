@@ -17,28 +17,28 @@ public class MachinesTableController : BaseApiController
         return ResultHelper(await _machinesTableService.GetMachinesAsync());
     }
 
-    // Retrieve machine by its ID.
+    // Retrieves a machine by its ID.
     [HttpGet("{machineId}")]
     public async Task<ActionResult<ServiceResponse<MachineRecordDto>>> GetMachine(Guid machineId)
     {
         return ResultHelper(await _machinesTableService.GetMachineAsync(machineId));
     }
 
-    // Insert new machine
+    // Inserts a new machine.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<MachinesTableRowDto>>> InsertMachine([FromBody] AddMachineDto addMachineDto)
     {
         return ResultHelper(await _machinesTableService.InsertMachineAsync(addMachineDto));
     }
 
-    // Update an exiting machine
+    // Updates an existing machine.
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<MachinesTableRowDto>>> UpdateMachine([FromBody] UpdateMachineDto updateMachineDto)
     {
         return ResultHelper(await _machinesTableService.UpdateMachineAsync(updateMachineDto));
     }
 
-    // Deletes a machine by its ID.
+    // Deletes an existing machine.
     [HttpDelete("{machineId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteMachine(Guid machineId)
     {
@@ -51,12 +51,4 @@ public class MachinesTableController : BaseApiController
     {
         return ResultHelper(await _machinesTableService.DeleteMachinesAsync(machineIds));
     }
-
-    // TODO: machine_tables feature refactor. Searches for machines based on the specified search keyword.
-    [HttpGet("search/{searchKey}")]
-    public async Task<ActionResult<ServiceResponse<IEnumerable<MachinesTableRowDto>>>> FindMachinesByKeyword(string searchKey)
-    {
-        return ResultHelper(await _machinesTableService.FindMachinesByKeywordAsync(searchKey));
-    }
-
 }
