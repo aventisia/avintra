@@ -1,0 +1,6 @@
+.w-json-view-container span {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace !important;
+  font-size: 0.76rem !important;
+}

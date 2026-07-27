@@ -16,6 +16,7 @@ export * from "./form";
 export * from "./HorizontalScrollWrapper";
 export * from "./input-group";
 export * from "./Input";
+export * from "./json-viewer";
 export * from "./LoadingSpinner";
 export * from "./Lucide";
 export * from "./NoContentMessage";

@@ -12,6 +12,7 @@ import {
 } from "@avplatform/ui/components/view-record";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
+import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
 import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -26,8 +27,6 @@ import {
   MessageSquareTextIcon,
   ZapIcon,
 } from "lucide-react";
-
-import { JsonViewer } from "@/components/JsonViewer";
 
 import { getJob } from "../../apis/jobs-table-apis";
 import { statusColor } from "../../constants/column-display-names";
@@ -204,9 +203,10 @@ export const JobView = ({ rowId }: JobViewProps) => {
       <ViewInfoRowsCard
         title="Input Data"
         icon={<FileJsonIcon className="size-3.5 text-muted-foreground" />}
+        action={createCopyJsonAction(jsonToString(job.jobInputData))}
       >
         {job.jobInputData ? (
-          <JsonViewer jsonData={jsonToString(job.jobInputData)} enableCopy enableClipboard />
+          <JsonViewer jsonData={jsonToString(job.jobInputData)} enableValueClipboard />
         ) : (
           <p className="px-0.5 py-1.5 text-xs text-foreground">{FALLBACK_VALUE}</p>
         )}
@@ -216,9 +216,10 @@ export const JobView = ({ rowId }: JobViewProps) => {
       <ViewInfoRowsCard
         title="Output Data"
         icon={<FileJsonIcon className="size-3.5 text-muted-foreground" />}
+        action={createCopyJsonAction(jsonToString(job.jobOutputData))}
       >
         {job.jobOutputData ? (
-          <JsonViewer jsonData={jsonToString(job.jobOutputData)} enableCopy enableClipboard />
+          <JsonViewer jsonData={jsonToString(job.jobOutputData)} enableValueClipboard />
         ) : (
           <p className="px-0.5 py-1.5 text-xs text-foreground">{FALLBACK_VALUE}</p>
         )}
@@ -244,7 +245,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
         }
       >
         {job.lastNodeLog ? (
-          <JsonViewer jsonData={jsonToString(job.lastNodeLog)} enableCopy enableClipboard />
+          <JsonViewer jsonData={jsonToString(job.lastNodeLog)} enableValueClipboard />
         ) : (
           <p className="px-0.5 py-1.5 text-xs text-foreground">{FALLBACK_VALUE}</p>
         )}
