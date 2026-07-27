@@ -309,6 +309,14 @@ public class JobsTableService : IJobsTableService
             if (job == null)
                 return serviceResponse.Update("Job not found.", 404);
 
+            // CANNOT UPDATE THE JOB: Job is already in a completed or closed status
+            if (job.Status == JobStatusEnum.Completed ||
+                job.Status == JobStatusEnum.Failed ||
+                job.Status == JobStatusEnum.Aborted ||
+                job.Status == JobStatusEnum.Canceled ||
+                job.Status == JobStatusEnum.Killed)
+                return serviceResponse.Update("Cannot update a job that is already completed or closed.", 400);
+
             // Trim the string properties in the DTO
             jobUpdateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobUpdateDto);
 
