@@ -56,7 +56,16 @@ export const MachineCrudForm = ({ rowId, crudAction }: MachineCrudFormProps) => 
     AddMachineDto | UpdateMachineDto,
     MachinesTableRowDto,
     MachinesTableRowDto
-  >(crudAction, [rowId], insertOrUpdateMachine, DATA_QUERY_KEY);
+  >(
+    crudAction,
+    [rowId],
+    insertOrUpdateMachine,
+    DATA_QUERY_KEY,
+    "desc",
+    true,
+    // Invalidate the machine detail query so the read view reflects assigned agents immediately.
+    crudAction === "update" ? [["machine", rowId]] : [],
+  );
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof machineZodSchema>) => {

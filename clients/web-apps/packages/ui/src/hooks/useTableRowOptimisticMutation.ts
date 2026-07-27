@@ -21,6 +21,7 @@ import { getMutationErrorMessage } from "@/ui/utils";
  * @param {string[]} queryKey The key used to identify the query in the query cache.
  * @param {OrderByType} orderBy The order by which to add the new record. Default is "desc".
  * @param {boolean} showSuccessToast A boolean indicating whether to show a success toast message. Default is true.
+ * @param {string[][]} additionalQueryKeys Optional additional query keys to invalidate after the mutation settles (e.g., detail views related to the mutated record).
  *
  * @returns {Object} An object containing the `mutate`, `isPending`, `isError`, and `isSuccess` properties.
  */
@@ -35,6 +36,7 @@ export const useTableRowOptimisticMutation = <
   queryKey: string[],
   orderBy: OrderByType = "desc",
   showSuccessToast: boolean = true,
+  additionalQueryKeys: string[][] = [],
 ) => {
   // Get query client
   const queryClient = useQueryClient();
@@ -46,6 +48,13 @@ export const useTableRowOptimisticMutation = <
       // Cancel any refetches
       await queryClient.cancelQueries({
         queryKey,
+      });
+
+      // Cancel refetches for any related detail queries
+      additionalQueryKeys?.forEach((key) => {
+        queryClient.cancelQueries({
+          queryKey: key,
+        });
       });
 
       // Hold previous data
@@ -128,6 +137,13 @@ export const useTableRowOptimisticMutation = <
       // Refetch the data
       queryClient.invalidateQueries({
         queryKey: queryKey,
+      });
+
+      // Refetch any related detail queries
+      additionalQueryKeys?.forEach((key) => {
+        queryClient.invalidateQueries({
+          queryKey: key,
+        });
       });
     },
   });
