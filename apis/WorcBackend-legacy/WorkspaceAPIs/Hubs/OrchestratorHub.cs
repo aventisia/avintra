@@ -37,26 +37,26 @@ public class OrchestratorHub : Hub
             // Try to parse the client type from the query string (e.g., 'AvintraMachine', 'WebBrowser')
             Enum.TryParse<ClientTypesEnum>(httpContext.Request.Query["clientType"], true, out var clientType);
 
-            // Retrieve additional query parameters (OSId, Hostname, AppVersion)
+            // Retrieve additional query parameters (OSId, Username, AppVersion)
             string? osId = httpContext.Request.Query["osId"];
-            string? hostname = httpContext.Request.Query["hostname"];
+            string? username = httpContext.Request.Query["username"];
             string? appVersion = httpContext.Request.Query["appVersion"];
 
             // Log the retrieved client information
-            _logger.LogInformation("ClientType: {ClientType}, OSId: {OSId}, Hostname: {Hostname}, AppVersion: {AppVersion}", clientType, osId, hostname, appVersion);
+            _logger.LogInformation("ClientType: {ClientType}, OSId: {OSId}, Username: {Username}, AppVersion: {AppVersion}", clientType, osId, username, appVersion);
 
             // Initialize clientId with userId by default
             Guid clientId = userId;
 
-            // If OSId and Hostname are provided, check if a machine exists
-            if (!string.IsNullOrEmpty(osId) && !string.IsNullOrEmpty(hostname))
+            // If OSId and Username are provided, check if a machine exists
+            if (!string.IsNullOrEmpty(osId) && !string.IsNullOrEmpty(username))
             {
-                // Try to find a machine based on OSId and Hostname
+                // Try to find a machine based on OSId and Username
                 var machine = await _workspaceInternalDbContext.Machine
                     .Where(w =>
                         w.TenantId == tenantId &&
                         w.OsID.ToLower() == osId.ToLower() &&
-                        w.Hostname.ToLower() == hostname.ToLower()
+                        w.Username.ToLower() == username.ToLower()
                     )
                     .SingleOrDefaultAsync();
 
@@ -65,13 +65,13 @@ public class OrchestratorHub : Hub
                 {
                     clientId = machine.Id;
                     clientType = ClientTypesEnum.AvintraMachine;
-                    _logger.LogInformation("Machine found with OSId: {OSId}, Hostname: {Hostname}. Assigned ClientId: {ClientId}, ClientType: {ClientType}.", osId, hostname, clientId, clientType);
+                    _logger.LogInformation("Machine found with OSId: {OSId}, Username: {Username}. Assigned ClientId: {ClientId}, ClientType: {ClientType}.", osId, username, clientId, clientType);
                 }
                 else
                 {
                     // If no machine is found, default clientType to DesktopApp
                     clientType = ClientTypesEnum.AvintraDesktopApp;
-                    _logger.LogWarning("No machine found for OSId: {OSId}, Hostname: {Hostname}. Defaulting to client type {ClientType}.", osId, hostname, clientType);
+                    _logger.LogWarning("No machine found for OSId: {OSId}, Username: {Username}. Defaulting to client type {ClientType}.", osId, username, clientType);
                 }
             }
 

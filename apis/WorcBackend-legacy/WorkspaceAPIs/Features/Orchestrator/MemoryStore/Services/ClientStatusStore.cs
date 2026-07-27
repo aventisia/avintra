@@ -4,14 +4,18 @@ public class ClientStatusStore : IClientStatusStore
 {
     // Thread-safe dictionary to store client statuses, with the clientId as the key.
     private readonly ConcurrentDictionary<Guid, ClientDataStore> ClientStore;
+    private readonly WorkspaceDbContext _workspaceDbContext;
+    private readonly ILogger<ClientStatusStore> _logger;
 
-    public ClientStatusStore(ConcurrentDictionary<Guid, ClientDataStore> clientStore)
+    public ClientStatusStore(ConcurrentDictionary<Guid, ClientDataStore> clientStore, WorkspaceDbContext workspaceDbContext, ILogger<ClientStatusStore> logger)
     {
         ClientStore = clientStore;
+        _workspaceDbContext = workspaceDbContext;
+        _logger = logger;
     }
 
     // Adds or updates the client's status in the store.
-    public Task AddOrUpdateStatusAsync(ClientDataStore req)
+    public async Task AddOrUpdateStatusAsync(ClientDataStore req)
     {
         var client = new ClientDataStore
         {
@@ -27,11 +31,12 @@ public class ClientStatusStore : IClientStatusStore
 
         ClientStore.AddOrUpdate(req.ClientId, client, (_, __) => client);
 
-        return Task.CompletedTask;
+        // Persist the last check-in timestamp for machine clients.
+        await UpdateMachineLastCheckedInAsync(client);
     }
 
     // Removes all clients from the store by their connection identifier.
-    public Task RemoveClientByConnectionAsync(string connectionId)
+    public async Task RemoveClientByConnectionAsync(string connectionId)
     {
         // Find all clients with the matching connection ID
         var clientsToRemove = ClientStore.Values
@@ -41,10 +46,11 @@ public class ClientStatusStore : IClientStatusStore
         // If any clients are found, remove them from the store
         foreach (var client in clientsToRemove)
         {
+            // Persist the disconnect time for machine clients before removing them.
+            await UpdateMachineLastCheckedInAsync(client);
+
             ClientStore.TryRemove(client.ClientId, out _);
         }
-
-        return Task.CompletedTask;
     }
 
     // Retrieves the status of a client by their client ID.
@@ -110,16 +116,17 @@ public class ClientStatusStore : IClientStatusStore
     }
 
     // Updates the status of a client by their clientId.
-    public Task UpdateClientStatusAsync(ClientDataStore clientDataStore)
+    public async Task UpdateClientStatusAsync(ClientDataStore clientDataStore)
     {
         // Attempt to find and update the client's status by clientId.
         if (ClientStore.TryGetValue(clientDataStore.ClientId, out var existingClient))
         {
             existingClient.Status = clientDataStore.Status;
             existingClient.LastSeen = DateTimeOffset.UtcNow;
-        }
 
-        return Task.CompletedTask;
+            // Persist the last check-in timestamp for machine clients.
+            await UpdateMachineLastCheckedInAsync(existingClient);
+        }
     }
 
     // Retrieves the first client associated with the specified job ID.
@@ -131,5 +138,35 @@ public class ClientStatusStore : IClientStatusStore
 
         // Return the matching client if found; otherwise, return null.
         return Task.FromResult<ClientDataStore?>(client);
+    }
+
+    // Persists the machine's LastCheckedIn timestamp to the database.
+    // Only applies to machine clients; other client types are ignored.
+    // Failures are logged and swallowed so the in-memory status update is never blocked.
+    private async Task UpdateMachineLastCheckedInAsync(ClientDataStore clientDataStore)
+    {
+        if (clientDataStore.Type != ClientTypesEnum.AvintraMachine)
+            return;
+
+        try
+        {
+            var machine = await _workspaceDbContext.Machines
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(m =>
+                    m.Id == clientDataStore.ClientId &&
+                    m.TenantId == clientDataStore.TenantId);
+
+            if (machine == null)
+                return;
+
+            machine.LastCheckedIn = DateTimeOffset.UtcNow.UtcDateTime;
+            await _workspaceDbContext.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex,
+                "Failed to update LastCheckedIn for machine {MachineId}. Continuing in-memory status update.",
+                clientDataStore.ClientId);
+        }
     }
 }

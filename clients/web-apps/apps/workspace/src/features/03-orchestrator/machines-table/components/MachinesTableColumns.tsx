@@ -10,12 +10,6 @@ import { getColumnName, statusColor } from "../constants/column-display-names";
 import type { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
 import { MachineRowActions } from "./machine-row-actions/MachineRowActions";
 
-const formatDateValue = (value: unknown) => {
-  if (!value) return null;
-  const date = value instanceof Date ? value : new Date(String(value));
-  return Number.isNaN(date.getTime()) ? null : formatDate(date);
-};
-
 /**
  * Array of table columns for the machine table.
  * Each column object contains an accessorKey, header component, and cell component.
@@ -83,9 +77,13 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
       />
     ),
     cell: ({ row }) => {
-      const formattedDate = formatDateValue(row.getValue("lastCheckedIn"));
+      const formattedDate = formatDate(row.getValue("lastCheckedIn"), true);
       if (!formattedDate || formattedDate === "01 Jan 0001") return FALLBACK_VALUE;
-      return formattedDate;
+      return (
+        <span className="inline-block w-28 truncate" title={formattedDate}>
+          {formattedDate}
+        </span>
+      );
     },
   },
   {
@@ -181,7 +179,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
         title={getColumnName("createdOn")}
       />
     ),
-    cell: ({ row }) => formatDateValue(row.getValue("createdOn")),
+    cell: ({ row }) => formatDate(row.getValue("createdOn")),
   },
   {
     accessorKey: "lastModifiedBy",
@@ -208,7 +206,7 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
         title={getColumnName("lastModifiedOn")}
       />
     ),
-    cell: ({ row }) => formatDateValue(row.getValue("lastModifiedOn")),
+    cell: ({ row }) => formatDate(row.getValue("lastModifiedOn")),
   },
   {
     accessorKey: "id",

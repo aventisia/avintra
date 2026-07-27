@@ -49,11 +49,17 @@ public class MachinesTableService : IMachinesTableService
                 // Find the status of the machine by matching its ClientId with the current machine's Id
                 var clientStatusDto = clientStatusDtos.FirstOrDefault(status => status.ClientId == machine.Id);
 
-                // Set the machine's status based on whether a matching status was found
-                machine.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusEnum.Offline;
-
-                // (Optional) Update the machine's last checked-in time if a valid status is found
-                // machine.LastCheckedIn = clientStatusDto != null ? clientStatusDto.LastSeen : MachineStatusEnum.Offline;
+                if (clientStatusDto != null)
+                {
+                    // Set the machine's status and use the live last-seen timestamp when online.
+                    machine.Status = clientStatusDto.Status;
+                    machine.LastCheckedIn = clientStatusDto.LastSeen.UtcDateTime;
+                }
+                else
+                {
+                    // No live status found; keep the persisted last checked-in time.
+                    machine.Status = MachineStatusEnum.Offline;
+                }
             }
 
             // Task successful
@@ -89,11 +95,17 @@ public class MachinesTableService : IMachinesTableService
             // TODO: machine_tables feature refactor Attempt to retrieve the client status from the store based on the machine's unique ID
             var clientStatusDto = await _clientStatusStore.GetClientByIdAsync(machine.Id);
 
-            // TODO: machine_tables feature refactor If the client status is found, update the machine's status to match the stored status. If no status is found, mark the machine as 'Offline'.
-            machine.Status = clientStatusDto != null ? clientStatusDto.Status : MachineStatusEnum.Offline;
-
-            // TODO: machine_tables feature refactor (Optional) Update the machine's 'LastCheckedIn' timestamp if a valid status is found.
-            // machine.LastCheckedIn = clientStatusDto != null ? clientStatusDto.LastSeen : DateTimeOffset.UtcNow;
+            if (clientStatusDto != null)
+            {
+                // Set the machine's status and use the live last-seen timestamp when online.
+                machine.Status = clientStatusDto.Status;
+                machine.LastCheckedIn = clientStatusDto.LastSeen.UtcDateTime;
+            }
+            else
+            {
+                // No live status found; keep the persisted last checked-in time.
+                machine.Status = MachineStatusEnum.Offline;
+            }
 
             // Task successful
             return serviceResponse.Update(null, 200, machine);

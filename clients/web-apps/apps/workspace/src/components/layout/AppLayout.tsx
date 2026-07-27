@@ -64,10 +64,10 @@ export const AppLayout = () => {
     })),
   );
 
-  const { osID, hostname, appVersion } = useTuariUserMetadataStore(
+  const { osID, username, appVersion } = useTuariUserMetadataStore(
     useShallow((state) => ({
       osID: state.osID,
-      hostname: state.hostname,
+      username: state.username,
       appVersion: state.appVersion,
     })),
   );
@@ -115,7 +115,7 @@ export const AppLayout = () => {
     url: getWebSocketUrl({
       osID,
       appVersion,
-      hostname,
+      username,
     }),
     shouldConnect: connectWebsocket,
   });
