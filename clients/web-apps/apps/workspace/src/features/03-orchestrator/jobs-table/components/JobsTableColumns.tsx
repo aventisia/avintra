@@ -188,7 +188,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdByName")} />
     ),
     cell: ({ row }) => (
-      <div className="max-w-40 truncate font-medium">
+      <div title={row.getValue("createdByName") ?? ""} className="max-w-40 truncate font-medium">
         {row.getValue("createdByName") ?? FALLBACK_VALUE}
       </div>
     ),
@@ -222,7 +222,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="max-w-40 truncate font-medium">
+      <div title={row.getValue("executionLocation") ?? ""} className="max-w-40 truncate font-medium">
         {row.getValue("executionLocation") ?? FALLBACK_VALUE}
       </div>
     ),

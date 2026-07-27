@@ -1,6 +1,6 @@
 namespace WorkspaceAPIs.MappingProfiles;
 
-public class JobTableMappingProfile : IRegister
+public class JobsTableMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {

@@ -4,13 +4,13 @@ namespace WorkspaceAPIs.Controllers;
 [ApiController]
 [Route("job")]
 [Authorize(Roles = "OM")]
-public class JobTableController : BaseApiController
+public class JobsTableController : BaseApiController
 {
-    private readonly IJobTableService _jobTableService;
+    private readonly IJobsTableService _jobsTableService;
 
-    public JobTableController(IJobTableService jobTableService)
+    public JobsTableController(IJobsTableService jobsTableService)
     {
-        _jobTableService = jobTableService;
+        _jobsTableService = jobsTableService;
     }
 
     // Retrieves a list of jobs based on optional start and end date filters.
@@ -19,49 +19,49 @@ public class JobTableController : BaseApiController
         [FromQuery] DateTimeOffset? startDate,
         [FromQuery] DateTimeOffset? endDate)
     {
-        return ResultHelper(await _jobTableService.GetJobsAsync(startDate, endDate));
+        return ResultHelper(await _jobsTableService.GetJobsAsync(startDate, endDate));
     }
 
     // Get job by its ID.
     [HttpGet("{jobId}")]
     public async Task<ActionResult<ServiceResponse<JobRecordDto>>> GetJob(Guid jobId)
     {
-        return ResultHelper(await _jobTableService.GetJobAsync(jobId));
+        return ResultHelper(await _jobsTableService.GetJobAsync(jobId));
     }
 
     // Inserts a new job.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<JobRecordDto>>> InsertJob([FromBody] JobInsertDto jobInsertDto)
     {
-        return ResultHelper(await _jobTableService.InsertJobAsync(jobInsertDto));
+        return ResultHelper(await _jobsTableService.InsertJobAsync(jobInsertDto));
     }
 
     // Updates an existing job.
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<JobRecordDto>>> UpdateJob([FromBody] JobUpdateDto jobUpdateDto)
     {
-        return ResultHelper(await _jobTableService.UpdateJobAsync(jobUpdateDto));
+        return ResultHelper(await _jobsTableService.UpdateJobAsync(jobUpdateDto));
     }
 
     // Deletes a job by its ID.
     [HttpDelete("{jobId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteJob(Guid jobId)
     {
-        return ResultHelper(await _jobTableService.DeleteJobAsync(jobId));
+        return ResultHelper(await _jobsTableService.DeleteJobAsync(jobId));
     }
 
     // Delete multiple jobs by their IDs.
     [HttpPost("delete-multiple")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteJobs([FromBody] IEnumerable<Guid> jobIds)
     {
-        return ResultHelper(await _jobTableService.DeleteJobsAsync(jobIds));
+        return ResultHelper(await _jobsTableService.DeleteJobsAsync(jobIds));
     }
 
     // Exports jobs data into a CSV file
     [HttpPost("export")]
     public async Task<ActionResult<FileStreamResult>> ExportJobs(ExportJobsReqDto exportJobsReqDto)
     {
-        var exportedData = await _jobTableService.ExportJobsAsync(exportJobsReqDto);
+        var exportedData = await _jobsTableService.ExportJobsAsync(exportJobsReqDto);
         if (exportedData.StatusCode == 200 && exportedData.Data != null)
         {
             return exportedData.Data;
@@ -77,33 +77,33 @@ public class JobTableController : BaseApiController
     //     [FromQuery] DateTimeOffset? startDate,
     //     [FromQuery] DateTimeOffset? endDate)
     // {
-    //     return ResultHelper(await _jobTableService.GetJobLogsAsync(startDate, endDate));
+    //     return ResultHelper(await _jobsTableService.GetJobLogsAsync(startDate, endDate));
     // }
 
     // [HttpPost("{jobId}/retry")]
     // public async Task<ActionResult<ServiceResponse<bool>>> RetryJobAsync(Guid jobId)
     // {
-    //     return ResultHelper(await _jobTableService.RetryJobAsync(jobId));
+    //     return ResultHelper(await _jobsTableService.RetryJobAsync(jobId));
     // }
 
     // [HttpPost("{jobId}/cancel")]
     // public async Task<ActionResult<ServiceResponse<bool>>> CancelJob(Guid jobId)
     // {
-    //     return ResultHelper(await _jobTableService.CancelJobAsync(jobId));
+    //     return ResultHelper(await _jobsTableService.CancelJobAsync(jobId));
     // }
 
     // // Abort the execution of a job on the machine
     // [HttpPost("abort")]
     // public async Task<ActionResult<ServiceResponse<bool>>> AbortMachineExecution(JobAbortRequestDto jobAbortRequestDto)
     // {
-    //     return ResultHelper(await _jobTableService.AbortJobExecutionAsync(jobAbortRequestDto));
+    //     return ResultHelper(await _jobsTableService.AbortJobExecutionAsync(jobAbortRequestDto));
     // }
 
     // // Exports jobs data into a CSV file
     // [HttpPost("export")]
     // public async Task<ActionResult> ExportJobs(ExportJobRequestDto exportJobRequestDto)
     // {
-    //     var exportedData = await _jobTableService.ExportJobsAsync(exportJobRequestDto);
+    //     var exportedData = await _jobsTableService.ExportJobsAsync(exportJobRequestDto);
     //     if (exportedData.StatusCode == 200 && exportedData.Data != null)
     //     {
     //         return exportedData.Data;
@@ -116,6 +116,6 @@ public class JobTableController : BaseApiController
     // [HttpPost("trigger")]
     // public async Task<ActionResult<ServiceResponse<JobTableDto>>> TriggerJobCreation([FromBody] JobUpsertDto jobUpsertDto)
     // {
-    //     return ResultHelper(await _jobTableService.InsertJobAsync(jobUpsertDto));
+    //     return ResultHelper(await _jobsTableService.InsertJobAsync(jobUpsertDto));
     // }
 }

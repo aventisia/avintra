@@ -1,8 +1,8 @@
 namespace WorkspaceAPIs.Services;
 
-public class JobTableService : IJobTableService
+public class JobsTableService : IJobsTableService
 {
-    private readonly ILogger<JobTableService> _logger;
+    private readonly ILogger<JobsTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IJobsExecutorService _jobsExecutorService;
@@ -11,8 +11,8 @@ public class JobTableService : IJobTableService
     private readonly Guid _userId;
     private readonly string _userMachine;
 
-    public JobTableService(
-        ILogger<JobTableService> logger,
+    public JobsTableService(
+        ILogger<JobsTableService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         ICurrentTenantService currentTenantService,
