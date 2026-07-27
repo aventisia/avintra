@@ -53,7 +53,7 @@ export const ViewBadge = ({
       {Icon && (
         <Icon
           className={cn(
-            "size-3.5 stroke-[2px] text-muted-foreground",
+            "size-3.5 min-h-3.5 min-w-3.5 stroke-[2px] text-muted-foreground",
             viewStyle === "enabled" && "text-primary-500",
             viewStyle === "disabled" && "text-red-500",
             iconClassName,

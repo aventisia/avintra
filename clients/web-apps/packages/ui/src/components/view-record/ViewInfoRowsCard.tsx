@@ -12,6 +12,8 @@ type ViewInfoRowsCardProps = ComponentPropsWithoutRef<"div"> & {
   title: string;
   /** Optional icon rendered before the section title. */
   icon?: ReactNode;
+  /** Optional action element rendered at the right end of the header. */
+  action?: ReactNode;
   /** Additional classes for the section title. */
   headerClassName?: string;
   /** Additional classes for the body wrapper. */
@@ -27,6 +29,7 @@ type ViewInfoRowsCardProps = ComponentPropsWithoutRef<"div"> & {
 export const ViewInfoRowsCard = ({
   title,
   icon,
+  action,
   children,
   className,
   headerClassName,
@@ -37,12 +40,15 @@ export const ViewInfoRowsCard = ({
     <div className={cn("rounded-lg border bg-card px-4 pb-2 pt-4", className)} {...props}>
       <div
         className={cn(
-          "flex items-center gap-2 text-2xs font-medium uppercase tracking-wider text-foreground",
+          "flex items-center justify-between gap-2 text-2xs font-medium uppercase tracking-wider text-foreground",
           headerClassName,
         )}
       >
-        {icon}
-        {title}
+        <span className="flex items-center gap-2">
+          {icon}
+          {title}
+        </span>
+        {action}
       </div>
       <div className={cn("space-y-1 pt-3", bodyClassName)}>{children}</div>
     </div>

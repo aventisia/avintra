@@ -40,6 +40,10 @@ export const JobUpdateForm = ({ rowId }: JobUpdateFormProps) => {
     [rowId],
     updateJob,
     DATA_QUERY_KEY,
+    "desc",
+    true,
+    // Invalidate the job detail query so the read view reflects updates immediately.
+    [["job", rowId]],
   );
 
   const onSubmit = (formData: JobUpdateFormData) => {

@@ -7,6 +7,7 @@ import { buildDialogCloseParams } from "@/ui/components/data-table/crud-dialog-u
 import { decodePrefilledOption } from "../../utils/decode-prefilled-option.util";
 import { JobCreateForm } from "./JobCreateForm";
 import { JobUpdateForm } from "./JobUpdateForm";
+import { JobView } from "./JobView";
 
 interface JobCrudDialogContentProps {
   crudAction: DialogCrudAction;
@@ -37,6 +38,10 @@ export const JobCrudDialogContent = ({ crudAction, rowId }: JobCrudDialogContent
 
     setSearchParams(next, { replace: true });
   };
+
+  if (crudAction === "read") {
+    return <JobView rowId={rowId} />;
+  }
 
   if (crudAction === "create") {
     return (

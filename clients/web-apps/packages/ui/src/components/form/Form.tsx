@@ -114,7 +114,9 @@ const Form = <T extends FieldValues>({
           {children}
         </fieldset>
       </form>
-      {!isInsideCrudDialog && <DirtyFormBlocker isDirty={formState.isDirty} checkDirtyForm={checkDirtyForm} />}
+      {!isInsideCrudDialog && (
+        <DirtyFormBlocker isDirty={formState.isDirty} checkDirtyForm={checkDirtyForm} />
+      )}
     </FormProvider>
   );
 };

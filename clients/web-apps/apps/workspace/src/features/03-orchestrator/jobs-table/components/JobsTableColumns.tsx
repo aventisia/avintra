@@ -1,8 +1,7 @@
 import { Checkbox, CopyableText } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { DTColumnHeader, DTOpenViewCell, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { cn } from "@avplatform/ui/lib";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -40,35 +39,14 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     enableSorting: false,
   },
   {
-    accessorKey: "flowName",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("flowName")} />
-    ),
+    accessorKey: "id",
+    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Job" />,
     cell: ({ row }) => (
-      <FlowVersionNavLink
-        to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}execution-log?v=${row.original.flowVersionId}&j=${row.original.id}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        title={`View ${row.original.flowName} v${row.original.flowVersionNumber} in Agent Builder`}
-        flowName={row.original.flowName ?? "NAME_NOT_FOUND"}
-        flowVersionNumber={row.original.flowVersionNumber}
+      <DTOpenViewCell
+        rowId={row.original.id}
+        cellContent={`${row.original.flowName}_${row.original.flowVersionNumber}_${row.getValue("id") ?? "ID_NOT_FOUND"}`}
+        entity="job"
       />
-    ),
-  },
-  {
-    accessorKey: "flowVersionNumber",
-    enableHiding: false,
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("flowVersionNumber") ?? 0}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("flowVersionNumber") ?? FALLBACK_VALUE}
-      </div>
     ),
   },
   {
@@ -222,7 +200,10 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div title={row.getValue("executionLocation") ?? ""} className="max-w-40 truncate font-medium">
+      <div
+        title={row.getValue("executionLocation") ?? ""}
+        className="max-w-40 truncate font-medium"
+      >
         {row.getValue("executionLocation") ?? FALLBACK_VALUE}
       </div>
     ),
