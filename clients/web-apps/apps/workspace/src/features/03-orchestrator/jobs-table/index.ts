@@ -46,6 +46,7 @@ export * from "./components/JobsTableColumns";
 export * from "./components/jobs-crud-dialog/JobCreateForm";
 export * from "./components/jobs-crud-dialog/JobCrudDialogContent";
 export * from "./components/jobs-crud-dialog/JobUpdateForm";
+export * from "./components/jobs-crud-dialog/JobView";
 export * from "./components/jobs-row-actions/JobRowAbortAction";
 export * from "./components/jobs-row-actions/JobRowActions";
 export * from "./components/jobs-row-actions/JobRowDeleteAction";

@@ -131,7 +131,7 @@ const crudDialogRegistry: CrudDialogRegistry = {
     Content: MachineCrudDialogContent,
   },
   job: {
-    maxWidth: "!max-w-[36rem]",
+    maxWidth: "!max-w-[42rem]",
     getHeader: getJobDialogHeadingDescription,
     Content: JobCrudDialogContent,
   },

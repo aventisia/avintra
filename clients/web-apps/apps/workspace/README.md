@@ -20,14 +20,14 @@ The workspace app runs on port `3002` by default.
 
 ## Available Scripts
 
-| Script          | Description                                     |
-| --------------- | ----------------------------------------------- |
-| `dev`           | Start the Vite dev server (port 3002)           |
-| `build`         | Type-check and build for production               |
-| `typecheck`     | Run TypeScript compiler in build mode           |
-| `lint`          | Run ESLint                                      |
-| `format`        | Format files with Prettier                      |
-| `preview`       | Preview the production build                    |
+| Script      | Description                           |
+| ----------- | ------------------------------------- |
+| `dev`       | Start the Vite dev server (port 3002) |
+| `build`     | Type-check and build for production   |
+| `typecheck` | Run TypeScript compiler in build mode |
+| `lint`      | Run ESLint                            |
+| `format`    | Format files with Prettier            |
+| `preview`   | Preview the production build          |
 
 ## Shared Dependencies
 
