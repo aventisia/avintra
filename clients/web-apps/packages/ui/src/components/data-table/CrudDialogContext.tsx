@@ -79,3 +79,13 @@ export function useCrudDialogIsDirty() {
 
   return ctx.isDirty;
 }
+
+/**
+ * Returns true when the calling component is mounted inside a URL-driven CRUD
+ * dialog. The generic `Form.tsx` blocker defers to the dialog's own blocker so
+ * React Router only has one active blocker at a time.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useIsInsideCrudDialog() {
+  return useContext(CrudDialogContext) !== null;
+}

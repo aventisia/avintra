@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { type CrudEntityKey, type DialogCrudAction } from "@/ui/types";
 
-const DIALOG_PARAM_KEYS = ["e", "ca", "rid", "back"];
+import { buildDialogCloseParams } from "./crud-dialog-url.util";
 
 const crudActionParamMapper: Record<string, DialogCrudAction> = {
   create: "create",
@@ -98,22 +98,20 @@ export function useCrudDialogUrlState() {
 
   const cleanupDialogParams = useCallback(
     (params: URLSearchParams) => {
-      DIALOG_PARAM_KEYS.forEach((key) => params.delete(key));
       extraParamKeysRef.current.forEach((key) => params.delete(key));
       extraParamKeysRef.current = [];
-      return params;
+      return buildDialogCloseParams({ current: params });
     },
     [extraParamKeysRef],
   );
 
   const closeCrudDialog = useCallback(() => {
-    setSearchParams(
-      (params) => {
-        return cleanupDialogParams(params);
-      },
-      { replace: true },
-    );
-  }, [cleanupDialogParams, setSearchParams]);
+    // Build a new URLSearchParams from the current snapshot and delete dialog
+    // keys. Passing a fresh object avoids the updater-function form, which can
+    // silently fail to commit when a useBlocker is active.
+    const next = cleanupDialogParams(new URLSearchParams(searchParams));
+    setSearchParams(next, { replace: true });
+  }, [cleanupDialogParams, searchParams, setSearchParams]);
 
   const goBack = useCallback(() => {
     if (!backParam) {
@@ -121,19 +119,15 @@ export function useCrudDialogUrlState() {
       return;
     }
 
-    const decoded = new URLSearchParams(backParam);
-    setSearchParams(
-      (params) => {
-        // Start from current params so filters/pagination/tabs are preserved,
-        // then remove dialog params and merge the back snapshot on top.
-        const next = new URLSearchParams(params);
-        cleanupDialogParams(next);
-        decoded.forEach((value, key) => next.set(key, value));
-        return next;
-      },
-      { replace: true },
-    );
-  }, [backParam, cleanupDialogParams, closeCrudDialog, setSearchParams]);
+    // Start from current params so filters/pagination/tabs are preserved,
+    // then remove dialog params and merge the back snapshot on top.
+    const next = buildDialogCloseParams({
+      current: new URLSearchParams(searchParams),
+      back: backParam,
+    });
+    cleanupDialogParams(next);
+    setSearchParams(next, { replace: true });
+  }, [backParam, cleanupDialogParams, closeCrudDialog, searchParams, setSearchParams]);
 
   return useMemo(
     () => ({

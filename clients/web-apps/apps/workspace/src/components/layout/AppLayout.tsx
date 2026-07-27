@@ -20,7 +20,6 @@ import { PROCESSING_STATES } from "@/features/execute-flow";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
 import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
 import { usePreventClose } from "@/hooks/usePreventClose";
-import { usePreventNavigation } from "@/hooks/usePreventNavigation";
 import { useRecoverCrashLogs } from "@/hooks/useRecoverCrashLogs";
 import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 import useWebSocket from "@/hooks/useWebSocket";
@@ -35,6 +34,7 @@ import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppLoader } from "./AppLoader";
 import { AppRedirectPage } from "./AppRedirectPage";
+import { PreventNavigationBlocker } from "./PreventNavigationBlocker";
 import { Sidebar } from "./Sidebar";
 import { getSidebarMenuBasedOnPermissions } from "./sidebar-menu-sections";
 
@@ -80,14 +80,11 @@ export const AppLayout = () => {
     })),
   );
 
-  usePreventNavigation({
-    enabled: import.meta.env.MODE !== "production",
-
-    basePath: import.meta.env.VITE_WORKSPACE_PATH,
-    isDirty: false,
-
-    isExecuting: PROCESSING_STATES.includes(executionState),
-  });
+  // Only mount the navigation blocker in Tauri dev mode when an execution is
+  // running. React Router only allows one active blocker at a time, so we avoid
+  // registering this blocker alongside the CRUD dialog's blocker in web mode.
+  const isExecuting = PROCESSING_STATES.includes(executionState);
+  const showNavigationBlocker = import.meta.env.MODE !== "production" && IS_TAURI && isExecuting;
 
   // Prevent closing the Tauri app while an execution is in progress
   usePreventClose({
@@ -240,6 +237,12 @@ export const AppLayout = () => {
         </div>
       )}
       <WorkspaceCrudDialogProvider />
+      {showNavigationBlocker && (
+        <PreventNavigationBlocker
+          isExecuting={isExecuting}
+          basePath={import.meta.env.VITE_WORKSPACE_PATH}
+        />
+      )}
     </>
   );
 };

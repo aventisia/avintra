@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { type FieldValues, FormProvider, type UseFormReturn } from "react-hook-form";
 import { useBlocker, useNavigate } from "react-router-dom";
 
+import { useIsInsideCrudDialog } from "@/ui/components/data-table/CrudDialogContext";
 import { useShowAlertHandler } from "@/ui/hooks";
 import { cn } from "@/ui/lib";
 
@@ -14,6 +15,49 @@ interface FormProps<T extends FieldValues> extends React.FormHTMLAttributes<HTML
 
   /** If true, it will check for dirty form and prevent leaving the page */
   checkDirtyForm?: boolean;
+}
+
+interface DirtyFormBlockerProps {
+  isDirty: boolean;
+  checkDirtyForm: boolean;
+}
+
+/**
+ * Registers the generic dirty-form route blocker.
+ *
+ * Rendered as a sibling of the form only when the form is not inside a
+ * URL-driven CRUD dialog. React Router only allows one active blocker at a
+ * time, so we must avoid mounting this hook while the dialog's blocker is
+ * already registered.
+ */
+function DirtyFormBlocker({ isDirty, checkDirtyForm }: DirtyFormBlockerProps) {
+  const isBlockingRef = useRef(checkDirtyForm);
+  const navigate = useNavigate();
+  const { showDefaultAlertDialog } = useShowAlertHandler();
+
+  useBlocker(({ currentLocation, nextLocation }) => {
+    // If form is dirty, show alert dialog
+    if (
+      isBlockingRef.current &&
+      isDirty &&
+      checkDirtyForm &&
+      currentLocation.pathname !== nextLocation.pathname
+    ) {
+      showDefaultAlertDialog({
+        confirmActionFn: () => {
+          isBlockingRef.current = false;
+          navigate(nextLocation.pathname);
+        },
+        alertType: "unsaved",
+      });
+      // Block navigation
+      return true;
+    }
+    // Allow navigation
+    return false;
+  });
+
+  return null;
 }
 
 /** Extended version of FormProvider, form, fieldset. It supports:
@@ -33,14 +77,10 @@ const Form = <T extends FieldValues>({
   // Get form state
   const { formState } = methods;
 
-  // Set blocking state
-  const isBlockingRef = useRef(checkDirtyForm);
-
-  // Get navigate function
-  const navigate = useNavigate();
-
-  // Get discard unsaved changes alert dialog handler
-  const { showDefaultAlertDialog } = useShowAlertHandler();
+  // Detect whether this form is inside a URL-driven CRUD dialog. The dialog
+  // already registers its own useBlocker, so we avoid mounting the generic
+  // DirtyFormBlocker while inside the dialog.
+  const isInsideCrudDialog = useIsInsideCrudDialog();
 
   // ----------------Add beforeunload event listener
   useEffect(() => {
@@ -58,28 +98,6 @@ const Form = <T extends FieldValues>({
     };
   }, [checkDirtyForm, formState.isDirty]);
 
-  // ----------------Check for route changes
-  useBlocker(({ currentLocation, nextLocation }) => {
-    // If form is dirty, show alert dialog
-    if (
-      isBlockingRef.current &&
-      formState.isDirty &&
-      currentLocation.pathname !== nextLocation.pathname
-    ) {
-      showDefaultAlertDialog({
-        confirmActionFn: () => {
-          isBlockingRef.current = false;
-          navigate(nextLocation.pathname);
-        },
-        alertType: "unsaved",
-      });
-      // Block navigation
-      return true;
-    }
-    // Allow navigation
-    return false;
-  });
-
   // ----------------Reset form when unmounting
   useEffect(() => {
     return () => {
@@ -96,6 +114,7 @@ const Form = <T extends FieldValues>({
           {children}
         </fieldset>
       </form>
+      {!isInsideCrudDialog && <DirtyFormBlocker isDirty={formState.isDirty} checkDirtyForm={checkDirtyForm} />}
     </FormProvider>
   );
 };
