@@ -497,6 +497,17 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
+# Other
+clients/web-apps/packages/layout/.turbo/turbo-lint.log
+clients/web-apps/packages/layout/.turbo/turbo-typecheck.log
+clients/web-apps/packages/tauri-utils/.turbo/turbo-lint.log
+clients/web-apps/packages/tauri-utils/.turbo/turbo-typecheck.log
+clients/web-apps/packages/tauri-utils/tsconfig.tsbuildinfo
+clients/web-apps/packages/ui/.turbo/turbo-lint.log
+clients/web-apps/packages/ui/.turbo/turbo-typecheck.log
+clients/web-apps/packages/ui-editors/.turbo/turbo-lint.log
+clients/web-apps/packages/ui-editors/.turbo/turbo-typecheck.log
+
 # Custom ignore rules
 [Pp]ublished/
 .env.local
