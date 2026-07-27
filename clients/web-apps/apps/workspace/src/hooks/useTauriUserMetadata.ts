@@ -40,7 +40,7 @@ export default function useTauriUserMetadata() {
             ? {
                 osID: data?.os_id,
                 appVersion: data?.app_version,
-                hostname: data?.username,
+                username: data?.username,
               }
             : null,
         );

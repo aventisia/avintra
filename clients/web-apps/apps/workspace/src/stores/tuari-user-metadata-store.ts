@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 export interface TuariUserMetadata {
   osID: string;
-  hostname: string;
+  username: string;
   appVersion: string;
 }
 
@@ -14,7 +14,7 @@ export const useTuariUserMetadataStore = create<TuariUserMetadata & TuariUserMet
   (set) => ({
     osID: "",
     appVersion: "",
-    hostname: "",
+    username: "",
     setTuariUserMetadata: (data) => set({ ...data }),
   }),
 );
