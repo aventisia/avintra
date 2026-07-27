@@ -10,3 +10,4 @@ export * from "./useShowAlertHandler";
 export * from "./useTableRowOptimisticMutation";
 export * from "./useToggle";
 export * from "./useDebounce";
+export * from "./useCopyToClipboard";

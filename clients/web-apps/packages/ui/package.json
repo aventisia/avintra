@@ -39,6 +39,7 @@
     "./hover-card": "./src/components/hover-card/index.ts",
     "./input-group": "./src/components/input-group/index.tsx",
     "./input-otp": "./src/components/input-otp/index.ts",
+    "./json-viewer": "./src/components/json-viewer/index.ts",
     "./label": "./src/components/label/index.ts",
     "./lib": "./src/lib/index.ts",
     "./lucide": "./src/components/Lucide/index.tsx",
@@ -152,6 +153,7 @@
     "react-dropdown-menu": "^0.0.2",
     "react-hotkeys-hook": "^5.3.3",
     "react-phone-number-input": "^3.4.3",
+    "@uiw/react-json-view": "^2.0.0-alpha.40",
     "sonner": "^1.5.0",
     "tailwind-merge": "^3.3.1"
   },
