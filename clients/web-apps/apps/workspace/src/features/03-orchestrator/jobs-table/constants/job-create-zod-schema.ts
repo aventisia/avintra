@@ -58,7 +58,7 @@ export const jobCreateZodSchema = z
     }),
     executeOnCloud: z.boolean().default(true),
     executionLocation: z.preprocess(
-      (value) => extractSelectedId(value, "value"),
+      (value) => extractSelectedId(value, "label"),
       z.string().default(""),
     ),
     jobInputData: optionalJsonStringSchema,

@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Services;
 /// <summary>
 /// Defines the operations for managing jobs.
 /// </summary>
-public interface IJobTableService
+public interface IJobsTableService
 {
     /// <summary>
     /// Retrieves a list of all jobs between optional start and end date filters.
