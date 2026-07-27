@@ -96,7 +96,12 @@ function CrudDialog({
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
   // Block in-app navigation when the dialog is open and the form is dirty.
-  const blocker = useBlocker(() => isDialogOpen && isDirty);
+  // Only block pathname changes; search-param-only navigation (used by the
+  // dialog itself to clean e/ca/rid) must be allowed to proceed.
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) =>
+      isDialogOpen && isDirty && currentLocation.pathname !== nextLocation.pathname,
+  );
 
   useEffect(() => {
     if (blocker.state === "blocked") {

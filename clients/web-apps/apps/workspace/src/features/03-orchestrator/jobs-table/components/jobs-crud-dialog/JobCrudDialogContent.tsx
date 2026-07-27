@@ -2,6 +2,8 @@ import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
 import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useSearchParams } from "react-router-dom";
 
+import { buildDialogCloseParams } from "@/ui/components/data-table/crud-dialog-url.util";
+
 import { decodePrefilledOption } from "../../utils/decode-prefilled-option.util";
 import { JobCreateForm } from "./JobCreateForm";
 import { JobUpdateForm } from "./JobUpdateForm";
@@ -11,22 +13,29 @@ interface JobCrudDialogContentProps {
   rowId: string;
 }
 
+/** Prefill params injected when opening the create-job dialog from a machine. */
+const JOB_CREATE_PREFILL_KEYS = ["mid", "fv"];
+
 /**
  * Content adapter for the job CRUD dialog.
  */
 export const JobCrudDialogContent = ({ crudAction, rowId }: JobCrudDialogContentProps) => {
-  const [searchParams] = useSearchParams();
-  const { goBack, closeCrudDialog, back } = useCrudDialogUrlState();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { back } = useCrudDialogUrlState();
 
   const defaultMachineOption = decodePrefilledOption(searchParams.get("mid"));
   const defaultFlowVersionOption = decodePrefilledOption(searchParams.get("fv"));
 
   const handleJobCreated = () => {
-    if (back) {
-      goBack();
-    } else {
-      closeCrudDialog();
-    }
+    // Remove the prefill params and the dialog params in a single URL update,
+    // restoring the machine view when the dialog was opened with a `back` state.
+    const next = buildDialogCloseParams({
+      current: searchParams,
+      back,
+      extraKeys: JOB_CREATE_PREFILL_KEYS,
+    });
+
+    setSearchParams(next, { replace: true });
   };
 
   if (crudAction === "create") {
