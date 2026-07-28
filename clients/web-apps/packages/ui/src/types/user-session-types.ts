@@ -16,6 +16,7 @@ interface IUserSessionStore {
   userRoles: string[];
   expiresOn: Date;
   avatarSrc?: string;
+  access_mode?: string;
 }
 
 interface IJwtPayload {

@@ -8,7 +8,7 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 ## Scope
 
 - Use this file for code under `clients/web-apps` and its workspace packages.
-- Do **not** use for the legacy `studio` app (`clients/worc-web-legacy/studio`), which depends on external `@aventisia/ui` and uses classic ESLint.
+- The `studio` app (`apps/studio`) depends on external `@aventisia/ui` and uses its own conventions inherited from the legacy codebase. Apply these rules incrementally when touching studio files.
 
 ## Role
 

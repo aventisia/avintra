@@ -4,18 +4,25 @@ import * as React from "react";
 import { alertVariants } from "@/ui/components/alert";
 import { cn } from "@/ui/lib";
 
-function Alert({
-  className,
-  variant,
-  ...props
-}: React.ComponentProps<"div"> & VariantProps<typeof alertVariants>) {
+interface AlertProps extends React.ComponentProps<"div">, VariantProps<typeof alertVariants> {
+  icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  title?: string;
+  description?: string;
+}
+
+function Alert({ className, variant, icon: Icon, title, description, children, ...props }: AlertProps) {
   return (
     <div
       data-slot="alert"
       role="alert"
       className={cn(alertVariants({ variant }), className)}
       {...props}
-    />
+    >
+      {Icon && <Icon className="h-4 w-4" />}
+      {title && <AlertTitle>{title}</AlertTitle>}
+      {description && <AlertDescription>{description}</AlertDescription>}
+      {children}
+    </div>
   );
 }
 

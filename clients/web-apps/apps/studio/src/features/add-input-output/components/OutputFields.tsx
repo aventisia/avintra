@@ -1,0 +1,69 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Button } from "@avplatform/ui/buttons";
+import { OutputFieldFormValues } from "../constants/inputs-outputs-zod-schema";
+import { Control, Controller, UseFieldArrayRemove } from "react-hook-form";
+import { Trash2 } from "lucide-react";
+import { InputField } from "@avplatform/ui/form";
+
+interface OutputFieldsProps extends OutputFieldFormValues {
+  id: string;
+}
+const OutputFields = ({
+  field,
+  control,
+  index,
+  remove,
+}: {
+  field: OutputFieldsProps;
+  control: Control<any>;
+  index: number;
+  remove: UseFieldArrayRemove;
+}) => {
+  return (
+    <div
+      key={field.id}
+      className="mb-3 grid grid-cols-2 items-center gap-2.5 rounded-lg border bg-slate-50 p-4"
+    >
+      <div className="col-span-2 flex justify-between">
+        <span className="text-sm">Output {index + 1}</span>
+        <Button
+          variant="ghost"
+          type="button"
+          size="xs"
+          onClick={() => remove(index)}
+          className="text-red-500 hover:bg-red-50 hover:text-red-700"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      </div>
+
+      {/* Name Field */}
+      <Controller
+        name={`outputs.${index}.name`}
+        control={control}
+        render={({ field }) => (
+          <InputField
+            {...field}
+            fieldSize="xs"
+            description="Unique identifier for the field "
+            label="Output variable"
+          />
+        )}
+      />
+      <Controller
+        name={`outputs.${index}.description`}
+        control={control}
+        render={({ field }) => (
+          <InputField
+            {...field}
+            fieldSize="xs"
+            description="Optional helper text"
+            label="Description"
+          />
+        )}
+      />
+    </div>
+  );
+};
+
+export default OutputFields;

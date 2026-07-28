@@ -4,7 +4,7 @@ type StudioPreferencesType = {
   layoutDirection: LayoutDirectionType;
   miniMap: boolean;
   undoRedo: boolean;
-  intractivityToggle: boolean;
+  cursorToggle: boolean;
   zoomControls: boolean;
   deleteAlert: boolean;
 };

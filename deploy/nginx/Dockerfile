@@ -21,9 +21,9 @@ COPY deploy/nginx/404.html /usr/share/nginx/html/404.html
 COPY deploy/nginx/502.html /usr/share/nginx/html/502.html
 
 # Copy static files for reactjs clients
-COPY clients/worc-web-legacy/accounts/dist /usr/share/nginx/html/accounts
-COPY clients/worc-web-legacy/workspace/dist /usr/share/nginx/html/workspace
-COPY clients/worc-web-legacy/studio/dist /usr/share/nginx/html/studio
+COPY clients/web-apps/apps/accounts/dist /usr/share/nginx/html/accounts
+COPY clients/web-apps/apps/workspace/dist /usr/share/nginx/html/workspace
+COPY clients/web-apps/apps/studio/dist /usr/share/nginx/html/studio
 
 # Create necessary directories
 RUN mkdir -p /var/log/nginx
