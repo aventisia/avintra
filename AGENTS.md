@@ -16,7 +16,7 @@ Compact, repo-specific guidance for OpenCode sessions. If a fact is obvious from
 | Shared libs | `shared/NodeLibrary/`, `shared/ExecutorLibrary/`, `shared/NodeToJson/` | .NET 8 class libs / console app | Referenced by WorkspaceAPIs and NodeExecutor tools |
 | Python API | `apis/llmpipeline/` | `app/main.py` | FastAPI on port 4003, root path `/api` |
 | Web apps | `clients/web-apps/` | npm workspaces + Turborepo | `apps/accounts` (3001), `apps/workspace` (3002), shared packages under `packages/` |
-| Studio app | `clients/worc-web-legacy/studio/` | standalone Vite project | port 3006, depends on external `@aventisia/ui` |
+| Studio app | `clients/web-apps/apps/studio/` | Turborepo app (Vite) | port 3006 |
 | Documentation | `clients/docs/` | Next.js, port 3004 | Search index built by `pagefind` in `postbuild` |
 | Desktop app | `clients/desktop-app/` | Vite + Tauri (Rust) | dev port 2999, Tauri config in `src-tauri/` |
 | Node/RPA executor | `clients/NodeExecutor/` | Multiple `.sln` files | Windows-centric tooling (desktop RPA executor) |
@@ -92,11 +92,9 @@ Shared packages (`@avplatform/ui`, `@avplatform/vite-config`, etc.) are source-o
 ### Studio app
 
 ```sh
-cd clients/worc-web-legacy/studio
-npm install
-npm run dev      # port 3006
-npm run build
-npm run lint     # ESLint classic, --ext ts,tsx
+npx turbo run dev --filter=studio   # port 3006
+npx turbo run build --filter=studio
+npx turbo run lint --filter=studio
 ```
 
 Studio depends on external package `@aventisia/ui`, not the local `@avplatform/*` packages.
@@ -141,7 +139,7 @@ Open `tests/bruno` in Bruno. Environments are under `tests/bruno/environments/`.
   - `clients/web-apps/AGENTS.md` — React frontend + ASP.NET integration conventions (`.apis.ts`, DTOs, file suffixes, Zod validation).
 - Docker images:
   - .NET API Dockerfiles expect project root as build context and copy `AspNetToolkit` alongside.
-  - Nginx Dockerfile copies the built studio dist (`clients/worc-web-legacy/studio/dist`) into the image — build it first.
+  - Nginx Dockerfile copies the built studio dist (`clients/web-apps/apps/studio/dist`) into the image — build it first.
   - LLMPipeline Dockerfile uses `python:3.12-slim`, port 4003.
 - Environment files: `.env.local` is gitignored. `deploy/.env` contains example/default values for local/dev. Do not commit secrets.
 - No unit test suites found in web-apps or .NET projects. `tests/bruno` is the primary API-level verification.

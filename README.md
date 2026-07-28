@@ -15,8 +15,8 @@ This repository contains the source code, shared libraries, clients, and deploym
 │   ├── web-apps/               # Turborepo + npm workspaces (Vite + React + TypeScript)
 │   │   ├── apps/accounts       # Identity / accounts web app
 │   │   ├── apps/workspace      # Workspace / flow builder web app
+│   │   ├── apps/studio         # Studio / admin web app
 │   │   └── packages/*          # Shared packages (ui, layout, ui-editors, eslint-config, etc.)
-│   ├── worc-web-legacy/        # Legacy Vite + React apps (accounts, workspace, studio)
 │   ├── desktop-app/            # Tauri-based cross-platform desktop app
 │   ├── docs/                   # Nextra-based documentation site
 │   └── NodeExecutor/           # Windows desktop workflow executor (WPF / .NET Framework 4.8)
@@ -78,13 +78,14 @@ sudo docker login acr.aventisia.com
 ### 1. Install and build legacy web clients
 
 ```sh
-npm --prefix clients/worc-web-legacy/accounts install
-npm --prefix clients/worc-web-legacy/workspace install
-npm --prefix clients/worc-web-legacy/studio install --force
+npm --prefix clients/web-apps/apps/accounts install
+npm --prefix clients/web-apps/apps/workspace install
+# Studio is now part of the web-apps turborepo (see clients/web-apps/README.md)
+npm --prefix clients/web-apps install
 
-npm --prefix clients/worc-web-legacy/accounts run build --mode=production
-npm --prefix clients/worc-web-legacy/workspace run build --mode=production
-npm --prefix clients/worc-web-legacy/studio run build --mode=production
+npm --prefix clients/web-apps/apps/accounts run build --mode=production
+npm --prefix clients/web-apps/apps/workspace run build --mode=production
+npx --prefix clients/web-apps turbo run build --filter=studio -- --mode=production
 ```
 
 ### 2. Build Docker images from the repository root

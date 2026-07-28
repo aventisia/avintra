@@ -75,7 +75,6 @@ pipeline {
                         env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = hasChangesInPath('clients/web-apps') ? 'true' : 'false'
-                        env.BUILD_STUDIO_CLIENT = hasChangesInPath('clients/worc-web-legacy/studio') ? 'true' : 'false'
                         env.BUILD_ASPNET_TOOLKIT = aspnetToolkitChanged ? 'true' : 'false'
                     }
                     
@@ -336,44 +335,16 @@ pipeline {
                                 }
                             }
                         }
-                    }
-                }
-                
-                stage('Studio Client') {
-                    when {
-                        expression { env.BUILD_STUDIO_CLIENT == 'true' }
-                    }
-                    agent any
-                    tools {
-                        nodejs 'NodeJS 22.18.0'
-                    }
-                    stages {
-                        stage('Install - Studio Client') {
-                            steps {
-                                dir('clients/worc-web-legacy/studio') {
-                                    echo 'Installing Studio Client dependencies...'
-                                    sh 'npm ci'
-                                }
-                            }
-                        }
-                        stage('Build - Studio Client') {
-                            steps {
-                                dir('clients/worc-web-legacy/studio') {
-                                    echo 'Building Studio Client...'
-                                    sh "npm run build -- --mode=${getBuildMode(env.BRANCH_NAME)}"
-                                }
-                            }
-                        }
-                        stage('Deploy - Studio Client') {
+                        stage('Deploy - Studio App') {
                             steps {
                                 script {
                                     sshagent(credentials: ['aventisia_vps_ssh']) {
                                         def targetServers = getTargetServers(env.BRANCH_NAME)
-                                        echo "Deploying Studio Client to ${targetServers.size()} server(s)..."
+                                        echo "Deploying Studio App to ${targetServers.size()} server(s)..."
                                         
                                         targetServers.each { server ->
-                                            sh "rsync -avz --delete ${WORKSPACE}/clients/worc-web-legacy/studio/dist/* admin@${server}:/var/www/aventisia.com/clients/studio/"
-                                            echo "Successfully deployed Studio Client to ${server}"
+                                            sh "rsync -avz --delete ${WORKSPACE}/clients/web-apps/apps/studio/dist/* admin@${server}:/var/www/aventisia.com/clients/studio/"
+                                            echo "Successfully deployed Studio App to ${server}"
                                         }
                                     }
                                 }

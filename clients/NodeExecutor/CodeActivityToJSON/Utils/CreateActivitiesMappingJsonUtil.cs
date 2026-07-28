@@ -174,11 +174,11 @@ namespace CodeActivityToJSON.Utils
                             var jsonWithUnixLineEndings = json.Replace("\r\n", "\n");
 
                             // Create the file WSL2 repo (for form generation)
-                            var fileName = Path.Combine($@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\worc-web-legacy\studio\src\features\dynamic-config-panel\constants\config-json", activity.Name + ".json");
+                            var fileName = Path.Combine($@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\web-apps\apps\studio\src\features\dynamic-config-panel\constants\config-json", activity.Name + ".json");
                             File.WriteAllText(fileName, jsonWithUnixLineEndings);
 
                             // Create the file in Windows repo (for form generation)
-                            var repofileName = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "worc-web-legacy", "studio", "src", "features", "dynamic-config-panel", "constants", "config-json", activity.Name + ".json"));
+                            var repofileName = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "web-apps", "apps", "studio", "src", "features", "dynamic-config-panel", "constants", "config-json", activity.Name + ".json"));
                             File.WriteAllText(repofileName, jsonWithUnixLineEndings);
 
                             // Create the file in %LOCALAPPDATA%\AvintraDesktopApp\config-files\desktop-nodes (for form generation)
@@ -201,7 +201,7 @@ namespace CodeActivityToJSON.Utils
             }
 
             // Save the primary categories JSON file to wsl2
-            var outputFilePath = $@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\worc-web-legacy\studio\src\features\action-selector\constants\_ActionSelectorData.json";
+            var outputFilePath = $@"\\wsl$\Ubuntu\home\{Environment.UserName.ToLower()}\gitea\aventisia\worc-platform\clients\web-apps\apps\studio\src\features\action-selector\constants\_ActionSelectorData.json";
             using (var writer = new StreamWriter(outputFilePath))
             {
                 // Set NewLine to Unix line ending (LF)
@@ -213,7 +213,7 @@ namespace CodeActivityToJSON.Utils
             }
 
             // Save the primary categories JSON file to Windows repo
-            var repoOutputFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "worc-web-legacy", "studio", "src", "features", "action-selector", "constants", "_ActionSelectorData.json"));
+            var repoOutputFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "web-apps", "apps", "studio", "src", "features", "action-selector", "constants", "_ActionSelectorData.json"));
             using (var writer = new StreamWriter(repoOutputFilePath))
             {
                 // Set NewLine to Unix line ending (LF)

@@ -3,6 +3,7 @@
   "references": [
     { "path": "./apps/accounts" },
     { "path": "./apps/workspace" },
+    { "path": "./apps/studio" },
     { "path": "./packages/ui" },
     { "path": "./packages/ui-editors" },
     { "path": "./packages/layout" },

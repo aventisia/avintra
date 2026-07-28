@@ -22,9 +22,9 @@
     {
       "label": "studio",
       "type": "shell",
-      "command": "npm run dev",
+      "command": "npx turbo run dev --filter=studio",
       "options": {
-        "cwd": "${workspaceFolder}/clients/worc-web-legacy/studio"
+        "cwd": "${workspaceFolder}/clients/web-apps"
       },
       "isBackground": true
     },
