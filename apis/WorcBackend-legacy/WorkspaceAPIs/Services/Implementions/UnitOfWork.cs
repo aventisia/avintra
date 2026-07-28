@@ -30,6 +30,7 @@ public class UnitOfWork : IUnitOfWork
     public IQueueTransactionEventRepo QueueTransactionEventRepo => new QueueTransactionEventRepo(_workspaceDbContext);
     public IQueueUserRepo QueueUserRepo => new QueueUserRepo(_workspaceDbContext);
     public IJobRepo JobRepo => new JobRepo(_workspaceDbContext);
+    public IJobNodeExecutionLogRepo JobNodeExecutionLogRepo => new JobNodeExecutionLogRepo(_workspaceDbContext);
     public IKeyStoreRepo KeyStoreRepo => new KeyStoreRepo(_workspaceDbContext);
     public IVaultRepo VaultRepo => new VaultRepo(_workspaceDbContext);
     public ITimeTriggerRepo TimeTriggerRepo => new TimeTriggerRepo(_workspaceDbContext);

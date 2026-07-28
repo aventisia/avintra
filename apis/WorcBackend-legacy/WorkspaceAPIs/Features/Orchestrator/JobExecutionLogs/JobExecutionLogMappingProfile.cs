@@ -52,6 +52,7 @@ public class JobExecutionLogMappingProfile : IRegister
             .Map(dest => dest.Type,
                 src => src.FlowVersion != null && src.FlowVersion.Flow != null
                     ? src.FlowVersion.Flow.Type
-                    : FlowTypesEnum.Agent);
+                    : FlowTypesEnum.Agent)
+            .Ignore(dest => dest.NodeExecutionLogs);
     }
 }

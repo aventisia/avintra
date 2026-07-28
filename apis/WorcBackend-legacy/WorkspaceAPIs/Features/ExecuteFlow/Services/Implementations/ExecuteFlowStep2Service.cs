@@ -1,7 +1,5 @@
 using ExecutorLibrary.FlowProcessor;
-using ExecutorLibrary.FlowProcessor.Interfaces;
 using ExecutorLibrary.FlowProcessor.Models;
-using ExecutorLibrary.Models;
 using NodeLibrary.Core;
 
 namespace WorkspaceAPIs.Services;
@@ -168,9 +166,15 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             // Update the job with the final status and results after execution
             job.Status = MapFlowStatusToJobStatus(flowResult.Status);
             job.EndTime = flowResult.EndTime;
-            job.NodeExecutionLogs = System.Text.Json.JsonSerializer.Serialize(flowResult.NodeLogs);
             job.OutputDataJson = outputDataJson;
             unitOfWork.JobRepo.Update(job);
+
+            // Persist per-node execution logs in the isolated ws_NodeExecutionLogs table.
+            var logEntities = flowResult.NodeLogs.Select(log => MapSharedLogToEntity(log, job.Id, job.TenantId)).ToList();
+            if (logEntities.Count > 0)
+            {
+                await unitOfWork.JobNodeExecutionLogRepo.InsertAsync(logEntities);
+            }
 
             // Error: Failed to save the final job status and results
             if (!await unitOfWork.SaveAsync())
@@ -270,9 +274,15 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             // Update the job with the final status and results
             job.Status = MapFlowStatusToJobStatus(flowResult.Status);
             job.EndTime = flowResult.EndTime;
-            job.NodeExecutionLogs = System.Text.Json.JsonSerializer.Serialize(flowResult.NodeLogs);
             job.OutputDataJson = outputDataJson;
             unitOfWork.JobRepo.Update(job);
+
+            // Persist per-node execution logs in the isolated ws_NodeExecutionLogs table.
+            var logEntities = flowResult.NodeLogs.Select(log => MapSharedLogToEntity(log, job.Id, job.TenantId)).ToList();
+            if (logEntities.Count > 0)
+            {
+                await unitOfWork.JobNodeExecutionLogRepo.InsertAsync(logEntities);
+            }
 
             if (!await unitOfWork.SaveAsync())
             {
@@ -472,6 +482,32 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             FlowExecutionStatus.Completed => JobStatusEnum.Completed,
             FlowExecutionStatus.Aborted => JobStatusEnum.Aborted,
             _ => JobStatusEnum.Failed,
+        };
+    }
+
+    // Helper: Maps a shared NodeExecutionLog model to a JobNodeExecutionLog entity with compressed payloads.
+    private static JobNodeExecutionLog MapSharedLogToEntity(NodeExecutionLog log, Guid jobId, Guid tenantId)
+    {
+        var inputsJson = System.Text.Json.JsonSerializer.Serialize(log.Inputs);
+        var outputsJson = System.Text.Json.JsonSerializer.Serialize(log.Outputs);
+
+        return new JobNodeExecutionLog
+        {
+            Id = Guid.NewGuid(),
+            JobId = jobId,
+            TenantId = tenantId,
+            NodeExecutionId = log.UniqueNodeId,
+            RetryAttempt = 0,
+            NodeId = log.NodeId,
+            NodeDisplayName = log.NodeName,
+            NodeUniqueName = log.NodeUniqueName,
+            IsSuccess = log.IsSuccess,
+            Duration = log.Duration,
+            InputsJsonCompressed = NodeExecutionLogCompressionHelpers.CompressJson(inputsJson),
+            OutputsJsonCompressed = NodeExecutionLogCompressionHelpers.CompressJson(outputsJson),
+            InputsJsonLength = inputsJson.Length,
+            OutputsJsonLength = outputsJson.Length,
+            ExecutedAt = DateTimeOffset.UtcNow
         };
     }
 

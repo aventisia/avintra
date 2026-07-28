@@ -51,6 +51,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<VectorStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<KnowledgeBase>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<KnowledgeBaseFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<JobNodeExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // TODO: Remove this temporary migration code after all legacy user mapping data
         // (FlowUser, FlowVersionUser, and QueueUser) has been successfully migrated
@@ -97,7 +98,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Job>().Property(e => e.Status).HasConversion(new EnumToStringConverter<JobStatusEnum>());
         modelBuilder.Entity<Job>().Property(e => e.Priority).HasConversion(new EnumToStringConverter<JobPriorityEnum>());
         modelBuilder.Entity<Job>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
-        modelBuilder.Entity<Job>().Property(e => e.CreditsConsumed).HasDefaultValue(null);
         modelBuilder.Entity<OnPremModel>().Property(e => e.ProviderType).HasConversion(new EnumToStringConverter<OnPremModelProviderEnum>());
         modelBuilder.Entity<OnPremModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<OnPremModelStatusEnum>());
         modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusEnum>());
@@ -157,6 +157,17 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowVersionUser>().HasOne(one => one.FlowVersion).WithMany(many => many.FlowVersionUsers).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<Conversation>().HasOne(one => one.FlowVersion).WithMany(many => many.Conversations).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<ConversationMessage>().HasOne(one => one.Conversation).WithMany(many => many.Messages).HasForeignKey(fKey => fKey.ConversationId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+
+        // Configure One-to-Many relationship between Job and JobNodeExecutionLog
+        modelBuilder.Entity<JobNodeExecutionLog>()
+            .HasOne(one => one.Job)
+            .WithMany(many => many.NodeExecutionLogs)
+            .HasForeignKey(fKey => fKey.JobId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Indexes for ws_NodeExecutionLogs
+        modelBuilder.Entity<JobNodeExecutionLog>()
+            .HasIndex(index => new { index.TenantId, index.JobId, index.NodeId, index.NodeExecutionId, index.RetryAttempt });
 
         // Registers the pgvector extension in PostgreSQL.
         // CRITICAL: Must be enabled before migrations or any vector column usage, otherwise the application will fail at runtime.
@@ -220,6 +231,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<QueueTransactionEvent> QueueTransactionEvents { get; set; }
     public DbSet<QueueUser> QueueUsers { get; set; }
     public DbSet<Job> Jobs { get; set; }
+    public DbSet<JobNodeExecutionLog> JobNodeExecutionLogs { get; set; }
     public DbSet<KeyStore> KeyStores { get; set; }
     public DbSet<Vault> Vaults { get; set; }
     public DbSet<FlowUser> FlowUsers { get; set; }

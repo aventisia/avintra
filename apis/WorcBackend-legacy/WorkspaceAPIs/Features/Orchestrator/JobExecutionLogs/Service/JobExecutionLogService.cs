@@ -4,13 +4,16 @@ public class JobExecutionLogService : IJobExecutionLogService
 {
     private readonly ILogger<JobExecutionLogService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly INodeExecutionLogService _nodeExecutionLogService;
 
     public JobExecutionLogService(
         ILogger<JobExecutionLogService> logger,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        INodeExecutionLogService nodeExecutionLogService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _nodeExecutionLogService = nodeExecutionLogService;
     }
 
     // Get all job execution logs for a specific FlowVersionId
@@ -78,6 +81,10 @@ public class JobExecutionLogService : IJobExecutionLogService
                 serviceResponse.Message = "Execution log not found.";
                 return serviceResponse;
             }
+
+            // Retrieve per-node execution logs from the isolated log table.
+            var nodeLogsResponse = await _nodeExecutionLogService.GetNodeExecutionLogsAsync(jobId);
+            jobExecutionLogDetail.NodeExecutionLogs = nodeLogsResponse.Data ?? [];
 
             // Success response
             serviceResponse.Data = jobExecutionLogDetail;

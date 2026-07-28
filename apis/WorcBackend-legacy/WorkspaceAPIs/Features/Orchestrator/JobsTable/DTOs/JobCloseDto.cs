@@ -17,9 +17,9 @@ public class JobCloseDto
     public JobStatusEnum ClosingStatus { get; set; }
 
     /// <summary>
-    /// Gets or sets the execution logs of nodes within the job's flow, stored as a JSON string.
+    /// Gets or sets the collection of per-node execution logs for the job.
     /// </summary>
-    public string? NodeExecutionLogs { get; set; }
+    public List<NodeExecutionLogDto> NodeExecutionLogs { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the remarks or additional information related to the job closure.

@@ -60,6 +60,11 @@ public class Job
     public int RetryCount { get; set; }
 
     /// <summary>
+    /// Gets or sets the credits consumed for the job execution, if credit tracking is enabled.
+    /// </summary>
+    public int? CreditsConsumed { get; set; }
+
+    /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).
     /// </summary>
     public JobStatusEnum Status { get; set; } = JobStatusEnum.Created;
@@ -78,11 +83,6 @@ public class Job
     /// Gets or sets the output data produced by the job, stored as a JSON string. Populated when the job completes.
     /// </summary>
     public string? OutputDataJson { get; set; }
-
-    /// <summary>
-    /// Gets or sets the logs of node executions within the job's flow/agent, stored as a JSON string.
-    /// </summary>
-    public string? NodeExecutionLogs { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp indicating when the job record was created.
@@ -116,9 +116,10 @@ public class Job
     public Guid? FlowVersionHistoryId { get; set; }
 
     /// <summary>
-    /// Gets or sets the total credits consumed for the job execution. This is set when the job reaches a terminal state.
+    /// Gets or sets the legacy JSON string of node execution logs. Deprecated: use the per-node logs in ws_NodeExecutionLogs.
+    /// This property will be removed after the backfill migration is complete.
     /// </summary>
-    public double? CreditsConsumed { get; set; }
+    public string? NodeExecutionLogsLegacy { get; set; }
 
     /// <summary>
     /// Gets or sets the navigation property to the flow version associated with this job.
@@ -137,4 +138,9 @@ public class Job
     /// </summary>
     [ForeignKey("FlowVersionHistoryId")]
     public virtual FlowVersionHistory? FlowVersionHistory { get; set; }
+
+    /// <summary>
+    /// Gets or sets the collection of per-node execution logs for the job.
+    /// </summary>
+    public virtual ICollection<JobNodeExecutionLog> NodeExecutionLogs { get; set; } = new List<JobNodeExecutionLog>();
 }
