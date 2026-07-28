@@ -1,4 +1,5 @@
 namespace AccountsAPIs.Services;
+
 /// <summary>
 /// Provides operations to retrieve and record credit usage data across services, resources, and users.
 /// </summary>
@@ -19,18 +20,18 @@ public interface ICreditUsageService
     /// </summary>
     /// <param name="creditUsageDto">The credit usage data to record.</param>
     /// <returns>
-    /// A task representing the asynchronous operation. The result contains a boolean indicating whether the insertion was successful.
+    /// A task representing the asynchronous operation. The result contains the recorded credit usage details including calculated credits used.
     /// </returns>
-    Task<ServiceResponse<bool>> RecordCreditUsageAsync(CreditsUsageDto creditUsageDto);
+    Task<ServiceResponse<RecordedCreditUsageDto>> RecordCreditUsageAsync(CreditsUsageDto creditUsageDto);
 
     /// <summary>
     /// Records multiple credit usage entries into the system.
     /// </summary>
     /// <param name="creditUsageDtos">A collection of credit usage data to record.</param>
     /// <returns>
-    /// A task representing the asynchronous operation. The result contains a boolean indicating whether the batch insertion was successful.
+    /// A task representing the asynchronous operation. The result contains the recorded credit usage details for each service type.
     /// </returns>
-    Task<ServiceResponse<bool>> RecordCreditUsagesAsync(IEnumerable<CreditsUsageDto> creditUsageDtos);
+    Task<ServiceResponse<List<RecordedCreditUsageDto>>> RecordCreditUsagesAsync(IEnumerable<CreditsUsageDto> creditUsageDtos);
 
     /// <summary>
     /// Exports the credit usage data as a CSV file based on the provided filters encapsulated in the request DTO.

@@ -118,4 +118,10 @@ public class JobsTableRowDto
             return 0;
         }
     }
+
+    /// <summary>
+    /// Gets or sets the total credits consumed for the job execution. This value is set when the job reaches a terminal state.
+    /// </summary>
+    [Display(Name = "Credits Consumed")]
+    public double? CreditsConsumed { get; set; }
 }

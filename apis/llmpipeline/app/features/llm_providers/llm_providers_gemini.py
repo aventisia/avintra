@@ -529,7 +529,7 @@ class GeminiProvider(BaseLLMProvider):
         """
         Build credit usage specifically for Gemini models.
 
-        - Maps model → CreditServiceTypesEnum
+        - Maps model → CreditServicesEnum
         - Handles missing/invalid token values safely
         - Supports future models via fallback
         """

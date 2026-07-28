@@ -67,9 +67,9 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<PaymentMethod>().Property(e => e.Type).HasConversion(new EnumToStringConverter<PaymentMethodTypesEnum>());
         builder.Entity<AccountUser>().Property(e => e.Gender).HasConversion(new EnumToStringConverter<GenderTypeEnum>());
         builder.Entity<RolePermission>().Property(e => e.Access).HasConversion(new EnumToStringConverter<PermissionAccessTypesEnum>());
-        builder.Entity<CreditPlan>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServiceTypesEnum>());
+        builder.Entity<CreditPlan>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServicesEnum>());
         builder.Entity<CreditPlan>().Property(e => e.UnitType).HasConversion(new EnumToStringConverter<UnitTypesEnum>());
-        builder.Entity<CreditUsage>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServiceTypesEnum>());
+        builder.Entity<CreditUsage>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServicesEnum>());
         builder.Entity<CreditUsage>().Property(e => e.RefType).HasConversion(new EnumToStringConverter<UsageSourceTypesEnum>());
         builder.Entity<CreditUsage>().Property(e => e.Action).HasConversion(new EnumToStringConverter<ActionTypesEnum>());
         builder.Entity<TenantSubscription>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<SubscriptionFrequenciesEnum>());

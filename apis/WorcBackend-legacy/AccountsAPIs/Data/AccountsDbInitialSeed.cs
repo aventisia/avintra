@@ -375,7 +375,7 @@ public static class AccountsDbInitialSeed
         }
     }
 
-    // Seed CreditPlans based on CreditServiceTypesEnum
+    // Seed CreditPlans based on CreditServicesEnum
     private async static Task<bool> SeedCreditPlansAsync(AccountsDbContext dbContext, AccountUser superUser)
     {
         try
@@ -383,10 +383,10 @@ public static class AccountsDbInitialSeed
             // Create a list to hold CreditPlan objects to be inserted in bulk
             var creditPlans = new List<CreditPlan>();
 
-            // Iterate over each value in CreditServiceTypesEnum
-            foreach (var creditServiceType in Enum.GetValues(typeof(CreditServiceTypesEnum)))
+            // Iterate over each value in CreditServicesEnum
+            foreach (var creditServiceType in Enum.GetValues(typeof(CreditServicesEnum)))
             {
-                var serviceType = (CreditServiceTypesEnum)creditServiceType;
+                var serviceType = (CreditServicesEnum)creditServiceType;
 
                 // Directly create CreditPlan object and add it to the list
                 creditPlans.Add(new CreditPlan()

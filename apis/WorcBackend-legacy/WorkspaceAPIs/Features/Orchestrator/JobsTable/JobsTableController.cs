@@ -57,6 +57,20 @@ public class JobsTableController : BaseApiController
         return ResultHelper(await _jobsTableService.DeleteJobsAsync(jobIds));
     }
 
+    // Starts a job by transitioning it from Created to Running.
+    [HttpPost("start")]
+    public async Task<ActionResult<ServiceResponse<JobRecordDto>>> StartJob([FromBody] JobStartDto jobStartDto)
+    {
+        return ResultHelper(await _jobsTableService.StartJobAsync(jobStartDto));
+    }
+
+    // Closes a job in a terminal status, records the end time and logs, and tracks consumed credits.
+    [HttpPost("close")]
+    public async Task<ActionResult<ServiceResponse<JobRecordDto>>> CloseJob([FromBody] JobCloseDto jobCloseDto)
+    {
+        return ResultHelper(await _jobsTableService.CloseJobAsync(jobCloseDto));
+    }
+
     // Exports jobs data into a CSV file
     [HttpPost("export")]
     public async Task<ActionResult<FileStreamResult>> ExportJobs(ExportJobsReqDto exportJobsReqDto)

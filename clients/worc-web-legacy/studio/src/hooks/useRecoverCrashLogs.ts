@@ -2,18 +2,11 @@ import { get } from "idb-keyval";
 import { useEffect, useRef } from "react";
 
 import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
-import { CreditServiceTypesEnum } from "@/features/credits-management/constants/credit-service-type-enum";
+import { CreditServicesEnum } from "@/features/credits-management/constants/credit-service-type-enum";
 import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
 import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
-import {
-  AgentExecutionLogType,
-  EXECUTION_LOG_KEY,
-  markLogAsSynced,
-} from "@/features/execute-flow";
-import {
-  getJobById,
-  updateJobData,
-} from "@/features/execute-flow/apis/jobs-table-apis";
+import { AgentExecutionLogType, EXECUTION_LOG_KEY, markLogAsSynced } from "@/features/execute-flow";
+import { getJobById, updateJobData } from "@/features/execute-flow/apis/jobs-table-apis";
 import { JobStatusEnum } from "@/features/execute-flow/enums/job-status-enum";
 
 /**
@@ -30,21 +23,17 @@ export const useRecoverCrashLogs = (): void => {
 
     const scanAndRecoverCrashedLogs = async () => {
       try {
-        const allLogs =
-          (await get<AgentExecutionLogType[]>(EXECUTION_LOG_KEY)) || [];
+        const allLogs = (await get<AgentExecutionLogType[]>(EXECUTION_LOG_KEY)) || [];
 
         // Extract any logs that unexpectedly stopped mid-execution
         const crashedLogs = allLogs.filter(
-          (log) =>
-            log.isLogSavePending && log.jobId && log.jobId !== "jobId-unknown",
+          (log) => log.isLogSavePending && log.jobId && log.jobId !== "jobId-unknown",
         );
 
         if (crashedLogs.length === 0) return;
 
         for (const log of crashedLogs) {
-          console.warn(
-            `Recovery: Found stranded log data for Job ${log.jobId}. Syncing...`,
-          );
+          console.warn(`Recovery: Found stranded log data for Job ${log.jobId}. Syncing...`);
 
           try {
             // 1. Fetch original job details from server
@@ -52,15 +41,11 @@ export const useRecoverCrashLogs = (): void => {
             const jobData = jobResponse?.data;
 
             if (!jobData) {
-              console.warn(
-                `Recovery: Could not find job data on server for Job ${log.jobId}`,
-              );
+              console.warn(`Recovery: Could not find job data on server for Job ${log.jobId}`);
               continue;
             }
 
-            const startTime = jobData.startTime
-              ? new Date(jobData.startTime)
-              : new Date();
+            const startTime = jobData.startTime ? new Date(jobData.startTime) : new Date();
 
             // 2. Calculate true execution duration by summing up the durations of completed nodes
             const totalNodeDuration = (log.versionLog || []).reduce(
@@ -90,10 +75,7 @@ export const useRecoverCrashLogs = (): void => {
             // 4. Post credit consumption for the actual elapsed execution time
             await postCreditConsumption([
               {
-                serviceType:
-                  CreditServiceTypesEnum[
-                    CreditServiceTypesEnum.AgentExecutionTime
-                  ],
+                serviceType: CreditServicesEnum[CreditServicesEnum.AgentExecutionTime],
                 consumedUnit: duration,
                 refType: UsageSourceTypesEnum[UsageSourceTypesEnum.Agent],
                 refId: jobData.flowId || "",

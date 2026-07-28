@@ -53,6 +53,20 @@ public interface IJobsTableService
     Task<ServiceResponse<bool>> DeleteJobsAsync(IEnumerable<Guid> jobIds);
 
     /// <summary>
+    /// Starts a job by transitioning it from Created to Running and recording the start time.
+    /// </summary>
+    /// <param name="jobStartDto">The data required to start the job.</param>
+    /// <returns>A task representing the service response containing the started job details.</returns>
+    Task<ServiceResponse<JobRecordDto>> StartJobAsync(JobStartDto jobStartDto);
+
+    /// <summary>
+    /// Closes a job in a terminal status, records the end time and logs, and tracks consumed credits.
+    /// </summary>
+    /// <param name="jobCloseDto">The data required to close the job.</param>
+    /// <returns>A task representing the service response containing the closed job details.</returns>
+    Task<ServiceResponse<JobRecordDto>> CloseJobAsync(JobCloseDto jobCloseDto);
+
+    /// <summary>
     /// Exports jobs data into a CSV file
     /// </summary>
     /// <param name="exportJobsReqDto">DTO for exporting jobs data request. This DTO contains optional filters such as list of job priorities, list of job statuses etc. to filter the job data.</param>

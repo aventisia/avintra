@@ -129,14 +129,17 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("creditsConsumed") ?? 0}
+        title={getColumnName("creditsConsumed")}
       />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">
-        {row.getValue("creditsConsumed") ?? FALLBACK_VALUE}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const value = row.getValue("creditsConsumed");
+      return (
+        <div className="w-auto truncate font-medium">
+          {typeof value === "number" ? value.toLocaleString() : FALLBACK_VALUE}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "remarks",
@@ -230,7 +233,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       <DTColumnHeader
         tableKey={TABLE_KEY}
         column={column}
-        title={getColumnName("retryCount") ?? 0}
+        title={getColumnName("retryCount")}
       />
     ),
     cell: ({ row }) => (

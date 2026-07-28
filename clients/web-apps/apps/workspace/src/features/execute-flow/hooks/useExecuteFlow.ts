@@ -9,6 +9,7 @@ import { getAvailableCredits } from "@/features/available-credits/available-cred
 import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
 import { NodeDataType } from "@/types/node-data-type";
 
+import { startJob } from "../apis/job-trigger-apis";
 import { CURRENT_JOB_ID_KEY, CURRENT_VERSION_ID_KEY } from "../constants/constants";
 import { JobDetailsDto } from "../dtos/job-details-dto";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
@@ -128,6 +129,7 @@ export default function useExecuteFlow() {
           data.flowVersionId,
           data.inputArgumentsJson || "{}",
           data.inputOutputObject || "",
+          data.id,
         );
       } else {
         toast.info("Please use our desktop app. Execution in browser is not supported.");
@@ -146,6 +148,7 @@ export default function useExecuteFlow() {
     versionId: string,
     inputArgumentsJson: string,
     inputOutputObject: string,
+    jobId: string,
   ) => {
     console.log(
       "ExecuteFlow - Opening desktop executor with inputOutputObject:",
@@ -201,7 +204,11 @@ export default function useExecuteFlow() {
       });
       console.log("Executor launched successfully:", res);
 
-      updateField("startTime", new Date());
+      const startTime = new Date();
+      updateField("startTime", startTime);
+
+      // Mark the job as Running on the backend.
+      await startJob({ id: jobId });
     } catch (error) {
       // Inform the user about the failure
       toast.error(`Failed to launch the executor. Please try again. Error: ${error}`);
