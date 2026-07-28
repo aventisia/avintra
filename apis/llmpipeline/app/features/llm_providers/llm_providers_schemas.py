@@ -37,7 +37,7 @@ class LLMRequest(BaseModel):
     credential_id: Optional[str] = None # TODO: Implement BYOK support
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
-    stream: Optional[bool] = False,
+    stream: Optional[bool] = False
     is_chat_agent: Optional[bool] = False   # Whether the request originates from a chat agent
     generate_followup_messages: Optional[bool] = False  # Indicates whether follow-up messages should be generated for requests originating from a dynamic action or workflow.
     ref_type: str # Type of the reference (e.g., "Agent", "Workflow")
@@ -47,6 +47,9 @@ class LLMRequest(BaseModel):
     agent_name: Optional[str] = None  # Knowledge base retrieval (optional)
     kb_names: Optional[List[str]] = None  # Knowledge base names used to scope KB chunk retrieval
     top_k: Optional[int] = Field(default=5, ge=1, le=100)  # Number of top chunks to retrieve from the knowledge base
+    skill_names: Optional[list[str]] = None # List of skills available to the agent for handling this request.
+    conversation_id: Optional[str] = None   # Unique identifier for the conversation thread used to preserve context across requests.
+    is_temp_chat: bool = False  # If True, the conversation is kept in memory only and is not persisted.
 
 # Chat agent response schema
 class ChatAgentResponse(BaseModel):
@@ -59,7 +62,9 @@ class LLMChunkResponse(BaseModel):
     provider: ProviderLiteral
     model: str
     output: Union[str, dict, list, ChatAgentResponse]  # Text, JSON, or structured chat-agent response
-
+    conversation_id: Optional[str] = None # Unique identifier for the conversation/thread. Use this to maintain conversation context across multiple requests.
+    type: Optional[str] = None
+    
 # Response schema for LLM full response or last chunk in streaming
 class LLMResponse(BaseModel):
     provider: ProviderLiteral
@@ -81,6 +86,9 @@ class LLMResponse(BaseModel):
     is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support
     credential_id: Optional[str] = None # TODO: Implement BYOK support
     error: Optional[str] = None
+    skill_names: Optional[list[str]] = None # List of skills available to the agent for handling this request.
+    conversation_id: Optional[str] = None   # Unique identifier for the conversation thread used to preserve context across requests.
+    is_temp_chat: bool = False  # If True, the conversation is kept in memory only and is not persisted.
 
 
 class EmbeddingRequest(BaseModel):
