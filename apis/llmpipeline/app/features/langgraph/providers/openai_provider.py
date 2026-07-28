@@ -74,6 +74,24 @@ def create_openai_model(
         # Initialize credit manager
         credit_manager = CreditManagerService()
 
+        # Validate user credits before using platform resources
+        has_credit = credit_manager.has_sufficient_credits(
+            task="openai",
+            jwt=user.access_token,
+        )
+
+        # Stop request when credits are insufficient
+        if not has_credit:
+            logger.warning(
+                "Insufficient OpenAI credits. user=%s",
+                user.username,
+            )
+
+            raise HTTPException(
+                status_code=400,
+                detail="Insufficient credits to continue.",
+            )
+        
         # Load platform credentials
         resolved_api_key = settings.OPENAI_API_KEY
         resolved_base_url = settings.OPENAI_API_URL
