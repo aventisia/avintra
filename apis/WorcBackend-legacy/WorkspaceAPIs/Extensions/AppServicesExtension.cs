@@ -153,7 +153,9 @@ public static class AppServicesExtension
         services.AddScoped<IKnowledgeBaseService, KnowledgeBaseService>();
         services.AddScoped<IKnowledgeBaseFileService, KnowledgeBaseFileService>();
         services.AddScoped<IJobExecutionLogService, JobExecutionLogService>();
+        services.AddScoped<INodeExecutionLogService, NodeExecutionLogService>();
         services.AddScoped<IResourceShareService, ResourceShareService>();
+        services.AddHostedService<BackfillNodeExecutionLogsHostedService>();
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();

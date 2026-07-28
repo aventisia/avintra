@@ -317,7 +317,6 @@ const ExecuteFlow = () => {
         status: JobStatusEnum.Running,
         startTime: executionStartTime,
         isPublished: false,
-        nodeExecutionLogs: JSON.stringify([]),
         osId: osID,
       });
 

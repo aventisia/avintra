@@ -60,7 +60,7 @@ public interface IJobsTableService
     Task<ServiceResponse<JobRecordDto>> StartJobAsync(JobStartDto jobStartDto);
 
     /// <summary>
-    /// Closes a job in a terminal status, records the end time and logs, and tracks consumed credits.
+    /// Closes a job in a terminal status, records the end time and per-node execution logs, and tracks consumed credits.
     /// </summary>
     /// <param name="jobCloseDto">The data required to close the job.</param>
     /// <returns>A task representing the service response containing the closed job details.</returns>

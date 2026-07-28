@@ -47,6 +47,4 @@ export interface JobDetailsDto {
   startTime?: Date | string;
 
   endTime?: Date | string;
-
-  nodeExecutionLogs?: string;
 }

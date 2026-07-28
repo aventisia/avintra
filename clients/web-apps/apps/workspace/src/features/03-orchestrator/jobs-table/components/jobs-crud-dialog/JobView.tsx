@@ -184,7 +184,18 @@ export const JobView = ({ rowId }: JobViewProps) => {
           value={job.duration > 0 ? formatSecondsToCompactDuration(job.duration) : FALLBACK_VALUE}
         />
         <Separator className="h-[0.5px]" />
-        <ViewInfoRow label="Execution Location" value={job.executionLocation ?? FALLBACK_VALUE} />
+        <ViewInfoRow
+          label="Execution Location"
+          valueClassName="text-right"
+          value={
+            <span
+              className="inline-block max-w-60 truncate text-right"
+              title={job.executionLocation ?? undefined}
+            >
+              {job.executionLocation ?? FALLBACK_VALUE}
+            </span>
+          }
+        />
       </ViewInfoRowsCard>
 
       {/* Remarks section */}

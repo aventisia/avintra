@@ -14,6 +14,7 @@ public class JobsTableService : IJobsTableService
     private readonly Guid _userId;
     private readonly string _userMachine;
     private readonly string? _authHeader;
+    private readonly INodeExecutionLogService _nodeExecutionLogService;
 
     public JobsTableService(
         ILogger<JobsTableService> logger,
@@ -23,7 +24,8 @@ public class JobsTableService : IJobsTableService
         IJobsExecutorService jobsExecutorService,
         IWebhookCallbackService webhookCallbackService,
         IHttpClientFactory httpClientFactory,
-        EnvironmentConfig environmentConfig)
+        EnvironmentConfig environmentConfig,
+        INodeExecutionLogService nodeExecutionLogService)
     {
         // Set the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -41,6 +43,7 @@ public class JobsTableService : IJobsTableService
         _webhookCallbackService = webhookCallbackService;
         _httpClientFactory = httpClientFactory;
         _environmentConfig = environmentConfig;
+        _nodeExecutionLogService = nodeExecutionLogService;
     }
 
     // Retrieves a list of all jobs between optional start and end date filters.
@@ -334,7 +337,7 @@ public class JobsTableService : IJobsTableService
             // When the update is closing the job, run the shared close logic so credits are tracked.
             if (isClosing)
             {
-                var closeResult = await CloseJobCoreAsync(job, jobUpdateDto.ClosingStatus!.Value, jobUpdateDto.Remarks, nodeExecutionLogs: null);
+                var closeResult = await CloseJobCoreAsync(job, jobUpdateDto.ClosingStatus!.Value, jobUpdateDto.Remarks, nodeExecutionLogs: []);
                 if (closeResult.StatusCode != 200)
                     return closeResult;
             }
@@ -670,7 +673,7 @@ public class JobsTableService : IJobsTableService
                 return serviceResponse.Update("Cannot close a job that is already completed or closed.", 400);
 
             // Run the shared close logic.
-            var closeResult = await CloseJobCoreAsync(job, jobCloseDto.ClosingStatus, jobCloseDto.Remarks, jobCloseDto.NodeExecutionLogs);
+            var closeResult = await CloseJobCoreAsync(job, jobCloseDto.ClosingStatus, jobCloseDto.Remarks, jobCloseDto.NodeExecutionLogs ?? []);
             return closeResult;
         }
         catch (Exception ex)
@@ -681,7 +684,7 @@ public class JobsTableService : IJobsTableService
     }
 
     // Shared helper that closes a job, tracks credit consumption via AccountsAPIs, and saves the record.
-    private async Task<ServiceResponse<JobRecordDto>> CloseJobCoreAsync(Job job, JobStatusEnum closingStatus, string? remarks, string? nodeExecutionLogs)
+    private async Task<ServiceResponse<JobRecordDto>> CloseJobCoreAsync(Job job, JobStatusEnum closingStatus, string? remarks, List<NodeExecutionLogDto>? nodeExecutionLogs)
     {
         // Initialize the response with a default error message.
         var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to close job", 500);
@@ -697,8 +700,11 @@ public class JobsTableService : IJobsTableService
             if (!string.IsNullOrWhiteSpace(remarks))
                 job.Remark = remarks;
 
-            if (!string.IsNullOrWhiteSpace(nodeExecutionLogs))
-                job.NodeExecutionLogs = nodeExecutionLogs;
+            // Persist per-node execution logs from the desktop/web executor if provided.
+            if (nodeExecutionLogs is { Count: > 0 })
+            {
+                await _nodeExecutionLogService.InsertNodeExecutionLogsAsync(job.Id, nodeExecutionLogs);
+            }
 
             // Track credits consumed for agent execution time.
             var durationSeconds = job.StartTime.HasValue
@@ -708,7 +714,7 @@ public class JobsTableService : IJobsTableService
             var creditUsageResponse = await RecordAgentExecutionCreditUsageAsync(job, durationSeconds);
             if (creditUsageResponse.StatusCode == 200 && creditUsageResponse.Data != null)
             {
-                job.CreditsConsumed = creditUsageResponse.Data.CreditsUsed;
+                job.CreditsConsumed = (int?)creditUsageResponse.Data.CreditsUsed;
             }
             else
             {

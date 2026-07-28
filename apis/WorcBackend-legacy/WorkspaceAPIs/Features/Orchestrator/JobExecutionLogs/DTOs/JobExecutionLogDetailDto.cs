@@ -67,9 +67,9 @@ public class JobExecutionLogDetailDto
     public string? InputOutputObject { get; set; }
 
     /// <summary>
-    /// Gets or sets the logs of node executions within the job's flow/agent, stored as a JSON string.
+    /// Gets or sets the collection of per-node execution logs for the job.
     /// </summary>
-    public string? NodeExecutionLogs { get; set; }
+    public List<NodeExecutionLogDto> NodeExecutionLogs { get; set; } = [];
 
     /// <summary>
     /// Gets or sets the type of the flow (e.g., regular, conditional, batch).

@@ -44,7 +44,21 @@ export const useRecoverCrashLogs = (): void => {
             await closeJob({
               id: log.jobId,
               closingStatus: JobStatusEnum.Failed,
-              nodeExecutionLogs: JSON.stringify(log.versionLog || []),
+              nodeExecutionLogs: (log.versionLog || []).map((nodeLog) => ({
+                nodeExecutionId: nodeLog.nodeExecutionId,
+                retryAttempt: nodeLog.retryAttempt,
+                nodeId: nodeLog.nodeId,
+                nodeDisplayName: nodeLog.nodeName,
+                nodeUniqueName: nodeLog.nodeUniqueName,
+                isSuccess: nodeLog.isSuccess,
+                duration: nodeLog.duration,
+                inputs: Object.fromEntries(
+                  nodeLog.inputs.map((item) => [item.key, item.value]),
+                ),
+                outputs: Object.fromEntries(
+                  nodeLog.outputs.map((item) => [item.key, item.value]),
+                ),
+              })),
             });
 
             // 5. Mark safe locally in IndexedDB so we don't process it again

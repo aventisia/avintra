@@ -610,8 +610,8 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<double?>("CreditsConsumed")
-                        .HasColumnType("double precision");
+                    b.Property<int?>("CreditsConsumed")
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset?>("EndTime")
                         .HasColumnType("timestamp with time zone");
@@ -637,7 +637,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid?>("MachineId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("NodeExecutionLogs")
+                    b.Property<string>("NodeExecutionLogsLegacy")
                         .HasColumnType("text");
 
                     b.Property<string>("OutputDataJson")
@@ -679,6 +679,67 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("MachineId");
 
                     b.ToTable("ws_Jobs");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.JobNodeExecutionLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<double>("Duration")
+                        .HasColumnType("double precision");
+
+                    b.Property<DateTimeOffset>("ExecutedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<byte[]>("InputsJsonCompressed")
+                        .HasColumnType("bytea");
+
+                    b.Property<int?>("InputsJsonLength")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsSuccess")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("JobId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("NodeDisplayName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NodeExecutionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NodeId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NodeUniqueName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("OutputsJsonCompressed")
+                        .HasColumnType("bytea");
+
+                    b.Property<int?>("OutputsJsonLength")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("RetryAttempt")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobId");
+
+                    b.HasIndex("TenantId", "JobId", "NodeId", "NodeExecutionId", "RetryAttempt");
+
+                    b.ToTable("ws_JobNodeExecutionLogs");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.KeyStore", b =>
@@ -2454,6 +2515,17 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("Machine");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.JobNodeExecutionLog", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.Job", "Job")
+                        .WithMany("NodeExecutionLogs")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.KeyStore", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
@@ -3008,6 +3080,11 @@ namespace WorkspaceAPIs.Data.Migrations
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowVersionHistory", b =>
                 {
                     b.Navigation("Jobs");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.Job", b =>
+                {
+                    b.Navigation("NodeExecutionLogs");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.KnowledgeBase", b =>

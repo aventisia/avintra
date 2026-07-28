@@ -4,27 +4,28 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { JobStatusEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-enum";
-import { ExecutionNode } from "@/types/execution-types";
 
 import {
   WebSocketCommandType,
   WebSocketMessageType,
   getExecutionState,
-  markLogAsSynced,
-  saveNodeExecutionLog,
   sendExecutionComplete,
   sendNextNodeToProcess,
   sendNodeToProcess,
 } from "..";
 import { closeJob } from "../apis/job-trigger-apis";
+import { insertNodeExecutionLogs } from "../apis/node-execution-log.apis";
+import { NodeExecutionLogDto } from "../dtos/node-execution-log.dto";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
 import { useJobDataStore } from "../stores/job-data-store";
-import { getLocalExecutionLog } from "../utils/get-version-execution-log";
+
+const NODE_LOG_BATCH_SIZE = 5;
 
 export default function useWebSocket() {
   const socketRef = useRef<WebSocket | null>(null);
   const isConnected = useRef(false); // Track connection state
   const isConnecting = useRef(false);
+  const pendingNodeLogs = useRef<NodeExecutionLogDto[]>([]);
 
   // Get setExecutionState action from current flow store
   const { currentFlow, setExecutionState } = useCurrentFlowStore(
@@ -143,7 +144,15 @@ export default function useWebSocket() {
               sendNextNodeToProcess(sendCommand);
               break;
             case "save-execution-log":
-              await saveNodeExecutionLog(msg.data || "{}");
+              {
+                const parsedLog = parseNodeExecutionLog(msg.data || "{}");
+                if (parsedLog) {
+                  pendingNodeLogs.current.push(parsedLog);
+                  if (pendingNodeLogs.current.length >= NODE_LOG_BATCH_SIZE) {
+                    await flushPendingNodeLogs(currentFlow.jobId, pendingNodeLogs.current);
+                  }
+                }
+              }
               break;
             default:
               await sendNodeToProcess(msg.data || "nodeId", sendCommand);
@@ -194,23 +203,15 @@ export default function useWebSocket() {
 
     const handleExecutionData = async () => {
       try {
-        // Fetch execution logs for the current flow version
-        const localLogs = await getLocalExecutionLog(currentFlow.versionId);
-        let executionData: ExecutionNode[] = [];
-
-        if (Array.isArray(localLogs) && localLogs.length > 0) {
-          executionData = localLogs[0].nodes ?? [];
-        }
+        // Flush any remaining node logs before closing the job.
+        await flushPendingNodeLogs(currentFlow.jobId, pendingNodeLogs.current);
 
         // Close the job in a terminal status. The backend tracks consumed credits.
         await closeJob({
           id: currentFlow.jobId || "jobId-unknown",
           closingStatus: status,
-          nodeExecutionLogs: JSON.stringify(executionData),
+          nodeExecutionLogs: [],
         });
-
-        // mark the job log pushed to backend
-        await markLogAsSynced(currentFlow.jobId || "jobId-unknown");
       } catch (error) {
         // Log any errors that occur during the process
         console.error("Error during execution close:", error);
@@ -230,4 +231,40 @@ export default function useWebSocket() {
   // startJob is called and EndTime/CreditsConsumed when closeJob is called.
 
   return { sendCommand };
+}
+
+// Parses a raw WebSocket node execution log payload into a typed DTO.
+function parseNodeExecutionLog(data: string): NodeExecutionLogDto | null {
+  try {
+    const parsed = JSON.parse(data);
+    return {
+      nodeExecutionId: parsed.nodeExecutionId ?? parsed.uniqueNodeId ?? "",
+      retryAttempt: parsed.retryAttempt ?? 0,
+      nodeId: parsed.nodeId ?? "",
+      nodeDisplayName: parsed.nodeName ?? "",
+      nodeUniqueName: parsed.nodeUniqueName ?? "",
+      isSuccess: parsed.isSuccess ?? false,
+      duration: parsed.duration ?? 0,
+      inputs: parsed.inputs ?? {},
+      outputs: parsed.outputs ?? {},
+    };
+  } catch {
+    console.error("Invalid node execution log payload:", data);
+    return null;
+  }
+}
+
+// Sends a batch of pending node logs to the backend and clears the buffer.
+async function flushPendingNodeLogs(
+  jobId: string | undefined,
+  pendingLogs: NodeExecutionLogDto[]
+): Promise<void> {
+  if (!jobId || pendingLogs.length === 0) return;
+
+  try {
+    await insertNodeExecutionLogs(jobId, [...pendingLogs]);
+    pendingLogs.length = 0;
+  } catch (error) {
+    console.error("Failed to flush pending node execution logs:", error);
+  }
 }

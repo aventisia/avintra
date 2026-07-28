@@ -7,6 +7,8 @@ import { UsageSourceTypesEnum } from "@/features/credits-management/constants/us
 import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
 import { AgentExecutionLogType, EXECUTION_LOG_KEY, markLogAsSynced } from "@/features/execute-flow";
 import { getJobById, updateJobData } from "@/features/execute-flow/apis/jobs-table-apis";
+import { insertNodeExecutionLogs } from "@/features/execute-flow/apis/node-execution-log-apis";
+import { NodeExecutionLogDto } from "@/features/execute-flow/dtos/node-execution-log-dto";
 import { JobStatusEnum } from "@/features/execute-flow/enums/job-status-enum";
 
 /**
@@ -69,8 +71,30 @@ export const useRecoverCrashLogs = (): void => {
               status: JobStatusEnum.Failed,
               startTime,
               endTime,
-              nodeExecutionLogs: JSON.stringify(log.versionLog || []),
             });
+
+            // 3.1 Sync any captured node execution logs separately.
+            const nodeLogs = (log.versionLog || []).map(
+              (nodeLog): NodeExecutionLogDto => ({
+                nodeExecutionId: nodeLog.nodeExecutionId,
+                retryAttempt: nodeLog.retryAttempt,
+                nodeId: nodeLog.nodeId,
+                nodeDisplayName: nodeLog.nodeName,
+                nodeUniqueName: nodeLog.nodeUniqueName,
+                isSuccess: nodeLog.isSuccess,
+                duration: nodeLog.duration,
+                inputs: Object.fromEntries(
+                  nodeLog.inputs.map((item) => [item.key, item.value]),
+                ),
+                outputs: Object.fromEntries(
+                  nodeLog.outputs.map((item) => [item.key, item.value]),
+                ),
+              }),
+            );
+
+            if (nodeLogs.length > 0) {
+              await insertNodeExecutionLogs(log.jobId, nodeLogs);
+            }
 
             // 4. Post credit consumption for the actual elapsed execution time
             await postCreditConsumption([
