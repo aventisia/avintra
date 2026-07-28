@@ -217,7 +217,7 @@ public class CreditPlanService : ICreditPlanService
 
             // Check if a plan with the same name exists
             var existingPlan = await _unitOfWork.CreditPlanRepo
-                .GetByConditionAsync(w => w.ServiceType == Enum.Parse<CreditServiceTypesEnum>(creditPlanName))
+                .GetByConditionAsync(w => w.ServiceType == Enum.Parse<CreditServicesEnum>(creditPlanName))
                 .FirstOrDefaultAsync();
 
             if (existingPlan != null)

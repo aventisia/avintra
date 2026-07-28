@@ -8,7 +8,7 @@ public class CreditsUsageDto
     /// <summary>
     /// Gets or sets the type of service for which the credits were used.
     /// </summary>
-    public CreditServiceTypesEnum ServiceType { get; set; }
+    public CreditServicesEnum ServiceType { get; set; }
 
     /// <summary>
     /// Gets or sets the number of unit consumed for the specified service. 
@@ -135,7 +135,7 @@ public class ResourceUsageDetailDto
     /// <summary>
     /// Gets or sets the type of service this plan applies to.
     /// </summary>
-    public CreditServiceTypesEnum ServiceType { get; set; }
+    public CreditServicesEnum ServiceType { get; set; }
 
     /// <summary>
     /// Gets or sets the type of unit used to measure usage, like seconds, tokens, or messages.

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { ActionTypesEnum } from "@/features/credits-management/constants/action-types-enum";
-import { CreditServiceTypesEnum } from "@/features/credits-management/constants/credit-service-type-enum";
+import { CreditServicesEnum } from "@/features/credits-management/constants/credit-service-type-enum";
 import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
 import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -32,14 +32,13 @@ export default function useWebSocket() {
   const isConnecting = useRef(false);
 
   // Get setExecutionState action from current flow store
-  const { currentFlow, executionState, setExecutionState } =
-    useCurrentFlowStore(
-      useShallow((state) => ({
-        currentFlow: state.currentFlow,
-        executionState: state.executionState,
-        setExecutionState: state.setExecutionState,
-      })),
-    );
+  const { currentFlow, executionState, setExecutionState } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+      executionState: state.executionState,
+      setExecutionState: state.setExecutionState,
+    })),
+  );
 
   const { osID } = useTuariUserMetadataStore(
     useShallow((state) => ({
@@ -58,17 +57,14 @@ export default function useWebSocket() {
 
   const { postCreditConsumption } = usePostCreditConsumptionMutation();
 
-  const [currExecCommand, setCurrExecCommand] = useState<
-    "abort" | "complete" | "error" | null
-  >(null);
+  const [currExecCommand, setCurrExecCommand] = useState<"abort" | "complete" | "error" | null>(
+    null,
+  );
 
   // Function to send command to web socket
   const sendCommand = useCallback(
     (command: WebSocketCommandType, data?: string) => {
-      if (
-        socketRef.current &&
-        socketRef.current.readyState === WebSocket.OPEN
-      ) {
+      if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
         // Send the message as a string
         socketRef.current.send(
           JSON.stringify({
@@ -78,11 +74,7 @@ export default function useWebSocket() {
           }),
         );
 
-        if (
-          command === "abort" ||
-          command === "complete" ||
-          command == "error"
-        ) {
+        if (command === "abort" || command === "complete" || command == "error") {
           const endTime = new Date();
           const status =
             command === "complete"
@@ -226,9 +218,7 @@ export default function useWebSocket() {
 
         // Handle Credit Consumption
         if (currExecCommand) {
-          const duration = Math.round(
-            (endTime.getTime() - startTime.getTime()) / 1000,
-          );
+          const duration = Math.round((endTime.getTime() - startTime.getTime()) / 1000);
 
           await updateJobData({
             id: currentFlow.jobId,
@@ -245,10 +235,7 @@ export default function useWebSocket() {
 
           await postCreditConsumption([
             {
-              serviceType:
-                CreditServiceTypesEnum[
-                  CreditServiceTypesEnum.AgentExecutionTime
-                ],
+              serviceType: CreditServicesEnum[CreditServicesEnum.AgentExecutionTime],
               consumedUnit: duration,
               refType: UsageSourceTypesEnum[UsageSourceTypesEnum.Agent],
               refId: currentFlow.id,
@@ -262,10 +249,7 @@ export default function useWebSocket() {
         }
       } catch (error) {
         // Log any errors that occur during the process
-        console.error(
-          "Error during execution or posting credit consumption:",
-          error,
-        );
+        console.error("Error during execution or posting credit consumption:", error);
       } finally {
         // Reset both commands after execution is done
         setCurrExecCommand(null);
@@ -282,9 +266,7 @@ export default function useWebSocket() {
 
     const syncExecutionData = async () => {
       try {
-        const currentDuration = Math.round(
-          (new Date().getTime() - startTime.getTime()) / 1000,
-        );
+        const currentDuration = Math.round((new Date().getTime() - startTime.getTime()) / 1000);
 
         // Update job metadata and logs WITHOUT consuming credits
         await updateJobData({
@@ -308,12 +290,6 @@ export default function useWebSocket() {
     const intervalId = setInterval(syncExecutionData, 120000);
 
     return () => clearInterval(intervalId);
-  }, [
-    currentFlow.jobId,
-    currentFlow.versionId,
-    startTime,
-    osID,
-    executionState,
-  ]);
+  }, [currentFlow.jobId, currentFlow.versionId, startTime, osID, executionState]);
   return { sendCommand };
 }

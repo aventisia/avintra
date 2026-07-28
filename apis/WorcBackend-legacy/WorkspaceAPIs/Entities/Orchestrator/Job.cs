@@ -3,7 +3,7 @@ namespace WorkspaceAPIs.Entities;
 /// <summary>
 /// Represents an execution instance of a flow/agent, tracking its execution details, status, and associated logs. This class provides information about the job's lifecycle.
 /// </summary>
-[Table("worc_Jobs")]
+[Table("ws_Jobs")]
 public class Job
 {
     /// <summary>
@@ -114,6 +114,11 @@ public class Job
     /// Gets or sets the FlowVersionHistoryId associated with this job.
     /// </summary>
     public Guid? FlowVersionHistoryId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total credits consumed for the job execution. This is set when the job reaches a terminal state.
+    /// </summary>
+    public double? CreditsConsumed { get; set; }
 
     /// <summary>
     /// Gets or sets the navigation property to the flow version associated with this job.

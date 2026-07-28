@@ -126,6 +126,11 @@ public class JobRecordDto
     }
 
     /// <summary>
+    /// Gets or sets the total credits consumed for the job execution. This value is set when the job reaches a terminal state.
+    /// </summary>
+    public double? CreditsConsumed { get; set; }
+
+    /// <summary>
     /// Gets or sets the input payload for the job in JSON format.
     /// </summary>
     public JsonDocument? JobInputData { get; set; }

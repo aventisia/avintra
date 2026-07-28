@@ -3,11 +3,7 @@ import { useEffect, useRef } from "react";
 
 import { JobStatusEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-enum";
 import { AgentExecutionLogType, EXECUTION_LOG_KEY, markLogAsSynced } from "@/features/execute-flow";
-import { getJobById, updateJobData } from "@/features/execute-flow/apis/job-trigger-apis";
-import { ActionTypesEnum } from "@/features/execute-flow/constants/action-types-enum";
-import { CreditServiceTypesEnum } from "@/features/execute-flow/constants/credit-service-type-enum";
-import { UsageSourceTypesEnum } from "@/features/execute-flow/constants/usage-source-types-enum";
-import { usePostCreditConsumptionMutation } from "@/features/execute-flow/hooks/usePostCreditConsumptionMutation";
+import { closeJob, getJobById } from "@/features/execute-flow/apis/job-trigger-apis";
 
 /**
  * Scans IndexedDB on app boot for unsynced logs from crashed executions,
@@ -15,7 +11,6 @@ import { usePostCreditConsumptionMutation } from "@/features/execute-flow/hooks/
  */
 export const useRecoverCrashLogs = (): void => {
   const hasRun = useRef(false);
-  const { postCreditConsumption } = usePostCreditConsumptionMutation();
 
   useEffect(() => {
     if (hasRun.current) return;
@@ -45,49 +40,17 @@ export const useRecoverCrashLogs = (): void => {
               continue;
             }
 
-            const startTime = jobData.startTime ? new Date(jobData.startTime) : new Date();
-
-            // 2. Calculate true execution duration by summing up the durations of completed nodes
-            const totalNodeDuration = (log.versionLog || []).reduce(
-              (acc, node) => acc + (node.duration || 0),
-              0,
-            );
-
-            // Ensure a minimum of 1 second duration even if it crashed instantly
-            const duration = Math.max(1, totalNodeDuration);
-
-            const endTime = new Date();
-
-            // 3. Push final logs and update status to Failed
-            await updateJobData({
+            // 2. Close the crashed job as Failed. The backend calculates and records consumed credits.
+            await closeJob({
               id: log.jobId,
-              flowId: jobData.flowId,
-              flowVersionId: log.versionId,
-              machineId: jobData.machineId,
-              duration,
-              status: JobStatusEnum.Failed,
-              startTime,
-              endTime,
+              closingStatus: JobStatusEnum.Failed,
               nodeExecutionLogs: JSON.stringify(log.versionLog || []),
             });
-
-            // 4. Post credit consumption for the actual elapsed execution time
-            await postCreditConsumption([
-              {
-                serviceType: CreditServiceTypesEnum[CreditServiceTypesEnum.AgentExecutionTime],
-                consumedUnit: duration,
-                refType: UsageSourceTypesEnum[UsageSourceTypesEnum.Agent],
-                refId: jobData.flowId || "",
-                refName: jobData.name || "Agent",
-                action: ActionTypesEnum[ActionTypesEnum.AgentExecution],
-                triggeredByAgent: jobData.name || "Agent",
-              },
-            ]);
 
             // 5. Mark safe locally in IndexedDB so we don't process it again
             await markLogAsSynced(log.jobId);
             console.log(
-              `Recovery: Job ${log.jobId} sync & credit update successful (Duration: ${duration}s).`,
+              `Recovery: Job ${log.jobId} closed as Failed with logs synced.`,
             );
           } catch (apiErr) {
             console.error(
@@ -102,5 +65,5 @@ export const useRecoverCrashLogs = (): void => {
     };
 
     scanAndRecoverCrashedLogs();
-  }, [postCreditConsumption]);
+  }, []);
 };

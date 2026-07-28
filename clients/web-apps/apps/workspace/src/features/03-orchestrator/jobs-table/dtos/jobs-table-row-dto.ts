@@ -55,4 +55,7 @@ export interface JobsTableRowDto {
 
   /** The job execution duration in seconds. */
   duration: number;
+
+  /** The total credits consumed for the job execution. Set when the job reaches a terminal state. */
+  creditsConsumed?: number;
 }

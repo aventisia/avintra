@@ -87,7 +87,7 @@ public class CreditUsageService : ICreditUsageService
                 {
                     TotalCredits = creditUsages.Sum(c => c.CreditsUsed),
                     TotalAgentTransactions = creditUsages
-                            .Where(w => w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime && !string.IsNullOrEmpty(w.TriggeredByAgent))
+                            .Where(w => w.ServiceType == CreditServicesEnum.AgentExecutionTime && !string.IsNullOrEmpty(w.TriggeredByAgent))
                             .Count(),
                     TotalAgentCredits = creditUsages
                             .Where(w => !string.IsNullOrEmpty(w.TriggeredByAgent))
@@ -113,7 +113,7 @@ public class CreditUsageService : ICreditUsageService
                         TotalCount = creditUsages
                             .Where(w =>
                                 w.UsedAt.Date == s &&
-                                w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime &&
+                                w.ServiceType == CreditServicesEnum.AgentExecutionTime &&
                                 !string.IsNullOrEmpty(w.TriggeredByAgent))
                             .Count()
                     })
@@ -179,7 +179,7 @@ public class CreditUsageService : ICreditUsageService
                                 .Where(w =>
                                     w.UsedByUserId == user.Id &&
                                     (
-                                        w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime
+                                        w.ServiceType == CreditServicesEnum.AgentExecutionTime
                                     )
                                 ).Count(),
                             TotalCredits = s.Sum(sm => sm.CreditsUsed)
@@ -197,7 +197,7 @@ public class CreditUsageService : ICreditUsageService
                         return new AgentUsageDto
                         {
                             AgentName = s.First().RefName,
-                            TotalTransactions = creditUsages.Where(w => w.ServiceType == CreditServiceTypesEnum.AgentExecutionTime && w.RefType == UsageSourceTypesEnum.Agent && w.RefId == s.First().RefId).Count(),
+                            TotalTransactions = creditUsages.Where(w => w.ServiceType == CreditServicesEnum.AgentExecutionTime && w.RefType == UsageSourceTypesEnum.Agent && w.RefId == s.First().RefId).Count(),
                             TotalCredits = s.Sum(sm => sm.CreditsUsed)
                         };
                     })
@@ -219,14 +219,10 @@ public class CreditUsageService : ICreditUsageService
     }
 
     // Record a new credit usage record for a user and service type.
-    public async Task<ServiceResponse<bool>> RecordCreditUsageAsync(CreditsUsageDto creditUsageDto)
+    public async Task<ServiceResponse<RecordedCreditUsageDto>> RecordCreditUsageAsync(CreditsUsageDto creditUsageDto)
     {
         // Initialize the default service response in case of failure
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to insert credit usage. Please try again later."
-        };
+        var serviceResponse = ServiceResponse<RecordedCreditUsageDto>.Create("Failed to insert credit usage. Please try again later.", 500);
 
         try
         {
@@ -347,10 +343,15 @@ public class CreditUsageService : ICreditUsageService
                 return serviceResponse;
             }
 
+            // Build the recorded credit usage result.
+            var recordedCreditUsage = new RecordedCreditUsageDto
+            {
+                ServiceType = creditUsageDto.ServiceType,
+                CreditsUsed = creditUsed
+            };
+
             // Set the service response to indicate successful credit usage insertion
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Credit usage recorded successfully.";
+            return serviceResponse.Update("Credit usage recorded successfully.", 200, recordedCreditUsage);
         }
         catch (Exception ex)
         {
@@ -363,14 +364,11 @@ public class CreditUsageService : ICreditUsageService
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<bool>> RecordCreditUsagesAsync(IEnumerable<CreditsUsageDto> creditUsageDtos)
+    // Records multiple credit usage entries and returns the calculated credits used per service type.
+    public async Task<ServiceResponse<List<RecordedCreditUsageDto>>> RecordCreditUsagesAsync(IEnumerable<CreditsUsageDto> creditUsageDtos)
     {
         // Initialize the default service response for multiple credit usage insertions
-        var serviceResponse = new ServiceResponse<bool>
-        {
-            Data = false,
-            Message = "Failed to insert credit usage records. Please try again later."
-        };
+        var serviceResponse = ServiceResponse<List<RecordedCreditUsageDto>>.Create("Failed to insert credit usage records. Please try again later.", 500);
 
         try
         {
@@ -491,10 +489,17 @@ public class CreditUsageService : ICreditUsageService
                 return serviceResponse;
             }
 
+            // Build the recorded credit usage result from the inserted entities.
+            var recordedCreditUsages = creditUsages
+                .Select(cu => new RecordedCreditUsageDto
+                {
+                    ServiceType = cu.ServiceType,
+                    CreditsUsed = cu.CreditsUsed
+                })
+                .ToList();
+
             // Set the service response to indicate successful credit usage insertion
-            serviceResponse.Data = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Credit usage records recorded successfully.";
+            return serviceResponse.Update("Credit usage records recorded successfully.", 200, recordedCreditUsages);
         }
         catch (Exception ex)
         {

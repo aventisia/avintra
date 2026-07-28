@@ -8,7 +8,7 @@ public class ExportCreditUsageRequestDto
     /// <summary>
     /// Gets or sets the list of credit service types to include in the export.
     /// </summary>
-    public List<CreditServiceTypesEnum> ServiceTypes { get; set; } = new();
+    public List<CreditServicesEnum> ServiceTypes { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the list of user IDs to filter the credit usage records.
@@ -44,7 +44,7 @@ public class ExportCreditUsageResponseDto
     /// <summary>
     /// Gets or sets the type of service for which the credits were utilized.
     /// </summary>
-    public CreditServiceTypesEnum ServiceType { get; set; }
+    public CreditServicesEnum ServiceType { get; set; }
 
     /// <summary>
     /// Gets or sets the unit of measurement for the usage, such as seconds, tokens, or messages.

@@ -1,9 +1,9 @@
-namespace AccountsAPIs.Enums;
+namespace AspNetToolkit.Enums;
 
 /// <summary>
 /// Defines the available credit-based services for AI processing, communication, and execution tasks.
 /// </summary>
-public enum CreditServiceTypesEnum
+public enum CreditServicesEnum
 {
     AgentExecutionTime,
     // gpt-5.1

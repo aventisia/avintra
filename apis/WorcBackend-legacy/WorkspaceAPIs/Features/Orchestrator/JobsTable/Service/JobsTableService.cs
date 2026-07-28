@@ -1,5 +1,7 @@
 namespace WorkspaceAPIs.Services;
 
+using AspNetToolkit.DTOs;
+
 public class JobsTableService : IJobsTableService
 {
     private readonly ILogger<JobsTableService> _logger;
@@ -7,9 +9,11 @@ public class JobsTableService : IJobsTableService
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IJobsExecutorService _jobsExecutorService;
     private readonly IWebhookCallbackService _webhookCallbackService;
+    private readonly IHttpClientFactory _httpClientFactory;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
     private readonly string _userMachine;
+    private readonly string? _authHeader;
 
     public JobsTableService(
         ILogger<JobsTableService> logger,
@@ -18,6 +22,7 @@ public class JobsTableService : IJobsTableService
         ICurrentTenantService currentTenantService,
         IJobsExecutorService jobsExecutorService,
         IWebhookCallbackService webhookCallbackService,
+        IHttpClientFactory httpClientFactory,
         EnvironmentConfig environmentConfig)
     {
         // Set the user ID from the HTTP context
@@ -26,11 +31,15 @@ public class JobsTableService : IJobsTableService
         // Fetch the custom header: X-User-Machine (only set if running inside Tauri Desktop App)
         _userMachine = httpContextAccessor.HttpContext?.Request?.Headers["X-User-Machine"].FirstOrDefault() ?? string.Empty;
 
+        // Forward the current request's Authorization header so calls to AccountsAPIs are authenticated.
+        _authHeader = httpContextAccessor.HttpContext?.Request?.Headers["Authorization"].FirstOrDefault();
+
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
         _jobsExecutorService = jobsExecutorService;
         _webhookCallbackService = webhookCallbackService;
+        _httpClientFactory = httpClientFactory;
         _environmentConfig = environmentConfig;
     }
 
@@ -309,19 +318,31 @@ public class JobsTableService : IJobsTableService
             if (job == null)
                 return serviceResponse.Update("Job not found.", 404);
 
-            // CANNOT UPDATE THE JOB: Job is already in a completed or closed status
-            if (job.Status == JobStatusEnum.Completed ||
-                job.Status == JobStatusEnum.Failed ||
-                job.Status == JobStatusEnum.Aborted ||
-                job.Status == JobStatusEnum.Canceled ||
-                job.Status == JobStatusEnum.Killed)
+            // CANNOT UPDATE THE JOB: Job is already in a terminal status
+            if (job.Status.IsTerminal())
                 return serviceResponse.Update("Cannot update a job that is already completed or closed.", 400);
 
             // Trim the string properties in the DTO
             jobUpdateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(jobUpdateDto);
 
-            // Default mapping
+            // Determine whether the job is being closed in this update.
+            var isClosing = jobUpdateDto.ClosingStatus.HasValue && jobUpdateDto.ClosingStatus.Value.IsTerminal();
+
+            // Default mapping for priority and remarks.
             jobUpdateDto.Adapt(job);
+
+            // When the update is closing the job, run the shared close logic so credits are tracked.
+            if (isClosing)
+            {
+                var closeResult = await CloseJobCoreAsync(job, jobUpdateDto.ClosingStatus!.Value, jobUpdateDto.Remarks, nodeExecutionLogs: null);
+                if (closeResult.StatusCode != 200)
+                    return closeResult;
+            }
+            else
+            {
+                // Non-closing updates should not touch the credits consumed value.
+                job.CreditsConsumed = null;
+            }
 
             // TODO: Need to check this.
             // // Checks if the job status is the same as the stored status (no change).
@@ -410,12 +431,16 @@ public class JobsTableService : IJobsTableService
             //         job.EndTime = DateTimeOffset.UtcNow;
             // }
 
-            // Update the record
-            _unitOfWork.JobRepo.Update(job);
+            // For non-closing updates we still need to persist the priority/remarks changes.
+            if (!isClosing)
+            {
+                // Update the record
+                _unitOfWork.JobRepo.Update(job);
 
-            // Update-Job failed, log and return
-            if (!await _unitOfWork.SaveAsync())
-                return serviceResponse.Update("Failed to save changes.", 500);
+                // Update-Job failed, log and return
+                if (!await _unitOfWork.SaveAsync())
+                    return serviceResponse.Update("Failed to save changes.", 500);
+            }
 
             // Return success response
             return serviceResponse.Update("Job updated", 200, job.Adapt<JobRecordDto>());
@@ -563,6 +588,207 @@ public class JobsTableService : IJobsTableService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while deleting the jobs with IDs {JobIds}.", string.Join(", ", jobIds));
+            return serviceResponse;
+        }
+    }
+
+    // Starts a job by transitioning it from Created to Running and recording the start time.
+    public async Task<ServiceResponse<JobRecordDto>> StartJobAsync(JobStartDto jobStartDto)
+    {
+        // Initialize the response with a default error message.
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to start job", 500);
+
+        try
+        {
+            // Retrieve the record
+            var job = await _unitOfWork.JobRepo
+                        .GetByConditionAsync(w => w.Id == jobStartDto.Id)
+                        .Include(i => i.FlowVersion)
+                            .ThenInclude(i2 => i2.Flow)
+                        .Include(i => i.Machine)
+                        .FirstOrDefaultAsync();
+
+            // If record not found, log and return
+            if (job == null)
+                return serviceResponse.Update("Job not found.", 404);
+
+            // CANNOT START THE JOB: Job must be in Created status to start.
+            if (job.Status != JobStatusEnum.Created)
+                return serviceResponse.Update("Only jobs in created status can be started.", 400);
+
+            // CANNOT START THE JOB: Job is already in a terminal status
+            if (job.Status.IsTerminal())
+                return serviceResponse.Update("Cannot start a job that is already completed or closed.", 400);
+
+            // Update status and start time.
+            job.Status = JobStatusEnum.Running;
+            job.StartTime = DateTimeOffset.UtcNow;
+
+            // Update the record
+            _unitOfWork.JobRepo.Update(job);
+
+            // Start-Job failed, log and return
+            if (!await _unitOfWork.SaveAsync())
+                return serviceResponse.Update("Failed to save changes.", 500);
+
+            // Return success response
+            return serviceResponse.Update("Job started", 200, job.Adapt<JobRecordDto>());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while starting the job with ID {JobId}.", jobStartDto.Id);
+            return serviceResponse;
+        }
+    }
+
+    // Closes a job in a terminal status, records the end time and logs, and tracks consumed credits.
+    public async Task<ServiceResponse<JobRecordDto>> CloseJobAsync(JobCloseDto jobCloseDto)
+    {
+        // Initialize the response with a default error message.
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to close job", 500);
+
+        try
+        {
+            // Validate the requested closing status is terminal.
+            if (!jobCloseDto.ClosingStatus.IsTerminal())
+                return serviceResponse.Update("Closing status must be a terminal status.", 400);
+
+            // Retrieve the record including related flow data for credit attribution.
+            var job = await _unitOfWork.JobRepo
+                        .GetByConditionAsync(w => w.Id == jobCloseDto.Id)
+                        .Include(i => i.FlowVersion)
+                            .ThenInclude(i2 => i2.Flow)
+                        .Include(i => i.Machine)
+                        .FirstOrDefaultAsync();
+
+            // If record not found, log and return
+            if (job == null)
+                return serviceResponse.Update("Job not found.", 404);
+
+            // CANNOT CLOSE THE JOB: Job is already in a terminal status
+            if (job.Status.IsTerminal())
+                return serviceResponse.Update("Cannot close a job that is already completed or closed.", 400);
+
+            // Run the shared close logic.
+            var closeResult = await CloseJobCoreAsync(job, jobCloseDto.ClosingStatus, jobCloseDto.Remarks, jobCloseDto.NodeExecutionLogs);
+            return closeResult;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while closing the job with ID {JobId}.", jobCloseDto.Id);
+            return serviceResponse;
+        }
+    }
+
+    // Shared helper that closes a job, tracks credit consumption via AccountsAPIs, and saves the record.
+    private async Task<ServiceResponse<JobRecordDto>> CloseJobCoreAsync(Job job, JobStatusEnum closingStatus, string? remarks, string? nodeExecutionLogs)
+    {
+        // Initialize the response with a default error message.
+        var serviceResponse = ServiceResponse<JobRecordDto>.Create("Failed to close job", 500);
+
+        try
+        {
+            var now = DateTimeOffset.UtcNow;
+
+            // Apply closure fields.
+            job.Status = closingStatus;
+            job.EndTime = now;
+
+            if (!string.IsNullOrWhiteSpace(remarks))
+                job.Remark = remarks;
+
+            if (!string.IsNullOrWhiteSpace(nodeExecutionLogs))
+                job.NodeExecutionLogs = nodeExecutionLogs;
+
+            // Track credits consumed for agent execution time.
+            var durationSeconds = job.StartTime.HasValue
+                ? Math.Ceiling((now - job.StartTime.Value).TotalSeconds)
+                : 0;
+
+            var creditUsageResponse = await RecordAgentExecutionCreditUsageAsync(job, durationSeconds);
+            if (creditUsageResponse.StatusCode == 200 && creditUsageResponse.Data != null)
+            {
+                job.CreditsConsumed = creditUsageResponse.Data.CreditsUsed;
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "Credit usage tracking failed for job {JobId}. Status: {StatusCode}, Message: {Message}.",
+                    job.Id, creditUsageResponse.StatusCode, creditUsageResponse.Message);
+            }
+
+            // Update the record
+            _unitOfWork.JobRepo.Update(job);
+
+            // Close-Job failed, log and return
+            if (!await _unitOfWork.SaveAsync())
+                return serviceResponse.Update("Failed to save changes.", 500);
+
+            // Return success response
+            return serviceResponse.Update("Job closed", 200, job.Adapt<JobRecordDto>());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while closing the job with ID {JobId}.", job.Id);
+            return serviceResponse;
+        }
+    }
+
+    // Posts a single credit usage record to AccountsAPIs for agent execution time.
+    private async Task<ServiceResponse<RecordedCreditUsageDto>> RecordAgentExecutionCreditUsageAsync(Job job, double durationSeconds)
+    {
+        var serviceResponse = ServiceResponse<RecordedCreditUsageDto>.Create("Failed to record credit usage.", 500);
+
+        try
+        {
+            var accountsApiBaseUrl = _environmentConfig.AccountsApiBaseUrl;
+            if (string.IsNullOrWhiteSpace(accountsApiBaseUrl))
+                return serviceResponse.Update("Accounts API base URL is not configured.", 500);
+
+            var flowName = job.FlowVersion?.Flow?.Name ?? "Unknown Agent";
+
+            var payload = new
+            {
+                ServiceType = CreditServicesEnum.AgentExecutionTime,
+                ConsumedUnit = durationSeconds,
+                RefType = UsageSourceTypesEnum.Agent,
+                RefId = job.FlowVersionId,
+                RefName = flowName,
+                UsedByUserId = _userId,
+                Action = ActionTypesEnum.AgentExecution,
+                TriggeredByAgent = flowName
+            };
+
+            using var httpClient = _httpClientFactory.CreateClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(30);
+
+            if (!string.IsNullOrWhiteSpace(_authHeader))
+                httpClient.DefaultRequestHeaders.Add("Authorization", _authHeader);
+
+            var response = await httpClient.PostAsJsonAsync($"{accountsApiBaseUrl.TrimEnd('/')}/credit-usage", payload);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "AccountsAPIs credit-usage endpoint returned {StatusCode} for job {JobId}. Response: {Response}.",
+                    (int)response.StatusCode, job.Id, responseBody);
+                return serviceResponse.Update("Credit usage tracking endpoint returned an error.", (int)response.StatusCode);
+            }
+
+            var recordedUsage = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<RecordedCreditUsageDto>>(responseBody, new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            if (recordedUsage == null)
+                return serviceResponse.Update("Unable to parse credit usage response.", 500);
+
+            return recordedUsage;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while recording credit usage for job {JobId}.", job.Id);
             return serviceResponse;
         }
     }

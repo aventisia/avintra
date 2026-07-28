@@ -1,8 +1,8 @@
 /**
  * Enum representing the available credit-based services for AI processing, communication, and execution tasks.
- * Synced with BE: CreditServiceTypesEnum
+ * Synced with BE: CreditServicesEnum
  */
-export enum CreditServiceTypesEnum {
+export enum CreditServicesEnum {
   AgentExecutionTime,
   // gpt-5.1
   Gpt51Input,

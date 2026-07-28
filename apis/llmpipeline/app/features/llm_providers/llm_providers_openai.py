@@ -524,7 +524,7 @@ class OpenAIProvider(BaseLLMProvider):
         """
         Build credit usage specifically for GPT models.
 
-        - Maps model_name → CreditServiceTypesEnum
+        - Maps model_name → CreditServicesEnum
         - Handles missing/invalid token values safely
         - Supports future models via fallback
         """

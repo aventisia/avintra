@@ -66,6 +66,9 @@ export interface JobRecordDto {
   /** The job execution duration in seconds. */
   duration: number;
 
+  /** The total credits consumed for the job execution. Set when the job reaches a terminal state. */
+  creditsConsumed?: number;
+
   /** The input payload for the job in JSON format. */
   jobInputData?: Record<string, unknown>;
 

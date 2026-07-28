@@ -9,7 +9,7 @@ public class CreditPlan : BaseEntity
     /// <summary>
     /// Gets or sets the type of service this plan applies to
     /// </summary>
-    public required CreditServiceTypesEnum ServiceType { get; set; }
+    public required CreditServicesEnum ServiceType { get; set; }
 
     /// <summary>
     /// Gets or sets the type of unit used to measure usage, like seconds, tokens, or messages.

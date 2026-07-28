@@ -1,7 +1,7 @@
 namespace WorkspaceAPIs.DTOs;
 
 /// <summary>
-/// Represents the payload used to update a job.
+/// Represents the payload used to update job metadata such as priority and remarks.
 /// </summary>
 public class JobUpdateDto
 {
@@ -11,7 +11,8 @@ public class JobUpdateDto
     public Guid Id { get; set; }
 
     /// <summary>
-    /// Gets or sets the closing status of the job.
+    /// Gets or sets the closing status of the job. When a terminal status is provided,
+    /// the job is closed and credits are tracked automatically.
     /// </summary>
     public JobStatusEnum? ClosingStatus { get; set; }
 

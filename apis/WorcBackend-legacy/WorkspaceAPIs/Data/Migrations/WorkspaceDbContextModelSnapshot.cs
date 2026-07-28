@@ -610,6 +610,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<double?>("CreditsConsumed")
+                        .HasColumnType("double precision");
+
                     b.Property<DateTimeOffset?>("EndTime")
                         .HasColumnType("timestamp with time zone");
 
@@ -675,7 +678,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("MachineId");
 
-                    b.ToTable("worc_Jobs");
+                    b.ToTable("ws_Jobs");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.KeyStore", b =>

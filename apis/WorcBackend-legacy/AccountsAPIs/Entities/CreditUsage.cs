@@ -25,7 +25,7 @@ public class CreditUsage : IMustHaveTenant
     /// <summary>
     /// Gets or sets the type of service for which the credits were consumed.
     /// </summary>
-    public CreditServiceTypesEnum ServiceType { get; set; }
+    public CreditServicesEnum ServiceType { get; set; }
 
     /// <summary>
     /// Gets or sets the number of credits that were consumed.
@@ -66,7 +66,7 @@ public class CreditUsage : IMustHaveTenant
     /// Gets or sets the name or identifier of the agent that triggered the consumption of credits. 
     /// </summary>
     public string? TriggeredByAgent { get; set; }
-    
+
     /// <summary>
     /// Gets or sets the user who consumed the credits.
     /// </summary>
