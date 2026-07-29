@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
-from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message
+from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message, _file_input_filename
 from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from app.core.vault_manager import VaultManager
@@ -259,38 +259,44 @@ class DeepInfraProvider(BaseLLMProvider):
         else:
             raise ValueError("Invalid input format. Must be string or list of messages.")
 
-        # Add base64 files if any are provided
+        # Add files if any are provided (DeepInfra uses an OpenAI-compatible
+        # chat completions endpoint, so we use standard vision content blocks).
         if llm_request.files:
-            for file_data in llm_request.files:
-                # Determine filename
-                filename = getattr(file_data, "filename", "file_from_base64")
+            # Attach files to the first user message. If no user message exists yet,
+            # create one at the front.
+            target_index = 0
+            found_user = False
+            for idx, msg in enumerate(messages):
+                if msg.get("role") == "user":
+                    target_index = idx
+                    found_user = True
+                    break
+            if not found_user:
+                messages.insert(0, {"role": "user", "content": []})
 
-                # Convert to base64 using file_to_base64
+            # Ensure content is a list.
+            content = messages[target_index].get("content")
+            if isinstance(content, str):
+                messages[target_index]["content"] = [{"type": "text", "text": content}]
+            elif not isinstance(content, list):
+                messages[target_index]["content"] = []
+
+            for file_data in llm_request.files:
                 base64_uri = file_to_base64(file_data)
                 if not base64_uri:
                     continue  # skip invalid files
 
-                # Extract MIME type and encoded content from base64 URI
-                if base64_uri.startswith("data:"):
-                    mime_type = base64_uri.split(";")[0].replace("data:", "")
-                else:
-                    mime_type = "application/octet-stream"
-
-                # Ensure messages[0]["content"] exists
-                if not messages:
-                    messages.append({"role": "user", "content": []})
-                elif "content" not in messages[0]:
-                    messages[0]["content"] = []
-
-                # Handle images
-                if mime_type.startswith("image/"):
-                    messages[0]["content"].append({
-                        "type": "input_image",
-                        "image_url": base64_uri
+                if base64_uri.startswith("data:image/"):
+                    messages[target_index]["content"].append({
+                        "type": "image_url",
+                        "image_url": {"url": base64_uri}
                     })
-                # Handle other file types
                 else:
-                    messages[0]["content"].append({
+                    # DeepInfra / most OpenAI-compatible providers only reliably support
+                    # image inputs in the chat completions content array. Non-image files
+                    # are best-effort: include them as a plain text note with the file name.
+                    filename = _file_input_filename(file_data, default="file")
+                    messages[target_index]["content"].append({
                         "type": "input_file",
                         "filename": filename,
                         "file_data": base64_uri

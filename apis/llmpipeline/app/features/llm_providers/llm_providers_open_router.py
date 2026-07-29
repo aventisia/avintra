@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
-from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message
+from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message, _file_input_filename
 from app.features.llm_providers.llm_providers_schemas import (
     EmbeddingRequest,
     EmbeddingResponse,
@@ -254,13 +254,28 @@ class OpenRouterProvider(BaseLLMProvider):
         else:
             raise ValueError("Input must be a string or a list of messages.")
 
-        # Add base64 files if any are provided (Gemini 'inline_data')
+        # Add files if any are provided (OpenRouter uses an OpenAI-compatible
+        # chat completions endpoint, so we use standard vision content blocks).
         if llm_request.files:
-            for file_data in llm_request.files:
-                # Determine filename
-                filename = getattr(file_data, "filename", "file_from_base64")
+            # Attach files to the last user message if one exists.
+            user_message_index = None
+            for idx in range(len(messages) - 1, -1, -1):
+                if messages[idx].get("role") == "user":
+                    user_message_index = idx
+                    break
 
-                # Convert to base64 using file_to_base64
+            if user_message_index is None:
+                messages.append({"role": "user", "content": []})
+                user_message_index = len(messages) - 1
+
+            # Ensure content is a list.
+            content = messages[user_message_index].get("content")
+            if isinstance(content, str):
+                messages[user_message_index]["content"] = [{"type": "text", "text": content}]
+            elif not isinstance(content, list):
+                messages[user_message_index]["content"] = []
+
+            for file_data in llm_request.files:
                 base64_uri = file_to_base64(file_data)
                 if not base64_uri:
                     continue  # skip invalid files
@@ -273,42 +288,23 @@ class OpenRouterProvider(BaseLLMProvider):
                     mime_type = "application/octet-stream"
                     file_format = "bin"
 
-                # Build message content depending on type
-                if mime_type.startswith("image/"):
-                    content_item = {
+                if base64_uri.startswith("data:image/"):
+                    messages[user_message_index]["content"].append({
                         "type": "image_url",
-                        "imageUrl": {"url": base64_uri}
-                    }
-                elif mime_type.startswith("video/"):
-                    content_item = {
-                        "type": "input_video",
-                        "input_video": {
-                            "data": base64_uri,
-                            "format": file_format,
-                            "filename": filename
-                        }
-                    }
-                elif mime_type.startswith("audio/"):
-                    content_item = {
-                        "type": "input_audio",
-                        "input_audio": {
-                            "data": base64_uri,
-                            "format": file_format,
-                            "filename": filename
-                        }
-                    }
+                        "image_url": {"url": base64_uri}
+                    })
                 else:
-                    # All other file types
-                    content_item = {
+                    # OpenRouter's chat completions endpoint primarily supports images
+                    # in content arrays. For non-image files we fall back to a textual
+                    # marker containing the filename.
+                    filename = _file_input_filename(file_data, default="file")
+                    messages[user_message_index]["content"].append({
                         "type": "file",
                         "file": {
                             "filename": filename,
                             "file_data": f"data:{mime_type};base64,{base64_uri}"
                         }
-                    }
-
-                # Append to messages
-                messages.append({"role": "user", "content": [content_item]})
+                    })
                      
         # Building the payload with dynamic elements
         payload = {
