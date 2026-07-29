@@ -6,10 +6,12 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from sqlalchemy.orm import selectinload
 
 from app.core.logger import logger
 from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.skills.skill_registry import SkillRegistry
+from app.features.langgraph.schemas.skill_registry_models import Skill
 
 
 SKILL_PACKAGE = "app.features.langgraph.skills"
@@ -203,5 +205,166 @@ def load_default_skills(
 
         registry.register(config)
         loaded.append(config)
+
+    return loaded
+
+
+def _build_skill_config_from_db(skill: Skill) -> SkillConfig | None:
+    """
+    Build a ``SkillConfig`` from a database ``Skill`` row.
+
+    The SKILL.md content is expected to be stored as one of the attached
+    ``SkillFile`` rows with the file name ``SKILL.md``. Its YAML front-matter
+    is parsed and merged with the row-level name/description so that user
+    skills behave identically to filesystem skills in the registry.
+    """
+
+    skill_md = next(
+        (f for f in (skill.files or []) if f.file_name.lower() == "skill.md"),
+        None,
+    )
+
+    metadata: dict[str, Any] = {
+        "skill_id": str(skill.id),
+        "tenant_id": str(skill.tenant_id),
+        "files": [
+            {
+                "id": str(file.id),
+                "file_name": file.file_name,
+                "file_type": file.file_type,
+            }
+            for file in (skill.files or [])
+        ],
+    }
+
+    tags: list[str] = []
+    providers: list[str] = []
+    license_block: dict[str, Any] = {}
+    references: list[dict[str, Any]] = []
+
+    if skill_md and skill_md.content:
+        try:
+            content = skill_md.content_text
+            if content.startswith("---"):
+                parts = content.split("---", 2)
+                if len(parts) >= 3:
+                    parsed = yaml.safe_load(parts[1]) or {}
+                    if isinstance(parsed, dict):
+                        tags = parsed.get("tags") or []
+                        providers = parsed.get("providers") or []
+                        license_block = parsed.get("license") or {}
+                        references = parsed.get("references") or []
+        except Exception as exc:
+            logger.warning(
+                "Failed to parse SKILL.md front-matter for skill %s (%s): %s",
+                skill.name,
+                skill.id,
+                exc,
+            )
+
+    metadata["tags"] = tags
+    metadata["providers"] = providers
+
+    # Include decoded file contents in metadata so the runtime can inject
+    # SKILL.md instructions and supporting scripts into the agent prompt.
+    metadata["files"] = [
+        {
+            "id": str(file.id),
+            "file_name": file.file_name,
+            "file_type": file.file_type,
+            "content": file.content_text,
+        }
+        for file in (skill.files or [])
+    ]
+
+    from app.features.langgraph.schemas.skill_schema import SkillLicense, SkillReference
+
+    license_obj = SkillLicense(
+        name=license_block.get("name", ""),
+        url=license_block.get("url", ""),
+        terms=license_block.get("terms", ""),
+    )
+
+    reference_objs = [
+        SkillReference(
+            title=ref.get("title", ""),
+            url=ref.get("url", ""),
+            type=ref.get("type", ""),
+        )
+        for ref in references
+        if isinstance(ref, dict)
+    ]
+
+    return SkillConfig(
+        name=skill.name,
+        description=skill.description or "",
+        is_active=skill.is_active,
+        metadata=metadata,
+        license=license_obj,
+        references=reference_objs,
+        providers=providers,
+    )
+
+
+async def load_user_skills_from_db(
+    registry: SkillRegistry,
+    db_session,
+    tenant_id: str,
+) -> list[SkillConfig]:
+    """
+    Load active user-created skills from the Workspace DB for a tenant.
+
+    Args:
+        registry: ``SkillRegistry`` to register discovered user skills into.
+        db_session: An async SQLAlchemy session.
+        tenant_id: UUID string of the tenant whose skills should be loaded.
+
+    Returns:
+        A list of user ``SkillConfig`` instances that were registered.
+    """
+
+    from sqlalchemy import select
+    from uuid import UUID
+
+    loaded: list[SkillConfig] = []
+
+    try:
+        tenant_uuid = UUID(tenant_id)
+    except Exception as exc:
+        logger.warning(
+            "Invalid tenant_id for user skill loading: %s (%s)",
+            tenant_id,
+            exc,
+        )
+        return loaded
+
+    result = await db_session.execute(
+        select(Skill)
+        .where(Skill.tenant_id == tenant_uuid)
+        .where(Skill.is_active.is_(True))
+        .where(Skill.is_disabled.is_(False))
+        .options(selectinload(Skill.files))
+    )
+    skills = result.unique().scalars().all()
+
+    for skill in skills:
+        config = _build_skill_config_from_db(skill)
+        if config is None:
+            continue
+
+        if registry.exists(config.name):
+            logger.warning(
+                "User skill %s (%s) conflicts with an existing skill; overwriting.",
+                config.name,
+                skill.id,
+            )
+
+        registry.register(config)
+        loaded.append(config)
+        logger.info(
+            "Loaded user skill %s for tenant %s",
+            config.name,
+            tenant_id,
+        )
 
     return loaded

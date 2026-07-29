@@ -2,11 +2,13 @@ import json
 from typing import Any
 
 from langchain_core.messages import HumanMessage, SystemMessage
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
 from app.features.langgraph.schemas.skill_schema import SkillConfig
 from app.features.langgraph.services.model_factory import create_chat_model
+from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
@@ -28,6 +30,7 @@ async def select_tools_and_skills(
     user: User,
     tool_registry: ToolRegistry,
     skill_registry: SkillRegistry,
+    tenant_id: str | None = None,
 ) -> "ToolSkillSelectionResponse":
     """
     Ask a small planner LLM which tools and skills are relevant for ``request``.
@@ -36,11 +39,16 @@ async def select_tools_and_skills(
     tool implementations and skill details are not exposed in the prompt. The
     returned selection is used to load only the required tools and to inject
     selected skills into the agent's system prompt.
+
+    Args:
+        tenant_id: When provided, the catalog includes tenant-specific user
+            skills in addition to global skills.
     """
 
     catalog = _build_catalog(
         tool_registry=tool_registry,
         skill_registry=skill_registry,
+        tenant_id=tenant_id,
     )
 
     if not catalog.tools and not catalog.skills:
@@ -115,6 +123,7 @@ async def resolve_requested_or_selected_tools_and_skills(
     user: User,
     tool_registry: ToolRegistry,
     skill_registry: SkillRegistry,
+    db_session: AsyncSession | None = None,
 ) -> tuple[list[str], list[SkillConfig]]:
     """
     Decide which tools and skills to load.
@@ -123,9 +132,28 @@ async def resolve_requested_or_selected_tools_and_skills(
     explicit values. Otherwise ask the planner LLM to pick relevant tools/skills
     from the lightweight catalog.
 
+    Tenant-specific skills are loaded from the database when a session is
+    provided so that custom user skills are available alongside global skills.
+
+    Args:
+        request: The incoming LLM request.
+        user: Authenticated user (used for tenant scoping and model creation).
+        tool_registry: Registry of available tools.
+        skill_registry: Registry of available skills.
+        db_session: Optional async SQLAlchemy session for loading user skills.
+
     Returns:
         A tuple of (selected_tool_names, selected_skill_configs).
     """
+
+    tenant_id = str(user.tenant_id)
+
+    if db_session is not None:
+        await load_user_skills_from_db(
+            registry=skill_registry,
+            db_session=db_session,
+            tenant_id=tenant_id,
+        )
 
     explicit_tools: list[str] | None = None
     explicit_skills: list[str] | None = None
@@ -145,7 +173,11 @@ async def resolve_requested_or_selected_tools_and_skills(
             explicit_tools,
             explicit_skills,
         )
-        selected_skills = _resolve_skill_configs(skill_registry, explicit_skills or [])
+        selected_skills = _resolve_skill_configs(
+            skill_registry,
+            explicit_skills or [],
+            tenant_id=tenant_id,
+        )
         return (
             explicit_tools or [],
             selected_skills,
@@ -156,6 +188,7 @@ async def resolve_requested_or_selected_tools_and_skills(
         user=user,
         tool_registry=tool_registry,
         skill_registry=skill_registry,
+        tenant_id=tenant_id,
     )
 
     logger.info(
@@ -164,7 +197,11 @@ async def resolve_requested_or_selected_tools_and_skills(
         selection.skill_names,
     )
 
-    selected_skills = _resolve_skill_configs(skill_registry, selection.skill_names)
+    selected_skills = _resolve_skill_configs(
+        skill_registry,
+        selection.skill_names,
+        tenant_id=tenant_id,
+    )
 
     return selection.tool_names, selected_skills
 
@@ -172,13 +209,14 @@ async def resolve_requested_or_selected_tools_and_skills(
 def _resolve_skill_configs(
     skill_registry: SkillRegistry,
     skill_names: list[str],
+    tenant_id: str | None = None,
 ) -> list[SkillConfig]:
     """Resolve a list of skill names to their registered configs."""
 
     configs: list[SkillConfig] = []
 
     for name in skill_names:
-        skill = skill_registry.get(name)
+        skill = skill_registry.get_for_tenant(name, tenant_id)
         if skill is not None and skill.is_active:
             configs.append(skill)
         else:
@@ -193,6 +231,7 @@ def _resolve_skill_configs(
 def _build_catalog(
     tool_registry: ToolRegistry,
     skill_registry: SkillRegistry,
+    tenant_id: str | None = None,
 ) -> "ToolSkillCatalog":
     """Build a name/description catalog from the live registries."""
 
@@ -209,7 +248,7 @@ def _build_catalog(
             "name": skill.name,
             "description": skill.description or "",
         }
-        for skill in skill_registry.get_active()
+        for skill in skill_registry.get_active_for_tenant(tenant_id)
     ]
 
     return ToolSkillCatalog(tools=tools, skills=skills)

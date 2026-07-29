@@ -66,7 +66,11 @@ class ChatService:
 
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
-        graph = self._graph(request=request, user=user)
+        graph = self._graph(
+            request=request,
+            user=user,
+            db_session=db_session,
+        )
         conversation_id = request.conversation_id or str(uuid4())
         config = self._thread_config(conversation_id)
 
@@ -123,7 +127,11 @@ class ChatService:
 
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
-        graph = self._graph(request=request, user=user)
+        graph = self._graph(
+            request=request,
+            user=user,
+            db_session=db_session,
+        )
         conversation_id = request.conversation_id or str(uuid4())
         config = self._thread_config(conversation_id)
 
@@ -312,6 +320,7 @@ class ChatService:
         self,
         request: LLMRequest,
         user: User,
+        db_session: AsyncSession | None = None,
     ) -> Any:
         """Retrieve or create a compiled LangGraph instance."""
 
@@ -348,6 +357,7 @@ class ChatService:
                 user=user,
                 tool_registry=self.tool_registry,
                 skill_registry=self.skill_registry,
+                db_session=db_session,
                 tool_names=explicit_tool_names or None,
                 skill_names=explicit_skill_names or None,
             )
