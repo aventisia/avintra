@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import LLMChunkResponse, LLMRequest, LLMResponse
-from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message
+from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message, _file_input_filename
 from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from fastapi import HTTPException
@@ -376,44 +376,52 @@ class AnthropicProvider(BaseLLMProvider):
                         """
                     break
         
-        # Add base64 files if any are provided
+        # Add files if any are provided
         if llm_request.files:
-            for file_data in llm_request.files:
-                # Determine filename (optional, could be used later)
-                filename = getattr(file_data, "filename", "file_from_base64")
+            # Anthropic requires alternating user/assistant messages, so attach file
+            # content blocks to the existing last user message instead of appending a
+            # new user message.
+            user_message_index = None
+            for idx in range(len(messages) - 1, -1, -1):
+                if messages[idx].get("role") == "user":
+                    user_message_index = idx
+                    break
 
-                # Convert file_data to base64 using file_to_base64
+            if user_message_index is None:
+                messages.append({"role": "user", "content": []})
+                user_message_index = len(messages) - 1
+
+            # Ensure the target message content is a list.
+            user_content = messages[user_message_index].get("content")
+            if isinstance(user_content, str):
+                messages[user_message_index]["content"] = [{"type": "text", "text": user_content}]
+            elif not isinstance(user_content, list):
+                messages[user_message_index]["content"] = []
+
+            for file_data in llm_request.files:
                 base64_uri = file_to_base64(file_data)
                 if not base64_uri:
                     continue  # skip invalid files
 
-                # Extract MIME type and encoded content from base64 URI
+                # Extract MIME type and encoded content from the data URI
                 if base64_uri.startswith("data:"):
                     mime_type = base64_uri.split(";")[0].replace("data:", "")
-                    encoded_content = base64_uri.split(",")[1]  # pure base64 content
+                    encoded_content = base64_uri.split(",")[1]
                 else:
                     mime_type = "application/octet-stream"
                     encoded_content = base64_uri
 
-                # Determine file_type for payload
-                if mime_type.startswith("image/"):
-                    file_type = "image"
-                else:
-                    file_type = "document"
+                # Anthropic supports images via `type: image` and arbitrary binary
+                # documents via `type: document` (e.g., PDF).
+                file_type = "image" if mime_type.startswith("image/") else "document"
 
-                # Add to request payload
-                request_payload["messages"].append({
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": file_type,
-                            "source": {
-                                "type": "base64",
-                                "media_type": mime_type,
-                                "data": encoded_content
-                            }
-                        }
-                    ]
+                messages[user_message_index]["content"].append({
+                    "type": file_type,
+                    "source": {
+                        "type": "base64",
+                        "media_type": mime_type,
+                        "data": encoded_content
+                    }
                 })
 
         # Build request headers

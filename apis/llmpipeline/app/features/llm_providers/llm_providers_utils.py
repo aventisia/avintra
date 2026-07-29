@@ -1,4 +1,7 @@
 import json
+import os
+import base64
+from typing import Optional, Union
 
 def extract_json_from_llm_response(text: str):
     """
@@ -41,6 +44,24 @@ def extract_json_from_llm_response(text: str):
             continue
 
     return _json_fallback(text)
+
+
+def _file_input_filename(file_input: Union[str, dict], default: str = "file") -> str:
+    """Extract a sensible filename from a file input."""
+    if isinstance(file_input, str):
+        if file_input.startswith("data:"):
+            return default
+        return os.path.basename(file_input.split("?")[0]) or default
+
+    data = file_input
+    if hasattr(data, "model_dump"):
+        data = data.model_dump()
+
+    if isinstance(data, dict):
+        return data.get("filename") or data.get("mime_type", "").replace("/", ".") or default
+
+    return default
+
 
 def extract_error_message(exception) -> str:
     """

@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.features.llm_providers.llm_providers_schemas import ChatAgentResponse, EmbeddingRequest, EmbeddingResponse, LLMChunkResponse, LLMRequest, LLMResponse
-from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message
+from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message,  _file_input_filename
 from .llm_providers_base import BaseLLMProvider
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from fastapi import HTTPException
@@ -362,25 +362,46 @@ class OpenAIProvider(BaseLLMProvider):
         if llm_request.max_output_tokens:
             request_payload["max_output_tokens"] = llm_request.max_output_tokens
         
-        # Add base64 files if any are provided
+        # Add files if any are provided
         if llm_request.files:
-            # Iterate through the files provided in llm_request.files
+            # Files must be attached to a user message with a list content. Prefer the
+            # last user message; fall back to the first input message and normalize its
+            # content to a list if necessary.
+            target_message = None
+            target_index = 0
+            for idx, msg in enumerate(request_payload["input"]):
+                if msg.get("role") == "user":
+                    target_message = msg
+                    target_index = idx
+                    break
+
+            if target_message is None:
+                # No user message found; create one so files have a place to attach.
+                request_payload["input"].append({"role": "user", "content": []})
+                target_index = len(request_payload["input"]) - 1
+
+            # Ensure content is a list (some message dicts may have string content).
+            content = request_payload["input"][target_index].get("content")
+            if isinstance(content, str):
+                request_payload["input"][target_index]["content"] = [{"type": "input_text", "text": content}]
+            elif not isinstance(content, list):
+                request_payload["input"][target_index]["content"] = []
+
             for file_data in llm_request.files:
                 # Convert to base64 URI
                 base64_uri = file_to_base64(file_data)
                 if not base64_uri:
                     continue  # skip invalid files
 
-                # Add to payload
+                filename = _file_input_filename(file_data, default="file_from_base64")
+
                 if base64_uri.startswith("data:image/"):
-                    request_payload["input"][0]["content"].append({
+                    request_payload["input"][target_index]["content"].append({
                         "type": "input_image",
                         "image_url": base64_uri
                     })
                 else:
-                    # Simplified filename
-                    filename = getattr(file_data, "filename", "file_from_base64")
-                    request_payload["input"][0]["content"].append({
+                    request_payload["input"][target_index]["content"].append({
                         "type": "input_file",
                         "filename": filename,
                         "file_data": base64_uri

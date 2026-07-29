@@ -15,7 +15,7 @@ from app.features.llm_providers.llm_providers_schemas import (
     LLMRequest,
     LLMResponse,
 )
-from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message
+from app.features.llm_providers.llm_providers_utils import extract_json_from_llm_response, extract_error_message, _file_input_filename
 from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from .llm_providers_base import BaseLLMProvider
 from app.utils.file_converter_utils import file_to_base64
@@ -281,27 +281,29 @@ class GeminiProvider(BaseLLMProvider):
         else:
             raise ValueError("Input must be a string or a list of messages.")
 
-        # Add base64 files if any are provided (Gemini 'inline_data')
+        # Add files if any are provided (Gemini 'inline_data')
         if llm_request.files:
             for file_data in llm_request.files:
-                # Determine filename (optional, could be used later)
-                filename = getattr(file_data, "filename", "file_from_base64")
-
-                # Convert file_data to base64 using file_to_base64
                 base64_uri = file_to_base64(file_data)
                 if not base64_uri:
                     continue  # skip invalid files
 
-                # Extract MIME type from base64 URI if present
+                # Extract MIME type and encoded content from the data URI
                 if base64_uri.startswith("data:"):
                     mime_type = base64_uri.split(";")[0].replace("data:", "")
-                    encoded_content = base64_uri.split(",")[1]  # actual base64 data
+                    encoded_content = base64_uri.split(",")[1]
                 else:
                     mime_type = "application/octet-stream"
                     encoded_content = base64_uri
 
-                # Add to contents
+                # Gemini expects a role on every content entry. Re-use the last user
+                # entry's role if available, otherwise create a user entry.
+                target_role = "user"
+                if contents and contents[-1].get("role") in ("user", "model"):
+                    target_role = contents[-1].get("role")
+
                 contents.append({
+                    "role": target_role,
                     "parts": [
                         {
                             "inline_data": {
