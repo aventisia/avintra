@@ -7,6 +7,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.tools import BaseTool
 from langgraph.graph import END, START, StateGraph
 from langgraph.prebuilt import tools_condition
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logger import logger
 from app.features.auth.authenticated_user import User
@@ -19,8 +20,10 @@ from app.features.langgraph.services.model_factory import create_chat_model
 from app.features.langgraph.services.tool_skill_selector import (
     ToolSkillCatalog,
     ToolSkillSelectionResponse,
+    resolve_requested_or_selected_tools_and_skills,
     select_tools_and_skills,
 )
+from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_registry import ToolRegistry
 from app.features.llm_providers.chat_agent_response_schema import (
@@ -34,6 +37,7 @@ def build_chat_graph(
     user: User,
     tool_registry: ToolRegistry,
     skill_registry: SkillRegistry,
+    db_session: AsyncSession | None = None,
     tool_names: list[str] | None = None,
     skill_names: list[str] | None = None,
 ) -> StateGraph:
@@ -61,6 +65,7 @@ def build_chat_graph(
             skill_registry=skill_registry,
             request=request,
             user=user,
+            db_session=db_session,
             explicit_tool_names=tool_names,
             explicit_skill_names=skill_names,
         ),
@@ -107,6 +112,7 @@ def _create_agent_selector_node(
     skill_registry: SkillRegistry,
     request: LLMRequest,
     user: User,
+    db_session: AsyncSession | None = None,
     explicit_tool_names: list[str] | None = None,
     explicit_skill_names: list[str] | None = None,
 ):
@@ -114,34 +120,52 @@ def _create_agent_selector_node(
     Select tools and skills required for the current request.
     """
 
+    tenant_id = str(user.tenant_id)
+
     async def identify_tools_and_skills(state: ChatState):
         metadata = state.get("metadata") or {}
 
-        # Use manually provided selections when available
-        if explicit_tool_names or explicit_skill_names:
-            selection = ToolSkillSelectionResponse(
-                tool_names=list(explicit_tool_names or []),
-                skill_names=list(explicit_skill_names or []),
+        # Load tenant-specific skills from the database so the planner sees
+        # both global skills and this tenant's custom skills.
+        if db_session is not None:
+            await load_user_skills_from_db(
+                registry=skill_registry,
+                db_session=db_session,
+                tenant_id=tenant_id,
             )
 
-        # Otherwise let planner model decide
+        # Use manually provided selections when available
+        if explicit_tool_names or explicit_skill_names:
+            selected_tool_names = list(explicit_tool_names or [])
+            selected_skill_names = list(explicit_skill_names or [])
+
+            # Resolve skill configs against the merged tenant + global registry
+            selected_skills = _resolve_skill_configs(
+                skill_registry,
+                selected_skill_names,
+                tenant_id=tenant_id,
+            )
         else:
+            # Let planner model decide from the tenant-aware catalog
             selection = await select_tools_and_skills(
                 request=request,
                 user=user,
                 tool_registry=tool_registry,
                 skill_registry=skill_registry,
+                tenant_id=tenant_id,
             )
 
-        # Convert skill names into active skill configurations
-        selected_skills = _resolve_skill_configs(
-            skill_registry,
-            selection.skill_names,
-        )
+            selected_tool_names = selection.tool_names
+            selected_skill_names = selection.skill_names
+            selected_skills = _resolve_skill_configs(
+                skill_registry,
+                selected_skill_names,
+                tenant_id=tenant_id,
+            )
 
         logger.info(
             "Agent identified tools/skills. tools=%s skills=%s",
-            selection.tool_names,
+            selected_tool_names,
             [skill.name for skill in selected_skills]
             if selected_skills else None,
         )
@@ -150,7 +174,7 @@ def _create_agent_selector_node(
         return {
             "metadata": {
                 **metadata,
-                "selected_tool_names": selection.tool_names or None,
+                "selected_tool_names": selected_tool_names or None,
                 "selected_skills": selected_skills,
             }
         }
@@ -248,13 +272,14 @@ def _resolve_tools(
 def _resolve_skill_configs(
     skill_registry: SkillRegistry,
     skill_names: list[str],
+    tenant_id: str | None = None,
 ) -> list[SkillConfig]:
     """Resolve a list of skill names to their registered configs."""
 
     configs: list[SkillConfig] = []
 
     for name in skill_names:
-        skill = skill_registry.get(name)
+        skill = skill_registry.get_for_tenant(name, tenant_id)
         if skill is not None and skill.is_active:
             configs.append(skill)
         else:
@@ -279,6 +304,19 @@ def _build_skill_prompt(skills: list[SkillConfig] | None) -> str | None:
 
     for skill in skills:
         lines.append(f"- {skill.name}: {skill.description}")
+
+        # If the skill was loaded from the DB, inject the full file contents
+        # (SKILL.md instructions + supporting scripts) into the prompt.
+        skill_files = skill.metadata.get("files")
+        if skill_files:
+            lines.append("")
+            lines.append(f"  Files for {skill.name}:")
+            for file_info in skill_files:
+                content = file_info.get("content")
+                if content:
+                    lines.append("")
+                    lines.append(f"  --- {file_info.get('file_name')} ---")
+                    lines.append(content)
 
     lines.append("")
     lines.append(
