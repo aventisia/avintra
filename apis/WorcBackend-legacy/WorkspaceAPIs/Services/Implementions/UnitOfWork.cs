@@ -48,6 +48,8 @@ public class UnitOfWork : IUnitOfWork
     public IKnowledgeBaseRepo KnowledgeBaseRepo => new KnowledgeBaseRepo(_workspaceDbContext);
     public IKnowledgeBaseFileRepo KnowledgeBaseFileRepo => new KnowledgeBaseFileRepo(_workspaceDbContext);
     public IResourceShareRepo ResourceShareRepo => new ResourceShareRepo(_workspaceDbContext);
+    public ISkillRepo SkillRepo => new SkillRepo(_workspaceDbContext);
+    public ISkillFileRepo SkillFileRepo => new SkillFileRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {

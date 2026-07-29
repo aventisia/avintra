@@ -1,0 +1,17 @@
+meta {
+  name: Is skill name available
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/skill-registry/is-available
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "userInput": "sample skill name"
+  }
+}

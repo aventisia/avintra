@@ -1,0 +1,11 @@
+meta {
+  name: Get skill by id
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/skill-registry/{{SKILL_ID}}
+  body: none
+  auth: none
+}

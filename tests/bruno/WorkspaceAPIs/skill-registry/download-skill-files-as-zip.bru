@@ -1,0 +1,11 @@
+meta {
+  name: Download skill files as zip
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/skill-registry/{{SKILL_ID}}/files/download
+  body: none
+  auth: none
+}

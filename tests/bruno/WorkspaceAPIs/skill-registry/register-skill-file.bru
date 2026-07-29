@@ -1,0 +1,28 @@
+meta {
+  name: Register skill file
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/skill-registry/{{SKILL_ID}}/files
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "fileName": "knowledge-base.md",
+    "content": "# Knowledge Base\n\nThis document contains guidelines for using the Skill Registry.\n\n## Overview\nThe Skill Registry allows users to upload, manage, and retrieve skill-related documentation.\n\n## Best Practices\n- Use descriptive file names.\n- Keep documentation up to date.\n- Organize content with headings and bullet points.",
+    "fileType": "markdown"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "SKILL_FILE_ID",
+          res.getBody().data.id
+      );
+  }
+}
