@@ -16,6 +16,8 @@ import { KnowledgeBaseDetailsPage } from "./pages/02-configure/knowledge-bases/K
 import { KnowledgeBasePage } from "./pages/02-configure/knowledge-bases/KnowledgeBasePage";
 import { QueuesPage } from "./pages/02-configure/queues/QueuesPage";
 import { QueuesWorkItemsPage } from "./pages/02-configure/queues/QueuesWorkItemsPage";
+import { SkillDetailsPage } from "./pages/02-configure/skills/SkillsDetailsPage";
+import { SkillPage } from "./pages/02-configure/skills/SkillsPage";
 import { EmailTriggerPage } from "./pages/02-configure/triggers/EmailTriggerPage";
 import { MessageTriggerPage } from "./pages/02-configure/triggers/MessageTriggerPage";
 import { TimeTriggerPage } from "./pages/02-configure/triggers/TimeTriggerPage";
@@ -124,6 +126,19 @@ const routerConfig: RouteObject[] = [
               {
                 path: ":id",
                 element: <KnowledgeBaseDetailsPage />,
+              },
+            ],
+          },
+          {
+            path: "skills",
+            children: [
+              {
+                index: true,
+                element: <SkillPage />,
+              },
+              {
+                path: ":id",
+                element: <SkillDetailsPage />,
               },
             ],
           },

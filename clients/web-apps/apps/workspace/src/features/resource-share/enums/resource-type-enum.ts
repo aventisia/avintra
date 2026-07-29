@@ -5,6 +5,7 @@ export enum ResourceTypeEnum {
   Vault = "Vault",
   AppSecret = "AppSecret",
   KnowledgeBase = "KnowledgeBase",
+  Skill = "Skill",
   Flow = "Flow",
   FlowVersion = "FlowVersion",
 }

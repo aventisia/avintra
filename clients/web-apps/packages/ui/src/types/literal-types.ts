@@ -28,6 +28,7 @@ type CrudEntityKey =
   | "queue"
   | "keystore"
   | "knowledgeBase"
+  | "skill"
   | "vault"
   | "emailTrigger"
   | "messageTrigger"
