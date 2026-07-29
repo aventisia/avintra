@@ -6,6 +6,7 @@ import { getDialogHeadingDescription as getFlowDialogHeadingDescription } from "
 import { getDialogHeadingDescription as getKeystoreDialogHeadingDescription } from "@/features/02-configure/keystore-table/constants";
 import { getDialogHeadingDescription as getKBDialogHeadingDescription } from "@/features/02-configure/knowledge-base/constants";
 import { getDialogHeadingDescription as getQueueDialogHeadingDescription } from "@/features/02-configure/queues/queues-table/constants";
+import { getDialogHeadingDescription as getSkillsDialogHeadingDescription } from "@/features/02-configure/skills/constants";
 import { getDialogHeadingDescription as getEmailTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/email-triggers-table/constants";
 import { getDialogHeadingDescription as getMessageTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/message-triggers-table/constants";
 import { getDialogHeadingDescription as getTimeTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/time-triggers-table/constants";
@@ -51,6 +52,11 @@ const KeystoreCrudDialogContent = lazy(() =>
 const KBCrudDialogContent = lazy(() =>
   import("@/features/02-configure/knowledge-base/components/kb-crud-dialog/KBCrudDialogContent").then(
     (m) => ({ default: m.KBCrudDialogContent }),
+  ),
+);
+const SkillsCrudDialogContent = lazy(() =>
+  import("@/features/02-configure/skills/components/skill-crud-dialog/SkillCrudDialogContent").then(
+    (m) => ({ default: m.SkillCrudDialogContent }),
   ),
 );
 const VaultCrudDialogContent = lazy(() =>
@@ -154,6 +160,11 @@ const crudDialogRegistry: CrudDialogRegistry = {
     maxWidth: "!max-w-[36rem]",
     getHeader: getKBDialogHeadingDescription,
     Content: KBCrudDialogContent,
+  },
+  skill: {
+    maxWidth: "!max-w-[36rem]",
+    getHeader: getSkillsDialogHeadingDescription,
+    Content: SkillsCrudDialogContent,
   },
   vault: {
     maxWidth: "!max-w-[36rem]",
