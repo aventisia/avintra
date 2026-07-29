@@ -80,6 +80,7 @@ public static class AppServicesExtension
         config.Apply(new SearchByQueryMappingProfile());
         config.Apply(new KnowledgeBaseMappingProfile());
         config.Apply(new KnowledgeBaseFileMappingProfile());
+        config.Apply(new SkillMappingProfile());
         config.Apply(new JobExecutionLogMappingProfile());
         config.Apply(new ResourceShareMappingProfile());
 
@@ -152,6 +153,8 @@ public static class AppServicesExtension
         services.AddScoped<IAdminConversationService, AdminConversationService>();
         services.AddScoped<IKnowledgeBaseService, KnowledgeBaseService>();
         services.AddScoped<IKnowledgeBaseFileService, KnowledgeBaseFileService>();
+        services.AddScoped<ISkillRegistryService, SkillRegistryService>();
+        services.AddScoped<ISkillRegistryFileService, SkillRegistryFileService>();
         services.AddScoped<IJobExecutionLogService, JobExecutionLogService>();
         services.AddScoped<INodeExecutionLogService, NodeExecutionLogService>();
         services.AddScoped<IResourceShareService, ResourceShareService>();

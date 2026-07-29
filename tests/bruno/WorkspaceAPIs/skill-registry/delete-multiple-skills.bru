@@ -1,0 +1,24 @@
+meta {
+  name: Delete multiple skills
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/skill-registry/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  ["{{SKILL_ID}}"]
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "SKILL_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}

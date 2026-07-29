@@ -41,6 +41,8 @@ public interface IUnitOfWork
     IKnowledgeBaseRepo KnowledgeBaseRepo { get; }
     IKnowledgeBaseFileRepo KnowledgeBaseFileRepo { get; }
     IResourceShareRepo ResourceShareRepo { get; }
+    ISkillRepo SkillRepo { get; }
+    ISkillFileRepo SkillFileRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

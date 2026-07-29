@@ -52,6 +52,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<KnowledgeBase>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<KnowledgeBaseFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<JobNodeExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Skill>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<SkillFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // TODO: Remove this temporary migration code after all legacy user mapping data
         // (FlowUser, FlowVersionUser, and QueueUser) has been successfully migrated
@@ -73,6 +75,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<KnowledgeBase>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
         modelBuilder.Entity<KnowledgeBaseFile>().HasIndex(index => new { index.KnowledgeBaseId, index.FileName }).IsUnique();
         modelBuilder.Entity<ResourceShare>().HasIndex(index => new { index.ResourceId, index.UserId }).IsUnique();
+        modelBuilder.Entity<Skill>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
+        modelBuilder.Entity<SkillFile>().HasIndex(index => new { index.SkillId, index.FileName }).IsUnique();
 
         // Enum to string conversion
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
@@ -134,6 +138,13 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<SupportTicketRemark>().HasOne(one => one.SupportTicket).WithMany(many => many.SupportTicketRemarks).HasForeignKey(fKey => fKey.SupportTicketId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<NotificationUser>().HasOne(one => one.Notification).WithMany(many => many.NotificationUsers).HasForeignKey(fKey => fKey.NotificationId).OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<KnowledgeBaseFile>().HasOne(one => one.KnowledgeBase).WithMany(many => many.Files).HasForeignKey(fKey => fKey.KnowledgeBaseId).IsRequired().OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<SkillFile>()
+            .HasOne(one => one.Skill)
+            .WithMany(many => many.Files)
+            .HasForeignKey(fKey => fKey.SkillId)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Configure One-to-One relationship between Notification and WorkspaceUser
         modelBuilder.Entity<Notification>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
@@ -247,4 +258,6 @@ public class WorkspaceDbContext : DbContext
     public DbSet<KnowledgeBase> KnowledgeBases { get; set; }
     public DbSet<KnowledgeBaseFile> KnowledgeBaseFiles { get; set; }
     public DbSet<ResourceShare> ResourceShares { get; set; }
+    public DbSet<Skill> Skills { get; set; }
+    public DbSet<SkillFile> SkillFiles { get; set; }
 }

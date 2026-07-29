@@ -51,5 +51,11 @@ public enum ResourceTypeEnum
     /// Represents a specific version of a flow resource used for versioned workflow execution and management.
     /// </summary>
     [Description("Represents a specific version of a flow resource used for versioned workflow execution and management.")]
-    FlowVersion
+    FlowVersion,
+
+    /// <summary>
+    /// Represents a skill registry resource used for storing and sharing reusable skills and scripts.
+    /// </summary>
+    [Description("Represents a skill registry resource used for storing and sharing reusable skills and scripts.")]
+    Skill
 }

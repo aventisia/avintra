@@ -1,0 +1,23 @@
+meta {
+  name: Update skill
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/skill-registry
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "id": "{{SKILL_ID}}",
+    "name": "Intelligent Document Search",
+    "description": "Provides semantic search capabilities over uploaded documents using vector embeddings, enabling users to quickly find relevant information across large knowledge bases.",
+    "isGlobal": false,
+    "isTenantWideAccess": false,
+    "isActive": true,
+    "isDisabled": false
+  }
+}

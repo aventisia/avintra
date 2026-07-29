@@ -1,0 +1,11 @@
+meta {
+  name: Get shared skills
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/skill-registry/list/shared
+  body: none
+  auth: none
+}

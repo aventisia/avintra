@@ -1,0 +1,20 @@
+meta {
+  name: Share skill to user
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/resource-share
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "resourceType": "Skill",
+    "resourceId": "{{SKILL_ID}}",
+    "accessLevel": "View",
+    "userId": "{{USER_ID}}"
+  }
+}

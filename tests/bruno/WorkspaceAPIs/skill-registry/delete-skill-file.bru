@@ -1,0 +1,20 @@
+meta {
+  name: Delete skill file
+  type: http
+  seq: 12
+}
+
+delete {
+  url: {{WORKSPACE_APIS_BASE_URL}}/skill-registry/{{SKILL_ID}}/files/{{SKILL_FILE_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+        "SKILL_FILE_ID", 
+        "00000000-0000-0000-0000-000000000000"
+      );
+  }
+}
