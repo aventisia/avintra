@@ -5,7 +5,7 @@ import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { registerSkillFile } from "../../apis/skill-file-apis";
-import { DETAIL_DATA_QUERY_KEY } from "../../constants";
+import { DATA_QUERY_KEY, DETAIL_DATA_QUERY_KEY } from "../../constants";
 import { useDefineSkillAddFilesForm } from "../../hooks/useDefineSkillAddFilesForm";
 import {
   FileDropZone,
@@ -70,6 +70,9 @@ export const SkillAddFileForm = ({
     onSuccess: async ({ successCount, failureCount }) => {
       await queryClient.invalidateQueries({
         queryKey: [...DETAIL_DATA_QUERY_KEY, skillId],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: DATA_QUERY_KEY,
       });
 
       if (failureCount === 0) {

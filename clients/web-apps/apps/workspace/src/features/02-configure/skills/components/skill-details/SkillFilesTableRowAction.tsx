@@ -5,7 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon, Trash2Icon } from "lucide-react";
 
 import { deleteSkillFile } from "../../apis/skill-file-apis";
-import { DETAIL_DATA_QUERY_KEY } from "../../constants";
+import { DATA_QUERY_KEY, DETAIL_DATA_QUERY_KEY } from "../../constants";
 import { SkillFileDto } from "../../dtos/skill-file-dto";
 import { SkillTableDto } from "../../dtos/skill-table-dto";
 
@@ -27,6 +27,9 @@ export const SkillFilesTableRowAction = ({ row, skillId }: SkillFilesTableRowAct
       toast.success("File deleted successfully");
       queryClient.invalidateQueries({
         queryKey: [...DETAIL_DATA_QUERY_KEY, skillId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: DATA_QUERY_KEY,
       });
     },
     onError: (error) => {
