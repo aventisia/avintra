@@ -254,57 +254,84 @@ class OpenRouterProvider(BaseLLMProvider):
         else:
             raise ValueError("Input must be a string or a list of messages.")
 
-        # Add files if any are provided (OpenRouter uses an OpenAI-compatible
-        # chat completions endpoint, so we use standard vision content blocks).
+        # Add files if any are provided
         if llm_request.files:
-            # Attach files to the last user message if one exists.
+            # Find the last user message
             user_message_index = None
             for idx in range(len(messages) - 1, -1, -1):
-                if messages[idx].get("role") == "user":
+                if messages[idx]["role"] == "user":
                     user_message_index = idx
                     break
 
+            # Create one if it doesn't exist
             if user_message_index is None:
                 messages.append({"role": "user", "content": []})
                 user_message_index = len(messages) - 1
 
-            # Ensure content is a list.
+            # Convert string content into content blocks
             content = messages[user_message_index].get("content")
+
             if isinstance(content, str):
-                messages[user_message_index]["content"] = [{"type": "text", "text": content}]
-            elif not isinstance(content, list):
+                messages[user_message_index]["content"] = [
+                    {
+                        "type": "text",
+                        "text": content,
+                    }
+                ]
+            elif content is None:
                 messages[user_message_index]["content"] = []
 
             for file_data in llm_request.files:
-                base64_uri = file_to_base64(file_data)
-                if not base64_uri:
-                    continue  # skip invalid files
+                data_uri = file_to_base64(file_data)
+                if not data_uri:
+                    continue
 
-                # Extract MIME type and format from base64 URI if available
-                if base64_uri.startswith("data:"):
-                    mime_type = base64_uri.split(";")[0].replace("data:", "")
-                    file_format = mime_type.split("/")[-1]
-                else:
-                    mime_type = "application/octet-stream"
-                    file_format = "bin"
+                filename = _file_input_filename(file_data, default="file")
 
-                if base64_uri.startswith("data:image/"):
-                    messages[user_message_index]["content"].append({
-                        "type": "image_url",
-                        "image_url": {"url": base64_uri}
-                    })
-                else:
-                    # OpenRouter's chat completions endpoint primarily supports images
-                    # in content arrays. For non-image files we fall back to a textual
-                    # marker containing the filename.
-                    filename = _file_input_filename(file_data, default="file")
-                    messages[user_message_index]["content"].append({
-                        "type": "file",
-                        "file": {
-                            "filename": filename,
-                            "file_data": f"data:{mime_type};base64,{base64_uri}"
+                # Parse mime type
+                mime_type = "application/octet-stream"
+                if data_uri.startswith("data:"):
+                    mime_type = data_uri.split(";")[0][5:]
+
+                # Images
+                if mime_type.startswith("image/"):
+                    messages[user_message_index]["content"].append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": data_uri,
+                            },
                         }
-                    })
+                    )
+
+                # Audio
+                elif mime_type.startswith("audio/"):
+                    audio_format = mime_type.split("/")[-1]
+
+                    # input_audio expects raw base64 without the data: prefix
+                    base64_data = data_uri.split(",", 1)[1]
+
+                    messages[user_message_index]["content"].append(
+                        {
+                            "type": "input_audio",
+                            "input_audio": {
+                                "data": base64_data,
+                                "format": audio_format,
+                            },
+                        }
+                    )
+
+                # Everything else (PDF, DOCX, TXT, etc.)
+                else:
+                    messages[user_message_index]["content"].append(
+                        {
+                            "type": "file",
+                            "file": {
+                                "filename": filename,
+                                "file_data": data_uri,  # data:<mime>;base64,...
+                            },
+                        }
+                    )
                      
         # Building the payload with dynamic elements
         payload = {
