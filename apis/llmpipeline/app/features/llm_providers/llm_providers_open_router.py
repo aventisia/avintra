@@ -320,7 +320,7 @@ class OpenRouterProvider(BaseLLMProvider):
             payload["max_tokens"] = llm_request.max_output_tokens
 
         # Initialize default response format
-        payload["response_format"] = {}
+        payload["response_format"] = None
 
         # Include response format if JSON schema is defined
         if llm_request.json_schema:
