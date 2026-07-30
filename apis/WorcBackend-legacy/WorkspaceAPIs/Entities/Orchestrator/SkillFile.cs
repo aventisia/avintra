@@ -26,7 +26,7 @@ public class SkillFile : BaseEntity, IMustHaveTenant
     /// <summary>
     /// Gets or sets the text content of the file.
     /// </summary>
-    public required byte[] Content { get; set; }
+    public required string Content { get; set; }
 
     /// <summary>
     /// Gets or sets the type of the file (e.g., markdown, python, shell, javascript).

@@ -11,17 +11,16 @@ tenant-scoped and support the tenant filtering infrastructure through
 ``TenantScopedMixin``.
 
 Note:
-    ``worc_SkillFiles.Content`` is stored as ``bytea`` by the .NET EF Core
-    migration because the C# entity declares ``byte[] Content``. The Python
-    model maps the same column as ``LargeBinary`` and exposes a convenience
-    property ``content_text`` that decodes the bytes as UTF-8 for reading.
+    ``worc_SkillFiles.Content`` is stored as PostgreSQL ``text`` because the
+    C# entity declares ``string Content``. The Python model maps the same
+    column as ``Text`` and exposes it directly as a ``str``.
 """
 
 import uuid
 from datetime import datetime, timezone
 from typing import Optional
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, LargeBinary, String, Text, UniqueConstraint
+from sqlalchemy import Boolean, DateTime, ForeignKey, Index, String, Text, UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -154,11 +153,11 @@ class SkillFile(TenantScopedMixin, SkillRegistryBase, _BaseEntityMixin):
         String(255),
         nullable=False,
     )
-    content: Mapped[bytes] = mapped_column(
+    content: Mapped[str] = mapped_column(
         "Content",
-        LargeBinary,
+        Text,
         nullable=False,
-        default=b"",
+        default="",
     )
     file_type: Mapped[Optional[str]] = mapped_column(
         "FileType",
@@ -175,20 +174,4 @@ class SkillFile(TenantScopedMixin, SkillRegistryBase, _BaseEntityMixin):
 
     skill: Mapped["Skill"] = relationship(
         back_populates="files",
-    )
-
-    @property
-    def content_text(self) -> str:
-        """Return the file content decoded as UTF-8 text."""
-
-        if self.content is None:
-            return ""
-        return self.content.decode("utf-8", errors="replace")
-
-    __table_args__ = (
-        UniqueConstraint(
-            "SkillId",
-            "FileName",
-            name="UQ_worc_SkillFiles_SkillId_FileName",
-        ),
     )

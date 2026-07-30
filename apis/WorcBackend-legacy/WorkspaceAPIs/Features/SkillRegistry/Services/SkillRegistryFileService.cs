@@ -194,7 +194,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                 TenantId = _currentTenantService.CurrentTenantId,
                 SkillId = skillId,
                 FileName = safeFileName,
-                Content = Encoding.UTF8.GetBytes(registerSkillFileDto.Content),
+                Content = registerSkillFileDto.Content,
                 FileType = fileType,
                 CreatedByUserId = _userId,
                 LastModifiedByUserId = _userId,
@@ -376,7 +376,8 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                         System.IO.Compression.CompressionLevel.Optimal);
 
                     await using var entryStream = entry.Open();
-                    await entryStream.WriteAsync(file.Content);
+                    await using var writer = new StreamWriter(entryStream, Encoding.UTF8);
+                    await writer.WriteAsync(file.Content ?? string.Empty);
                 }
             }
             serviceResponse.Update("Skill files downloaded successfully", 200, memoryStream.ToArray());

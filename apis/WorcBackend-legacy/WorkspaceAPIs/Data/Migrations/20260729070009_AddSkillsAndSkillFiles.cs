@@ -54,7 +54,7 @@ namespace WorkspaceAPIs.Data.Migrations
                     TenantId = table.Column<Guid>(type: "uuid", nullable: false),
                     SkillId = table.Column<Guid>(type: "uuid", nullable: false),
                     FileName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    Content = table.Column<byte[]>(type: "bytea", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
                     FileType = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     CreatedByUserId = table.Column<Guid>(type: "uuid", nullable: false),
                     CreatedOn = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),

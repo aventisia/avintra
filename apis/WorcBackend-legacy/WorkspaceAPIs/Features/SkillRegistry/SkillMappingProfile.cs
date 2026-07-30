@@ -23,7 +23,11 @@ public class SkillMappingProfile : IRegister
                 src => src.Files != null ? src.Files.Count : 0);
 
         config.NewConfig<SkillFile, SkillFileDto>()
-            .Map(dest => dest.Content, src => Encoding.UTF8.GetString(src.Content))
+            .Map(dest => dest.Content,
+                src => string.Join(" ",
+                    src.Content
+                        .Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Take(20)))
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName

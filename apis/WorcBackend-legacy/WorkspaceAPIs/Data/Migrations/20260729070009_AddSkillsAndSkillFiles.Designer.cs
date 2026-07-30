@@ -1733,9 +1733,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<byte[]>("Content")
+                    b.Property<string>("Content")
                         .IsRequired()
-                        .HasColumnType("bytea");
+                        .HasColumnType("text");
 
                     b.Property<Guid>("CreatedByUserId")
                         .HasColumnType("uuid");
