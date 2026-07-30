@@ -54,4 +54,10 @@ public interface ISkillRegistryService
     /// <param name="skillIds">The IDs of the skills to delete.</param>
     /// <returns>The task result contains the service response indicating whether the skills were deleted.</returns>
     Task<ServiceResponse<bool>> DeleteSkillsAsync(List<Guid> skillIds);
+
+    /// <summary>
+    /// Retrieves all skills accessible to the specified user for desktop sync.
+    /// </summary>
+    /// <returns>The task result contains the service response with the list of skills and their files.</returns>
+    Task<ServiceResponse<IEnumerable<SkillSyncDto>>> GetSkillsForSyncAsync();
 }

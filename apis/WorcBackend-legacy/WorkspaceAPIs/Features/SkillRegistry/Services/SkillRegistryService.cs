@@ -593,4 +593,82 @@ public class SkillRegistryService : ISkillRegistryService
 
         return serviceResponse;
     }
+
+    /// <summary>
+    /// Retrieves all skills accessible to the current user for desktop sync.
+    /// </summary>
+    public async Task<ServiceResponse<IEnumerable<SkillSyncDto>>> GetSkillsForSyncAsync()
+    {
+        // Initialize a failed response in case the operation does not complete successfully.
+        var serviceResponse = ServiceResponse<IEnumerable<SkillSyncDto>>.Create("Failed to retrieve skills for sync. Please try again", 400);
+
+        try
+        {
+            // Validate input identifiers.
+            if (_currentTenantService.CurrentTenantId == Guid.Empty)
+            {
+                serviceResponse.Message = "A valid tenant ID is required";
+                return serviceResponse;
+            }
+
+            if (_currentTenantService.CurrentUserId == Guid.Empty)
+            {
+                serviceResponse.Message = "A valid user ID is required";
+                return serviceResponse;
+            }
+
+            // Retrieve IDs and access levels for resources shared with the target user.
+            var resourceAccess = await _resourceShareService.GetAccessibleResourcesWithAccessAsync(
+                _currentTenantService.CurrentUserId,
+                ResourceTypeEnum.Skill,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                });
+
+            // Load skills within the tenant that are global, tenant-wide, explicitly shared, or owned by the user.
+            var skills = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(s =>
+                    s.TenantId == _currentTenantService.CurrentTenantId &&
+                    (
+                        s.CreatedByUserId == _currentTenantService.CurrentUserId ||
+                        s.IsGlobal ||
+                        s.IsTenantWideAccess ||
+                        resourceAccess.Keys.Contains(s.Id)
+                    ))
+                .OrderByDescending(o => o.CreatedOn)
+                .Include(i => i.Files)
+                .ThenInclude(i2 => i2.CreatedByUser)
+                .ToListAsync();
+
+            // Project entities to sync DTOs preserving full file content.
+            var syncDtoList = skills.Select(skill => new SkillSyncDto
+            {
+                Name = skill.Name,
+                Description = skill.Description,
+                Files = skill.Files?.Select(file => new SkillFileDto
+                {
+                    Id = file.Id,
+                    SkillId = file.SkillId,
+                    FileName = file.FileName,
+                    Content = file.Content,
+                    FileType = file.FileType,
+                    CreatedBy = file.CreatedByUser != null
+                        ? file.CreatedByUser.FirstName + " " + file.CreatedByUser.LastName
+                        : null,
+                    CreatedOn = file.CreatedOn,
+                }).ToList() ?? new List<SkillFileDto>(),
+            }).ToList();
+
+            serviceResponse.Update("Skills retrieved for sync successfully", 200, syncDtoList);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving skills for sync for tenant {TenantId} and user {UserId}", _currentTenantService.CurrentTenantId, _currentTenantService.CurrentUserId);
+        }
+
+        return serviceResponse;
+    }
 }
