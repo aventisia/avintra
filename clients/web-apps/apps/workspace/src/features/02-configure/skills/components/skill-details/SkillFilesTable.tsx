@@ -39,7 +39,11 @@ export const SkillFilesTable = () => {
 
   // Fetch skill files data
   const { data } = useFetchSkillFiles(skillId);
-  const { data: skillData, isLoading: isSkillListLoading } = useFetchSkills("all");
+  const {
+    data: skillData,
+    isLoading: isSkillListLoading,
+    isError: isSkillListError,
+  } = useFetchSkills("all");
 
   const skill = useMemo(
     () => skillData?.data?.find((item) => item.id === skillId),
@@ -48,10 +52,13 @@ export const SkillFilesTable = () => {
 
   const columns = useMemo(() => getSkillFilesTableColumns(skillId, skill), [skillId, skill]);
 
-  // If the skill does not exist in skill list/shared revert user back to skills
+  // If the skill does not exist in personal/shared lists and fetching has finished
+  // without an error, revert the user back to the skills list.
   useEffect(() => {
-    if (!isSkillListLoading && !skill) navigate("/configure/skills");
-  }, [isSkillListLoading, skill, navigate]);
+    if (!isSkillListLoading && !isSkillListError && skillId && !skill) {
+      navigate("/configure/skills");
+    }
+  }, [isSkillListLoading, isSkillListError, skillId, skill, navigate]);
 
   const canManageFiles = useMemo(() => {
     if (!skill) return false;

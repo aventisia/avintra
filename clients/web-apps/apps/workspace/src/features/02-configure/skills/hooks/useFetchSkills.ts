@@ -15,7 +15,10 @@ export const useFetchSkills = (tab: "current" | "all" = "current") => {
   const { isPersonal, queryKey } = useTableTab();
 
   const shouldFetchBoth = tab === "all";
-  const personalQueryKey = [...queryKey];
+
+  // When fetching both lists (e.g. detail page lookup), use stable distinct keys
+  // so the two queries never collide. For the current tab view, use the tab-derived key.
+  const personalQueryKey = shouldFetchBoth ? DATA_QUERY_KEY : queryKey;
   const sharedQueryKey = [...DATA_QUERY_KEY, "SHARED"];
 
   // Get skills using react query
@@ -49,6 +52,7 @@ export const useFetchSkills = (tab: "current" | "all" = "current") => {
   // Return isFetching and isLoading flag
   return {
     data,
+    isError,
     isFetching: personalQuery.isFetching || sharedQuery.isFetching,
     isLoading: personalQuery.isLoading || sharedQuery.isLoading,
   };
