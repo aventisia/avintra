@@ -77,4 +77,11 @@ public class SkillRegistryController : BaseApiController
     {
         return ResultHelper(await _skillRegistryService.DeleteSkillsAsync(skillIds));
     }
+
+    // Retrieves all skills and files for desktop sync.
+    [HttpGet("sync")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SkillSyncDto>>>> GetSkillsForSync()
+    {
+        return ResultHelper(await _skillRegistryService.GetSkillsForSyncAsync());
+    }
 }
