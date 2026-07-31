@@ -14,7 +14,7 @@ import { getToolById, isToolNameAvailable } from "../apis/tools.apis";
 import { DETAIL_DATA_QUERY_KEY } from "../constants/tools-table.constants";
 import { toolNameSchema, toolZodSchema } from "../constants/tools-zod-schema";
 import { ToolDto } from "../dtos/index";
-import { ToolTypeEnum } from "../enums/tool-type-enum";
+import { ComponentTypeEnum } from "../enums/component-type-enum";
 import { useTableTab } from "./useTableTab.hook";
 
 interface UseToolFormOptions {
@@ -36,7 +36,7 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
       id: "",
       name: "",
       description: "",
-      type: ToolTypeEnum.Custom,
+      type: ComponentTypeEnum.Custom,
       baseUrl: "",
       openApiSpec: "",
       parsedSchema: undefined,
@@ -64,7 +64,7 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
         id: "",
         name: "",
         description: "",
-        type: ToolTypeEnum.Custom,
+        type: ComponentTypeEnum.Custom,
         baseUrl: "",
         openApiSpec: "",
         parsedSchema: undefined,
@@ -90,7 +90,7 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
           id: cachedTool.id ?? "",
           name: cachedTool.name ?? "",
           description: cachedTool.description ?? "",
-          type: cachedTool.type ?? ToolTypeEnum.Custom,
+          type: cachedTool.type ?? ComponentTypeEnum.Custom,
           baseUrl: cachedTool.baseUrl ?? "",
           openApiSpec: cachedTool.openApiSpec ?? "",
           parsedSchema: (cachedTool.parsedSchema as Record<string, unknown>) ?? undefined,
@@ -120,7 +120,7 @@ export const useToolForm = ({ rowId, crudAction }: UseToolFormOptions) => {
           id: tool.id ?? "",
           name: tool.name ?? "",
           description: tool.description ?? "",
-          type: tool.type ?? ToolTypeEnum.Custom,
+          type: tool.type ?? ComponentTypeEnum.Custom,
           baseUrl: tool.baseUrl ?? "",
           openApiSpec: tool.openApiSpec ?? "",
           parsedSchema: (tool.parsedSchema as Record<string, unknown>) ?? undefined,

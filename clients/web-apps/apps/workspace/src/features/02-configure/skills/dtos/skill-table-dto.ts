@@ -1,4 +1,5 @@
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
+import { ComponentTypeEnum } from "../enums/component-type-enum";
 
 /**
  * Represents a data transfer object (DTO) for a Skill entry.
@@ -15,6 +16,11 @@ export interface SkillTableDto {
    * Description of the skill.
    */
   description?: string;
+
+   /**
+     * Component type of the skill. Always Custom for user-created skills.
+     */
+    type: ComponentTypeEnum;
 
   /**
    * Access level of the skill record.
