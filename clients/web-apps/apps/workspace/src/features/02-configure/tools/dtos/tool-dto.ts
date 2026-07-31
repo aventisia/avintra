@@ -1,7 +1,7 @@
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-enum";
-import { ToolTypeEnum } from "../enums/tool-type-enum";
+import { ComponentTypeEnum } from "../enums/component-type-enum";
 
 /**
  * Represents a data transfer object (DTO) for a tool entry.
@@ -22,7 +22,7 @@ export interface ToolDto {
   /**
    * Component type of the tool. Always Custom for user-created tools.
    */
-  type: ToolTypeEnum;
+  type: ComponentTypeEnum;
 
   /**
    * Base URL of the external API.

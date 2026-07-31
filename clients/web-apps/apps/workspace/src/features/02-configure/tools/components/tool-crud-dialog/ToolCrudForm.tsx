@@ -27,9 +27,6 @@ export const ToolCrudForm = ({
   const { queryKey } = useTableTab();
   const {
     form,
-    isDirty,
-    isAvailable,
-    isCheckPending,
     availabilityMessage,
     setAvailabilityMessage,
     handleInputChange,
@@ -122,12 +119,6 @@ export const ToolCrudForm = ({
         disabled={isReadMode || isCredentialsLoading}
       />
 
-      <SwitchField
-        name="isTenantWideAccess"
-        label="Tenant Wide Access"
-        description="Make this tool available to all users in the tenant"
-      />
-
       {crudAction !== "create" && (
         <SwitchField
           name="isDisabled"
@@ -140,7 +131,7 @@ export const ToolCrudForm = ({
         <div className="!mt-5 flex w-full justify-end">
           <Button
             type="submit"
-            disabled={!isDirty || !isAvailable || isCheckPending || isMutating}
+            disabled={isMutating}
             className="min-w-[5rem]"
           >
             {isMutating

@@ -8,7 +8,7 @@ import { AUTHENTICATION_TYPE_DISPLAY_NAMES } from "@/features/02-configure/tools
 import { getColumnName } from "@/features/02-configure/tools/constants/tools-column-display-names";
 import { ToolDto } from "@/features/02-configure/tools/dtos/index";
 import { ToolAuthenticationTypeEnum } from "@/features/02-configure/tools/enums/tool-authentication-type-enum";
-import { ToolTypeEnum } from "@/features/02-configure/tools/enums/tool-type-enum";
+import { ComponentTypeEnum } from "@/features/02-configure/tools/enums/component-type-enum";
 import { ToolRowActions } from "@/features/02-configure/tools/components/tool-row-actions/ToolRowActions";
 
 export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): ColumnDef<ToolDto>[] => [
@@ -50,7 +50,7 @@ export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): Column
   {
     accessorKey: "type",
     header: ({ column }) => <DTColumnHeader column={column} tableKey="tools" title={getColumnName("type")} />,
-    cell: ({ row }) => <div>{getEnumValueByKey(ToolTypeEnum, row.getValue("type"))}</div>,
+    cell: ({ row }) => <div>{getEnumValueByKey(ComponentTypeEnum, row.getValue("type"))}</div>,
   },
   {
     accessorKey: "baseUrl",

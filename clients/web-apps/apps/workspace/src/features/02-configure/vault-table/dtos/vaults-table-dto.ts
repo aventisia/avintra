@@ -1,7 +1,5 @@
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
-import { VaultAppsEnum } from "../enums/vault-apps-enum";
-
 /**
  * Represents a data transfer object (DTO) for an app secret.
  */
@@ -21,10 +19,9 @@ export interface VaultsTableDto {
   /**
    * Gets or sets the type of the secret.
    * Used to determine the structure of the data field.
+   * The backend accepts the enum name as a string (e.g. "CustomApiTool").
    */
-  type: VaultAppsEnum;
-  // If backend sends arbitrary string values, use:
-  // type: string;
+  type: string;
 
   /**
    * Gets or sets the secret data.
