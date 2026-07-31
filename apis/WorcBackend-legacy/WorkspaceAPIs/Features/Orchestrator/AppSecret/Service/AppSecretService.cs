@@ -11,8 +11,9 @@ public class AppSecretService : IAppSecretService
         IUnitOfWork unitOfWork,
         ILogger<AppSecretService> logger, IHttpContextAccessor
         httpContextAccessor,
-        IStringEncryptionService encryptionService
-, IResourceShareService resourceShareService)
+        IStringEncryptionService encryptionService,
+        IResourceShareService resourceShareService
+    )
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -904,7 +905,9 @@ public class AppSecretService : IAppSecretService
         // JSON deserialization options (case-insensitive for property names)
         var jsonOptions = new JsonSerializerOptions
         {
-            PropertyNameCaseInsensitive = true
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+
         };
 
         // Serialize the input object to a JSON string
@@ -1225,6 +1228,38 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
+            case AppSecretTypesEnum.CustomApiTool:
+                {
+                    // Deserialize the incoming JSON into the custom API tool credentials DTO.
+                    var credentials = System.Text.Json.JsonSerializer.Deserialize<CustomApiToolCredentialsDto>(rawJson, jsonOptions);
+
+                    // Ensure authentication parameters are present.
+                    if (credentials?.Parameters?.Count > 0)
+                    {
+                        // Encrypt each authentication parameter and remove the plaintext value  before persisting the sanitized JSON.
+                        foreach (var key in credentials.Parameters.Keys.ToList())
+                        {
+                            var value = credentials.Parameters[key];
+
+                            if (!string.IsNullOrWhiteSpace(value))
+                            {
+                                // Store the encrypted value separately.
+                                validationResult.EncryptedValues[key] = _encryptionService.EncryptString(value);
+
+                                // Clear the sensitive value from the serialized payload.
+                                credentials.Parameters[key] = string.Empty;
+                            }
+                        }
+                        // Serialize the sanitized credentials back to JSON.
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(credentials, jsonOptions);
+                    }
+                    else
+                    {
+                        // Validation failed because no authentication parameters were provided.
+                        validationResult.Remark = "Invalid Custom API Tool credentials: authentication parameters are missing or invalid.";
+                    }
+                    break;
+                }
 
             // Default case for unsupported credential types
             default:
@@ -1254,7 +1289,11 @@ public class AppSecretService : IAppSecretService
         // Apply updates
         foreach (var kv in updatedProperties)
         {
-            if (jsonObject.ContainsKey(kv.Key))
+            if (jsonObject["Parameters"] is JsonObject parameters && parameters.ContainsKey(kv.Key))
+            {
+                parameters[kv.Key] = kv.Value;
+            }
+            else if (jsonObject.ContainsKey(kv.Key))
             {
                 jsonObject[kv.Key] = kv.Value;
             }
