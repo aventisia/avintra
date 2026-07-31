@@ -29,6 +29,7 @@ type CrudEntityKey =
   | "keystore"
   | "knowledgeBase"
   | "skill"
+  | "tool"
   | "vault"
   | "emailTrigger"
   | "messageTrigger"

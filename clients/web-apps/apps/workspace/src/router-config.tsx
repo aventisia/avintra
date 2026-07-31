@@ -18,6 +18,8 @@ import { QueuesPage } from "./pages/02-configure/queues/QueuesPage";
 import { QueuesWorkItemsPage } from "./pages/02-configure/queues/QueuesWorkItemsPage";
 import { SkillDetailsPage } from "./pages/02-configure/skills/SkillsDetailsPage";
 import { SkillPage } from "./pages/02-configure/skills/SkillsPage";
+import { ToolDetailsPage } from "./pages/02-configure/tools/ToolDetailsPage";
+import { ToolsPage } from "./pages/02-configure/tools/ToolsPage";
 import { EmailTriggerPage } from "./pages/02-configure/triggers/EmailTriggerPage";
 import { MessageTriggerPage } from "./pages/02-configure/triggers/MessageTriggerPage";
 import { TimeTriggerPage } from "./pages/02-configure/triggers/TimeTriggerPage";
@@ -139,6 +141,19 @@ const routerConfig: RouteObject[] = [
               {
                 path: ":id",
                 element: <SkillDetailsPage />,
+              },
+            ],
+          },
+          {
+            path: "tools",
+            children: [
+              {
+                index: true,
+                element: <ToolsPage />,
+              },
+              {
+                path: ":id",
+                element: <ToolDetailsPage />,
               },
             ],
           },

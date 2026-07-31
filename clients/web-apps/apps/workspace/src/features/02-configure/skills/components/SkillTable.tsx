@@ -30,13 +30,13 @@ export const SkillTable = () => {
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isPersonal, queryKey, currentTab, isShared } = useTableTab();
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared/Library tabs list
+  const { isShared, isLibrary, isReadOnly, queryKey, currentTab } = useTableTab();
 
   // Fetch skills data
   const { data } = useFetchSkills();
 
-  const skillTableColumnsArray = SkillTableColumns(isShared);
+  const skillTableColumnsArray = SkillTableColumns(isShared, isLibrary);
 
   // Create a React table for skills data
   const table = useDataTable(
@@ -60,7 +60,7 @@ export const SkillTable = () => {
             </div>
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />
-              {isPersonal && <DTCreateButton buttonText="Add" entity="skill" />}
+              {!isReadOnly && <DTCreateButton buttonText="Add" entity="skill" />}
             </div>
           </div>
           {/* DT with only rows and custom design */}
@@ -90,6 +90,7 @@ export const SkillTable = () => {
                           accessLevel={row.original.accessLevel}
                           isTenantWideAccess={row.original.isTenantWideAccess || false}
                           name={row.original.name}
+                          isLibrary={isLibrary}
                         />
                       </div>
                       <span className="text-xs text-muted-foreground line-clamp-3">
@@ -108,7 +109,7 @@ export const SkillTable = () => {
           ) : (
             <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
               <p className="text-sm text-muted-foreground">
-                No skill found. Please add a new skill.
+                No skill found. {isReadOnly ? "" : "Please add a new skill."}
               </p>
             </div>
           )}

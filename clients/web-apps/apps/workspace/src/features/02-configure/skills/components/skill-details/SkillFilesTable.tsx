@@ -16,6 +16,7 @@ import { DETAIL_TABLE_KEY } from "../../constants";
 import { columnVisibilityState } from "../../constants/skill-files-column-visibility-state";
 import { useFetchSkillFiles } from "../../hooks/useFetchSkillFiles";
 import { useFetchSkills } from "../../hooks/useFetchSkills";
+import { useTableTab } from "../../hooks/useTableTab";
 import { useSkillFilesDialogStore } from "../../stores/skill-files-upload-dialog-store";
 import { SkillFileUploadDialog } from "./SkillFileUploadDialog";
 import { getSkillFilesTableColumns } from "./SkillFilesTableColumns";
@@ -36,6 +37,9 @@ export const SkillFilesTable = () => {
     DETAIL_TABLE_KEY,
     columnVisibilityState,
   );
+
+  // Personal/Shared/Library tab state from URL
+  const { isReadOnly } = useTableTab();
 
   // Fetch skill files data
   const { data } = useFetchSkillFiles(skillId);
@@ -61,9 +65,9 @@ export const SkillFilesTable = () => {
   }, [isSkillListLoading, isSkillListError, skillId, skill, navigate]);
 
   const canManageFiles = useMemo(() => {
-    if (!skill) return false;
+    if (isReadOnly || !skill) return false;
     return skill.accessLevel === "Owner" || skill.accessLevel === "FullAccess";
-  }, [skill]);
+  }, [isReadOnly, skill]);
 
   const filteredColumns = useMemo(() => {
     if (canManageFiles) return columns;
