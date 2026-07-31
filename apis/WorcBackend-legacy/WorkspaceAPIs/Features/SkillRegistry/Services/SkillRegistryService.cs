@@ -72,7 +72,6 @@ public class SkillRegistryService : ISkillRegistryService
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
                         (
-                            w.IsGlobal ||
                             w.IsTenantWideAccess ||
                             resourceAccess.Keys.Contains(w.Id)
                         )
@@ -132,9 +131,9 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Check for duplicate name excluding the current skill during updates.
             var existingSkill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s =>
-                    s.Name.ToLower() == normalizedName &&
-                    (skillId == Guid.Empty || skillId == null || s.Id != skillId)
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == normalizedName &&
+                    (skillId == Guid.Empty || skillId == null || w.Id != skillId)
                 )
                 .FirstOrDefaultAsync();
 
@@ -174,10 +173,10 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Retrieve the skill by ID including its related users and files.
             var skill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s => s.Id == skillId)
-                .Include(s => s.CreatedByUser)
-                .Include(s => s.LastModifiedByUser)
-                .Include(s => s.Files)
+                .GetByConditionAsync(w => w.Id == skillId)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.Files)
                 .FirstOrDefaultAsync();
 
             // Return when skill does not exist.
@@ -246,7 +245,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Check duplicate name within tenant to avoid conflicts.
             var existingSkill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s => s.Name.ToLower() == skillDto.Name.ToLower())
+                .GetByConditionAsync(w => w.Name.ToLower() == skillDto.Name.ToLower())
                 .FirstOrDefaultAsync();
 
             if (existingSkill != null)
@@ -324,7 +323,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Retrieve the existing skill for update.
             var existingSkill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s => s.Id == skillDto.Id)
+                .GetByConditionAsync(w => w.Id == skillDto.Id)
                 .FirstOrDefaultAsync();
 
             // Return when skill is missing.
@@ -358,9 +357,9 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Check for duplicate name excluding the current skill.
             var duplicateName = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s =>
-                    s.Id != skillDto.Id &&
-                    s.Name.ToLower() == skillDto.Name.ToLower()
+                .GetByConditionAsync(w =>
+                    w.Id != skillDto.Id &&
+                    w.Name.ToLower() == skillDto.Name.ToLower()
                 )
                 .FirstOrDefaultAsync();
 
@@ -448,7 +447,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Retrieve the skill for deletion.
             var skill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s => s.Id == skillId)
+                .GetByConditionAsync(w => w.Id == skillId)
                 .FirstOrDefaultAsync();
 
             // Return 404 when skill does not exist.
@@ -528,7 +527,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Load all requested skills from the database.
             var allMatchedSkills = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s => requestedIds.Contains(s.Id))
+                .GetByConditionAsync(w => requestedIds.Contains(w.Id))
                 .ToListAsync();
 
             // Ensure every requested ID matches an existing skill.
@@ -620,14 +619,14 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Load skills within the tenant that are global, tenant-wide, explicitly shared, or owned by the user.
             var skills = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s =>
-                    s.TenantId == _currentTenantService.CurrentTenantId &&
+                .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     (
-                        s.CreatedByUserId == _currentTenantService.CurrentUserId ||
-                        s.IsGlobal ||
-                        s.IsTenantWideAccess ||
-                        resourceAccess.Keys.Contains(s.Id)
-                    ))
+                        w.CreatedByUserId == _currentTenantService.CurrentUserId ||
+                        w.IsTenantWideAccess ||
+                        resourceAccess.Keys.Contains(w.Id)
+                    )
+                )
                 .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.Files)
                 .ThenInclude(i2 => i2.CreatedByUser)
@@ -674,13 +673,11 @@ public class SkillRegistryService : ISkillRegistryService
         {
             // Load platform-managed skills for the current tenant.
             var librarySkills = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s =>
-                    s.TenantId == _currentTenantService.CurrentTenantId &&
-                    s.Type == ComponentTypeEnum.Platform)
+                .GetByConditionAsync(w => w.Type == ComponentTypeEnum.Platform)
                 .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
-                .Include(i => i.Files)
+                .IgnoreQueryFilters()
                 .ToListAsync();
 
             // Map entities to DTOs.
