@@ -54,6 +54,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<JobNodeExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Skill>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<SkillFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<Tool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<FlowVersion_Tool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
 
         // TODO: Remove this temporary migration code after all legacy user mapping data
         // (FlowUser, FlowVersionUser, and QueueUser) has been successfully migrated
@@ -77,6 +79,8 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<ResourceShare>().HasIndex(index => new { index.ResourceId, index.UserId }).IsUnique();
         modelBuilder.Entity<Skill>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
         modelBuilder.Entity<SkillFile>().HasIndex(index => new { index.SkillId, index.FileName }).IsUnique();
+        modelBuilder.Entity<Tool>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
+        modelBuilder.Entity<FlowVersion_Tool>().HasIndex(index => new { index.TenantId, index.FlowVersionId, index.ToolId }).IsUnique();
 
         // Enum to string conversion
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
@@ -111,6 +115,9 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<PromptTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<PromptTemplateAccessTypeEnum>());
         modelBuilder.Entity<ResourceShare>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<ResourceAccessTypeEnum>());
         modelBuilder.Entity<ResourceShare>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
+        modelBuilder.Entity<Skill>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ComponentTypeEnum>());
+        modelBuilder.Entity<Tool>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ComponentTypeEnum>());
+        modelBuilder.Entity<Tool>().Property(e => e.AuthenticationType).HasConversion(new EnumToStringConverter<ToolAuthenticationTypeEnum>());
 
         // Configure Many-to-Many relationship between User and Notification
         modelBuilder.Entity<WorkspaceUser>().HasMany(many => many.NotificationUsers).WithOne(one => one.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
@@ -144,6 +151,19 @@ public class WorkspaceDbContext : DbContext
             .WithMany(many => many.Files)
             .HasForeignKey(fKey => fKey.SkillId)
             .IsRequired()
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // Configure Many-to-Many relationship between FlowVersion and Tool
+        modelBuilder.Entity<FlowVersion_Tool>()
+            .HasOne(one => one.FlowVersion)
+            .WithMany()
+            .HasForeignKey(fKey => fKey.FlowVersionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<FlowVersion_Tool>()
+            .HasOne(one => one.Tool)
+            .WithMany()
+            .HasForeignKey(fKey => fKey.ToolId)
             .OnDelete(DeleteBehavior.Cascade);
 
         // Configure One-to-One relationship between Notification and WorkspaceUser
@@ -260,4 +280,6 @@ public class WorkspaceDbContext : DbContext
     public DbSet<ResourceShare> ResourceShares { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<SkillFile> SkillFiles { get; set; }
+    public DbSet<Tool> Tools { get; set; }
+    public DbSet<FlowVersion_Tool> FlowVersionTools { get; set; }
 }

@@ -1,0 +1,11 @@
+meta {
+  name: Delete tool
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{WORKSPACE_APIS_BASE_URL}}/tools/{{TOOL_ID}}
+  body: none
+  auth: none
+}

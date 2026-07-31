@@ -57,5 +57,11 @@ public enum ResourceTypeEnum
     /// Represents a skill registry resource used for storing and sharing reusable skills and scripts.
     /// </summary>
     [Description("Represents a skill registry resource used for storing and sharing reusable skills and scripts.")]
-    Skill
+    Skill,
+
+    /// <summary>
+    /// Represents a tool resource used for registering custom REST APIs as LLM-callable tools.
+    /// </summary>
+    [Description("Represents a tool resource used for registering custom REST APIs as LLM-callable tools.")]
+    Tool
 }

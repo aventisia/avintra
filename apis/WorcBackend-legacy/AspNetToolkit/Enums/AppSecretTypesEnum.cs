@@ -102,5 +102,11 @@ public enum AppSecretTypesEnum
     Qdrant,
 
     EmailClient,
-    AzureBlobStorage
+    AzureBlobStorage,
+
+    /// <summary>
+    /// API key used to authenticate with a custom REST API tool registered in the Tool Registry.
+    /// </summary>
+    [Description("Custom API Tool Credentials")]
+    CustomApiTool,
 }

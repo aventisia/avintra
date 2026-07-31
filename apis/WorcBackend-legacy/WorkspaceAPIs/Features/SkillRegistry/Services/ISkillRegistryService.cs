@@ -60,4 +60,10 @@ public interface ISkillRegistryService
     /// </summary>
     /// <returns>The task result contains the service response with the list of skills and their files.</returns>
     Task<ServiceResponse<IEnumerable<SkillSyncDto>>> GetSkillsForSyncAsync();
+
+    /// <summary>
+    /// Retrieves all platform (library) skills available to the current tenant.
+    /// </summary>
+    /// <returns>The task result contains the service response with the list of library skill details.</returns>
+    Task<ServiceResponse<IEnumerable<SkillDto>>> GetLibrarySkillsAsync();
 }

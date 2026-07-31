@@ -1,0 +1,17 @@
+meta {
+  name: Get personal tools
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/tools/list
+  body: none
+  auth: none
+}
+
+script:post-response {
+  if (res.getStatus() === 200 && res.getBody().data?.length) {
+    bru.setGlobalEnvVar("TOOL_ID", res.getBody().data[0].id);
+  }
+}

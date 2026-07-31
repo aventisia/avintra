@@ -1,0 +1,15 @@
+meta {
+  name: Get flow version tools
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/flow-version-tools?flowVersionId={{FLOW_VERSION_ID}}
+  body: none
+  auth: none
+}
+
+params:query {
+  flowVersionId: {{FLOW_VERSION_ID}}
+}

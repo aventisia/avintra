@@ -50,6 +50,8 @@ public class UnitOfWork : IUnitOfWork
     public IResourceShareRepo ResourceShareRepo => new ResourceShareRepo(_workspaceDbContext);
     public ISkillRepo SkillRepo => new SkillRepo(_workspaceDbContext);
     public ISkillFileRepo SkillFileRepo => new SkillFileRepo(_workspaceDbContext);
+    public IToolRepo ToolRepo => new ToolRepo(_workspaceDbContext);
+    public IFlowVersionToolRepo FlowVersionToolRepo => new FlowVersionToolRepo(_workspaceDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false)
     {

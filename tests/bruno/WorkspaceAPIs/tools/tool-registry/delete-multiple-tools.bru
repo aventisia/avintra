@@ -1,0 +1,17 @@
+meta {
+  name: Delete multiple tools
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/tools/delete-multiple
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    ""{{TOOL_ID}}""
+  ]
+}

@@ -255,22 +255,12 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
-            // Create new skill entity from the DTO.
-            var newSkill = new Skill
-            {
-                Id = Guid.NewGuid(),
-                Name = skillDto.Name,
-                Description = skillDto.Description,
-                IsGlobal = false,
-                IsTenantWideAccess = skillDto.IsTenantWideAccess,
-                IsActive = skillDto.IsActive,
-                IsDisabled = skillDto.IsDisabled ?? false,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId,
-                CreatedOn = DateTimeOffset.UtcNow,
-                LastModifiedOn = DateTimeOffset.UtcNow,
-                TenantId = _currentTenantService.CurrentTenantId
-            };
+            // Map DTO to entity, force custom type, and set audit fields.
+            var newSkill = skillDto.Adapt<Skill>();
+            newSkill.Type = ComponentTypeEnum.Custom;
+            newSkill.CreatedByUserId = _userId;
+            newSkill.LastModifiedByUserId = _userId;
+
 
             // Persist new skill.
             await _unitOfWork.SkillRepo.InsertAsync(newSkill);
@@ -667,6 +657,41 @@ public class SkillRegistryService : ISkillRegistryService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error retrieving skills for sync for tenant {TenantId} and user {UserId}", _currentTenantService.CurrentTenantId, _currentTenantService.CurrentUserId);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
+    /// Retrieves all platform (library) skills available to the current tenant.
+    /// </summary>
+    public async Task<ServiceResponse<IEnumerable<SkillDto>>> GetLibrarySkillsAsync()
+    {
+        // Initialize a failed response in case the operation does not complete successfully.
+        var serviceResponse = ServiceResponse<IEnumerable<SkillDto>>.Create("Failed to retrieve library skills. Please try again", 400);
+
+        try
+        {
+            // Load platform-managed skills for the current tenant.
+            var librarySkills = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(s =>
+                    s.TenantId == _currentTenantService.CurrentTenantId &&
+                    s.Type == ComponentTypeEnum.Platform)
+                .OrderByDescending(o => o.CreatedOn)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.Files)
+                .ToListAsync();
+
+            // Map entities to DTOs.
+            var skillDtoList = librarySkills.Adapt<List<SkillDto>>();
+            skillDtoList.ForEach(fe => fe.AccessLevel = ResourceAccessTypeEnum.View);
+
+            serviceResponse.Update("Library skills retrieved successfully", 200, skillDtoList);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving library skills for tenant {TenantId}", _currentTenantService.CurrentTenantId);
         }
 
         return serviceResponse;
