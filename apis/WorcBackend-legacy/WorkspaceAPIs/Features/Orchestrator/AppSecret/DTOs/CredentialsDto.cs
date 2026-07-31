@@ -432,3 +432,19 @@ public class QdrantCredentialsDto
     /// </summary>
     public string ApiKey { get; set; } = string.Empty;
 }
+
+/// <summary>
+/// Represents credentials for a custom API tool.
+/// </summary>
+public class CustomApiToolCredentialsDto
+{
+    /// <summary>
+    /// Authentication type.
+    /// </summary>
+    public ToolAuthenticationTypeEnum Type { get; set; }
+
+    /// <summary>
+    /// Authentication parameters.
+    /// </summary>
+    public Dictionary<string, string> Parameters { get; set; } = [];
+}
