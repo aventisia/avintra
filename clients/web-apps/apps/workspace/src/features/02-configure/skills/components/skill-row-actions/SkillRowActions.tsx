@@ -18,6 +18,7 @@ interface SkillRowActionsProps {
   name: string;
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
+  isLibrary?: boolean;
 }
 
 export const SkillRowActions = ({
@@ -25,13 +26,16 @@ export const SkillRowActions = ({
   name,
   accessLevel,
   isTenantWideAccess,
+  isLibrary: isLibraryRow = false,
 }: SkillRowActionsProps) => {
   const navigate = useNavigate();
 
   const actions = getResourceAccessActions(accessLevel);
 
-  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
-  const { isShared, queryKey, currentTab } = useTableTab();
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared/Library tabs list
+  const { isShared, isLibrary: isLibraryTab, queryKey, currentTab } = useTableTab();
+
+  const readOnly = isLibraryRow || isLibraryTab;
 
   return (
     // Dropdown menu for skill table row action
@@ -39,7 +43,8 @@ export const SkillRowActions = ({
       {actions?.read && (
         <SimpleDDMenuItem
           Icon={ArrowTopRightOnSquareIcon}
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             navigate(
               `/configure/skills/${rowId}?skill=${name}&${TABLE_TAB_QUERY_PARAM}=${currentTab}`,
             );
@@ -47,10 +52,12 @@ export const SkillRowActions = ({
           content="Open"
         />
       )}
-      {/* Edit skill details */}
-      {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="skill" />}
-      {/* Share Access */}
-      {actions?.share && (
+      {/* Edit skill details (not available for library skills) */}
+      {!readOnly && actions?.update && (
+        <DTRowAction rowId={rowId} crudAction="update" entity="skill" />
+      )}
+      {/* Share Access (not available for library skills) */}
+      {!readOnly && actions?.share && (
         <ResourceShareRowAction
           rowId={rowId}
           isTenantWideAccess={isTenantWideAccess}
@@ -60,8 +67,8 @@ export const SkillRowActions = ({
       )}
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
-      {/* Skill delete alert dialog */}
-      {actions?.delete && <SkillRowDeleteAction rowId={rowId} />}
+      {/* Skill delete alert dialog (not available for library skills) */}
+      {!readOnly && actions?.delete && <SkillRowDeleteAction rowId={rowId} />}
       {isShared && <RemoveResourceRowAction queryKey={queryKey} rowId={rowId} />}
     </DataTableRowActions>
   );

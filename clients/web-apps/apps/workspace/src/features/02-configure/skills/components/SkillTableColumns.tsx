@@ -13,6 +13,7 @@ import { SkillRowActions } from "./skill-row-actions/SkillRowActions";
  */
 export const SkillTableColumns = (
   isSharedTab: boolean,
+  isLibraryTab: boolean = false,
 ): ColumnDef<SkillTableDto>[] => [
   {
     accessorKey: "id",
@@ -101,6 +102,7 @@ export const SkillTableColumns = (
         name={row.original.name}
         accessLevel={row.original.accessLevel}
         isTenantWideAccess={row.original.isTenantWideAccess || false}
+        isLibrary={isLibraryTab}
       />
     ),
   },

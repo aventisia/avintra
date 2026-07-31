@@ -20,6 +20,7 @@ import {
   ServerIcon,
   Shield,
   Wallet,
+  WrenchIcon,
   Workflow,
 } from "lucide-react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
@@ -114,6 +115,13 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: PuzzleIcon,
         name: "skills",
         route: "/configure/skills",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["OM"],
+        Icon: WrenchIcon,
+        name: "tools",
+        route: "/configure/tools",
         type: ["Commercial", "Enterprise"],
       },
     ],

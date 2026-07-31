@@ -67,6 +67,15 @@ export const deleteSkills = (ids: string[]) => {
 };
 
 /**
+ * Retrieves all platform (library) skills available to the current tenant.
+ */
+export const getLibrarySkills = () => {
+  return axiosInstance
+    .get<IHttpResponse<SkillTableDto[]>>(`${baseAPIURL}/library`)
+    .then((res) => res.data);
+};
+
+/**
  * Performs an optimistic mutation on a skill based on the provided CRUD action.
  *
  * @param {IOptimisticMutation<SkillTableDto | string | string[]>} options - The options for the optimistic mutation.

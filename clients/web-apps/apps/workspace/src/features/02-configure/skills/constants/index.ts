@@ -27,6 +27,7 @@ const TABLE_TAB_QUERY_PARAM = "tab";
 const TABLE_VIEW_TABS = [
   { label: "Personal", value: "personal" },
   { label: "Shared", value: "shared" },
+  { label: "Library", value: "library" },
 ] as QueryTabItem[];
 
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
