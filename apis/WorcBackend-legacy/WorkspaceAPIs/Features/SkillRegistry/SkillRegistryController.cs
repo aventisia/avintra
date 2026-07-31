@@ -84,4 +84,11 @@ public class SkillRegistryController : BaseApiController
     {
         return ResultHelper(await _skillRegistryService.GetSkillsForSyncAsync());
     }
+
+    // Retrieves all platform (library) skills.
+    [HttpGet("library")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SkillDto>>>> GetLibrarySkills()
+    {
+        return ResultHelper(await _skillRegistryService.GetLibrarySkillsAsync());
+    }
 }

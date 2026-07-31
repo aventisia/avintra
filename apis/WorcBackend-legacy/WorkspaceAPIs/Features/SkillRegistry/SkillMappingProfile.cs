@@ -22,6 +22,12 @@ public class SkillMappingProfile : IRegister
             .Map(dest => dest.FileCount,
                 src => src.Files != null ? src.Files.Count : 0);
 
+        config.NewConfig<SkillDto, Skill>()
+            .Ignore(dest => dest.Id)
+            .Ignore(dest => dest.CreatedOn)
+            .Ignore(dest => dest.LastModifiedOn)
+            .IgnoreNullValues(true);
+
         config.NewConfig<SkillFile, SkillFileDto>()
             .Map(dest => dest.Content,
                 src => string.Join(" ",

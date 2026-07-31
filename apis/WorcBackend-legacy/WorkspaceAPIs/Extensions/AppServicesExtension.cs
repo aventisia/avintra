@@ -83,6 +83,7 @@ public static class AppServicesExtension
         config.Apply(new SkillMappingProfile());
         config.Apply(new JobExecutionLogMappingProfile());
         config.Apply(new ResourceShareMappingProfile());
+        config.Apply(new ToolMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -158,6 +159,8 @@ public static class AppServicesExtension
         services.AddScoped<IJobExecutionLogService, JobExecutionLogService>();
         services.AddScoped<INodeExecutionLogService, NodeExecutionLogService>();
         services.AddScoped<IResourceShareService, ResourceShareService>();
+        services.AddScoped<IToolService, ToolService>();
+        services.AddScoped<IFlowVersionToolService, FlowVersionToolService>();
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();
 
         // Cloud Connectors feature

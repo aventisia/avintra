@@ -1,0 +1,17 @@
+meta {
+  name: Check tool name availability
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/tools/is-available
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Sample Tool"
+  }
+}

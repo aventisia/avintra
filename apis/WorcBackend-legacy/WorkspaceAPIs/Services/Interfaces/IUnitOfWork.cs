@@ -43,6 +43,8 @@ public interface IUnitOfWork
     IResourceShareRepo ResourceShareRepo { get; }
     ISkillRepo SkillRepo { get; }
     ISkillFileRepo SkillFileRepo { get; }
+    IToolRepo ToolRepo { get; }
+    IFlowVersionToolRepo FlowVersionToolRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

@@ -1,0 +1,11 @@
+meta {
+  name: Activate tool
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/tools/{{TOOL_ID}}/activate
+  body: none
+  auth: none
+}

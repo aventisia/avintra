@@ -1,0 +1,11 @@
+meta {
+  name: Get shared tools
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/tools/list/shared
+  body: none
+  auth: none
+}
