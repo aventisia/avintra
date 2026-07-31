@@ -41,7 +41,7 @@ public class ResourceShareService : IResourceShareService
 
             // Include user details and map to DTO.
             serviceResponse.Data = await resourceSharesQuery
-                .Include(x => x.User)
+                .Include(i => i.User)
                 .ProjectToType<ResourceShareDto>()
                 .ToListAsync();
 
@@ -74,8 +74,8 @@ public class ResourceShareService : IResourceShareService
         {
             // Fetch all resource shares for the given resource and include user details.
             var resourceShares = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(x => x.ResourceId == resourceId)
-                .Include(x => x.User)
+                .GetByConditionAsync(w => w.ResourceId == resourceId)
+                .Include(i => i.User)
                 .ProjectToType<ResourceShareDto>()
                 .ToListAsync();
 
@@ -110,8 +110,8 @@ public class ResourceShareService : IResourceShareService
         {
             // Fetch the resource share including recipient details.
             var resourceShare = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(x => x.Id == resourceShareId)
-                .Include(x => x.User)
+                .GetByConditionAsync(w => w.Id == resourceShareId)
+                .Include(i => i.User)
                 .ProjectToType<ResourceShareDto>()
                 .SingleOrDefaultAsync();
 
@@ -155,10 +155,10 @@ public class ResourceShareService : IResourceShareService
         {
             // Check if the user already has access to this resource.
             var existingResource = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(x =>
-                    x.ResourceId == resourceShareDto.ResourceId &&
-                    x.ResourceType == resourceShareDto.ResourceType &&
-                    x.UserId == resourceShareDto.UserId)
+                .GetByConditionAsync(w =>
+                    w.ResourceId == resourceShareDto.ResourceId &&
+                    w.ResourceType == resourceShareDto.ResourceType &&
+                    w.UserId == resourceShareDto.UserId)
                 .AnyAsync();
 
             // Prevent duplicate access assignments.
@@ -171,7 +171,7 @@ public class ResourceShareService : IResourceShareService
 
             // Verify that the target user exists.
             var workspaceUser = await _unitOfWork.WorkspaceUserRepo
-                .GetByConditionAsync(x => x.Id == resourceShareDto.UserId)
+                .GetByConditionAsync(w => w.Id == resourceShareDto.UserId)
                 .SingleOrDefaultAsync();
 
             if (workspaceUser == null)
@@ -313,7 +313,7 @@ public class ResourceShareService : IResourceShareService
         {
             // Retrieve the existing resource share.
             var resourceShare = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(x => x.Id == resourceShareDto.Id)
+                .GetByConditionAsync(w => w.Id == resourceShareDto.Id)
                 .SingleOrDefaultAsync();
 
             // Return if the resource share does not exist.
@@ -379,7 +379,7 @@ public class ResourceShareService : IResourceShareService
                     {
                         // Retrieve the Queue resource.
                         var queue = await _unitOfWork.QueueRepo
-                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
                             .SingleOrDefaultAsync();
 
                         if (queue == null)
@@ -395,7 +395,7 @@ public class ResourceShareService : IResourceShareService
                     {
                         // Retrieve the Trigger resource.
                         var trigger = await _unitOfWork.TriggerRepo
-                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
                             .SingleOrDefaultAsync();
 
                         if (trigger == null)
@@ -410,7 +410,7 @@ public class ResourceShareService : IResourceShareService
                     {
                         // Retrieve the KeyStore resource.
                         var keyStore = await _unitOfWork.KeyStoreRepo
-                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
                             .SingleOrDefaultAsync();
 
                         if (keyStore == null)
@@ -425,7 +425,7 @@ public class ResourceShareService : IResourceShareService
                     {
                         // Retrieve the Vault resource.
                         var vault = await _unitOfWork.VaultRepo
-                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
                             .SingleOrDefaultAsync();
 
                         if (vault == null)
@@ -440,7 +440,7 @@ public class ResourceShareService : IResourceShareService
                     {
                         // Retrieve the AppSecret resource.
                         var appSecret = await _unitOfWork.AppSecretRepo
-                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
                             .SingleOrDefaultAsync();
 
                         if (appSecret == null)
@@ -455,7 +455,7 @@ public class ResourceShareService : IResourceShareService
                     {
                         // Retrieve the KnowledgeBase resource.
                         var knowledgeBase = await _unitOfWork.KnowledgeBaseRepo
-                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
                             .SingleOrDefaultAsync();
 
                         if (knowledgeBase == null)
@@ -470,7 +470,7 @@ public class ResourceShareService : IResourceShareService
                     {
                         // Retrieve the Flow resource.
                         var flow = await _unitOfWork.FlowRepo
-                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
                             .SingleOrDefaultAsync();
 
                         if (flow == null)
@@ -485,7 +485,7 @@ public class ResourceShareService : IResourceShareService
                     {
                         // Retrieve the FlowVersion resource.
                         var flowVersion = await _unitOfWork.FlowVersionRepo
-                            .GetByConditionAsync(x => x.Id == updateTenantWideAccessDto.ResourceId)
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
                             .SingleOrDefaultAsync();
 
                         if (flowVersion == null)
@@ -493,6 +493,36 @@ public class ResourceShareService : IResourceShareService
 
                         flowVersion.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
                         _unitOfWork.FlowVersionRepo.Update(flowVersion);
+                        break;
+                    }
+
+                case ResourceTypeEnum.Skill:
+                    {
+                        // Retrieve the Skill resource.
+                        var skill = await _unitOfWork.SkillRepo
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (skill == null)
+                            return serviceResponse;
+
+                        skill.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.SkillRepo.Update(skill);
+                        break;
+                    }
+
+                case ResourceTypeEnum.Tool:
+                    {
+                        // Retrieve the Tool resource.
+                        var tool = await _unitOfWork.ToolRepo
+                            .GetByConditionAsync(w => w.Id == updateTenantWideAccessDto.ResourceId)
+                            .SingleOrDefaultAsync();
+
+                        if (tool == null)
+                            return serviceResponse;
+
+                        tool.IsTenantWideAccess = updateTenantWideAccessDto.IsTenantWideAccess;
+                        _unitOfWork.ToolRepo.Update(tool);
                         break;
                     }
 
@@ -540,9 +570,9 @@ public class ResourceShareService : IResourceShareService
 
             // Retrieve the user's resource share for the specified resource.
             var resourceShare = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(x =>
-                    x.ResourceId == resourceId &&
-                    x.UserId == _userId)
+                .GetByConditionAsync(w =>
+                    w.ResourceId == resourceId &&
+                    w.UserId == _userId)
                 .FirstOrDefaultAsync();
 
             // Validate that the resource share exists.
@@ -597,7 +627,7 @@ public class ResourceShareService : IResourceShareService
         {
             // Retrieve the resource share entity by its ID.
             var resourceShare = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(x => x.Id == resourceShareId)
+                .GetByConditionAsync(w => w.Id == resourceShareId)
                 .SingleOrDefaultAsync();
 
             // Validate that the resource share exists.
@@ -658,7 +688,7 @@ public class ResourceShareService : IResourceShareService
 
             // Retrieve all resource shares matching the provided IDs.
             var resourceShares = await _unitOfWork.ResourceShareRepo
-                .GetByConditionAsync(x => resourceShareIds.Contains(x.Id))
+                .GetByConditionAsync(w => resourceShareIds.Contains(w.Id))
                 .ToListAsync();
 
             // Validate that matching resource shares were found.

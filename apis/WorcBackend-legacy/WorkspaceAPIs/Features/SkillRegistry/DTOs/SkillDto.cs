@@ -24,7 +24,7 @@ public class SkillDto
     /// <summary>
     /// Gets or sets whether the component is platform-managed or custom.
     /// </summary>
-    public required ComponentTypeEnum Type { get; set; }
+    public ComponentTypeEnum? Type { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether this skill is globally provided by the platform.
