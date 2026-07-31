@@ -30,8 +30,8 @@ public class FlowVersionToolService : IFlowVersionToolService
         {
             // Fetch all tool links for the given flow version, including related tools.
             var flowVersionToolLinks = await _unitOfWork.FlowVersionToolRepo
-                .GetByConditionAsync(link => link.FlowVersionId == flowVersionId)
-                .Include(link => link.Tool)
+                .GetByConditionAsync(w => w.FlowVersionId == flowVersionId)
+                .Include(i => i.Tool)
                 .ToListAsync();
 
             return serviceResponse.Update(
@@ -59,9 +59,9 @@ public class FlowVersionToolService : IFlowVersionToolService
         {
             // Prevent duplicate links between the same flow version and tool.
             var duplicateLink = await _unitOfWork.FlowVersionToolRepo
-                .GetByConditionAsync(link =>
-                    link.FlowVersionId == flowVersionToolDto.FlowVersionId &&
-                    link.ToolId == flowVersionToolDto.ToolId)
+                .GetByConditionAsync(w =>
+                    w.FlowVersionId == flowVersionToolDto.FlowVersionId &&
+                    w.ToolId == flowVersionToolDto.ToolId)
                 .SingleOrDefaultAsync();
 
             if (duplicateLink != null)
@@ -106,7 +106,7 @@ public class FlowVersionToolService : IFlowVersionToolService
         {
             // Fetch the existing tool link.
             var linkToUpdate = await _unitOfWork.FlowVersionToolRepo
-                .GetByConditionAsync(link => link.Id == flowVersionToolDto.Id)
+                .GetByConditionAsync(w => w.Id == flowVersionToolDto.Id)
                 .SingleOrDefaultAsync();
 
             if (linkToUpdate == null)
@@ -152,7 +152,7 @@ public class FlowVersionToolService : IFlowVersionToolService
         {
             // Fetch the tool link to delete.
             var linkToDelete = await _unitOfWork.FlowVersionToolRepo
-                .GetByConditionAsync(link => link.Id == linkId)
+                .GetByConditionAsync(w => w.Id == linkId)
                 .SingleOrDefaultAsync();
 
             if (linkToDelete == null)

@@ -45,7 +45,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
 
             // Retrieve the skill and verify access.
             var skill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s => s.Id == skillId)
+                .GetByConditionAsync(w => w.Id == skillId)
                 .FirstOrDefaultAsync();
 
             // Return 404 when skill does not exist.
@@ -80,9 +80,10 @@ public class SkillRegistryFileService : ISkillRegistryFileService
 
             // Load files belonging to the skill, including creator information.
             var files = await _unitOfWork.SkillFileRepo
-                .GetByConditionAsync(f => f.SkillId == skillId)
-                .Include(f => f.CreatedByUser)
-                .OrderBy(f => f.FileName)
+                .GetByConditionAsync(w => w.SkillId == skillId)
+                .Include(i => i.CreatedByUser)
+                .OrderBy(i => i.FileName)
+                .IgnoreAutoIncludes()
                 .ToListAsync();
 
             serviceResponse.Update("Skill files retrieved successfully", 200, files.Adapt<List<SkillFileDto>>());
@@ -139,7 +140,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
 
             // Retrieve the skill and verify edit access.
             var skill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s => s.Id == skillId)
+                .GetByConditionAsync(w => w.Id == skillId)
                 .FirstOrDefaultAsync();
 
             // Return 404 when skill does not exist.
@@ -172,7 +173,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
 
             // Enforce unique file name within the skill.
             var duplicate = await _unitOfWork.SkillFileRepo
-                .GetByConditionAsync(f => f.SkillId == skillId && f.FileName == safeFileName)
+                .GetByConditionAsync(w => w.SkillId == skillId && w.FileName == safeFileName)
                 .FirstOrDefaultAsync();
 
             if (duplicate != null)
@@ -209,8 +210,8 @@ public class SkillRegistryFileService : ISkillRegistryFileService
 
             // Reload file with creator information for the response.
             var createdFile = await _unitOfWork.SkillFileRepo
-                .GetByConditionAsync(f => f.Id == skillFile.Id)
-                .Include(f => f.CreatedByUser)
+                .GetByConditionAsync(w => w.Id == skillFile.Id)
+                .Include(i => i.CreatedByUser)
                 .FirstOrDefaultAsync();
 
             serviceResponse.Update("Skill file registered successfully", 201, (createdFile ?? skillFile).Adapt<SkillFileDto>());
@@ -242,7 +243,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
 
             // Retrieve the skill and verify edit access.
             var skill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s => s.Id == skillId)
+                .GetByConditionAsync(w => w.Id == skillId)
                 .FirstOrDefaultAsync();
 
             // Return 404 when skill does not exist.
@@ -276,7 +277,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
 
             // Load the specific file linked to the skill.
             var skillFile = await _unitOfWork.SkillFileRepo
-                .GetByConditionAsync(f => f.Id == fileId && f.SkillId == skillId)
+                .GetByConditionAsync(w => w.Id == fileId && w.SkillId == skillId)
                 .FirstOrDefaultAsync();
 
             // Return 404 when file does not exist under the skill.
@@ -320,8 +321,9 @@ public class SkillRegistryFileService : ISkillRegistryFileService
 
             // Retrieve the skill with its files and verify access.
             var skill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(s => s.Id == skillId)
-                .Include(s => s.Files)
+                .GetByConditionAsync(w => w.Id == skillId)
+                .Include(i => i.Files)
+                .IgnoreAutoIncludes()
                 .FirstOrDefaultAsync();
 
             // Return 404 when skill does not exist.

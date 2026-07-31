@@ -49,10 +49,10 @@ public class ToolService : IToolService
             {
                 // Fetch tools owned by the current user.
                 toolList = await _unitOfWork.ToolRepo
-                    .GetByConditionAsync(tool => tool.CreatedByUserId == _currentUserId)
-                    .OrderByDescending(tool => tool.CreatedOn)
-                    .Include(tool => tool.CreatedByUser)
-                    .Include(tool => tool.LastModifiedByUser)
+                    .GetByConditionAsync(w => w.CreatedByUserId == _currentUserId)
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .ToListAsync();
             }
             else
@@ -70,12 +70,12 @@ public class ToolService : IToolService
 
                 // Fetch shared and tenant-wide tools not owned by the current user.
                 toolList = await _unitOfWork.ToolRepo
-                    .GetByConditionAsync(tool =>
-                        tool.CreatedByUserId != _currentUserId &&
-                        (tool.IsTenantWideAccess || resourceAccessMap.Keys.Contains(tool.Id)))
-                    .OrderByDescending(tool => tool.CreatedOn)
-                    .Include(tool => tool.CreatedByUser)
-                    .Include(tool => tool.LastModifiedByUser)
+                    .GetByConditionAsync(w =>
+                        w.CreatedByUserId != _currentUserId &&
+                        (w.IsTenantWideAccess || resourceAccessMap.Keys.Contains(w.Id)))
+                    .OrderByDescending(o => o.CreatedOn)
+                    .Include(i => i.CreatedByUser)
+                    .Include(i => i.LastModifiedByUser)
                     .ToListAsync();
             }
 
@@ -123,8 +123,7 @@ public class ToolService : IToolService
 
             // Search for an existing tool with the same name (case-insensitive).
             var existingToolWithSameName = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(tool =>
-                    tool.Name.ToLower() == normalizedName.ToLower())
+                .GetByConditionAsync(w => w.Name.ToLower() == normalizedName.ToLower())
                 .SingleOrDefaultAsync();
 
             if (existingToolWithSameName != null)
@@ -160,8 +159,8 @@ public class ToolService : IToolService
         {
             // Fetch the requested tool.
             var tool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(tool => tool.Id == toolId)
-                .Include(tool => tool.CreatedByUser)
+                .GetByConditionAsync(w => w.Id == toolId)
+                .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
             if (tool == null)
@@ -216,7 +215,7 @@ public class ToolService : IToolService
 
             // Ensure the tool name is unique.
             var toolWithSameName = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(tool => tool.Name.ToLower() == toolDto.Name.ToLower())
+                .GetByConditionAsync(w => w.Name.ToLower() == toolDto.Name.ToLower())
                 .SingleOrDefaultAsync();
 
             if (toolWithSameName != null)
@@ -280,7 +279,7 @@ public class ToolService : IToolService
 
             // Fetch the existing tool.
             var toolToUpdate = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(tool => tool.Id == toolDto.Id)
+                .GetByConditionAsync(w => w.Id == toolDto.Id)
                 .SingleOrDefaultAsync();
 
             if (toolToUpdate == null)
@@ -308,7 +307,7 @@ public class ToolService : IToolService
 
             // Ensure no other tool uses the requested name.
             var otherToolWithSameName = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(tool => tool.Name.ToLower() == toolDto.Name.ToLower() && tool.Id != toolDto.Id)
+                .GetByConditionAsync(w => w.Name.ToLower() == toolDto.Name.ToLower() && w.Id != toolDto.Id)
                 .SingleOrDefaultAsync();
 
             if (otherToolWithSameName != null)
@@ -372,7 +371,7 @@ public class ToolService : IToolService
         {
             // Fetch the tool to delete.
             var toolToDelete = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(tool => tool.Id == toolId)
+                .GetByConditionAsync(w => w.Id == toolId)
                 .SingleOrDefaultAsync();
 
             if (toolToDelete == null)
@@ -427,7 +426,7 @@ public class ToolService : IToolService
         {
             // Fetch all tools matching the provided identifiers.
             var toolsToDelete = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(tool => toolIds.Contains(tool.Id))
+                .GetByConditionAsync(w => toolIds.Contains(w.Id))
                 .ToListAsync();
 
             if (toolsToDelete.Count == 0)
@@ -487,7 +486,7 @@ public class ToolService : IToolService
         {
             // Fetch the tool to test.
             var tool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(tool => tool.Id == toolId)
+                .GetByConditionAsync(w => w.Id == toolId)
                 .SingleOrDefaultAsync();
 
             if (tool == null)
@@ -590,7 +589,7 @@ public class ToolService : IToolService
         {
             // Fetch the tool to activate.
             var toolToActivate = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(tool => tool.Id == toolId)
+                .GetByConditionAsync(w => w.Id == toolId)
                 .SingleOrDefaultAsync();
 
             if (toolToActivate == null)
@@ -658,10 +657,11 @@ public class ToolService : IToolService
         {
             // Step 1: Load platform-managed tools.
             var libraryTools = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(tool => tool.Type == ComponentTypeEnum.Platform)
-                .OrderByDescending(tool => tool.CreatedOn)
-                .Include(tool => tool.CreatedByUser)
-                .Include(tool => tool.LastModifiedByUser)
+                .GetByConditionAsync(w => w.Type == ComponentTypeEnum.Platform)
+                .OrderByDescending(o => o.CreatedOn)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .IgnoreQueryFilters()
                 .ToListAsync();
 
             // Step 2: Map to DTOs and assign view access.
