@@ -1,3 +1,4 @@
+import { type ReactNode } from "react";
 import { create } from "zustand";
 
 type State = {
@@ -15,6 +16,9 @@ type State = {
 
   /** Description of the alert dialog */
   description?: string;
+
+  /** Custom content rendered below the description */
+  content?: ReactNode;
 
   /** Text for the cancel button */
   cancelBtnText?: string;
@@ -44,6 +48,9 @@ export const useAlertDialogStore = create<State & Actions>((set) => ({
     set((state) => ({
       ...state,
       ...alertOptions,
+      // Always reset custom content unless the caller explicitly provides it.
+      // Otherwise a previous alert's ReactNode (e.g. the created API key) leaks into the next alert.
+      content: alertOptions.content,
     })),
 
   toggleAlertDialogOpen: (value) =>

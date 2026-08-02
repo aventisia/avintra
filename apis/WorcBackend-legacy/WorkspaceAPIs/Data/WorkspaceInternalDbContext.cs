@@ -22,6 +22,12 @@ namespace WorkspaceAPIs.Data
 
             modelBuilder.Entity<Machine_FlowVersion>().HasKey(mf => new { mf.MachineId, mf.FlowVersionId });
 
+            // Owned JSON permission set for ApiKey. Must be configured in every context that exposes ApiKey.
+            modelBuilder.Entity<ApiKey>().OwnsOne(e => e.Permissions, permissions =>
+            {
+                permissions.ToJson();
+            });
+
             // Enum configurations to store enums as strings in the database for easy readability
             modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
             modelBuilder.Entity<Machine>().Property(e => e.OperatingSystem).HasConversion(new EnumToStringConverter<OsTypesEnum>());
@@ -47,6 +53,7 @@ namespace WorkspaceAPIs.Data
         public DbSet<TimeTriggersFlowVersion> TimeTriggersFlowVersions { get; set; }
         public DbSet<Trigger> Triggers { get; set; }
         public DbSet<TriggerFlowVersion> TriggerFlowVersions { get; set; }
+        public DbSet<ApiKey> ApiKeys { get; set; }
 
         // They may be kept for future use or internal logic that does not require API access.
         // public DbSet<WorkspaceUser> Users { get; set; }  

@@ -65,11 +65,11 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
   - `var serviceResponse = ServiceResponse<bool>.Create("Failed to [action]", 500);`
 - `ServiceResponse<T>` provides `Create(message, statusCode, data)` and `Update(message, statusCode, data)`; use these for fluent initialization and mutation.
 - For `delete-multiple` operations, the service method and controller must always return the number of records deleted (e.g., `ServiceResponse<int>`) instead of a boolean.
-- Normalize DTO string properties (trim, apply standard casing such as lowercase for emails) before performing any database operations (insert, update, delete, search, filter) to prevent case-sensitivity mismatches.
+- Normalize DTO string properties (trim, apply standard casing such as lowercase for emails) before performing any database operations (create, update, delete, search, filter) to prevent case-sensitivity mismatches.
 - Return responses using standardized methods:
   - Failure: `serviceResponse.Update("Machine not found", 404);`
   - Success: `serviceResponse.Update("Machine added/updated" or null, 201/200, dataObject);`
-- Keep the message in the `ServiceResponse` concise and relevant to the action performed.
+- Keep the message in the `ServiceResponse` concise and relevant to the action performed. For example, use "Machine added" instead of "Machine added successfully" or "Machine added successfully to the database."
 - Split complex service logic into small isolated blocks.
 - Review each service method's logic for incorrect, incomplete, or inconsistent implementation; fix it when the intended behavior is clear, otherwise highlight the issue explicitly in the review output.
 - Add a concise step comment before each non-trivial block to aid future maintenance scanning.

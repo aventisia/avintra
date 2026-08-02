@@ -8,6 +8,25 @@ import { FALLBACK_VALUE } from "@/ui/constants";
  * @param withTime Whether to include the time in the formatted output. Defaults to false.
  * @returns The formatted date string, or a fallback value if the input is invalid.
  */
+/**
+ * Parses a date-like value (Date, string, number) or undefined/null into a Date object.
+ * Returns null when the input is missing or cannot be parsed.
+ * @param value The value to parse.
+ * @returns A valid Date or null.
+ */
+export const toDateOrNull = (value: Date | string | number | null | undefined): Date | null => {
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = value instanceof Date ? value : new Date(value);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+};
+
+/**
+ * Formats a given date value into a human-readable string.
+ * Returns a fallback value when the input is missing, invalid, or the .NET default DateTime sentinel.
+ * @param value The date value to format. Can be a Date object, a string, a number, or null/undefined.
+ * @param withTime Whether to include the time in the formatted output. Defaults to false.
+ * @returns The formatted date string, or a fallback value if the input is invalid.
+ */
 export const formatDate = (value?: Date | string | number | null, withTime: boolean = false) => {
   if (!value) return FALLBACK_VALUE;
 

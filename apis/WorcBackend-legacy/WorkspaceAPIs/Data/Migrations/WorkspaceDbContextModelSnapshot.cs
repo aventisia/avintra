@@ -78,6 +78,68 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("worc_QueueTransactionEvents");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.ApiKey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("KeyHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("KeyPrefix")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("LastUsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("KeyHash")
+                        .IsUnique();
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("ws_ApiKeys");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2498,6 +2560,54 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
 
                     b.Navigation("QueueTransaction");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.ApiKey", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.OwnsOne("WorkspaceAPIs.Entities.ApiKeyPermissions", "Permissions", b1 =>
+                        {
+                            b1.Property<Guid>("ApiKeyId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<bool>("CloudExecution")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("CreateQueueWorkItem")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("MachineAuth")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool>("WebhookTrigger")
+                                .HasColumnType("boolean");
+
+                            b1.HasKey("ApiKeyId");
+
+                            b1.ToTable("ws_ApiKeys");
+
+                            b1.ToJson("Permissions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ApiKeyId");
+                        });
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
+
+                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.AppSecret", b =>
