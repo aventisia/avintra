@@ -1,4 +1,4 @@
-import { DatePickerFieldProps, MultiSelectFieldProps } from "@avplatform/ui/form";
+import { type DateTimePickerFieldProps, MultiSelectFieldProps } from "@avplatform/ui/form";
 import { enumToArray } from "@avplatform/ui/utils";
 
 import { ServiceTypeEnum } from "@/features/06-super-admin/credit-plans-table/enums/service-type-enum";
@@ -28,17 +28,19 @@ const agentsProps: MultiSelectFieldProps = {
   selectOptions: [],
 };
 
-const startDateProps: DatePickerFieldProps = {
+const startDateProps: DateTimePickerFieldProps = {
   name: "startDate",
   label: "Start Date",
-  // isRequired: true,
+  granularity: "minute",
+  hourCycle: 12,
   placeholder: "DD/MM/YYYY",
 };
 
-const endDateProps: DatePickerFieldProps = {
+const endDateProps: DateTimePickerFieldProps = {
   name: "endDate",
   label: "End Date",
-  // isRequired: true,
+  granularity: "minute",
+  hourCycle: 12,
   placeholder: "DD/MM/YYYY",
 };
 

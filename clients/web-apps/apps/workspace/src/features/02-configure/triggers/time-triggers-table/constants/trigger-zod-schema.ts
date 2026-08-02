@@ -35,11 +35,8 @@ export const triggerZodSchema = z
 
     interval: z.string().default("1"),
 
-    // Start date for the trigger to be effective
+    // Start date and time for the trigger to be effective
     effectiveDate: z.date({ required_error: reqError("Start Date") }),
-
-    // Specific time when the trigger to be effective (optional)
-    effectiveTime: z.string().nullable().optional(),
 
     // Frequency type for the trigger (enum)
     frequency: z.enum(Object.keys(TriggerFrequencyTypesEnum) as [string, ...string[]], {
@@ -55,11 +52,8 @@ export const triggerZodSchema = z
     // Days of the month when the trigger should fire (1-31)
     monthDays: z.array(z.string()).optional(),
 
-    // End date for when the trigger should stop (optional)
+    // End date and time for when the trigger should stop (optional)
     endDate: z.date().nullable().optional(),
-
-    // Specific time when the trigger should stop (optional)
-    endTime: z.string().nullable().optional(),
 
     // Hours of the day to exclude from the trigger (0-23)
     exceptionHours: z.array(z.string()).optional(),
@@ -80,22 +74,7 @@ export const triggerZodSchema = z
     const now = new Date();
     const isUpdate = !!data.id; // Determines if we are editing an existing record
 
-    /**
-     * Utility to combine independent Date and Time form fields into a single Date object.
-     * Defaults to midnight if no time is provided.
-     */
-    const buildDateTime = (d: Date, t?: string | null) => {
-      const dt = new Date(d);
-      if (t) {
-        const [hours, minutes] = t.split(":").map(Number);
-        dt.setHours(hours, minutes, 0, 0);
-      } else {
-        dt.setHours(0, 0, 0, 0);
-      }
-      return dt;
-    };
-
-    const effectiveDateTime = buildDateTime(data.effectiveDate, data.effectiveTime);
+    const effectiveDateTime = data.effectiveDate;
 
     // 1. Effective Date Check: Only enforce future dates when creating a new trigger.
     // Existing triggers are allowed to have historical start dates.
@@ -105,16 +84,11 @@ export const triggerZodSchema = z
         message: "Effective date and time cannot be in the past for new triggers.",
         path: ["effectiveDate"],
       });
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        message: "Time cannot be in the past.",
-        path: ["effectiveTime"],
-      });
     }
 
     // 2. End Date Validation Suite
     if (data.endDate) {
-      const endDateTime = buildDateTime(data.endDate, data.endTime);
+      const endDateTime = data.endDate;
 
       // Rule A: End date must logically follow the start date
       if (endDateTime <= effectiveDateTime) {

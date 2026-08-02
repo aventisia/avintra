@@ -103,24 +103,6 @@ const timezoneOptions = Enumerable.from(timezones)
   }))
   .toArray();
 
-//   Extracts time in "HH:mm" format from a Date object
-function getTimeFromDate(date: Date): string {
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  return `${hours}:${minutes}`;
-}
-
-// Updates a Date object with a new time from "HH:mm" string
-function setTimeToDate(date: Date, time: string): Date {
-  const [hours, minutes] = time.split(":").map(Number);
-
-  // Create a new Date object to avoid mutating the original
-  const newDate = new Date(date);
-  newDate.setHours(hours, minutes, 0, 0);
-
-  return newDate;
-}
-
 const teamsMessageResourceOptions = [
   {
     label: "/teams/{team-id}/channels/{channel-id}/messages",
@@ -163,8 +145,6 @@ export {
   generateMinutesOptions,
   generateMonthOptions,
   timezoneOptions,
-  getTimeFromDate,
-  setTimeToDate,
   teamsMessageResourceOptions,
   resourceRequiresReference,
 };

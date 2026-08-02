@@ -1,5 +1,5 @@
 import {
-  DatePickerFieldProps,
+  type DateTimePickerFieldProps,
   InputFieldProps,
   SelectFieldProps,
   SwitchFieldProps,
@@ -34,11 +34,12 @@ const apiKeyProps: InputFieldProps = {
   label: "Api Key",
 };
 
-const apiKeyExpiryProps: DatePickerFieldProps = {
+const apiKeyExpiryProps: DateTimePickerFieldProps = {
   name: "apiKeyExpiry",
   label: "Expiry Date",
   description: "The date when the trigger will expire.",
   isRequired: true,
+  granularity: "minute",
 };
 
 const apiKeyExpiryDaysProps: SelectFieldProps = {

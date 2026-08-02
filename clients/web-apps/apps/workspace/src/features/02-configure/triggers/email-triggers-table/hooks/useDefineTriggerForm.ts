@@ -10,7 +10,6 @@ import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 // import { isNameAvailable } from "../apis/triggers-table-apis";
-import { getTimeFromDate, setTimeToDate } from "../constants/form-utils";
 import {
   // triggerNameSchema,
   triggerZodSchema,
@@ -47,8 +46,11 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       agents: [],
       timezone: "",
       apiKey: "",
-      expiryDateTime: new Date(), // Default to current date
-      expiryTime: null,
+      expiryDateTime: (() => {
+        const d = new Date();
+        d.setDate(d.getDate() + 30);
+        return d;
+      })(), // Default to 30 days ahead
       credentialId: "",
       folder: "Inbox",
       mailbox: "",
@@ -90,12 +92,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       timezone: triggerData?.timezone ?? userTimeZone ?? "",
       apiKey: triggerData?.apiKey ?? "",
       mailbox: triggerData?.mailbox ?? "",
-      expiryDateTime: triggerData?.expiryDateTime
-        ? new Date(triggerData.expiryDateTime)
-        : datePlus30,
-      expiryTime: triggerData?.expiryDateTime
-        ? getTimeFromDate(new Date(triggerData.expiryDateTime))
-        : getTimeFromDate(new Date(datePlus30)),
+      expiryDateTime: triggerData?.expiryDateTime ? new Date(triggerData.expiryDateTime) : datePlus30,
 
       resubscribeFrequency: triggerData?.resubscribeFrequency?.toString() ?? "1",
 
@@ -129,9 +126,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       lastModifiedBy: userSession?.email ?? "",
 
       lastModifiedOn: new Date().toISOString(),
-      expiryDateTime: formData.expiryTime
-        ? setTimeToDate(formData.expiryDateTime, formData.expiryTime)
-        : formData.expiryDateTime,
+      expiryDateTime: formData.expiryDateTime,
       resubscribeFrequency: Number(formData.resubscribeFrequency),
     };
   };

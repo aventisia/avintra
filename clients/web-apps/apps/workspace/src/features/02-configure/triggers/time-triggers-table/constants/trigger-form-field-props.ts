@@ -1,5 +1,5 @@
 import {
-  DatePickerFieldProps,
+  type DateTimePickerFieldProps,
   InputFieldProps,
   MultiSelectFieldProps,
   SelectFieldProps,
@@ -36,17 +36,19 @@ const selectFrequencyProps: SelectFieldProps = {
   description: "Choose how frequently the trigger should run or repeat.",
 };
 
-const effectiveDateProps: DatePickerFieldProps = {
+const effectiveDateProps: DateTimePickerFieldProps = {
   name: "effectiveDate",
-  label: "Effective Date",
-  description: "The date when the trigger will begin.",
+  label: "Effective Date & Time",
+  description: "The date and time when the trigger will begin.",
   isRequired: true,
+  granularity: "minute",
 };
 
-const endDateProps: DatePickerFieldProps = {
+const endDateProps: DateTimePickerFieldProps = {
   name: "endDate",
   label: "Ends on",
-  description: "The optional date when the trigger should stop.",
+  description: "The optional date and time when the trigger should stop.",
+  granularity: "minute",
 };
 
 const isDisabledProps: SwitchFieldProps = {
