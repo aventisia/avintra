@@ -2,7 +2,7 @@ import { CurrenciesEnum } from "@avplatform/ui/enums";
 import { DatabaseOptionsEnum } from "@avplatform/ui/enums/database-options-enum";
 import { DeploymentTypeEnum } from "@avplatform/ui/enums/deployment-types-enum";
 import {
-  DatePickerFieldProps,
+  type DateTimePickerFieldProps,
   InputFieldProps,
   RadioGroupFieldProps,
   SelectFieldProps,
@@ -40,17 +40,21 @@ export const currencyProps: SelectFieldProps = {
   selectOptions: enumToArray(CurrenciesEnum),
 };
 
-export const effectiveOnProps: DatePickerFieldProps = {
+export const effectiveOnProps: DateTimePickerFieldProps = {
   name: "effectiveDate",
   label: "Contract Effective Date",
   isRequired: true,
+  granularity: "minute",
+  hourCycle: 12,
 };
 
 // Expires On
-export const renewsOnProps: DatePickerFieldProps = {
+export const renewsOnProps: DateTimePickerFieldProps = {
   name: "renewalDate",
   label: "Contract Renewal Date",
   isRequired: true,
+  granularity: "minute",
+  hourCycle: 12,
 };
 
 // Is TwoFA Enabled

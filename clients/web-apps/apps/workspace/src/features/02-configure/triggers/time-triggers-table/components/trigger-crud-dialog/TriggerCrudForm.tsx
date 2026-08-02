@@ -2,7 +2,7 @@ import { TagInput } from "@avplatform/ui";
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import {
-  DatePickerField,
+  DateTimePickerField,
   Form,
   FormControl,
   FormField,
@@ -166,19 +166,8 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
       />
 
       <div className="grid grid-cols-2 gap-2">
-        <DatePickerField {...effectiveDateProps} disabled={disableEffectiveInputs} />
-        <InputField
-          type="time"
-          name="effectiveTime"
-          step={60}
-          label="Time"
-          disabled={disableEffectiveInputs}
-        />
-      </div>
-
-      <div className="grid grid-cols-2 gap-2">
-        <DatePickerField {...endDateProps} />
-        <InputField type="time" name="endTime" step={60} label="Time" />
+        <DateTimePickerField {...effectiveDateProps} hourCycle={12} granularity="minute" disabled={disableEffectiveInputs} />
+        <DateTimePickerField {...endDateProps} hourCycle={12} granularity="minute" />
       </div>
 
       <MultiSelectField {...exceptionHoursProps} />

@@ -46,11 +46,8 @@ export const triggerZodSchema = z
     apiKey: z.string().min(1, { message: reqError("Api Key") }),
     resource: z.string(),
     reference: z.string().optional(),
-    // Expiry date
-    expiryDateTime: z.date().min(today, { message: "Expiry date cannot be in the past" }),
-
-    // Expiry time
-    expiryTime: z.string().nullable().optional(),
+    // Expiry date and time
+    expiryDateTime: z.date().min(today, { message: "Expiry date and time cannot be in the past" }),
 
     resubscribeEnabled: z.boolean().optional(),
 

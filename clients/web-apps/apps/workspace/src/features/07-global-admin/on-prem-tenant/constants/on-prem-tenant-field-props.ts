@@ -1,5 +1,5 @@
 import {
-  DatePickerFieldProps,
+  type DateTimePickerFieldProps,
   InputFieldProps,
   SelectFieldProps,
   SwitchFieldProps,
@@ -39,17 +39,19 @@ const executionTimeAllowedProps: InputFieldProps = {
 };
 
 // Contract Start Date
-const contractStartDateProps: DatePickerFieldProps = {
+const contractStartDateProps: DateTimePickerFieldProps = {
   name: "contractStartDate",
   label: "Contract Start Date",
   isRequired: true,
+  granularity: "minute",
 };
 
 // Contract Renewal Date
-const contractRenewalDateProps: DatePickerFieldProps = {
+const contractRenewalDateProps: DateTimePickerFieldProps = {
   name: "contractRenewalDate",
   label: "Contract Renewal Date",
   isRequired: true,
+  granularity: "minute",
 };
 
 // Name

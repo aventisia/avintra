@@ -116,24 +116,6 @@ const timezoneOptions = Enumerable.from(timezones)
   }))
   .toArray();
 
-/**
- * Extracts time in strictly "HH:mm" format from a JavaScript Date object.
- */
-function getTimeFromDate(date: Date): string {
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
-  return `${hours}:${minutes}`;
-}
-
-/**
- * Clones a Date object and applies a new time derived from an "HH:mm" string.
- */
-function setTimeToDate(date: Date, time: string): Date {
-  const [hours, minutes] = time.split(":").map(Number);
-  const newDate = new Date(date);
-  newDate.setHours(hours, minutes, 0, 0);
-  return newDate;
-}
 export {
   weekdaysToNumbers,
   numbersToWeekdays,
@@ -145,6 +127,4 @@ export {
   generateMinutesOptions,
   generateMonthOptions,
   timezoneOptions,
-  getTimeFromDate,
-  setTimeToDate,
 };

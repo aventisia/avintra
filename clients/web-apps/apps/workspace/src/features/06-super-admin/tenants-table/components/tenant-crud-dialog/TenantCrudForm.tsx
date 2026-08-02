@@ -3,7 +3,7 @@ import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { DatabaseOptionsEnum } from "@avplatform/ui/enums/database-options-enum";
 import {
   AutherCard,
-  DatePickerField,
+  DateTimePickerField,
   Form,
   InputField,
   RadioGroupField,
@@ -122,10 +122,10 @@ export const TenantCrudForm = ({ rowId, crudAction }: TenantCrudFormProps) => {
       <SelectField {...currencyProps} />
 
       {/* Effective date */}
-      <DatePickerField {...effectiveOnProps} />
+      <DateTimePickerField {...effectiveOnProps} />
 
       {/* renewal date */}
-      <DatePickerField {...renewsOnProps} />
+      <DateTimePickerField {...renewsOnProps} />
 
       {/* Is TwoFA Enabled*/}
       <SwitchField {...isTwoFAEnabledProps} />

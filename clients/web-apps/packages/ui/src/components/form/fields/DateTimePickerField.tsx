@@ -5,21 +5,26 @@ import {
   FormItem,
   FormLabelExt,
   FormMessage,
-} from "@avplatform/ui/form";
+} from "@/ui/components/form";
+import { cn } from "@/ui/lib";
+import { type FormFieldSizeType } from "@/ui/types";
 import { type FieldPath, type FieldValues, useFormContext } from "react-hook-form";
 
-import { DateTimePicker, type DateTimePickerProps } from "../../date-time-picker";
+import { DateTimePicker, type DateTimePickerProps } from "../../date-picker";
 
 export type DateTimePickerFieldProps = DateTimePickerProps &
   BaseFieldProps & {
     /** The name of the form field. */
     name: FieldPath<FieldValues>;
-    fieldSize?: "base" | "sm" | "xs";
+    /** Size of the field trigger. */
+    fieldSize?: FormFieldSizeType;
+    /** Disable the field. */
     disabled?: boolean;
   };
 
 /**
- * A custom input form field component with label (if provided)
+ * A single form field for date-only or date-time selection.
+ * Use `granularity="day"` for date-only inputs.
  */
 export const DateTimePickerField = ({
   name,
@@ -29,24 +34,34 @@ export const DateTimePickerField = ({
   description,
   disabled,
   nonErrorMessage,
+  className,
   ...props
 }: DateTimePickerFieldProps) => {
-  // Get the form context
   const { control } = useFormContext<FieldValues>();
 
-  // Render the InputField component
   return (
     <FormField
-      {...{ name, control }}
+      name={name}
+      control={control}
       render={({ field }) => (
         <FormItem size={fieldSize}>
           {label && (
-            <FormLabelExt size={fieldSize} {...{ label, disabled, isRequired, description }} />
+            <FormLabelExt size={fieldSize} label={label} disabled={disabled} isRequired={isRequired} description={description} />
           )}
           <FormControl>
-            <DateTimePicker value={field.value} onChange={field.onChange} {...props} />
+            <DateTimePicker
+              value={field.value}
+              onChange={field.onChange}
+              disabled={disabled}
+              className={cn(
+                fieldSize === "xs" && "h-7 pl-[0.45rem] pr-1 text-2xs",
+                fieldSize === "sm" && "h-8 pl-[0.55rem] pr-1.5 text-xs",
+                fieldSize === "base" && "h-10 pl-3 pr-2.5 text-sm",
+                className,
+              )}
+              {...props}
+            />
           </FormControl>
-
           {nonErrorMessage ? (
             <FormMessage customMessageType={nonErrorMessage.type} size={fieldSize}>
               {nonErrorMessage.message}
@@ -59,3 +74,5 @@ export const DateTimePickerField = ({
     />
   );
 };
+
+DateTimePickerField.displayName = "DateTimePickerField";

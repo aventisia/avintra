@@ -2,7 +2,6 @@ import { PhoneInput } from "@avplatform/ui";
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { CountriesEnum } from "@avplatform/ui/enums";
 import {
-  // DatePickerField,
   Form,
   FormControl,
   FormField,
@@ -67,49 +66,6 @@ export const UserForm = () => {
               />
             </div>
           </InputDivElement>
-
-          {/* <InputDivElement
-            headingForInput="Date of Birth"
-            messageForInput="This information is required to verify your age and provide age appropriate services."
-            showSkelaton={isLoading}
-          >
-            <DatePickerField name="dateOfBirth" />
-          </InputDivElement> */}
-
-          {/* <InputDivElement
-            headingForInput={"Gender"}
-            messageForInput={"Select your gender from the options."}
-            showSkelaton={isLoading}
-          >
-            <CheckboxFeildDiv>
-              <CheckboxFeildDiv.CheckboxFormField
-                name="gender"
-                type="radio"
-                value={form.getValues("gender")}
-              >
-                <div className="flex flex-col items-center md:flex-row">
-                  <CheckboxFeildDiv.CheckboxInputFeildWrapper>
-                    <CheckboxFeildDiv.CheckboxInputFeild value="Male" />
-                    <CheckboxFeildDiv.Label className="text-sm text-slate-500">
-                      Male
-                    </CheckboxFeildDiv.Label>
-                  </CheckboxFeildDiv.CheckboxInputFeildWrapper>
-                  <CheckboxFeildDiv.CheckboxInputFeildWrapper>
-                    <CheckboxFeildDiv.CheckboxInputFeild value="Female" />
-                    <CheckboxFeildDiv.Label className="text-sm text-slate-500">
-                      Female
-                    </CheckboxFeildDiv.Label>
-                  </CheckboxFeildDiv.CheckboxInputFeildWrapper>
-                  <CheckboxFeildDiv.CheckboxInputFeildWrapper>
-                    <CheckboxFeildDiv.CheckboxInputFeild value="PreferNotToSay" />
-                    <CheckboxFeildDiv.Label className="text-sm text-slate-500">
-                      Prefer Not To Say
-                    </CheckboxFeildDiv.Label>
-                  </CheckboxFeildDiv.CheckboxInputFeildWrapper>
-                </div>
-              </CheckboxFeildDiv.CheckboxFormField>
-            </CheckboxFeildDiv>
-          </InputDivElement> */}
 
           <InputDivElement
             headingForInput={"Phone Number"}

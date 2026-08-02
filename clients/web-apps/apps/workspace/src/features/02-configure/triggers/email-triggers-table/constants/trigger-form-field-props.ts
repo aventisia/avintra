@@ -1,5 +1,5 @@
 import {
-  DatePickerFieldProps,
+  type DateTimePickerFieldProps,
   InputFieldProps,
   SelectFieldProps,
   SwitchFieldProps,
@@ -39,11 +39,12 @@ const folderProps: InputFieldProps = {
   description: "Enter Folder",
 };
 
-const expiryDateTimeProps: DatePickerFieldProps = {
+const expiryDateTimeProps: DateTimePickerFieldProps = {
   name: "expiryDateTime",
-  label: "Expiry Date",
-  description: "The date when the trigger will expire.",
+  label: "Expiry Date & Time",
+  description: "The date and time when the trigger will expire.",
   isRequired: true,
+  granularity: "minute",
 };
 
 const resubscribeEnabledProps: SwitchFieldProps = {

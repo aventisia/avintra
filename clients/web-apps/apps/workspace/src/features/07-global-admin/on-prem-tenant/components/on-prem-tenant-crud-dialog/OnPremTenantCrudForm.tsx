@@ -1,6 +1,6 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
-import { DatePickerField, Form, InputField, SwitchField } from "@avplatform/ui/form";
+import { DateTimePickerField, Form, InputField, SwitchField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect } from "react";
@@ -103,9 +103,9 @@ export const OnPremTenantCrudForm = ({ rowId, crudAction }: OnPremTenantCrudForm
 
       <InputField {...executionTimeAllowedProps} />
 
-      <DatePickerField {...contractStartDateProps} />
+      <DateTimePickerField {...contractStartDateProps} />
 
-      <DatePickerField {...contractRenewalDateProps} />
+      <DateTimePickerField {...contractRenewalDateProps} />
 
       <InputField {...ourEmailsProps} />
 

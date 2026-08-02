@@ -8,12 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import {
-  getTimeFromDate,
-  numbersToWeekdays,
-  setTimeToDate,
-  weekdaysToNumbers,
-} from "../constants/form-utils";
+import { numbersToWeekdays, weekdaysToNumbers } from "../constants/form-utils";
 import { triggerZodSchema } from "../constants/trigger-zod-schema";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 import { useTableTab } from "./useTableTab";
@@ -49,15 +44,13 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       name: "",
       agents: [],
       timezone: "",
-      effectiveDate: new Date(), // Default to current date
-      effectiveTime: null,
+      effectiveDate: new Date(new Date().getTime() + 15 * 60000), // Default to 15 minutes ahead
       frequency: "MinuteByMinute", // Default frequency to "MinuteByMinute"
       atTime: "00:00",
       interval: "1",
       weekdays: [],
       monthDays: [],
       endDate: null,
-      endTime: null,
       exceptionHours: [],
       exceptionWeekdays: [],
       exceptionDates: [],
@@ -93,18 +86,15 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       name: triggerData?.name ?? "",
       agents: triggerData?.agents ?? [],
       timezone: triggerData?.timezone ?? "",
-      effectiveDate: triggerData?.effectiveDate ? new Date(triggerData.effectiveDate) : new Date(),
-      // Default new triggers to 15 minutes ahead to prevent immediate past-date validation errors
-      effectiveTime: triggerData?.effectiveDate
-        ? getTimeFromDate(new Date(triggerData.effectiveDate))
-        : getTimeFromDate(new Date(new Date().getTime() + 15 * 60000)),
+      effectiveDate: triggerData?.effectiveDate
+        ? new Date(triggerData.effectiveDate)
+        : new Date(new Date().getTime() + 15 * 60000),
       interval: triggerData?.interval?.toString() ?? "1",
       frequency: triggerData?.frequency ?? "Daily",
       atTime: triggerData?.atTime?.slice(0, 5) ?? "00:00",
       weekdays: numbersToWeekdays(triggerData?.weekdays) ?? [],
       monthDays: triggerData?.monthDays?.map((v) => v.toString()) ?? [],
       endDate: triggerData?.endDate ? new Date(triggerData.endDate) : null,
-      endTime: triggerData?.endDate ? getTimeFromDate(new Date(triggerData.endDate)) : null,
       exceptionHours: triggerData?.exceptionHours?.map((v) => v.toString()) ?? [],
       exceptionWeekdays: numbersToWeekdays(triggerData?.exceptionWeekdays) ?? [],
       exceptionDates: triggerData?.exceptionDates ?? [],
@@ -130,15 +120,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       exceptionHours: formData.exceptionHours?.map((v) => Number(v)),
       exceptionWeekdays: weekdaysToNumbers(formData.exceptionWeekdays),
 
-      // Combine Date and Time inputs into single Date objects
-      effectiveDate: formData.effectiveTime
-        ? setTimeToDate(formData.effectiveDate, formData.effectiveTime)
-        : formData.effectiveDate,
-      endDate: formData.endDate
-        ? formData.endTime
-          ? setTimeToDate(formData.endDate, formData.endTime)
-          : formData.endDate
-        : null,
+      endDate: formData.endDate ? formData.endDate : null,
     };
   };
 

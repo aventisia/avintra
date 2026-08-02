@@ -1,6 +1,6 @@
 import { LoadingSpinner, Separator } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { DatePickerField, Form } from "@avplatform/ui/form";
+import { DateTimePickerField, Form } from "@avplatform/ui/form";
 import { Label } from "@avplatform/ui/label";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import React from "react";
@@ -111,8 +111,8 @@ const ExportDialogForm = () => {
 
             {/* Date Picker */}
             <div className="grid grid-cols-2 gap-4">
-              <DatePickerField {...startDateProps} />
-              <DatePickerField {...endDateProps} />
+              <DateTimePickerField {...startDateProps} />
+              <DateTimePickerField {...endDateProps} />
             </div>
           </div>
         </ScrollArea>

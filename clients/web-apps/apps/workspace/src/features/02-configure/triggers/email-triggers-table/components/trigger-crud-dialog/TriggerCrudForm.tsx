@@ -1,7 +1,7 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import {
-  DatePickerField,
+  DateTimePickerField,
   Form,
   FormControl,
   FormField,
@@ -25,7 +25,6 @@ import { z } from "zod";
 import APIKeyField from "../../../webhook-triggers-table/components/trigger-crud-dialog/APIKeyField.tsx";
 import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
-import { getTimeFromDate } from "../../constants/form-utils.ts";
 import {
   expiryDateTimeProps,
   folderProps,
@@ -119,7 +118,6 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
     const finalDate = removeTimeZoneOffset(tzDate, timezone);
 
     form.setValue("expiryDateTime", finalDate);
-    form.setValue("expiryTime", getTimeFromDate(tzDate)); // show local TZ time
   }, [resubscribeFrequency, timezone]);
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof triggerZodSchema>) => {
@@ -235,12 +233,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
 
       <InputField type="number" {...resubscribeFrequencyProps} min={1} max={4320} />
 
-      {/* <DatePickerField {...expiryDateTimeProps} disabled /> */}
-
-      <div className="grid grid-cols-2 gap-2">
-        <DatePickerField {...expiryDateTimeProps} disabled />
-        <InputField type="time" name="expiryTime" step={60} label="Time" disabled />
-      </div>
+      <DateTimePickerField {...expiryDateTimeProps} disabled />
 
       <SwitchField size="sm" {...resubscribeEnabledProps} />
 
