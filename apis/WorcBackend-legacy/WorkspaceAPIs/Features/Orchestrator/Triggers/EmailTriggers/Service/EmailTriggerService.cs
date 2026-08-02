@@ -245,6 +245,9 @@ public class EmailTriggerService : IEmailTriggerService
             // Serialize EmailTriggerModel properties into Metadata JSON
             var model = (EmailTriggerModel)emailTriggerDto;
 
+            // Generate a random clientState token used to verify Graph webhook notifications
+            model.ClientState = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+
             // Create or update the email subscription and update the DTO with the subscription ID
             var subscription = await ManageEmailTriggerSubscriptionAsync(model, "create", newEmailTrigger.Id);
             if (subscription.StatusCode != 200)
@@ -1060,7 +1063,7 @@ public class EmailTriggerService : IEmailTriggerService
                                 notificationUrl = notificationUrl,
                                 resource = resourcePath,
                                 expirationDateTime = emailTriggerModel.ExpiryDateTime.UtcDateTime.ToString("o"),
-                                clientState = emailTriggerModel.ApiKey
+                                clientState = emailTriggerModel.ClientState
                             };
 
                             var postRequest = new HttpRequestMessage(HttpMethod.Post, "subscriptions")

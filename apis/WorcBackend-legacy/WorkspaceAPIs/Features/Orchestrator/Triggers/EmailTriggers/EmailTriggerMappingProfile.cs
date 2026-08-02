@@ -31,7 +31,6 @@ public class EmailTriggerMappingProfile : IRegister
                         dest.SubscriptionId = model.SubscriptionId;
                         dest.CredentialId = model.CredentialId;
                         dest.Provider = model.Provider;
-                        dest.ApiKey = !string.IsNullOrEmpty(model.ApiKey) && model.ApiKey.Length > 4 ? model.ApiKey[..4] + "*******" : model.ApiKey; ;
                     }
                 }
             )

@@ -49,7 +49,8 @@ public class EmailTriggerModel
     public TriggerProviderTypesEnum Provider { get; set; } = TriggerProviderTypesEnum.M365;
 
     /// <summary>
-    /// Gets or sets the API key used for authenticating incoming trigger requests.
+    /// Gets or sets the Graph clientState token used to verify Microsoft Graph webhook notifications.
+    /// This is a server-generated opaque value; it is never returned to the client.
     /// </summary>
-    public string ApiKey { get; set; } = string.Empty;
+    public string ClientState { get; set; } = string.Empty;
 }
