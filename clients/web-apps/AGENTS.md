@@ -22,7 +22,7 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 - Use standard CRUD naming patterns in API files:
   - `get[Entities]`
   - `get[Entity]`
-  - `insert[Entity]`
+  - `create[Entity]`
   - `update[Entity]`
   - `delete[Entity]`
   - `deleteMultiple[Entities]`

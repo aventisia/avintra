@@ -27,6 +27,7 @@ export const AlertDialogWrapper: React.FC<React.PropsWithChildren> = ({ children
     isDestructive,
     title,
     description,
+    content,
     cancelBtnText,
     confirmBtnText,
   } = useAlertDialogStore(
@@ -37,6 +38,7 @@ export const AlertDialogWrapper: React.FC<React.PropsWithChildren> = ({ children
       isDestructive: state.isDestructive,
       title: state.title,
       description: state.description,
+      content: state.content,
       cancelBtnText: state.cancelBtnText,
       confirmBtnText: state.confirmBtnText,
     })),
@@ -61,6 +63,9 @@ export const AlertDialogWrapper: React.FC<React.PropsWithChildren> = ({ children
 
           {/* Description */}
           <AlertDialogDescription>{description}</AlertDialogDescription>
+
+          {/* Custom content */}
+          {content ? <div className="mt-4">{content}</div> : null}
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2">
           {/* Cancel button */}

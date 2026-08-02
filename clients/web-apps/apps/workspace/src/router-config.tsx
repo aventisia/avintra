@@ -24,6 +24,7 @@ import { EmailTriggerPage } from "./pages/02-configure/triggers/EmailTriggerPage
 import { MessageTriggerPage } from "./pages/02-configure/triggers/MessageTriggerPage";
 import { TimeTriggerPage } from "./pages/02-configure/triggers/TimeTriggerPage";
 import { WebhookTriggerPage } from "./pages/02-configure/triggers/WebhookTriggerPage";
+import { ApiKeysPage } from "./pages/03-orchestrator/ApiKeysPage";
 import { JobsPage } from "./pages/03-orchestrator/JobsPage";
 import { MachinesPage } from "./pages/03-orchestrator/MachinesPage";
 import { PublishedAgentsPage } from "./pages/03-orchestrator/PublishedAgentsPage";
@@ -178,6 +179,10 @@ const routerConfig: RouteObject[] = [
           {
             path: "jobs",
             element: <JobsPage />,
+          },
+          {
+            path: "api-keys",
+            element: <ApiKeysPage />,
           },
           {
             path: "conversations",

@@ -40,6 +40,7 @@ public interface IUnitOfWork
     IVectorStoreRepo VectorStoreRepo { get; }
     IKnowledgeBaseRepo KnowledgeBaseRepo { get; }
     IKnowledgeBaseFileRepo KnowledgeBaseFileRepo { get; }
+    IApiKeyRepo ApiKeyRepo { get; }
     IResourceShareRepo ResourceShareRepo { get; }
     ISkillRepo SkillRepo { get; }
     ISkillFileRepo SkillFileRepo { get; }

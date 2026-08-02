@@ -13,6 +13,7 @@ import { getDialogHeadingDescription as getMessageTriggerDialogHeadingDescriptio
 import { getDialogHeadingDescription as getTimeTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/time-triggers-table/constants";
 import { getDialogHeadingDescription as getWebhookTriggerDialogHeadingDescription } from "@/features/02-configure/triggers/webhook-triggers-table/constants";
 import { getDialogHeadingDescription as getVaultDialogHeadingDescription } from "@/features/02-configure/vault-table/constants";
+import { getDialogHeadingDescription as getApiKeyDialogHeadingDescription } from "@/features/03-orchestrator/api-keys/constants";
 import { getDialogHeadingDescription as getJobDialogHeadingDescription } from "@/features/03-orchestrator/jobs-table/constants/variables";
 import { getDialogHeadingDescription as getMachineDialogHeadingDescription } from "@/features/03-orchestrator/machines-table/constants";
 import { getDialogHeadingDescription as getSupportTicketDialogHeadingDescription } from "@/features/05-tenant-admin/support-tickets-table/constants/constants";
@@ -135,6 +136,11 @@ const RoleCrudDialogContent = lazy(() =>
     (m) => ({ default: m.RoleCrudDialogContent }),
   ),
 );
+const ApiKeyCrudDialogContent = lazy(() =>
+  import("@/features/03-orchestrator/api-keys/components/api-key-crud-dialog/ApiKeyCrudDialogContent").then(
+    (m) => ({ default: m.ApiKeyCrudDialogContent }),
+  ),
+);
 
 const crudDialogRegistry: CrudDialogRegistry = {
   machine: {
@@ -246,6 +252,11 @@ const crudDialogRegistry: CrudDialogRegistry = {
     maxWidth: "!max-w-[40rem]",
     getHeader: getRoleDialogHeadingDescription,
     Content: RoleCrudDialogContent,
+  },
+  apiKey: {
+    maxWidth: "!max-w-[34rem]",
+    getHeader: getApiKeyDialogHeadingDescription,
+    Content: ApiKeyCrudDialogContent,
   },
 };
 

@@ -95,13 +95,11 @@ public class TenantResolver
                     appDefaultConfig.TenantIdInHeaderEndpoints != null &&
                     appDefaultConfig.TenantIdInHeaderEndpoints.Contains(currentEndpoint))
                 {
-                    // Try to get the tenant ID from the custom header "tntid"
-                    context.Request.Headers.TryGetValue("tntid", out var tenantIdRequestFromHeader);
-
-                    // If the header contains a valid tenant ID, set it and extract user info from JWT
-                    if (!string.IsNullOrEmpty(tenantIdRequestFromHeader))
+                    // Try to get the tenant ID from the request header "X-TENANT-ID" first, then legacy "tntid"
+                    // TODO: Remove legacy "tntid" support once all clients have migrated to "X-TENANT-ID".
+                    if (TryGetTenantIdFromHeaders(context.Request.Headers, out var tenantIdRequestFromHeader))
                     {
-                        tenantId = tenantIdRequestFromHeader.ToString() ?? "Unknown"; // Set tenant ID from header
+                        tenantId = tenantIdRequestFromHeader ?? "Unknown"; // Set tenant ID from header
                         userId = jwtInfo?.UserId ?? "Unknown"; // Extract user ID from JWT
                         return; // Exit after successfully setting tenant and user
                     }
@@ -121,13 +119,12 @@ public class TenantResolver
                 return;
 
             // Get tenantId from custom request header
-            context.Request.Headers.TryGetValue("tntid", out var tenantIdFromHeader);
-            // tid not found in request header
-            if (!string.IsNullOrEmpty(tenantIdFromHeader))
+            // TODO: Remove legacy "tntid" support once all clients have migrated to "X-TENANT-ID".
+            if (TryGetTenantIdFromHeaders(context.Request.Headers, out var tenantIdFromHeader))
             {
                 // Set tenant Id 
-                tenantId = tenantIdFromHeader.ToString();
-                userId = "Unknown"; // Even we can try to get userId from UserName cookie but its safe to set unknown since user is not autheraized
+                tenantId = tenantIdFromHeader ?? "Unknown"; // Even we can try to get userId from UserName cookie but its safe to set unknown since user is not autheraized
+                userId = "Unknown";
                 return;
             }
         }
@@ -137,5 +134,27 @@ public class TenantResolver
         }
 
         return;
+    }
+
+    // Tries to read the tenant id from "X-TENANT-ID" first, then falls back to the legacy "tntid" header.
+    private static bool TryGetTenantIdFromHeaders(IHeaderDictionary headers, out string? tenantId)
+    {
+        tenantId = null;
+
+        // Prefer the standard "X-TENANT-ID" header.
+        if (headers.TryGetValue("X-TENANT-ID", out var tenantIdFromHeader) && !string.IsNullOrEmpty(tenantIdFromHeader))
+        {
+            tenantId = tenantIdFromHeader.ToString();
+            return true;
+        }
+
+        // TODO: Remove legacy "tntid" support once all clients have migrated to "X-TENANT-ID".
+        if (headers.TryGetValue("tntid", out var legacyTenantIdFromHeader) && !string.IsNullOrEmpty(legacyTenantIdFromHeader))
+        {
+            tenantId = legacyTenantIdFromHeader.ToString();
+            return true;
+        }
+
+        return false;
     }
 }

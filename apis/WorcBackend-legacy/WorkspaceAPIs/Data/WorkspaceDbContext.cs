@@ -52,6 +52,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<KnowledgeBase>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<KnowledgeBaseFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<JobNodeExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<ApiKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Skill>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<SkillFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Tool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -77,6 +78,13 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<KnowledgeBase>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
         modelBuilder.Entity<KnowledgeBaseFile>().HasIndex(index => new { index.KnowledgeBaseId, index.FileName }).IsUnique();
         modelBuilder.Entity<ResourceShare>().HasIndex(index => new { index.ResourceId, index.UserId }).IsUnique();
+        modelBuilder.Entity<ApiKey>().HasIndex(index => index.KeyHash).IsUnique();
+        modelBuilder.Entity<ApiKey>().OwnsOne(e => e.Permissions, permissions =>
+        {
+            permissions.ToJson();
+        });
+        modelBuilder.Entity<ApiKey>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ApiKey>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<Skill>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
         modelBuilder.Entity<SkillFile>().HasIndex(index => new { index.SkillId, index.FileName }).IsUnique();
         modelBuilder.Entity<Tool>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
@@ -277,6 +285,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<VectorStore> VectorStores { get; set; }
     public DbSet<KnowledgeBase> KnowledgeBases { get; set; }
     public DbSet<KnowledgeBaseFile> KnowledgeBaseFiles { get; set; }
+    public DbSet<ApiKey> ApiKeys { get; set; }
     public DbSet<ResourceShare> ResourceShares { get; set; }
     public DbSet<Skill> Skills { get; set; }
     public DbSet<SkillFile> SkillFiles { get; set; }

@@ -47,6 +47,7 @@ type AlertDialogDefaultOptions = {
  * @property isDestructive - (Optional) Indicates whether the action is destructive. Defaults to `false`.
  * @property title - (Optional) The title of the alert dialog.
  * @property description - (Optional) A brief description or message displayed in the alert dialog.
+ * @property content - (Optional) Custom React node rendered below the description. Useful for interactive content such as a copyable value.
  * @property cancelBtnText - (Optional) Custom text for the cancel button. Defaults to a standard label.
  * @property confirmBtnText - (Optional) Custom text for the confirm button. Defaults to a standard label.
  */
@@ -62,6 +63,9 @@ type AlertDialogCustomOptions = {
 
   /** A brief description or message displayed in the alert dialog. Default is `This action cannot be undone. Are you sure you want to continue?` */
   description?: string;
+
+  /** Custom React node rendered below the description, such as a copyable value. */
+  content?: React.ReactNode;
 
   /** Custom text for the cancel button. Defaults is `Cancel`. Pass empty string to hide the cancel button. */
   cancelBtnText?: string;
