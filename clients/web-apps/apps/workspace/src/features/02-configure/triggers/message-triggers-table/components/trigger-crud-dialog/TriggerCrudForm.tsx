@@ -23,7 +23,6 @@ import {
 import { useEffect, useState } from "react";
 import { z } from "zod";
 
-import APIKeyField from "../../../webhook-triggers-table/components/trigger-crud-dialog/APIKeyField.tsx";
 import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { triggerOptimisticMutationFn } from "../../apis/triggers-table-apis.ts";
 import { resourceRequiresReference } from "../../constants/form-utils.ts";
@@ -182,26 +181,6 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
                 onItemSelect={(item) => field.onChange(item.value)}
                 onItemClear={() => field.onChange(null)}
                 placeholder="Search"
-              />
-            </FormControl>
-
-            <FormMessage size={"base"} />
-          </FormItem>
-        )}
-      />
-      <FormField
-        name="apiKey"
-        control={form.control}
-        render={({ field }) => (
-          <FormItem size={"base"}>
-            <FormLabelExt size={"base"} label="Api Key" isRequired />
-
-            <FormControl>
-              <APIKeyField
-                value={field.value}
-                onChange={field.onChange}
-                crudAction={crudAction}
-                disabled={isReadMode}
               />
             </FormControl>
 

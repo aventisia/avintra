@@ -41,7 +41,6 @@ export const triggerZodSchema = z
 
     // Timezone in which the trigger is set
     timezone: z.string().min(1, { message: reqError("Timezone") }),
-    apiKey: z.string().min(1, { message: reqError("Api Key") }),
 
     mailbox: z
       .string()

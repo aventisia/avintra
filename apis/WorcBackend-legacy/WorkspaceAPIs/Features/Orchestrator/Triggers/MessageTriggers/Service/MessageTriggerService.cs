@@ -236,6 +236,9 @@ public class MessageTriggerService : IMessageTriggerService
             // Serialize MessageTriggerModel properties into Metadata JSON
             var model = (MessageTriggerModel)messageTriggerDto;
 
+            // Generate a random clientState token used to verify Graph webhook notifications
+            model.ClientState = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
+
             // Create new message trigger subscription
             var subscription = await ManagemessageTriggerSubscriptionAsync(model, "create", newMessageTrigger.Id);
 
@@ -1046,7 +1049,7 @@ public class MessageTriggerService : IMessageTriggerService
                                 lifecycleNotificationUrl = notificationUrl,
                                 resource = messageTriggerModel.Resource,
                                 expirationDateTime = messageTriggerModel.ExpiryDateTime.UtcDateTime.ToString("o"),
-                                clientState = messageTriggerModel.ApiKey
+                                clientState = messageTriggerModel.ClientState
                             };
 
                             // Send subscription creation request

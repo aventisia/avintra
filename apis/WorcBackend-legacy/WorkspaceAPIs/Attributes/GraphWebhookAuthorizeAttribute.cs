@@ -49,12 +49,12 @@ public class GraphWebhookAuthorizeAttribute : Attribute, IAsyncAuthorizationFilt
             httpContext.Request.Body.Position = 0;
         }
 
-        // Extract clientState (API key) from Graph payload
-        string? apiKey;
+        // Extract clientState token from Graph payload
+        string? clientState;
         try
         {
             using var json = JsonDocument.Parse(body);
-            apiKey = json.RootElement
+            clientState = json.RootElement
                          .GetProperty("value")[0]
                          .GetProperty("clientState")
                          .GetString();
@@ -69,13 +69,13 @@ public class GraphWebhookAuthorizeAttribute : Attribute, IAsyncAuthorizationFilt
             return;
         }
 
-        // Ensure API key exists
-        if (string.IsNullOrEmpty(apiKey))
+        // Ensure clientState token exists
+        if (string.IsNullOrEmpty(clientState))
         {
             context.Result = new ContentResult
             {
                 StatusCode = 401,
-                Content = "Missing API key"
+                Content = "Missing clientState"
             };
             return;
         }
@@ -92,18 +92,20 @@ public class GraphWebhookAuthorizeAttribute : Attribute, IAsyncAuthorizationFilt
             return;
         }
 
-        // Get stored API key from metadata JSON
-        var triggerApiKey = trigger.Metadata.RootElement
-            .GetProperty("apiKey")
-            .GetString();
+        // Get stored clientState from metadata JSON
+        string? storedClientState = null;
+        if (trigger.Metadata.RootElement.TryGetProperty("clientState", out var clientStateProperty))
+        {
+            storedClientState = clientStateProperty.GetString();
+        }
 
-        // Compare incoming API key with stored value
-        if (!string.Equals(triggerApiKey, apiKey))
+        // Compare incoming clientState with stored value
+        if (!string.Equals(storedClientState, clientState, StringComparison.Ordinal))
         {
             context.Result = new ContentResult
             {
                 StatusCode = 403,
-                Content = "Invalid API Key"
+                Content = "Invalid clientState"
             };
             return;
         }

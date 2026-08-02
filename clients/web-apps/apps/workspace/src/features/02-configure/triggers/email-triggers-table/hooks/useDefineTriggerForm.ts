@@ -20,7 +20,7 @@ import { useTableTab } from "./useTableTab";
 /**
  * Custom hook for defining a trigger form.
  */
-export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: CrudActionType }) => {
+export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: CrudActionType }) => {
   // Trigger name state for availability check
   // const [triggerName, setTriggerName] = useState("");
 
@@ -45,7 +45,6 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       name: "",
       agents: [],
       timezone: "",
-      apiKey: "",
       expiryDateTime: (() => {
         const d = new Date();
         d.setDate(d.getDate() + 30);
@@ -90,7 +89,6 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       name: triggerData?.name ?? "",
       agents: triggerData?.agents ?? [],
       timezone: triggerData?.timezone ?? userTimeZone ?? "",
-      apiKey: triggerData?.apiKey ?? "",
       mailbox: triggerData?.mailbox ?? "",
       expiryDateTime: triggerData?.expiryDateTime ? new Date(triggerData.expiryDateTime) : datePlus30,
 
@@ -102,7 +100,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       resubscribeEnabled: triggerData?.resubscribeEnabled ?? false,
       isDisabled: triggerData?.isDisabled ?? false,
     });
-  }, [rowId, form, queryClient, userSession]);
+  }, [rowId, form, queryClient, userSession, queryKey]);
 
   // Get check availability state and methods
   // const {
