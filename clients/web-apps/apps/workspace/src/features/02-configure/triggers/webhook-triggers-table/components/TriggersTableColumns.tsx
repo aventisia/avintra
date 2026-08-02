@@ -70,13 +70,6 @@ export const triggersTableColumns = (isSharedTab: boolean): ColumnDef<WebhookTri
   },
 
   {
-    accessorKey: "apiKey",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("apiKey")} />
-    ),
-    cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("apiKey")}</div>,
-  },
-  {
     accessorKey: "createdBy",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />

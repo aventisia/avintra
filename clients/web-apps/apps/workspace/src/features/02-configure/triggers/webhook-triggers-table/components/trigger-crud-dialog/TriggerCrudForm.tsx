@@ -30,11 +30,8 @@ import { triggerZodSchema } from "../../constants/trigger-zod-schema.ts";
 import { WebhookTriggerDto } from "../../dtos/webhook-trigger-dto.ts";
 import { useDefineTriggerForm } from "../../hooks/useDefineTriggerForm.ts";
 import { useTableTab } from "../../hooks/useTableTab.ts";
-import APIKeyField from "./APIKeyField.tsx";
 import { AgentsSelector } from "./AgentsSelector.tsx";
 import InputWithCopy from "./InputWithCopy.tsx";
-
-// import { generateApiKey } from "../../apis/api-key-apis.ts";
 
 interface TriggerCrudFormProps {
   rowId: string;
@@ -110,8 +107,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
         agent: triggerData?.agent ? objectToArray(triggerData?.agent) : [],
         webhookUrl:
           triggerData?.webhookUrl ??
-          `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}/webhook/{Id}`,
-        apiKey: triggerData?.apiKey ?? "",
+          `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}/execute-flow/webhook`,
 
         callbackUrl: triggerData?.callbackUrl ?? "",
         expectedPayloadSchema: triggerData?.expectedPayloadSchema ?? "",
@@ -143,37 +139,6 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
         name="webhookUrl"
         render={({ field }) => (
           <InputWithCopy {...webhookUrlProps} value={field.value} onChange={field.onChange} />
-        )}
-      />
-      {/* <Controller
-        control={form.control}
-        name="apiKey"
-        render={({ field }) => (
-          <APIKeyField
-            value={field.value}
-            onChange={field.onChange}
-            crudAction={crudAction}
-          />
-        )}
-      /> */}
-      <FormField
-        name="apiKey"
-        control={form.control}
-        render={({ field }) => (
-          <FormItem size={"base"}>
-            <FormLabelExt size={"base"} label="Api Key" isRequired />
-
-            <FormControl>
-              <APIKeyField
-                value={field.value}
-                onChange={field.onChange}
-                crudAction={crudAction}
-                disabled={isReadMode}
-              />
-            </FormControl>
-
-            <FormMessage size={"base"} />
-          </FormItem>
         )}
       />
 

@@ -23,8 +23,6 @@ export const triggerZodSchema = z.object({
 
   webhookUrl: z.string().optional(),
 
-  apiKey: z.string().min(1, { message: reqError("Api Key") }),
-
   expectedPayloadSchema: z.string().optional(),
 
   callbackUrl: z.string().optional(),

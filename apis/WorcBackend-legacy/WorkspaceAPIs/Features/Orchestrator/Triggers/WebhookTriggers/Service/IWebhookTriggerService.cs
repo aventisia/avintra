@@ -9,6 +9,5 @@ public interface IWebhookTriggerService
     Task<ServiceResponse<bool>> DeleteWebhookTriggerAsync(Guid triggerId);
     Task<ServiceResponse<bool>> DeleteWebhookTriggersAsync(IEnumerable<Guid> triggerIds);
     Task<ServiceResponse<TrueFalseResultDto>> IsWebhookTriggerNameAvailableAsync(CheckAvailabilityDto dto);
-    Task<ServiceResponse<WebhookTriggerDto>> RegenerateApiKeyAsync(Guid triggerId);
     Task<ServiceResponse<AssignAgentTriggerDto>> GetAgentByWebhookTriggerAsync(Guid triggerId);
 }

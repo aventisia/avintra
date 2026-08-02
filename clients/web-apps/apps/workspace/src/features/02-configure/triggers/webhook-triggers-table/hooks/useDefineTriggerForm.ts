@@ -49,7 +49,6 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       id: "",
       name: "",
       agent: [],
-      apiKey: "",
       webhookUrl: "",
       expectedPayloadSchema: "",
       callbackUrl: "",
@@ -85,8 +84,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       agent: triggerData?.agent ? objectToArray(triggerData?.agent) : [],
       webhookUrl:
         triggerData?.webhookUrl ??
-        `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}/webhook/{Id}`,
-      apiKey: triggerData?.apiKey ?? "",
+        `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}/execute-flow/webhook`,
 
       callbackUrl: triggerData?.callbackUrl ?? "",
       expectedPayloadSchema: triggerData?.expectedPayloadSchema ?? "",
