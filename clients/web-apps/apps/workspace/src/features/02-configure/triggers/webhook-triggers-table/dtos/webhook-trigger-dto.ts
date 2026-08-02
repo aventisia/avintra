@@ -21,8 +21,6 @@ export interface WebhookTriggerDto {
 
   webhookUrl?: string;
 
-  apiKey: string;
-
   expectedPayloadSchema?: string;
 
   callbackUrl?: string;

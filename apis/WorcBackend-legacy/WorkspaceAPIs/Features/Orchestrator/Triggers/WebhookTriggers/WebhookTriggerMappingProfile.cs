@@ -22,8 +22,6 @@ public class WebhookTriggerMappingProfile : IRegister
                 {
                     dest.ExpectedPayloadSchema = model.ExpectedPayloadSchema;
                     dest.CallbackUrl = model.CallbackUrl;
-                    dest.ApiKey = !string.IsNullOrEmpty(model.ApiKey) && model.ApiKey.Length > 4 ? model.ApiKey[..4] + "*******" : model.ApiKey; ;
-                    dest.ApiKeyHash = string.Empty;
                 }
             })
             .Map(dest => dest.Agent,

@@ -199,17 +199,11 @@ public class WebhookTriggerService : IWebhookTriggerService
 
             dto = TrimDtoStringPropsUtil.TrimDtoStringProps(dto);
 
-            // Generate a cryptographically secure API key (shown once)
-            var plainApiKey = GenerateApiKey();
-            var apiKeyHash = HashApiKey(plainApiKey);
-
             // Build the metadata model
             var model = new WebhookTriggerModel
             {
-                ApiKeyHash = apiKeyHash,
                 ExpectedPayloadSchema = dto.ExpectedPayloadSchema,
-                CallbackUrl = dto.CallbackUrl,
-                ApiKey = dto.ApiKey
+                CallbackUrl = dto.CallbackUrl
             };
 
             var newTrigger = dto.Adapt<Trigger>();
@@ -277,9 +271,6 @@ public class WebhookTriggerService : IWebhookTriggerService
 
             var resultDto = newTrigger.Adapt<WebhookTriggerDto>();
             resultDto.WebhookUrl = BuildWebhookUrl(newTrigger.Id);
-            // Return the plain key once
-            resultDto.ApiKey = plainApiKey;
-            resultDto.ApiKeyHash = null;
 
             serviceResponse.Data = resultDto;
             serviceResponse.StatusCode = 200;
@@ -352,22 +343,13 @@ public class WebhookTriggerService : IWebhookTriggerService
 
             dto = TrimDtoStringPropsUtil.TrimDtoStringProps(dto);
 
-            // Deserialize existing metadata to preserve the API key hash
+            // Deserialize existing metadata to preserve webhook-specific settings.
             var jsonOptions = BuildJsonOptions();
             var existingModel = System.Text.Json.JsonSerializer.Deserialize<WebhookTriggerModel>(
-                trigger.Metadata.RootElement.GetRawText(), jsonOptions);
-
-            // Check if API key changed
-            bool isApiKeyChanged = !string.IsNullOrWhiteSpace(dto.ApiKey) &&
-                                   dto.ApiKey != existingModel?.ApiKey;
+                trigger.Metadata.RootElement.GetRawText(), jsonOptions) ?? new WebhookTriggerModel();
 
             var updatedModel = new WebhookTriggerModel
             {
-                ApiKey = isApiKeyChanged ? dto.ApiKey : existingModel?.ApiKey,
-                ApiKeyHash = isApiKeyChanged
-                    ? HashApiKey(dto.ApiKey ?? string.Empty)   // generate new hash if changed
-                    : existingModel.ApiKeyHash,
-
                 ExpectedPayloadSchema = dto.ExpectedPayloadSchema,
                 CallbackUrl = dto.CallbackUrl
             };
@@ -640,81 +622,6 @@ public class WebhookTriggerService : IWebhookTriggerService
         return serviceResponse;
     }
 
-    // Regenerates the API key for a webhook trigger. Returns the plain key once.
-    public async Task<ServiceResponse<WebhookTriggerDto>> RegenerateApiKeyAsync(Guid triggerId)
-    {
-        var serviceResponse = new ServiceResponse<WebhookTriggerDto>
-        {
-            Data = null,
-            Message = "Failed to regenerate API key. Please try again."
-        };
-
-        try
-        {
-            var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.Webhook)
-                .SingleOrDefaultAsync();
-
-            if (trigger == null)
-            {
-                serviceResponse.Message = "Webhook trigger does not exist";
-                return serviceResponse;
-            }
-
-            // Validate edit permission
-            var (canEdit, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
-                _userId,
-                trigger.Id,
-                ResourceTypeEnum.Trigger,
-                trigger.CreatedByUserId,
-                false,
-                new[]
-                {
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.Edit,
-                }
-            );
-
-            if (!canEdit)
-            {
-                serviceResponse.Message = "You do not have access to generate api key this webhook trigger.";
-                return serviceResponse;
-            }
-
-            var jsonOptions = BuildJsonOptions();
-            var model = System.Text.Json.JsonSerializer.Deserialize<WebhookTriggerModel>(
-                trigger.Metadata.RootElement.GetRawText(), jsonOptions) ?? new WebhookTriggerModel();
-
-            var plainApiKey = GenerateApiKey();
-            model.ApiKeyHash = HashApiKey(plainApiKey);
-
-            trigger.Metadata = SerializeMetadata(model);
-            trigger.LastModifiedByUserId = _userId;
-
-            _unitOfWork.TriggerRepo.Update(trigger);
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Database save failed while regenerating API key for trigger {TriggerId}.", triggerId);
-                return serviceResponse;
-            }
-
-            var resultDto = trigger.Adapt<WebhookTriggerDto>();
-            resultDto.WebhookUrl = BuildWebhookUrl(trigger.Id);
-            resultDto.ApiKey = plainApiKey;
-            resultDto.ApiKeyHash = null;
-
-            serviceResponse.Data = resultDto;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "API key regenerated successfully";
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while regenerating API key for trigger {TriggerId}.", triggerId);
-        }
-
-        return serviceResponse;
-    }
-
     // Retrieves the agent linked to a webhook trigger.
     public async Task<ServiceResponse<AssignAgentTriggerDto>> GetAgentByWebhookTriggerAsync(Guid triggerId)
     {
@@ -757,17 +664,8 @@ public class WebhookTriggerService : IWebhookTriggerService
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
-    private static string GenerateApiKey()
-        => Convert.ToBase64String(RandomNumberGenerator.GetBytes(32));
-
-    internal static string HashApiKey(string plainKey)
-    {
-        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(plainKey));
-        return Convert.ToHexString(bytes).ToLowerInvariant();
-    }
-
     private string BuildWebhookUrl(Guid triggerId)
-        => $"{_environmentConfig.AppBaseUrl.TrimEnd('/')}/api/webhook-trigger/notify/{triggerId}";
+        => $"{_environmentConfig.AppBaseUrl.TrimEnd('/')}/api/execute-flow/webhook";
 
     private static JsonDocument SerializeMetadata(WebhookTriggerModel model)
     {

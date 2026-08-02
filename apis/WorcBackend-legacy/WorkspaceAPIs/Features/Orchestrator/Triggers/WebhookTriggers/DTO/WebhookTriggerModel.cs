@@ -2,14 +2,10 @@ namespace WorkspaceAPIs.DTOs;
 
 /// <summary>
 /// Contains the webhook-specific configuration stored in the Trigger.Metadata JSON column.
+/// API key authentication is now handled by the centralized ApiKey entity, so per-trigger API key fields have been removed.
 /// </summary>
 public class WebhookTriggerModel
 {
-    /// <summary>
-    /// Gets or sets the SHA-256 hash of the generated API key. Never returned in responses.
-    /// </summary>
-    public string? ApiKeyHash { get; set; }
-
     /// <summary>
     /// Gets or sets an optional JSON Schema string that incoming payloads are validated against.
     /// </summary>
@@ -19,9 +15,4 @@ public class WebhookTriggerModel
     /// Gets or sets an optional URL to POST the agent execution result to when the job completes.
     /// </summary>
     public string? CallbackUrl { get; set; }
-
-    /// <summary>
-    /// Gets or sets the plain-text API key. Populated ONLY on Create and RegenerateApiKey responses; null on all other reads.
-    /// </summary>
-    public string? ApiKey { get; set; }
 }

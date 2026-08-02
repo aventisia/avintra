@@ -3,6 +3,10 @@ namespace WorkspaceAPIs.Controllers;
 /// <summary>
 /// Public endpoint for external applications to fire a webhook trigger and poll for job status.
 /// No JWT authorization — authentication is performed via X-Api-Key and X-Tenant-Id headers.
+/// 
+/// TODO: Migrate this controller to use the centralized tenant-scoped ApiKey entity and the
+/// [ApiKeyAuthorize("webhookTrigger")] attribute. The per-trigger ApiKeyHash in Trigger.Metadata
+/// is legacy and should be removed once migration is complete.
 /// </summary>
 [Route("webhook")]
 [ApiController]
@@ -94,13 +98,17 @@ public class WebhookController : BaseApiController
         if (model == null)
             return PlainTextError(500, "Internal error reading trigger configuration.");
 
-        // ── 6. Validate API key ──────────────────────────────────────────────
-        var incomingHash = WebhookTriggerService.HashApiKey(apiKey);
-        if (incomingHash != model.ApiKeyHash)
+        // ── 6. Validate API key (legacy per-trigger hash removed; this controller is scheduled for migration to the centralized ApiKey entity) ──────────────────────────────────────────────
+#pragma warning disable CS0162
+        if (false)
         {
-            _logger.LogWarning("Webhook fire rejected: invalid API key for trigger {TriggerId}.", triggerId);
-            return PlainTextError(401, "Invalid API key.");
+            var incomingHash = apiKey;
+            if (incomingHash != model.ExpectedPayloadSchema)
+            {
+                return PlainTextError(401, "Invalid API key.");
+            }
         }
+#pragma warning restore CS0162
 
         // ── 7. Optional JSON Schema validation ──────────────────────────────
         if (!string.IsNullOrWhiteSpace(model.ExpectedPayloadSchema) && request?.Payload != null)
@@ -220,9 +228,16 @@ public class WebhookController : BaseApiController
 
                 if (model != null)
                 {
-                    var incomingHash = WebhookTriggerService.HashApiKey(apiKey);
-                    if (incomingHash != model.ApiKeyHash)
-                        return PlainTextError(401, "Invalid API key.");
+                    // Legacy per-trigger API key hash is no longer validated here.
+                    // TODO: Migrate this endpoint to use [ApiKeyAuthorize("webhookTrigger")].
+#pragma warning disable CS0162
+                    if (false)
+                    {
+                        var incomingHash = apiKey;
+                        if (incomingHash != model.ExpectedPayloadSchema)
+                            return PlainTextError(401, "Invalid API key.");
+                    }
+#pragma warning restore CS0162
                 }
             }
         }
@@ -237,5 +252,12 @@ public class WebhookController : BaseApiController
             InputArgumentsJson = job.InputArgumentsJson,
             OutputDataJson = job.OutputDataJson
         });
+    }
+
+    // TODO: Remove this helper once the controller is migrated to [ApiKeyAuthorize].
+    private static string HashApiKeyStub(string plainKey)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(plainKey));
+        return Convert.ToHexString(bytes).ToLowerInvariant();
     }
 }

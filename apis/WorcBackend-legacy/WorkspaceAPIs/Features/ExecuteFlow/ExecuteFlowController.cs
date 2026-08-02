@@ -26,13 +26,13 @@ public class ExecuteFlowController : BaseApiController
     /// <summary>
     /// Executes a flow via webhook trigger from external systems.
     /// 
-    /// - Requires API key authentication (handled by WebhookTriggerAuthorizeAttribute)
+    /// - Requires API key authentication with the "webhookTrigger" permission (handled by ApiKeyAuthorizeAttribute)
     /// - Only published flows can be executed
     /// - Accepts raw JSON payload from external source
     /// </summary>
     [HttpPost("webhook")]
     [AllowAnonymous] // bypass JWT/auth
-    [WebhookTriggerAuthorize]
+    [ApiKeyAuthorize("webhookTrigger")]
     public async Task<ActionResult<ServiceResponse<ExecuteFlowResponseDto>>> ExecuteFlowFromWebhookAsync([FromBody] ExecuteFlowRequestDto requestDto)
     {
         return ResultHelper(await _executeFlowStep1Service.ExecuteFlowAsync(requestDto, TriggerTypesEnum.Webhook));

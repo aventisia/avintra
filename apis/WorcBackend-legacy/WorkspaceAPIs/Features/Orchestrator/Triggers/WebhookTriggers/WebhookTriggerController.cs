@@ -68,13 +68,6 @@ public class WebhookTriggerController : BaseApiController
         return ResultHelper(await _webhookTriggerService.DeleteWebhookTriggersAsync(triggerIds));
     }
 
-    // Regenerates the API key for a webhook trigger (plain key returned once)
-    [HttpPost("{triggerId}/regenerate-api-key")]
-    public async Task<ActionResult<ServiceResponse<WebhookTriggerDto>>> RegenerateApiKey(Guid triggerId)
-    {
-        return ResultHelper(await _webhookTriggerService.RegenerateApiKeyAsync(triggerId));
-    }
-
     // Retrieves the agent linked to a webhook trigger
     [HttpGet("{triggerId}/agents")]
     public async Task<ActionResult<ServiceResponse<AssignAgentTriggerDto>>> GetAgentByWebhookTrigger(Guid triggerId)

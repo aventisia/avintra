@@ -1,9 +1,4 @@
-import {
-  type DateTimePickerFieldProps,
-  InputFieldProps,
-  SelectFieldProps,
-  SwitchFieldProps,
-} from "@avplatform/ui/form";
+import { InputFieldProps, SwitchFieldProps } from "@avplatform/ui/form";
 
 // trigger Id
 const idProps: InputFieldProps = {
@@ -29,32 +24,6 @@ const webhookUrlProps: InputFieldProps = {
   description: "Webhook URL is auto-generated after trigger creation",
 };
 
-const apiKeyProps: InputFieldProps = {
-  name: "apiKey",
-  label: "Api Key",
-};
-
-const apiKeyExpiryProps: DateTimePickerFieldProps = {
-  name: "apiKeyExpiry",
-  label: "Expiry Date",
-  description: "The date when the trigger will expire.",
-  isRequired: true,
-  granularity: "minute",
-};
-
-const apiKeyExpiryDaysProps: SelectFieldProps = {
-  name: "apiKeyExpiryDays",
-  label: "API Key Expiry (in days)",
-  isRequired: true,
-  selectOptions: [
-    { label: "30", value: "30" },
-    { label: "90", value: "90" },
-    { label: "180", value: "180" },
-    { label: "365", value: "365" },
-    { label: "Custom", value: "custom" },
-  ],
-};
-
 const callbackUrlProps: InputFieldProps = {
   name: "callbackUrl",
   label: "Callback Url",
@@ -75,9 +44,6 @@ export {
   idProps,
   nameProps,
   webhookUrlProps,
-  apiKeyProps,
-  apiKeyExpiryDaysProps,
-  apiKeyExpiryProps,
   callbackUrlProps,
   expectedPayloadSchemaProps,
   isDisabledProps,

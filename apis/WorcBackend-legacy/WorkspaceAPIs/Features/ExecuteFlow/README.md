@@ -47,7 +47,7 @@ Part 1: Make only the required modificaiton on the frontend to call the execute 
 
 Part 2: Implement the execute endpoint in the backend to validate the flow version id, check permissions, fetch flow metadata and create a job in the database. We will also send a notification to frontend that the flow execution has started and provide the jobId for real-time updates. However, we will not implement the actual flow execution logic in this phase, and we will just return a success message to the user after creating the job. This will allow us to test the end-to-end flow execution process without actually executing the nodes in the flow.
 
-> removing the API key from executeFlow feature since this will be validated by the webhook trigger feature and that feature is going to call \_executeFlowStep1Service.ExecuteFlowAsync for published flow execution
+> API key authentication for `POST /execute-flow/webhook` is now handled by the centralized tenant-scoped `ApiKey` entity via the `[ApiKeyAuthorize("webhookTrigger")]` attribute. The caller must provide `X-API-KEY` and `X-TENANT-ID` headers. The key must have the `webhookTrigger` permission. Only published flows can be executed via this endpoint.
 
 ### Phase 2: Implement only the FlowProcessor to process the flow without NodeProcessor. In this phase, we will mock the node execution and just focus on the flow processing logic, including handling of conditional nodes and loop nodes.
 

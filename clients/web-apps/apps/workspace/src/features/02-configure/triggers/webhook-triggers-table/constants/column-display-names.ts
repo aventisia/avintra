@@ -5,7 +5,6 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "id", value: "Select Row" },
   { key: "name", value: "Name" },
   { key: "agent", value: "Agent" },
-  { key: "apiKey", value: "Api Key" },
   { key: "createdBy", value: "Created By" },
   { key: "createdOn", value: "Created On" },
   { key: "lastModifiedBy", value: "Last Modified By" },
