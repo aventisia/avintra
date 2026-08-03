@@ -1,4 +1,3 @@
-import type { EnvironmentTypesEnum } from "@avplatform/ui/enums/environment-types-enum";
 import type { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import type { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
 
@@ -17,11 +16,6 @@ export interface MachinesTableRowDto {
    * Gets or sets the generated unique machine name.
    */
   name: string;
-
-  /**
-   * Represents the environment of the machine, e.g., Development, UAT, Production.
-   */
-  environment: EnvironmentTypesEnum;
 
   /**
    * Represents the operating system of the machine, e.g., Windows, Linux.
@@ -44,11 +38,6 @@ export interface MachinesTableRowDto {
   hostname: string;
 
   /**
-   * Optional IP address of the machine (supports IPv4 or IPv6, max length 100).
-   */
-  ipAddress?: string;
-
-  /**
    * Represents the timestamp of when the machine was last checked in.
    */
   lastCheckedIn: string;
@@ -69,26 +58,15 @@ export interface MachinesTableRowDto {
   isDisabled: boolean;
 
   /**
-   * Gets or sets the username of the user who created the user record.
+   * Gets or sets the linked user account of the machine.
+   * The value could be the linked user's unique username or user id.
    * This property is intended for use in responses only and should not be included in requests.
    */
-  createdBy: string;
+  linkedUserAccount: string;
 
   /**
-   * Gets or sets the date and time when the user record was created.
+   * Gets or sets the date and time when the machine record was created.
    * This property is intended for use in responses only and should not be included in requests.
    */
-  createdOn: Date;
-
-  /**
-   * Gets or sets the username of the user who last modified the user record.
-   * This property is intended for use in responses only and should not be included in requests.
-   */
-  lastModifiedBy: string;
-
-  /**
-   * Gets or sets the date and time when the user record was last modified.
-   * This property is intended for use in responses only and should not be included in requests.
-   */
-  lastModifiedOn: Date;
+  createdAt: string;
 }

@@ -2,7 +2,7 @@ import { Checkbox, CopyableText } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { DTColumnHeader, DTOpenViewCell, createDTActionsColumn } from "@avplatform/ui/data-table";
-import { formatDate, maskIP } from "@avplatform/ui/utils";
+import { formatDate } from "@avplatform/ui/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
@@ -87,13 +87,6 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
     },
   },
   {
-    accessorKey: "environment",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("environment")} />
-    ),
-    cell: ({ row }) => row.getValue("environment"),
-  },
-  {
     accessorKey: "operatingSystem",
     header: ({ column }) => (
       <DTColumnHeader
@@ -148,65 +141,27 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
     cell: ({ row }) => (row.getValue<boolean>("isDisabled") ? "Yes" : "No"),
   },
   {
-    accessorKey: "ipAddress",
+    accessorKey: "linkedUserAccount",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("ipAddress")} />
-    ),
-    cell: ({ row }) => {
-      const ipAddress = row.getValue<string>("ipAddress");
-      if (!ipAddress || ipAddress === "0.0.0.0") return FALLBACK_VALUE;
-      return maskIP(ipAddress);
-    },
-  },
-  {
-    accessorKey: "createdBy",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("linkedUserAccount")} />
     ),
     cell: ({ row }) => (
-      <div title={row.getValue("createdBy")} className="w-auto max-w-40 truncate font-medium">
-        {row.getValue("createdBy")}
+      <div title={row.getValue("linkedUserAccount")} className="w-auto max-w-40 truncate font-medium">
+        {row.getValue("linkedUserAccount")}
       </div>
     ),
   },
   {
-    accessorKey: "createdOn",
+    accessorKey: "createdAt",
     header: ({ column }) => (
       <DTColumnHeader
         tableKey={TABLE_KEY}
         className="w-[7rem]"
         column={column}
-        title={getColumnName("createdOn")}
+        title={getColumnName("createdAt")}
       />
     ),
-    cell: ({ row }) => formatDate(row.getValue("createdOn")),
-  },
-  {
-    accessorKey: "lastModifiedBy",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("lastModifiedBy")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div title={row.getValue("lastModifiedBy")} className="w-auto max-w-40 truncate font-medium">
-        {row.getValue("lastModifiedBy")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "lastModifiedOn",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        className="w-[7rem]"
-        column={column}
-        title={getColumnName("lastModifiedOn")}
-      />
-    ),
-    cell: ({ row }) => formatDate(row.getValue("lastModifiedOn")),
+    cell: ({ row }) => formatDate(row.getValue("createdAt")),
   },
   {
     accessorKey: "id",

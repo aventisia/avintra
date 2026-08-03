@@ -19,13 +19,6 @@ public interface IMachinesTableService
     Task<ServiceResponse<MachineRecordDto>> GetMachineAsync(Guid machineId);
 
     /// <summary>
-    /// Inserts a new machine.
-    /// </summary>
-    /// <param name="addMachineDto">The machine details.</param>
-    /// <returns>A service response containing the created machine data.</returns>
-    Task<ServiceResponse<MachinesTableRowDto>> InsertMachineAsync(AddMachineDto addMachineDto);
-
-    /// <summary>
     /// Updates an existing machine.
     /// </summary>
     /// <param name="updateMachineDto">The updated machine details.</param>

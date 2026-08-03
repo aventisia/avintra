@@ -32,33 +32,22 @@ public static class MachinesTableHelpers
     }
 
     /// <summary>
-    /// Builds a machine name based on the provided environment, operating system, OS ID, and username.
-    /// The machine name is constructed in the format: "[username]_[environment]_[os]_[osId]".
-    /// The environment is converted to a token (e.g., "dev" for Development, "prod" for Production, "uat" for UAT).
+    /// Builds a machine name based on the provided operating system, OS ID, and username.
+    /// The machine name is constructed in the format: "[username]_[os]_[osId]".
     /// </summary>
-    /// <param name="environment"></param>
     /// <param name="operatingSystem"></param>
     /// <param name="osId"></param>
     /// <param name="username"></param>
     /// <returns></returns>
     public static string BuildMachineName(
-        EnvironmentTypesEnum environment,
         OsTypesEnum operatingSystem,
         string osId,
         string username)
     {
-        var environmentToken = environment switch
-        {
-            EnvironmentTypesEnum.Development => "dev",
-            EnvironmentTypesEnum.Production => "prod",
-            EnvironmentTypesEnum.UAT => "uat",
-            _ => environment.ToString().ToLowerInvariant()
-        };
-
         var normalizedUsername = username.Trim().ToLowerInvariant();
         var osToken = operatingSystem.ToString().ToLowerInvariant();
         var normalizedOsId = osId.Trim().ToLowerInvariant();
 
-        return $"[{normalizedUsername}]_{environmentToken}_{osToken}_{normalizedOsId}";
+        return $"[{normalizedUsername}]_{osToken}_{normalizedOsId}";
     }
 }

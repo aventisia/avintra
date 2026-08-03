@@ -161,6 +161,7 @@ public static class AppServicesExtension
         services.AddScoped<INodeExecutionLogService, NodeExecutionLogService>();
         services.AddScoped<IResourceShareService, ResourceShareService>();
         services.AddScoped<IApiKeyService, ApiKeyService>();
+        services.AddScoped<IMachineAuthService, MachineAuthService>();
         services.AddScoped<IToolService, ToolService>();
         services.AddScoped<IFlowVersionToolService, FlowVersionToolService>();
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();

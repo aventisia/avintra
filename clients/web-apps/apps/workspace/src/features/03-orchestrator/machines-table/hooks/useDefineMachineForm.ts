@@ -1,24 +1,22 @@
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
-import { EnvironmentTypesEnum } from "@avplatform/ui/enums/environment-types-enum";
-import { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { getMachine } from "../apis/machines-table-apis";
 import { machineZodSchema } from "../constants/machine-zod-schema";
-import { buildMachineNamePreview } from "../utils/build-machine-name-util";
 
 interface UseDefineMachineFormOptions {
   rowId: string;
-  crudAction: "create" | "update";
 }
 
 /**
- * Custom hook for defining a machine form.
+ * Custom hook for defining a machine edit form.
+ * Machines are registered through the desktop app, so this form is used only
+ * for updating an existing machine (assigned flow versions and disabled state).
  */
-export const useDefineMachineForm = ({ rowId, crudAction }: UseDefineMachineFormOptions) => {
+export const useDefineMachineForm = ({ rowId }: UseDefineMachineFormOptions) => {
   const { setIsDirty } = useCrudDialogDirty();
 
   // Define form with zod schema
@@ -28,12 +26,7 @@ export const useDefineMachineForm = ({ rowId, crudAction }: UseDefineMachineForm
     mode: "onChange",
     defaultValues: {
       id: "",
-      environment: EnvironmentTypesEnum.Development,
-      operatingSystem: OsTypesEnum.Windows,
-      osID: "",
-      username: "",
       hostname: "",
-      ipAddress: "",
       flowVersionIds: [],
       isDisabled: false,
       name: "",
@@ -50,45 +43,33 @@ export const useDefineMachineForm = ({ rowId, crudAction }: UseDefineMachineForm
     let isActive = true;
 
     const resetMachineForm = async () => {
-      if (crudAction === "update" && rowId) {
-        try {
-          const machineRecordResponse = await getMachine(rowId);
-
-          if (!isActive) {
-            return;
-          }
-
-          const machineData = machineRecordResponse?.data;
-
-          form.reset({
-            id: machineData?.id ?? rowId,
-            environment: machineData?.environment ?? EnvironmentTypesEnum.Development,
-            operatingSystem: machineData?.operatingSystem ?? OsTypesEnum.Windows,
-            osID: machineData?.osID ?? "",
-            username: machineData?.username ?? "",
-            hostname: machineData?.hostname ?? "",
-            ipAddress: machineData?.ipAddress ?? "",
-            flowVersionIds: machineData?.machineFlowVersions ?? [],
-            isDisabled: machineData?.isDisabled ?? false,
-            name: machineData?.name ?? "",
-          });
-        } catch {
-          if (!isActive) {
-            return;
-          }
-
-          form.reset();
-        }
-
+      if (!rowId) {
         return;
       }
 
-      form.reset();
+      try {
+        const machineRecordResponse = await getMachine(rowId);
 
-      // Focus first editable field after reset.
-      setTimeout(() => {
-        form.setFocus("osID", { shouldSelect: false });
-      }, 0);
+        if (!isActive) {
+          return;
+        }
+
+        const machineData = machineRecordResponse?.data;
+
+        form.reset({
+          id: machineData?.id ?? rowId,
+          hostname: machineData?.hostname ?? "",
+          flowVersionIds: machineData?.machineFlowVersions ?? [],
+          isDisabled: machineData?.isDisabled ?? false,
+          name: machineData?.name ?? "",
+        });
+      } catch {
+        if (!isActive) {
+          return;
+        }
+
+        form.reset();
+      }
     };
 
     resetMachineForm();
@@ -96,28 +77,7 @@ export const useDefineMachineForm = ({ rowId, crudAction }: UseDefineMachineForm
     return () => {
       isActive = false;
     };
-  }, [rowId, crudAction, form]);
-
-  const [environment, operatingSystem, osID, username] = useWatch({
-    control: form.control,
-    name: ["environment", "operatingSystem", "osID", "username"],
-  });
-
-  // Keep read-only name in sync with backend naming format for user preview.
-  useEffect(() => {
-    const namePreview = buildMachineNamePreview({
-      environment: environment ?? "",
-      operatingSystem: operatingSystem ?? "",
-      osID: osID ?? "",
-      username: username ?? "",
-    });
-
-    form.setValue("name", namePreview, {
-      shouldDirty: false,
-      shouldTouch: false,
-      shouldValidate: false,
-    });
-  }, [environment, operatingSystem, osID, username, form]);
+  }, [rowId, form]);
 
   // Save the form dirty state
   useEffect(() => {

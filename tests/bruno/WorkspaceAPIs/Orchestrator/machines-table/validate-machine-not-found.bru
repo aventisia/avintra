@@ -1,0 +1,36 @@
+meta {
+  name: Validate machine not found
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/machine/validate
+  body: json
+  auth: none
+}
+
+headers {
+  X-API-KEY: {{CUSTOM_API_KEY}}
+  X-TENANT-ID: {{TENANT_ID}}
+}
+
+body:json {
+  {
+    "operatingSystem": "Linux",
+    "osID": "bruno-validate-not-found-machine-guid",
+    "hostname": "bruno-validate-host",
+    "username": "bruno.validate.notfound",
+    "linkedUserAccountId": "{{ACCOUNT_USER_ID}}"
+  }
+}
+
+script:post-response {
+  // Expected: 404 "Machine not found."
+  if(res.getStatus() == 404){
+      bru.setGlobalEnvVar(
+          "MACHINE_NOT_FOUND",
+          "verified"
+      );
+  }
+}

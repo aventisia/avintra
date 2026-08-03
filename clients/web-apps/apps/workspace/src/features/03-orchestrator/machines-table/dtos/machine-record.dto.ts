@@ -1,4 +1,3 @@
-import type { EnvironmentTypesEnum } from "@avplatform/ui/enums/environment-types-enum";
 import type { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import type { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
 import type { ISelectOption } from "@avplatform/ui/types";
@@ -24,9 +23,6 @@ export interface MachineRecordDto {
   /** The generated unique machine name. */
   name: string;
 
-  /** The environment of the machine (e.g., Development, UAT, Production). */
-  environment: EnvironmentTypesEnum;
-
   /** The operating system of the machine (e.g., Windows, Linux). */
   operatingSystem: OsTypesEnum;
 
@@ -38,9 +34,6 @@ export interface MachineRecordDto {
 
   /** The host name of the machine (max length 255). */
   hostname: string;
-
-  /** Optional IP address of the machine (supports IPv4 or IPv6, max length 100). */
-  ipAddress?: string;
 
   /** The timestamp of when the machine was last checked in. */
   lastCheckedIn: string;
@@ -54,15 +47,9 @@ export interface MachineRecordDto {
   /** Flag indicating whether the machine record is disabled. */
   isDisabled: boolean;
 
-  /** The username of the user who created the machine record (response only). */
-  createdBy: string;
+  /** The linked user account of the machine. Could be a user id or unique username (response only). */
+  linkedUserAccount: string;
 
   /** The date and time when the machine record was created (response only). */
-  createdOn: Date;
-
-  /** The username of the user who last modified the machine record (response only). */
-  lastModifiedBy: string;
-
-  /** The date and time when the machine record was last modified (response only). */
-  lastModifiedOn: Date;
+  createdAt: string;
 }
