@@ -12,10 +12,10 @@ This functionality is ideal for:
 
 ## Configuration Options
 
-| Field Name        | Description                                                                 | Input Type | Required? | Default Value |
-| ----------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **FTP Connection**| The FTP connection object that provides the details needed to connect to the FTP server. | Text       | Yes       | _(empty)_     |
-| **File Name**     | The name of the file that you wish to delete from the FTP server.           | Text       | Yes       | _(empty)_     |
+| Field Name         | Description                                                                              | Input Type | Required? | Default Value |
+| ------------------ | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **FTP Connection** | The FTP connection object that provides the details needed to connect to the FTP server. | Text       | Yes       | _(empty)_     |
+| **File Name**      | The name of the file that you wish to delete from the FTP server.                        | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -43,22 +43,23 @@ After configuration, run the flow. The deleted file information will be availabl
 </Steps>
 
 <Callout type="warning" title="Warning">
-  Ensure that the file specified in the **File Name** field is indeed meant to be deleted, as this process cannot be undone.
+  Ensure that the file specified in the **File Name** field is indeed meant to
+  be deleted, as this process cannot be undone.
 </Callout>
 
 ## Input/Output Examples
 
-| Input                       | Output       | Output Type         |
-| --------------------------- | ------------ | ------------------- |
-| FTP Connection: "ftp://example.com", File Name: "report.txt" | DeletedFile: "report.txt" | Text |
+| Input                                                        | Output                    | Output Type |
+| ------------------------------------------------------------ | ------------------------- | ----------- |
+| FTP Connection: "ftp://example.com", File Name: "report.txt" | DeletedFile: "report.txt" | Text        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                       |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **FTP Connection error**                     | Verify that the FTP connection details are correct and that your network allows FTP access.    |
-| **File not found**                           | Check for any typos in the file name or ensure the file path is specified correctly.           |
-| **Permission denied error**                  | Ensure the FTP user credentials have the necessary permissions to delete files.                |
+| Problem                     | Solution                                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------------------- |
+| **FTP Connection error**    | Verify that the FTP connection details are correct and that your network allows FTP access. |
+| **File not found**          | Check for any typos in the file name or ensure the file path is specified correctly.        |
+| **Permission denied error** | Ensure the FTP user credentials have the necessary permissions to delete files.             |
 
 ## Real-World Use Cases
 

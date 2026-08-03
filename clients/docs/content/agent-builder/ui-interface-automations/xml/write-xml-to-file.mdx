@@ -12,13 +12,13 @@ For example:
 
 ## Configuration Options
 
-| Field Name                | Description                                                                 | Input Type | Required? | Default Value |
-| ------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **File Path**             | The path to the file where the XML will be written.                         | Text       | Yes       | _(empty)_     |
-| **XML To Write**          | The XML string to write into the file.                                      | Text       | Yes       | _(empty)_     |
-| **Encoding Type**         | The character encoding to use when writing the file.                        | Select     | No        | SystemDefault |
-| **Format XML**            | Whether to format (indent) the XML output for better readability.           | Switch     | No        | _(empty)_     |
-| **Indentation Per Level** | Number of spaces to use for indentation if formatting is enabled.           | Text       | No        | _(empty)_     |
+| Field Name                | Description                                                       | Input Type | Required? | Default Value |
+| ------------------------- | ----------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File Path**             | The path to the file where the XML will be written.               | Text       | Yes       | _(empty)_     |
+| **XML To Write**          | The XML string to write into the file.                            | Text       | Yes       | _(empty)_     |
+| **Encoding Type**         | The character encoding to use when writing the file.              | Select     | No        | SystemDefault |
+| **Format XML**            | Whether to format (indent) the XML output for better readability. | Switch     | No        | _(empty)_     |
+| **Indentation Per Level** | Number of spaces to use for indentation if formatting is enabled. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -58,17 +58,18 @@ If formatting is enabled, specify the **Indentation Per Level** with your prefer
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the file path you enter is accessible and that you have write permissions for the file location.
+  Ensure that the file path you enter is accessible and that you have write
+  permissions for the file location.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                                         |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **File Not Saved**                            | Double-check the file path for errors. Ensure it is a valid path and you have permissions to write to that directory.            |
-| **Encoding Issues**                           | If the file can't be read correctly, try changing the encoding type to match what your application expects (e.g., UTF-8).        |
-| **XML Formatting Doesn't Apply**              | Make sure **Format XML** is enabled, and that you've specified an indentation value if required.                                 |
-| **File Path Is Incorrect**                    | Verify that the path includes the file name and extension, e.g., `output.xml`.                                                  |
+| Problem                          | Solution                                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **File Not Saved**               | Double-check the file path for errors. Ensure it is a valid path and you have permissions to write to that directory.     |
+| **Encoding Issues**              | If the file can't be read correctly, try changing the encoding type to match what your application expects (e.g., UTF-8). |
+| **XML Formatting Doesn't Apply** | Make sure **Format XML** is enabled, and that you've specified an indentation value if required.                          |
+| **File Path Is Incorrect**       | Verify that the path includes the file name and extension, e.g., `output.xml`.                                            |
 
 ## Real-World Use Cases
 

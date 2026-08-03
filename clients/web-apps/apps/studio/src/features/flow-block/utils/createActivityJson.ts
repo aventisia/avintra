@@ -1,10 +1,9 @@
-import { PrimaryCategoryType } from "@/features/action-selector/types/primary-category-type";
-import { FlowBlockDto } from "../dtos/flow-block-dtos";
 import { ActionCategoryType } from "@/features/action-selector/types/action-category-type";
+import { PrimaryCategoryType } from "@/features/action-selector/types/primary-category-type";
 
-export function createActivityJson(
-  data: FlowBlockDto[],
-): PrimaryCategoryType[] {
+import { FlowBlockDto } from "../dtos/flow-block-dtos";
+
+export function createActivityJson(data: FlowBlockDto[]): PrimaryCategoryType[] {
   const blockConfig: Record<string, string> = {};
 
   const arr: ActionCategoryType[] = data.map((value: FlowBlockDto) => {

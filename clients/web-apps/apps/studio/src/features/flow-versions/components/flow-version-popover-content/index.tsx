@@ -1,10 +1,11 @@
 import { Command, CommandEmpty, CommandList } from "@avplatform/ui/command";
 import { ScrollArea } from "@avplatform/ui/scroll";
+
+import { FlowVersionDto } from "../../dtos/flow-version-dto";
 import { FVList } from "./FVList";
 import { FVNoContentMessage } from "./FVNoContentMessage";
 import { FVSearchBox } from "./FVSearchBox";
 import { FVSkeleton } from "./FVSkeleton";
-import { FlowVersionDto } from "../../dtos/flow-version-dto";
 
 interface FVPopoverContentProps {
   flowVersionsList: FlowVersionDto[] | undefined;
@@ -14,10 +15,7 @@ interface FVPopoverContentProps {
 /**
  * Renders the content of the Flow versions  component.
  */
-export const FVPopoverContent = ({
-  flowVersionsList,
-  isLoading,
-}: FVPopoverContentProps) => {
+export const FVPopoverContent = ({ flowVersionsList, isLoading }: FVPopoverContentProps) => {
   // Return the component
   return (
     <Command className="pt-2">

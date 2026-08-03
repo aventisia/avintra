@@ -6,10 +6,10 @@ The **Insert Row to Excel Worksheet** node is used to add a new row into an exis
 
 ## Configuration Options
 
-| Field Name            | Description                                                                 | Input Type | Required? | Default Value |
-| --------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance**| The Excel Worksheet object where the new row will be inserted.              | Text       | Yes       | _(empty)_     |
-| **Row Index**         | The 1-based index of the row where the new row should be inserted (above).  | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                                | Input Type | Required? | Default Value |
+| ---------------------- | -------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object where the new row will be inserted.             | Text       | Yes       | _(empty)_     |
+| **Row Index**          | The 1-based index of the row where the new row should be inserted (above). | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -37,7 +37,8 @@ The node will execute to insert a new row into the Excel worksheet at the specif
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the "Worksheet Instance" is correctly set to an Excel Worksheet object to avoid errors.
+  Ensure that the "Worksheet Instance" is correctly set to an Excel Worksheet
+  object to avoid errors.
 </Callout>
 
 ## Input/Output Examples
@@ -48,10 +49,10 @@ The node will execute to insert a new row into the Excel worksheet at the specif
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                          |
-| ---------------------------------------------| ------------------------------------------------------------------------------------------------- |
-| **Blank Worksheet Instance**                 | Make sure to specify a valid Excel Worksheet object.                                              |
-| **Invalid Row Index Error**                  | Verify that the Row Index is within the range of existing rows and is a valid number, starting at 1.|
+| Problem                      | Solution                                                                                             |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Blank Worksheet Instance** | Make sure to specify a valid Excel Worksheet object.                                                 |
+| **Invalid Row Index Error**  | Verify that the Row Index is within the range of existing rows and is a valid number, starting at 1. |
 
 ## Real-World Use Cases
 

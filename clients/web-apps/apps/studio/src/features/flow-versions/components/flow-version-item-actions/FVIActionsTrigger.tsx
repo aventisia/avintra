@@ -1,6 +1,6 @@
-import { cn } from "@avplatform/ui/lib";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { DropdownMenuTrigger } from "@avplatform/ui/dropdown-menu";
+import { cn } from "@avplatform/ui/lib";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 
 export const FVIActionsTrigger = () => {

@@ -5,18 +5,19 @@ import { Callout, Steps } from "nextra/components";
 The **Extract Substring from Text** node allows you to retrieve a specific section (substring) of text from a larger string. This can be particularly useful when you want to isolate certain parts of text like names, codes, or specific data fields from within a larger piece of information.
 
 For example, you might need to:
+
 - Extract the first few letters of a product code.
 - Get a section of text starting from a specific letter position.
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                      | Input Type | Required? | Default Value   |
-| ----------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | --------------- |
-| **Original Text**       | The full text value from which to extract a substring.                                           | Text       | Yes       | _(empty)_       |
-| **Start Index Type**    | Specifies whether to start from the beginning of the text or at a specific character position.   | Select     | Yes       | Start of Text   |
-| **Start Index**         | The zero-based starting position of the substring. Only used if 'Start Index Type' is 'Character Position'. | Text       | No        | _(empty)_       |
-| **Length Type**         | Specifies whether to extract a specific number of characters or until the end of the string.     | Select     | No        | Specific Length |
-| **Number of Characters**| The number of characters to extract. Only used if 'Length Type' is 'Specific Length'.            | Text       | No        | _(empty)_       |
+| Field Name               | Description                                                                                                 | Input Type | Required? | Default Value   |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Original Text**        | The full text value from which to extract a substring.                                                      | Text       | Yes       | _(empty)_       |
+| **Start Index Type**     | Specifies whether to start from the beginning of the text or at a specific character position.              | Select     | Yes       | Start of Text   |
+| **Start Index**          | The zero-based starting position of the substring. Only used if 'Start Index Type' is 'Character Position'. | Text       | No        | _(empty)_       |
+| **Length Type**          | Specifies whether to extract a specific number of characters or until the end of the string.                | Select     | No        | Specific Length |
+| **Number of Characters** | The number of characters to extract. Only used if 'Length Type' is 'Specific Length'.                       | Text       | No        | _(empty)_       |
 
 ## Expected Output Format
 
@@ -36,6 +37,7 @@ In the **Original Text** field, enter the full text from which you wish to extra
 ### Step 3
 
 Choose a value from the **Start Index Type** dropdown:
+
 - **Start of Text**: Initiates extraction from the beginning of the text.
 - **Character Position**: Allows starting extraction at a specific character position (requires additional steps).
 
@@ -46,6 +48,7 @@ If **Character Position** is selected, input the position in the **Start Index**
 ### Step 5
 
 Choose a value from the **Length Type** dropdown:
+
 - **Until End**: Continues extraction to the end of the text.
 - **Specific Length**: Extracts a specified number of characters (requires additional steps).
 
@@ -60,24 +63,25 @@ The extracted substring will be available as **SubstringResult** for use in othe
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the combination of Start Index and Number of Characters falls within the bounds of the Original Text.
+  Ensure that the combination of Start Index and Number of Characters falls
+  within the bounds of the Original Text.
 </Callout>
 
 ## Input/Output Examples
 
-| Start Index Type | Start Index | Length Type    | Number of Characters | Original Text                 | Output Value   | Output Type |
-| ---------------- | ----------- | -------------- | -------------------- | ----------------------------- | -------------- | ----------- |
-| Start of Text    | _(n/a)_     | Until End      | _(n/a)_              | "Hello World"                 | "Hello World"  | Text        |
-| Character Position | 0         | Specific Length | 5                    | "Sample Text"                 | "Sample"       | Text        |
-| Character Position | 7         | Until End      | _(n/a)_              | "Extract from here"           | "from here"    | Text        |
+| Start Index Type   | Start Index | Length Type     | Number of Characters | Original Text       | Output Value  | Output Type |
+| ------------------ | ----------- | --------------- | -------------------- | ------------------- | ------------- | ----------- |
+| Start of Text      | _(n/a)_     | Until End       | _(n/a)_              | "Hello World"       | "Hello World" | Text        |
+| Character Position | 0           | Specific Length | 5                    | "Sample Text"       | "Sample"      | Text        |
+| Character Position | 7           | Until End       | _(n/a)_              | "Extract from here" | "from here"   | Text        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                                                    |
-|-------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Incorrect substring extracted**                | Double-check the Start Index, Length Type, and Number of Characters. Ensure they match the desired substring location and length within the Original Text.   |
-| **Start Index out of range**                     | Remember that character positions are zero-based. Ensure the index fits within the length of the Original Text.                                               |
-| **No output or unexpected result**               | Verify all field values are correctly entered and aligned with your extraction needs. Ensure non-used fields are left blank or at default settings.           |
+| Problem                            | Solution                                                                                                                                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect substring extracted**  | Double-check the Start Index, Length Type, and Number of Characters. Ensure they match the desired substring location and length within the Original Text. |
+| **Start Index out of range**       | Remember that character positions are zero-based. Ensure the index fits within the length of the Original Text.                                            |
+| **No output or unexpected result** | Verify all field values are correctly entered and aligned with your extraction needs. Ensure non-used fields are left blank or at default settings.        |
 
 ## Real-World Use Cases
 

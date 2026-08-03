@@ -12,7 +12,9 @@ export const ToolDetailsPage = () => {
     <div className="space-y-4 p-6">
       <h1 className="text-xl font-semibold">{toolName}</h1>
       <p className="text-sm text-muted-foreground">Tool ID: {id}</p>
-      <p className="text-sm text-muted-foreground">Detailed tool editor and playground will be added here.</p>
+      <p className="text-sm text-muted-foreground">
+        Detailed tool editor and playground will be added here.
+      </p>
     </div>
   );
 };

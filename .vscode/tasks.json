@@ -59,11 +59,7 @@
     },
     {
       "label": "Run Backends",
-      "dependsOn": [
-        "accounts_apis",
-        "workspace_apis",
-        "llmpipeline_apis"
-      ]
+      "dependsOn": ["accounts_apis", "workspace_apis", "llmpipeline_apis"]
     },
     {
       "label": "Run All",

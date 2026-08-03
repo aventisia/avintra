@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                        | Input Type | Required? | Default Value |
-| --------------------- | ---------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Mouse Event to Send** | Choose the type of mouse event you want to simulate: Left, Right, or Double Click, etc. | Select     | Yes       | _(empty)_      |
-| **Wait**              | Time in milliseconds to wait before executing the mouse click.                      | Text       | No        | 0              |
-| **Move Mouse**        | Determine if the mouse should move to the current position before clicking.        | Switch     | No        | _(empty)_      |
+| Field Name              | Description                                                                             | Input Type | Required? | Default Value |
+| ----------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Mouse Event to Send** | Choose the type of mouse event you want to simulate: Left, Right, or Double Click, etc. | Select     | Yes       | _(empty)_     |
+| **Wait**                | Time in milliseconds to wait before executing the mouse click.                          | Text       | No        | 0             |
+| **Move Mouse**          | Determine if the mouse should move to the current position before clicking.             | Switch     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -49,25 +49,26 @@ In the **Mouse Event to Send** dropdown, select the mouse action you wish to per
 </Steps>
 
 <Callout type="tip">
-  For actions that require precision, like clicking small buttons, enabling **Move Mouse** may reduce errors from unexpected cursor positions.
+  For actions that require precision, like clicking small buttons, enabling
+  **Move Mouse** may reduce errors from unexpected cursor positions.
 </Callout>
 
 ## Input/Output Examples
 
-| Mouse Event           | Wait (ms) | Move Mouse | Action                                     |
-| --------------------- | --------- | ---------- | ------------------------------------------ |
-| Left Click            | 200       | Yes        | Waits for 200ms, moves mouse, then clicks. |
-| Right Click           | 0         | No         | Instantly sends a right click.             |
-| Double Click          | 500       | Yes        | Pause 500ms, adjust position, double-click.|
-| Left Button Down      | 100       | No         | Holds the left button after short pause.   |
+| Mouse Event      | Wait (ms) | Move Mouse | Action                                      |
+| ---------------- | --------- | ---------- | ------------------------------------------- |
+| Left Click       | 200       | Yes        | Waits for 200ms, moves mouse, then clicks.  |
+| Right Click      | 0         | No         | Instantly sends a right click.              |
+| Double Click     | 500       | Yes        | Pause 500ms, adjust position, double-click. |
+| Left Button Down | 100       | No         | Holds the left button after short pause.    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                     |
-| ---------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **No action performed**                        | Ensure the **Mouse Event to Send** is selected. Without this, no mouse action will be triggered. |
-| **Unexpected click location**                  | If precise clicking is necessary, enable the **Move Mouse** option to reposition the cursor.   |
-| **Delay seems long**                           | Double-check the **Wait** field value. High values translate to noticeable pauses.             |
+| Problem                       | Solution                                                                                         |
+| ----------------------------- | ------------------------------------------------------------------------------------------------ |
+| **No action performed**       | Ensure the **Mouse Event to Send** is selected. Without this, no mouse action will be triggered. |
+| **Unexpected click location** | If precise clicking is necessary, enable the **Move Mouse** option to reposition the cursor.     |
+| **Delay seems long**          | Double-check the **Wait** field value. High values translate to noticeable pauses.               |
 
 ## Real-World Use Cases
 

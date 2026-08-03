@@ -1,9 +1,11 @@
-import { useState } from "react";
 import { toast } from "@avplatform/ui/sonner";
+import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
+
 import { deepParse } from "@/features/react-flow/utils/deepParse";
+
 import { REQUIRED_JSON_KEYS } from "../constants";
 import { useImportStore } from "../stores/import-flow-store";
-import { useShallow } from "zustand/react/shallow";
 
 /**
  * Type definitions for the imported JSON structure
@@ -49,8 +51,7 @@ export const useFileUpload = () => {
     if (!file) return;
 
     // Check if the uploaded file is a valid JSON file
-    const isJson =
-      file.type === "application/json" || file.name.endsWith(".json");
+    const isJson = file.type === "application/json" || file.name.endsWith(".json");
 
     // If the file type is invalid, show an error toast
     if (!isJson) {
@@ -64,8 +65,7 @@ export const useFileUpload = () => {
       try {
         // Parse the file content and validate it
         const content = e.target?.result as string;
-        const parsed: ImportFileObject =
-          (deepParse(content) as unknown as ImportFileObject) || {};
+        const parsed: ImportFileObject = (deepParse(content) as unknown as ImportFileObject) || {};
 
         // Check for reactFlowObject and validate its keys
         const isValid = REQUIRED_JSON_KEYS.every((key) =>

@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Get Screen Resolution** node is designed to help you gather important details about the display setup of your system. It retrieves information like the width, height, bit depth, and refresh rate of your monitor(s). This node can be extremely useful for applications or tasks that rely on display settings, such as graphics and video configurations.
 
 Typical uses include:
+
 - Obtaining display settings for optimal graphic configurations.
 - Ensuring compatibility with different screen setups in multi-monitor environments.
 - Troubleshooting display issues by verifying monitor configurations.
 
 ## Configuration Options
 
-| Field Name         | Description                                                                                      | Input Type | Required? | Default Value  |
-| ------------------ | ------------------------------------------------------------------------------------------------ | ---------- | --------- | -------------- |
-| **Monitor Selection** | Specify whether to get info for the primary, all, or a specific monitor                        | Select     | No        | Primary        |
-| **Monitor Index**     | Zero-based index of the monitor to check (only used when Selection is "Specific Monitor Index")| Text       | No        | _(empty)_      |
+| Field Name            | Description                                                                                     | Input Type | Required? | Default Value |
+| --------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Monitor Selection** | Specify whether to get info for the primary, all, or a specific monitor                         | Select     | No        | Primary       |
+| **Monitor Index**     | Zero-based index of the monitor to check (only used when Selection is "Specific Monitor Index") | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -49,24 +50,26 @@ The screen resolution details will be available as **ScreenDetail** or **ScreenD
 </Steps>
 
 <Callout type="info" title="Note">
-  The **Monitor Index** field only appears if you've selected **Specific Monitor Index** in the Monitor Selection dropdown. Ensure the index is correct to avoid errors.
+  The **Monitor Index** field only appears if you've selected **Specific Monitor
+  Index** in the Monitor Selection dropdown. Ensure the index is correct to
+  avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Monitor Selection       | Monitor Index | Output Value    | Output Type       |
-| ----------------------- | ------------- | --------------- | ----------------- |
-| Primary Monitor         | _(n/a)_       | ScreenDetail    | Details Object    |
-| All Monitors            | _(n/a)_       | ScreenDetails   | Details List      |
-| Specific Monitor Index  | 1             | ScreenDetail    | Details Object    |
+| Monitor Selection      | Monitor Index | Output Value  | Output Type    |
+| ---------------------- | ------------- | ------------- | -------------- |
+| Primary Monitor        | _(n/a)_       | ScreenDetail  | Details Object |
+| All Monitors           | _(n/a)_       | ScreenDetails | Details List   |
+| Specific Monitor Index | 1             | ScreenDetail  | Details Object |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                     |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Monitor Index field missing**                      | This field only appears if you select **Specific Monitor Index**. Check your Monitor Selection setting.      |
-| **Incorrect monitor index resulting in no output**  | Re-check the index of your monitors. Monitor indexes start at 0.                                             |
-| **Expected multiple outputs for All Monitors**      | Ensure that multiple monitors are connected. The All Monitors option fetches the details for all connected monitors. |
+| Problem                                            | Solution                                                                                                             |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Monitor Index field missing**                    | This field only appears if you select **Specific Monitor Index**. Check your Monitor Selection setting.              |
+| **Incorrect monitor index resulting in no output** | Re-check the index of your monitors. Monitor indexes start at 0.                                                     |
+| **Expected multiple outputs for All Monitors**     | Ensure that multiple monitors are connected. The All Monitors option fetches the details for all connected monitors. |
 
 ## Real-World Use Cases
 

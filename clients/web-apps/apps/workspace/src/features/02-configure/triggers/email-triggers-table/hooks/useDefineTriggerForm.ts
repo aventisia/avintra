@@ -90,7 +90,9 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
       agents: triggerData?.agents ?? [],
       timezone: triggerData?.timezone ?? userTimeZone ?? "",
       mailbox: triggerData?.mailbox ?? "",
-      expiryDateTime: triggerData?.expiryDateTime ? new Date(triggerData.expiryDateTime) : datePlus30,
+      expiryDateTime: triggerData?.expiryDateTime
+        ? new Date(triggerData.expiryDateTime)
+        : datePlus30,
 
       resubscribeFrequency: triggerData?.resubscribeFrequency?.toString() ?? "1",
 

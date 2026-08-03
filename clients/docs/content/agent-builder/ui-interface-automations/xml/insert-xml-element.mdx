@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                              | Input Type | Required? | Default Value       |
-| --------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------------- |
-| **XML Content**       | The existing XML document as a string where the new element will be inserted.            | Text       | Yes       | _(empty)_           |
-| **XPath Expression**  | The XPath expression that identifies the insertion point in the XML document.            | Text       | Yes       | _(empty)_           |
-| **XML Element To Insert** | The XML structure/string of the element that you want to insert at the XPath location. | Text       | Yes       | _(empty)_           |
+| Field Name                | Description                                                                            | Input Type | Required? | Default Value |
+| ------------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**           | The existing XML document as a string where the new element will be inserted.          | Text       | Yes       | _(empty)_     |
+| **XPath Expression**      | The XPath expression that identifies the insertion point in the XML document.          | Text       | Yes       | _(empty)_     |
+| **XML Element To Insert** | The XML structure/string of the element that you want to insert at the XPath location. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -44,25 +44,27 @@ Enter the additional XML data in **XML Element To Insert** field, which will be 
 ### Step 5
 
 The process will produce **Updated XML Content** that integrates the newly inserted XML element.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-Ensure the XPath Expression accurately targets where you want to insert the new XML element for successful modifications.
+  Ensure the XPath Expression accurately targets where you want to insert the
+  new XML element for successful modifications.
 </Callout>
 
 ## Input/Output Examples
 
-| XML Content                                  | XPath Expression | XML Element To Insert         | Updated XML Content                                                                           |
-|--------------------------------------------- | ---------------- | ----------------------------- | --------------------------------------------------------------------------------------------- |
-| `<products><product id=\"1\"></product></products>` | `/products`      | `<product id=\"2\"></product>` | `<products><product id=\"1\"></product><product id=\"2\"></product></products>`               |
+| XML Content                                         | XPath Expression | XML Element To Insert          | Updated XML Content                                                             |
+| --------------------------------------------------- | ---------------- | ------------------------------ | ------------------------------------------------------------------------------- |
+| `<products><product id=\"1\"></product></products>` | `/products`      | `<product id=\"2\"></product>` | `<products><product id=\"1\"></product><product id=\"2\"></product></products>` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                                                                           |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Invalid XPath Expression**                  | Ensure your XPath expression correctly navigates the XML structure, targeting an element that exists within your XML Content.                                       |
-| **Incorrect XML Format**                      | Double-check that both **XML Content** and **XML Element To Insert** fields contain well-formed XML strings (e.g., correct opening and closing tags).               |
-| **Insertion Point Not Found**                 | Verify that the XPath expression points to a valid location for insertion. If not found, the new element cannot be added, resulting in no changes to the XML.       |
+| Problem                       | Solution                                                                                                                                                      |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid XPath Expression**  | Ensure your XPath expression correctly navigates the XML structure, targeting an element that exists within your XML Content.                                 |
+| **Incorrect XML Format**      | Double-check that both **XML Content** and **XML Element To Insert** fields contain well-formed XML strings (e.g., correct opening and closing tags).         |
+| **Insertion Point Not Found** | Verify that the XPath expression points to a valid location for insertion. If not found, the new element cannot be added, resulting in no changes to the XML. |
 
 ## Real-World Use Cases
 

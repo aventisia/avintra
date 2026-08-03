@@ -1,8 +1,10 @@
+import { Node } from "@xyflow/react";
+
 import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { NodeDataType } from "@/types/node-data-type";
+
 import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
 import { createNodeObj } from "./create-node-obj";
-import { Node } from "@xyflow/react";
 
 /**
  * Creates an cloud connector node and returns an object containing the new node, new edge, and last node ID.

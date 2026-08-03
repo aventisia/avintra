@@ -1,13 +1,14 @@
+import { Input } from "@avplatform/ui";
+import { toast } from "@avplatform/ui/sonner";
 import { useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Input } from "@avplatform/ui";
-import { useImportStore } from "../stores/import-flow-store";
+import { useShallow } from "zustand/react/shallow";
+
+import { SUPPORTED_FILE_TYPES } from "../constants";
 import { useFileUpload } from "../hooks/useFileUpload";
 import { useFlowMutation } from "../hooks/useUpdateFlowMutation";
-import { SUPPORTED_FILE_TYPES } from "../constants";
+import { useImportStore } from "../stores/import-flow-store";
 import { ImportConfirmationDialog } from "./ImportConfirmationDialog";
-import { useShallow } from "zustand/react/shallow";
-import { toast } from "@avplatform/ui/sonner";
 
 /**
  * Main component that allows users to import a flow.

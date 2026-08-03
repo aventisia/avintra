@@ -8,10 +8,7 @@ interface ApiKeyCrudDialogContentProps {
   rowId: string;
 }
 
-export const ApiKeyCrudDialogContent = ({
-  crudAction,
-  rowId,
-}: ApiKeyCrudDialogContentProps) => {
+export const ApiKeyCrudDialogContent = ({ crudAction, rowId }: ApiKeyCrudDialogContentProps) => {
   if (crudAction === "read") {
     return <ApiKeyView rowId={rowId} />;
   }

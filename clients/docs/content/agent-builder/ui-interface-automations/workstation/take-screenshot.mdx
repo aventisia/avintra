@@ -6,13 +6,13 @@ The **Take Screenshot** node allows you to capture screenshots of your screen(s)
 
 ## Configuration Options
 
-| Field Name            | Description                                                                 | Input Type | Required? | Default Value |
-| --------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Capture**           | Specifies which part of the screen to capture: all screens, primary screen, or a specific one. | Select     | Yes       | _(empty)_     |
-| **Screen to Capture** | The handle of the screen/window to capture, required only if choosing "Select screen". | Text       | No        | _(empty)_     |
-| **Save Screenshot To**| Choose where to save the screenshot: clipboard or file.                      | Select     | No        | _(empty)_     |
-| **Image File Path**   | Path to save the screenshot file, required only if saving to "File".         | Text       | No        | _(empty)_     |
-| **Image Format**      | The format to save the screenshot (e.g., BMP, GIF, JPG, PNG, TIFF). Required if saving to "File". | Select     | No        | BMP           |
+| Field Name             | Description                                                                                       | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Capture**            | Specifies which part of the screen to capture: all screens, primary screen, or a specific one.    | Select     | Yes       | _(empty)_     |
+| **Screen to Capture**  | The handle of the screen/window to capture, required only if choosing "Select screen".            | Text       | No        | _(empty)_     |
+| **Save Screenshot To** | Choose where to save the screenshot: clipboard or file.                                           | Select     | No        | _(empty)_     |
+| **Image File Path**    | Path to save the screenshot file, required only if saving to "File".                              | Text       | No        | _(empty)_     |
+| **Image Format**       | The format to save the screenshot (e.g., BMP, GIF, JPG, PNG, TIFF). Required if saving to "File". | Select     | No        | BMP           |
 
 ## Expected Output Format
 
@@ -51,24 +51,25 @@ If you selected **File**, fill in the **Image File Path** with the location wher
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you choose "Clipboard" in the **Save Screenshot To** option, you do not need to specify an **Image File Path** or **Image Format**.
+  If you choose "Clipboard" in the **Save Screenshot To** option, you do not
+  need to specify an **Image File Path** or **Image Format**.
 </Callout>
 
 ## Input/Output Examples
 
-| Capture Mode    | Save To      | Image Format | Image File Path       | Output      |
-| --------------- | ------------ | ------------ | --------------------- | ----------- |
-| All screens     | Clipboard    | _(n/a)_      | _(n/a)_               | Screenshot available on clipboard |
-| Primary screen  | File         | PNG          | C:\Screenshots\screen.png | Screenshot saved as PNG |
-| Select screen   | File         | JPG          | D:\Capture\capture.jpg | Screenshot of specified screen saved as JPG |
+| Capture Mode   | Save To   | Image Format | Image File Path           | Output                                      |
+| -------------- | --------- | ------------ | ------------------------- | ------------------------------------------- |
+| All screens    | Clipboard | _(n/a)_      | _(n/a)_                   | Screenshot available on clipboard           |
+| Primary screen | File      | PNG          | C:\Screenshots\screen.png | Screenshot saved as PNG                     |
+| Select screen  | File      | JPG          | D:\Capture\capture.jpg    | Screenshot of specified screen saved as JPG |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                       |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| **Screen to Capture required but not provided**              | Ensure you specify the screen handle when selecting "Select screen".          |
-| **Save path not available when "File" selected**             | Provide a valid file path in **Image File Path** when saving to a file.       |
-| **Screenshot not saving to desired format**                  | Double-check the **Image Format** you selected matches your intention.         |
+| Problem                                          | Solution                                                                |
+| ------------------------------------------------ | ----------------------------------------------------------------------- |
+| **Screen to Capture required but not provided**  | Ensure you specify the screen handle when selecting "Select screen".    |
+| **Save path not available when "File" selected** | Provide a valid file path in **Image File Path** when saving to a file. |
+| **Screenshot not saving to desired format**      | Double-check the **Image Format** you selected matches your intention.  |
 
 ## Real-World Use Cases
 

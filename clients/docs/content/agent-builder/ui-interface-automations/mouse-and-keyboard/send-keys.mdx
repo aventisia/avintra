@@ -12,16 +12,16 @@ Common scenarios include:
 
 ## Configuration Options
 
-| Field Name                   | Description                                                                                           | Input Type | Required? | Default Value |
-| ---------------------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Send Keys To**             | Destination target for the keys (e.g., active window, specific elements, or windows by title/class).  | Select     | Yes       | _(empty)_     |
-| **UI Element**               | The specific UI element where keys should be sent. Appears if target is selected as "UI element."      | Text       | No        | _(empty)_     |
-| **Window Handle**            | The unique handle of the window for sending keys. Applicable if target is "Window instance/handle."    | Text       | No        | _(empty)_     |
-| **Window Title**             | The title of the window to target keys. Relevant when "Title and/or class" is chosen as target.        | Text       | No        | _(empty)_     |
-| **Window Class**             | The class name of the window used for sending keys if "Title and/or class" is selected.                | Text       | No        | _(empty)_     |
-| **Text to Send**             | The actual text or special keys (e.g., shortcuts) to be sent to the target.                           | Text       | Yes       | _(empty)_     |
-| **Delay Between Keystrokes** | Time in milliseconds to pause between each keystroke for smoother operation.                          | Text       | No        | 0             |
-| **Send Text as Hardware Keys** | Switch for sending keys as hardware inputs rather than virtual key codes.                          | Switch     | No        | false         |
+| Field Name                     | Description                                                                                          | Input Type | Required? | Default Value |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Send Keys To**               | Destination target for the keys (e.g., active window, specific elements, or windows by title/class). | Select     | Yes       | _(empty)_     |
+| **UI Element**                 | The specific UI element where keys should be sent. Appears if target is selected as "UI element."    | Text       | No        | _(empty)_     |
+| **Window Handle**              | The unique handle of the window for sending keys. Applicable if target is "Window instance/handle."  | Text       | No        | _(empty)_     |
+| **Window Title**               | The title of the window to target keys. Relevant when "Title and/or class" is chosen as target.      | Text       | No        | _(empty)_     |
+| **Window Class**               | The class name of the window used for sending keys if "Title and/or class" is selected.              | Text       | No        | _(empty)_     |
+| **Text to Send**               | The actual text or special keys (e.g., shortcuts) to be sent to the target.                          | Text       | Yes       | _(empty)_     |
+| **Delay Between Keystrokes**   | Time in milliseconds to pause between each keystroke for smoother operation.                         | Text       | No        | 0             |
+| **Send Text as Hardware Keys** | Switch for sending keys as hardware inputs rather than virtual key codes.                            | Switch     | No        | false         |
 
 ## Expected Output Format
 
@@ -66,23 +66,24 @@ Save the configuration and activate the process. The text will be sent to the sp
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use the **Delay Between Keystrokes** to avoid overwhelming applications with fast keystrokes, which might cause input errors.
+  Use the **Delay Between Keystrokes** to avoid overwhelming applications with
+  fast keystrokes, which might cause input errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Send Keys To | Text to Send | Delay Between Keystrokes | Send Text as Hardware Keys | Expected Behavior                                               |
-| ------------ | ------------ | ------------------------ | -------------------------- | ---------------------------------------------------------------- |
-| Foreground window | HelloWorld!   | 100                    | false                      | Types "HelloWorld!" in the active window with 100ms delay between keys. |
+| Send Keys To      | Text to Send | Delay Between Keystrokes | Send Text as Hardware Keys | Expected Behavior                                                       |
+| ----------------- | ------------ | ------------------------ | -------------------------- | ----------------------------------------------------------------------- |
+| Foreground window | HelloWorld!  | 100                      | false                      | Types "HelloWorld!" in the active window with 100ms delay between keys. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                  | Solution                                                                                                            |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **Keys sent to wrong window**            | Ensure the correct target is selected, and application windows are active or accessible.                             |
-| **Unexpected characters entered**        | Check for any additional spaces or incorrect special keys specified in **Text to Send**.                             |
-| **No text appearing in the target field**| Confirm that any required window fields such as **UI Element** or **Window Title** are correctly specified.         |
-| **Delay not functioning as intended**    | Verify the delay is set correctly in milliseconds; using very small delays may not be visibly effective.            |
+| Problem                                   | Solution                                                                                                    |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Keys sent to wrong window**             | Ensure the correct target is selected, and application windows are active or accessible.                    |
+| **Unexpected characters entered**         | Check for any additional spaces or incorrect special keys specified in **Text to Send**.                    |
+| **No text appearing in the target field** | Confirm that any required window fields such as **UI Element** or **Window Title** are correctly specified. |
+| **Delay not functioning as intended**     | Verify the delay is set correctly in milliseconds; using very small delays may not be visibly effective.    |
 
 ## Real-World Use Cases
 

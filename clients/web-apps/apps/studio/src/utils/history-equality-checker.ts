@@ -1,4 +1,5 @@
 import { Edge, Node } from "@xyflow/react";
+
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 
 export interface HistoryState {
@@ -14,16 +15,12 @@ export interface HistoryState {
  * Evaluates if a state change represents a mathematical or structural difference.
  * Leverages strict reference equality to bypass deep JSON comparisons for unmodified nodes.
  */
-export const isHistoryEqual = (
-  past: HistoryState,
-  current: HistoryState,
-): boolean => {
+export const isHistoryEqual = (past: HistoryState, current: HistoryState): boolean => {
   // 1. FAST STRUCTURAL CHECKS
   if (past === current) return true;
   if (past.nodes.length !== current.nodes.length) return false;
   if (past.edges.length !== current.edges.length) return false;
-  if (past.flowVariablesObject.length !== current.flowVariablesObject.length)
-    return false;
+  if (past.flowVariablesObject.length !== current.flowVariablesObject.length) return false;
 
   // 3. NODES CHECK
   if (past.nodes !== current.nodes) {
@@ -47,8 +44,7 @@ export const isHistoryEqual = (
 
       // Deep compare data only if the memory reference changed
       if (pNode.data !== cNode.data) {
-        if (JSON.stringify(pNode.data) !== JSON.stringify(cNode.data))
-          return false;
+        if (JSON.stringify(pNode.data) !== JSON.stringify(cNode.data)) return false;
       }
     }
   }

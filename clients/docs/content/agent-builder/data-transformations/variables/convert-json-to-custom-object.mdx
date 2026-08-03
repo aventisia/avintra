@@ -11,9 +11,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                     | Input Type | Required? | Default Value  |
-| ------------------ | --------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **JSON Data**      | The JSON string that will be converted to a custom object.      | Text       | Yes       | _(empty)_      |
+| Field Name    | Description                                                | Input Type | Required? | Default Value |
+| ------------- | ---------------------------------------------------------- | ---------- | --------- | ------------- |
+| **JSON Data** | The JSON string that will be converted to a custom object. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -37,21 +37,22 @@ After the conversion process, the output **Custom Object** will be available for
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure your JSON string is well-formed and valid, as malformed JSON will prevent the node from successfully converting it into an object.
+  Ensure your JSON string is well-formed and valid, as malformed JSON will
+  prevent the node from successfully converting it into an object.
 </Callout>
 
 ## Input/Output Examples
 
-| Input JSON   | Output Value | Output Type     |
-| ------------ | ------------ | --------------- |
+| Input JSON                  | Output Value | Output Type       |
+| --------------------------- | ------------ | ----------------- |
 | `{"name":"John", "age":30}` | CustomObject | Structured Object |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                           |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Input is not a valid JSON string**                  | Verify that your JSON syntax is correct, including proper use of brackets and commas.              |
-| **Output object not appearing**                      | Ensure the JSON string provided is valid and correctly entered in the **JSON Data** field.         |
+| Problem                              | Solution                                                                                   |
+| ------------------------------------ | ------------------------------------------------------------------------------------------ |
+| **Input is not a valid JSON string** | Verify that your JSON syntax is correct, including proper use of brackets and commas.      |
+| **Output object not appearing**      | Ensure the JSON string provided is valid and correctly entered in the **JSON Data** field. |
 
 ## Real-World Use Cases
 

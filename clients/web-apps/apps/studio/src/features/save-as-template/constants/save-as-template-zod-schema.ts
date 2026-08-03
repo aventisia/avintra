@@ -38,10 +38,7 @@ export const saveAsTemplateSchema = z
   })
   .superRefine((data, ctx) => {
     // Custom validation: If access level is "Spaces", ensure at least one space is selected
-    if (
-      data.accessType === "Spaces" &&
-      (!data.spaces || data.spaces.length === 0)
-    ) {
+    if (data.accessType === "Spaces" && (!data.spaces || data.spaces.length === 0)) {
       ctx.addIssue({
         path: ["spaces"],
         code: z.ZodIssueCode.custom,

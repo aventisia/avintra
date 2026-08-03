@@ -1,9 +1,11 @@
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { NodeDataType } from "@/types/node-data-type";
-import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
 import { Edge } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeDataType } from "@/types/node-data-type";
+import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
+
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
 
 export const useAddFirstNodeToFlow = () => {
@@ -22,9 +24,7 @@ export const useAddFirstNodeToFlow = () => {
   const addFirstNodeToFlow = useCallback(
     (nodeData: NodeDataType, plusNodeId: string) => {
       // Get plus node edge
-      const plusNodeEdge = edges.find(
-        (edge) => edge.target === plusNodeId,
-      ) as Edge;
+      const plusNodeEdge = edges.find((edge) => edge.target === plusNodeId) as Edge;
 
       // Get source node
       const sourceNode = nodes.find((node) => node.id === plusNodeEdge.source);
@@ -38,12 +38,11 @@ export const useAddFirstNodeToFlow = () => {
       } = createNodesAndEdgesUtil(sourceNode, nodeData);
 
       // Create flow end node & edge
-      const { newNodes: flowEndNode, newEdges: flowEndEdge } =
-        createNodesAndEdgesUtil(
-          firstNodeArrayLastNode,
-          nodeData, // Not required for flow end node but added because its a required parameter
-          "flowEndNode",
-        );
+      const { newNodes: flowEndNode, newEdges: flowEndEdge } = createNodesAndEdgesUtil(
+        firstNodeArrayLastNode,
+        nodeData, // Not required for flow end node but added because its a required parameter
+        "flowEndNode",
+      );
 
       // Get plus node index
       const plusNodeIndex = nodes.findIndex((node) => node.id === plusNodeId);
@@ -57,9 +56,7 @@ export const useAddFirstNodeToFlow = () => {
       ];
 
       // Get plus node edge index
-      const plusNodeEdgeIndex = edges.findIndex(
-        (edge) => edge.id === plusNodeEdge.id,
-      );
+      const plusNodeEdgeIndex = edges.findIndex((edge) => edge.id === plusNodeEdge.id);
 
       // Add new edges & remove plus node edge
       const updatedEdges = [

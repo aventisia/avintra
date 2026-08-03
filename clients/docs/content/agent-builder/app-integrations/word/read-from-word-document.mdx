@@ -2,7 +2,7 @@ import { Callout, Steps } from "nextra/components";
 
 # Read from Word Document
 
-The **Read from Word Document** node allows you to extract text content from a Microsoft Word document. This is particularly useful for automating workflows that require data manipulation or analysis directly from Word files without manual copying. 
+The **Read from Word Document** node allows you to extract text content from a Microsoft Word document. This is particularly useful for automating workflows that require data manipulation or analysis directly from Word files without manual copying.
 
 For example, you can use this node to:
 
@@ -12,10 +12,10 @@ For example, you can use this node to:
 
 ## Configuration Options
 
-| Field Name        | Description                                                       | Input Type | Required? | Default Value   |
-| ----------------- | ----------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Word Instance** | The specific Word instance to read from. This specifies the file. | Text       | Yes       | _(empty)_       |
-| **Retrieve**      | Specifies the portion of the document to retrieve: whole, pages, or bookmark. | Select     | No        | Whole Document  |
+| Field Name        | Description                                                                   | Input Type | Required? | Default Value  |
+| ----------------- | ----------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Word Instance** | The specific Word instance to read from. This specifies the file.             | Text       | Yes       | _(empty)_      |
+| **Retrieve**      | Specifies the portion of the document to retrieve: whole, pages, or bookmark. | Select     | No        | Whole Document |
 
 ## Expected Output Format
 
@@ -47,16 +47,18 @@ The extracted text will be available as **WordData** for use in other nodes.
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you're not interested in extracting specific parts, selecting "Whole Document" in the **Retrieve** dropdown will automatically gather all available text from your document.
+  If you're not interested in extracting specific parts, selecting "Whole
+  Document" in the **Retrieve** dropdown will automatically gather all available
+  text from your document.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                   |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **Word Instance not specified**                           | Ensure you've entered the document you wish to read for the **Word Instance** field.       |
-| **Unexpected content retrieved**                          | Double-check your **Retrieve** selection and any associated parameters such as page numbers or bookmarks. |
-| **No output or empty content**                            | Make sure that the Word document is correctly formatted and accessible. Confirm permission settings. |
+| Problem                          | Solution                                                                                                  |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Word Instance not specified**  | Ensure you've entered the document you wish to read for the **Word Instance** field.                      |
+| **Unexpected content retrieved** | Double-check your **Retrieve** selection and any associated parameters such as page numbers or bookmarks. |
+| **No output or empty content**   | Make sure that the Word document is correctly formatted and accessible. Confirm permission settings.      |
 
 ## Real-World Use Cases
 

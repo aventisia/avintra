@@ -10,11 +10,11 @@ interface TuariUserMetadataActions {
   setTuariUserMetadata: (open: TuariUserMetadata | null) => void;
 }
 
-export const useTuariUserMetadataStore = create<
-  TuariUserMetadata & TuariUserMetadataActions
->((set) => ({
-  osID: "",
-  appVersion: "",
-  hostname: "",
-  setTuariUserMetadata: (data) => set({ ...data }),
-}));
+export const useTuariUserMetadataStore = create<TuariUserMetadata & TuariUserMetadataActions>(
+  (set) => ({
+    osID: "",
+    appVersion: "",
+    hostname: "",
+    setTuariUserMetadata: (data) => set({ ...data }),
+  }),
+);

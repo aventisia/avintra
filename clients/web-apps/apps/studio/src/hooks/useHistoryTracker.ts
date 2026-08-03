@@ -1,6 +1,7 @@
 import { useEffect } from "react";
+
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { isHistoryEqual, HistoryState } from "@/utils/history-equality-checker";
+import { HistoryState, isHistoryEqual } from "@/utils/history-equality-checker";
 
 /**
  * Global hook that monitors the canvas.
@@ -37,8 +38,7 @@ export const useHistoryTracker = () => {
           };
 
           const pastStack = state.past;
-          const lastHistoryState =
-            pastStack.length > 0 ? pastStack[pastStack.length - 1] : null;
+          const lastHistoryState = pastStack.length > 0 ? pastStack[pastStack.length - 1] : null;
 
           let isDifferentFromLastHistory = false;
 
@@ -50,10 +50,7 @@ export const useHistoryTracker = () => {
             ) {
               isDifferentFromLastHistory = false;
             } else {
-              isDifferentFromLastHistory = !isHistoryEqual(
-                lastHistoryState,
-                currentState,
-              );
+              isDifferentFromLastHistory = !isHistoryEqual(lastHistoryState, currentState);
             }
           } else {
             isDifferentFromLastHistory = true;

@@ -1,10 +1,4 @@
-import {
-  maxError,
-  maxLenError,
-  minError,
-  minLenError,
-  reqError,
-} from "@avplatform/ui/utils";
+import { maxError, maxLenError, minError, minLenError, reqError } from "@avplatform/ui/utils";
 import { ZodBoolean, ZodNumber, ZodString, ZodTypeAny, z } from "zod";
 
 import { DCPFieldSchemaType } from "..";
@@ -25,8 +19,7 @@ function applyFieldOptions<T extends ZodString | ZodNumber | ZodBoolean>(
   let newSchema = schema;
 
   if (newSchema instanceof z.ZodString) {
-    if (required)
-      newSchema = newSchema.min(1, { message: reqError(label) }) as T;
+    if (required) newSchema = newSchema.min(1, { message: reqError(label) }) as T;
     if (minLength !== undefined)
       newSchema = (newSchema as ZodString).min(minLength, {
         message: minLenError(label, minLength),
@@ -38,8 +31,7 @@ function applyFieldOptions<T extends ZodString | ZodNumber | ZodBoolean>(
   }
 
   if (newSchema instanceof z.ZodNumber) {
-    if (required)
-      newSchema = newSchema.min(1, { message: reqError(label) }) as T;
+    if (required) newSchema = newSchema.min(1, { message: reqError(label) }) as T;
     if (min !== undefined)
       newSchema = (newSchema as ZodNumber).min(min, {
         message: minError(label, min),
@@ -62,23 +54,11 @@ function applyFieldOptions<T extends ZodString | ZodNumber | ZodBoolean>(
   // Add default value if provided (and not undefined)
   if (defaultValue !== undefined) {
     if (newSchema instanceof z.ZodString && typeof defaultValue === "string") {
-      newSchema = (newSchema as ZodString).default(
-        defaultValue,
-      ) as unknown as T;
-    } else if (
-      newSchema instanceof z.ZodNumber &&
-      typeof defaultValue === "number"
-    ) {
-      newSchema = (newSchema as ZodNumber).default(
-        defaultValue,
-      ) as unknown as T;
-    } else if (
-      newSchema instanceof z.ZodBoolean &&
-      typeof defaultValue === "boolean"
-    ) {
-      newSchema = (newSchema as ZodBoolean).default(
-        defaultValue,
-      ) as unknown as T;
+      newSchema = (newSchema as ZodString).default(defaultValue) as unknown as T;
+    } else if (newSchema instanceof z.ZodNumber && typeof defaultValue === "number") {
+      newSchema = (newSchema as ZodNumber).default(defaultValue) as unknown as T;
+    } else if (newSchema instanceof z.ZodBoolean && typeof defaultValue === "boolean") {
+      newSchema = (newSchema as ZodBoolean).default(defaultValue) as unknown as T;
     }
   }
 
@@ -124,9 +104,7 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     // If the structure is valid, apply default values to the schema
 
     if ("is_byok_enabled" in field.defaultValue) {
-      isByokEnabledSchema.default(
-        field?.defaultValue?.is_byok_enabled as boolean,
-      );
+      isByokEnabledSchema.default(field?.defaultValue?.is_byok_enabled as boolean);
     }
     if ("provider" in field.defaultValue) {
       providerSchema.default(field?.defaultValue?.provider as string);
@@ -141,15 +119,11 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
       topPSchema.default(field?.defaultValue?.top_p as number);
     }
     if ("is_json_output" in field.defaultValue) {
-      isJsonOutputSchema.default(
-        field?.defaultValue?.is_json_output as boolean,
-      );
+      isJsonOutputSchema.default(field?.defaultValue?.is_json_output as boolean);
     }
 
     if ("max_output_tokens" in field.defaultValue) {
-      maxOutputTokenSchema.default(
-        field?.defaultValue?.max_output_tokens as number,
-      );
+      maxOutputTokenSchema.default(field?.defaultValue?.max_output_tokens as number);
     }
   }
 
@@ -176,9 +150,7 @@ function getToolsConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   const toolConfigSchema = z.object({
     tool: z.string().min(1, "Tool is required"),
     credential_id: z.string().min(1, "Credential ID is required"),
-    actions: z
-      .array(actionItemSchema)
-      .min(1, "At least one action must be selected"),
+    actions: z.array(actionItemSchema).min(1, "At least one action must be selected"),
   });
 
   let schema: ZodTypeAny = z.array(toolConfigSchema);
@@ -245,9 +217,7 @@ function getVoiceConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // 2. Reassign the variables with the newly generated default schemas
   if (field.defaultValue && typeof field.defaultValue === "object") {
     if ("language" in field.defaultValue) {
-      languageSchema = z
-        .string()
-        .default(field.defaultValue.language as string);
+      languageSchema = z.string().default(field.defaultValue.language as string);
     }
 
     if ("voice" in field.defaultValue) {
@@ -321,14 +291,10 @@ function getKnowledgeBaseConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
       retrievalTypeSchema.default(field?.defaultValue?.retrievalType as string);
     }
     if ("sourceThreshold" in field.defaultValue) {
-      sourceThresholdSchema.default(
-        field?.defaultValue?.sourceThreshold as number,
-      );
+      sourceThresholdSchema.default(field?.defaultValue?.sourceThreshold as number);
     }
     if ("numberOfChunks" in field.defaultValue) {
-      numberOfChunksSchema.default(
-        field?.defaultValue?.numberOfChunks as number,
-      );
+      numberOfChunksSchema.default(field?.defaultValue?.numberOfChunks as number);
     }
   }
 
@@ -351,9 +317,7 @@ function getMemoryConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     // If the structure is valid, apply default values to the schema
 
     if ("memoryProvider" in field.defaultValue) {
-      memoryProviderSchema.default(
-        field?.defaultValue?.memoryProvider as string,
-      );
+      memoryProviderSchema.default(field?.defaultValue?.memoryProvider as string);
     }
     if ("maxDataStored" in field.defaultValue) {
       maxDataStoredSchema.default(field?.defaultValue?.maxDataStored as number);

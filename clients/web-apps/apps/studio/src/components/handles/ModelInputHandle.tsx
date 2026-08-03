@@ -1,11 +1,7 @@
 import { cn } from "@avplatform/ui/lib";
 import { Handle, Position, useHandleConnections } from "@xyflow/react";
 
-export const ModelInputHandle = ({
-  isConnectable,
-}: {
-  isConnectable: boolean;
-}) => {
+export const ModelInputHandle = ({ isConnectable }: { isConnectable: boolean }) => {
   const connections = useHandleConnections({
     type: "target",
   });

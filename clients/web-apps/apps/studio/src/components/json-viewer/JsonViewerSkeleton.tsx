@@ -1,18 +1,9 @@
 import { Skeleton } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
 
-export default function JsonViewerSkeleton({
-  className,
-}: {
-  className?: string;
-}) {
+export default function JsonViewerSkeleton({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        "h-[60vh] w-full overflow-hidden rounded-md bg-gray-50 p-2",
-        className,
-      )}
-    >
+    <div className={cn("h-[60vh] w-full overflow-hidden rounded-md bg-gray-50 p-2", className)}>
       <div className="space-y-2">
         {/* Simulating nested JSON structure */}
         <div className="flex items-start gap-2">

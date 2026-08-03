@@ -12,10 +12,10 @@ By using this node, you can:
 
 ## Configuration Options
 
-| Field Name         | Description                                     | Input Type | Required? | Default Value |
-| ------------------ | ----------------------------------------------- | ---------- | --------- | ------------- |
-| **.NET Script Code** | The script code you want to execute.           | Text       | Yes       | _(empty)_     |
-| **Script Output**  | Returns the output of the script execution.     | Display    | No        | ScriptOutput  |
+| Field Name           | Description                                 | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------- | ---------- | --------- | ------------- |
+| **.NET Script Code** | The script code you want to execute.        | Text       | Yes       | _(empty)_     |
+| **Script Output**    | Returns the output of the script execution. | Display    | No        | ScriptOutput  |
 
 ## Expected Output Format
 
@@ -39,23 +39,24 @@ After execution, the result will be available as **ScriptOutput** and can be use
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the .NET script you enter is correctly structured to avoid runtime errors. Test your script independently if possible before using the node.
+  Ensure that the .NET script you enter is correctly structured to avoid runtime
+  errors. Test your script independently if possible before using the node.
 </Callout>
 
 ## Input/Output Examples
 
-| Input (.NET Script Code)           | Expected Output                          |
-| ---------------------------------- | ---------------------------------------- |
-| `Console.WriteLine("Hello World")` | _Outputs "Hello World" to the console._  |
-| `int x = 5 + 10; return x;`        | `15`                                     |
+| Input (.NET Script Code)           | Expected Output                         |
+| ---------------------------------- | --------------------------------------- |
+| `Console.WriteLine("Hello World")` | _Outputs "Hello World" to the console._ |
+| `int x = 5 + 10; return x;`        | `15`                                    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                   |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **Syntax errors in .NET Script Code**          | Double-check your script syntax and ensure it's correct for .NET.                          |
-| **No output from the script**                  | Verify that the script includes a return statement or output directive (like Console.WriteLine). |
-| **Unexpected results**                         | Check the script logic to ensure it performs the desired operation.                         |
+| Problem                               | Solution                                                                                         |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Syntax errors in .NET Script Code** | Double-check your script syntax and ensure it's correct for .NET.                                |
+| **No output from the script**         | Verify that the script includes a return statement or output directive (like Console.WriteLine). |
+| **Unexpected results**                | Check the script logic to ensure it performs the desired operation.                              |
 
 ## Real-World Use Cases
 

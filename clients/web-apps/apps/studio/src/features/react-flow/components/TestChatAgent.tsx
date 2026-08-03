@@ -1,10 +1,10 @@
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-
 import { Button } from "@avplatform/ui/buttons";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Panel } from "@xyflow/react";
 import { FlaskConicalIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 export const TestChatAgent = () => {
   const { isTestChatOpen, setIsTestChatOpen } = useReactFlowExtStore(

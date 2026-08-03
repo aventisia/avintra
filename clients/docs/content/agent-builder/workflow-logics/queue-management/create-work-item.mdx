@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name       | Description                                                                 | Input Type      | Required? | Default Value |
-| ---------------- | --------------------------------------------------------------------------- | --------------- | --------- | ------------- |
-| **Select Queue** | Choose the queue where the new work item will be created.                   | Queue Select    | Yes       | _(empty)_     |
-| **Work Item Data** | Provide the data payload for the work item in JSON format.                 | JSON Editor     | Yes       | _(empty)_     |
-| **Remark**       | Enter the remark for the work item.                                         | Text            | No        | _(empty)_     |
-| **Created WorkItem** | Returns the newly created work item.                                    | Config Panel Output | No     | CreatedWorkItem |
+| Field Name           | Description                                                | Input Type          | Required? | Default Value   |
+| -------------------- | ---------------------------------------------------------- | ------------------- | --------- | --------------- |
+| **Select Queue**     | Choose the queue where the new work item will be created.  | Queue Select        | Yes       | _(empty)_       |
+| **Work Item Data**   | Provide the data payload for the work item in JSON format. | JSON Editor         | Yes       | _(empty)_       |
+| **Remark**           | Enter the remark for the work item.                        | Text                | No        | _(empty)_       |
+| **Created WorkItem** | Returns the newly created work item.                       | Config Panel Output | No        | CreatedWorkItem |
 
 ## Expected Output Format
 
@@ -49,24 +49,25 @@ The new work item will be output as **CreatedWorkItem**, which you can use in su
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure your JSON data in the **Work Item Data** field is correctly structured to avoid errors.
+  Ensure your JSON data in the **Work Item Data** field is correctly structured
+  to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Field           | Example Value                                   | Description                                       |
-| --------------- | ----------------------------------------------- | ------------------------------------------------- |
-| Select Queue    | OrdersQueue                                    | The queue to which the work item is added.        |
-| Work Item Data  | `{ "customerId": "12345", "orderTotal": 150 }` | The data needed to process this particular item.  |
-| Remark          | "Priority processing required."                | An optional note about the work item.             |
+| Field          | Example Value                                  | Description                                      |
+| -------------- | ---------------------------------------------- | ------------------------------------------------ |
+| Select Queue   | OrdersQueue                                    | The queue to which the work item is added.       |
+| Work Item Data | `{ "customerId": "12345", "orderTotal": 150 }` | The data needed to process this particular item. |
+| Remark         | "Priority processing required."                | An optional note about the work item.            |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                         | Solution                                                                                                           |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Queue not selected**          | Ensure you select a queue from the dropdown to create the work item.                                               |
-| **Invalid JSON Format**         | Double-check that your JSON in **Work Item Data** is valid and correctly formatted.                                |
-| **Unexpected output value**     | Verify that all required fields are filled appropriately, and that output field **CreatedWorkItem** is properly used. |
+| Problem                     | Solution                                                                                                              |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Queue not selected**      | Ensure you select a queue from the dropdown to create the work item.                                                  |
+| **Invalid JSON Format**     | Double-check that your JSON in **Work Item Data** is valid and correctly formatted.                                   |
+| **Unexpected output value** | Verify that all required fields are filled appropriately, and that output field **CreatedWorkItem** is properly used. |
 
 ## Real-World Use Cases
 

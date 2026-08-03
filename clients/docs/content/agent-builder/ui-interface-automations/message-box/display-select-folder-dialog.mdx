@@ -11,11 +11,11 @@ Common use cases include:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                 | Input Type | Required? | Default Value |
-| ----------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Dialog Description**  | The description or title of the folder selection dialog window.             | Text       | Yes       | _(empty)_     |
-| **Initial Folder**      | The folder path where the dialog starts. Defaults to Desktop if left blank. | Text       | No        | _(empty)_     |
-| **Keep Dialog On Top**  | Keeps the dialog window on top of all other windows if set to true.         | Switch     | No        | _(empty)_     |
+| Field Name             | Description                                                                 | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Dialog Description** | The description or title of the folder selection dialog window.             | Text       | Yes       | _(empty)_     |
+| **Initial Folder**     | The folder path where the dialog starts. Defaults to Desktop if left blank. | Text       | No        | _(empty)_     |
+| **Keep Dialog On Top** | Keeps the dialog window on top of all other windows if set to true.         | Switch     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -50,16 +50,17 @@ The folder path selected by the user will be available as **Selected Folder**, a
 </Steps>
 
 <Callout type="info" title="Tip">
-  It is a good practice to specify an **Initial Folder** if you know where users are most likely to be selecting folders from, as this can save time.
+  It is a good practice to specify an **Initial Folder** if you know where users
+  are most likely to be selecting folders from, as this can save time.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                                                                                                  |
-| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Dialog not appearing**                    | Verify that your flow is triggering the node correctly. Ensure that there are no preceding steps that prevent the dialog from being shown.                |
-| **Incorrect folder path as output**         | Double-check if the `Selected Folder` is being used in other parts of your automation and ensure there is no overwriting happening unintentionally.       |
-| **Keep Dialog On Top not functioning**      | Depending on system settings or permissions, the dialog might not stay on top. Make sure your application has the necessary permissions to enforce this.  |
+| Problem                                | Solution                                                                                                                                                 |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Dialog not appearing**               | Verify that your flow is triggering the node correctly. Ensure that there are no preceding steps that prevent the dialog from being shown.               |
+| **Incorrect folder path as output**    | Double-check if the `Selected Folder` is being used in other parts of your automation and ensure there is no overwriting happening unintentionally.      |
+| **Keep Dialog On Top not functioning** | Depending on system settings or permissions, the dialog might not stay on top. Make sure your application has the necessary permissions to enforce this. |
 
 ## Real-World Use Cases
 

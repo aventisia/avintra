@@ -1,6 +1,5 @@
-import { axiosInstance } from "@avplatform/ui/lib";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import { FlowVersionHistoryDetailDto } from "../dtos/agent-history-details-dto";
 import { FlowVersionHistoryDto } from "../dtos/agent-history-dto";
@@ -12,9 +11,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow-vers
  */
 const getAgentsHistory = (flowVersionId: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<FlowVersionHistoryDto[]>
-    >(`${baseAPIURL}/${flowVersionId}/list`)
+    .get<IHttpResponse<FlowVersionHistoryDto[]>>(`${baseAPIURL}/${flowVersionId}/list`)
     .then((res) => res.data);
 };
 
@@ -23,9 +20,7 @@ const getAgentsHistory = (flowVersionId: string) => {
  */
 const getAgentsHistoryById = (flowVersionHistoryId: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<FlowVersionHistoryDetailDto>
-    >(`${baseAPIURL}/${flowVersionHistoryId}`)
+    .get<IHttpResponse<FlowVersionHistoryDetailDto>>(`${baseAPIURL}/${flowVersionHistoryId}`)
     .then((res) => res.data);
 };
 
@@ -34,9 +29,10 @@ const getAgentsHistoryById = (flowVersionHistoryId: string) => {
  */
 const cloneHistoryToVersion = (versionHistory: FlowVersionHistoryDetailDto) => {
   return axiosInstance
-    .post<
-      IHttpResponse<FlowVersionHistoryDetailDto>
-    >(`${baseAPIURL}/clone-flow-version`, versionHistory)
+    .post<IHttpResponse<FlowVersionHistoryDetailDto>>(
+      `${baseAPIURL}/clone-flow-version`,
+      versionHistory,
+    )
     .then((res) => res.data);
 };
 
@@ -45,15 +41,8 @@ const cloneHistoryToVersion = (versionHistory: FlowVersionHistoryDetailDto) => {
  */
 const cloneHistoryToAgent = (versionHistory: FlowVersionHistoryDetailDto) => {
   return axiosInstance
-    .post<
-      IHttpResponse<FlowVersionHistoryDetailDto>
-    >(`${baseAPIURL}/clone-flow`, versionHistory)
+    .post<IHttpResponse<FlowVersionHistoryDetailDto>>(`${baseAPIURL}/clone-flow`, versionHistory)
     .then((res) => res.data);
 };
 
-export {
-  getAgentsHistory,
-  getAgentsHistoryById,
-  cloneHistoryToVersion,
-  cloneHistoryToAgent,
-};
+export { getAgentsHistory, getAgentsHistoryById, cloneHistoryToVersion, cloneHistoryToAgent };

@@ -10,12 +10,7 @@ import { z } from "zod";
 import ImproveWithAIButton from "@/features/dynamic-config-panel/components/dcp-tabs/ImproveWithAIButton";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
-import {
-  RenderField,
-  shouldRenderField,
-  useDefineDCPForm,
-  useUpdateNodeDataIO,
-} from "..";
+import { RenderField, shouldRenderField, useDefineDCPForm, useUpdateNodeDataIO } from "..";
 import { refineSubmittedIO } from "../utils/refine-submitted-io";
 import { DCPTabsContent } from "./dcp-tabs/DCPTabsContent";
 import { DCPTabsFooterWrapper } from "./dcp-tabs/DCPTabsFooterWrapper";
@@ -62,20 +57,13 @@ export const DCPForm = () => {
       shouldRenderField("Output", field, watchedValues),
     );
 
-    setShowOutputFields(
-      Number(renderedOutputFields?.map((field) => field.name)?.length) > 0,
-    );
+    setShowOutputFields(Number(renderedOutputFields?.map((field) => field.name)?.length) > 0);
   }, [nodeConfig?.fields, isFormReady, nodeConfig, watchedValues]);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof nodeConfigZodSchema>) => {
     // Extract node inputs and outputs from formData
-    const { inputs, outputs } = refineSubmittedIO(
-      nodeUniqueName,
-      formData,
-      inputKeys,
-      outputKeys,
-    );
+    const { inputs, outputs } = refineSubmittedIO(nodeUniqueName, formData, inputKeys, outputKeys);
 
     // Update node data inputs and outputs
     if (nodeId) {
@@ -113,8 +101,7 @@ export const DCPForm = () => {
               {tabKeys
                 ?.filter(
                   (key) =>
-                    import.meta.env.MODE !== "production" ||
-                    (key !== "Tools" && key !== "Schema"),
+                    import.meta.env.MODE !== "production" || (key !== "Tools" && key !== "Schema"),
                 )
                 ?.map((key) => (
                   <DCPTabsTrigger
@@ -197,8 +184,7 @@ export const DCPForm = () => {
                       }
 
                       // Add the field name to inputKeys if not already present
-                      if (!inputKeys.includes(field.name))
-                        inputKeys.push(field.name);
+                      if (!inputKeys.includes(field.name)) inputKeys.push(field.name);
 
                       // Render the field
                       return <RenderField key={field.name} {...field} />;
@@ -208,19 +194,15 @@ export const DCPForm = () => {
                 {/* Output fields */}
                 {tabNo == 0 &&
                 showOuputFields &&
-                Number(
-                  nodeConfig?.fields?.filter(
-                    (field) => field.direction == "Output",
-                  )?.length,
-                ) > 0 ? (
+                Number(nodeConfig?.fields?.filter((field) => field.direction == "Output")?.length) >
+                  0 ? (
                   <>
                     <h3
                       className={cn(
                         "relative !my-8 flex h-[0.06rem] items-center gap-1 border-[0.5px] border-x-0 border-t-0",
                         nodeConfig?.fields?.filter(
                           (field) =>
-                            (field.category ?? "Inputs") == tab &&
-                            field.direction == "Input",
+                            (field.category ?? "Inputs") == tab && field.direction == "Input",
                         ).length == 0 && "!mt-2",
                       )}
                     >
@@ -234,21 +216,15 @@ export const DCPForm = () => {
                     <div className="mb-1 mt-3 space-y-3 rounded-lg border bg-slate-50 px-3.5 py-3">
                       {nodeConfig?.fields?.map((field) => {
                         // Check if the field should be rendered based on direction and renderIf conditions
-                        if (
-                          !shouldRenderField("Output", field, watchedValues)
-                        ) {
+                        if (!shouldRenderField("Output", field, watchedValues)) {
                           //Remove the key from outputKeys if the field is not rendered
                           if (outputKeys.includes(field.name))
-                            outputKeys.splice(
-                              outputKeys.indexOf(field.name),
-                              1,
-                            );
+                            outputKeys.splice(outputKeys.indexOf(field.name), 1);
                           return null;
                         }
 
                         // Add the field name to outputKeys if not already present
-                        if (!outputKeys.includes(field.name))
-                          outputKeys.push(field.name);
+                        if (!outputKeys.includes(field.name)) outputKeys.push(field.name);
 
                         return <RenderField key={field.name} {...field} />;
                       })}
@@ -261,18 +237,12 @@ export const DCPForm = () => {
             {/* Save button */}
             {selectedTab !== "Test" && (
               <DCPTabsFooterWrapper
-                className={cn(
-                  (selectedTab == "Prompt" || isAgentHistory) &&
-                    "justify-between",
-                )}
+                className={cn((selectedTab == "Prompt" || isAgentHistory) && "justify-between")}
               >
                 {selectedTab == "Prompt" && !isAgentHistory && (
                   <ImproveWithAIButton
                     disabled={isAgentHistory}
-                    name={
-                      nodeConfig.fields.find((v) => v.type == "prompt-input")
-                        ?.name ?? ""
-                    }
+                    name={nodeConfig.fields.find((v) => v.type == "prompt-input")?.name ?? ""}
                     form={form}
                   />
                 )}
@@ -280,9 +250,7 @@ export const DCPForm = () => {
                 {isAgentHistory ? (
                   <div className="flex items-center gap-1 text-muted-foreground">
                     <InfoIcon className="h-3.5 w-3.5" />
-                    <span className="mt-0.5 text-xs">
-                      Changes will not be saved
-                    </span>
+                    <span className="mt-0.5 text-xs">Changes will not be saved</span>
                   </div>
                 ) : null}
                 <Button

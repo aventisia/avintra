@@ -1,18 +1,14 @@
 import { Button } from "@avplatform/ui/buttons";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import {
-  useController,
-  useFieldArray,
-  useFormContext,
-  useWatch,
-} from "react-hook-form";
-import { DCPFieldSchemaType, RenderField, shouldRenderField } from "../..";
-import { GroupedFieldsWrapper } from "../fields-for-form/GroupedFieldsWrapper";
-import { InputSchemaField } from "../../dtos/queues-table-dto";
 import { ISelectOption } from "@avplatform/ui/types";
+import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useQuery } from "@tanstack/react-query";
-import { getQueues } from "../../apis/queues-apis";
 import { useEffect, useRef, useState } from "react";
+import { useController, useFieldArray, useFormContext, useWatch } from "react-hook-form";
+
+import { DCPFieldSchemaType, RenderField, shouldRenderField } from "../..";
+import { getQueues } from "../../apis/queues-apis";
+import { InputSchemaField } from "../../dtos/queues-table-dto";
+import { GroupedFieldsWrapper } from "../fields-for-form/GroupedFieldsWrapper";
 import { PriorityFieldsLabelHeader } from "./PriorityFieldsLabelHeader";
 
 const defaultPriorityObj = {
@@ -22,9 +18,7 @@ const defaultPriorityObj = {
 };
 
 export const QueuePriorityGroupsField = (field: DCPFieldSchemaType) => {
-  const [queueFieldsOptions, setQueueFieldOptions] = useState<ISelectOption[]>(
-    [],
-  );
+  const [queueFieldsOptions, setQueueFieldOptions] = useState<ISelectOption[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
   const { control, setValue } = useFormContext();
@@ -39,9 +33,7 @@ export const QueuePriorityGroupsField = (field: DCPFieldSchemaType) => {
     control,
   });
 
-  const mapSchemaFieldsToSelectOptions = (
-    fields: InputSchemaField[],
-  ): ISelectOption[] => {
+  const mapSchemaFieldsToSelectOptions = (fields: InputSchemaField[]): ISelectOption[] => {
     return fields.map((field) => ({
       value: field.name,
       label: field.label ?? field.name,
@@ -80,9 +72,7 @@ export const QueuePriorityGroupsField = (field: DCPFieldSchemaType) => {
 
   useEffect(() => {
     if (queueSelectField.value) {
-      const queueSchema = data?.find(
-        (item) => item.id == queueSelectField.value,
-      )?.inputSchema;
+      const queueSchema = data?.find((item) => item.id == queueSelectField.value)?.inputSchema;
 
       if (queueSchema) {
         setQueueFieldOptions(mapSchemaFieldsToSelectOptions(queueSchema));
@@ -96,25 +86,16 @@ export const QueuePriorityGroupsField = (field: DCPFieldSchemaType) => {
         <PriorityFieldsLabelHeader />
 
         {fields.map((item, index) => (
-          <div
-            key={item.id}
-            className="grid grid-cols-[1fr_1fr_auto] items-end gap-3 space-y-1.5"
-          >
+          <div key={item.id} className="grid grid-cols-[1fr_1fr_auto] items-end gap-3 space-y-1.5">
             {field.conditionSchema?.map((subField, i) => {
-              subField.disabled = !shouldRenderField(
-                "Input",
-                subField,
-                rowValues?.[index],
-              );
+              subField.disabled = !shouldRenderField("Input", subField, rowValues?.[index]);
 
               return (
                 <RenderField
                   key={subField.name}
                   {...subField}
                   name={`${field.name}.${index}.${subField.name}`}
-                  selectOptions={
-                    i === 0 ? queueFieldsOptions : subField.selectOptions
-                  }
+                  selectOptions={i === 0 ? queueFieldsOptions : subField.selectOptions}
                 />
               );
             })}

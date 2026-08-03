@@ -1,15 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { JsonEditor } from "@/components/json-editor/JsonEditor";
-
-import {
-  ToolCallMessagePartComponent,
-  ToolCallMessagePartStatus,
-} from "@assistant-ui/react";
+import { ToolCallMessagePartComponent, ToolCallMessagePartStatus } from "@assistant-ui/react";
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 import { PencilIcon, PlayIcon, XIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+
+import { JsonEditor } from "@/components/json-editor/JsonEditor";
 
 import {
   ToolFallbackArgs,
@@ -48,9 +45,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
   const [isEditing, setIsEditing] = useState(false);
 
   // Track the raw JSON string the user actually saved
-  const [userEditedPayloadStr, setUserEditedPayloadStr] = useState<
-    string | null
-  >(null);
+  const [userEditedPayloadStr, setUserEditedPayloadStr] = useState<string | null>(null);
 
   // The payload currently active (LLM generated vs User edited)
   const displayArgsStr = useMemo(() => {
@@ -93,8 +88,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
     } catch {
       showCustomAlertDialog({
         title: "Invalid JSON",
-        description:
-          "Please ensure the arguments are valid JSON before executing.",
+        description: "Please ensure the arguments are valid JSON before executing.",
         confirmBtnText: "Got it",
         confirmActionFn: () => {},
         isDestructive: false,
@@ -106,8 +100,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
 
   const uiStatus: ToolCallMessagePartStatus = useMemo(() => {
     if (isStreaming || isExecuting) return { type: "running" };
-    if (status === "cancelled")
-      return { type: "incomplete", reason: "cancelled" };
+    if (status === "cancelled") return { type: "incomplete", reason: "cancelled" };
     if (status === "failed")
       return {
         type: "incomplete",
@@ -115,8 +108,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
         error: displayResult?.details || "Execution failed",
       };
 
-    if (status === "pending")
-      return { type: "requires-action", reason: "interrupt" };
+    if (status === "pending") return { type: "requires-action", reason: "interrupt" };
 
     return { type: "complete" };
   }, [status, isStreaming, isExecuting, displayResult]);
@@ -129,11 +121,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
       defaultOpen={status === "pending" || isStreaming || isExecuting}
       className="shadow-sm mb-2"
     >
-      <ToolFallbackTrigger
-        toolName={toolLabel}
-        status={uiStatus}
-        className={cn("rounded-lg")}
-      />
+      <ToolFallbackTrigger toolName={toolLabel} status={uiStatus} className={cn("rounded-lg")} />
 
       <ToolFallbackContent>
         <ToolFallbackError status={uiStatus} />
@@ -144,11 +132,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
             <div className="mb-2 flex items-center gap-1.5 font-medium text-foreground">
               Editing Arguments:
             </div>
-            <JsonEditor
-              value={draftEditStr}
-              onChange={setDraftEditStr}
-              disabled={false}
-            />
+            <JsonEditor value={draftEditStr} onChange={setDraftEditStr} disabled={false} />
             <div className="mt-3 flex items-center justify-end gap-2">
               <Button variant="outline" size="xs" onClick={handleCancelEdit}>
                 Cancel Edit
@@ -189,9 +173,7 @@ export const ToolsCall: ToolCallMessagePartComponent = (props) => {
         )}
 
         {status === "success" && displayResult && (
-          <ToolFallbackResult
-            result={displayResult?.details || displayResult}
-          />
+          <ToolFallbackResult result={displayResult?.details || displayResult} />
         )}
       </ToolFallbackContent>
     </ToolFallbackRoot>

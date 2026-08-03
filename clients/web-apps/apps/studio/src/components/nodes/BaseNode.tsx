@@ -28,13 +28,7 @@ interface BaseNodeProps extends React.HTMLAttributes<HTMLDivElement> {
   nodeId: string;
 }
 
-const BaseNode: React.FC<BaseNodeProps> = ({
-  selected,
-  nodeData,
-  children,
-  nodeId,
-  ...props
-}) => {
+const BaseNode: React.FC<BaseNodeProps> = ({ selected, nodeData, children, nodeId, ...props }) => {
   const { toggleGroupExpand } = useGroupToggle();
 
   const renderCount = nodeData?.count
@@ -48,9 +42,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({
     : 0;
 
   const customIconMapper: { [key: string]: JSX.Element } = {
-    ConditionalNodeIcon: (
-      <SplitIcon className="h-6 w-6 rotate-180 text-white" />
-    ),
+    ConditionalNodeIcon: <SplitIcon className="h-6 w-6 rotate-180 text-white" />,
     LoopNodeIcon: <Repeat2Icon className="h-6 w-6 text-white" />,
     BlockNodeIcon: <BoxesIcon className="h-6 w-6 text-[#1E1B4B]" />,
   };

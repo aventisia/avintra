@@ -1,4 +1,4 @@
-import React from "react";
+import { LoadingSpinner } from "@avplatform/ui";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -8,8 +8,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@avplatform/ui/alert-dialog";
-import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import React from "react";
 
 /**
  *  Confirmation dialog before importing the flow.
@@ -22,17 +22,20 @@ interface ImportConfirmationDialogProps {
   onOpenChange?(open: boolean): void;
 }
 
-export const ImportConfirmationDialog: React.FC<
-  ImportConfirmationDialogProps
-> = ({ open, onOpenChange, isPending, onConfirm }) => {
+export const ImportConfirmationDialog: React.FC<ImportConfirmationDialogProps> = ({
+  open,
+  onOpenChange,
+  isPending,
+  onConfirm,
+}) => {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Import Agent</AlertDialogTitle>
           <AlertDialogDescription>
-            This will overwrite your current flow with the imported data. Are
-            you sure you want to proceed?
+            This will overwrite your current flow with the imported data. Are you sure you want to
+            proceed?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

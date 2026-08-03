@@ -2,7 +2,7 @@ import { Callout, Steps } from "nextra/components";
 
 # Get Email Details by ID
 
-The **Get Email Details by ID** node is designed to help you fetch emails from Outlook, using the Graph API, by specifying their unique message ID. This tool is handy for retrieving detailed information about an email, including attachments, whenever you need to process specific messages in workflows. 
+The **Get Email Details by ID** node is designed to help you fetch emails from Outlook, using the Graph API, by specifying their unique message ID. This tool is handy for retrieving detailed information about an email, including attachments, whenever you need to process specific messages in workflows.
 
 This can be particularly useful for:
 
@@ -12,14 +12,14 @@ This can be particularly useful for:
 
 ## Configuration Options
 
-| Field Name         | Description                                                        | Input Type | Required? | Default Value |
-| ------------------ | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Tenant ID**      | The Azure Active Directory tenant (directory) ID.                  | Text       | Yes       | _(empty)_     |
-| **Client ID**      | The Azure AD application (client) ID.                              | Text       | Yes       | _(empty)_     |
-| **Client Secret**  | The Azure AD application client secret.                            | Text       | Yes       | _(empty)_     |
-| **User Email**     | The email address of the mailbox owner.                            | Text       | Yes       | _(empty)_     |
-| **Message ID**     | The unique ID of the email message.                                | Text       | Yes       | _(empty)_     |
-| **Email Details**  | The full email message object returned as a JSON object.           | Output     | No        | EmailDetails  |
+| Field Name        | Description                                              | Input Type | Required? | Default Value |
+| ----------------- | -------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**     | The Azure Active Directory tenant (directory) ID.        | Text       | Yes       | _(empty)_     |
+| **Client ID**     | The Azure AD application (client) ID.                    | Text       | Yes       | _(empty)_     |
+| **Client Secret** | The Azure AD application client secret.                  | Text       | Yes       | _(empty)_     |
+| **User Email**    | The email address of the mailbox owner.                  | Text       | Yes       | _(empty)_     |
+| **Message ID**    | The unique ID of the email message.                      | Text       | Yes       | _(empty)_     |
+| **Email Details** | The full email message object returned as a JSON object. | Output     | No        | EmailDetails  |
 
 ## Expected Output Format
 
@@ -59,18 +59,19 @@ Upon configuration, the node will output the **Email Details** in JSON format, w
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that your Azure AD configurations (Tenant ID, Client ID, and Client Secret) are correctly set up in your Azure portal for seamless integration.
+  Ensure that your Azure AD configurations (Tenant ID, Client ID, and Client
+  Secret) are correctly set up in your Azure portal for seamless integration.
 </Callout>
 
 ## Input/Output Examples
 
-| Field          | Example Value                             |
-| -------------- | ----------------------------------------- |
-| Tenant ID      | `12345abc-def6-7890-ghij-123456klmnop`    |
-| Client ID      | `abc123-def456-ghi789-jkl012-mnop345`    |
-| Client Secret  | `yoursupersecretkey123`                   |
-| User Email     | `jane.doe@example.com`                    |
-| Message ID     | `AQMkAD…AAABEgAQAAA=`                    |
+| Field         | Example Value                          |
+| ------------- | -------------------------------------- |
+| Tenant ID     | `12345abc-def6-7890-ghij-123456klmnop` |
+| Client ID     | `abc123-def456-ghi789-jkl012-mnop345`  |
+| Client Secret | `yoursupersecretkey123`                |
+| User Email    | `jane.doe@example.com`                 |
+| Message ID    | `AQMkAD…AAABEgAQAAA=`                  |
 
 Expected output in JSON structure:
 
@@ -92,11 +93,11 @@ Expected output in JSON structure:
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                   |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **Incorrect Tenant ID or Client ID**         | Verify these details within your Azure portal to ensure they are correct.                  |
-| **Authorization Error**                      | Check if the Client Secret is correct and hasn't expired, and if the app has proper permissions.  |
-| **Email not found (wrong Message ID)**       | Double-check the Message ID. This should be a correct and existing ID in the user's mailbox.  |
+| Problem                                | Solution                                                                                         |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Incorrect Tenant ID or Client ID**   | Verify these details within your Azure portal to ensure they are correct.                        |
+| **Authorization Error**                | Check if the Client Secret is correct and hasn't expired, and if the app has proper permissions. |
+| **Email not found (wrong Message ID)** | Double-check the Message ID. This should be a correct and existing ID in the user's mailbox.     |
 
 ## Real-World Use Cases
 

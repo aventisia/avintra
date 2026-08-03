@@ -23,21 +23,24 @@ Conditions determine whether the loop will continue to run.
 
 You can create one or more **condition groups**, combining conditions with **AND** and **OR** logic:
 
-- Use **+ AND** to add multiple conditions within a group that must *all* be true.
-- Use **+ OR** to create a new group of conditions. The loop will continue if *any one group* is true.
+- Use **+ AND** to add multiple conditions within a group that must _all_ be true.
+- Use **+ OR** to create a new group of conditions. The loop will continue if _any one group_ is true.
 
 ---
 
 ## Supported Operators
 
 ### Basic Comparisons
+
 - **Is Equal To / Exactly Matches**: Match static or dynamic values (e.g., `status Is Equal To "Active"`).
 - **Is Greater Than / Is Less Than**: Check numerical or date values (e.g., `Balance Is Greater Than 5000`).
 
 ### Boolean Checks
+
 - **Is True / Is False**: Use when evaluating flags or toggles (e.g., `isVerified Is True`).
 
 ### Text Logic
+
 - **Contains (Text)**: `Comment Contains "error"`
 - **Does Not Contain (Text)**: `Name Does Not Contain "test"`
 - **Starts With / Ends With**: `Filename Starts With "invoice_"`, `Email Ends With "@domain.com"`
@@ -45,14 +48,17 @@ You can create one or more **condition groups**, combining conditions with **AND
 - **Does Not Exactly Match**: `Status Does Not Exactly Match "Complete"`
 
 ### Existence Checks
+
 - **Exists / Does Not Exist**: Useful when values are optional (e.g., `ErrorCode Exists`)
 - **Is Empty / Is Not Empty**: For strings, arrays, or lists (e.g., `PhoneNumber Is Not Empty`)
 
 ### List Logic
+
 - **Contains (List)**: `AssignedRoles Contains (List) "Manager"`
 - **Does Not Contain (List)**: `Tags Does Not Contain (List) "Urgent"`
 
 ### Date & Time
+
 - **After / Before**: `DueDate Before "2025-12-01"`
 - **Equals (DateTime)**: `ScheduledTime Equals "2025-07-09T10:00:00Z"`
 
@@ -63,16 +69,19 @@ You can create one or more **condition groups**, combining conditions with **AND
 ### Repeat based on condition
 
 **Group 1 (AND):**
+
 - `Status Is Equal To "Active"`
 - `Retries Is Less Than 3`
 
 **Group 2 (OR):**
+
 - `LastError Contains (Text) "Timeout"`
 - `RetryFlag Is True`
 
 In this setup, the loop continues if:
+
 - The status is active **and** the retry count is less than 3  
-**OR**
+  **OR**
 - The last error message contains “Timeout” **or** the retry flag is true.
 
 ---
@@ -90,7 +99,8 @@ In this setup, the loop continues if:
 ## Best Practices
 
 <Callout emoji="✅">
-Always keep loops deterministic. Add escape conditions to avoid infinite loops.
+  Always keep loops deterministic. Add escape conditions to avoid infinite
+  loops.
 </Callout>
 
 - Use logical grouping wisely. Favor **AND** inside a group and **OR** between groups.

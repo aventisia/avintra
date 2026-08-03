@@ -1,7 +1,7 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { create } from "zustand";
 
 import { ExecutionStateType } from "@/features/execute-flow/types/execution-state-type";
-import { FlowTypesEnum } from "@avplatform/ui/enums";
 
 interface ICurrentFlowDetails {
   id: string;
@@ -67,9 +67,7 @@ type Actions = {
   setExecutionState: (executionState: ExecutionStateType) => void;
 
   /** Sets the conditional execution group */
-  setConditionalExecutionGroup: (
-    conditionalExecutionGroup: ConditionalExecutionGroup[],
-  ) => void;
+  setConditionalExecutionGroup: (conditionalExecutionGroup: ConditionalExecutionGroup[]) => void;
 
   /** Sets the loop execution group */
   setLoopExecutionGroup: (loopExecutionGroup: LoopExecutionGroup[]) => void;
@@ -111,8 +109,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
 
   setExecutionState: (executionState) => set({ executionState }),
 
-  setConditionalExecutionGroup: (conditionalExecutionGroup) =>
-    set({ conditionalExecutionGroup }),
+  setConditionalExecutionGroup: (conditionalExecutionGroup) => set({ conditionalExecutionGroup }),
 
   setLoopExecutionGroup: (loopExecutionGroup) => set({ loopExecutionGroup }),
 }));

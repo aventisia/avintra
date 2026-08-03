@@ -37,9 +37,4 @@ const isRevokedProps: SwitchFieldProps = {
   description: "Turn off to block this key from accessing the API.",
 };
 
-export {
-  expiresAtProps,
-  idProps,
-  isRevokedProps,
-  nameProps,
-};
+export { expiresAtProps, idProps, isRevokedProps, nameProps };

@@ -11,14 +11,14 @@ For example:
 
 ## Configuration Options
 
-| Field Name          | Description                                                                                                 | Input Type | Required? | Default Value |
-| ------------------- | ----------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Sheets Service**  | The authenticated SheetsService instance needed for Google Sheets operations. Obtainable from the related node. | Text       | Yes       | _(empty)_     |
-| **Spreadsheet ID**  | The unique identifier of the Google Spreadsheet. Found in the Google Sheets URL.                          | Text       | Yes       | _(empty)_     |
-| **Sheet Name**      | Indicates the specific tab within the spreadsheet you want to append data to (e.g., `Sheet1`).            | Text       | Yes       | _(empty)_     |
-| **Range**           | (Optional) Specifies the column range for appending data. Default behavior appends a full row if not set. | Text       | No        | _(empty)_     |
-| **Row Values**      | A collection of values that form the row to be added (e.g., `['John', 'Doe', 'john@example.com']`).        | Text       | Yes       | _(empty)_     |
-| **Run Delay (ms)**  | (Optional) Adds a delay in milliseconds before performing the operation to mitigate potential rate limits. | Text       | No        | 0             |
+| Field Name         | Description                                                                                                     | Input Type | Required? | Default Value |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Sheets Service** | The authenticated SheetsService instance needed for Google Sheets operations. Obtainable from the related node. | Text       | Yes       | _(empty)_     |
+| **Spreadsheet ID** | The unique identifier of the Google Spreadsheet. Found in the Google Sheets URL.                                | Text       | Yes       | _(empty)_     |
+| **Sheet Name**     | Indicates the specific tab within the spreadsheet you want to append data to (e.g., `Sheet1`).                  | Text       | Yes       | _(empty)_     |
+| **Range**          | (Optional) Specifies the column range for appending data. Default behavior appends a full row if not set.       | Text       | No        | _(empty)_     |
+| **Row Values**     | A collection of values that form the row to be added (e.g., `['John', 'Doe', 'john@example.com']`).             | Text       | Yes       | _(empty)_     |
+| **Run Delay (ms)** | (Optional) Adds a delay in milliseconds before performing the operation to mitigate potential rate limits.      | Text       | No        | 0             |
 
 ## Expected Output Format
 
@@ -58,27 +58,29 @@ Insert the **Row Values** field with the values you wish to add as a new row. En
 ### Step 8
 
 Execute the node to append your data to the Google Sheet.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure your Google Sheets access and permissions are configured correctly with the SheetsService instance to enable data append functionality.
+  Ensure your Google Sheets access and permissions are configured correctly with
+  the SheetsService instance to enable data append functionality.
 </Callout>
 
 ## Input/Output Examples
 
-| Scenario                             | Spreadsheet ID                     | Sheet Name | Range | Row Values                             | Run Delay (ms) | Outcome                                         |
-| ------------------------------------ | ---------------------------------- | ---------- | ----- | --------------------------------------- | -------------- | ----------------------------------------------- |
-| Basic Append                         | 1A2BCD3EFgHIjKlmnopQrS            | Sheet1     | _(n/a)_| ['Alice', 'Smith', 'alice@example.com'] | 0              | Data is appended as a new row in Sheet1.        |
-| Specified Range                      | 1A2BCD3EFgHIjKlmnopQrS            | DataTab    | A:C   | ['Product', 'Price', 'Quantity']        | 100            | New data in specified columns (A to C) appended.|
+| Scenario        | Spreadsheet ID         | Sheet Name | Range   | Row Values                              | Run Delay (ms) | Outcome                                          |
+| --------------- | ---------------------- | ---------- | ------- | --------------------------------------- | -------------- | ------------------------------------------------ |
+| Basic Append    | 1A2BCD3EFgHIjKlmnopQrS | Sheet1     | _(n/a)_ | ['Alice', 'Smith', 'alice@example.com'] | 0              | Data is appended as a new row in Sheet1.         |
+| Specified Range | 1A2BCD3EFgHIjKlmnopQrS | DataTab    | A:C     | ['Product', 'Price', 'Quantity']        | 100            | New data in specified columns (A to C) appended. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                          |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **Authentication issues with Sheets Service**   | Double-check your SheetsService setup to make sure you have the correct authentication parameters.|
-| **Invalid Spreadsheet ID entered**              | Verify the Spreadsheet ID from the correct part of the Google Sheets URL.                         |
-| **Misformatted Row Values**                     | Ensure your Row Values are in list form (e.g., `['value1', 'value2']`).                           |
-| **Data not appearing in specified Range**       | Confirm that the Range is accurately set and corresponds with your expectations.                  |
+| Problem                                       | Solution                                                                                           |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Authentication issues with Sheets Service** | Double-check your SheetsService setup to make sure you have the correct authentication parameters. |
+| **Invalid Spreadsheet ID entered**            | Verify the Spreadsheet ID from the correct part of the Google Sheets URL.                          |
+| **Misformatted Row Values**                   | Ensure your Row Values are in list form (e.g., `['value1', 'value2']`).                            |
+| **Data not appearing in specified Range**     | Confirm that the Range is accurately set and corresponds with your expectations.                   |
 
 ## Real-World Use Cases
 

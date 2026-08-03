@@ -1,5 +1,6 @@
 import { cn } from "@avplatform/ui/lib";
 import React from "react";
+
 import { ConditionLabel } from "../..";
 
 export const FieldsLabelHeader: React.FC = () => (
@@ -8,10 +9,7 @@ export const FieldsLabelHeader: React.FC = () => (
       label="First Value"
       description="The first value to compare in the condition. This can be a number, string, or variable."
     />
-    <ConditionLabel
-      label="Operator"
-      description="The operator to use for comparison."
-    />
+    <ConditionLabel label="Operator" description="The operator to use for comparison." />
     <ConditionLabel
       label="Second Value"
       description="The second value to compare in the condition. This can be a number, string, or variable."

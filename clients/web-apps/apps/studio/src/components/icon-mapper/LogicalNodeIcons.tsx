@@ -1,20 +1,9 @@
-import {
-  ArrowRightCircle,
-  BoxesIcon,
-  Power,
-  Repeat2Icon,
-  Slash,
-  SplitIcon,
-} from "lucide-react";
+import { ArrowRightCircle, BoxesIcon, Power, Repeat2Icon, Slash, SplitIcon } from "lucide-react";
+
 import NewAgentIcon from "./NewAgentIcon";
 
-
 const IconContainer = ({ children }: React.PropsWithChildren) => {
-  return (
-    <div className="grid h-7 w-7 place-items-center rounded-lg bg-slate-100">
-      {children}
-    </div>
-  );
+  return <div className="grid h-7 w-7 place-items-center rounded-lg bg-slate-100">{children}</div>;
 };
 
 const ConditionalNodeIcon = () => {

@@ -6,10 +6,10 @@ The **Pause Service** node is used to temporarily pause a running Windows servic
 
 ## Configuration Options
 
-| Field Name             | Description                                                                                                 | Input Type | Required? | Default Value |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Service to Pause**   | Select the service you wish to pause from the available list.                                               | Select     | Yes       | _(empty)_     |
-| **Custom Service Name**| Enter a custom service name if the service to pause is not listed in the selection above.                   | Text       | No        | _(empty)_     |
+| Field Name              | Description                                                                               | Input Type | Required? | Default Value |
+| ----------------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Service to Pause**    | Select the service you wish to pause from the available list.                             | Select     | Yes       | _(empty)_     |
+| **Custom Service Name** | Enter a custom service name if the service to pause is not listed in the selection above. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -39,16 +39,17 @@ Confirm and apply the changes to execute and pause the selected service.
 </Steps>
 
 <Callout type="info" title="Note">
-  It is often necessary to have administrative privileges to pause certain system services.
+  It is often necessary to have administrative privileges to pause certain
+  system services.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                                 |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **Service Not Found Error**                       | Ensure the service name is correctly spelled, especially when using the **Custom Service Name** field.                   |
-| **Insufficient Permissions**                      | Verify that you have the required administrative rights to pause the selected Windows service.                           |
-| **Unresponsive Service**                          | If the service doesn't respond to the pause command, check if it supports pause functionality or if it requires stopping.|
+| Problem                      | Solution                                                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Service Not Found Error**  | Ensure the service name is correctly spelled, especially when using the **Custom Service Name** field.                    |
+| **Insufficient Permissions** | Verify that you have the required administrative rights to pause the selected Windows service.                            |
+| **Unresponsive Service**     | If the service doesn't respond to the pause command, check if it supports pause functionality or if it requires stopping. |
 
 ## Real-World Use Cases
 

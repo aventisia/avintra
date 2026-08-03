@@ -31,10 +31,7 @@ export const InputHandle = ({
       position={position}
       isConnectable={connections.length < connectionCount}
       // Added !transform-none and !left-0 to lock it perfectly over the node
-      className={cn(
-        "!left-0 top-0 h-full w-full !transform-none rounded-lg opacity-0",
-        className,
-      )}
+      className={cn("!left-0 top-0 h-full w-full !transform-none rounded-lg opacity-0", className)}
     />
   );
 };

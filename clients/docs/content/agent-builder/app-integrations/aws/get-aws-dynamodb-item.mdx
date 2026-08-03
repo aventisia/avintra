@@ -8,13 +8,13 @@ Being able to fetch database records seamlessly and integrate them into your wor
 
 ## Configuration Options
 
-| Field Name                       | Description                                                                                      | Input Type | Required? | Default Value |
-|----------------------------------|--------------------------------------------------------------------------------------------------|------------|-----------|---------------|
-| **Credential to connect with**   | Select the AWS credential to use for authentication.                                             | Text       | Yes       | _(empty)_     |
-| **Table Name or ID**             | The name of the DynamoDB table to retrieve an item from.                                         | Text       | Yes       | _(empty)_     |
-| **Keys**                         | The primary key(s) of the item to retrieve.                                                      | Text       | Yes       | _(empty)_     |
-| **Simplify**                     | If enabled, returns only the key values of the retrieved item.                                   | Switch     | No        | _(empty)_     |
-| **AWS Region**                   | The AWS region where the DynamoDB table is located (e.g., us-east-1). Default is "us-east-1".   | Text       | No        | us-east-1     |
+| Field Name                     | Description                                                                                   | Input Type | Required? | Default Value |
+| ------------------------------ | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication.                                          | Text       | Yes       | _(empty)_     |
+| **Table Name or ID**           | The name of the DynamoDB table to retrieve an item from.                                      | Text       | Yes       | _(empty)_     |
+| **Keys**                       | The primary key(s) of the item to retrieve.                                                   | Text       | Yes       | _(empty)_     |
+| **Simplify**                   | If enabled, returns only the key values of the retrieved item.                                | Switch     | No        | _(empty)_     |
+| **AWS Region**                 | The AWS region where the DynamoDB table is located (e.g., us-east-1). Default is "us-east-1". | Text       | No        | us-east-1     |
 
 ## Expected Output Format
 
@@ -58,23 +58,24 @@ The retrieved item will appear as **Retrieved Item** or **Key Values** depending
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure your AWS credentials have permission to read from the specified DynamoDB table.
+  Ensure your AWS credentials have permission to read from the specified
+  DynamoDB table.
 </Callout>
 
 ## Input/Output Examples
 
-| AWS Region | Table Name     | Keys            | Simplify  | Output Type          | Example Output                               |
-|------------|----------------|-----------------|-----------|----------------------|---------------------------------------------|
-| us-east-1  | "Customers"    | "CustomerId:123"| Disabled  | Retrieved Item       | `{"Name":"John", "Email":"john@example.com"}` |
-| us-west-2  | "Products"     | "ProductId:456" | Enabled   | Key Values           | `{"ProductId":"456"}`                         |
+| AWS Region | Table Name  | Keys             | Simplify | Output Type    | Example Output                                |
+| ---------- | ----------- | ---------------- | -------- | -------------- | --------------------------------------------- |
+| us-east-1  | "Customers" | "CustomerId:123" | Disabled | Retrieved Item | `{"Name":"John", "Email":"john@example.com"}` |
+| us-west-2  | "Products"  | "ProductId:456"  | Enabled  | Key Values     | `{"ProductId":"456"}`                         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                                                   |
-|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| **Incorrect keys specified**                            | Double-check the key values are correct and match what's in the table. Keys must correspond to the primary keys used.     |
-| **Region mismatch**                                     | Verify the AWS Region corresponds to where your table is actually located.                                                  |
-| **Permission errors**                                   | Make sure your AWS credentials allow you to access the DynamoDB table.                                                      |
+| Problem                      | Solution                                                                                                              |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect keys specified** | Double-check the key values are correct and match what's in the table. Keys must correspond to the primary keys used. |
+| **Region mismatch**          | Verify the AWS Region corresponds to where your table is actually located.                                            |
+| **Permission errors**        | Make sure your AWS credentials allow you to access the DynamoDB table.                                                |
 
 ## Real-World Use Cases
 

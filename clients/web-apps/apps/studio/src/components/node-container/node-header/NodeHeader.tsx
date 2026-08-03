@@ -6,10 +6,7 @@ export const NodeHeader = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
-    <div
-      className={cn("flex items-center justify-between gap-3", className)}
-      {...props}
-    >
+    <div className={cn("flex items-center justify-between gap-3", className)} {...props}>
       {children}
     </div>
   );

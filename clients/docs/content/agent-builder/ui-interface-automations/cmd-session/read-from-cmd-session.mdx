@@ -6,10 +6,10 @@ The **Read from CMD Session** node allows you to capture the output from a Comma
 
 ## Configuration Options
 
-| Field Name                    | Description                                                                               | Input Type | Required? | Default Value |
-| ----------------------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **CMD Session**               | The process representing the CMD session you want to read from.                           | Text       | Yes       | _(empty)_     |
-| **Separate Output from Error**| Indicates if the CMD session's standard output should be separated from standard error.  | Switch     | No        | True          |
+| Field Name                     | Description                                                                             | Input Type | Required? | Default Value |
+| ------------------------------ | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **CMD Session**                | The process representing the CMD session you want to read from.                         | Text       | Yes       | _(empty)_     |
+| **Separate Output from Error** | Indicates if the CMD session's standard output should be separated from standard error. | Switch     | No        | True          |
 
 ## Expected Output Format
 
@@ -40,24 +40,25 @@ Once configured, the node will capture the output which you can utilize in subse
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you enable the "Separate Output from Error" option, ensure that your workflow accounts for handling both outputs separately.
+  If you enable the "Separate Output from Error" option, ensure that your
+  workflow accounts for handling both outputs separately.
 </Callout>
 
 ## Input/Output Examples
 
-| CMD Command      | Separate Output? | CmdOutput                    | CmdError           |
-| ---------------- | ---------------- | ---------------------------- | ------------------ |
-| `echo Hello`     | Yes              | Hello                        | _(none)_           |
-| `badcommand`     | Yes              | _(none)_                     | 'badcommand' is not recognized |
-| `echo Hello`     | No               | Hello                        | _(none)_           |
+| CMD Command  | Separate Output? | CmdOutput | CmdError                       |
+| ------------ | ---------------- | --------- | ------------------------------ |
+| `echo Hello` | Yes              | Hello     | _(none)_                       |
+| `badcommand` | Yes              | _(none)_  | 'badcommand' is not recognized |
+| `echo Hello` | No               | Hello     | _(none)_                       |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                        | Solution                                                                                                   |
-| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **CMD Session not found**                                      | Ensure you have correctly specified the CMD session identifier.                                            |
-| **No output captured**                                         | Verify that the CMD session is running and is producing output.                                            |
-| **Unexpected error messages in output**                        | If "Separate Output from Error" is not enabled, both standard output and error might appear together.      |
+| Problem                                 | Solution                                                                                              |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **CMD Session not found**               | Ensure you have correctly specified the CMD session identifier.                                       |
+| **No output captured**                  | Verify that the CMD session is running and is producing output.                                       |
+| **Unexpected error messages in output** | If "Separate Output from Error" is not enabled, both standard output and error might appear together. |
 
 ## Real-World Use Cases
 

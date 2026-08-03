@@ -1,4 +1,5 @@
 import { NodeInputType, NodeOutputType } from "..";
+
 interface CloudConnectorNodeData {
   id: string;
   type: string;

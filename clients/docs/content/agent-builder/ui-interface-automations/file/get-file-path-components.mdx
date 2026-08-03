@@ -13,15 +13,15 @@ For example, you can extract:
 
 ## Configuration Options
 
-| Field Name                     | Description                                               | Input Type | Required? | Default Value        |
-| ------------------------------ | --------------------------------------------------------- | ---------- | --------- | -------------------- |
-| **Source File Path**           | The full path of the file from which to extract components. | Text       | Yes       | _(empty)_            |
-| **Root Path**                  | The root path of the source file.                          | Output     | No        | RootPath             |
-| **Directory Path**             | The directory of the source file.                          | Output     | No        | Directory            |
-| **File Name**                  | The name of the source file.                               | Output     | No        | FileName             |
-| **File Name Without Extension**| The file name without the file extension.                  | Output     | No        | FileNameNoExtension  |
-| **File Extension**             | The extension of the source file.                          | Output     | No        | FileExtension        |
-| **Creation Date Time**         | The creation date and time of the source file.             | Output     | No        | CreationDateTime     |
+| Field Name                      | Description                                                 | Input Type | Required? | Default Value       |
+| ------------------------------- | ----------------------------------------------------------- | ---------- | --------- | ------------------- |
+| **Source File Path**            | The full path of the file from which to extract components. | Text       | Yes       | _(empty)_           |
+| **Root Path**                   | The root path of the source file.                           | Output     | No        | RootPath            |
+| **Directory Path**              | The directory of the source file.                           | Output     | No        | Directory           |
+| **File Name**                   | The name of the source file.                                | Output     | No        | FileName            |
+| **File Name Without Extension** | The file name without the file extension.                   | Output     | No        | FileNameNoExtension |
+| **File Extension**              | The extension of the source file.                           | Output     | No        | FileExtension       |
+| **Creation Date Time**          | The creation date and time of the source file.              | Output     | No        | CreationDateTime    |
 
 ## Expected Output Format
 
@@ -48,6 +48,7 @@ In the **Source File Path** field, enter the full file path from which you want 
 ### Step 3
 
 Upon entering the file path, the node will automatically extract and display the following components:
+
 - Root Path
 - Directory Path
 - File Name
@@ -62,22 +63,23 @@ Use these extracted components in subsequent nodes within your automation flow a
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the file path you enter in the **Source File Path** field is accurate and complete to avoid errors.
+  Ensure that the file path you enter in the **Source File Path** field is
+  accurate and complete to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Source File Path                      | Root Path | Directory Path            | File Name | File Name No Extension | File Extension | Creation Date Time   |
-| ------------------------------------- | --------- | ------------------------- | --------- | ---------------------- | -------------- | -------------------- |
-| `C:\Users\Documents\report.docx`      | `C:\`     | `C:\Users\Documents\`     | `report.docx` | `report`               | `.docx`         | `2023-10-12T14:45:00`|
+| Source File Path                 | Root Path | Directory Path        | File Name     | File Name No Extension | File Extension | Creation Date Time    |
+| -------------------------------- | --------- | --------------------- | ------------- | ---------------------- | -------------- | --------------------- |
+| `C:\Users\Documents\report.docx` | `C:\`     | `C:\Users\Documents\` | `report.docx` | `report`               | `.docx`        | `2023-10-12T14:45:00` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                        |
-| ---------------------------------------------------- | --------------------------------------------------------------- |
-| **Invalid file path**                                | Ensure you enter a correct and existing file path.              |
-| **Empty output fields**                              | Double-check if the input file path is present and correct.     |
-| **Unexpected extraction results**                    | Verify the format and components of input file path.            |
+| Problem                           | Solution                                                    |
+| --------------------------------- | ----------------------------------------------------------- |
+| **Invalid file path**             | Ensure you enter a correct and existing file path.          |
+| **Empty output fields**           | Double-check if the input file path is present and correct. |
+| **Unexpected extraction results** | Verify the format and components of input file path.        |
 
 ## Real-World Use Cases
 

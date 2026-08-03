@@ -1,16 +1,12 @@
-import {
-  CommandInput,
-  Command,
-  CommandList,
-  CommandItem,
-} from "@avplatform/ui/command";
-import { ScrollArea } from "@avplatform/ui/scroll";
-import { FlowUserDto } from "../../dtos/flow-user-dto";
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
+import { Command, CommandInput, CommandItem, CommandList } from "@avplatform/ui/command";
 import { cn } from "@avplatform/ui/lib";
-import { FlowUserItemActions } from "./flow-user-item-actions";
+import { ScrollArea } from "@avplatform/ui/scroll";
+
+import { FlowUserDto } from "../../dtos/flow-user-dto";
 import { useFetchFlowUserList } from "../../hooks/useFetchFlowUserList";
 import { UsersNoContentMessage } from "./UsersNoContentMessage";
+import { FlowUserItemActions } from "./flow-user-item-actions";
 
 const UserList = () => {
   const { data } = useFetchFlowUserList();
@@ -18,11 +14,7 @@ const UserList = () => {
   return (
     <Command>
       <div className="my-1.5 rounded-lg bg-slate-100">
-        <CommandInput
-          className="h-9 text-xs"
-          placeholder="Search..."
-          autoFocus
-        />
+        <CommandInput className="h-9 text-xs" placeholder="Search..." autoFocus />
       </div>
       <UsersNoContentMessage />
       <ScrollArea>
@@ -34,11 +26,7 @@ const UserList = () => {
                 value={`${val.userFullName}${val.userName}${val.type}`}
                 className="group/CommandItem cursor-pointer rounded-lg p-1"
               >
-                <div
-                  className={
-                    "flex w-full items-center gap-3 rounded-lg px-0.5 py-0.5 pl-2"
-                  }
-                >
+                <div className={"flex w-full items-center gap-3 rounded-lg px-0.5 py-0.5 pl-2"}>
                   {/* Content container */}
                   <div className="flex grow items-center gap-2">
                     <Avatar className={cn("flex h-7 w-7")}>
@@ -49,9 +37,7 @@ const UserList = () => {
                     {/* Agent name */}
                     <div className="flex flex-col ">
                       <p>{val.userFullName}</p>
-                      <span className="text-2xs text-muted-foreground">
-                        {val.userName}
-                      </span>
+                      <span className="text-2xs text-muted-foreground">{val.userName}</span>
                     </div>
                   </div>
 

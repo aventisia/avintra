@@ -12,16 +12,16 @@ For example:
 
 ## Configuration Options
 
-| Field Name                  | Description                                                                 | Input Type | Required? | Default Value |
-| --------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **UI Element**              | The UI element for the text box or editable field you want to fill.         | Text       | Yes       | _(empty)_     |
-| **Text to Enter**           | The text that you wish to input into the specified field.                   | Text       | Yes       | _(empty)_     |
-| **Fill Method**             | Choose either to type, paste, or set the text directly into the field.      | Select     | No        | Typing       |
+| Field Name                  | Description                                                                       | Input Type | Required? | Default Value |
+| --------------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**              | The UI element for the text box or editable field you want to fill.               | Text       | Yes       | _(empty)_     |
+| **Text to Enter**           | The text that you wish to input into the specified field.                         | Text       | Yes       | _(empty)_     |
+| **Fill Method**             | Choose either to type, paste, or set the text directly into the field.            | Select     | No        | Typing        |
 | **Max Wait Time (seconds)** | The maximum duration to wait for the UI element to become available (in seconds). | Text       | No        | 5             |
 
 ## Expected Output Format
 
-The output of this node is a **boolean value** indicating whether the text was filled successfully, known as **IsTextFilled**. 
+The output of this node is a **boolean value** indicating whether the text was filled successfully, known as **IsTextFilled**.
 
 - The value will be `true` if the text entry is successful.
 - The value will be `false` if the text could not be entered due to an error or timeout.
@@ -60,24 +60,25 @@ Once setup, the node will attempt to fill the text field, and the result will be
 </Steps>
 
 <Callout type="tip" title="Note">
-  If you're not sure which Fill Method to use, start with "Type" for more compatibility across different applications.
+  If you're not sure which Fill Method to use, start with "Type" for more
+  compatibility across different applications.
 </Callout>
 
 ## Input/Output Examples
 
-| UI Element       | Text to Enter  | Fill Method | Max Wait Time | Output Value | Output Type |
-| ---------------- | -------------- | ----------- | ------------- | ------------ | ----------- |
-| "LoginField"     | "username123"  | Type        | 10            | true         | Boolean     |
-| "SearchField"    | "example query" | Paste       | 5             | true         | Boolean     |
-| "PasswordField"  | "P@ssw0rd!"    | Set Value   | 10            | false        | Boolean     |
+| UI Element      | Text to Enter   | Fill Method | Max Wait Time | Output Value | Output Type |
+| --------------- | --------------- | ----------- | ------------- | ------------ | ----------- |
+| "LoginField"    | "username123"   | Type        | 10            | true         | Boolean     |
+| "SearchField"   | "example query" | Paste       | 5             | true         | Boolean     |
+| "PasswordField" | "P@ssw0rd!"     | Set Value   | 10            | false        | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                        | Solution                                                                                                                                                     |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Field not found error despite correct UI Element input**     | Check if the application's window is active and visible. The tool may not locate hidden elements.                                                            |
-| **Unexpected failure of text input**                           | Ensure that the field selector correctly targets editable fields. Test alternative Fill Method options for compatibility.                                    |
-| **Timeout before locating UI element**                         | Increase the **Max Wait Time** to provide additional time for the application to load or respond, especially on systems with high latency or resource use.    |
+| Problem                                                    | Solution                                                                                                                                                   |
+| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Field not found error despite correct UI Element input** | Check if the application's window is active and visible. The tool may not locate hidden elements.                                                          |
+| **Unexpected failure of text input**                       | Ensure that the field selector correctly targets editable fields. Test alternative Fill Method options for compatibility.                                  |
+| **Timeout before locating UI element**                     | Increase the **Max Wait Time** to provide additional time for the application to load or respond, especially on systems with high latency or resource use. |
 
 ## Real-World Use Cases
 

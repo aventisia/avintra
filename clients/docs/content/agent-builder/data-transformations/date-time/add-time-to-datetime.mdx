@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name       | Description                                                                            | Input Type | Required? | Default Value |
-| ---------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Base DateTime**| The original DateTime value to which you want to add time.                             | Text       | Yes       | _(empty)_     |
-| **Value to Add** | The numeric amount of time you want to add.                                            | Text       | Yes       | _(empty)_     |
-| **Time Unit**    | Choose the unit of time for addition (e.g., Seconds, Minutes, Hours).                  | Select     | Yes       | Days          |
+| Field Name        | Description                                                           | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Base DateTime** | The original DateTime value to which you want to add time.            | Text       | Yes       | _(empty)_     |
+| **Value to Add**  | The numeric amount of time you want to add.                           | Text       | Yes       | _(empty)_     |
+| **Time Unit**     | Choose the unit of time for addition (e.g., Seconds, Minutes, Hours). | Select     | Yes       | Days          |
 
 ## Expected Output Format
 
@@ -50,24 +50,25 @@ The newly adjusted DateTime will be available as **ResultDateTime** for further 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that your Base DateTime value is in a supported DateTime format to prevent errors.
+  Ensure that your Base DateTime value is in a supported DateTime format to
+  prevent errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Base DateTime         | Value to Add | Time Unit | Output DateTime         | Output Type       |
-| --------------------- | ------------ | --------- | ----------------------- | ----------------- |
-| 2023-11-01T10:00:00   | 5            | Days      | 2023-11-06T10:00:00     | DateTime          |
-| 2023-11-01T10:00:00   | 2            | Hours     | 2023-11-01T12:00:00     | DateTime          |
-| 2023-11-01T10:00:00   | 15           | Minutes   | 2023-11-01T10:15:00     | DateTime          |
+| Base DateTime       | Value to Add | Time Unit | Output DateTime     | Output Type |
+| ------------------- | ------------ | --------- | ------------------- | ----------- |
+| 2023-11-01T10:00:00 | 5            | Days      | 2023-11-06T10:00:00 | DateTime    |
+| 2023-11-01T10:00:00 | 2            | Hours     | 2023-11-01T12:00:00 | DateTime    |
+| 2023-11-01T10:00:00 | 15           | Minutes   | 2023-11-01T10:15:00 | DateTime    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                                                                        |
-| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Non-numeric value entered in Value to Add** | Ensure that the Value to Add is a numeric input (e.g., 10).                                                                                                      |
-| **Base DateTime not in valid format**         | Check that your DateTime input follows an accepted format (e.g., `YYYY-MM-DDTHH:MM:SS`).                                                                        |
-| **Incorrect time adjustments**                | Double-check both the Value to Add and the Time Unit to ensure you are adding the right amount of time in the correct unit.                                      |
+| Problem                                       | Solution                                                                                                                    |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Non-numeric value entered in Value to Add** | Ensure that the Value to Add is a numeric input (e.g., 10).                                                                 |
+| **Base DateTime not in valid format**         | Check that your DateTime input follows an accepted format (e.g., `YYYY-MM-DDTHH:MM:SS`).                                    |
+| **Incorrect time adjustments**                | Double-check both the Value to Add and the Time Unit to ensure you are adding the right amount of time in the correct unit. |
 
 ## Real-World Use Cases
 

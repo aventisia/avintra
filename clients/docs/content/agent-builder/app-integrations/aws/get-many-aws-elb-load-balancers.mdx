@@ -6,12 +6,12 @@ The **Get Many AWS ELB Load Balancers** node allows you to retrieve multiple loa
 
 ## Configuration Options
 
-| Field Name                     | Description                                                                                   | Input Type | Required? | Default Value |
-| ------------------------------ | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Credential to connect with** | Select the AWS credential to use for authentication.                                          | Text       | Yes       | _(empty)_     |
+| Field Name                     | Description                                                                                  | Input Type | Required? | Default Value |
+| ------------------------------ | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication.                                         | Text       | Yes       | _(empty)_     |
 | **Return All**                 | Enable to retrieve all load balancers (up to AWS limit). If not enabled, limits the results. | Switch     | No        | _(empty)_     |
-| **Limit**                      | Maximum number of load balancers to return (max 100).                                         | Text       | No        | 100           |
-| **AWS Region**                 | The AWS region where the load balancers are located (e.g., us-east-1).                        | Text       | No        | us-east-1     |
+| **Limit**                      | Maximum number of load balancers to return (max 100).                                        | Text       | No        | 100           |
+| **AWS Region**                 | The AWS region where the load balancers are located (e.g., us-east-1).                       | Text       | No        | us-east-1     |
 
 ## Expected Output Format
 
@@ -44,24 +44,25 @@ Once configured, the node will output a detailed list of load balancers to **Loa
 </Steps>
 
 <Callout type="warning" title="Note">
-  If **Return All** is selected, the **Limit** field will not be operative. Ensure your AWS account supports the number of load balancers being requested.
+  If **Return All** is selected, the **Limit** field will not be operative.
+  Ensure your AWS account supports the number of load balancers being requested.
 </Callout>
 
 ## Input/Output Examples
 
-| Return All | Limit | Region   | Output Value (Load Balancers) | Response Output Type |
-| ---------- | ----- | -------- | ----------------------------- | -------------------- |
+| Return All | Limit | Region    | Output Value (Load Balancers) | Response Output Type |
+| ---------- | ----- | --------- | ----------------------------- | -------------------- |
 | True       | n/a   | us-east-1 | List of Load Balancers        | Raw JSON             |
 | False      | 50    | us-west-2 | List of Load Balancers        | Raw JSON             |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                               |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Invalid credential error**                   | Make sure the correct AWS credentials are chosen in the **Credential to connect with** field.                                                          |
-| **No load balancers returned**                 | Double-check the region specified and that load balancers exist in the chosen AWS region.                                                              |
-| **Limit not applying**                         | Ensure that **Return All** is not enabled if you want to set a custom limit.                                                                           |
-| **AWS Region not supported**                   | Verify the AWS region code is correct and supported, e.g., `us-east-1`.                                                                                |
+| Problem                        | Solution                                                                                      |
+| ------------------------------ | --------------------------------------------------------------------------------------------- |
+| **Invalid credential error**   | Make sure the correct AWS credentials are chosen in the **Credential to connect with** field. |
+| **No load balancers returned** | Double-check the region specified and that load balancers exist in the chosen AWS region.     |
+| **Limit not applying**         | Ensure that **Return All** is not enabled if you want to set a custom limit.                  |
+| **AWS Region not supported**   | Verify the AWS region code is correct and supported, e.g., `us-east-1`.                       |
 
 ## Real-World Use Cases
 

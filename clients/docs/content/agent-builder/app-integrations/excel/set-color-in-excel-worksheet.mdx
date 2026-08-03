@@ -6,20 +6,20 @@ The **Set Color in Excel Worksheet** node enables you to fill the background of 
 
 ## Configuration Options
 
-| Field Name                     | Description                                                                                 | Input Type | Required? | Default Value   |
-| ------------------------------ | ------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Worksheet Instance (Optional)** | The Excel Worksheet object where the color will be applied. Defaults to the active worksheet. | Text       | Yes       | _(empty)_       |
-| **Selection Mode**             | Determines how cells are selected for coloring: single cell, range of cells, or named ranges. | Select     | Yes       | SingleCell      |
-| **Start Column**               | The starting column for coloring a single cell (e.g., 'A'). _Appears if Selection Mode is "Single Cell"._ | Text      | No        | _(empty)_       |
-| **Start Row**                  | The starting row for coloring a single cell (e.g., '1'). _Appears if Selection Mode is "Single Cell"._ | Text       | No        | _(empty)_       |
-| **Start Column (Range)**       | The starting column for a range of cells (e.g., 'A'). _Appears if Selection Mode is "Range of Cells"._ | Text       | No        | _(empty)_       |
-| **Start Row (Range)**          | The starting row for a range of cells (e.g., '1'). _Appears if Selection Mode is "Range of Cells"._ | Text       | No        | _(empty)_       |
-| **End Column**                 | The ending column for a range of cells (e.g., 'B'). _Appears if Selection Mode is "Range of Cells"._ | Text       | No        | _(empty)_       |
-| **End Row**                    | The ending row for a range of cells (e.g., '5'). _Appears if Selection Mode is "Range of Cells"._ | Text       | No        | _(empty)_       |
-| **Named Range**                | The name of the named range to color. _Appears if Selection Mode is "Named Cells"._ | Text       | No        | _(empty)_       |
-| **Color Format**               | Format of the color input: predefined names or hexadecimal values.                           | Select     | Yes       | Name            |
-| **Color Name**                 | The color to apply, selected from predefined names like 'Red', 'Green', etc. _Appears if Color Format is "Name"._ | Select     | No        | _(empty)_       |
-| **Color Hexadecimal Value**    | The hexadecimal value of the color (e.g., '#FF0000'). _Appears if Color Format is "Hexadecimal Value"._ | Text      | No        | _(empty)_       |
+| Field Name                        | Description                                                                                                       | Input Type | Required? | Default Value |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance (Optional)** | The Excel Worksheet object where the color will be applied. Defaults to the active worksheet.                     | Text       | Yes       | _(empty)_     |
+| **Selection Mode**                | Determines how cells are selected for coloring: single cell, range of cells, or named ranges.                     | Select     | Yes       | SingleCell    |
+| **Start Column**                  | The starting column for coloring a single cell (e.g., 'A'). _Appears if Selection Mode is "Single Cell"._         | Text       | No        | _(empty)_     |
+| **Start Row**                     | The starting row for coloring a single cell (e.g., '1'). _Appears if Selection Mode is "Single Cell"._            | Text       | No        | _(empty)_     |
+| **Start Column (Range)**          | The starting column for a range of cells (e.g., 'A'). _Appears if Selection Mode is "Range of Cells"._            | Text       | No        | _(empty)_     |
+| **Start Row (Range)**             | The starting row for a range of cells (e.g., '1'). _Appears if Selection Mode is "Range of Cells"._               | Text       | No        | _(empty)_     |
+| **End Column**                    | The ending column for a range of cells (e.g., 'B'). _Appears if Selection Mode is "Range of Cells"._              | Text       | No        | _(empty)_     |
+| **End Row**                       | The ending row for a range of cells (e.g., '5'). _Appears if Selection Mode is "Range of Cells"._                 | Text       | No        | _(empty)_     |
+| **Named Range**                   | The name of the named range to color. _Appears if Selection Mode is "Named Cells"._                               | Text       | No        | _(empty)_     |
+| **Color Format**                  | Format of the color input: predefined names or hexadecimal values.                                                | Select     | Yes       | Name          |
+| **Color Name**                    | The color to apply, selected from predefined names like 'Red', 'Green', etc. _Appears if Color Format is "Name"._ | Select     | No        | _(empty)_     |
+| **Color Hexadecimal Value**       | The hexadecimal value of the color (e.g., '#FF0000'). _Appears if Color Format is "Hexadecimal Value"._           | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -70,7 +70,8 @@ Review your settings and proceed to apply the changes.
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the column entries like 'A', 'B', and row entries are accurate for intended cell(s) coloring, especially when selecting ranges.
+  Ensure that the column entries like 'A', 'B', and row entries are accurate for
+  intended cell(s) coloring, especially when selecting ranges.
 </Callout>
 
 ## Input/Output Examples
@@ -91,10 +92,10 @@ Review your settings and proceed to apply the changes.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                                       |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Incorrect cells colored**                 | Double-check column and row entries for accuracy.                                              |
-| **Color not changing**                      | Verify the worksheet instance is correct and ensure there are no active locks on the workbook. |
+| Problem                     | Solution                                                                                       |
+| --------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Incorrect cells colored** | Double-check column and row entries for accuracy.                                              |
+| **Color not changing**      | Verify the worksheet instance is correct and ensure there are no active locks on the workbook. |
 
 ## Real-World Use Cases
 

@@ -5,26 +5,27 @@ import { Callout, Steps } from "nextra/components";
 The **Click on Web Page** node simulates clicking a UI element such as a link or button on a web page. This is particularly useful for automating web navigation tasks, form submissions, or interactions requiring user input on websites.
 
 For example:
+
 - Clicking a "Submit" button on a form.
 - Navigating through a web menu by clicking links.
 - Simulating user interactions for web testing processes.
 
 ## Configuration Options
 
-| Field Name                      | Description                                                                                      | Input Type | Required? | Default Value |
-| ------------------------------- | ------------------------------------------------------------------------------------------------| ---------- | --------- | ------------- |
-| **Web Browser Instance**        | Enter or choose the variable that contains the web browser instance to work with.                | Text       | Yes       | _(empty)_     |
-| **Find Type**                   | Specifies how to find the element (e.g., ID, XPath, CssSelector).                               | Select     | Yes       | XPath         |
-| **Value To Find**               | The selector used to locate the link or button on the web page.                                 | Text       | Yes       | _(empty)_     |
-| **Click Type**                  | Specifies the type of click to perform.                                                         | Select     | No        | LeftClick     |
-| **Send Physical Click**         | If true, simulates physical mouse movement before clicking.                                     | Switch     | No        | true          |
-| **Wait for Page Load**          | If true, waits for the next page to load after the click.                                       | Switch     | No        | true          |
-| **Timeout for Page Load**       | The maximum time (in seconds) to wait for the page to load.                                     | Text       | No        | 60            |
-| **Handle Dialog**               | Specifies what to do if a dialog appears after the click.                                       | Select     | No        | DoNothing     |
-| **Dialog Button to Press**      | The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').                     | Text       | No        | Ok            |
-| **Mouse Position Relative to Element** | Specifies where to position the mouse relative to the element before clicking.               | Select     | No        | MiddleCenter  |
-| **Offset X**                    | Move the mouse this many pixels horizontally from the selected position.                        | Text       | No        | 0             |
-| **Offset Y**                    | Move the mouse this many pixels vertically from the selected position.                          | Text       | No        | 0             |
+| Field Name                             | Description                                                                       | Input Type | Required? | Default Value |
+| -------------------------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**               | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **Find Type**                          | Specifies how to find the element (e.g., ID, XPath, CssSelector).                 | Select     | Yes       | XPath         |
+| **Value To Find**                      | The selector used to locate the link or button on the web page.                   | Text       | Yes       | _(empty)_     |
+| **Click Type**                         | Specifies the type of click to perform.                                           | Select     | No        | LeftClick     |
+| **Send Physical Click**                | If true, simulates physical mouse movement before clicking.                       | Switch     | No        | true          |
+| **Wait for Page Load**                 | If true, waits for the next page to load after the click.                         | Switch     | No        | true          |
+| **Timeout for Page Load**              | The maximum time (in seconds) to wait for the page to load.                       | Text       | No        | 60            |
+| **Handle Dialog**                      | Specifies what to do if a dialog appears after the click.                         | Select     | No        | DoNothing     |
+| **Dialog Button to Press**             | The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').       | Text       | No        | Ok            |
+| **Mouse Position Relative to Element** | Specifies where to position the mouse relative to the element before clicking.    | Select     | No        | MiddleCenter  |
+| **Offset X**                           | Move the mouse this many pixels horizontally from the selected position.          | Text       | No        | 0             |
+| **Offset Y**                           | Move the mouse this many pixels vertically from the selected position.            | Text       | No        | 0             |
 
 ## Expected Output Format
 
@@ -68,7 +69,7 @@ In the **Click Type** dropdown, choose the type of click action (e.g., Left Clic
 ### Step 9
 
 (Optional) Configure **Handle Dialog** and **Dialog Button to Press** fields if expecting a dialog post-click.
-  
+
 ### Step 10
 
 (Optional) Set **Mouse Position Relative to Element** and **Offset X/Y** for precise mouse positioning before the click.
@@ -76,16 +77,17 @@ In the **Click Type** dropdown, choose the type of click action (e.g., Left Clic
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you're unsure of which **Find Type** to choose, XPath is often the most flexible for finding complex elements.
+  If you're unsure of which **Find Type** to choose, XPath is often the most
+  flexible for finding complex elements.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                       |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------------------|
-| **Element not found using specified Find Type**   | Re-check the element selector (XPath, CSS selector, etc.) for accuracy and correct path.      |
-| **Page not loaded after click**                   | Make sure **Wait for Page Load** is enabled, and that the **Timeout** is reasonable.          |
-| **Unexpected dialog handling**                    | Confirm the **Handle Dialog** and **Dialog Button to Press** settings are correct.            |
+| Problem                                         | Solution                                                                                 |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Element not found using specified Find Type** | Re-check the element selector (XPath, CSS selector, etc.) for accuracy and correct path. |
+| **Page not loaded after click**                 | Make sure **Wait for Page Load** is enabled, and that the **Timeout** is reasonable.     |
+| **Unexpected dialog handling**                  | Confirm the **Handle Dialog** and **Dialog Button to Press** settings are correct.       |
 
 ## Real-World Use Cases
 

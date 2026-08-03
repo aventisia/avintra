@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Delete Empty Rows From Data Table** node is designed to help you clean up your data tables by removing rows that contain empty cells. This is particularly useful for data preparation tasks where maintaining clean data sets is critical. Use this node when you want to ensure that your tables are free of incomplete or partially filled rows, which can affect analysis and reporting.
 
 Typical use cases include preparing data for:
+
 - Accurate reporting or analysis.
 - Database imports where empty rows can cause errors or inconsistencies.
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                          | Input Type | Required? | Default Value |
-| ------------------------ | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Data Table**           | The data table containing the rows to process.                                                       | Text       | Yes       | _(empty)_     |
-| **Empty Row Mode**       | Specifies how to detect empty rows.                                                                  | Select     | Yes       | AllEmpty      |
-| **Column Names To Check**| List of column names to check for emptiness. Required if the mode is "Based on Specific Columns".     | Text       | No        | _(empty)_     |
+| Field Name                | Description                                                                                       | Input Type | Required? | Default Value |
+| ------------------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**            | The data table containing the rows to process.                                                    | Text       | Yes       | _(empty)_     |
+| **Empty Row Mode**        | Specifies how to detect empty rows.                                                               | Select     | Yes       | AllEmpty      |
+| **Column Names To Check** | List of column names to check for emptiness. Required if the mode is "Based on Specific Columns". | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -50,24 +51,25 @@ The cleaned data table will be outputted and ready for use in subsequent nodes.
 </Steps>
 
 <Callout type="info" title="Note">
-  The **Column Names To Check** field is only visible if "Based on Specific Columns" is selected in the **Empty Row Mode** dropdown.
+  The **Column Names To Check** field is only visible if "Based on Specific
+  Columns" is selected in the **Empty Row Mode** dropdown.
 </Callout>
 
 ## Input/Output Examples
 
-| Empty Row Mode           | Input Data Table                  | Column Names         | Output Data Table                 |
-| ------------------------ | --------------------------------- | -------------------- | --------------------------------- |
-| All Cells Empty          | `[["A",1,""],["","", ""], ["B",2,""]]` | _(not needed)_      | `[["A",1,""],["B",2,""]]`         |
-| Any Cell Empty           | `[["C",3,""],["D","", 5], ["E",6,""]]` | _(not needed)_      | `[["E",6,""]]`                    |
-| Based on Specific Columns| `[["F",4,""],["G",5, "N/A"],["H",6,""]]` | Column 3            | `[["G",5,"N/A"]]`                 |
+| Empty Row Mode            | Input Data Table                         | Column Names   | Output Data Table         |
+| ------------------------- | ---------------------------------------- | -------------- | ------------------------- |
+| All Cells Empty           | `[["A",1,""],["","", ""], ["B",2,""]]`   | _(not needed)_ | `[["A",1,""],["B",2,""]]` |
+| Any Cell Empty            | `[["C",3,""],["D","", 5], ["E",6,""]]`   | _(not needed)_ | `[["E",6,""]]`            |
+| Based on Specific Columns | `[["F",4,""],["G",5, "N/A"],["H",6,""]]` | Column 3       | `[["G",5,"N/A"]]`         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                           | Solution                                                                                                                                                    |
-| ----------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **The Column Names To Check field isn't showing**               | Ensure you have selected **"Based on Specific Columns"** under **Empty Row Mode**.                                                                           |
-| **Incorrect columns getting checked**                           | Double-check that you have entered the correct column names in the **Column Names To Check** field, separated by commas if more than one.                   |
-| **No rows are being deleted**                                   | Ensure the **Data Table** field is correctly set, and verify the mode selection and conditions (like specific column names) are properly configured.         |
+| Problem                                           | Solution                                                                                                                                             |
+| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **The Column Names To Check field isn't showing** | Ensure you have selected **"Based on Specific Columns"** under **Empty Row Mode**.                                                                   |
+| **Incorrect columns getting checked**             | Double-check that you have entered the correct column names in the **Column Names To Check** field, separated by commas if more than one.            |
+| **No rows are being deleted**                     | Ensure the **Data Table** field is correctly set, and verify the mode selection and conditions (like specific column names) are properly configured. |
 
 ## Real-World Use Cases
 

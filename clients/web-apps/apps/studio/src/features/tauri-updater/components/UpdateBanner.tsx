@@ -1,11 +1,12 @@
-import { SubmitButton } from "@avplatform/ui/buttons";
 import { Banner } from "@avplatform/layout";
+import { SubmitButton } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { check } from "@tauri-apps/plugin-updater";
 import { useState } from "react";
+
 import { TAURI_RELAUNCH_URL_KEY, TAURI_UPDATE_STORE, killBinaries } from "..";
 
 // Create a lazy store instance to manage the update state
@@ -54,9 +55,7 @@ export function UpdateBanner() {
             break;
           }
           case "Finished":
-            toast.success(
-              `Avintra v${update.version} downloaded successfully. Restarting app...`,
-            );
+            toast.success(`Avintra v${update.version} downloaded successfully. Restarting app...`);
             setProgress(0);
             break;
         }
@@ -83,8 +82,7 @@ export function UpdateBanner() {
       <div className="flex w-full gap-2 md:items-center">
         <div className="flex grow gap-3 md:items-center md:justify-center">
           <p className="flex items-center justify-center gap-3 text-sm text-secondary-foreground">
-            🚀 A new version is available! Update now for the latest features
-            and improvements.
+            🚀 A new version is available! Update now for the latest features and improvements.
             <SubmitButton
               size="xs"
               type="button"

@@ -94,12 +94,8 @@ export function useLLMExecute(
    * before the user hits Execute — keeping preview and actual request in
    * lockstep instead of two logic paths that can drift apart.
    */
-  async function buildPayload(
-    userPrompt: string,
-  ): Promise<LLMRequestDto | null> {
-    const promptKey = Object.keys(formData).find((k) =>
-      k.includes("__Prompt__"),
-    );
+  async function buildPayload(userPrompt: string): Promise<LLMRequestDto | null> {
+    const promptKey = Object.keys(formData).find((k) => k.includes("__Prompt__"));
     const systemPrompt = promptKey ? (formData[promptKey] as string) : "";
 
     const modelConfigData = getModelConfig(formData);
@@ -111,15 +107,12 @@ export function useLLMExecute(
 
     const kbConfigData = getKBConfig(formData);
 
-    const dataUrlFiles =
-      files.length > 0 ? await filesToDataUrls(files) : undefined;
+    const dataUrlFiles = files.length > 0 ? await filesToDataUrls(files) : undefined;
 
     const toolsConfigData = getToolsConfig(formData);
     const suggestionsConfigData = getSuggestionsConfig(formData);
     const hasToolConfig = Boolean(toolsConfigData?.config?.length);
-    const dynamicActionsEnabled = Boolean(
-      suggestionsConfigData?.config?.enableDynamicActions,
-    );
+    const dynamicActionsEnabled = Boolean(suggestionsConfigData?.config?.enableDynamicActions);
     const followUpPrompt = dynamicActionsEnabled
       ? suggestionsConfigData?.config?.followUpMessagePrompt
       : undefined;
@@ -130,9 +123,7 @@ export function useLLMExecute(
       input: buildLLMInput(systemPrompt, userPrompt, followUpPrompt),
       files: dataUrlFiles,
       is_json_output: modelConfig.is_json_output,
-      json_schema: formData.useJSONSchema
-        ? (formData.json_schema as string)
-        : null,
+      json_schema: formData.useJSONSchema ? (formData.json_schema as string) : null,
       max_output_tokens: modelConfig.max_output_tokens ?? null,
       is_byok_enabled: modelConfig.is_byok_enabled,
       credential_id: modelConfig.credential_id || null,

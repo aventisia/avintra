@@ -5,27 +5,28 @@ import { Callout, Steps } from "nextra/components";
 The **Invoke Web Service** node allows you to connect to external web services via HTTP requests (REST or SOAP) and retrieve their response. This node is useful when you need to integrate different services, fetch data from web APIs, or submit data to server endpoints.
 
 For example:
+
 - Fetching data from a public API to integrate into your application.
 - Submitting user data to a server for processing.
 - Connecting to third-party services for more functionality.
 
 ## Configuration Options
 
-| Field Name                | Description                                                                                    | Input Type | Required? | Default Value    |
-| ------------------------- | ---------------------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **Endpoint URL**          | The URL of the web service endpoint (e.g., `https://api.example.com/data`).                    | Text       | Yes       | _(empty)_        |
-| **HTTP Method**           | The HTTP method to use: GET, POST, PUT, DELETE, etc.                                           | Select     | Yes       | GET              |
-| **Request Body**          | The request body to send in POST, PUT, etc. Leave empty for GET requests.                      | Text       | No        | _(empty)_        |
-| **Content Type**          | Specifies the content type for the request body (e.g., `application/json`, `text/xml`).        | Text       | No        | application/json |
-| **Accept Header**         | Specifies the content type expected in the response (e.g., `application/json`, `text/xml`).    | Text       | No        | application/json |
-| **Authentication Type**   | Type of authentication to use: None, Basic, Bearer, etc.                                       | Select     | No        | _(empty)_        |
-| **Username**              | Username for basic authentication.                                                             | Text       | No        | _(empty)_        |
-| **Password**              | Password for basic authentication.                                                             | Password   | No        | _(empty)_        |
-| **Bearer Token**          | Bearer token for OAuth authentication.                                                         | Text       | No        | _(empty)_        |
-| **Timeout Seconds**       | Maximum time in seconds to wait for the service to respond.                                    | Text       | No        | 60               |
-| **Use Default Credentials**| If true, sends credentials of the current user with the request.                             | Switch     | No        | _(empty)_        |
-| **Ignore SSL Errors**     | If true, ignores SSL certificate validation errors.                                            | Switch     | No        | _(empty)_        |
-| **Headers**               | Custom HTTP headers to include in the request.                                                 | Text       | No        | _(empty)_        |
+| Field Name                  | Description                                                                                 | Input Type | Required? | Default Value    |
+| --------------------------- | ------------------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
+| **Endpoint URL**            | The URL of the web service endpoint (e.g., `https://api.example.com/data`).                 | Text       | Yes       | _(empty)_        |
+| **HTTP Method**             | The HTTP method to use: GET, POST, PUT, DELETE, etc.                                        | Select     | Yes       | GET              |
+| **Request Body**            | The request body to send in POST, PUT, etc. Leave empty for GET requests.                   | Text       | No        | _(empty)_        |
+| **Content Type**            | Specifies the content type for the request body (e.g., `application/json`, `text/xml`).     | Text       | No        | application/json |
+| **Accept Header**           | Specifies the content type expected in the response (e.g., `application/json`, `text/xml`). | Text       | No        | application/json |
+| **Authentication Type**     | Type of authentication to use: None, Basic, Bearer, etc.                                    | Select     | No        | _(empty)_        |
+| **Username**                | Username for basic authentication.                                                          | Text       | No        | _(empty)_        |
+| **Password**                | Password for basic authentication.                                                          | Password   | No        | _(empty)_        |
+| **Bearer Token**            | Bearer token for OAuth authentication.                                                      | Text       | No        | _(empty)_        |
+| **Timeout Seconds**         | Maximum time in seconds to wait for the service to respond.                                 | Text       | No        | 60               |
+| **Use Default Credentials** | If true, sends credentials of the current user with the request.                            | Switch     | No        | _(empty)_        |
+| **Ignore SSL Errors**       | If true, ignores SSL certificate validation errors.                                         | Switch     | No        | _(empty)_        |
+| **Headers**                 | Custom HTTP headers to include in the request.                                              | Text       | No        | _(empty)_        |
 
 ### Outputs
 
@@ -36,6 +37,7 @@ For example:
 ## Expected Output Format
 
 The expected output from this node includes:
+
 - **Result**: A string containing the raw response text from the service.
 - **Response Code**: An integer representing the HTTP status code (e.g., `200` for success).
 - **Response Headers**: A string or structured data listing the response headers.
@@ -87,24 +89,25 @@ The results from the web service will be returned as **Result**, **Response Code
 </Steps>
 
 <Callout type="info" title="Tip">
-  For GET requests, you don't need to provide a Request Body. Ensure the Endpoint URL is correctly formatted and accessible.
+  For GET requests, you don't need to provide a Request Body. Ensure the
+  Endpoint URL is correctly formatted and accessible.
 </Callout>
 
 ## Input/Output Examples
 
-| HTTP Method | Endpoint URL                    | Request Body  | Output (Result)            | Output (Response Code) | Output (Response Headers)                 |
-| ----------- | --------------------------------| ------------- | -------------------------- | ---------------------- | ----------------------------------------- |
-| GET         | `https://api.example.com/data`  | _(empty)_     | `{ "data": "sample" }`    | 200                    | `Content-Type: application/json`          |
-| POST        | `https://api.example.com/send`  | `{"name": "John"}` | `{ "status": "success" }` | 201                    | `Content-Type: application/json`          |
+| HTTP Method | Endpoint URL                   | Request Body       | Output (Result)           | Output (Response Code) | Output (Response Headers)        |
+| ----------- | ------------------------------ | ------------------ | ------------------------- | ---------------------- | -------------------------------- |
+| GET         | `https://api.example.com/data` | _(empty)_          | `{ "data": "sample" }`    | 200                    | `Content-Type: application/json` |
+| POST        | `https://api.example.com/send` | `{"name": "John"}` | `{ "status": "success" }` | 201                    | `Content-Type: application/json` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                          |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **Cannot connect to web service**            | Verify the Endpoint URL is correct and accessible. Check network and server configurations.        |
-| **Unexpected HTTP status code**              | Ensure the request is properly set up, including correct headers, authentication, and method type. |
-| **SSL Errors with secure sites**             | Use the **Ignore SSL Errors** switch if the SSL certificate is invalid or self-signed.             |
-| **Authentication issues**                    | Double-check the authentication type and credentials (if applicable).                             |
+| Problem                           | Solution                                                                                           |
+| --------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Cannot connect to web service** | Verify the Endpoint URL is correct and accessible. Check network and server configurations.        |
+| **Unexpected HTTP status code**   | Ensure the request is properly set up, including correct headers, authentication, and method type. |
+| **SSL Errors with secure sites**  | Use the **Ignore SSL Errors** switch if the SSL certificate is invalid or self-signed.             |
+| **Authentication issues**         | Double-check the authentication type and credentials (if applicable).                              |
 
 ## Real-World Use Cases
 

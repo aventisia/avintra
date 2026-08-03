@@ -8,11 +8,11 @@ Use this node when you need a controlled environment for executing command-line 
 
 ## Configuration Options
 
-| Field Name          | Description                                                                        | Input Type | Required? | Default Value |
-| ------------------- | ---------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Working Folder**  | The directory where the CMD session should start.                                  | Text       | Yes       | _(empty)_     |
-| **Change Code Page**| Specifies whether to change the code page in the CMD session.                      | Switch     | No        | false         |
-| **Encoding**        | The encoding to use if 'Change Code Page' is enabled (e.g., UTF8, ASCII).          | Select     | No        | UTF8          |
+| Field Name           | Description                                                               | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Working Folder**   | The directory where the CMD session should start.                         | Text       | Yes       | _(empty)_     |
+| **Change Code Page** | Specifies whether to change the code page in the CMD session.             | Switch     | No        | false         |
+| **Encoding**         | The encoding to use if 'Change Code Page' is enabled (e.g., UTF8, ASCII). | Select     | No        | UTF8          |
 
 ## Expected Output Format
 
@@ -44,24 +44,25 @@ Once configured, the CMD session details will be available as **CmdSession** to 
 </Steps>
 
 <Callout type="info" title="Note">
-  The **Encoding** dropdown is only visible if **Change Code Page** is turned on.
+  The **Encoding** dropdown is only visible if **Change Code Page** is turned
+  on.
 </Callout>
 
 ## Input/Output Examples
 
-| Working Folder   | Change Code Page | Encoding | Output Value (CmdSession) |
-| ---------------- | ---------------- | -------- | ------------------------- |
-| `C:\Projects`    | false            | _(n/a)_  | CmdSession                |
-| `D:\WorkFiles`   | true             | UTF8     | CmdSession                |
-| `E:\Documents`   | true             | ASCII    | CmdSession                |
+| Working Folder | Change Code Page | Encoding | Output Value (CmdSession) |
+| -------------- | ---------------- | -------- | ------------------------- |
+| `C:\Projects`  | false            | _(n/a)_  | CmdSession                |
+| `D:\WorkFiles` | true             | UTF8     | CmdSession                |
+| `E:\Documents` | true             | ASCII    | CmdSession                |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                                                       |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Encoding field not visible**                    | Ensure that the **Change Code Page** switch is enabled; otherwise, the **Encoding** selection will not appear.                                  |
-| **Invalid directory path in Working Folder**      | Double-check the directory path for any typos or errors. It should be an existing, accessible folder path on your desktop.                       |
-| **CMD Session not initiated**                     | Verify all mandatory fields are filled correctly and try toggling the input switch or changing the directory path to resolve execution issues.  |
+| Problem                                      | Solution                                                                                                                                       |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Encoding field not visible**               | Ensure that the **Change Code Page** switch is enabled; otherwise, the **Encoding** selection will not appear.                                 |
+| **Invalid directory path in Working Folder** | Double-check the directory path for any typos or errors. It should be an existing, accessible folder path on your desktop.                     |
+| **CMD Session not initiated**                | Verify all mandatory fields are filled correctly and try toggling the input switch or changing the directory path to resolve execution issues. |
 
 ## Real-World Use Cases
 

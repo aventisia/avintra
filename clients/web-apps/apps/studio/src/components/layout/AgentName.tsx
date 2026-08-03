@@ -61,9 +61,7 @@ const AgentName = ({ className }: { className?: string }) => {
                   });
               }}
             />
-            {isPending ? (
-              <LoadingSpinner className="h-3 w-3 text-muted-foreground" />
-            ) : null}
+            {isPending ? <LoadingSpinner className="h-3 w-3 text-muted-foreground" /> : null}
           </>
         ) : (
           <span className={cn("mt-0.5 max-w-80 truncate !text-xs", className)}>

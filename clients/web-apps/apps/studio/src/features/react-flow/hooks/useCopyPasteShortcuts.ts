@@ -1,6 +1,6 @@
-import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
-
 import { useHotkeys } from "react-hotkeys-hook";
+
+import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 
 import { useFlowOperations } from "./useFlowOperations";
 
@@ -25,10 +25,7 @@ export const useCopyPasteShortcuts = () => {
   useHotkeys(
     ["meta+c", "ctrl+c"],
     () => {
-      if (
-        activeElement &&
-        ["INPUT", "TEXTAREA"].includes(activeElement.tagName)
-      ) {
+      if (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) {
         return;
       }
       copyNodes();
@@ -41,10 +38,7 @@ export const useCopyPasteShortcuts = () => {
   useHotkeys(
     ["meta+x", "ctrl+x"],
     () => {
-      if (
-        activeElement &&
-        ["INPUT", "TEXTAREA"].includes(activeElement.tagName)
-      ) {
+      if (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) {
         return;
       }
       cutNodes();
@@ -58,10 +52,7 @@ export const useCopyPasteShortcuts = () => {
     ["meta+v", "ctrl+v"],
     () => {
       if (!selectedNode) return;
-      if (
-        activeElement &&
-        ["INPUT", "TEXTAREA"].includes(activeElement.tagName)
-      ) {
+      if (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) {
         return;
       }
 
@@ -80,8 +71,7 @@ export const useCopyPasteShortcuts = () => {
     () => {
       if (!selectedNode) return;
       if (
-        (activeElement &&
-          ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) ||
+        (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) ||
         isInsideDialog
       ) {
         return;

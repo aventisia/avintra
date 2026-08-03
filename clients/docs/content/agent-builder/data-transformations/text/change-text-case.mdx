@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name        | Description                                                                      | Input Type | Required? | Default Value |
-| ----------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Text to Convert** | Enter the text you want to transform to a different case style.                 | Text       | No        | _(empty)_     |
-| **Convert To**    | Choose the target case format: Upper, Lower, Title, or Sentence.                 | Select     | No        | _(empty)_     |
+| Field Name          | Description                                                      | Input Type | Required? | Default Value |
+| ------------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text to Convert** | Enter the text you want to transform to a different case style.  | Text       | No        | _(empty)_     |
+| **Convert To**      | Choose the target case format: Upper, Lower, Title, or Sentence. | Select     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -54,25 +54,27 @@ The formatted text will be available as **Result** for further use in your workf
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use **Sentence case** primarily for regular sentences and **Title Case** for titles or headlines. Choose **UPPERCASE** or **lowercase** for text needing uniform casing.
+  Use **Sentence case** primarily for regular sentences and **Title Case** for
+  titles or headlines. Choose **UPPERCASE** or **lowercase** for text needing
+  uniform casing.
 </Callout>
 
 ## Input/Output Examples
 
-| Convert To       | Input Text                     | Output Text                   |
-| ---------------- | ------------------------------ | ----------------------------- |
-| UPPERCASE        | This is a Sample Text.         | THIS IS A SAMPLE TEXT.        |
-| lowercase        | This is a Sample Text.         | this is a sample text.        |
-| Sentence case    | this is a sample text.         | This is a sample text.        |
-| Title Case       | This is a sample text.         | This Is A Sample Text.        |
+| Convert To    | Input Text             | Output Text            |
+| ------------- | ---------------------- | ---------------------- |
+| UPPERCASE     | This is a Sample Text. | THIS IS A SAMPLE TEXT. |
+| lowercase     | This is a Sample Text. | this is a sample text. |
+| Sentence case | this is a sample text. | This is a sample text. |
+| Title Case    | This is a sample text. | This Is A Sample Text. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                              |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| **No conversion result appears**                       | Ensure the **Convert To** option is selected. Without this choice, the node cannot perform any operation.|
-| **Uppercase/lowercase not applying to non-letters**    | Note that numbers and symbols are not affected by case transformations; they remain unchanged.         |
-| **Input text remains unchanged**                       | Double-check selection in the **Convert To** dropdown and ensure text is present in the **Text to Convert** field.|
+| Problem                                             | Solution                                                                                                           |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **No conversion result appears**                    | Ensure the **Convert To** option is selected. Without this choice, the node cannot perform any operation.          |
+| **Uppercase/lowercase not applying to non-letters** | Note that numbers and symbols are not affected by case transformations; they remain unchanged.                     |
+| **Input text remains unchanged**                    | Double-check selection in the **Convert To** dropdown and ensure text is present in the **Text to Convert** field. |
 
 ## Real-World Use Cases
 

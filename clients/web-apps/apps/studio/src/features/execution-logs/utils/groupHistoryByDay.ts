@@ -1,9 +1,7 @@
 import { JobExecutionLogDto } from "../dtos/job-execution-log-dto";
 import { DaySection } from "../types/log-list-type";
 
-export const groupHistoryByDay = (
-  data: JobExecutionLogDto[] | undefined,
-): DaySection[] => {
+export const groupHistoryByDay = (data: JobExecutionLogDto[] | undefined): DaySection[] => {
   if (!data?.length) return [];
 
   const sorted = [...data].sort(

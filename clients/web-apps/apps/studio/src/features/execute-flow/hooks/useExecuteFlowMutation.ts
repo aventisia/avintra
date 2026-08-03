@@ -17,9 +17,7 @@ export const useExecuteFlowMutation = () => {
 
     onSuccess: (httpResponse) => {
       // Success message
-      toast.success(
-        httpResponse.message || "Flow execution started successfully",
-      );
+      toast.success(httpResponse.message || "Flow execution started successfully");
     },
     onError: (error) => {
       toast.error(error.toString() || "Failed to start flow execution");

@@ -1,27 +1,12 @@
-import { findHighestNodePosition } from "@/utils/findHighestNodePosition";
-
-import {
-  BaseEdge,
-  EdgeProps,
-  Position,
-  useEdges,
-  useNodes,
-} from "@xyflow/react";
+import { BaseEdge, EdgeProps, Position, useEdges, useNodes } from "@xyflow/react";
 import { memo } from "react";
+
+import { findHighestNodePosition } from "@/utils/findHighestNodePosition";
 
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
 
 export const LoopBackEdge = memo(
-  ({
-    id,
-    sourceX,
-    sourceY,
-    targetX,
-    targetY,
-    sourcePosition,
-    markerEnd,
-    target,
-  }: EdgeProps) => {
+  ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, markerEnd, target }: EdgeProps) => {
     const nodes = useNodes();
     const edges = useEdges();
     // Use the new utility to find the highest point
@@ -40,10 +25,7 @@ export const LoopBackEdge = memo(
     const stepOut = 0;
 
     // We use Math.min to find the highest coordinate (lowest number) and subtract padding to go ABOVE it
-    const topY =
-      Math.min(sourceY, targetYWithDepth, highestY) -
-      safePadding -
-      depth * loopSpacing;
+    const topY = Math.min(sourceY, targetYWithDepth, highestY) - safePadding - depth * loopSpacing;
 
     const stepOutX =
       sourcePosition === Position.Right

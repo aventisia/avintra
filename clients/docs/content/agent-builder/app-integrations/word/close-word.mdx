@@ -6,12 +6,12 @@ The **Close Word** node is designed to close an active instance of Microsoft Wor
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                                | Input Type | Required? | Default Value        |
-| ----------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- | --------- | -------------------- |
-| **Word Instance**       | The specific Word instance you want to close.                                                              | Text       | Yes       | _(empty)_            |
-| **Before Closing Word** | Decide whether to save the document before closing.                                                       | Select     | No        | DoNotSaveDocument    |
-| **Save Path**           | Specify the file path to save the document if you chose 'Save document as'. (Appears if 'Save document as' is selected) | Text       | No        | _(empty)_            |
-| **Save Format**         | Choose the file format for saving the document (.docx or .pdf). (Appears if 'Save document as' is selected) | Select     | No        | Docx                 |
+| Field Name              | Description                                                                                                             | Input Type | Required? | Default Value     |
+| ----------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ----------------- |
+| **Word Instance**       | The specific Word instance you want to close.                                                                           | Text       | Yes       | _(empty)_         |
+| **Before Closing Word** | Decide whether to save the document before closing.                                                                     | Select     | No        | DoNotSaveDocument |
+| **Save Path**           | Specify the file path to save the document if you chose 'Save document as'. (Appears if 'Save document as' is selected) | Text       | No        | _(empty)_         |
+| **Save Format**         | Choose the file format for saving the document (.docx or .pdf). (Appears if 'Save document as' is selected)             | Select     | No        | Docx              |
 
 ## Expected Output Format
 
@@ -47,25 +47,26 @@ Also, if **Save document as** is selected, choose the **Save Format** (.docx or 
 </Steps>
 
 <Callout type="warning" title="Important">
-Ensure that the Word instance specified exists and is active, otherwise, the node will not perform any action.
+  Ensure that the Word instance specified exists and is active, otherwise, the
+  node will not perform any action.
 </Callout>
 
 ## Input/Output Examples
 
-| Before Closing Word    | Save Path          | Save Format | Behavior                                                                 |
-| ---------------------- | ------------------ | ----------- | ----------------------------------------------------------------------- |
-| Do Not Save Document   | _(n/a)_            | _(n/a)_     | Closes the Word instance without saving changes.                        |
-| Save Document          | _(n/a)_            | _(n/a)_     | Saves changes to the current file path and closes the document.         |
-| Save Document As       | C:\example\file    | .docx       | Saves the document as a `.docx` at the specified path and closes it.    |
-| Save Document As       | D:\docs\file-name  | .pdf        | Saves the document as a `.pdf` at the specified path before closing.    |
+| Before Closing Word  | Save Path         | Save Format | Behavior                                                             |
+| -------------------- | ----------------- | ----------- | -------------------------------------------------------------------- |
+| Do Not Save Document | _(n/a)_           | _(n/a)_     | Closes the Word instance without saving changes.                     |
+| Save Document        | _(n/a)_           | _(n/a)_     | Saves changes to the current file path and closes the document.      |
+| Save Document As     | C:\example\file   | .docx       | Saves the document as a `.docx` at the specified path and closes it. |
+| Save Document As     | D:\docs\file-name | .pdf        | Saves the document as a `.pdf` at the specified path before closing. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                       |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Word instance not available**              | Check that the correct Word instance identifier is entered and that Word is running.            |
-| **Save Path not specified**                  | When 'Save document as' is selected, ensure a valid file path is entered in the Save Path field.|
-| **Incorrect file format selected**           | Confirm that the desired Save Format corresponds to your needs (.docx or .pdf).                |
+| Problem                            | Solution                                                                                         |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Word instance not available**    | Check that the correct Word instance identifier is entered and that Word is running.             |
+| **Save Path not specified**        | When 'Save document as' is selected, ensure a valid file path is entered in the Save Path field. |
+| **Incorrect file format selected** | Confirm that the desired Save Format corresponds to your needs (.docx or .pdf).                  |
 
 ## Real-World Use Cases
 

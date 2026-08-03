@@ -12,13 +12,13 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                                      | Input Type | Required? | Default Value |
-| ------------------ | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Specify Process By** | Choose how to identify the process you want to terminate: by its name or by its numeric ID. | Select     | Yes       | _(empty)_     |
-| **Process Name**     | The name of the process to stop. Applicable only if **Specify Process By** is set to "Process Name".  | Text       | No        | _(empty)_     |
-| **Process ID**       | The numeric ID of the process to stop. Applicable only if **Specify Process By** is set to "Process ID".  | Text       | No        | _(empty)_     |
-| **From User**        | Toggle to check if the process is running under a specific user.                                | Switch     | No        | _(empty)_     |
-| **User Name**        | The username to verify. This field appears only if **From User** is enabled.                    | Text       | No        | _(empty)_     |
+| Field Name             | Description                                                                                              | Input Type | Required? | Default Value |
+| ---------------------- | -------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Specify Process By** | Choose how to identify the process you want to terminate: by its name or by its numeric ID.              | Select     | Yes       | _(empty)_     |
+| **Process Name**       | The name of the process to stop. Applicable only if **Specify Process By** is set to "Process Name".     | Text       | No        | _(empty)_     |
+| **Process ID**         | The numeric ID of the process to stop. Applicable only if **Specify Process By** is set to "Process ID". | Text       | No        | _(empty)_     |
+| **From User**          | Toggle to check if the process is running under a specific user.                                         | Switch     | No        | _(empty)_     |
+| **User Name**          | The username to verify. This field appears only if **From User** is enabled.                             | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -61,23 +61,24 @@ Upon configuration, the status of the operation will be available as a **Status 
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that you have the necessary permissions to terminate processes to avoid access-related issues.
+  Ensure that you have the necessary permissions to terminate processes to avoid
+  access-related issues.
 </Callout>
 
 ## Input/Output Examples
 
-| Specify Process By | Process Name | Process ID | From User | User Name | Status Message                              |
-| ------------------ | ------------ | ---------- | --------- | --------- | ------------------------------------------- |
-| Process Name       | notepad      | _(n/a)_    | Off       | _(n/a)_   | Process 'notepad' terminated successfully.  |
+| Specify Process By | Process Name | Process ID | From User | User Name | Status Message                                                 |
+| ------------------ | ------------ | ---------- | --------- | --------- | -------------------------------------------------------------- |
+| Process Name       | notepad      | _(n/a)_    | Off       | _(n/a)_   | Process 'notepad' terminated successfully.                     |
 | Process ID         | _(n/a)_      | 1234       | On        | alice     | Process with ID 1234 for user 'alice' terminated successfully. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                    | Solution                                                                                                 |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| **Process does not terminate**              | Verify that the specified process name or ID is correct and that you have the necessary permissions.      |
-| **Fields not appearing correctly**         | Make sure you have selected the correct option in **Specify Process By** to reveal the appropriate fields. |
-| **Access denied errors**                   | Check your user permissions and ensure that you are allowed to terminate processes on the system.         |
+| Problem                            | Solution                                                                                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Process does not terminate**     | Verify that the specified process name or ID is correct and that you have the necessary permissions.       |
+| **Fields not appearing correctly** | Make sure you have selected the correct option in **Specify Process By** to reveal the appropriate fields. |
+| **Access denied errors**           | Check your user permissions and ensure that you are allowed to terminate processes on the system.          |
 
 ## Real-World Use Cases
 

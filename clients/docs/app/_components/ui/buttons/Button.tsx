@@ -6,7 +6,8 @@ import { buttonVariants } from "./button-variants";
 
 /** Base Button props interface */
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {}
 
 /** Basic/Default button implementation using buttonVariants tailwind classes */
@@ -19,7 +20,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       />
     );
-  }
+  },
 );
 
 Button.displayName = "Button";

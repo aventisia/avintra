@@ -1,8 +1,10 @@
-import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { OnNodesDelete } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+
 import { getNodesAndEdgesAfterDeletion } from "../utils/getNodesAndEdgesAfterDeletion";
 import {
   deduplicateEdges,
@@ -11,23 +13,17 @@ import {
 } from "../utils/node-deletion-utils";
 
 export const useOnNodeDelete = () => {
-  const {
-    nodes,
-    edges,
-    setNodes,
-    setEdges,
-    flowVariablesObject,
-    setFlowVariablesObject,
-  } = useReactFlowExtStore(
-    useShallow((state) => ({
-      nodes: state.nodes,
-      edges: state.edges,
-      setNodes: state.setNodes,
-      setEdges: state.setEdges,
-      flowVariablesObject: state.flowVariablesObject,
-      setFlowVariablesObject: state.setFlowVariablesObject,
-    })),
-  );
+  const { nodes, edges, setNodes, setEdges, flowVariablesObject, setFlowVariablesObject } =
+    useReactFlowExtStore(
+      useShallow((state) => ({
+        nodes: state.nodes,
+        edges: state.edges,
+        setNodes: state.setNodes,
+        setEdges: state.setEdges,
+        flowVariablesObject: state.flowVariablesObject,
+        setFlowVariablesObject: state.setFlowVariablesObject,
+      })),
+    );
 
   const autoLayout = useDagreAutoLayout();
 
@@ -40,24 +36,16 @@ export const useOnNodeDelete = () => {
 
         // 1. Expand selection to include all hidden group members or subgraph bounds
         const deletedIds = deletedNodes.map((n) => n.id);
-        const comprehensiveIds = getComprehensiveSelection(
-          deletedIds,
-          updatedNodes,
-          updatedEdges,
-        );
-        const allNodesToDelete = updatedNodes.filter((n) =>
-          comprehensiveIds.includes(n.id),
-        );
+        const comprehensiveIds = getComprehensiveSelection(deletedIds, updatedNodes, updatedEdges);
+        const allNodesToDelete = updatedNodes.filter((n) => comprehensiveIds.includes(n.id));
 
         // 2. Strip UI temporary edges to prevent traversal crashes
         updatedEdges = updatedEdges.filter((e) => !e.data?.isTemporary);
 
         // 3. Sort special nodes to be deleted first to cleanly clear subgraphs
         const sortedNodesToDelete = allNodesToDelete.sort((a, b) => {
-          const aIsSpecial =
-            a.type === "conditionalNode" || a.type === "forLoopNode";
-          const bIsSpecial =
-            b.type === "conditionalNode" || b.type === "forLoopNode";
+          const aIsSpecial = a.type === "conditionalNode" || a.type === "forLoopNode";
+          const bIsSpecial = b.type === "conditionalNode" || b.type === "forLoopNode";
           if (aIsSpecial && !bIsSpecial) return -1;
           if (!aIsSpecial && bIsSpecial) return 1;
           return 0;
@@ -84,8 +72,7 @@ export const useOnNodeDelete = () => {
         allNodesToDelete.forEach((n) => {
           if (n.data?.groupId && !n.data.isGroupHead) {
             const isHeadDeleted = allNodesToDelete.some(
-              (cn) =>
-                cn.data?.groupId === n.data?.groupId && cn.data?.isGroupHead,
+              (cn) => cn.data?.groupId === n.data?.groupId && cn.data?.isGroupHead,
             );
             if (!isHeadDeleted) {
               groupsAffected.set(
@@ -101,8 +88,7 @@ export const useOnNodeDelete = () => {
             (n) => n.data?.groupId === gId && n.data?.isGroupHead,
           );
           if (headIndex !== -1) {
-            const currentCount =
-              (updatedNodes[headIndex].data.count as number) || 1;
+            const currentCount = (updatedNodes[headIndex].data.count as number) || 1;
             updatedNodes[headIndex] = {
               ...updatedNodes[headIndex],
               data: {

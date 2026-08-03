@@ -6,9 +6,9 @@ The **Read Text from File** node is designed to extract all the text content fro
 
 ## Configuration Options
 
-| Field Name    | Description                                                       | Input Type | Required? | Default Value |
-| ------------- | ----------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **File Path** | The full path of the file you want to read.                       | Text       | Yes       | _(empty)_     |
+| Field Name       | Description                                                           | Input Type | Required? | Default Value |
+| ---------------- | --------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File Path**    | The full path of the file you want to read.                           | Text       | Yes       | _(empty)_     |
 | **Trim Content** | Indicates whether to trim whitespace from the file content once read. | Switch     | No        | Yes           |
 
 ## Expected Output Format
@@ -37,23 +37,24 @@ The text content extracted from the file will be stored in **FileContent** for u
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the file at the specified path is not locked or in use by another application, as this might restrict access for reading its content.
+  Ensure the file at the specified path is not locked or in use by another
+  application, as this might restrict access for reading its content.
 </Callout>
 
 ## Input/Output Examples
 
-| Input File Path             | Trim Content | Output (FileContent)                                                             | Output Type |
-| --------------------------- | ------------ | -------------------------------------------------------------------------------- | ----------- |
-| `/Users/name/docs/sample.txt` | Yes          | "This is a sample file text."                                                    | Text        |
-| `C:\Users\name\docs\sample.txt` | No         | "This is a sample file text.    " (including any trailing spaces in the file)    | Text        |
+| Input File Path                 | Trim Content | Output (FileContent)                                                       | Output Type |
+| ------------------------------- | ------------ | -------------------------------------------------------------------------- | ----------- |
+| `/Users/name/docs/sample.txt`   | Yes          | "This is a sample file text."                                              | Text        |
+| `C:\Users\name\docs\sample.txt` | No           | "This is a sample file text. " (including any trailing spaces in the file) | Text        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                  |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Problem                                       | Solution                                                                                    |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | **Invalid or non-existent file path entered** | Verify the file path is correct and the file exists at the specified location.              |
-| **File access errors**                       | Ensure the file isn't open in another application and check user permissions to access it.  |
-| **Unexpected content output**                | If whitespace or formatting issues appear, consider adjusting the **Trim Content** setting. |
+| **File access errors**                        | Ensure the file isn't open in another application and check user permissions to access it.  |
+| **Unexpected content output**                 | If whitespace or formatting issues appear, consider adjusting the **Trim Content** setting. |
 
 ## Real-World Use Cases
 

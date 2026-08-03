@@ -8,15 +8,15 @@ This node is useful in scenarios where you need to interact with web forms, navi
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                          | Input Type | Required? | Default Value |
-| ----------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance**| Enter or choose the variable that contains the web browser instance to work with.                    | Text       | Yes       | _(empty)_     |
-| **Find Type**           | Specifies how to find the element (e.g., ID, XPath, CssSelector).                                    | Select     | Yes       | XPath         |
-| **Value To Find**       | The value used to locate the element (e.g., 'username', '//input[@id='email']').                     | Text       | Yes       | _(empty)_     |
-| **Wait for Page Load**  | If true, waits for the next page to load after pressing the button.                                  | Switch     | No        | True          |
-| **Timeout for Page Load**| Maximum time in seconds to wait for the page to load.                                               | Text       | No        | 60            |
-| **Handle Dialog**       | Specifies what to do if a dialog appears after the click.                                            | Select     | No        | DoNothing     |
-| **Dialog Button to Press**| The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').                        | Text       | No        | Ok            |
+| Field Name                 | Description                                                                       | Input Type | Required? | Default Value |
+| -------------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**   | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **Find Type**              | Specifies how to find the element (e.g., ID, XPath, CssSelector).                 | Select     | Yes       | XPath         |
+| **Value To Find**          | The value used to locate the element (e.g., 'username', '//input[@id='email']').  | Text       | Yes       | _(empty)_     |
+| **Wait for Page Load**     | If true, waits for the next page to load after pressing the button.               | Switch     | No        | True          |
+| **Timeout for Page Load**  | Maximum time in seconds to wait for the page to load.                             | Text       | No        | 60            |
+| **Handle Dialog**          | Specifies what to do if a dialog appears after the click.                         | Select     | No        | DoNothing     |
+| **Dialog Button to Press** | The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').       | Text       | No        | Ok            |
 
 ## Expected Output Format
 
@@ -65,16 +65,18 @@ If pressing a button on a dialog, enter the **Dialog Button to Press**, such as 
 </Steps>
 
 <Callout type="info" title="Tip">
-  For accurate element selection, ensure that the **Find Type** and **Value To Find** settings appropriately match the element's characteristics on the HTML page.
+  For accurate element selection, ensure that the **Find Type** and **Value To
+  Find** settings appropriately match the element's characteristics on the HTML
+  page.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                                                       |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Element not found error**                           | Verify that the **Find Type** and **Value To Find** correctly match an element on the page, and check for any typos or inaccuracies in your values.             |
-| **Timeout while waiting for page load**               | Increase the **Timeout for Page Load** value if the web page takes longer than expected to load. Ensure that the **Wait for Page Load** switch is set correctly.|
-| **Dialog handling not working as expected**           | Check if the **Handle Dialog** and **Dialog Button to Press** are correctly configured to correspond with the dialog's attributes and available options.        |
+| Problem                                     | Solution                                                                                                                                                         |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Element not found error**                 | Verify that the **Find Type** and **Value To Find** correctly match an element on the page, and check for any typos or inaccuracies in your values.              |
+| **Timeout while waiting for page load**     | Increase the **Timeout for Page Load** value if the web page takes longer than expected to load. Ensure that the **Wait for Page Load** switch is set correctly. |
+| **Dialog handling not working as expected** | Check if the **Handle Dialog** and **Dialog Button to Press** are correctly configured to correspond with the dialog's attributes and available options.         |
 
 ## Real-World Use Cases
 

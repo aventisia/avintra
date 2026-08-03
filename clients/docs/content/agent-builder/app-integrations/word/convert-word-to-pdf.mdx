@@ -11,10 +11,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                  | Input Type | Required? | Default Value   |
-| ------------------ | ---------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Input File Path**  | The complete path to the Word document you want to convert.                  | Text       | Yes       | _(empty)_       |
-| **Output File Path** | The full path where you want the PDF saved. If left empty, it saves in the same folder as the original file. | Text       | No        | _(empty)_       |
+| Field Name           | Description                                                                                                  | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Input File Path**  | The complete path to the Word document you want to convert.                                                  | Text       | Yes       | _(empty)_     |
+| **Output File Path** | The full path where you want the PDF saved. If left empty, it saves in the same folder as the original file. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -42,23 +42,24 @@ Execute the node to start the conversion process. Once completed, a new PDF file
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the Word document is accessible and not open in another program while converting to prevent errors.
+  Ensure the Word document is accessible and not open in another program while
+  converting to prevent errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Input File         | Output Location                                                                       | Resulting File     |
-| ------------------ | -------------------------------------------------------------------------------------- | ------------------ |
-| `C:\Documents\report.docx` | Not specified (empty)                                                                | `C:\Documents\report.pdf` |
-| `C:\Documents\presentation.docx` | `C:\PDFs\presentation.pdf`                                                       | `C:\PDFs\presentation.pdf` |
+| Input File                       | Output Location            | Resulting File             |
+| -------------------------------- | -------------------------- | -------------------------- |
+| `C:\Documents\report.docx`       | Not specified (empty)      | `C:\Documents\report.pdf`  |
+| `C:\Documents\presentation.docx` | `C:\PDFs\presentation.pdf` | `C:\PDFs\presentation.pdf` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                             |
-| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **File not found error**                            | Ensure the path in **Input File Path** is correct and accessible.                                     |
-| **Output file not created in expected location**   | Double-check the **Output File Path** for typos or permission issues. Ensure path is correctly specified. |
-| **Permission denied**                              | Make sure the application has permission to access the folder paths specified. Close any open Word documents being converted. |
+| Problem                                          | Solution                                                                                                                      |
+| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| **File not found error**                         | Ensure the path in **Input File Path** is correct and accessible.                                                             |
+| **Output file not created in expected location** | Double-check the **Output File Path** for typos or permission issues. Ensure path is correctly specified.                     |
+| **Permission denied**                            | Make sure the application has permission to access the folder paths specified. Close any open Word documents being converted. |
 
 ## Real-World Use Cases
 

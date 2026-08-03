@@ -8,13 +8,13 @@ For example, you might want to list all buttons within the same container to ens
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                                                                  | Input Type | Required? | Default Value |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                                                       | Text       | Yes       | _(empty)_     |
-| **Find Type**        | Specifies how to find the element (e.g., ID, XPath, CssSelector).                                                                             | Select     | Yes       | XPath        |
-| **Value To Find**    | The value used to locate the element (e.g., 'username', '//input[@id='email']').                                                            | Text       | Yes       | _(empty)_     |
-| **Wait For Element** | If true, waits for the element to appear before retrieving its siblings.                                                                      | Switch     | No        | _(empty)_     |
-| **Timeout Seconds**  | Maximum time in seconds to wait for the element before failing.                                                                               | Text       | No        | 60           |
+| Field Name               | Description                                                                       | Input Type | Required? | Default Value |
+| ------------------------ | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **Find Type**            | Specifies how to find the element (e.g., ID, XPath, CssSelector).                 | Select     | Yes       | XPath         |
+| **Value To Find**        | The value used to locate the element (e.g., 'username', '//input[@id='email']').  | Text       | Yes       | _(empty)_     |
+| **Wait For Element**     | If true, waits for the element to appear before retrieving its siblings.          | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for the element before failing.                   | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -56,23 +56,24 @@ The sibling elements will be available for use under **SiblingElements** for fur
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use **Wait For Element** when dealing with dynamic content where the targeted elements might take some time to load.
+  Use **Wait For Element** when dealing with dynamic content where the targeted
+  elements might take some time to load.
 </Callout>
 
 ## Input/Output Examples
 
-| Find Type | Value To Find        | Wait For Element | Timeout Seconds | Output       | Output Type        |
-| --------- | -------------------- | ---------------- | --------------- | ------------ | ------------------ |
-| XPath     | `//ul/li[@id='item']`| true             | 30              | List of `<li>` tags | Collection of Elements |
-| Id        | `username`           | false            | 60              | None (failed) | Error (Timeout)    |
+| Find Type | Value To Find         | Wait For Element | Timeout Seconds | Output              | Output Type            |
+| --------- | --------------------- | ---------------- | --------------- | ------------------- | ---------------------- |
+| XPath     | `//ul/li[@id='item']` | true             | 30              | List of `<li>` tags | Collection of Elements |
+| Id        | `username`            | false            | 60              | None (failed)       | Error (Timeout)        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                                                   |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **No elements found**                               | Ensure the correct Find Type and Value To Find are selected and correctly inputted.                                                        |
-| **Wait Timer expired without finding element**      | Increase **Timeout Seconds** or make sure the **Web Browser Instance** is properly initialized before this node attempts to locate the element. |
-| **Misidentified elements**                          | Validate the **Find Type** and detailed **Value To Find** for potential mismatches or errors.                                               |
+| Problem                                        | Solution                                                                                                                                        |
+| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No elements found**                          | Ensure the correct Find Type and Value To Find are selected and correctly inputted.                                                             |
+| **Wait Timer expired without finding element** | Increase **Timeout Seconds** or make sure the **Web Browser Instance** is properly initialized before this node attempts to locate the element. |
+| **Misidentified elements**                     | Validate the **Find Type** and detailed **Value To Find** for potential mismatches or errors.                                                   |
 
 ## Real-World Use Cases
 

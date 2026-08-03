@@ -1,15 +1,13 @@
-import { useShallow } from "zustand/react/shallow";
-import { useShareStore } from "../stores/share-store";
-import {
-  Dialog,
-  DialogContent,
-  DialogDefaultHeader,
-} from "@avplatform/ui/dialog";
 import { Button } from "@avplatform/ui/buttons";
+import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { ArrowLeftIcon, UserPlusIcon } from "lucide-react";
-import UserList from "./users/UserList";
-import { SearchMultiSelect } from "./share-access/ShareAccess";
+import { useShallow } from "zustand/react/shallow";
+
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+
+import { useShareStore } from "../stores/share-store";
+import { SearchMultiSelect } from "./share-access/ShareAccess";
+import UserList from "./users/UserList";
 
 const ShareAccessDialog = () => {
   const { open, setOpen, setView, view } = useShareStore(
@@ -42,22 +40,14 @@ const ShareAccessDialog = () => {
           <div className="flex w-full items-center justify-between px-2">
             <div className="flex items-center gap-2">
               {view == "Search" ? (
-                <Button
-                  onClick={() => setView("Users")}
-                  variant={"ghost"}
-                  size={"icon6"}
-                >
+                <Button onClick={() => setView("Users")} variant={"ghost"} size={"icon6"}>
                   <ArrowLeftIcon />
                 </Button>
               ) : null}
               <span>Share Access</span>
             </div>
             {view == "Users" ? (
-              <Button
-                onClick={() => setView("Search")}
-                variant={"ghost"}
-                size={"icon7"}
-              >
+              <Button onClick={() => setView("Search")} variant={"ghost"} size={"icon7"}>
                 <UserPlusIcon />
               </Button>
             ) : null}

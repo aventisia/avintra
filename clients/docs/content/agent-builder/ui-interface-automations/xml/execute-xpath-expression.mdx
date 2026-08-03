@@ -11,10 +11,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name             | Description                                                                                                        | Input Type | Required? | Default Value |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **XML Content**        | The XML content to query with XPath.                                                                               | Text       | Yes       | _(empty)_     |
-| **XPath Expression**   | The XPath expression to execute.                                                                                   | Text       | Yes       | _(empty)_     |
+| Field Name               | Description                                                                                                      | Input Type | Required? | Default Value |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**          | The XML content to query with XPath.                                                                             | Text       | Yes       | _(empty)_     |
+| **XPath Expression**     | The XPath expression to execute.                                                                                 | Text       | Yes       | _(empty)_     |
 | **Get First Value Only** | If true, only the first matching node will be returned. If false, all matching nodes will be returned as a list. | Switch     | No        | false         |
 
 ## Expected Output Format
@@ -53,23 +53,24 @@ The output will be available as **XPathResult** or **XPathResults** for use in o
 </Steps>
 
 <Callout type="info" title="Tip">
-  When not sure about your XPath, test using smaller snippets of XML to ensure accuracy.
+  When not sure about your XPath, test using smaller snippets of XML to ensure
+  accuracy.
 </Callout>
 
 ## Input/Output Examples
 
-| XML Content                                 | XPath Expression  | Get First Value Only | Output        | Output Type    |
-| ------------------------------------------- | ----------------- | -------------------- | ------------- | -------------- |
-| `<items><item>Apple</item><item>Banana</item></items>` | `//item`          | true                 | `Apple`       | String         |
-| `<items><item>Apple</item><item>Banana</item></items>` | `//item`          | false                | `["Apple", "Banana"]` | List of Strings |
+| XML Content                                            | XPath Expression | Get First Value Only | Output                | Output Type     |
+| ------------------------------------------------------ | ---------------- | -------------------- | --------------------- | --------------- |
+| `<items><item>Apple</item><item>Banana</item></items>` | `//item`         | true                 | `Apple`               | String          |
+| `<items><item>Apple</item><item>Banana</item></items>` | `//item`         | false                | `["Apple", "Banana"]` | List of Strings |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                  |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **No results returned**                       | Check your XML structure and XPath expression for accuracy.                               |
-| **XPath Errors**                              | Ensure XPath syntax is correct and matches the XML's node structure.                      |
-| **Empty output despite XML input**            | Make sure the XML input is well-formed and matches what your XPath expects.               |
+| Problem                            | Solution                                                                    |
+| ---------------------------------- | --------------------------------------------------------------------------- |
+| **No results returned**            | Check your XML structure and XPath expression for accuracy.                 |
+| **XPath Errors**                   | Ensure XPath syntax is correct and matches the XML's node structure.        |
+| **Empty output despite XML input** | Make sure the XML input is well-formed and matches what your XPath expects. |
 
 ## Real-World Use Cases
 

@@ -36,16 +36,12 @@ const MarkdownViewer = ({ textValue }: { textValue: string }) => {
     ),
     // Paragraphs
     p: ({ children }) => (
-      <p className="not-first:mt-6 leading-7 text-gray-700 dark:text-gray-300">
-        {children}
-      </p>
+      <p className="not-first:mt-6 leading-7 text-gray-700 dark:text-gray-300">{children}</p>
     ),
 
     // Strong text
     strong: ({ children }) => (
-      <strong className="font-semibold text-slate-900 dark:text-slate-100">
-        {children}
-      </strong>
+      <strong className="font-semibold text-slate-900 dark:text-slate-100">{children}</strong>
     ),
 
     code({ className, children, ...props }) {
@@ -99,21 +95,13 @@ const MarkdownViewer = ({ textValue }: { textValue: string }) => {
       </th>
     ),
     td: ({ children }) => (
-      <td className="m-0 border border-gray-300 px-4 py-2 dark:border-gray-600">
-        {children}
-      </td>
+      <td className="m-0 border border-gray-300 px-4 py-2 dark:border-gray-600">{children}</td>
     ),
 
     // Lists
-    ul: ({ children }) => (
-      <ul className="not-first:mt-6 list-disc space-y-2">{children}</ul>
-    ),
-    ol: ({ children }) => (
-      <ol className="not-first:mt-6 list-decimal space-y-2">{children}</ol>
-    ),
-    li: ({ children }) => (
-      <li className="my-2 dark:text-gray-300">{children}</li>
-    ),
+    ul: ({ children }) => <ul className="not-first:mt-6 list-disc space-y-2">{children}</ul>,
+    ol: ({ children }) => <ol className="not-first:mt-6 list-decimal space-y-2">{children}</ol>,
+    li: ({ children }) => <li className="my-2 dark:text-gray-300">{children}</li>,
 
     // Blockquotes (for callouts/notes)
     blockquote: ({ children }) => (

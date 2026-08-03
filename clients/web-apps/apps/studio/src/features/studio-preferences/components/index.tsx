@@ -1,14 +1,12 @@
-import {
-  Popover,
-  PopoverContent,
-  PopoverDefaultHeader,
-} from "@avplatform/ui/popover";
+import { cn } from "@avplatform/ui/lib";
+import { Popover, PopoverContent, PopoverDefaultHeader } from "@avplatform/ui/popover";
 import { ScrollArea } from "@avplatform/ui/scroll";
+
 import { POPOVER_HEADING } from "../constants";
+import { useSetStudioPreferences } from "../hooks/useSetStudioPreferences";
 import { StudioPreferencesForm } from "./StudioPreferencesForm";
 import { StudioPreferencesTrigger } from "./StudioPreferencesTrigger";
-import { useSetStudioPreferences } from "../hooks/useSetStudioPreferences";
-import { cn } from "@avplatform/ui/lib";
+
 interface StudioPreferencesProps {
   className?: string;
 }
@@ -20,11 +18,7 @@ export const StudioPreferences = ({ className }: StudioPreferencesProps) => {
   return (
     <Popover>
       <StudioPreferencesTrigger />
-      <PopoverContent
-        align="end"
-        variant={"responsive"}
-        className={cn(className)}
-      >
+      <PopoverContent align="end" variant={"responsive"} className={cn(className)}>
         <PopoverDefaultHeader heading={POPOVER_HEADING} />
         <ScrollArea className="grow px-1.5 py-3">
           <StudioPreferencesForm />

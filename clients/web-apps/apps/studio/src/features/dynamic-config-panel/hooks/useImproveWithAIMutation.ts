@@ -1,8 +1,9 @@
 import { toast } from "@avplatform/ui/sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { generateLLMResponse } from "../apis/llm-pipelines-apis";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
+
+import { generateLLMResponse } from "../apis/llm-pipelines-apis";
 
 /**
  * Hook to handle template instruction generation mutation.

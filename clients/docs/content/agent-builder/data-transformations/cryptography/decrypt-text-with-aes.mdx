@@ -11,11 +11,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                                                                         | Input Type | Required? | Default Value |
-| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Ciphertext to Decrypt** | The Base64-encoded encrypted text you want to decrypt.                                                                                              | Text       | Yes       | _(empty)_     |
-| **Decryption Key**      | The key used for the decryption process. If the key is shorter than needed, it will be automatically hashed to reach an adequate length (16/24/32 bytes). | Text       | Yes       | _(empty)_     |
-| **Initialization Vector (IV)** | A critical component for decryption; must be exactly 16 characters long. It aligns the decryption starting point for security.                       | Text       | Yes       | _(empty)_     |
+| Field Name                     | Description                                                                                                                                               | Input Type | Required? | Default Value |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Ciphertext to Decrypt**      | The Base64-encoded encrypted text you want to decrypt.                                                                                                    | Text       | Yes       | _(empty)_     |
+| **Decryption Key**             | The key used for the decryption process. If the key is shorter than needed, it will be automatically hashed to reach an adequate length (16/24/32 bytes). | Text       | Yes       | _(empty)_     |
+| **Initialization Vector (IV)** | A critical component for decryption; must be exactly 16 characters long. It aligns the decryption starting point for security.                            | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,25 +45,27 @@ Enter the **Initialization Vector (IV)** make sure it is exactly 16 characters l
 ### Step 5
 
 The decrypted text will be available as **DecryptedText** for you to utilize in subsequent nodes or output.
+
 </Steps>
 
 <Callout type="important" title="Important Note">
-  Always ensure your decryption key and initialization vector (IV) are kept secure, as they are crucial for accessing the encrypted data.
+  Always ensure your decryption key and initialization vector (IV) are kept
+  secure, as they are crucial for accessing the encrypted data.
 </Callout>
 
 ## Input/Output Examples
 
-| Ciphertext to Decrypt     | Decryption Key  | Initialization Vector | Output (Decrypted Text) | Output Type   |
-| ------------------------- | --------------- | --------------------- | ----------------------- | ------------- |
+| Ciphertext to Decrypt      | Decryption Key  | Initialization Vector | Output (Decrypted Text) | Output Type   |
+| -------------------------- | --------------- | --------------------- | ----------------------- | ------------- |
 | `U2FsdGVkX1+IjW0jv21QKg==` | MySecretKey1234 | 1234567890123456      | Hello World             | String (Text) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                                                               |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Error due to incorrect key length**             | Ensure that your decryption key is provided correctly. If it's too short, it will be automatically hashed, but this means re-checking the expected output. |
-| **Initialization Vector (IV) not 16 characters**  | Verify that the IV entered is exactly 16 characters; adjust it to meet this requirement.                                                                 |
-| **Unreadable output**                             | Verify the correctness of all encryption parameters: the ciphertext, decryption key, and IV must all match the original encryption settings.              |
+| Problem                                          | Solution                                                                                                                                                   |
+| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Error due to incorrect key length**            | Ensure that your decryption key is provided correctly. If it's too short, it will be automatically hashed, but this means re-checking the expected output. |
+| **Initialization Vector (IV) not 16 characters** | Verify that the IV entered is exactly 16 characters; adjust it to meet this requirement.                                                                   |
+| **Unreadable output**                            | Verify the correctness of all encryption parameters: the ciphertext, decryption key, and IV must all match the original encryption settings.               |
 
 ## Real-World Use Cases
 

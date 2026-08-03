@@ -1,6 +1,5 @@
-import { FlowTypesEnum } from "@avplatform/ui/enums";
-
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
 import { useQueryClient } from "@tanstack/react-query";
@@ -24,9 +23,7 @@ const PublishFlow = () => {
 
   // Read from cache once
   const flowQueryKey = ["flow", flowId, versionId];
-  const flowData = queryClient.getQueryData<{ data: LoadFlowDto }>(
-    flowQueryKey,
-  )?.data;
+  const flowData = queryClient.getQueryData<{ data: LoadFlowDto }>(flowQueryKey)?.data;
 
   const { mutate: publish, isPending } = usePublishFlowMutation();
   const { showCustomAlertDialog } = useShowAlertHandler();
@@ -86,9 +83,7 @@ const PublishFlow = () => {
           confirmActionFn: handlePublish,
           confirmBtnText: "Publish",
           title: `Publish ${type ?? ""}`,
-          description: `Are you sure you want to publish the ${
-            type?.toLowerCase() ?? "flow"
-          }?`,
+          description: `Are you sure you want to publish the ${type?.toLowerCase() ?? "flow"}?`,
           isDestructive: false,
         });
       }}

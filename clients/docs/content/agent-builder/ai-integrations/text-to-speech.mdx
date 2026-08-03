@@ -6,11 +6,11 @@ The **Text To Speech Model** node allows you to convert written text into natura
 
 ## Configuration Options
 
-| Field Name                        | Description                                                                           | Input Type           | Required? | Default Value                               |
-| --------------------------------- | ------------------------------------------------------------------------------------- | -------------------- | --------- | ------------------------------------------- |
-| **Model Configuration**           | Select and configure the AI model for speech synthesis.                               | Model Config Select  | No        | Provider: openai, Model: gpt-4o-mini, etc.  |
-| **Files**                         | Upload files if needed for additional context in generating the speech.               | Text                 | No        | _(empty)_                                   |
-| **Prompt**                        | Enter the text that you want to convert into speech.                                  | Text                 | No        | _(empty)_                                   |
+| Field Name              | Description                                                             | Input Type          | Required? | Default Value                              |
+| ----------------------- | ----------------------------------------------------------------------- | ------------------- | --------- | ------------------------------------------ |
+| **Model Configuration** | Select and configure the AI model for speech synthesis.                 | Model Config Select | No        | Provider: openai, Model: gpt-4o-mini, etc. |
+| **Files**               | Upload files if needed for additional context in generating the speech. | Text                | No        | _(empty)_                                  |
+| **Prompt**              | Enter the text that you want to convert into speech.                    | Text                | No        | _(empty)_                                  |
 
 ## Expected Output Format
 
@@ -44,22 +44,23 @@ The generated speech output will become available as **AIModelResult** for furth
 </Steps>
 
 <Callout type="info" title="Note">
-  The **Files** and **Prompt** fields are optional, but entering prompt text is necessary for generating speech output.
+  The **Files** and **Prompt** fields are optional, but entering prompt text is
+  necessary for generating speech output.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Configuration           | Files | Prompt                | Output Value        | Output Type          |
-| ----------------------------- | ----- | --------------------- | ------------------- | -------------------- |
-| Model: gpt-4o-mini, openai    | None  | "Hello, world!"       | AIModelResult       | Audio (Speech Output) |
-| Model: gpt-4o-mini, openai    | None  | "Today's headlines."  | AIModelResult       | Audio (Speech Output) |
+| Input Configuration        | Files | Prompt               | Output Value  | Output Type           |
+| -------------------------- | ----- | -------------------- | ------------- | --------------------- |
+| Model: gpt-4o-mini, openai | None  | "Hello, world!"      | AIModelResult | Audio (Speech Output) |
+| Model: gpt-4o-mini, openai | None  | "Today's headlines." | AIModelResult | Audio (Speech Output) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                             |
-| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| **No output generated**                                | Ensure that there is text entered in the **Prompt** field.                                           |
-| **Unexpected speech output**                           | Check your model configuration and ensure that the correct model is selected and appropriately configured. |
+| Problem                      | Solution                                                                                                   |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **No output generated**      | Ensure that there is text entered in the **Prompt** field.                                                 |
+| **Unexpected speech output** | Check your model configuration and ensure that the correct model is selected and appropriately configured. |
 
 ## Real-World Use Cases
 

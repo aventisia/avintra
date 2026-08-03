@@ -105,9 +105,7 @@ export function MultiSelectCombobox({
                       variant="outline"
                       className={cn(
                         "flex items-center gap-1 rounded-full bg-background font-normal",
-                        fieldSize === "xs"
-                          ? "px-1.5 py-0 text-[10px]"
-                          : "px-2 py-0.5",
+                        fieldSize === "xs" ? "px-1.5 py-0 text-[10px]" : "px-2 py-0.5",
                       )}
                     >
                       {option?.label || val}
@@ -116,8 +114,7 @@ export function MultiSelectCombobox({
                         tabIndex={0}
                         className="ml-1 rounded-full cursor-pointer outline-none hover:bg-muted focus:ring-2 focus:ring-ring focus:ring-offset-2"
                         onKeyDown={(e) => {
-                          if (e.key === "Enter" && !disabled)
-                            handleUnselect(val);
+                          if (e.key === "Enter" && !disabled) handleUnselect(val);
                         }}
                         onMouseDown={(e) => {
                           e.preventDefault();
@@ -141,10 +138,7 @@ export function MultiSelectCombobox({
           </Button>
         </PopoverTrigger>
 
-        <PopoverContent
-          className="w-[var(--radix-popover-trigger-width)] p-0"
-          align="start"
-        >
+        <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
           <Command>
             <CommandInput placeholder="Search..." />
             <CommandList>
@@ -153,17 +147,11 @@ export function MultiSelectCombobox({
                 {options.map((option) => {
                   const isSelected = value.includes(option.value);
                   return (
-                    <CommandItem
-                      key={option.value}
-                      onSelect={() => handleSelect(option.value)}
-                    >
+                    <CommandItem key={option.value} onSelect={() => handleSelect(option.value)}>
                       <div className="flex w-full items-center justify-between">
                         {option.label}
                         <Check
-                          className={cn(
-                            "h-3.5 w-3.5",
-                            isSelected ? "opacity-100" : "opacity-0",
-                          )}
+                          className={cn("h-3.5 w-3.5", isSelected ? "opacity-100" : "opacity-0")}
                         />
                       </div>
                     </CommandItem>
@@ -191,9 +179,7 @@ export function MultiSelectCombobox({
                 fieldSize === "base" && "h-10 text-sm",
               )}
             >
-              <SelectValue
-                placeholder={actionSelect.placeholder || "Select Option"}
-              />
+              <SelectValue placeholder={actionSelect.placeholder || "Select Option"} />
             </SelectTrigger>
             <SelectContent>
               {actionSelect.options.map((opt) => (

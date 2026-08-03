@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                            | Input Type | Required? | Default Value |
-| ------------------ | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **FTP Connection** | The FTP connection details to connect and access the server where the file resides.    | Text       | Yes       | _(empty)_     |
-| **Old File Name**  | The current name of the file on the server that you want to rename.                    | Text       | Yes       | _(empty)_     |
-| **New File Name**  | The new name you want the file to have after renaming.                                 | Text       | Yes       | _(empty)_     |
-| **Timeout Seconds**| The time in seconds the system should wait before stopping the operation due to timeout.| Text       | No        | 30            |
+| Field Name          | Description                                                                              | Input Type | Required? | Default Value |
+| ------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **FTP Connection**  | The FTP connection details to connect and access the server where the file resides.      | Text       | Yes       | _(empty)_     |
+| **Old File Name**   | The current name of the file on the server that you want to rename.                      | Text       | Yes       | _(empty)_     |
+| **New File Name**   | The new name you want the file to have after renaming.                                   | Text       | Yes       | _(empty)_     |
+| **Timeout Seconds** | The time in seconds the system should wait before stopping the operation due to timeout. | Text       | No        | 30            |
 
 ## Expected Output Format
 
@@ -53,17 +53,18 @@ Run the node to execute the file renaming operation on the specified FTP server.
 </Steps>
 
 <Callout type="warning" title="Important">
-  Make sure the FTP connection is active and the file permissions allow renaming. Incorrect connection details or permissions might result in errors.
+  Make sure the FTP connection is active and the file permissions allow
+  renaming. Incorrect connection details or permissions might result in errors.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                  | Solution                                                                 |
-| ---------------------------------------- | ------------------------------------------------------------------------ |
-| **Invalid FTP Connection**               | Ensure the **FTP Connection** details are correct and the server is accessible. |
-| **File Not Found**                       | Verify the file exists on the server with the name entered in **Old File Name**. |
-| **Permission Denied**                    | Check if you have the necessary permissions to rename files on the server. |
-| **Operation Timeout**                    | Increase **Timeout Seconds** to allow more time for the server to respond. |
+| Problem                    | Solution                                                                         |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| **Invalid FTP Connection** | Ensure the **FTP Connection** details are correct and the server is accessible.  |
+| **File Not Found**         | Verify the file exists on the server with the name entered in **Old File Name**. |
+| **Permission Denied**      | Check if you have the necessary permissions to rename files on the server.       |
+| **Operation Timeout**      | Increase **Timeout Seconds** to allow more time for the server to respond.       |
 
 ## Real-World Use Cases
 

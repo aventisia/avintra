@@ -6,10 +6,10 @@ The **Set Text on Terminal Session** node is used to send textual input to a spe
 
 ## Configuration Options
 
-| Field Name  | Description                                | Input Type | Required? | Default Value |
-| ----------- | ------------------------------------------ | ---------- | --------- | ------------- |
-| **SessionId** | The session ID of the terminal session.     | Text       | Yes       | _(empty)_     |
-| **Text**    | The text to set on the terminal session.    | Text       | Yes       | _(empty)_     |
+| Field Name    | Description                              | Input Type | Required? | Default Value |
+| ------------- | ---------------------------------------- | ---------- | --------- | ------------- |
+| **SessionId** | The session ID of the terminal session.  | Text       | Yes       | _(empty)_     |
+| **Text**      | The text to set on the terminal session. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -37,22 +37,23 @@ Ensure all entered values are correct and aligned with your session's requiremen
 </Steps>
 
 <Callout type="warning" title="Important">
-  Make sure the session ID is correct to avoid unintended text actions on the wrong terminal session.
+  Make sure the session ID is correct to avoid unintended text actions on the
+  wrong terminal session.
 </Callout>
 
 ## Input/Output Examples
 
-| SessionId | Text           | Action Taken                                     |
-| --------- | -------------- | ------------------------------------------------ |
-| 12345     | ls -l          | Executes the 'ls -l' command in the terminal.    |
-| abcde     | echo "Hello!"  | Displays "Hello!" in the terminal session.       |
+| SessionId | Text          | Action Taken                                  |
+| --------- | ------------- | --------------------------------------------- |
+| 12345     | ls -l         | Executes the 'ls -l' command in the terminal. |
+| abcde     | echo "Hello!" | Displays "Hello!" in the terminal session.    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                       |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Incorrect Session ID**                              | Double-check the session ID for accuracy to ensure text is sent to the right terminal session.  |
-| **Empty Text Field**                                  | Ensure text is entered to avoid missing command actions.                                       |
+| Problem                  | Solution                                                                                       |
+| ------------------------ | ---------------------------------------------------------------------------------------------- |
+| **Incorrect Session ID** | Double-check the session ID for accuracy to ensure text is sent to the right terminal session. |
+| **Empty Text Field**     | Ensure text is entered to avoid missing command actions.                                       |
 
 ## Real-World Use Cases
 

@@ -6,15 +6,15 @@ The **Download File(s) from FTP** node allows you to download one or more files 
 
 ## Configuration Options
 
-| Field Name               | Description                                                                 | Input Type | Required? | Default Value |
-| ------------------------ | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **FTP Connection**       | The FTP connection object that includes server details and credentials.     | Text       | Yes       | _(empty)_     |
-| **Download Multiple Files** | Toggle to choose if you want to download multiple files at once.         | Switch     | No        | False         |
-| **File Name**            | The exact name of the file to download. Only used if downloading a single file. | Text    | Yes (if single) | _(empty)_     |
-| **File Name List**       | The list of file names to download. Only appears if downloading multiple files. | Text    | No         | _(empty)_     |
-| **Local Directory**      | Specifies where on your computer the files will be saved.                   | Text       | Yes       | _(empty)_     |
-| **Transfer Type**        | Determines the method of file transfer: ASCII or Binary.                    | Select     | No        | Binary        |
-| **If File Exists**       | Decide how to handle files if they already exist locally.                   | Select     | No        | Overwrite     |
+| Field Name                  | Description                                                                     | Input Type | Required?       | Default Value |
+| --------------------------- | ------------------------------------------------------------------------------- | ---------- | --------------- | ------------- |
+| **FTP Connection**          | The FTP connection object that includes server details and credentials.         | Text       | Yes             | _(empty)_     |
+| **Download Multiple Files** | Toggle to choose if you want to download multiple files at once.                | Switch     | No              | False         |
+| **File Name**               | The exact name of the file to download. Only used if downloading a single file. | Text       | Yes (if single) | _(empty)_     |
+| **File Name List**          | The list of file names to download. Only appears if downloading multiple files. | Text       | No              | _(empty)_     |
+| **Local Directory**         | Specifies where on your computer the files will be saved.                       | Text       | Yes             | _(empty)_     |
+| **Transfer Type**           | Determines the method of file transfer: ASCII or Binary.                        | Select     | No              | Binary        |
+| **If File Exists**          | Decide how to handle files if they already exist locally.                       | Select     | No              | Overwrite     |
 
 ## Expected Output Format
 
@@ -63,26 +63,28 @@ Decide what to do if files with the same name already exist in the local directo
 ### Step 7
 
 The outputs will be available as **Downloaded Files Count** and **Skipped Files** for further use in the flow.
+
 </Steps>
 
 <Callout type="tip" title="Tip">
-  Use the node's output, like **Downloaded Files Count**, to trigger subsequent actions in your automation if new files were downloaded.
+  Use the node's output, like **Downloaded Files Count**, to trigger subsequent
+  actions in your automation if new files were downloaded.
 </Callout>
 
 ## Input/Output Examples
 
-| Download Mode    | File Name(s) Provided    | Local Directory        | Transfer Type | If File Exists       | Downloaded Files Count | Skipped Files      |
-| ---------------- | ------------------------ | ---------------------- | ------------- | -------------------- | ---------------------- | ------------------ |
-| Single File      | report.txt               | C:\Downloads\Reports   | ASCII         | Overwrite            | 1                      | []                 |
-| Multiple Files   | [log1.txt, backup.zip]   | C:\Downloads\Backups  | Binary        | Download with Unique Name | 2                      | []                 |
+| Download Mode  | File Name(s) Provided  | Local Directory      | Transfer Type | If File Exists            | Downloaded Files Count | Skipped Files |
+| -------------- | ---------------------- | -------------------- | ------------- | ------------------------- | ---------------------- | ------------- |
+| Single File    | report.txt             | C:\Downloads\Reports | ASCII         | Overwrite                 | 1                      | []            |
+| Multiple Files | [log1.txt, backup.zip] | C:\Downloads\Backups | Binary        | Download with Unique Name | 2                      | []            |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                                                       |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **FTP Connection Errors**                         | Double-check the URL, username, and password for the FTP server. Ensure firewall or network settings allow FTP access.                          |
-| **Local Directory Not Found**                     | Verify the path to the local directory is correct and accessible. Ensure no permission issues preventing write access.                          |
-| **Unexpected File Overwrites**                    | Review the **If File Exists** option. Choose **Don't Download** or **Download with Unique Name** to prevent accidental overwrites.              |
+| Problem                        | Solution                                                                                                                           |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **FTP Connection Errors**      | Double-check the URL, username, and password for the FTP server. Ensure firewall or network settings allow FTP access.             |
+| **Local Directory Not Found**  | Verify the path to the local directory is correct and accessible. Ensure no permission issues preventing write access.             |
+| **Unexpected File Overwrites** | Review the **If File Exists** option. Choose **Don't Download** or **Download with Unique Name** to prevent accidental overwrites. |
 
 ## Real-World Use Cases
 

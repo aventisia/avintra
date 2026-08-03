@@ -5,15 +5,16 @@ import { Callout, Steps } from "nextra/components";
 The **Decrease Variable** node is designed to reduce a numeric variable by a specified amount. This functionality is useful when you need to adjust a number based on dynamic inputs, such as real-time data processing, inventory depletion, or budget adjustments.
 
 For example:
+
 - Subtracting an expense from a budget balance.
 - Deducting used resources from available stock.
 
 ## Configuration Options
 
-| Field Name            | Description                                                                                             | Input Type | Required? | Default Value |
-| --------------------- | ------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Variable To Decrease** | The initial numeric variable you want to decrease.                                                       | Text       | Yes       | _(empty)_     |
-| **Value To Subtract** | The numeric value or variable by which you want to decrease the initial variable.                         | Text       | Yes       | _(empty)_     |
+| Field Name               | Description                                                                       | Input Type | Required? | Default Value |
+| ------------------------ | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Variable To Decrease** | The initial numeric variable you want to decrease.                                | Text       | Yes       | _(empty)_     |
+| **Value To Subtract**    | The numeric value or variable by which you want to decrease the initial variable. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -39,26 +40,28 @@ In the **Value To Subtract** field, input the amount by which you want to decrea
 ### Step 4
 
 The result will be available as **Decreased Variable** and can be used in subsequent nodes or operations.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that both input values in **Variable To Decrease** and **Value To Subtract** are numbers, as non-numeric inputs may cause errors.
+  Ensure that both input values in **Variable To Decrease** and **Value To
+  Subtract** are numbers, as non-numeric inputs may cause errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Variable To Decrease | Value To Subtract | Output Value      | Output Type  |
-| -------------------- | ----------------- | ----------------- | ------------ |
-| 100                  | 25                | 75                | Number       |
-| 50                   | 5                 | 45                | Number       |
-| 200                  | 75.5              | 124.5             | Number       |
+| Variable To Decrease | Value To Subtract | Output Value | Output Type |
+| -------------------- | ----------------- | ------------ | ----------- |
+| 100                  | 25                | 75           | Number      |
+| 50                   | 5                 | 45           | Number      |
+| 200                  | 75.5              | 124.5        | Number      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                              |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| **Non-numeric value entered**                          | Make sure both the variable to decrease and the subtraction value are numeric. Avoid entering text.   |
-| **Subtracting results in unexpected negative value**   | Verify the initial variable value and subtraction value; a large subtraction can lead to a negative.  |
+| Problem                                              | Solution                                                                                             |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Non-numeric value entered**                        | Make sure both the variable to decrease and the subtraction value are numeric. Avoid entering text.  |
+| **Subtracting results in unexpected negative value** | Verify the initial variable value and subtraction value; a large subtraction can lead to a negative. |
 
 ## Real-World Use Cases
 

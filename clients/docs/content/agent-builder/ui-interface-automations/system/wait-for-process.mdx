@@ -12,14 +12,14 @@ For example:
 
 ## Configuration Options
 
-| Field Name                | Description                                                                            | Input Type | Required? | Default Value |
-| ------------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Process Name**          | The name of the process to monitor, chosen from a list of common applications.         | Select     | Yes       | _(empty)_     |
-| **From User**             | Specifies if the process should be tied to specific user activity.                     | Switch     | No        | _(empty)_     |
-| **User Name**             | The username associated with the process. This is needed if "From User" is checked.    | Text       | No        | _(empty)_     |
-| **Wait For Process To**   | Choose whether to wait for the process to start or stop.                               | Select     | No        | _(empty)_     |
-| **Fail With Timeout Error** | Determines if the activity should terminate when a timeout occurs.                    | Switch     | No        | _(empty)_     |
-| **Duration (Seconds)**    | The maximum duration to wait before timing out, optional if "Fail With Timeout Error" is selected. | Text    | No        | _(empty)_     |
+| Field Name                  | Description                                                                                        | Input Type | Required? | Default Value |
+| --------------------------- | -------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Process Name**            | The name of the process to monitor, chosen from a list of common applications.                     | Select     | Yes       | _(empty)_     |
+| **From User**               | Specifies if the process should be tied to specific user activity.                                 | Switch     | No        | _(empty)_     |
+| **User Name**               | The username associated with the process. This is needed if "From User" is checked.                | Text       | No        | _(empty)_     |
+| **Wait For Process To**     | Choose whether to wait for the process to start or stop.                                           | Select     | No        | _(empty)_     |
+| **Fail With Timeout Error** | Determines if the activity should terminate when a timeout occurs.                                 | Switch     | No        | _(empty)_     |
+| **Duration (Seconds)**      | The maximum duration to wait before timing out, optional if "Fail With Timeout Error" is selected. | Text       | No        | _(empty)_     |
 
 Note: The **User Name** field only appears when the **From User** switch is enabled, and **Duration (Seconds)** only appears if **Fail With Timeout Error** is enabled.
 
@@ -61,17 +61,19 @@ Once the process condition is met, the node can trigger subsequent actions in yo
 </Steps>
 
 <Callout type="info" title="Important Note">
-  Checking the box for **From User** without providing a **User Name** will result in the node not functioning as expected. Ensure both are configured if user-specific monitoring is needed.
+  Checking the box for **From User** without providing a **User Name** will
+  result in the node not functioning as expected. Ensure both are configured if
+  user-specific monitoring is needed.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                                              |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| **Process does not trigger despite being active**            | Verify that you have selected the correct process name from the list.                                 |
-| **User-specific process not detected**                       | Make sure that both **From User** is enabled and the correct **User Name** is entered.                |
-| **Timeout settings not effective**                           | Ensure **Fail With Timeout Error** is enabled and **Duration (Seconds)** is correctly configured.      |
-| **Fields are unexpectedly hidden**                           | Ensure you have correctly toggled **From User** and **Fail With Timeout Error** to display hidden fields.|
+| Problem                                           | Solution                                                                                                  |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Process does not trigger despite being active** | Verify that you have selected the correct process name from the list.                                     |
+| **User-specific process not detected**            | Make sure that both **From User** is enabled and the correct **User Name** is entered.                    |
+| **Timeout settings not effective**                | Ensure **Fail With Timeout Error** is enabled and **Duration (Seconds)** is correctly configured.         |
+| **Fields are unexpectedly hidden**                | Ensure you have correctly toggled **From User** and **Fail With Timeout Error** to display hidden fields. |
 
 ## Real-World Use Cases
 

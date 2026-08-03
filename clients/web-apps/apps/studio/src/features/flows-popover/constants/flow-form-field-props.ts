@@ -38,8 +38,7 @@ const descriptionProps: TextareaFieldProps = {
 const isDisabledProps: SwitchFieldProps = {
   name: "isDisabled",
   label: "Disable Record",
-  description:
-    "Disable this record if it's been outdated, or not required anymore",
+  description: "Disable this record if it's been outdated, or not required anymore",
 };
 
 export { descriptionProps, idProps, isDisabledProps, nameProps, typeProps };

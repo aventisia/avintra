@@ -12,16 +12,16 @@ Use this node when you need to:
 
 ## Configuration Options
 
-| Field Name                | Description                                                                 | Input Type | Required? | Default Value        |
-| ------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | -------------------- |
-| **Worksheet Instance**    | The Excel Worksheet where the value will be written.                         | Text       | Yes       | _(empty)_            |
-| **Value To Write**        | The value (text or data) to write into the specified cell or range.          | Text       | Yes       | _(empty)_            |
-| **Write Mode**            | Specify the method to determine the target cell(s) for writing.              | Select     | Yes       | OnSpecifiedCell      |
-| **Column**                | The column letter for data entry. Only used when Write Mode is "On Specified Cell". | Text       | No        | _(empty)_            |
-| **Column Index**          | The index of the column. Overrides Column letter if greater than 0. Only for "On Specified Cell". | Text       | No        | _(empty)_            |
-| **Row**                   | The row number for data entry. Only for "On Specified Cell".                | Text       | No        | _(empty)_            |
-| **Name**                  | The name of the named range to write to. Only used when Write Mode is "On Named Cells". | Text       | No        | _(empty)_            |
-| **Populate Entire Range** | If true, populates the entire named range with the same value.               | Switch     | No        | _(empty)_            |
+| Field Name                | Description                                                                                       | Input Type | Required? | Default Value   |
+| ------------------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Worksheet Instance**    | The Excel Worksheet where the value will be written.                                              | Text       | Yes       | _(empty)_       |
+| **Value To Write**        | The value (text or data) to write into the specified cell or range.                               | Text       | Yes       | _(empty)_       |
+| **Write Mode**            | Specify the method to determine the target cell(s) for writing.                                   | Select     | Yes       | OnSpecifiedCell |
+| **Column**                | The column letter for data entry. Only used when Write Mode is "On Specified Cell".               | Text       | No        | _(empty)_       |
+| **Column Index**          | The index of the column. Overrides Column letter if greater than 0. Only for "On Specified Cell". | Text       | No        | _(empty)_       |
+| **Row**                   | The row number for data entry. Only for "On Specified Cell".                                      | Text       | No        | _(empty)_       |
+| **Name**                  | The name of the named range to write to. Only used when Write Mode is "On Named Cells".           | Text       | No        | _(empty)_       |
+| **Populate Entire Range** | If true, populates the entire named range with the same value.                                    | Switch     | No        | _(empty)_       |
 
 ## Expected Output Format
 
@@ -65,25 +65,26 @@ Review all entries and ensure all required fields have been populated correctly.
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure the Excel Worksheet is not open during the process, as it may lead to access conflicts or errors.
+  Ensure the Excel Worksheet is not open during the process, as it may lead to
+  access conflicts or errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Write Mode           | Worksheet Instance | Value To Write | Column | Row | Name      | Output Behavior                                         |
-| -------------------- | ------------------ | -------------- | ------ | --- | ----------| --------------------------------------------------------|
-| On Specified Cell    | MySheet.xlsx       | Hello World    | A      | 1   | _(n/a)_   | Writes "Hello World" to cell A1 in MySheet.xlsx          |
-| On Currently Active Cell | MySheet.xlsx   | 12345          | _(n/a)_| _(n/a)_ | _(n/a)_ | Updates the active cell in MySheet.xlsx with "12345"    |
-| On Named Cells       | MySheet.xlsx       | 100            | _(n/a)_| _(n/a)_ | TotalCost | Fills the named range "TotalCost" with "100"            |
+| Write Mode               | Worksheet Instance | Value To Write | Column  | Row     | Name      | Output Behavior                                      |
+| ------------------------ | ------------------ | -------------- | ------- | ------- | --------- | ---------------------------------------------------- |
+| On Specified Cell        | MySheet.xlsx       | Hello World    | A       | 1       | _(n/a)_   | Writes "Hello World" to cell A1 in MySheet.xlsx      |
+| On Currently Active Cell | MySheet.xlsx       | 12345          | _(n/a)_ | _(n/a)_ | _(n/a)_   | Updates the active cell in MySheet.xlsx with "12345" |
+| On Named Cells           | MySheet.xlsx       | 100            | _(n/a)_ | _(n/a)_ | TotalCost | Fills the named range "TotalCost" with "100"         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                |
-| ----------------------------------------------------- | ----------------------------------------------------------------------- |
-| **Worksheet not found**                               | Ensure the worksheet instance path is correct and accessible.           |
-| **Write Mode selections not respected**               | Double-check the chosen Write Mode and fill corresponding settings.     |
-| **Excel file is locked or open**                      | Close the Excel file if open; avoid editing during node operations.     |
-| **Incomplete data entry**                             | Verify all required fields are filled, especially in "On Specified Cell".|
+| Problem                                 | Solution                                                                  |
+| --------------------------------------- | ------------------------------------------------------------------------- |
+| **Worksheet not found**                 | Ensure the worksheet instance path is correct and accessible.             |
+| **Write Mode selections not respected** | Double-check the chosen Write Mode and fill corresponding settings.       |
+| **Excel file is locked or open**        | Close the Excel file if open; avoid editing during node operations.       |
+| **Incomplete data entry**               | Verify all required fields are filled, especially in "On Specified Cell". |
 
 ## Real-World Use Cases
 

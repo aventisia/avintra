@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                                                                                               | Input Type | Required? | Default Value |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Original Text**  | The original text from which you want to trim characters.                                                                                                | Text       | Yes       | _(empty)_     |
-| **Trim Mode**      | Choose whether to trim characters from the start, end, or both sides of the text.                                                                         | Select     | Yes       | TrimBoth     |
-| **What to Trim**   | Specify the characters you want to remove. Leave empty to remove only whitespace characters like spaces, tabs, or newlines.                                | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                                                                                                 | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Original Text** | The original text from which you want to trim characters.                                                                   | Text       | Yes       | _(empty)_     |
+| **Trim Mode**     | Choose whether to trim characters from the start, end, or both sides of the text.                                           | Select     | Yes       | TrimBoth      |
+| **What to Trim**  | Specify the characters you want to remove. Leave empty to remove only whitespace characters like spaces, tabs, or newlines. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -56,25 +56,26 @@ The modified text will be output as **TrimmedText** for your use in subsequent n
 </Steps>
 
 <Callout type="info" title="Note">
-  If you do not specify characters in the **What to Trim** field, the node will remove only whitespace by default.
+  If you do not specify characters in the **What to Trim** field, the node will
+  remove only whitespace by default.
 </Callout>
 
 ## Input/Output Examples
 
-| Trim Mode       | Original Text          | Characters to Trim | Output Text          | Output Type |
-| --------------- | ---------------------- | ------------------ | -------------------- | ----------- |
-| TrimStart       | "  Hello, World!  "    | (none)             | "Hello, World!  "    | Text        |
-| TrimEnd         | "  Hello, World!  "    | (none)             | "  Hello, World!"    | Text        |
-| TrimBoth        | "--Hello, World!--"    | "-"                | "Hello, World!"      | Text        |
-| TrimBoth        | "  Hello,\nWorld!  "   | (none)              | "Hello,\nWorld!"     | Text        |
+| Trim Mode | Original Text       | Characters to Trim | Output Text      | Output Type |
+| --------- | ------------------- | ------------------ | ---------------- | ----------- |
+| TrimStart | " Hello, World! "   | (none)             | "Hello, World! " | Text        |
+| TrimEnd   | " Hello, World! "   | (none)             | " Hello, World!" | Text        |
+| TrimBoth  | "--Hello, World!--" | "-"                | "Hello, World!"  | Text        |
+| TrimBoth  | " Hello,\nWorld! "  | (none)             | "Hello,\nWorld!" | Text        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                          |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **No characters are trimmed**                | Ensure you have selected the correct Trim Mode and have input the text in the **Original Text** field.             |
-| **Unexpected characters remain**             | Verify the specified characters in the **What to Trim** field and ensure no additional spaces or characters exist. |
-| **Whitespace not removed as expected**       | If trimming whitespace, make sure that the **What to Trim** field is empty.                                        |
+| Problem                                | Solution                                                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **No characters are trimmed**          | Ensure you have selected the correct Trim Mode and have input the text in the **Original Text** field.             |
+| **Unexpected characters remain**       | Verify the specified characters in the **What to Trim** field and ensure no additional spaces or characters exist. |
+| **Whitespace not removed as expected** | If trimming whitespace, make sure that the **What to Trim** field is empty.                                        |
 
 ## Real-World Use Cases
 

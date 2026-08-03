@@ -6,10 +6,10 @@ The **Send Key to Terminal Session** node is designed to send control keys (like
 
 ## Configuration Options
 
-| Field Name    | Description                                                 | Input Type | Required? | Default Value |
-| ------------- | ----------------------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name    | Description                                                      | Input Type | Required? | Default Value |
+| ------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
 | **SessionId** | The session ID of the terminal session you are interacting with. | Text       | Yes       | _(empty)_     |
-| **Key**       | The control key you wish to send (e.g., 'Enter', 'Tab').    | Text       | Yes       | _(empty)_     |
+| **Key**       | The control key you wish to send (e.g., 'Enter', 'Tab').         | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -41,23 +41,25 @@ Proceed with other actions or end the workflow as per your requirements.
 </Steps>
 
 <Callout type="info" title="Note">
-  The **Send Key to Terminal Session** node doesn't provide a direct output but will confirm key press success indirectly within your terminal's workflow (e.g., by observing expected changes or outcomes).
+  The **Send Key to Terminal Session** node doesn't provide a direct output but
+  will confirm key press success indirectly within your terminal's workflow
+  (e.g., by observing expected changes or outcomes).
 </Callout>
 
 ## Input/Output Examples
 
-| SessionId   | Key   | Output         |
-| ----------- | ----- | -------------- |
-| `12345678`  | Enter | _(no output)_  |
-| `87654321`  | Tab   | _(no output)_  |
+| SessionId  | Key   | Output        |
+| ---------- | ----- | ------------- |
+| `12345678` | Enter | _(no output)_ |
+| `87654321` | Tab   | _(no output)_ |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                           |
-| ------------------------------------------- | ------------------------------------------------------------------ |
-| **Invalid SessionId**                       | Ensure you are using a valid and active terminal `SessionId`.      |
-| **Incorrect Key Value**                     | Double-check the key name input. Use standard control key names.   |
-| **Session Inactive or Closed**              | Verify that the terminal session is still open and responsive.     |
+| Problem                        | Solution                                                         |
+| ------------------------------ | ---------------------------------------------------------------- |
+| **Invalid SessionId**          | Ensure you are using a valid and active terminal `SessionId`.    |
+| **Incorrect Key Value**        | Double-check the key name input. Use standard control key names. |
+| **Session Inactive or Closed** | Verify that the terminal session is still open and responsive.   |
 
 ## Real-World Use Cases
 

@@ -11,11 +11,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name                | Description                                                                      | Input Type | Required? | Default Value |
-| ------------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Source Folder Path**    | The full path of the directory from which subfolders will be retrieved.           | Text       | Yes       | _(empty)_     |
-| **Include Nested Subfolders** | Determines whether to include all nested subdirectories recursively.              | Switch     | No        | False         |
-| **Subfolder List**        | The collection of subfolder paths found in the specified directory.                | N/A (Output)   | No        | Subfolders    |
+| Field Name                    | Description                                                             | Input Type   | Required? | Default Value |
+| ----------------------------- | ----------------------------------------------------------------------- | ------------ | --------- | ------------- |
+| **Source Folder Path**        | The full path of the directory from which subfolders will be retrieved. | Text         | Yes       | _(empty)_     |
+| **Include Nested Subfolders** | Determines whether to include all nested subdirectories recursively.    | Switch       | No        | False         |
+| **Subfolder List**            | The collection of subfolder paths found in the specified directory.     | N/A (Output) | No        | Subfolders    |
 
 ## Expected Output Format
 
@@ -46,23 +46,24 @@ The list of subfolder paths will be accessible as **Subfolder List** for use in 
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you only need the subfolders from the top level, ensure the **Include Nested Subfolders** switch is turned off.
+  If you only need the subfolders from the top level, ensure the **Include
+  Nested Subfolders** switch is turned off.
 </Callout>
 
 ## Input/Output Examples
 
-| Source Folder Path        | Include Nested Subfolders | Output Value                                        | Output Type       |
-| ------------------------- | ------------------------- | --------------------------------------------------- | ----------------- |
-| `C:/Projects`             | False                     | ["C:/Projects/2021", "C:/Projects/Archives"]        | List of Strings   |
-| `C:/Projects`             | True                      | ["C:/Projects/2021", "C:/Projects/Archives", "C:/Projects/2021/April"] | List of Strings   |
+| Source Folder Path | Include Nested Subfolders | Output Value                                                           | Output Type     |
+| ------------------ | ------------------------- | ---------------------------------------------------------------------- | --------------- |
+| `C:/Projects`      | False                     | ["C:/Projects/2021", "C:/Projects/Archives"]                           | List of Strings |
+| `C:/Projects`      | True                      | ["C:/Projects/2021", "C:/Projects/Archives", "C:/Projects/2021/April"] | List of Strings |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                      |
-| ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Path not found error**                       | Double-check the **Source Folder Path** to ensure it is correct and that the directory exists. |
-| **No output generated**                        | Make sure your source folder contains subdirectories and the **Source Folder Path** is correct. |
-| **Unexpected subdirectories listed**           | If additional unexpected folders are listed, verify the **Include Nested Subfolders** setting. |
+| Problem                              | Solution                                                                                        |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| **Path not found error**             | Double-check the **Source Folder Path** to ensure it is correct and that the directory exists.  |
+| **No output generated**              | Make sure your source folder contains subdirectories and the **Source Folder Path** is correct. |
+| **Unexpected subdirectories listed** | If additional unexpected folders are listed, verify the **Include Nested Subfolders** setting.  |
 
 ## Real-World Use Cases
 

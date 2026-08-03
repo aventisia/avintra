@@ -1,11 +1,3 @@
-import { SliderField } from "@/components/Slider/SliderField";
-import {
-  Model,
-  getSpecialtyFromNode,
-  modelProviders,
-} from "@/features/dynamic-config-panel/constants/model-providers";
-import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
-
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
@@ -14,6 +6,14 @@ import { toast } from "@avplatform/ui/sonner";
 import { Settings2Icon } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
+
+import { SliderField } from "@/components/Slider/SliderField";
+import {
+  Model,
+  getSpecialtyFromNode,
+  modelProviders,
+} from "@/features/dynamic-config-panel/constants/model-providers";
+import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
 import { getProviderModels } from "../../apis/llm-pipelines-apis";
 import { embeddingModelProviders } from "../../constants/embedding-model-providers";
@@ -97,10 +97,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   });
 
   const enableModelSetup = useMemo(
-    () =>
-      ["__ModelConfig__Inferencing", "__ModelConfig__Conversation"].includes(
-        name,
-      ),
+    () => ["__ModelConfig__Inferencing", "__ModelConfig__Conversation"].includes(name),
     [name],
   );
 
@@ -116,9 +113,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
       .map((p) => ({
         ...p,
         models: p.models.filter((m) => {
-          const specialtyMatch = requiredSpecialties.every((req) =>
-            m.specialty.includes(req),
-          );
+          const specialtyMatch = requiredSpecialties.every((req) => m.specialty.includes(req));
           return specialtyMatch && m.available;
         }),
       }));
@@ -227,14 +222,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
     const timer = setTimeout(fetchModels, 150);
     return () => clearTimeout(timer);
-  }, [
-    credentialsValue,
-    providerValue,
-    is_byok_enabled,
-    isInitialized,
-    setValue,
-    fieldNames,
-  ]);
+  }, [credentialsValue, providerValue, is_byok_enabled, isInitialized, setValue, fieldNames]);
 
   // 7. Render Helpers
   const availableModels = useMemo(() => {
@@ -251,9 +239,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     [availableModels, modelField.value],
   );
 
-  const currentProviderLabel = filteredProviders.find(
-    (p) => p.value === providerValue,
-  )?.label;
+  const currentProviderLabel = filteredProviders.find((p) => p.value === providerValue)?.label;
 
   return (
     <div className="w-full space-y-3.5">
@@ -295,11 +281,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
         {enableModelSetup && (
           <Popover>
-            <PopoverTrigger
-              className={cn(
-                buttonVariants({ size: "icon8", variant: "outline" }),
-              )}
-            >
+            <PopoverTrigger className={cn(buttonVariants({ size: "icon8", variant: "outline" }))}>
               <Settings2Icon className="h-3 w-3" />
             </PopoverTrigger>
 
@@ -307,26 +289,14 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
               <Controller
                 {...temperatureField}
                 render={({ field }) => (
-                  <SliderField
-                    label="Temperature"
-                    name={field.name}
-                    min={0}
-                    max={1.2}
-                    step={0.1}
-                  />
+                  <SliderField label="Temperature" name={field.name} min={0} max={1.2} step={0.1} />
                 )}
               />
 
               <Controller
                 {...topPField}
                 render={({ field }) => (
-                  <SliderField
-                    label="TopP"
-                    name={field.name}
-                    min={0}
-                    max={1.2}
-                    step={0.1}
-                  />
+                  <SliderField label="TopP" name={field.name} min={0} max={1.2} step={0.1} />
                 )}
               />
 

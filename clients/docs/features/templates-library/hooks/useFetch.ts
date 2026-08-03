@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 // Simple hook return type
 interface UseFetchReturn<T> {
@@ -23,7 +23,7 @@ const useFetch = <T>(fetchFn: () => Promise<T>): UseFetchReturn<T> => {
       const result = await fetchFn();
       setData(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : "An error occurred");
       setData(null);
     } finally {
       setLoading(false);

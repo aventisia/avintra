@@ -8,11 +8,11 @@ For example, you can use this node to update a server configuration file's setti
 
 ## Configuration Options
 
-| Field Name         | Description                                                                      | Input Type | Required? | Default Value |
-| ------------------ | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **XML Content**    | The XML content provided as a string in which the changes will be made.          | Text       | Yes       | _(empty)_     |
-| **XPath Expression** | The XPath expression used to locate the specific XML element you wish to modify.| Text       | Yes       | _(empty)_     |
-| **Element Value**  | The new value you want to set for the targeted XML element.                      | Text       | Yes       | _(empty)_     |
+| Field Name           | Description                                                                      | Input Type | Required? | Default Value |
+| -------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**      | The XML content provided as a string in which the changes will be made.          | Text       | Yes       | _(empty)_     |
+| **XPath Expression** | The XPath expression used to locate the specific XML element you wish to modify. | Text       | Yes       | _(empty)_     |
+| **Element Value**    | The new value you want to set for the targeted XML element.                      | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -47,22 +47,23 @@ Once all fields are correctly filled, the node will process the XML and output t
 </Steps>
 
 <Callout type="warning" title="Warning">
-  Ensure the XPath expression is correct, as an incorrect XPath will result in the element not being found and updated.
+  Ensure the XPath expression is correct, as an incorrect XPath will result in
+  the element not being found and updated.
 </Callout>
 
 ## Input/Output Examples
 
-| XPath Expression   | Input XML Content                                   | Element Value | Output XML Content                         |
-| ------------------ | ---------------------------------------------------- | ------------- | ------------------------------------------ |
+| XPath Expression        | Input XML Content                                          | Element Value | Output XML Content                                         |
+| ----------------------- | ---------------------------------------------------------- | ------------- | ---------------------------------------------------------- |
 | `/bookstore/book/price` | `<bookstore><book><price>39.95</price></book></bookstore>` | 29.95         | `<bookstore><book><price>29.95</price></book></bookstore>` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                                                                        |
-| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **XPath does not locate element**            | Verify that the XPath expression is correctly formulated and matches the XML structure. Use tools or online platforms to test XPath expressions if necessary.     |
-| **Element Value is not updated**             | Double-check that the **XML Content** and **XPath Expression** fields are correctly populated and that the XML is not malformed.                                 |
-| **Incorrect XML after update**               | Ensure that the XML content in the **Input** has only valid and properly nested elements, as invalid XML structures can lead to unsuccessful updates.             |
+| Problem                           | Solution                                                                                                                                                      |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **XPath does not locate element** | Verify that the XPath expression is correctly formulated and matches the XML structure. Use tools or online platforms to test XPath expressions if necessary. |
+| **Element Value is not updated**  | Double-check that the **XML Content** and **XPath Expression** fields are correctly populated and that the XML is not malformed.                              |
+| **Incorrect XML after update**    | Ensure that the XML content in the **Input** has only valid and properly nested elements, as invalid XML structures can lead to unsuccessful updates.         |
 
 ## Real-World Use Cases
 

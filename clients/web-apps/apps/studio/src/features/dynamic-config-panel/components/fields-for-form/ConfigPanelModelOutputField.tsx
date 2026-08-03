@@ -1,30 +1,23 @@
-import { JsonViewer } from "@/components/json-viewer/JsonViewer";
-import { VariableSelectorWrapper } from "@/components/variable-selector/VariableSelectorWrapper";
-import { useVariableSelectorStore } from "@/stores/variable-selector-store";
-
 import { Switch } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { FormControl, FormField, FormItem } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import {
-  InformationCircleIcon,
-  VariableIcon,
-} from "@heroicons/react/24/outline";
+import { InformationCircleIcon, VariableIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
-import {
-  FieldPath,
-  FieldValues,
-  useController,
-  useFormContext,
-} from "react-hook-form";
+import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
+
+import { JsonViewer } from "@/components/json-viewer/JsonViewer";
+import { VariableSelectorWrapper } from "@/components/variable-selector/VariableSelectorWrapper";
+import { useVariableSelectorStore } from "@/stores/variable-selector-store";
 
 import { ConfigPanelAutosizeInput } from "../..";
 
-interface ConfigPanelModelOutputFieldProps
-  extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeInput> {
+interface ConfigPanelModelOutputFieldProps extends React.ComponentPropsWithoutRef<
+  typeof ConfigPanelAutosizeInput
+> {
   /** The name of the form field. */
   name: string;
 
@@ -39,21 +32,16 @@ const ConfigPanelModelOutputField = ({
   ...props
 }: ConfigPanelModelOutputFieldProps) => {
   // Get variable selector store state and actions
-  const {
-    inputName,
-    selectedValue,
-    setSelectedValue,
-    setOpenState,
-    setInputName,
-  } = useVariableSelectorStore(
-    useShallow((state) => ({
-      inputName: state.inputName,
-      selectedValue: state.selectedValue,
-      setSelectedValue: state.setSelectedValue,
-      setOpenState: state.setOpenState,
-      setInputName: state.setInputName,
-    })),
-  );
+  const { inputName, selectedValue, setSelectedValue, setOpenState, setInputName } =
+    useVariableSelectorStore(
+      useShallow((state) => ({
+        inputName: state.inputName,
+        selectedValue: state.selectedValue,
+        setSelectedValue: state.setSelectedValue,
+        setOpenState: state.setOpenState,
+        setInputName: state.setInputName,
+      })),
+    );
 
   // Set names for the fields
   const valueFieldName = `${name}.value` as FieldPath<FieldValues>;
@@ -122,10 +110,7 @@ const ConfigPanelModelOutputField = ({
                   <Tooltip
                     className="max-w-[50vw] bg-white"
                     content={
-                      <JsonViewer
-                        jsonData={description}
-                        className="h-[calc(50vh)] w-full p-1"
-                      />
+                      <JsonViewer jsonData={description} className="h-[calc(50vh)] w-full p-1" />
                     }
                   >
                     <div className="rounded hover:bg-slate-100 hover:text-primary">

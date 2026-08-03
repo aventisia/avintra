@@ -11,13 +11,13 @@ Here's when and why to use it:
 
 ## Configuration Options
 
-| Field Name       | Description                                                          | Input Type | Required? | Default Value |
-| ---------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **User Email**   | The email address of the mailbox owner.                              | Text       | Yes       | _(empty)_     |
-| **Tenant ID**    | The Azure Active Directory tenant (directory) ID.                    | Text       | Yes       | _(empty)_     |
-| **Client ID**    | The Azure AD application (client) ID.                                | Text       | Yes       | _(empty)_     |
-| **Client Secret**| The Azure AD application client secret.                              | Text       | Yes       | _(empty)_     |
-| **Message ID**   | The ID of the email message to be deleted.                           | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                       | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------- | ---------- | --------- | ------------- |
+| **User Email**    | The email address of the mailbox owner.           | Text       | Yes       | _(empty)_     |
+| **Tenant ID**     | The Azure Active Directory tenant (directory) ID. | Text       | Yes       | _(empty)_     |
+| **Client ID**     | The Azure AD application (client) ID.             | Text       | Yes       | _(empty)_     |
+| **Client Secret** | The Azure AD application client secret.           | Text       | Yes       | _(empty)_     |
+| **Message ID**    | The ID of the email message to be deleted.        | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -57,7 +57,8 @@ Run the node to delete the specified email from your mailbox.
 </Steps>
 
 <Callout type="warning" title="Caution">
-  Ensure that you correctly enter the **Message ID** as the deletion is irrevocable. Double-check the email you intend to delete.
+  Ensure that you correctly enter the **Message ID** as the deletion is
+  irrevocable. Double-check the email you intend to delete.
 </Callout>
 
 ## Input/Output Examples
@@ -70,11 +71,11 @@ Given the secure nature of this action, a success message or background confirma
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                  | Solution                                                                                 |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Incorrect Message ID entered**         | Double-check and confirm the accurate Message ID is provided, ensuring the right email is targeted. |
-| **Authentication failures**              | Verify all identity fields are properly filled: User Email, Tenant ID, Client ID, and Client Secret. |
-| **Email not deleted despite operation**  | Ensure network connectivity and verify permissions related to Microsoft Graph API settings.|
+| Problem                                 | Solution                                                                                             |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Incorrect Message ID entered**        | Double-check and confirm the accurate Message ID is provided, ensuring the right email is targeted.  |
+| **Authentication failures**             | Verify all identity fields are properly filled: User Email, Tenant ID, Client ID, and Client Secret. |
+| **Email not deleted despite operation** | Ensure network connectivity and verify permissions related to Microsoft Graph API settings.          |
 
 ## Real-World Use Cases
 

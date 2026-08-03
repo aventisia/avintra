@@ -12,13 +12,13 @@ For example:
 
 ## Configuration Options
 
-| Field Name                 | Description                                                                                       | Input Type | Required? | Default Value |
-| -------------------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **User Email**             | The email address of the mailbox owner.                                                           | Text       | Yes       | _(empty)_     |
-| **Tenant ID**              | Azure Active Directory tenant (directory) ID.                                                     | Text       | Yes       | _(empty)_     |
-| **Client ID**              | Azure AD application (client) ID.                                                                 | Text       | Yes       | _(empty)_     |
-| **Client Secret**          | Azure AD application client secret.                                                               | Text       | Yes       | _(empty)_     |
-| **Email Message JSON**     | JSON string representing the draft email content (subject, body, recipients, etc.).               | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                                         | Input Type | Required? | Default Value |
+| ---------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **User Email**         | The email address of the mailbox owner.                                             | Text       | Yes       | _(empty)_     |
+| **Tenant ID**          | Azure Active Directory tenant (directory) ID.                                       | Text       | Yes       | _(empty)_     |
+| **Client ID**          | Azure AD application (client) ID.                                                   | Text       | Yes       | _(empty)_     |
+| **Client Secret**      | Azure AD application client secret.                                                 | Text       | Yes       | _(empty)_     |
+| **Email Message JSON** | JSON string representing the draft email content (subject, body, recipients, etc.). | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -60,22 +60,23 @@ Once configured, the node will create a draft in the specified mailbox, and the 
 </Steps>
 
 <Callout type="warning" title="Security Note">
-  Ensure your Client Secret remains confidential and never shared. It plays a critical role in securing access to your Microsoft services.
+  Ensure your Client Secret remains confidential and never shared. It plays a
+  critical role in securing access to your Microsoft services.
 </Callout>
 
 ## Input/Output Examples
 
-| Example Scenario                           | User Email       | Tenant ID     | Client ID     | Client Secret | Email Message JSON                              | Output Draft ID |
-| ------------------------------------------ | ---------------- | ------------- | ------------- | ------------- | ------------------------------------------------ | --------------- |
-| Creating a marketing campaign email draft  | user@example.com | tenant12345   | client56789   | secretKey123  | `{"subject":"Hello","body":"Welcome!","to":["a@b.com"]}` | "12345"         |
+| Example Scenario                          | User Email       | Tenant ID   | Client ID   | Client Secret | Email Message JSON                                       | Output Draft ID |
+| ----------------------------------------- | ---------------- | ----------- | ----------- | ------------- | -------------------------------------------------------- | --------------- |
+| Creating a marketing campaign email draft | user@example.com | tenant12345 | client56789 | secretKey123  | `{"subject":"Hello","body":"Welcome!","to":["a@b.com"]}` | "12345"         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                     |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Invalid JSON Format in Email Message JSON**     | Ensure the JSON string is correctly formatted and includes necessary email components like subject and body. |
-| **Incorrect Client ID or Secret**                 | Verify the Client ID and Client Secret match those configured in your Azure AD application settings.         |
-| **Authentication Errors**                         | Double-check your Tenant ID, Client ID, and Client Secret for accuracy and validity.                        |
+| Problem                                       | Solution                                                                                                     |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Invalid JSON Format in Email Message JSON** | Ensure the JSON string is correctly formatted and includes necessary email components like subject and body. |
+| **Incorrect Client ID or Secret**             | Verify the Client ID and Client Secret match those configured in your Azure AD application settings.         |
+| **Authentication Errors**                     | Double-check your Tenant ID, Client ID, and Client Secret for accuracy and validity.                         |
 
 ## Real-World Use Cases
 

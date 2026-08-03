@@ -22,16 +22,11 @@ export default function OpenNodeLog({
   showIcon = true,
   showBorder = true,
 }: OpenNodeLogProps) {
-  const {
-    executionMap,
-    executionHistoryMap,
-    nodeToParentStack,
-    activeIteration,
-  } = useExecutionStore();
+  const { executionMap, executionHistoryMap, nodeToParentStack, activeIteration } =
+    useExecutionStore();
 
   const parents = nodeToParentStack[nodeId] || [];
-  const pathKey =
-    parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";
+  const pathKey = parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";
 
   const history = executionMap[nodeId] || {};
   const log = history[pathKey];
@@ -46,9 +41,7 @@ export default function OpenNodeLog({
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const getAttemptLabel = (retryAttempt: number) => {
-    return retryAttempt <= 0
-      ? "Default Attempt"
-      : `Auto-Retry Attempt ${retryAttempt}`;
+    return retryAttempt <= 0 ? "Default Attempt" : `Auto-Retry Attempt ${retryAttempt}`;
   };
 
   // Attempt history for the currently active execution, ordered by retry sequence.
@@ -61,7 +54,7 @@ export default function OpenNodeLog({
 
   // First entry is always the default attempt, not a retry — subtract it from the total
   const retryCount =
-    attemptsForSameExecution.length > 2 // make it `1` if need to show Badge for default attempt 
+    attemptsForSameExecution.length > 2 // make it `1` if need to show Badge for default attempt
       ? attemptsForSameExecution.length - 1
       : 0;
 

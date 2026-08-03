@@ -12,14 +12,14 @@ For example, you can use this node to:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                     | Input Type | Required? | Default Value   |
-| ----------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Worksheet Instance**  | The Excel Worksheet where data will be appended. Defaults to the active worksheet if not set.   | Text       | Yes       | _(empty)_       |
-| **Data Table**          | The DataTable containing the data that needs to be appended.                                    | Text       | Yes       | _(empty)_       |
-| **Append Mode**         | Choose how to append the data: either to named cells or the active sheet.                       | Select     | No        | ToActiveSheet   |
-| **Name**                | The name of the named range for data appending. Only required when "AppendMode" is "ToNamedCells".| Text      | No        | _(empty)_       |
-| **First Row Has Headers** | Specifies if the first row of the DataTable contains headers, which should be skipped.         | Switch     | No        | _(empty)_       |
-| **Starting Column**     | The column letter indicating where appending should begin (for active sheet appending only).    | Text       | No        | _(empty)_       |
+| Field Name                | Description                                                                                        | Input Type | Required? | Default Value |
+| ------------------------- | -------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**    | The Excel Worksheet where data will be appended. Defaults to the active worksheet if not set.      | Text       | Yes       | _(empty)_     |
+| **Data Table**            | The DataTable containing the data that needs to be appended.                                       | Text       | Yes       | _(empty)_     |
+| **Append Mode**           | Choose how to append the data: either to named cells or the active sheet.                          | Select     | No        | ToActiveSheet |
+| **Name**                  | The name of the named range for data appending. Only required when "AppendMode" is "ToNamedCells". | Text       | No        | _(empty)_     |
+| **First Row Has Headers** | Specifies if the first row of the DataTable contains headers, which should be skipped.             | Switch     | No        | _(empty)_     |
+| **Starting Column**       | The column letter indicating where appending should begin (for active sheet appending only).       | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -66,27 +66,28 @@ Once configured, execute the node to append data seamlessly to your Excel Worksh
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the Excel application is open and the specified worksheet or range exists to avoid errors.
+  Ensure the Excel application is open and the specified worksheet or range
+  exists to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Field                | Example Value                   | Comments                               |
-| -------------------- | --------------------------------| --------------------------------------- |
-| Worksheet Instance   | sales_report.xlsx               | Use a valid Excel file name.            |
-| Data Table           | `{"salesData": [{"Product":... }]}` | Must be structured table data.          |
-| Append Mode          | ToActiveSheet                   | Defaults to active sheet appending.     |
-| Name                 | MonthlySalesData                | Use with **AppendMode: To Named Cells**. |
-| First Row Has Headers| true                            | Select if using headers in data table.  |
-| Starting Column      | A                               | Specify the starting column for active sheet. |
+| Field                 | Example Value                       | Comments                                      |
+| --------------------- | ----------------------------------- | --------------------------------------------- |
+| Worksheet Instance    | sales_report.xlsx                   | Use a valid Excel file name.                  |
+| Data Table            | `{"salesData": [{"Product":... }]}` | Must be structured table data.                |
+| Append Mode           | ToActiveSheet                       | Defaults to active sheet appending.           |
+| Name                  | MonthlySalesData                    | Use with **AppendMode: To Named Cells**.      |
+| First Row Has Headers | true                                | Select if using headers in data table.        |
+| Starting Column       | A                                   | Specify the starting column for active sheet. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                  |
-| ------------------------------------------------- | -----------------------------------------------------------------------------------------|
-| **Appended data not visible**                     | Ensure the worksheet is active or named ranges exist. Also, check the append starting point and validate. |
-| **Error due to missing Worksheet Instance**       | Ensure there is an active Excel worksheet open or provide the worksheet instance name.    |
-| **Incorrect data format**                         | Double-check the data table format to ensure it matches the worksheet's expected structure.|
+| Problem                                     | Solution                                                                                                  |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Appended data not visible**               | Ensure the worksheet is active or named ranges exist. Also, check the append starting point and validate. |
+| **Error due to missing Worksheet Instance** | Ensure there is an active Excel worksheet open or provide the worksheet instance name.                    |
+| **Incorrect data format**                   | Double-check the data table format to ensure it matches the worksheet's expected structure.               |
 
 ## Real-World Use Cases
 

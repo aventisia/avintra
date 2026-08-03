@@ -12,10 +12,10 @@ Examples of use include:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
-| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **UI Element**       | The UI Element for the text box or editable field you want to read.         | Text       | Yes       | _(empty)_     |
-| **Max Wait Time**    | Maximum time to wait to find the UI element (in seconds).                   | Text       | No        | 5             |
+| Field Name        | Description                                                         | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**    | The UI Element for the text box or editable field you want to read. | Text       | Yes       | _(empty)_     |
+| **Max Wait Time** | Maximum time to wait to find the UI element (in seconds).           | Text       | No        | 5             |
 
 ## Expected Output Format
 
@@ -46,23 +46,25 @@ Once configured, the node will read the text from the specified UI element and s
 </Steps>
 
 <Callout type="info" title="Tip">
-  The **Max Wait Time** allows flexibility in capturing text from applications that might be slow to load. Adjust this time based on the application's performance you are interacting with.
+  The **Max Wait Time** allows flexibility in capturing text from applications
+  that might be slow to load. Adjust this time based on the application's
+  performance you are interacting with.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Identification | Max Wait Time (seconds) | Output String             | Output Label      |
-| -------------------- | ----------------------- | ------------------------- | ----------------- |
-| `#usernameField`     | 3                       | "John Doe"                | TextBoxContent    |
-| `.notes`             | 10                      | "Important Update Notes"  | TextBoxContent    |
+| Input Identification | Max Wait Time (seconds) | Output String            | Output Label   |
+| -------------------- | ----------------------- | ------------------------ | -------------- |
+| `#usernameField`     | 3                       | "John Doe"               | TextBoxContent |
+| `.notes`             | 10                      | "Important Update Notes" | TextBoxContent |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                     |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Text not captured**                                 | Ensure the UI Element is correctly specified and that the application window is open and focus is on the specified element. |
-| **Max Wait Time too short**                           | Increase the wait time if the element takes longer to appear than the default 5 seconds.     |
-| **Invalid UI Element path**                           | Double-check the identification or path of the UI Element for accuracy.                      |
+| Problem                     | Solution                                                                                                                    |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **Text not captured**       | Ensure the UI Element is correctly specified and that the application window is open and focus is on the specified element. |
+| **Max Wait Time too short** | Increase the wait time if the element takes longer to appear than the default 5 seconds.                                    |
+| **Invalid UI Element path** | Double-check the identification or path of the UI Element for accuracy.                                                     |
 
 ## Real-World Use Cases
 

@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                   | Input Type | Required? | Default Value |
-| -------------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance** | The Excel Worksheet object where the data will be pasted.                                     | Text       | Yes       | _(empty)_     |
-| **Data Table**       | The DataTable containing the data to paste into the Excel worksheet.                        | Text       | Yes       | _(empty)_     |
-| **Start Row**        | The row number where pasting should start.                                                   | Text       | Yes       | 1             |
-| **Start Column**     | The column number where pasting should start.                                                | Text       | Yes       | 1             |
+| Field Name             | Description                                                          | Input Type | Required? | Default Value |
+| ---------------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object where the data will be pasted.            | Text       | Yes       | _(empty)_     |
+| **Data Table**         | The DataTable containing the data to paste into the Excel worksheet. | Text       | Yes       | _(empty)_     |
+| **Start Row**          | The row number where pasting should start.                           | Text       | Yes       | 1             |
+| **Start Column**       | The column number where pasting should start.                        | Text       | Yes       | 1             |
 
 ## Expected Output Format
 
@@ -53,24 +53,26 @@ Ensure all configurations are correct and proceed to execute the node to transfe
 </Steps>
 
 <Callout type="info" title="Tip">
-  The **Start Row** and **Start Column** must refer to a valid position in the Excel worksheet, ensuring enough space is available to paste the entire DataTable.
+  The **Start Row** and **Start Column** must refer to a valid position in the
+  Excel worksheet, ensuring enough space is available to paste the entire
+  DataTable.
 </Callout>
 
 ## Input/Output Examples
 
-| Worksheet Instance | Data Table    | Start Row | Start Column | Description                               |
-| ------------------ | ------------- | --------- | ------------ | ----------------------------------------- |
-| "Sheet1"           | "SalesData"   | 1         | 1            | Pastes SalesData table to the start of Sheet1. |
+| Worksheet Instance | Data Table    | Start Row | Start Column | Description                                                               |
+| ------------------ | ------------- | --------- | ------------ | ------------------------------------------------------------------------- |
+| "Sheet1"           | "SalesData"   | 1         | 1            | Pastes SalesData table to the start of Sheet1.                            |
 | "ReportSheet"      | "MonthlyData" | 5         | 2            | Pastes MonthlyData table starting from row 5 and column 2 in ReportSheet. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                                                                                 |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Worksheet Reference**                           | Ensure the **Worksheet Instance** is a valid Excel worksheet that exists and is open when executing the node.                                             |
-| **Data Not Pasting Properly**                             | Check the **Start Row** and **Start Column** are correct and there is sufficient space to accommodate the DataTable within the worksheet.               |
-| **Worksheet Locked or ReadOnly**                          | Ensure the Excel worksheet is not protected or set to read-only mode, as this may prevent data from being pasted.                                        |
-| **Non-Existent Data Table**                               | Verify the Data Table reference is accurate and available in the context where the node is being used.                                                   |
+| Problem                          | Solution                                                                                                                                  |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Worksheet Reference**  | Ensure the **Worksheet Instance** is a valid Excel worksheet that exists and is open when executing the node.                             |
+| **Data Not Pasting Properly**    | Check the **Start Row** and **Start Column** are correct and there is sufficient space to accommodate the DataTable within the worksheet. |
+| **Worksheet Locked or ReadOnly** | Ensure the Excel worksheet is not protected or set to read-only mode, as this may prevent data from being pasted.                         |
+| **Non-Existent Data Table**      | Verify the Data Table reference is accurate and available in the context where the node is being used.                                    |
 
 ## Real-World Use Cases
 

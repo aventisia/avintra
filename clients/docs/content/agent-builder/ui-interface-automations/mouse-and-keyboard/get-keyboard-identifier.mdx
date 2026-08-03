@@ -11,9 +11,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name              | Description                                           | Input Type | Required? | Default Value        |
-| ----------------------- | ----------------------------------------------------- | ---------- | --------- | -------------------- |
-| **Keyboard Layout ID**  | The registry key of the active keyboard identifier.   | Output     | No        | KeyboardLayoutId     |
+| Field Name             | Description                                         | Input Type | Required? | Default Value    |
+| ---------------------- | --------------------------------------------------- | ---------- | --------- | ---------------- |
+| **Keyboard Layout ID** | The registry key of the active keyboard identifier. | Output     | No        | KeyboardLayoutId |
 
 ## Expected Output Format
 
@@ -37,21 +37,22 @@ The retrieved keyboard layout identifier will be available as **KeyboardLayoutId
 </Steps>
 
 <Callout type="info" title="Note">
-  The node will not alter system settings; it merely reads and outputs the current keyboard layout setting.
+  The node will not alter system settings; it merely reads and outputs the
+  current keyboard layout setting.
 </Callout>
 
 ## Input/Output Examples
 
-| Input  | Output Value  | Output Type             |
-| ------ | ------------- | ----------------------- |
+| Input   | Output Value | Output Type                 |
+| ------- | ------------ | --------------------------- |
 | _(n/a)_ | `00000409`   | String (Keyboard Layout ID) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                      |
-| -------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **No output received**                       | Ensure the node is correctly placed in your flow and your system permissions allow registry access. |
-| **Unexpected output format**                 | The output should match standard keyboard layout ID formats. Confirm system registry settings. |
+| Problem                      | Solution                                                                                            |
+| ---------------------------- | --------------------------------------------------------------------------------------------------- |
+| **No output received**       | Ensure the node is correctly placed in your flow and your system permissions allow registry access. |
+| **Unexpected output format** | The output should match standard keyboard layout ID formats. Confirm system registry settings.      |
 
 ## Real-World Use Cases
 

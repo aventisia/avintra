@@ -6,10 +6,10 @@ The **Search for Text on Terminal Session** node enables you to identify all ins
 
 ## Configuration Options
 
-| Field Name        | Description                                          | Input Type | Required? | Default Value |
-| ----------------- | ---------------------------------------------------- | ---------- | --------- | ------------- |
-| **SessionId**     | The session ID of the terminal session.              | Text       | Yes       | _(empty)_     |
-| **TextToSearchFor** | The text to search for within the session.           | Text       | Yes       | _(empty)_     |
+| Field Name          | Description                                | Input Type | Required? | Default Value |
+| ------------------- | ------------------------------------------ | ---------- | --------- | ------------- |
+| **SessionId**       | The session ID of the terminal session.    | Text       | Yes       | _(empty)_     |
+| **TextToSearchFor** | The text to search for within the session. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -40,7 +40,8 @@ The node will process the input and display all occurrences under the **Result**
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the Session ID is accurate to retrieve results from the correct terminal session.
+  Ensure the Session ID is accurate to retrieve results from the correct
+  terminal session.
 </Callout>
 
 ## Input/Output Examples
@@ -52,11 +53,11 @@ The node will process the input and display all occurrences under the **Result**
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                      |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Incorrect SessionId**                              | Verify and enter the correct session ID to ensure you're searching in the right session.      |
-| **TextToSearchFor left empty**                       | Ensure you have specified the text you want to search for; otherwise, there won't be any output.|
-| **Unexpected search results**                        | Double-check for typographical errors in the **TextToSearchFor** field.                       |
+| Problem                        | Solution                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| **Incorrect SessionId**        | Verify and enter the correct session ID to ensure you're searching in the right session.         |
+| **TextToSearchFor left empty** | Ensure you have specified the text you want to search for; otherwise, there won't be any output. |
+| **Unexpected search results**  | Double-check for typographical errors in the **TextToSearchFor** field.                          |
 
 ## Real-World Use Cases
 

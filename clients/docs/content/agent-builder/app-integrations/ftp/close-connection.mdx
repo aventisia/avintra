@@ -6,9 +6,9 @@ The **Close Connection** node is designed to safely terminate an open FTP connec
 
 ## Configuration Options
 
-| Field Name        | Description                                    | Input Type | Required? | Default Value |
-| ----------------- | ---------------------------------------------- | ---------- | --------- | ------------- |
-| **Ftp Connection** | The FTP connection object to be closed.      | Text       | Yes       | _(empty)_     |
+| Field Name         | Description                             | Input Type | Required? | Default Value |
+| ------------------ | --------------------------------------- | ---------- | --------- | ------------- |
+| **Ftp Connection** | The FTP connection object to be closed. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -32,19 +32,21 @@ Ensure that all operations requiring an open FTP connection have been completed 
 ### Step 4
 
 Confirm execution of the flow to close the FTP connection properly.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Always close FTP connections to prevent potential issues with resource limits or connection quotas imposed by your FTP server.
+  Always close FTP connections to prevent potential issues with resource limits
+  or connection quotas imposed by your FTP server.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                 |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **Connection not closing**                     | Verify that the correct FTP connection object is specified in the **Ftp Connection** field.                                               |
-| **Error: Connection already closed**           | Ensure that the connection has not already been terminated or is not being closed multiple times within the same flow.                    |
-| **Resource errors on FTP server**              | Confirm that all other expected operations with the connection are completed before attempting to use the **Close Connection** node.     |
+| Problem                              | Solution                                                                                                                             |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Connection not closing**           | Verify that the correct FTP connection object is specified in the **Ftp Connection** field.                                          |
+| **Error: Connection already closed** | Ensure that the connection has not already been terminated or is not being closed multiple times within the same flow.               |
+| **Resource errors on FTP server**    | Confirm that all other expected operations with the connection are completed before attempting to use the **Close Connection** node. |
 
 ## Real-World Use Cases
 

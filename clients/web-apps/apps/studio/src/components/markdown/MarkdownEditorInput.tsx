@@ -12,16 +12,7 @@ export default function MarkdownEditorInput({
       value={value}
       onChange={(val) => setValue(val || "")}
       height={"auto"}
-      toolbars={[
-        "header",
-        "italic",
-        "bold",
-        "olist",
-        "ulist",
-        "link",
-        "quote",
-        "underline",
-      ]}
+      toolbars={["header", "italic", "bold", "olist", "ulist", "link", "quote", "underline"]}
       toolbarsMode={[]}
       width="100%"
       previewWidth="0%"

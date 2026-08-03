@@ -3,7 +3,7 @@ import { InputFieldProps } from "@avplatform/ui/form";
 // Run Delay
 const runDelayProps: InputFieldProps = {
   fieldSize: "sm",
-  type:"number",
+  type: "number",
   name: "runDelay",
   label: "Run Delay",
   description:

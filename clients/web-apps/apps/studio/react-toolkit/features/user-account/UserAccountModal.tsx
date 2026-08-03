@@ -1,18 +1,17 @@
 import { Separator } from "@avplatform/ui";
+import { logOffFromCurrentSession } from "@avplatform/ui/apis";
 import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
 import { Button, buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import { toast } from "@avplatform/ui/sonner";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { ArrowLeftStartOnRectangleIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2, UserIcon } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
-
-import { logOffFromCurrentSession } from "@avplatform/ui/apis";
-import { useUserSessionStore } from "@avplatform/ui/stores";
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */
@@ -22,10 +21,7 @@ interface UserAccountModalProps {
   sizeClassName?: string;
 }
 
-const UserAccountModal = ({
-  className,
-  sizeClassName = "h-8 w-8",
-}: UserAccountModalProps) => {
+const UserAccountModal = ({ className, sizeClassName = "h-8 w-8" }: UserAccountModalProps) => {
   // Get user session state and actions
   const { userSession, setUserSession } = useUserSessionStore();
 
@@ -46,10 +42,7 @@ const UserAccountModal = ({
     onSuccess: (httpResponse) => {
       if (httpResponse.data) {
         setUserSession(null);
-        navigate(
-          "/redirect?msg=Logging out...&url=" +
-            import.meta.env.VITE_ACCOUNTS_PATH,
-        );
+        navigate("/redirect?msg=Logging out...&url=" + import.meta.env.VITE_ACCOUNTS_PATH);
       } else toast.error(httpResponse.message);
     },
     onError: (error) => {
@@ -71,24 +64,15 @@ const UserAccountModal = ({
           </AvatarFallback>
         </Avatar>
       </PopoverTrigger>
-      <PopoverContent
-        align="end"
-        className={cn("flex w-[15rem] flex-col p-1", className)}
-      >
+      <PopoverContent align="end" className={cn("flex w-[15rem] flex-col p-1", className)}>
         {/* Header */}
-        <div
-          className={cn(
-            "flex flex-col justify-center gap-1 px-3.5 pb-2 pt-2.5",
-          )}
-        >
+        <div className={cn("flex flex-col justify-center gap-1 px-3.5 pb-2 pt-2.5")}>
           <Link
             to="/account"
             onClick={() => setisPopOverOpen(false)}
             className="truncate whitespace-nowrap text-base font-medium uppercase leading-4 hover:text-primary"
           >
-            {userSession
-              ? userSession?.firstName + " " + userSession?.lastName
-              : "User Name"}
+            {userSession ? userSession?.firstName + " " + userSession?.lastName : "User Name"}
           </Link>
           <span className="truncate whitespace-nowrap text-2xs font-normal lowercase">
             {userSession ? userSession?.email : "useremail@domain.com"}

@@ -6,14 +6,14 @@ The **Find and Replace in DOCX file** node allows you to search for specific tex
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                           | Input Type | Required? | Default Value |
-| ----------------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Document Path**       | The full file path to the .docx document that you want to modify.                                     | Text       | Yes       | _(empty)_     |
-| **All Matches**         | Set to replace all occurrences of the text or just the first one.                                     | Switch     | No        | True          |
-| **Text to Find**        | The specific text you are searching for in the document.                                              | Text       | Yes       | _(empty)_     |
-| **Text to Replace With**| The new text that will replace the text found in the document.                                        | Text       | Yes       | _(empty)_     |
-| **Use Regular Expressions** | Treats the text to find as a .NET regular expression, allowing complex search patterns.          | Switch     | No        | False         |
-| **Save Document**       | Automatically saves the document after replacements are made.                                         | Switch     | No        | False         |
+| Field Name                  | Description                                                                             | Input Type | Required? | Default Value |
+| --------------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Document Path**           | The full file path to the .docx document that you want to modify.                       | Text       | Yes       | _(empty)_     |
+| **All Matches**             | Set to replace all occurrences of the text or just the first one.                       | Switch     | No        | True          |
+| **Text to Find**            | The specific text you are searching for in the document.                                | Text       | Yes       | _(empty)_     |
+| **Text to Replace With**    | The new text that will replace the text found in the document.                          | Text       | Yes       | _(empty)_     |
+| **Use Regular Expressions** | Treats the text to find as a .NET regular expression, allowing complex search patterns. | Switch     | No        | False         |
+| **Save Document**           | Automatically saves the document after replacements are made.                           | Switch     | No        | False         |
 
 ## Expected Output Format
 
@@ -57,23 +57,25 @@ Once configured, execute the node to perform the find and replace operation in t
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the document path is correct and the document is not open in another application, as these could prevent changes from being saved correctly.
+  Ensure that the document path is correct and the document is not open in
+  another application, as these could prevent changes from being saved
+  correctly.
 </Callout>
 
 ## Input/Output Examples
 
-| Document Path         | Text to Find | Text to Replace With | All Matches | Use Regex | Save Document | Result                                                    |
-| --------------------- | ------------ | -------------------- | ----------- | --------- | ------------- | --------------------------------------------------------- |
-| `C:\Documents\Report.docx` | "2022"       | "2023"               | True        | False    | True          | All instances of "2022" in the document are replaced with "2023", and the document is saved. |
+| Document Path              | Text to Find | Text to Replace With | All Matches | Use Regex | Save Document | Result                                                                                       |
+| -------------------------- | ------------ | -------------------- | ----------- | --------- | ------------- | -------------------------------------------------------------------------------------------- |
+| `C:\Documents\Report.docx` | "2022"       | "2023"               | True        | False     | True          | All instances of "2022" in the document are replaced with "2023", and the document is saved. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                            | Solution                                                                                                    |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **Document not found**                             | Double-check the file path and ensure it points to a valid .docx file.                                      |
-| **No changes saved**                                | Ensure the document is not open in another application and the **Save Document** option is enabled.         |
-| **Text not found in document**                      | Verify that the correct text or pattern is used, and check the **Use Regular Expressions** option if needed. |
-| **Unexpected text replacement results**             | If using regex, ensure patterns are correctly formatted for .NET regular expressions.                       |
+| Problem                                 | Solution                                                                                                     |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Document not found**                  | Double-check the file path and ensure it points to a valid .docx file.                                       |
+| **No changes saved**                    | Ensure the document is not open in another application and the **Save Document** option is enabled.          |
+| **Text not found in document**          | Verify that the correct text or pattern is used, and check the **Use Regular Expressions** option if needed. |
+| **Unexpected text replacement results** | If using regex, ensure patterns are correctly formatted for .NET regular expressions.                        |
 
 ## Real-World Use Cases
 

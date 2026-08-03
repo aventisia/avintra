@@ -11,9 +11,9 @@ With this node, you can:
 
 ## Configuration Options
 
-| Field Name   | Description                                                                            | Input Type | Required? | Default Value |
-| ------------ | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Force Lock** | Activates alternative locking methods if the default lock fails.                   | Switch     | No        | False         |
+| Field Name     | Description                                                      | Input Type | Required? | Default Value |
+| -------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Force Lock** | Activates alternative locking methods if the default lock fails. | Switch     | No        | False         |
 
 ## Expected Output Format
 
@@ -39,7 +39,7 @@ Determine if you need to force the lock. If unsure or your system has issues wit
 
 ### Step 4
 
-Execute the flow. The node will attempt to lock the workstation. 
+Execute the flow. The node will attempt to lock the workstation.
 
 ### Step 5
 
@@ -48,24 +48,26 @@ The result will be available through the output values: **Success** and **Method
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you experience issues with locking your workstation using the standard method, consider turning on the **Force Lock** switch to employ alternate strategies.
+  If you experience issues with locking your workstation using the standard
+  method, consider turning on the **Force Lock** switch to employ alternate
+  strategies.
 </Callout>
 
 ## Input/Output Examples
 
-| Force Lock | Success | Method Used  | Explanation                                                             |
-| ---------- | ------- | ------------ | ----------------------------------------------------------------------- |
-| False      | true    | Standard     | Workstation locked successfully using the standard method.              |
-| True       | true    | Alternative  | Standard method failed, alternative method was used to lock successfully. |
-| False      | false   | N/A          | Locking failed due to insufficient permissions or system support.       |
+| Force Lock | Success | Method Used | Explanation                                                               |
+| ---------- | ------- | ----------- | ------------------------------------------------------------------------- |
+| False      | true    | Standard    | Workstation locked successfully using the standard method.                |
+| True       | true    | Alternative | Standard method failed, alternative method was used to lock successfully. |
+| False      | false   | N/A         | Locking failed due to insufficient permissions or system support.         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                               |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Workstation does not lock**                         | Ensure your system supports the standard locking method. If problems persist, enable **Force Lock**.   |
-| **Incorrect output value for Success**                | Verify the conditions under which the node was executed and ensure correct flow setup.                 |
-| **Unexpected Method Used output**                     | Check system settings and ensure alternative methods are permissible if they were expected to be used. |
+| Problem                                | Solution                                                                                               |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Workstation does not lock**          | Ensure your system supports the standard locking method. If problems persist, enable **Force Lock**.   |
+| **Incorrect output value for Success** | Verify the conditions under which the node was executed and ensure correct flow setup.                 |
+| **Unexpected Method Used output**      | Check system settings and ensure alternative methods are permissible if they were expected to be used. |
 
 ## Real-World Use Cases
 

@@ -1,5 +1,5 @@
-import { DotSeparator } from "@avplatform/ui";
 import { MinimalFooter, MinimalFooterLink } from "@avplatform/layout";
+import { DotSeparator } from "@avplatform/ui";
 
 /**
  * A functional React component that renders a minimal footer for the application.
@@ -21,16 +21,12 @@ import { MinimalFooter, MinimalFooterLink } from "@avplatform/layout";
 const AppMinimalFooter = () => {
   return (
     <MinimalFooter>
-      <MinimalFooterLink
-        href={`${import.meta.env.VITE_MARKETING_URL}/terms-of-service`}
-      >
+      <MinimalFooterLink href={`${import.meta.env.VITE_MARKETING_URL}/terms-of-service`}>
         Terms of Service
       </MinimalFooterLink>
       <DotSeparator />
       {/* <span className="mx-2 -mt-3.5 text-[1.5rem] text-slate-500">.</span> */}
-      <MinimalFooterLink
-        href={`${import.meta.env.VITE_MARKETING_URL}/privacy-policy`}
-      >
+      <MinimalFooterLink href={`${import.meta.env.VITE_MARKETING_URL}/privacy-policy`}>
         Privacy Policy
       </MinimalFooterLink>
     </MinimalFooter>

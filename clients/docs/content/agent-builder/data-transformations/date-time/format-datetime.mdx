@@ -12,12 +12,12 @@ For instance, you can:
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                       | Input Type | Required? | Default Value |
-| ------------------------ | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **DateTime Value**       | The DateTime value you want to format.                                                            | Text       | No        | _(empty)_     |
-| **Format Option**        | Choose whether to apply a standard or custom format to the DateTime value.                        | Select     | No        | Standard     |
-| **Standard Format**      | Select a predefined DateTime format. This field appears only when "Standard" is selected.         | Select     | No        | ShortDate    |
-| **Custom Format String** | Enter a custom format pattern. This field appears only when "Custom" is selected.                | Text       | No        | _(empty)_     |
+| Field Name               | Description                                                                               | Input Type | Required? | Default Value |
+| ------------------------ | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **DateTime Value**       | The DateTime value you want to format.                                                    | Text       | No        | _(empty)_     |
+| **Format Option**        | Choose whether to apply a standard or custom format to the DateTime value.                | Select     | No        | Standard      |
+| **Standard Format**      | Select a predefined DateTime format. This field appears only when "Standard" is selected. | Select     | No        | ShortDate     |
+| **Custom Format String** | Enter a custom format pattern. This field appears only when "Custom" is selected.         | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -61,25 +61,26 @@ Your formatted DateTime string will be produced as **Formatted DateTime String**
 </Steps>
 
 <Callout type="info" title="Note">
-  Selecting **Custom Format** allows for extensive flexibility, however, ensure correctness of the format string to avoid errors.
+  Selecting **Custom Format** allows for extensive flexibility, however, ensure
+  correctness of the format string to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Format Option     | DateTime Value       | Standard Format | Custom Format String | Output Value                      | Output Type      |
-| ----------------- | -------------------- | --------------- | -------------------- | --------------------------------- | ---------------- |
-| Standard Format   | 01/01/2025 15:30     | Long Date       | _(n/a)_              | Wednesday, January 1, 2025        | String (DateTime) |
-| Standard Format   | 01/01/2025 15:30     | Short Time      | _(n/a)_              | 15:30 PM                          | String (Time)     |
-| Custom Format     | 2025-01-01T15:30:00Z | _(n/a)_         | yyyyMMdd             | 20250101                          | String (Custom)   |
+| Format Option   | DateTime Value       | Standard Format | Custom Format String | Output Value               | Output Type       |
+| --------------- | -------------------- | --------------- | -------------------- | -------------------------- | ----------------- |
+| Standard Format | 01/01/2025 15:30     | Long Date       | _(n/a)_              | Wednesday, January 1, 2025 | String (DateTime) |
+| Standard Format | 01/01/2025 15:30     | Short Time      | _(n/a)_              | 15:30 PM                   | String (Time)     |
+| Custom Format   | 2025-01-01T15:30:00Z | _(n/a)_         | yyyyMMdd             | 20250101                   | String (Custom)   |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                             |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Incorrect DateTime Value**                      | Ensure the DateTime value is valid and in the correct format. Avoid using incompatible types or empty strings.       |
-| **Standard Format Options not visible**           | Double-check that "Standard" is selected in **Format Option** to display these options.                              |
-| **Custom Format Errors**                          | Verify the custom format string is correct and adheres to DateTime formatting standards.                             |
-| **Unexpected Output**                             | Revisit selected format options and ensure DateTime is correctly entered and optional fields are properly configured. |
+| Problem                                 | Solution                                                                                                              |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect DateTime Value**            | Ensure the DateTime value is valid and in the correct format. Avoid using incompatible types or empty strings.        |
+| **Standard Format Options not visible** | Double-check that "Standard" is selected in **Format Option** to display these options.                               |
+| **Custom Format Errors**                | Verify the custom format string is correct and adheres to DateTime formatting standards.                              |
+| **Unexpected Output**                   | Revisit selected format options and ensure DateTime is correctly entered and optional fields are properly configured. |
 
 ## Real-World Use Cases
 

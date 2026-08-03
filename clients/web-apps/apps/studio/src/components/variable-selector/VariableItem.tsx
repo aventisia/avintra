@@ -1,16 +1,14 @@
-import { useVariableSelectorStore } from "@/stores/variable-selector-store";
 import { CommandItem } from "@avplatform/ui/command";
 import { useShallow } from "zustand/react/shallow";
+
+import { useVariableSelectorStore } from "@/stores/variable-selector-store";
 
 interface VariableItemProps {
   value: string;
   isConfigValue?: boolean;
 }
 
-export const VariableItem: React.FC<VariableItemProps> = ({
-  value,
-  isConfigValue = false,
-}) => {
+export const VariableItem: React.FC<VariableItemProps> = ({ value, isConfigValue = false }) => {
   // Get variable selector store state and actions
   const { setOpenState, setSelectedValue } = useVariableSelectorStore(
     useShallow((state) => ({

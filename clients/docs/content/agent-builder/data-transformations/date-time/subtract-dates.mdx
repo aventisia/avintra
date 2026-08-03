@@ -8,11 +8,11 @@ You can select the unit of time (Seconds, Minutes, Hours, or Days) to get the di
 
 ## Configuration Options
 
-| Field Name           | Description                                                                     | Input Type | Required? | Default Value |
-| -------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Start DateTime**   | The starting point (earlier DateTime value) for the calculation.                | Text       | Yes       | _(empty)_     |
-| **End DateTime**     | The endpoint (later DateTime value) for the calculation.                        | Text       | Yes       | _(empty)_     |
-| **Difference Unit**  | The unit of measurement for the time difference: Seconds, Minutes, Hours, Days. | Select     | Yes       | Days          |
+| Field Name          | Description                                                                     | Input Type | Required? | Default Value |
+| ------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Start DateTime**  | The starting point (earlier DateTime value) for the calculation.                | Text       | Yes       | _(empty)_     |
+| **End DateTime**    | The endpoint (later DateTime value) for the calculation.                        | Text       | Yes       | _(empty)_     |
+| **Difference Unit** | The unit of measurement for the time difference: Seconds, Minutes, Hours, Days. | Select     | Yes       | Days          |
 
 ## Expected Output Format
 
@@ -52,25 +52,26 @@ The calculated time difference will appear as **DifferenceValue** for use in sub
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the **End DateTime** is always later than **Start DateTime** for accurate results.
+  Ensure the **End DateTime** is always later than **Start DateTime** for
+  accurate results.
 </Callout>
 
 ## Input/Output Examples
 
-| Start DateTime     | End DateTime       | Difference Unit | Output Value | Output Type         |
-| ------------------ | ------------------ | --------------- | ------------ | ------------------- |
-| 2023-10-01 08:00   | 2023-10-02 08:00   | Days            | 1            | Number (Days)       |
-| 2023-10-01 08:00   | 2023-10-01 09:30   | Hours           | 1.5          | Number (Hours)      |
-| 2023-10-01 08:00   | 2023-10-01 08:05   | Minutes         | 5            | Number (Minutes)    |
-| 2023-10-01 08:00   | 2023-10-01 08:00:30 | Seconds         | 30           | Number (Seconds)    |
+| Start DateTime   | End DateTime        | Difference Unit | Output Value | Output Type      |
+| ---------------- | ------------------- | --------------- | ------------ | ---------------- |
+| 2023-10-01 08:00 | 2023-10-02 08:00    | Days            | 1            | Number (Days)    |
+| 2023-10-01 08:00 | 2023-10-01 09:30    | Hours           | 1.5          | Number (Hours)   |
+| 2023-10-01 08:00 | 2023-10-01 08:05    | Minutes         | 5            | Number (Minutes) |
+| 2023-10-01 08:00 | 2023-10-01 08:00:30 | Seconds         | 30           | Number (Seconds) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                                                                           |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **End DateTime is before Start DateTime** | Ensure the **End DateTime** is a later value than **Start DateTime** to get a positive time difference result.     |
-| **Incorrect date format**                 | Make sure your date and time inputs match a standard format, such as `YYYY-MM-DD HH:MM`.                          |
-| **Empty time difference**                 | Double-check both date fields to make sure they are correctly filled out. Avoid leaving any field blank.           |
+| Problem                                   | Solution                                                                                                       |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **End DateTime is before Start DateTime** | Ensure the **End DateTime** is a later value than **Start DateTime** to get a positive time difference result. |
+| **Incorrect date format**                 | Make sure your date and time inputs match a standard format, such as `YYYY-MM-DD HH:MM`.                       |
+| **Empty time difference**                 | Double-check both date fields to make sure they are correctly filled out. Avoid leaving any field blank.       |
 
 ## Real-World Use Cases
 

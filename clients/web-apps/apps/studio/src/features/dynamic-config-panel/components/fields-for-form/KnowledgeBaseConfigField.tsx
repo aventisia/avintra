@@ -1,15 +1,9 @@
-import { SliderField } from "@/components/Slider/SliderField";
-
 import { InputField, MultiSelectField, SelectField } from "@avplatform/ui/form";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import {
-  Controller,
-  FieldPath,
-  FieldValues,
-  useController,
-  useFormContext,
-} from "react-hook-form";
+import { Controller, FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
+
+import { SliderField } from "@/components/Slider/SliderField";
 
 import { getKnowledgeBaseSelectOptions } from "../../apis/knowledge-base-apis.ts";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
@@ -21,14 +15,10 @@ interface KnowledgeBaseConfigFieldProps {
 
 const KnowledgeBaseConfigField = ({ name }: KnowledgeBaseConfigFieldProps) => {
   // Set names for the fields
-  const knowledgeBaseFieldName =
-    `${name}.knowledgeBase` as FieldPath<FieldValues>;
-  const numberOfChunksFieldName =
-    `${name}.numberOfChunks` as FieldPath<FieldValues>;
-  const retrievalTypeFieldName =
-    `${name}.retrievalType` as FieldPath<FieldValues>;
-  const sourceThresholdFieldName =
-    `${name}.sourceThreshold` as FieldPath<FieldValues>;
+  const knowledgeBaseFieldName = `${name}.knowledgeBase` as FieldPath<FieldValues>;
+  const numberOfChunksFieldName = `${name}.numberOfChunks` as FieldPath<FieldValues>;
+  const retrievalTypeFieldName = `${name}.retrievalType` as FieldPath<FieldValues>;
+  const sourceThresholdFieldName = `${name}.sourceThreshold` as FieldPath<FieldValues>;
 
   // Get the form context
   const { control, setValue, getValues } = useFormContext();

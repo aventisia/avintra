@@ -10,12 +10,12 @@ The **Wait For File** node suspends the processing of your workflow until a spec
 
 ## Configuration Options
 
-| Field Name                | Description                                                                 | Input Type | Required? | Default Value |
-| ------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **File Path**             | Enter the complete path of the file you want to monitor (to wait for).      | Text       | Yes       | _(empty)_     |
-| **Wait for File to be**   | Choose whether to wait for the file's creation or deletion.                 | Select     | No        | Created      |
-| **Fail with Timeout Error** | Decide if the workflow should fail if the file doesn't appear/disappear within a set time. | Switch     | No        | False        |
-| **Duration (seconds)**    | Specify how long (in seconds) to wait for the file's presence/absence before timing out. | Text       | No        | 5 seconds    |
+| Field Name                  | Description                                                                                | Input Type | Required? | Default Value |
+| --------------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **File Path**               | Enter the complete path of the file you want to monitor (to wait for).                     | Text       | Yes       | _(empty)_     |
+| **Wait for File to be**     | Choose whether to wait for the file's creation or deletion.                                | Select     | No        | Created       |
+| **Fail with Timeout Error** | Decide if the workflow should fail if the file doesn't appear/disappear within a set time. | Switch     | No        | False         |
+| **Duration (seconds)**      | Specify how long (in seconds) to wait for the file's presence/absence before timing out.   | Text       | No        | 5 seconds     |
 
 ## Expected Output Format
 
@@ -54,15 +54,17 @@ Proceed with your workflow. The node will halt the flow until the file condition
 </Steps>
 
 <Callout type="info" title="Note">
-  Enabling **Fail with Timeout Error** without specifying a longer duration may lead to premature timeouts in cases where file operations take longer than expected.
+  Enabling **Fail with Timeout Error** without specifying a longer duration may
+  lead to premature timeouts in cases where file operations take longer than
+  expected.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                                                                                                         |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid File Path entered**                                | Double-check that the full file path is correct and accessible from the system running the workflow.                                                            |
-| **Timeout occurs when expecting file creation/deletion**     | Ensure that **Fail with Timeout Error** is enabled and the **Duration** is sufficiently long to accommodate any expected delays in file creation or deletion.   |
+| Problem                                                     | Solution                                                                                                                                                          |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid File Path entered**                               | Double-check that the full file path is correct and accessible from the system running the workflow.                                                              |
+| **Timeout occurs when expecting file creation/deletion**    | Ensure that **Fail with Timeout Error** is enabled and the **Duration** is sufficiently long to accommodate any expected delays in file creation or deletion.     |
 | **The node does not proceed even after file condition met** | Verify that the file's path and type match the conditions set in the node configuration (e.g., waiting for the wrong file name or at an incorrect file location). |
 
 ## Real-World Use Cases

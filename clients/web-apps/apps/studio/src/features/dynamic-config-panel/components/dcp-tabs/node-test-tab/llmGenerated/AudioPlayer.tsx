@@ -54,9 +54,7 @@ const AudioPlayer = ({
         if (src.startsWith("http") || src.startsWith("blob:")) {
           setAudioUrl(src);
         } else {
-          const cleanBase64 = src.includes("base64,")
-            ? src.split("base64,")[1]
-            : src;
+          const cleanBase64 = src.includes("base64,") ? src.split("base64,")[1] : src;
           const byteCharacters = atob(cleanBase64);
           const byteNumbers = new Array(byteCharacters.length);
           for (let i = 0; i < byteCharacters.length; i++) {
@@ -118,11 +116,7 @@ const AudioPlayer = ({
   };
 
   if (error)
-    return (
-      <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg">
-        {error}
-      </div>
-    );
+    return <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-lg">{error}</div>;
   if (!audioUrl) return null;
 
   const isFile = src instanceof File;
@@ -150,11 +144,7 @@ const AudioPlayer = ({
 
         {/* File-type icon */}
         <div className="shrink-0 text-primary">
-          {isFile ? (
-            <FileAudio className="h-5 w-5" />
-          ) : (
-            <Volume2 className="h-5 w-5" />
-          )}
+          {isFile ? <FileAudio className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
         </div>
 
         {/* Name + size — takes flexible space before the controls */}
@@ -208,12 +198,7 @@ const AudioPlayer = ({
 
         {/* Remove button */}
         {onRemove && (
-          <Button
-            onClick={onRemove}
-            variant={"caution"}
-            size={"icon7"}
-            aria-label="Remove audio"
-          >
+          <Button onClick={onRemove} variant={"caution"} size={"icon7"} aria-label="Remove audio">
             <X className="h-4 w-4" />
           </Button>
         )}
@@ -230,11 +215,7 @@ const AudioPlayer = ({
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/5 text-primary shadow-inner">
-            {isFile ? (
-              <FileAudio className="h-5 w-5" />
-            ) : (
-              <Volume2 className="h-5 w-5" />
-            )}
+            {isFile ? <FileAudio className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
           </div>
           <div className="flex flex-col">
             <p className="truncate text-sm font-semibold text-foreground">
@@ -302,9 +283,7 @@ const AudioPlayer = ({
                     isPlaying ? "animate-pulse" : "h-[2px]",
                   )}
                   style={{
-                    height: isPlaying
-                      ? `${Math.max(20, Math.random() * 100)}%`
-                      : "2px",
+                    height: isPlaying ? `${Math.max(20, Math.random() * 100)}%` : "2px",
                     animationDuration: `${0.5 + i * 0.1}s`,
                   }}
                 />

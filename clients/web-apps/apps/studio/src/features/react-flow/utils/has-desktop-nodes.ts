@@ -1,6 +1,6 @@
-import { NodeDataType } from "@/types/node-data-type";
-
 import { Node } from "@xyflow/react";
+
+import { NodeDataType } from "@/types/node-data-type";
 
 /**
  * Support/placeholder node types that are not considered as executable nodes.
@@ -23,9 +23,7 @@ const SUPPORT_NODE_TYPES = new Set([
  * Examples allowed: [cloud, windows], [cloud], [cloud, linux], [cloud, windows, linux], [].
  * Note: If supportedPlatforms property is missing or empty, we will consider the node as cross-platform and allow it to be executed.
  */
-export const doesFlowContainAnyDesktopOnlyNode = (
-  nodes: Node<NodeDataType>[],
-): boolean => {
+export const doesFlowContainAnyDesktopOnlyNode = (nodes: Node<NodeDataType>[]): boolean => {
   const desktopOnlyNodeCount = nodes.filter((node) => {
     // Skip support node types since they are not executable nodes
     if (SUPPORT_NODE_TYPES.has(node.type || "")) return false;
@@ -36,9 +34,7 @@ export const doesFlowContainAnyDesktopOnlyNode = (
     // If supportedPlatforms is missing or empty or contains "cloud", consider the node executable on cloud
     const supportedPlatforms = node.data?.supportedPlatforms;
     return (
-      supportedPlatforms &&
-      supportedPlatforms.length > 0 &&
-      !supportedPlatforms.includes("cloud")
+      supportedPlatforms && supportedPlatforms.length > 0 && !supportedPlatforms.includes("cloud")
     );
   }).length;
 

@@ -2,18 +2,18 @@ import { Callout, Steps } from "nextra/components";
 
 # Update Cell or Range in Google Sheet
 
-The **Update Cell or Range in Google Sheet** node allows you to update specific cells or ranges within a Google Sheet with new values. It's helpful when you want to programmatically insert data, such as automatically updating metrics, entering new entries in a database, or appending logs to an existing sheet. 
+The **Update Cell or Range in Google Sheet** node allows you to update specific cells or ranges within a Google Sheet with new values. It's helpful when you want to programmatically insert data, such as automatically updating metrics, entering new entries in a database, or appending logs to an existing sheet.
 
 ## Configuration Options
 
-| Field Name        | Description                                                                                                                                         | Input Type | Required? | Default Value |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Sheets Service**| The authenticated SheetsService instance (created using 'Create Google Sheets Service Instance').                                                    | Text       | Yes       | _(empty)_     |
-| **Spreadsheet ID**| The unique identifier of the Google Spreadsheet, found in its URL.                                                                                   | Text       | Yes       | _(empty)_     |
-| **Sheet Name**    | The name of the sheet tab you want to modify (e.g., `Sheet1`).                                                                                      | Text       | Yes       | _(empty)_     |
-| **Range**         | The specific cell or range you wish to update (e.g., `A1`, `A1:B2`).                                                                                | Text       | Yes       | _(empty)_     |
-| **Values**        | The list of values you want to input in the selected range. For a single row, input like `['A1','B1']`; to update multiple rows, use a different node.| Text       | Yes       | _(empty)_     |
-| **Run Delay (ms)**| Optional time delay in milliseconds before the update operation to help avoid rate limiting.                                                        | Text       | No        | 0             |
+| Field Name         | Description                                                                                                                                            | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Sheets Service** | The authenticated SheetsService instance (created using 'Create Google Sheets Service Instance').                                                      | Text       | Yes       | _(empty)_     |
+| **Spreadsheet ID** | The unique identifier of the Google Spreadsheet, found in its URL.                                                                                     | Text       | Yes       | _(empty)_     |
+| **Sheet Name**     | The name of the sheet tab you want to modify (e.g., `Sheet1`).                                                                                         | Text       | Yes       | _(empty)_     |
+| **Range**          | The specific cell or range you wish to update (e.g., `A1`, `A1:B2`).                                                                                   | Text       | Yes       | _(empty)_     |
+| **Values**         | The list of values you want to input in the selected range. For a single row, input like `['A1','B1']`; to update multiple rows, use a different node. | Text       | Yes       | _(empty)_     |
+| **Run Delay (ms)** | Optional time delay in milliseconds before the update operation to help avoid rate limiting.                                                           | Text       | No        | 0             |
 
 ## Expected Output Format
 
@@ -32,7 +32,7 @@ Ensure you have an authenticated SheetsService instance ready. This is typically
 
 ### Step 3
 
-In the node configuration panel, enter the **Spreadsheet ID** which can be found in the URL of your Google Spreadsheet. For example, in `https://docs.google.com/spreadsheets/d/yourSpreadsheetId/edit`, `yourSpreadsheetId` is the ID. 
+In the node configuration panel, enter the **Spreadsheet ID** which can be found in the URL of your Google Spreadsheet. For example, in `https://docs.google.com/spreadsheets/d/yourSpreadsheetId/edit`, `yourSpreadsheetId` is the ID.
 
 ### Step 4
 
@@ -53,24 +53,25 @@ Optionally, enter a **Run Delay (ms)** if you wish to prevent hitting Google's e
 </Steps>
 
 <Callout type="info" title="Note">
-  The node operates without direct output. Post-update, verify changes directly in your Google Sheet.
+  The node operates without direct output. Post-update, verify changes directly
+  in your Google Sheet.
 </Callout>
 
 ## Input/Output Examples
 
-| Spreadsheet ID | Sheet Name | Range | Values       | Expected Result                                                            |
-| -------------- | ---------- | ----- | ------------ | -------------------------------------------------------------------------- |
-| abc123         | Sheet1     | A1    | ["Test"]     | Cell A1 in "Sheet1" of spreadsheet abc123 updated to "Test".               |
-| abc123         | Sheet2     | A1:B2 | ["A","B"]    | Cells A1 to B2 in "Sheet2" of spreadsheet abc123 updated with new values.  |
+| Spreadsheet ID | Sheet Name | Range | Values    | Expected Result                                                           |
+| -------------- | ---------- | ----- | --------- | ------------------------------------------------------------------------- |
+| abc123         | Sheet1     | A1    | ["Test"]  | Cell A1 in "Sheet1" of spreadsheet abc123 updated to "Test".              |
+| abc123         | Sheet2     | A1:B2 | ["A","B"] | Cells A1 to B2 in "Sheet2" of spreadsheet abc123 updated with new values. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                                                                              |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Spreadsheet ID**                       | Confirm the Spreadsheet ID from the URL matches what you've entered.                                                                                  |
-| **Incorrect Range Input**                        | Make sure the range format is correct (e.g., `A1`, `A1:B2`).                                                                                         |
-| **Values Mismatch with Range**                   | Ensure your provided values align with the number of cells in the range you specified.                                                                |
-| **Missing SheetsService Instance**               | Create an instance of SheetsService through the appropriate activity before using this node.                                                          |
+| Problem                            | Solution                                                                                     |
+| ---------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Invalid Spreadsheet ID**         | Confirm the Spreadsheet ID from the URL matches what you've entered.                         |
+| **Incorrect Range Input**          | Make sure the range format is correct (e.g., `A1`, `A1:B2`).                                 |
+| **Values Mismatch with Range**     | Ensure your provided values align with the number of cells in the range you specified.       |
+| **Missing SheetsService Instance** | Create an instance of SheetsService through the appropriate activity before using this node. |
 
 ## Real-World Use Cases
 

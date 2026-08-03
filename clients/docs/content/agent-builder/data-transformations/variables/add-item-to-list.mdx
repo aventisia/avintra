@@ -12,9 +12,9 @@ This functionality is helpful in scenarios such as:
 
 ## Configuration Options
 
-| Field Name       | Description                                                        | Input Type | Required? | Default Value |
-| ---------------- | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **List To Modify** | The list variable that you want to update with new items.          | Text       | Yes       | _(empty)_     |
+| Field Name         | Description                                                          | Input Type | Required? | Default Value |
+| ------------------ | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **List To Modify** | The list variable that you want to update with new items.            | Text       | Yes       | _(empty)_     |
 | **Item To Add**    | The item(s) to add; can be a single element or comma-separated list. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -43,24 +43,25 @@ Once configured, the node will process and output the list as **ModifiedList**, 
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the list and items you're handling are of compatible data types to avoid output issues.
+  Ensure that the list and items you're handling are of compatible data types to
+  avoid output issues.
 </Callout>
 
 ## Input/Output Examples
 
-| List To Modify | Item To Add         | Output Value                         | Output Type       |
-| -------------- | ------------------- | ------------------------------------ | ----------------- |
-| `[1, 2, 3]`    | `4`                 | `[1, 2, 3, 4]`                       | List (Numeric)    |
-| `['apple']`    | `'banana, orange'`  | `['apple', 'banana', 'orange']`      | List (String)     |
-| `[]`           | `'item1, item2'`    | `['item1', 'item2']`                 | List (String)     |
+| List To Modify | Item To Add        | Output Value                    | Output Type    |
+| -------------- | ------------------ | ------------------------------- | -------------- |
+| `[1, 2, 3]`    | `4`                | `[1, 2, 3, 4]`                  | List (Numeric) |
+| `['apple']`    | `'banana, orange'` | `['apple', 'banana', 'orange']` | List (String)  |
+| `[]`           | `'item1, item2'`   | `['item1', 'item2']`            | List (String)  |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                       |
-| ----------------------------------------------------- | -------------------------------------------------------------- |
-| **No output generated**                               | Ensure both fields aren't empty and contain valid inputs.      |
-| **Type mismatch error**                               | Confirm that item types match the list type.                   |
-| **Unexpected list order**                             | Items are added at the end; check the order in input operation. |
+| Problem                   | Solution                                                        |
+| ------------------------- | --------------------------------------------------------------- |
+| **No output generated**   | Ensure both fields aren't empty and contain valid inputs.       |
+| **Type mismatch error**   | Confirm that item types match the list type.                    |
+| **Unexpected list order** | Items are added at the end; check the order in input operation. |
 
 ## Real-World Use Cases
 

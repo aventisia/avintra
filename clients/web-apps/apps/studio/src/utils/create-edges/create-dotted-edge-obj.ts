@@ -1,6 +1,6 @@
-import { STROKE_DASHARRAY, STROKE_WIDTH } from "@/constants";
-
 import { Edge } from "@xyflow/react";
+
+import { STROKE_DASHARRAY, STROKE_WIDTH } from "@/constants";
 
 /**
  * Creates a dotted edge object.

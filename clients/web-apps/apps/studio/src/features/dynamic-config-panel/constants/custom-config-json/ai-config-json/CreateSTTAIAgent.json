@@ -4,10 +4,7 @@
   "description": "Convert spoken language into written text using AI.",
   "version": "1.0.0",
   "auther": "@aventisia",
-  "supportedPlatforms": [
-    "cloud",
-    "desktop"
-  ],
+  "supportedPlatforms": ["cloud", "desktop"],
   "errorHandling": "standard",
   "testScreenType": "llmGenerateRequest",
   "fields": [

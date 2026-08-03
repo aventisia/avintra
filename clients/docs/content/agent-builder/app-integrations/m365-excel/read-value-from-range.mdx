@@ -8,12 +8,12 @@ In practical use, this might help automate data extraction from reports, sales r
 
 ## Configuration Options
 
-| Field Name                       | Description                                                                                      | Input Type             | Required? | Default Value |
-| -------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------- | --------- | ------------- |
-| **M365 Excel API Credential**    | Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret). | Credentials Select    | Yes       | _(empty)_     |
-| **Excel File (Drive and Item ID)** | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint to read the value from. Format: `driveId/items/itemId`. | Text                  | Yes       | _(empty)_     |
-| **Worksheet Name**               | The name of the worksheet in the Excel file to read the value from (e.g., 'Sheet1').            | Text                  | No        | Sheet1        |
-| **Range Address**                | The address of the range in the worksheet to read the value from (e.g., 'A1' or 'A1:B10').      | Text                  | No        | A1            |
+| Field Name                         | Description                                                                                                                  | Input Type         | Required? | Default Value |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------ | --------- | ------------- |
+| **M365 Excel API Credential**      | Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret).               | Credentials Select | Yes       | _(empty)_     |
+| **Excel File (Drive and Item ID)** | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint to read the value from. Format: `driveId/items/itemId`. | Text               | Yes       | _(empty)_     |
+| **Worksheet Name**                 | The name of the worksheet in the Excel file to read the value from (e.g., 'Sheet1').                                         | Text               | No        | Sheet1        |
+| **Range Address**                  | The address of the range in the worksheet to read the value from (e.g., 'A1' or 'A1:B10').                                   | Text               | No        | A1            |
 
 ## Expected Output Format
 
@@ -49,24 +49,26 @@ Execute the node in your flow. The values from the specified range will be acces
 </Steps>
 
 <Callout type="info" title="Note">
-  Make sure your M365 credentials have the necessary permissions to access the specified file in OneDrive or SharePoint. Unauthorized access attempts will result in errors.
+  Make sure your M365 credentials have the necessary permissions to access the
+  specified file in OneDrive or SharePoint. Unauthorized access attempts will
+  result in errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Range Address | Retrieved Value Example      | Output Type  |
-| ------------- | ---------------------------- | ------------ |
-| A1            | 123                          | Single Value |
-| A1:B2         | [123, 'Text', 456, 'Data']   | Array        |
+| Range Address | Retrieved Value Example    | Output Type  |
+| ------------- | -------------------------- | ------------ |
+| A1            | 123                        | Single Value |
+| A1:B2         | [123, 'Text', 456, 'Data'] | Array        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                                                                             |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid credentials error**                        | Check if the provided M365 credentials are correct and have permission to access the specified Excel file.                                                           |
-| **File/Range not found**                             | Ensure the Drive ID, Item ID, worksheet name, and range address are correctly entered.                                                                                |
-| **Incorrect Range Address format**                   | Verify that the range address follows Excel's format. For single cell, use 'A1'; for multiple cells, use 'A1:B10'.                                                    |
-| **No data returned**                                 | Confirm that the specified range contains data. If the cells are empty, no data will be read.                                                                        |
+| Problem                            | Solution                                                                                                           |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Invalid credentials error**      | Check if the provided M365 credentials are correct and have permission to access the specified Excel file.         |
+| **File/Range not found**           | Ensure the Drive ID, Item ID, worksheet name, and range address are correctly entered.                             |
+| **Incorrect Range Address format** | Verify that the range address follows Excel's format. For single cell, use 'A1'; for multiple cells, use 'A1:B10'. |
+| **No data returned**               | Confirm that the specified range contains data. If the cells are empty, no data will be read.                      |
 
 ## Real-World Use Cases
 

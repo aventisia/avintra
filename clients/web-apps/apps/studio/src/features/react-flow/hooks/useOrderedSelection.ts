@@ -20,9 +20,7 @@ export const useOrderedSelection = (nodes: Node[]) => {
 
   useEffect(() => {
     setOrderedIds((prev) => {
-      const currentlySelected = nodes
-        .filter((n) => n.selected)
-        .map((n) => n.id);
+      const currentlySelected = nodes.filter((n) => n.selected).map((n) => n.id);
 
       // Keep existing ordered IDs that are still selected
       const maintained = prev.filter((id) => currentlySelected.includes(id));

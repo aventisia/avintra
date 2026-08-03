@@ -1,10 +1,12 @@
-import { cn } from "@avplatform/ui/lib";
-import { Button } from "@avplatform/ui/buttons";
-import { Tooltip } from "@avplatform/ui/tooltip";
 import { Separator } from "@avplatform/ui";
-import { Undo2, Redo2 } from "lucide-react";
-import { VCBContainer } from "./VCBContainer";
+import { Button } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
+import { Tooltip } from "@avplatform/ui/tooltip";
+import { Redo2, Undo2 } from "lucide-react";
+
 import { useUndoRedoControls } from "@/hooks/useUndoRedoControls";
+
+import { VCBContainer } from "./VCBContainer";
 
 /**
  * Renders the Undo and Redo actions for the ReactFlow ViewControls panel.

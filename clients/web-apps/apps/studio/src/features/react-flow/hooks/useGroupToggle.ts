@@ -1,11 +1,11 @@
 // ─── useGroupToggle ──────────────────────────────────────────────────────────
-import { MARKER_ARROW_PREFIX } from "@/constants";
-import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-
 import { Edge, Node } from "@xyflow/react";
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { MARKER_ARROW_PREFIX } from "@/constants";
+import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 // ─── Shared helper ────────────────────────────────────────────────────────────
 //
@@ -43,9 +43,7 @@ export function useGroupToggle() {
   const layoutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleGroupExpand = (groupId: string) => {
-    const groupHead = nodes.find(
-      (n) => n.data?.groupId === groupId && n.data?.isGroupHead,
-    );
+    const groupHead = nodes.find((n) => n.data?.groupId === groupId && n.data?.isGroupHead);
     if (!groupHead) return;
 
     const isCurrentlyExpanded = groupHead.data?.isExpanded ?? false;
@@ -55,10 +53,7 @@ export function useGroupToggle() {
 
     const groupLastNode = groupNodes.find(
       (node) =>
-        !edges.some(
-          (edge) =>
-            edge.source === node.id && groupNodeIds.includes(edge.target),
-        ),
+        !edges.some((edge) => edge.source === node.id && groupNodeIds.includes(edge.target)),
     );
     const lastNode = groupLastNode ?? groupNodes[groupNodes.length - 1];
 
@@ -77,9 +72,7 @@ export function useGroupToggle() {
         }
         return node;
       });
-      updatedEdges = edges.filter(
-        (e) => !(e.data?.isTemporary && e.id.includes(groupId)),
-      );
+      updatedEdges = edges.filter((e) => !(e.data?.isTemporary && e.id.includes(groupId)));
     } else {
       // COLLAPSE
       updatedNodes = nodes.map((node) => {
@@ -112,9 +105,7 @@ export function useGroupToggle() {
           }
         : null;
 
-      const cleanedEdges = edges.filter(
-        (e) => !(e.data?.isTemporary && e.id.includes(groupId)),
-      );
+      const cleanedEdges = edges.filter((e) => !(e.data?.isTemporary && e.id.includes(groupId)));
       updatedEdges = tempEdge ? [...cleanedEdges, tempEdge] : cleanedEdges;
     }
 

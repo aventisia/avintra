@@ -1,9 +1,7 @@
 import { FlowVersionHistoryDto } from "../dtos/agent-history-dto";
 import { DaySection } from "../types/agent-history-type";
 
-export const groupHistoryByDay = (
-  data: FlowVersionHistoryDto[] | undefined,
-): DaySection[] => {
+export const groupHistoryByDay = (data: FlowVersionHistoryDto[] | undefined): DaySection[] => {
   if (!data?.length) return [];
 
   const sorted = [...data].sort(

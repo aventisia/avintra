@@ -5,17 +5,18 @@ import { Callout, Steps } from "nextra/components";
 The **Wait for Service** node is designed to suspend the execution of your automation flow until a specific computer service (like a system or network service) changes its state to running, paused, or stopped. This feature is particularly useful in scenarios where your automation tasks depend on certain services being in a particular state before proceeding.
 
 For example:
+
 - Before printing, wait for the Print Spooler service to start.
 - Before performing database operations, ensure SQL Server is up and running.
 
 ## Configuration Options
 
-| Field Name                  | Description                                                                                                                                 | Input Type | Required? | Default Value |
-| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Wait for Service to**     | Choose the state change to observe: start, stop, or pause the service.                                                                      | Select     | Yes       | _(empty)_     |
-| **Service Name**            | Select the service you want to monitor. A predefined list of common services is available.                                                  | Select     | Yes       | _(empty)_     |
-| **Fail with Timeout Error** | If enabled, the node will generate an error if the service does not reach the desired state within the specified duration.                  | Switch     | No        | True          |
-| **Duration (seconds)**      | Set the maximum number of seconds to wait for the service. This option is visible only if "Fail with Timeout Error" is enabled.             | Text       | No        | 30            |
+| Field Name                  | Description                                                                                                                     | Input Type | Required? | Default Value |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Wait for Service to**     | Choose the state change to observe: start, stop, or pause the service.                                                          | Select     | Yes       | _(empty)_     |
+| **Service Name**            | Select the service you want to monitor. A predefined list of common services is available.                                      | Select     | Yes       | _(empty)_     |
+| **Fail with Timeout Error** | If enabled, the node will generate an error if the service does not reach the desired state within the specified duration.      | Switch     | No        | True          |
+| **Duration (seconds)**      | Set the maximum number of seconds to wait for the service. This option is visible only if "Fail with Timeout Error" is enabled. | Text       | No        | 30            |
 
 ## Expected Output Format
 
@@ -47,19 +48,22 @@ If you enabled **Fail with Timeout Error**, define how long the node should wait
 ### Step 6
 
 Proceed with your automation flow; the node will wait as configured for the service state change before continuing.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure the specified service is configured correctly on your system and that you have the necessary permissions to monitor its state. Misconfiguration or lack of permissions might cause unexpected behavior.
+  Ensure the specified service is configured correctly on your system and that
+  you have the necessary permissions to monitor its state. Misconfiguration or
+  lack of permissions might cause unexpected behavior.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                                  |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| **The service never reaches the desired state**  | Confirm the service is installed and operational on your system. Check service logs for any startup issues.|
-| **"Duration" field not visible**                 | Make sure the **Fail with Timeout Error** option is enabled to access the duration setting.                |
-| **Timeout error occurs quickly**                 | Increase the **Duration (seconds)** field value to provide more time for the service state change.         |
+| Problem                                         | Solution                                                                                                    |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **The service never reaches the desired state** | Confirm the service is installed and operational on your system. Check service logs for any startup issues. |
+| **"Duration" field not visible**                | Make sure the **Fail with Timeout Error** option is enabled to access the duration setting.                 |
+| **Timeout error occurs quickly**                | Increase the **Duration (seconds)** field value to provide more time for the service state change.          |
 
 ## Real-World Use Cases
 

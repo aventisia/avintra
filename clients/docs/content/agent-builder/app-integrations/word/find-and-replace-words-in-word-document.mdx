@@ -5,21 +5,22 @@ import { Callout, Steps } from "nextra/components";
 The **Find and Replace Words in Word Document** node helps you efficiently locate specific text within a Word document and replace it with different text. This is useful for updating document content quickly, such as correcting repeated typos or standardizing terminology across a document.
 
 For example:
+
 - Replacing outdated names with the current ones across reports.
 - Changing product codes or terms in proposals.
 - Quickly correcting consistent spelling mistakes.
 
 ## Configuration Options
 
-| Field Name                | Description                                                                 | Input Type | Required? | Default Value |
-| ------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Word Instance**         | The specific Word instance to use for the operation.                        | Text       | Yes       | _(empty)_     |
-| **All Matches**           | Choose to replace all occurrences (`true`) or just the first found (`false`).| Switch     | No        | false         |
-| **Text to Find**          | The text string you want to search for in the document.                     | Text       | Yes       | _(empty)_     |
-| **Text to Replace With**  | The text that will replace occurrences of the found text.                   | Text       | Yes       | _(empty)_     |
-| **Use Wildcards**         | Toggle to use special wildcard patterns in your search.                     | Switch     | No        | false         |
-| **Match Case**            | Ensure case sensitivity in search when using wildcards.                     | Switch     | No        | true          |
-| **Match Whole Words Only** | Match only complete words, not parts of words, when using wildcards.       | Switch     | No        | true          |
+| Field Name                 | Description                                                                   | Input Type | Required? | Default Value |
+| -------------------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Word Instance**          | The specific Word instance to use for the operation.                          | Text       | Yes       | _(empty)_     |
+| **All Matches**            | Choose to replace all occurrences (`true`) or just the first found (`false`). | Switch     | No        | false         |
+| **Text to Find**           | The text string you want to search for in the document.                       | Text       | Yes       | _(empty)_     |
+| **Text to Replace With**   | The text that will replace occurrences of the found text.                     | Text       | Yes       | _(empty)_     |
+| **Use Wildcards**          | Toggle to use special wildcard patterns in your search.                       | Switch     | No        | false         |
+| **Match Case**             | Ensure case sensitivity in search when using wildcards.                       | Switch     | No        | true          |
+| **Match Whole Words Only** | Match only complete words, not parts of words, when using wildcards.          | Switch     | No        | true          |
 
 ## Expected Output Format
 
@@ -61,16 +62,17 @@ Once configured, confirm your settings to execute the find and replace operation
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use wildcards for advanced searching. For example, using a wildcard pattern like `"b*t"` can match any word starting with 'b' and ending with 't'.
+  Use wildcards for advanced searching. For example, using a wildcard pattern
+  like `"b*t"` can match any word starting with 'b' and ending with 't'.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                          |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **Word Instance not found or incorrect**            | Ensure the Word document is open in the specified instance.                                                       |
-| **Text not being replaced as expected**             | Verify your text inputs for accuracy and check if case sensitivity or whole word settings are influencing results.|
-| **Wildcards not functioning properly**              | Double-check your wildcard patterns and settings. Make sure conditions like **Match Case** and **Whole Words** are correctly toggled.|
+| Problem                                  | Solution                                                                                                                              |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Word Instance not found or incorrect** | Ensure the Word document is open in the specified instance.                                                                           |
+| **Text not being replaced as expected**  | Verify your text inputs for accuracy and check if case sensitivity or whole word settings are influencing results.                    |
+| **Wildcards not functioning properly**   | Double-check your wildcard patterns and settings. Make sure conditions like **Match Case** and **Whole Words** are correctly toggled. |
 
 ## Real-World Use Cases
 

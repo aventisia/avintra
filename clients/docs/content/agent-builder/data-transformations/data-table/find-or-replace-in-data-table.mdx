@@ -6,18 +6,18 @@ The **Find or Replace in Data Table** node allows you to search for specific tex
 
 ## Configuration Options
 
-| Field Name                    | Description                                                                                               | Input Type | Required? | Default Value |
-| ----------------------------- | --------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Data Table**                | The data table to process.                                                                               | Text       | Yes       | _(empty)_     |
-| **Search Mode**               | Specifies whether to find or find and replace values.                                                    | Select     | Yes       | Find          |
-| **Text to Find**              | The value to find in the data table.                                                                     | Text       | No        | _(empty)_     |
-| **Text to Replace With**      | The value to replace with (required if 'Search Mode' is 'Find and Replace').                             | Text       | No        | _(empty)_     |
-| **All Matches**               | If true, processes all occurrences. If false, processes only the first occurrence.                       | Switch     | No        | _(empty)_     |
-| **Find Using a Regular Expression** | If true, uses regular expressions for matching.                                                   | Switch     | No        | _(empty)_     |
-| **Match Case**                | If true, performs a case-sensitive search.                                                               | Switch     | No        | _(empty)_     |
-| **Match Entire Cell Contents**| If true, matches only cells that contain exactly the specified text.                                    | Switch     | No        | _(empty)_     |
-| **Search By**                 | Specifies how to search the data table.                                                                 | Select     | No        | Everywhere    |
-| **Column Index or Name**      | The column index or name to search within (required if 'Search By' is 'On Column').                      | Text       | No        | _(empty)_     |
+| Field Name                          | Description                                                                         | Input Type | Required? | Default Value |
+| ----------------------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**                      | The data table to process.                                                          | Text       | Yes       | _(empty)_     |
+| **Search Mode**                     | Specifies whether to find or find and replace values.                               | Select     | Yes       | Find          |
+| **Text to Find**                    | The value to find in the data table.                                                | Text       | No        | _(empty)_     |
+| **Text to Replace With**            | The value to replace with (required if 'Search Mode' is 'Find and Replace').        | Text       | No        | _(empty)_     |
+| **All Matches**                     | If true, processes all occurrences. If false, processes only the first occurrence.  | Switch     | No        | _(empty)_     |
+| **Find Using a Regular Expression** | If true, uses regular expressions for matching.                                     | Switch     | No        | _(empty)_     |
+| **Match Case**                      | If true, performs a case-sensitive search.                                          | Switch     | No        | _(empty)_     |
+| **Match Entire Cell Contents**      | If true, matches only cells that contain exactly the specified text.                | Switch     | No        | _(empty)_     |
+| **Search By**                       | Specifies how to search the data table.                                             | Select     | No        | Everywhere    |
+| **Column Index or Name**            | The column index or name to search within (required if 'Search By' is 'On Column'). | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -66,23 +66,24 @@ Once configured, the node will output the rows that match your criteria as **Mat
 </Steps>
 
 <Callout type="info" title="Note">
-  If you choose **On Column** in the **Search By** dropdown, ensure you specify a valid column in **Column Index or Name**.
+  If you choose **On Column** in the **Search By** dropdown, ensure you specify
+  a valid column in **Column Index or Name**.
 </Callout>
 
 ## Input/Output Examples
 
-| Search Mode     | Data Table Example                                      | Text to Find | Text to Replace With | Matched Rows Example                                                                            |
-| --------------- | ------------------------------------------------------- | ------------ | -------------------- | ----------------------------------------------------------------------------------------------- |
-| Find            | `[{"Name": "John Doe", "Email": "john@example.com"}]`     | John         | _(n/a)_              | `[{"Name": "John Doe", "Email": "john@example.com"}]`                                             |
-| Find and Replace| `[{"Product": "Laptop", "Price": "$500"}]`                | "$500"       | "$450"               | `[{"Product": "Laptop", "Price": "$450"}]`                                                        |
+| Search Mode      | Data Table Example                                    | Text to Find | Text to Replace With | Matched Rows Example                                  |
+| ---------------- | ----------------------------------------------------- | ------------ | -------------------- | ----------------------------------------------------- |
+| Find             | `[{"Name": "John Doe", "Email": "john@example.com"}]` | John         | _(n/a)_              | `[{"Name": "John Doe", "Email": "john@example.com"}]` |
+| Find and Replace | `[{"Product": "Laptop", "Price": "$500"}]`            | "$500"       | "$450"               | `[{"Product": "Laptop", "Price": "$450"}]`            |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                            | Solution                                                                                      |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Text to Replace With not showing up**            | Ensure that you have selected **"Find and Replace"** in the Search Mode dropdown.            |
-| **Non-matching rows**                              | Check your search criteria and ensure all relevant options are properly configured.           |
-| **No output received**                             | Make sure the Data Table field is correctly filled and matches your other input configurations. |
+| Problem                                 | Solution                                                                                        |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Text to Replace With not showing up** | Ensure that you have selected **"Find and Replace"** in the Search Mode dropdown.               |
+| **Non-matching rows**                   | Check your search criteria and ensure all relevant options are properly configured.             |
+| **No output received**                  | Make sure the Data Table field is correctly filled and matches your other input configurations. |
 
 ## Real-World Use Cases
 

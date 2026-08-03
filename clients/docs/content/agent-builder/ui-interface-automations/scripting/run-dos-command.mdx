@@ -12,10 +12,10 @@ For example, you might want to:
 
 ## Configuration Options
 
-| Field Name      | Description                                   | Input Type | Required? | Default Value |
-| --------------- | --------------------------------------------- | ---------- | --------- | ------------- |
-| **Command**     | The DOS command you want to execute.          | Text       | Yes       | _(empty)_     |
-| **Command Output** | Captures and shows the output from the executed command. | Config-panel-output | No  | "CommandOutput"  |
+| Field Name         | Description                                              | Input Type          | Required? | Default Value   |
+| ------------------ | -------------------------------------------------------- | ------------------- | --------- | --------------- |
+| **Command**        | The DOS command you want to execute.                     | Text                | Yes       | _(empty)_       |
+| **Command Output** | Captures and shows the output from the executed command. | Config-panel-output | No        | "CommandOutput" |
 
 ## Expected Output Format
 
@@ -42,24 +42,25 @@ Once the node is configured, it will execute the command silently, and upon comp
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the DOS commands used are sufficiently tested independently to avoid unexpected behaviors in your workflow.
+  Ensure the DOS commands used are sufficiently tested independently to avoid
+  unexpected behaviors in your workflow.
 </Callout>
 
 ## Input/Output Examples
 
-| Action                          | Command                         | Command Output                                       | Output Type        |
-| ------------------------------- | ------------------------------- | ---------------------------------------------------- | ------------------ |
-| Retrieve directory listing      | `dir C:\Users\SampleFolder`      | List of files and folders within SampleFolder        | Text String |
-| System information              | `systeminfo`                     | Detailed text listing system specifications          | Text String |
-| Check network configuration     | `ipconfig`                       | Configuration of network interfaces                  | Text String |
+| Action                      | Command                     | Command Output                                | Output Type |
+| --------------------------- | --------------------------- | --------------------------------------------- | ----------- |
+| Retrieve directory listing  | `dir C:\Users\SampleFolder` | List of files and folders within SampleFolder | Text String |
+| System information          | `systeminfo`                | Detailed text listing system specifications   | Text String |
+| Check network configuration | `ipconfig`                  | Configuration of network interfaces           | Text String |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                  |
-| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| **Command not executing successfully**          | Double-check the command syntax for errors or unsupported instructions.                                    |
-| **Unexpected output from command**              | Ensure the command does not require user interaction or additional parameters not included in your input.  |
-| **Command Output is empty**                     | Verify whether the command has an actionable output or if it completed successfully with errors.           |
+| Problem                                | Solution                                                                                                  |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Command not executing successfully** | Double-check the command syntax for errors or unsupported instructions.                                   |
+| **Unexpected output from command**     | Ensure the command does not require user interaction or additional parameters not included in your input. |
+| **Command Output is empty**            | Verify whether the command has an actionable output or if it completed successfully with errors.          |
 
 ## Real-World Use Cases
 

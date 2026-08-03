@@ -6,12 +6,12 @@ The **Detect Dominant Language (AWS Comprehend)** node identifies the main langu
 
 ## Configuration Options
 
-| Field Name                       | Description                                                                                   | Input Type                    | Required? | Default Value      |
-|----------------------------------|-----------------------------------------------------------------------------------------------|-------------------------------|-----------|--------------------|
-| **Credential to connect with**   | Select the AWS credential to use for authentication (AWSServiceVaultId).                      | Text                          | Yes       | _(empty)_          |
-| **Text**                         | The text to analyze for the dominant language.                                                | Text                          | Yes       | _(empty)_          |
-| **Simplify**                     | If enabled, returns only the language code (e.g., 'en'). Otherwise, returns full response.   | Switch                        | No        | false              |
-| **AWS Region**                   | The AWS region where the Comprehend service is located (e.g., us-east-1).                     | Text                          | No        | us-east-1          |
+| Field Name                     | Description                                                                                | Input Type | Required? | Default Value |
+| ------------------------------ | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).                   | Text       | Yes       | _(empty)_     |
+| **Text**                       | The text to analyze for the dominant language.                                             | Text       | Yes       | _(empty)_     |
+| **Simplify**                   | If enabled, returns only the language code (e.g., 'en'). Otherwise, returns full response. | Switch     | No        | false         |
+| **AWS Region**                 | The AWS region where the Comprehend service is located (e.g., us-east-1).                  | Text       | No        | us-east-1     |
 
 ## Expected Output Format
 
@@ -51,23 +51,24 @@ The processed language will be available as **Detected Language** and potentiall
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use the **Simplify** option if you only need the basic language code to quicken processing.
+  Use the **Simplify** option if you only need the basic language code to
+  quicken processing.
 </Callout>
 
 ## Input/Output Examples
 
-| Simplify | Input Text             | Detected Language | Confidence Score | API Response      |
-|----------|------------------------|-------------------|------------------|-------------------|
-| On       | "Hello World"          | en                | _(n/a)_          | _(n/a)_           |
-| Off      | "Bonjour le monde"     | fr                | 0.98             | `{ "Language": "fr", "Score": 0.98 }` |
+| Simplify | Input Text         | Detected Language | Confidence Score | API Response                          |
+| -------- | ------------------ | ----------------- | ---------------- | ------------------------------------- |
+| On       | "Hello World"      | en                | _(n/a)_          | _(n/a)_                               |
+| Off      | "Bonjour le monde" | fr                | 0.98             | `{ "Language": "fr", "Score": 0.98 }` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                                                  |
-|------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Authentication error**                       | Double-check the AWS credentials in use. Ensure they have the required permissions for the Comprehend service.                                                             |
-| **Unexpected or No Output**                    | Verify the **Text** input is correct and non-empty. Also, ensure AWS Region is configured correctly.                                                                      |
-| **Simplify not providing expected results**    | Remember, Simplify returns only the language code, while disabling it provides the entire output with scores.                                                             |
+| Problem                                     | Solution                                                                                                       |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Authentication error**                    | Double-check the AWS credentials in use. Ensure they have the required permissions for the Comprehend service. |
+| **Unexpected or No Output**                 | Verify the **Text** input is correct and non-empty. Also, ensure AWS Region is configured correctly.           |
+| **Simplify not providing expected results** | Remember, Simplify returns only the language code, while disabling it provides the entire output with scores.  |
 
 ## Real-World Use Cases
 

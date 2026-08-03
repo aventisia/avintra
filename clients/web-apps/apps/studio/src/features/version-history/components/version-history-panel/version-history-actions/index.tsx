@@ -1,11 +1,11 @@
 import { DropdownMenu, DropdownMenuContent } from "@avplatform/ui/dropdown-menu";
 
-import OpenAction from "./OpenAction";
-import ExportAction from "./ExportAction";
-import RestoreAction from "./RestoreAction";
 import { ActionsTrigger } from "./ActionsTrigger";
-import CloneToVersionAction from "./CloneToVersionAction";
 import CloneToAgentAction from "./CloneToAgentAction";
+import CloneToVersionAction from "./CloneToVersionAction";
+import ExportAction from "./ExportAction";
+import OpenAction from "./OpenAction";
+import RestoreAction from "./RestoreAction";
 
 interface Props {
   id: string;

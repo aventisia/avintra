@@ -75,9 +75,7 @@ export default function FileViewer() {
 
   if (files.length === 0) return <EmptyState />;
 
-  const activeFile: LocalFile | undefined = files.find(
-    (f) => f.id === activeFileId,
-  );
+  const activeFile: LocalFile | undefined = files.find((f) => f.id === activeFileId);
   if (!activeFile) return <EmptyState />;
 
   const fileType = getFileType(activeFile.extension);

@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Change Working Directory** node is designated for use with FTP connections and allows you to set or change the current working directory when connected to an FTP server. This is particularly useful when you need to navigate through different directories on the server to access or manage files effectively.
 
 For example:
+
 - Navigate to a folder where required files are stored to initiate a download.
 - Change the directory to upload files in the correct location on the server.
 - Manage files across varied directories without disconnecting or reconnecting the FTP connection.
 
 ## Configuration Options
 
-| Field Name            | Description                                                          | Input Type | Required? | Default Value |
-| --------------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **FTP Connection**    | The established connection to your FTP server.                       | Text       | Yes       | _(empty)_     |
-| **New Directory Path**| The path to the directory you want to switch to on the FTP server.   | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                        | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **FTP Connection**     | The established connection to your FTP server.                     | Text       | Yes       | _(empty)_     |
+| **New Directory Path** | The path to the directory you want to switch to on the FTP server. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -42,29 +43,31 @@ In the **New Directory Path** field, enter the path of the new working directory
 ### Step 4
 
 The node will output:
+
 - **Actual Directory Path**: The full path to the current directory after the change.
 - **Success**: A confirmation whether the change directory action was successful.
 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the FTP connection is active and properly set up before attempting to change directories.
+  Ensure the FTP connection is active and properly set up before attempting to
+  change directories.
 </Callout>
 
 ## Input/Output Examples
 
-| FTP Connection | New Directory Path | Actual Directory Path   | Success |
-| -------------- | ------------------ | ----------------------- | ------- |
-| ftp://example  | /public_html       | /public_html            | true    |
-| ftp://example  | /unknown_directory | /current_path           | false   |
+| FTP Connection | New Directory Path | Actual Directory Path | Success |
+| -------------- | ------------------ | --------------------- | ------- |
+| ftp://example  | /public_html       | /public_html          | true    |
+| ftp://example  | /unknown_directory | /current_path         | false   |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                           |
-| ------------------------------------------------| -------------------------------------------------------------------------------------------------- |
-| **Invalid FTP Connection**                       | Ensure the FTP connection credentials are correct and the connection is established before use.     |
-| **Incorrect Directory Path**                     | Verify the directory path entered exists on the server.                                            |
-| **Success output is false**                      | Check if permissions allow directory access and the path is correct.                                |
+| Problem                      | Solution                                                                                        |
+| ---------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Invalid FTP Connection**   | Ensure the FTP connection credentials are correct and the connection is established before use. |
+| **Incorrect Directory Path** | Verify the directory path entered exists on the server.                                         |
+| **Success output is false**  | Check if permissions allow directory access and the path is correct.                            |
 
 ## Real-World Use Cases
 

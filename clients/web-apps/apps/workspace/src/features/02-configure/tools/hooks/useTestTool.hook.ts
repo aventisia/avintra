@@ -7,7 +7,8 @@ import { testTool } from "../apis/tools.apis";
  */
 export const useTestTool = () => {
   const mutation = useMutation({
-    mutationFn: ({ id, dto }: { id: string; dto: Parameters<typeof testTool>[1] }) => testTool(id, dto),
+    mutationFn: ({ id, dto }: { id: string; dto: Parameters<typeof testTool>[1] }) =>
+      testTool(id, dto),
   });
 
   return {

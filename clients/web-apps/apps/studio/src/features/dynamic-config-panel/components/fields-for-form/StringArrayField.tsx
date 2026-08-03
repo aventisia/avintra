@@ -13,12 +13,7 @@ import { toast } from "@avplatform/ui/sonner";
 import { FormFieldSizeType } from "@avplatform/ui/types";
 import { CircleOffIcon, Plus, X } from "lucide-react";
 import { KeyboardEvent, useRef, useState } from "react";
-import {
-  FieldPath,
-  FieldValues,
-  useFormContext,
-  useWatch,
-} from "react-hook-form";
+import { FieldPath, FieldValues, useFormContext, useWatch } from "react-hook-form";
 
 interface StringArrayFieldProps extends BaseFieldProps {
   name: FieldPath<FieldValues>;
@@ -83,10 +78,7 @@ export function StringArrayField({
         render={() => (
           <FormItem className="space-y-0">
             {label && (
-              <FormLabelExt
-                size={size}
-                {...{ label, disabled, isRequired, description }}
-              />
+              <FormLabelExt size={size} {...{ label, disabled, isRequired, description }} />
             )}
 
             {/* Input row */}

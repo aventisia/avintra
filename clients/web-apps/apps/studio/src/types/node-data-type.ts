@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DoNotRenderIfType } from "@/features/action-selector/types/do-not-render-type";
+
 import { CustomNodeType } from "./custom-node-type";
 
 type NodeTypeAndCategory = {
@@ -47,8 +48,8 @@ type NodeDataType = {
   isBlock?: boolean;
   isDisabled?: boolean;
   isCut?: boolean;
-  clipboardGroupId?:string
-  clipboardGroupHead?:boolean
+  clipboardGroupId?: string;
+  clipboardGroupHead?: boolean;
   selectedAgent?: { [key: string]: string };
   selectedModel?: { [key: string]: string };
   selectedBlock?: { [key: string]: string };

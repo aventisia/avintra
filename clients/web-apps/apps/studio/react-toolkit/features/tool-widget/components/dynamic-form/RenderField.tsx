@@ -1,6 +1,6 @@
-import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
-
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
+
+import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
 
 import { ConfigPanelAutosizeTextareaField } from "./ConfigPanelAutosizeTextareaField";
 

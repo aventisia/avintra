@@ -11,14 +11,8 @@ import { SectionLabel } from "./SectionLabel";
 import { TestTabExecuteButton } from "./TestTabExecuteButton";
 
 /** Dedicated test screen for the Text-to-Speech AI agent node. */
-const TTSTestContent = ({
-  formData,
-}: {
-  formData: Record<string, unknown>;
-}) => {
-  const [ttsText, setTtsText] = useState<string>(
-    (formData["InputText"] as string) ?? "",
-  );
+const TTSTestContent = ({ formData }: { formData: Record<string, unknown> }) => {
+  const [ttsText, setTtsText] = useState<string>((formData["InputText"] as string) ?? "");
 
   // Keep the local textarea in sync if InputText changes upstream (e.g. the
   // user edits the node config panel while this screen stays mounted).
@@ -32,12 +26,7 @@ const TTSTestContent = ({
   return (
     <DCPTabsContent
       tabValue="Test"
-      footer={
-        <TestTabExecuteButton
-          isPending={isPending}
-          onExecute={() => execute(ttsText)}
-        />
-      }
+      footer={<TestTabExecuteButton isPending={isPending} onExecute={() => execute(ttsText)} />}
     >
       <div className="flex flex-col gap-4 p-3">
         <div>

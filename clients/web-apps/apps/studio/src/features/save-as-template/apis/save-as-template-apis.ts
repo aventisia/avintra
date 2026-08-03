@@ -1,6 +1,5 @@
-import { axiosInstance } from "@avplatform/ui/lib";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import { GenerateInstructionRequestDto } from "../dto/genereate-instruction-request-dto";
 import { SaveAsTemplateDto } from "../dto/save-as-template";
@@ -17,9 +16,7 @@ const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/project-template`
  */
 const postSaveAsTemplate = (templateData: SaveAsTemplateDto) => {
   return axiosInstance
-    .post<
-      IHttpResponse<SaveAsTemplateDto>
-    >(`${baseAPIURL}/publish`, templateData)
+    .post<IHttpResponse<SaveAsTemplateDto>>(`${baseAPIURL}/publish`, templateData)
     .then((res) => res.data);
 };
 
@@ -32,9 +29,7 @@ const postSaveAsTemplate = (templateData: SaveAsTemplateDto) => {
  */
 const validateTemplate = (templateData: ValidateTemplateDto[]) => {
   return axiosInstance
-    .post<
-      IHttpResponse<ValidateTemplateDto[]>
-    >(`${baseAPIURL}/validate-access`, templateData)
+    .post<IHttpResponse<ValidateTemplateDto[]>>(`${baseAPIURL}/validate-access`, templateData)
     .then((res) => res.data);
 };
 
@@ -44,9 +39,7 @@ const validateTemplate = (templateData: ValidateTemplateDto[]) => {
  * @param payload - Serialized prompt data (usually from nodes).
  * @returns Generated instruction as a string.
  */
-const generateTemplateInstruction = (
-  postObj: GenerateInstructionRequestDto,
-) => {
+const generateTemplateInstruction = (postObj: GenerateInstructionRequestDto) => {
   return axiosInstance
     .post<IHttpResponse<string>>(
       `${baseAPIURL}/generate`,

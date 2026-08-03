@@ -1,7 +1,8 @@
-import { Tooltip } from "@avplatform/ui/tooltip";
 import { Button } from "@avplatform/ui/buttons";
+import { Tooltip } from "@avplatform/ui/tooltip";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
+
 import { useSearchStore } from "@/features/search/stores/serach-store";
 
 const SearchCommandTrigger = () => {

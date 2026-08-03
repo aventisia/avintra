@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name    | Description                                                            | Input Type | Required? | Default Value |
-| ------------- | ---------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Condition** | Determines whether to check for file presence ("Exists") or absence.   | Select     | Yes       | Exists        |
-| **File Path** | The complete path of the file you want to verify the existence of.     | Text       | Yes       | _(empty)_     |
+| Field Name    | Description                                                          | Input Type | Required? | Default Value |
+| ------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Condition** | Determines whether to check for file presence ("Exists") or absence. | Select     | Yes       | Exists        |
+| **File Path** | The complete path of the file you want to verify the existence of.   | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -49,25 +49,26 @@ Use the **Result** value in your workflow to conditionally determine the next st
 </Steps>
 
 <Callout type="warning" title="Important Note">
-  Make sure the file path is correct and accessible from your system to ensure accurate results.
+  Make sure the file path is correct and accessible from your system to ensure
+  accurate results.
 </Callout>
 
 ## Input/Output Examples
 
-| Condition     | File Path                | Result Output | Output Type |
-| ------------- | ------------------------ | ------------- | ----------- |
-| Exists        | C:\files\config.txt      | True          | Boolean     |
-| Doesn't Exist | C:\files\log.txt         | False         | Boolean     |
-| Exists        | C:\files\missing.txt     | False         | Boolean     |
-| Doesn't Exist | C:\files\found.txt       | True          | Boolean     |
+| Condition     | File Path            | Result Output | Output Type |
+| ------------- | -------------------- | ------------- | ----------- |
+| Exists        | C:\files\config.txt  | True          | Boolean     |
+| Doesn't Exist | C:\files\log.txt     | False         | Boolean     |
+| Exists        | C:\files\missing.txt | False         | Boolean     |
+| Doesn't Exist | C:\files\found.txt   | True          | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                                     |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Incorrect File Path**                               | Double-check the file path for typos and ensure it is entered correctly.                                                                     |
-| **File Access Permissions**                           | Ensure you have proper permissions to access the file system path specified.                                                                 |
-| **Unexpected Result**                                 | Verify that the correct condition is selected for the file existence check (either "Exists" or "Doesn't Exist").                             |
+| Problem                     | Solution                                                                                                         |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Incorrect File Path**     | Double-check the file path for typos and ensure it is entered correctly.                                         |
+| **File Access Permissions** | Ensure you have proper permissions to access the file system path specified.                                     |
+| **Unexpected Result**       | Verify that the correct condition is selected for the file existence check (either "Exists" or "Doesn't Exist"). |
 
 ## Real-World Use Cases
 

@@ -6,12 +6,12 @@ The **Inspect UltraTax Form** node allows users to gather details and inspect el
 
 ## Configuration Options
 
-| Field Name                  | Description                                                                              | Input Type | Required? | Default Value |
-| --------------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Form Element**            | The form element to inspect.                                                             | Text       | Yes       | _(empty)_     |
-| **Max Wait Time (seconds)** | Maximum time to wait to find the form element (in seconds).                              | Text       | Yes       | 5             |
-| **Number of Fields to Inspect** | Specify the number of fields to inspect.                                            | Text       | Yes       | _(empty)_     |
-| **Inspection Output File Path** | The full path where the JSON content with inspection details will be written.   | Text       | Yes       | _(empty)_     |
+| Field Name                      | Description                                                                   | Input Type | Required? | Default Value |
+| ------------------------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Form Element**                | The form element to inspect.                                                  | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)**     | Maximum time to wait to find the form element (in seconds).                   | Text       | Yes       | 5             |
+| **Number of Fields to Inspect** | Specify the number of fields to inspect.                                      | Text       | Yes       | _(empty)_     |
+| **Inspection Output File Path** | The full path where the JSON content with inspection details will be written. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -47,17 +47,18 @@ Run the node. The inspection details will be written to your specified JSON file
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the file path for **Inspection Output File Path** is correct and accessible to save the JSON inspection results.
+  Ensure the file path for **Inspection Output File Path** is correct and
+  accessible to save the JSON inspection results.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                    | Solution                                                                                                   |
-| ---------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Form Element not found within specified wait time**      | Increase the **Max Wait Time (seconds)** to allow more time for the node to locate the form element.       |
-| **Invalid file path in Inspection Output File Path**       | Double-check the file path to ensure it's correct and the location is writable.                            |
-| **Number of Fields to Inspect not specified**              | Ensure you provide a number in the **Number of Fields to Inspect** field; it cannot be empty.              |
-| **Fields not inspecting correctly**                        | Confirm you're using correct identifiers for form elements and that elements are accessible in the context.|
+| Problem                                               | Solution                                                                                                    |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Form Element not found within specified wait time** | Increase the **Max Wait Time (seconds)** to allow more time for the node to locate the form element.        |
+| **Invalid file path in Inspection Output File Path**  | Double-check the file path to ensure it's correct and the location is writable.                             |
+| **Number of Fields to Inspect not specified**         | Ensure you provide a number in the **Number of Fields to Inspect** field; it cannot be empty.               |
+| **Fields not inspecting correctly**                   | Confirm you're using correct identifiers for form elements and that elements are accessible in the context. |
 
 ## Real-World Use Cases
 

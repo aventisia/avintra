@@ -1,6 +1,5 @@
-import { axiosInstance } from "@avplatform/ui/lib";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import { PromptTemplateDto } from "../dto/prompt-template-dto";
 
@@ -15,9 +14,7 @@ const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/project-template`
  */
 const postSaveAsTemplate = (templateData: PromptTemplateDto) => {
   return axiosInstance
-    .post<
-      IHttpResponse<PromptTemplateDto>
-    >(`${baseAPIURL}/publish`, templateData)
+    .post<IHttpResponse<PromptTemplateDto>>(`${baseAPIURL}/publish`, templateData)
     .then((res) => res.data);
 };
 
@@ -63,10 +60,4 @@ const deleteTemplate = (id: string) => {
     .then((res) => res.data);
 };
 
-export {
-  getTemplatesList,
-  getTemplateById,
-  postSaveAsTemplate,
-  updateTemplate,
-  deleteTemplate,
-};
+export { getTemplatesList, getTemplateById, postSaveAsTemplate, updateTemplate, deleteTemplate };

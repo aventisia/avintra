@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name    | Description                                  | Input Type | Required? | Default Value |
-| ------------- | -------------------------------------------- | ---------- | --------- | ------------- |
-| **First List**  | The first list of items to merge.             | Text       | Yes       | _(empty)_     |
-| **Second List** | The second list of items to merge.            | Text       | Yes       | _(empty)_     |
+| Field Name      | Description                        | Input Type | Required? | Default Value |
+| --------------- | ---------------------------------- | ---------- | --------- | ------------- |
+| **First List**  | The first list of items to merge.  | Text       | Yes       | _(empty)_     |
+| **Second List** | The second list of items to merge. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,23 +45,24 @@ The combined list, referred to as **MergedList**, will be available for use in y
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the items in the lists are separated correctly, respecting the input format to avoid errors during merging.
+  Ensure the items in the lists are separated correctly, respecting the input
+  format to avoid errors during merging.
 </Callout>
 
 ## Input/Output Examples
 
-| First List         | Second List      | Output Value                      | Output Type |
-| ------------------ | ---------------- | --------------------------------- | ----------- |
-| `["Apple", "Banana"]`  | `["Orange"]`   | `["Apple", "Banana", "Orange"]`   | List        |
-| `["Red", "Blue"]`      | `["Green"]`    | `["Red", "Blue", "Green"]`        | List        |
+| First List            | Second List  | Output Value                    | Output Type |
+| --------------------- | ------------ | ------------------------------- | ----------- |
+| `["Apple", "Banana"]` | `["Orange"]` | `["Apple", "Banana", "Orange"]` | List        |
+| `["Red", "Blue"]`     | `["Green"]`  | `["Red", "Blue", "Green"]`      | List        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                             | Solution                                                                                                                      |
-| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Problem                             | Solution                                                                                                                       |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | **Lists not merging as expected**   | Ensure you have entered the list items properly, using correct delimiters (commas, semicolons, etc.) based on system settings. |
 | **Empty output**                    | Make sure both input fields are filled with valid lists before processing.                                                     |
-| **Unexpected characters in output** | Double-check the input list items to avoid any unintended characters or symbols.                                              |
+| **Unexpected characters in output** | Double-check the input list items to avoid any unintended characters or symbols.                                               |
 
 ## Real-World Use Cases
 

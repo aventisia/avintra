@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 import { NodeSelector } from "@/features/action-selector/components";
 import AddInputsOutputsDialog from "@/features/add-input-output/components/AddInputsOutputsDialog";
 import { DCPDialog } from "@/features/dynamic-config-panel";
@@ -8,8 +10,6 @@ import ShortcutsDialog from "@/features/keyboard-shortcuts/KeyboardShortcutsDial
 import { SaveAsTemplateDialog } from "@/features/save-as-template/components/SaveAsTemplateDialog";
 import { SearchCommandDialog } from "@/features/search/componets";
 import ShareAccessDialog from "@/features/share-access/components";
-
-import { memo } from "react";
 
 export const ReactFlowDialogWrapper = memo(() => {
   return (

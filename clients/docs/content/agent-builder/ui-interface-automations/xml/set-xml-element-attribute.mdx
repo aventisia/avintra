@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                        | Input Type | Required? | Default Value |
-| ------------------ | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **XML Content**    | The XML data you want to modify, provided as a string.             | Text       | Yes       | _(empty)_     |
+| Field Name           | Description                                                           | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**      | The XML data you want to modify, provided as a string.                | Text       | Yes       | _(empty)_     |
 | **XPath Expression** | An expression to correctly locate the XML element you want to change. | Text       | Yes       | _(empty)_     |
-| **Attribute Name** | The name of the attribute you wish to modify or set.               | Text       | Yes       | _(empty)_     |
-| **Attribute Value** | The new value you want to assign to the attribute.                | Text       | Yes       | _(empty)_     |
+| **Attribute Name**   | The name of the attribute you wish to modify or set.                  | Text       | Yes       | _(empty)_     |
+| **Attribute Value**  | The new value you want to assign to the attribute.                    | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -55,23 +55,24 @@ Use the output value, **UpdatedXmlContent**, in your subsequent nodes as needed.
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure your XPath expression accurately targets the intended XML element. Incorrect expressions may result in no changes or unexpected modifications.
+  Ensure your XPath expression accurately targets the intended XML element.
+  Incorrect expressions may result in no changes or unexpected modifications.
 </Callout>
 
 ## Input/Output Examples
 
-| XML Content                              | XPath Expression | Attribute Name | Attribute Value | Output Value                                       |
-| ---------------------------------------- | ---------------- | -------------- | --------------- | -------------------------------------------------- |
-| `<config><item name="old"></item></config>` | `/config/item`    | name           | new             | `<config><item name="new"></item></config>`        |
-| `<user><status id="1"></status></user>`  | `/user/status`   | id             | 2               | `<user><status id="2"></status></user>`            |
+| XML Content                                 | XPath Expression | Attribute Name | Attribute Value | Output Value                                |
+| ------------------------------------------- | ---------------- | -------------- | --------------- | ------------------------------------------- |
+| `<config><item name="old"></item></config>` | `/config/item`   | name           | new             | `<config><item name="new"></item></config>` |
+| `<user><status id="1"></status></user>`     | `/user/status`   | id             | 2               | `<user><status id="2"></status></user>`     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                  | Solution                                                                                                   |
-| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Incorrect XPath resulting in no changes**              | Double-check your XPath expression for accuracy. Use XPath testers to validate your expression if needed.  |
-| **Missing or misspelled attribute name**                 | Ensure the attribute name precisely matches the intended attribute in your XML element.                    |
-| **Output does not reflect the changes**                  | Verify all input fields are correctly filled, especially the XPath expression. Check for typos or format issues. |
+| Problem                                     | Solution                                                                                                         |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Incorrect XPath resulting in no changes** | Double-check your XPath expression for accuracy. Use XPath testers to validate your expression if needed.        |
+| **Missing or misspelled attribute name**    | Ensure the attribute name precisely matches the intended attribute in your XML element.                          |
+| **Output does not reflect the changes**     | Verify all input fields are correctly filled, especially the XPath expression. Check for typos or format issues. |
 
 ## Real-World Use Cases
 

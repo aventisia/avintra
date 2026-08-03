@@ -1,11 +1,12 @@
-import React from "react";
-import { X } from "lucide-react";
-import { usePanelStore } from "@/components/panel/stores/panel-store";
+import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
-import { useShallow } from "zustand/react/shallow";
-import { Button } from "@avplatform/ui/buttons";
+import { X } from "lucide-react";
+import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { useShallow } from "zustand/react/shallow";
+
+import { usePanelStore } from "@/components/panel/stores/panel-store";
 
 // PanelContextValue defines the shape of the context used within the Panel
 interface PanelContextValue {
@@ -36,17 +37,7 @@ interface PanelProps {
 }
 
 const Panel = React.forwardRef<HTMLDivElement, PanelProps>(
-  (
-    {
-      children,
-      id,
-      side = "right",
-      width = "w-96",
-      className,
-      closeOnEscape = true,
-    },
-    ref,
-  ) => {
+  ({ children, id, side = "right", width = "w-96", className, closeOnEscape = true }, ref) => {
     // Retrieve panel state and close handler from the store
     const { panels, closePanel } = usePanelStore();
 
@@ -206,10 +197,7 @@ const PanelContent = React.forwardRef<HTMLDivElement, PanelContentProps>(
     return (
       <div
         ref={ref}
-        className={cn(
-          "h-[calc(100vh-var(--header-height)-3*var(--header-padding))]",
-          className,
-        )}
+        className={cn("h-[calc(100vh-var(--header-height)-3*var(--header-padding))]", className)}
       >
         {children}
       </div>
@@ -260,11 +248,4 @@ const PanelTrigger = React.forwardRef<HTMLButtonElement, PanelTriggerProps>(
 PanelTrigger.displayName = "PanelTrigger";
 
 // Export all panel-related components
-export {
-  Panel,
-  PanelHeader,
-  PanelTitle,
-  PanelClose,
-  PanelContent,
-  PanelTrigger,
-};
+export { Panel, PanelHeader, PanelTitle, PanelClose, PanelContent, PanelTrigger };

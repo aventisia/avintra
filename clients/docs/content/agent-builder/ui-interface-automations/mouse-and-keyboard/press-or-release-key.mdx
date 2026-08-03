@@ -12,15 +12,15 @@ For example:
 
 ## Configuration Options
 
-| Field Name                   | Description                                                                                | Input Type | Required? | Default Value |
-| ---------------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Action To Perform**        | Select whether to press or release the keys.                                               | Select     | Yes       | _(empty)_     |
-| **Control**                  | Toggle to include the Control key in the action.                                           | Switch     | No        | _(empty)_     |
-| **Alt**                      | Toggle to include the Alt key in the action.                                               | Switch     | No        | _(empty)_     |
-| **Shift**                    | Toggle to include the Shift key in the action.                                             | Switch     | No        | _(empty)_     |
-| **Win**                      | Toggle to include the Windows key in the action.                                           | Switch     | No        | _(empty)_     |
-| **Key To Press**             | The main key to simulate (e.g., A, Enter, Tab). Leave blank if only using modifiers.        | Select     | No        | _(empty)_     |
-| **Wait Before Releasing (ms)** | Optional delay in milliseconds before releasing the key (used when pressing only).        | Text       | No        | 0             |
+| Field Name                     | Description                                                                          | Input Type | Required? | Default Value |
+| ------------------------------ | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Action To Perform**          | Select whether to press or release the keys.                                         | Select     | Yes       | _(empty)_     |
+| **Control**                    | Toggle to include the Control key in the action.                                     | Switch     | No        | _(empty)_     |
+| **Alt**                        | Toggle to include the Alt key in the action.                                         | Switch     | No        | _(empty)_     |
+| **Shift**                      | Toggle to include the Shift key in the action.                                       | Switch     | No        | _(empty)_     |
+| **Win**                        | Toggle to include the Windows key in the action.                                     | Switch     | No        | _(empty)_     |
+| **Key To Press**               | The main key to simulate (e.g., A, Enter, Tab). Leave blank if only using modifiers. | Select     | No        | _(empty)_     |
+| **Wait Before Releasing (ms)** | Optional delay in milliseconds before releasing the key (used when pressing only).   | Text       | No        | 0             |
 
 ## Expected Output Format
 
@@ -40,6 +40,7 @@ In the **Action To Perform** dropdown, select whether you want to "Press" or "Re
 ### Step 3
 
 Toggle the switches for any modifier keys you want to include:
+
 - **Control**
 - **Alt**
 - **Shift**
@@ -47,7 +48,7 @@ Toggle the switches for any modifier keys you want to include:
 
 ### Step 4
 
-If you want to simulate a specific key along with the modifiers, select it from the **Key To Press** dropdown. 
+If you want to simulate a specific key along with the modifiers, select it from the **Key To Press** dropdown.
 
 ### Step 5
 
@@ -56,10 +57,12 @@ If you want to simulate a specific key along with the modifiers, select it from 
 ### Step 6
 
 The action will execute with the specified key and modifier keys holding according to your configuration.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure the action you are automating does not interfere with critical systems or undesired application changes.
+  Ensure the action you are automating does not interfere with critical systems
+  or undesired application changes.
 </Callout>
 
 ## Input/Output Examples
@@ -76,11 +79,11 @@ While there is no direct data output, here are examples of configurations:
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                   |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **Keys not being recognized**                         | Double-check that the correct key or modifier is toggled and set.                                                          |
-| **Delay not behaving as expected**                    | Ensure the "Wait Before Releasing (ms)" field is correctly set with millisecond values.                                    |
-| **Inactivity or no action happening**                 | Verify that the node is placed correctly in the flow and that all required fields are configured adequately.                |
+| Problem                               | Solution                                                                                                     |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Keys not being recognized**         | Double-check that the correct key or modifier is toggled and set.                                            |
+| **Delay not behaving as expected**    | Ensure the "Wait Before Releasing (ms)" field is correctly set with millisecond values.                      |
+| **Inactivity or no action happening** | Verify that the node is placed correctly in the flow and that all required fields are configured adequately. |
 
 ## Real-World Use Cases
 

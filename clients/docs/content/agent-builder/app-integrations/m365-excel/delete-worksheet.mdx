@@ -12,11 +12,11 @@ Use cases include:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                                        | Input Type           | Required? | Default Value     |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------ | -------------------- | --------- | ----------------- |
-| **M365 Excel Credential** | The M365 Excel credential containing valid information like tenant ID, client ID, and client secret for authentication. | Credential Select    | Yes       | _(empty)_         |
-| **Drive and Item ID**   | The unique Drive ID and Item ID of the Excel file in OneDrive or SharePoint. Provide in this format: `driveId/items/itemId`. | Text                 | Yes       | _(empty)_         |
-| **Worksheet Name**      | The exact name of the worksheet you wish to delete.                                                                | Text                 | Yes       | Worksheet Name    |
+| Field Name                | Description                                                                                                                  | Input Type        | Required? | Default Value  |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------- | --------- | -------------- |
+| **M365 Excel Credential** | The M365 Excel credential containing valid information like tenant ID, client ID, and client secret for authentication.      | Credential Select | Yes       | _(empty)_      |
+| **Drive and Item ID**     | The unique Drive ID and Item ID of the Excel file in OneDrive or SharePoint. Provide in this format: `driveId/items/itemId`. | Text              | Yes       | _(empty)_      |
+| **Worksheet Name**        | The exact name of the worksheet you wish to delete.                                                                          | Text              | Yes       | Worksheet Name |
 
 ## Expected Output Format
 
@@ -52,24 +52,25 @@ Should be resulting in a **Result** status message indicating success or any err
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the worksheet name is spelled exactly as it appears in the Excel file to avoid errors in deletion.
+  Ensure the worksheet name is spelled exactly as it appears in the Excel file
+  to avoid errors in deletion.
 </Callout>
 
 ## Input/Output Examples
 
-| Drive and Item ID           | Worksheet Name | Result              |
-| --------------------------- | -------------- | ------------------- |
-| `drive123/items/item456`    | Sheet1         | Success: Sheet1 deleted |
-| `driveABC/items/itemDEF`    | Sheet2         | Error: Sheet2 not found |
+| Drive and Item ID        | Worksheet Name | Result                  |
+| ------------------------ | -------------- | ----------------------- |
+| `drive123/items/item456` | Sheet1         | Success: Sheet1 deleted |
+| `driveABC/items/itemDEF` | Sheet2         | Error: Sheet2 not found |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                 |
-| ----------------------------------------------------- | ------------------------------------------------------------------------ |
-| **Invalid Credentials**                               | Ensure your M365 credentials are up-to-date and include tenant ID, client ID, and client secret. |
-| **Incorrect Drive or Item ID Format**                 | Confirm you're using the correct format: `driveId/items/itemId`.          |
-| **Worksheet Name Case Sensitivity**                   | Double-check the worksheet name for case or typographical differences.    |
-| **Worksheet Not Found**                               | Verify the worksheet exists in the Excel file and the name is correct.   |
+| Problem                               | Solution                                                                                         |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Invalid Credentials**               | Ensure your M365 credentials are up-to-date and include tenant ID, client ID, and client secret. |
+| **Incorrect Drive or Item ID Format** | Confirm you're using the correct format: `driveId/items/itemId`.                                 |
+| **Worksheet Name Case Sensitivity**   | Double-check the worksheet name for case or typographical differences.                           |
+| **Worksheet Not Found**               | Verify the worksheet exists in the Excel file and the name is correct.                           |
 
 ## Real-World Use Cases
 

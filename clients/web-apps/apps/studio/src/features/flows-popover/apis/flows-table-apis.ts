@@ -1,9 +1,8 @@
-import { axiosInstance } from "@avplatform/ui/lib";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { IOptimisticMutation } from "@avplatform/ui/dtos";
 import { CheckAvailabilityDto } from "@avplatform/ui/dtos";
 import { TrueFalseResultDto } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 
@@ -29,9 +28,7 @@ const getFlows = () => {
  */
 const isFlowNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
-    .post<
-      IHttpResponse<TrueFalseResultDto>
-    >(`${baseAPIURL}/is-available`, postObj)
+    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj)
     .then((res) => res.data);
 };
 

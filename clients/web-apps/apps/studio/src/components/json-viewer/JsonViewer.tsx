@@ -32,8 +32,7 @@ export const JsonViewer = ({
       Object.keys(parsedJson).forEach((key) => {
         if (
           typeof parsedJson[key] === "string" &&
-          (parsedJson[key].trim().startsWith("{") ||
-            parsedJson[key].trim().startsWith("["))
+          (parsedJson[key].trim().startsWith("{") || parsedJson[key].trim().startsWith("["))
         ) {
           try {
             parsedJson[key] = JSON.parse(parsedJson[key]);

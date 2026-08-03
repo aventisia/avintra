@@ -24,10 +24,7 @@ export const NodeSelector = ({
 
   return (
     <StopPropagationWrapper className="flex">
-      <DialogWrapper
-        open={showDialog}
-        onOpenChangeFn={() => setShowDialog(!showDialog)}
-      >
+      <DialogWrapper open={showDialog} onOpenChangeFn={() => setShowDialog(!showDialog)}>
         {/* Custom trigger basis trigger location */}
         {children}
         {/* Popover content */}

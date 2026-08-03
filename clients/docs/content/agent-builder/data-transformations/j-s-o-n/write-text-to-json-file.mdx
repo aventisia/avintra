@@ -12,10 +12,10 @@ Use cases include:
 
 ## Configuration Options
 
-| Field Name      | Description                                                                 | Input Type | Required? | Default Value |
-| --------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **JSON Content** | The data you wish to save, formatted as a JSON string.                      | Text       | Yes       | _(empty)_     |
-| **File Path**    | The complete file path where you want the JSON data to be written.          | Text       | Yes       | _(empty)_     |
+| Field Name       | Description                                                        | Input Type | Required? | Default Value |
+| ---------------- | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **JSON Content** | The data you wish to save, formatted as a JSON string.             | Text       | Yes       | _(empty)_     |
+| **File Path**    | The complete file path where you want the JSON data to be written. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -47,17 +47,18 @@ Execute the flow to save the content to the specified file.
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure the file path provided has the correct permission settings to allow writing. Otherwise, the operation may fail.
+  Ensure the file path provided has the correct permission settings to allow
+  writing. Otherwise, the operation may fail.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                                                                                 |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid JSON Content**                                  | Validate your JSON content's structure to ensure it is properly formatted; consider using online JSON validators.                                         |
-| **Incorrect File Path**                                   | Double-check that the path is correct, includes the filename, and has the proper directory permissions.                                                  |
-| **Missing File Extension in Path**                        | Ensure you specify the file name with the correct extension (e.g., `file.json`).                                                                         |
-| **Permission Denied**                                     | Make sure the specified path has write access or is not in a restricted directory. Consider using a path within your user documents.                     |
+| Problem                            | Solution                                                                                                                             |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Invalid JSON Content**           | Validate your JSON content's structure to ensure it is properly formatted; consider using online JSON validators.                    |
+| **Incorrect File Path**            | Double-check that the path is correct, includes the filename, and has the proper directory permissions.                              |
+| **Missing File Extension in Path** | Ensure you specify the file name with the correct extension (e.g., `file.json`).                                                     |
+| **Permission Denied**              | Make sure the specified path has write access or is not in a restricted directory. Consider using a path within your user documents. |
 
 ## Real-World Use Cases
 

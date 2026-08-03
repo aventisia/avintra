@@ -1,8 +1,9 @@
-import { useShowAlertHandler } from "@avplatform/ui/hooks";
-import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
-import { UserMinus2Icon } from "lucide-react";
-import { cn } from "@avplatform/ui/lib";
 import { buttonVariants } from "@avplatform/ui/buttons";
+import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
+import { useShowAlertHandler } from "@avplatform/ui/hooks";
+import { cn } from "@avplatform/ui/lib";
+import { UserMinus2Icon } from "lucide-react";
+
 import { useRemoveUserMutation } from "@/features/share-access/hooks/useRemoveUserMutation";
 
 interface RemoveUserActionProps {
@@ -31,16 +32,12 @@ export const RemoveUserAction = ({ id }: RemoveUserActionProps) => {
           },
           title: "Remove User",
           confirmBtnText: "Remove",
-          description:
-            "Are you sure you want to remove this user's access to the Agent?",
+          description: "Are you sure you want to remove this user's access to the Agent?",
         });
       }}
     >
       <UserMinus2Icon
-        className={cn(
-          "mb-[2px] text-destructive group-focus:text-white",
-          "h-3.5 w-3.5",
-        )}
+        className={cn("mb-[2px] text-destructive group-focus:text-white", "h-3.5 w-3.5")}
       />
       Remove
     </DropdownMenuItem>

@@ -6,11 +6,11 @@ The **Speech To Text Model** node converts spoken language into written text usi
 
 ## Configuration Options
 
-| Field Name                   | Description                                                                                             | Input Type         | Required? | Default Value                                                                                                                                                                      |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------ | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Model Configuration**      | Select the AI model configuration for converting speech to text. This includes provider settings.         | Model Config Select | No        | Provider: `openai`; Model: `gpt-4o-mini`; Temperature: `1`; Top P: `1`; Max Output Tokens: `50`; Is JSON Output: `true`                                                            |
-| **Files**                    | File(s) containing the audio or speech you wish to convert into text.                                     | Text               | No        | _None_                                                                                                                                                                              |
-| **Prompt**                   | Additional input or instruction to guide the AI's understanding of the task – particularly useful refined customization. | Prompt Input       | No        | _None_                                                                                                                                                                              |
+| Field Name              | Description                                                                                                              | Input Type          | Required? | Default Value                                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Model Configuration** | Select the AI model configuration for converting speech to text. This includes provider settings.                        | Model Config Select | No        | Provider: `openai`; Model: `gpt-4o-mini`; Temperature: `1`; Top P: `1`; Max Output Tokens: `50`; Is JSON Output: `true` |
+| **Files**               | File(s) containing the audio or speech you wish to convert into text.                                                    | Text                | No        | _None_                                                                                                                  |
+| **Prompt**              | Additional input or instruction to guide the AI's understanding of the task – particularly useful refined customization. | Prompt Input        | No        | _None_                                                                                                                  |
 
 ## Expected Output Format
 
@@ -42,23 +42,24 @@ Run the node. Your transcription will be generated and available in the **AIMode
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that your audio files are of good quality for the best transcription accuracy.
+  Ensure that your audio files are of good quality for the best transcription
+  accuracy.
 </Callout>
 
 ## Input/Output Examples
 
-| Input File        | Prompt            | Output Text                                   | Output Type  |
-| ----------------- | ----------------- | --------------------------------------------- | ------------ |
-| `interview.mp3`   | _None_            | "This is the transcription of the interview." | Text         |
-| `meeting.wav`     | "Focus on key points" | "Discussion centered on budget concerns..."       | Text         |
+| Input File      | Prompt                | Output Text                                   | Output Type |
+| --------------- | --------------------- | --------------------------------------------- | ----------- |
+| `interview.mp3` | _None_                | "This is the transcription of the interview." | Text        |
+| `meeting.wav`   | "Focus on key points" | "Discussion centered on budget concerns..."   | Text        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                                                       |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **No transcription output**                           | Ensure that the audio file is correctly uploaded and readable. Double-check file compatibility and format.                                                      |
-| **Poor transcription accuracy**                       | Improve audio quality if possible, or provide a more detailed **Prompt** for better context understanding.                                                      |
-| **Output not saving**                                 | Check your flow configuration to ensure outputs are being correctly directed and stored.                                                                        |
+| Problem                         | Solution                                                                                                   |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **No transcription output**     | Ensure that the audio file is correctly uploaded and readable. Double-check file compatibility and format. |
+| **Poor transcription accuracy** | Improve audio quality if possible, or provide a more detailed **Prompt** for better context understanding. |
+| **Output not saving**           | Check your flow configuration to ensure outputs are being correctly directed and stored.                   |
 
 ## Real-World Use Cases
 

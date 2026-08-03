@@ -33,15 +33,13 @@ const vectorStoreApiBaseUrl: string = `${import.meta.env.VITE_LLMPIPELINE_API_PA
 export const queryVectorStore = (
   dto: VectorStoreQueryRequestDto,
 ): Promise<VectorStoreQueryResponseDto> => {
-  return axiosInstance
-    .post(`${vectorStoreApiBaseUrl}/query`, dto)
-    .then((res) => {
-      const payload = res.data as
-        | {
-            data?: VectorStoreQueryResponseDto;
-          }
-        | VectorStoreQueryResponseDto;
-      return ((payload as { data?: VectorStoreQueryResponseDto })?.data ??
-        payload) as VectorStoreQueryResponseDto;
-    });
+  return axiosInstance.post(`${vectorStoreApiBaseUrl}/query`, dto).then((res) => {
+    const payload = res.data as
+      | {
+          data?: VectorStoreQueryResponseDto;
+        }
+      | VectorStoreQueryResponseDto;
+    return ((payload as { data?: VectorStoreQueryResponseDto })?.data ??
+      payload) as VectorStoreQueryResponseDto;
+  });
 };

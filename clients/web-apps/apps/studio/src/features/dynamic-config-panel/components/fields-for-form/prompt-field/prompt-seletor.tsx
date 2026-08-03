@@ -76,34 +76,20 @@ export const PromptSelect = ({
           role="combobox"
           disabled={disabled}
           aria-expanded={open}
-          className={cn(
-            "w-full justify-between hover:bg-background",
-            sizeClasses[size],
-            className,
-          )}
+          className={cn("w-full justify-between hover:bg-background", sizeClasses[size], className)}
         >
-          <span className="line-clamp-1">
-            {selectedOption?.label ?? placeholder}
-          </span>
+          <span className="line-clamp-1">{selectedOption?.label ?? placeholder}</span>
           <ChevronDown className={cn("ml-2 h-4 w-4 opacity-50")} />
         </Button>
       </PopoverTrigger>
 
       <PopoverContent
         align="start"
-        className={cn(
-          className,
-          "w-[--radix-popover-trigger-width] p-2",
-          "shadow-sm",
-        )}
+        className={cn(className, "w-[--radix-popover-trigger-width] p-2", "shadow-sm")}
       >
         <Command>
           <div className="mb-1.5 rounded-lg bg-slate-100">
-            <CommandInput
-              className="h-9 text-xs"
-              placeholder={searchPlaceholder}
-              autoFocus
-            />
+            <CommandInput className="h-9 text-xs" placeholder={searchPlaceholder} autoFocus />
           </div>
           <CommandList>
             <CommandEmpty>{"No results found."}</CommandEmpty>
@@ -141,9 +127,7 @@ export const PromptSelect = ({
                         <Check
                           className={cn(
                             "h-3.5 w-3.5 shrink-0",
-                            value === option.value
-                              ? "opacity-100"
-                              : "opacity-0",
+                            value === option.value ? "opacity-100" : "opacity-0",
                           )}
                         />
                       </div>

@@ -6,14 +6,14 @@ The **Create Random Text** node allows you to generate a string of random charac
 
 ## Configuration Options
 
-| Field Name             | Description                                                                 | Input Type | Required? | Default Value |
-| ---------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Minimum Length**     | The minimum number of characters for the random text.                       | Text       | Yes       | _(empty)_     |
-| **Maximum Length**     | The maximum number of characters for the random text.                       | Text       | Yes       | _(empty)_     |
-| **Use Uppercase Letters** | Determines if uppercase letters (A-Z) are included.                       | Switch     | No        | True          |
-| **Use Lowercase Letters** | Determines if lowercase letters (a-z) are included.                       | Switch     | No        | True          |
-| **Use Digits**         | Determines if digits (0-9) are included.                                    | Switch     | No        | True          |
-| **Use Symbols**        | Determines if symbols (!@#$%^&*()_+-=[]{}|;:,&lt;>? ) are included.            | Switch     | No        | False         |
+| Field Name                | Description                                           | Input Type                | Required? | Default Value |
+| ------------------------- | ----------------------------------------------------- | ------------------------- | --------- | ------------- | ----- |
+| **Minimum Length**        | The minimum number of characters for the random text. | Text                      | Yes       | _(empty)_     |
+| **Maximum Length**        | The maximum number of characters for the random text. | Text                      | Yes       | _(empty)_     |
+| **Use Uppercase Letters** | Determines if uppercase letters (A-Z) are included.   | Switch                    | No        | True          |
+| **Use Lowercase Letters** | Determines if lowercase letters (a-z) are included.   | Switch                    | No        | True          |
+| **Use Digits**            | Determines if digits (0-9) are included.              | Switch                    | No        | True          |
+| **Use Symbols**           | Determines if symbols (!@#$%^&\*()\_+-=[]{}           | ;:,&lt;>? ) are included. | Switch    | No            | False |
 
 ## Expected Output Format
 
@@ -52,20 +52,20 @@ The generated random text will be available as **Random Text** for use in other 
 
 ## Input/Output Examples
 
-| Minimum Length | Maximum Length | Use Uppercase | Use Lowercase | Use Digits | Use Symbols | Output Example          |
-| -------------- | -------------- | ------------- | ------------- | ---------- | ----------- | ----------------------- |
-| 5              | 10             | Yes           | Yes           | Yes        | No          | `aB9fE`                 |
-| 8              | 8              | Yes           | Yes           | No         | Yes         | `G*hj!$Ra`              |
-| 3              | 5              | No            | No            | Yes        | No          | `472`                   |
-| 5              | 10             | Yes           | No            | Yes        | Yes         | `R3*89T`                |
+| Minimum Length | Maximum Length | Use Uppercase | Use Lowercase | Use Digits | Use Symbols | Output Example |
+| -------------- | -------------- | ------------- | ------------- | ---------- | ----------- | -------------- |
+| 5              | 10             | Yes           | Yes           | Yes        | No          | `aB9fE`        |
+| 8              | 8              | Yes           | Yes           | No         | Yes         | `G*hj!$Ra`     |
+| 3              | 5              | No            | No            | Yes        | No          | `472`          |
+| 5              | 10             | Yes           | No            | Yes        | Yes         | `R3*89T`       |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                   |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **Non-numeric value in length fields**                | Ensure both **Minimum Length** and **Maximum Length** contain valid numbers only.          |
-| **Maximum Length less than Minimum Length**           | Verify that the **Maximum Length** is not smaller than the **Minimum Length**.             |
-| **No characters in output**                           | Ensure at least one character type (uppercase, lowercase, digits, or symbols) is selected. |
+| Problem                                     | Solution                                                                                   |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| **Non-numeric value in length fields**      | Ensure both **Minimum Length** and **Maximum Length** contain valid numbers only.          |
+| **Maximum Length less than Minimum Length** | Verify that the **Maximum Length** is not smaller than the **Minimum Length**.             |
+| **No characters in output**                 | Ensure at least one character type (uppercase, lowercase, digits, or symbols) is selected. |
 
 ## Real-World Use Cases
 

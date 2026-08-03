@@ -12,11 +12,11 @@ For instance:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
-| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Workbook Instance**| The Excel Workbook object where the new worksheet will be added.            | Text       | Yes       | _(empty)_     |
-| **New Worksheet Name**| The name to assign to the newly created worksheet.                          | Text       | No        | _(empty)_     |
-| **Add Worksheet As** | Specifies whether to add the worksheet as the first or last sheet.          | Select     | Yes       | First         |
+| Field Name             | Description                                                        | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Workbook Instance**  | The Excel Workbook object where the new worksheet will be added.   | Text       | Yes       | _(empty)_     |
+| **New Worksheet Name** | The name to assign to the newly created worksheet.                 | Text       | No        | _(empty)_     |
+| **Add Worksheet As**   | Specifies whether to add the worksheet as the first or last sheet. | Select     | Yes       | First         |
 
 ## Expected Output Format
 
@@ -49,26 +49,28 @@ Select your preference in the **Add Worksheet As** dropdown:
 ### Step 5
 
 The new worksheet is now added to the workbook as per your configured settings.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Entering a distinct name in **New Worksheet Name** helps to better organize and identify different sheets quickly.
+  Entering a distinct name in **New Worksheet Name** helps to better organize
+  and identify different sheets quickly.
 </Callout>
 
 ## Input/Output Examples
 
-| Workbook Instance  | New Worksheet Name | Add Worksheet As | Output Confirmation           |
-| ------------------ | ------------------ | ---------------- | ----------------------------- |
-| SalesDataWorkbook  | January Reports    | First            | "New worksheet added successfully" |
-| FinancialWorkbook  |                    | Last             | "New worksheet added successfully" |
+| Workbook Instance | New Worksheet Name | Add Worksheet As | Output Confirmation                |
+| ----------------- | ------------------ | ---------------- | ---------------------------------- |
+| SalesDataWorkbook | January Reports    | First            | "New worksheet added successfully" |
+| FinancialWorkbook |                    | Last             | "New worksheet added successfully" |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                     | Solution                                                                                                                                                  |
-| ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Workbook Instance field is empty**                        | Ensure you have selected or provided a valid Excel workbook object in the **Workbook Instance** field.                                                    |
-| **Duplicate worksheet name error**                          | Changing the **New Worksheet Name** to a unique name that isn't already used in the workbook can avoid this issue.                                        |
-| **Worksheet not added as intended location**                | Double-check the selection in the **Add Worksheet As** dropdown to ensure the worksheet is added to the desired position.                                 |
+| Problem                                      | Solution                                                                                                                  |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Workbook Instance field is empty**         | Ensure you have selected or provided a valid Excel workbook object in the **Workbook Instance** field.                    |
+| **Duplicate worksheet name error**           | Changing the **New Worksheet Name** to a unique name that isn't already used in the workbook can avoid this issue.        |
+| **Worksheet not added as intended location** | Double-check the selection in the **Add Worksheet As** dropdown to ensure the worksheet is added to the desired position. |
 
 ## Real-World Use Cases
 

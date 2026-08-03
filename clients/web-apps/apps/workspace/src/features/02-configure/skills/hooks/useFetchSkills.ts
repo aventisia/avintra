@@ -26,13 +26,13 @@ export const useFetchSkills = (tab: "current" | "all" = "current") => {
   const personalQuery = useQuery({
     queryKey: personalQueryKey,
     queryFn: () => getSkills({ isPersonal: true }),
-    enabled: (shouldFetchBoth || isPersonal),
+    enabled: shouldFetchBoth || isPersonal,
   });
 
   const sharedQuery = useQuery({
     queryKey: sharedQueryKey,
     queryFn: () => getSkills({ isPersonal: false }),
-    enabled: (shouldFetchBoth || isShared),
+    enabled: shouldFetchBoth || isShared,
   });
 
   const libraryQuery = useQuery({

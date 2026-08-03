@@ -6,9 +6,9 @@ The **Delete Folder** node allows you to remove a folder and all of its contents
 
 ## Configuration Options
 
-| Field Name            | Description                                                          | Input Type | Required? | Default Value |
-| --------------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Folder to Delete**  | The full path of the folder you want to remove from the file system. | Text       | Yes       | _(empty)_     |
+| Field Name           | Description                                                          | Input Type | Required? | Default Value |
+| -------------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Folder to Delete** | The full path of the folder you want to remove from the file system. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -32,16 +32,17 @@ Proceed with your workflow, ensuring no subsequent nodes rely on the deleted fol
 </Steps>
 
 <Callout type="warning" title="Caution">
-  Deleting a folder is a permanent action that cannot be undone. Ensure that you have backups or no longer need the data before proceeding.
+  Deleting a folder is a permanent action that cannot be undone. Ensure that you
+  have backups or no longer need the data before proceeding.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                  | Solution                                                                                             |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Incorrect Folder Path**                | Verify the folder path is correct and exists. Incorrect paths will result in failure to delete.      |
-| **Permission Denied**                    | Ensure you have necessary permissions to delete the folder. Sometimes administrative rights are needed. |
-| **Dependent Workflow Errors**            | Check subsequent workflow nodes for dependencies on the deleted folder and adjust them accordingly.  |
+| Problem                       | Solution                                                                                                |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Incorrect Folder Path**     | Verify the folder path is correct and exists. Incorrect paths will result in failure to delete.         |
+| **Permission Denied**         | Ensure you have necessary permissions to delete the folder. Sometimes administrative rights are needed. |
+| **Dependent Workflow Errors** | Check subsequent workflow nodes for dependencies on the deleted folder and adjust them accordingly.     |
 
 ## Real-World Use Cases
 

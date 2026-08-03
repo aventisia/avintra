@@ -1,11 +1,11 @@
 // hooks/useActionSelectorData.ts
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { DeploymentType } from "@avplatform/ui/types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { getActionSelectorData } from "@/apis/get-action-selector-data";
-import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { useNodeSelectorStore } from "../stores/action-selector-store";
@@ -71,10 +71,7 @@ export function useActionSelectorData() {
       // Filter Action Categories based on visibility
       actionCategories: primary.actionCategories
         .filter((actionCategory) =>
-          canWeRenderNodeOrCategory(
-            actionCategory.doNotRenderIf,
-            deploymentType,
-          ),
+          canWeRenderNodeOrCategory(actionCategory.doNotRenderIf, deploymentType),
         )
 
         // For visible categories, also filter individual actions

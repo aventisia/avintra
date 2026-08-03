@@ -5,22 +5,23 @@ import { Callout, Steps } from "nextra/components";
 The **Create New List** node initializes an empty list that you can populate and use in other parts of your workflow. This is useful for organizing data, performing batch operations, or grouping items for processing.
 
 For example:
+
 - Starting with a fresh list to collect user inputs or results.
 - Preparing a list for iteration or looping activities.
 - Creating a container for future data accumulation.
 
 ## Configuration Options
 
-| Field Name     | Description                                                              | Input Type | Required? | Default Value |
-| -------------- | ------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Item To Add**| A single item or comma-separated values that you want to add to the list. | Text       | No        | _(empty)_     |
+| Field Name      | Description                                                               | Input Type | Required? | Default Value |
+| --------------- | ------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Item To Add** | A single item or comma-separated values that you want to add to the list. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
 The output is a **list**. If no items are provided, it begins as an empty list.
 
 - The output will appear in the `NewList` field.
-  
+
 ## Step-by-Step Guide
 
 <Steps>
@@ -35,6 +36,7 @@ In the **Item To Add** field (optional), input any item you wish to add to the l
 ### Step 3
 
 The new list will be available as **NewList** for further use in your workflow.
+
 </Steps>
 
 <Callout type="info" title="Tip">
@@ -43,19 +45,19 @@ The new list will be available as **NewList** for further use in your workflow.
 
 ## Input/Output Examples
 
-| Item To Add         | Output Value             | Output Type  |
-| ------------------- | ------------------------ | ------------ |
-| _(blank)_           | []                       | List         |
-| apple               | [ "apple" ]              | List         |
-| apple, banana, pear | [ "apple", "banana", "pear" ] | List   |
+| Item To Add         | Output Value                  | Output Type |
+| ------------------- | ----------------------------- | ----------- |
+| _(blank)_           | []                            | List        |
+| apple               | [ "apple" ]                   | List        |
+| apple, banana, pear | [ "apple", "banana", "pear" ] | List        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                                                             |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **No items in the list**                  | Make sure to enter values in the **Item To Add** field if you want to start with a non-empty list.  |
-| **Incorrect format of input values**      | Separate multiple items using commas without any additional spaces or quotes.                        |
-| **Expecting processed data instead**      | Remember, this node initializes a list and optionally adds items; it does not process the items.     |
+| Problem                              | Solution                                                                                           |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| **No items in the list**             | Make sure to enter values in the **Item To Add** field if you want to start with a non-empty list. |
+| **Incorrect format of input values** | Separate multiple items using commas without any additional spaces or quotes.                      |
+| **Expecting processed data instead** | Remember, this node initializes a list and optionally adds items; it does not process the items.   |
 
 ## Real-World Use Cases
 

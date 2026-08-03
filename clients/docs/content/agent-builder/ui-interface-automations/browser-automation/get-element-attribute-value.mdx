@@ -6,14 +6,14 @@ The **Get Element Attribute Value** node allows you to extract the attribute val
 
 ## Configuration Options
 
-| Field Name           | Description                                                                          | Input Type | Required? | Default Value |
-| -------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Web Browser Instance** | The existing web browser instance (e.g., IWebDriver) to interact with.               | Text       | Yes       | _(empty)_     |
-| **Find Type**        | Specifies how to find the element (e.g., ID, XPath, CssSelector).                     | Select     | Yes       | XPath         |
-| **Value To Find**    | The value used to locate the element (e.g., 'username', '//input[@id='email']').      | Text       | Yes       | _(empty)_     |
-| **Attribute Name**   | The name of the attribute whose value should be retrieved (e.g., 'value', 'href').    | Text       | Yes       | _(empty)_     |
-| **Wait For Element** | If true, waits for the element to appear before retrieving the attribute value.       | Switch     | No        | _(empty)_     |
-| **Timeout Seconds**  | Maximum time in seconds to wait for the element before failing.                       | Text       | No        | 60            |
+| Field Name               | Description                                                                        | Input Type | Required? | Default Value |
+| ------------------------ | ---------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | The existing web browser instance (e.g., IWebDriver) to interact with.             | Text       | Yes       | _(empty)_     |
+| **Find Type**            | Specifies how to find the element (e.g., ID, XPath, CssSelector).                  | Select     | Yes       | XPath         |
+| **Value To Find**        | The value used to locate the element (e.g., 'username', '//input[@id='email']').   | Text       | Yes       | _(empty)_     |
+| **Attribute Name**       | The name of the attribute whose value should be retrieved (e.g., 'value', 'href'). | Text       | Yes       | _(empty)_     |
+| **Wait For Element**     | If true, waits for the element to appear before retrieving the attribute value.    | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for the element before failing.                    | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -62,24 +62,25 @@ The attribute value will be output as **Result** and can be used for further ope
 </Steps>
 
 <Callout type="info" title="Tip">
-  Enabling "Wait For Element" can be particularly useful when dealing with dynamic content that takes time to load.
+  Enabling "Wait For Element" can be particularly useful when dealing with
+  dynamic content that takes time to load.
 </Callout>
 
 ## Input/Output Examples
 
-| Find Type | Value To Find               | Attribute Name | Result Example               |
-| --------- | --------------------------- | -------------- | ---------------------------- |
-| XPath     | `//img[@id='logo']`         | `src`          | `https://example.com/logo.png` |
-| Id        | `submitBtn`                 | `class`        | `btn btn-primary`             |
-| CssSelector | `.nav-link.active`       | `href`         | `/home`                       |
+| Find Type   | Value To Find       | Attribute Name | Result Example                 |
+| ----------- | ------------------- | -------------- | ------------------------------ |
+| XPath       | `//img[@id='logo']` | `src`          | `https://example.com/logo.png` |
+| Id          | `submitBtn`         | `class`        | `btn btn-primary`              |
+| CssSelector | `.nav-link.active`  | `href`         | `/home`                        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                                                       |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Element cannot be found**                             | Double-check the **Find Type** and **Value To Find** for correctness and ensure they refer to an existing element on the page.  |
-| **Attribute value is empty (or not as expected)**       | Ensure the **Attribute Name** is spelled correctly and matches exactly as used in the HTML document.                             |
-| **Timeout error**                                       | Check your internet connection, and ensure there's enough time set in **Timeout Seconds** for content-heavy pages to load.       |
+| Problem                                           | Solution                                                                                                                       |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Element cannot be found**                       | Double-check the **Find Type** and **Value To Find** for correctness and ensure they refer to an existing element on the page. |
+| **Attribute value is empty (or not as expected)** | Ensure the **Attribute Name** is spelled correctly and matches exactly as used in the HTML document.                           |
+| **Timeout error**                                 | Check your internet connection, and ensure there's enough time set in **Timeout Seconds** for content-heavy pages to load.     |
 
 ## Real-World Use Cases
 

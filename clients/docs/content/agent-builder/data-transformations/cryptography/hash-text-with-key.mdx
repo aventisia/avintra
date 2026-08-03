@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name           | Description                                                   | Input Type | Required? | Default Value |
-| -------------------- | ------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Text to Hash**     | The text you want to hash.                                    | Text       | Yes       | _(empty)_     |
-| **Key to Use**       | The key to use in hashing.                                    | Text       | Yes       | _(empty)_     |
-| **Hashing Algorithm**| The algorithm to use for hashing (e.g., SHA256, SHA512, MD5). | Select     | Yes       | _(empty)_     |
+| Field Name            | Description                                                   | Input Type | Required? | Default Value |
+| --------------------- | ------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text to Hash**      | The text you want to hash.                                    | Text       | Yes       | _(empty)_     |
+| **Key to Use**        | The key to use in hashing.                                    | Text       | Yes       | _(empty)_     |
+| **Hashing Algorithm** | The algorithm to use for hashing (e.g., SHA256, SHA512, MD5). | Select     | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -54,23 +54,24 @@ The hashed text will be available under the identifier **HashedText** for use in
 </Steps>
 
 <Callout type="info" title="Tip">
-  Choose an appropriate hashing algorithm based on your security needs. SHA512 is stronger than MD5 for most security applications.
+  Choose an appropriate hashing algorithm based on your security needs. SHA512
+  is stronger than MD5 for most security applications.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Text  | Key  | Algorithm | Output Hashed Text                       |
-| ----------- | ---- | --------- | -----------------------------------------|
-| "password"  | "key123" | SHA256 | `f8d3addbb500f240a31060bb8a2f024a8112a165`|
-| "username"  | "anotherKey" | MD5  | `1f3870be274f6c49b3e31a0c6728957f`        |
+| Input Text | Key          | Algorithm | Output Hashed Text                         |
+| ---------- | ------------ | --------- | ------------------------------------------ |
+| "password" | "key123"     | SHA256    | `f8d3addbb500f240a31060bb8a2f024a8112a165` |
+| "username" | "anotherKey" | MD5       | `1f3870be274f6c49b3e31a0c6728957f`         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                           |
-| --------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Output Hashed Text not available**          | Ensure all fields are correctly filled out. The node needs valid input text, key, and an algorithm.|
-| **Hashing Algorithm selection is empty**      | Ensure you select one of the available algorithms. Without this, the node cannot process the input.|
-| **Incorrect hash output**                     | Double-check the key and text inputs, as any variation will change the output. Ensure the key is correct. |
+| Problem                                  | Solution                                                                                                  |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Output Hashed Text not available**     | Ensure all fields are correctly filled out. The node needs valid input text, key, and an algorithm.       |
+| **Hashing Algorithm selection is empty** | Ensure you select one of the available algorithms. Without this, the node cannot process the input.       |
+| **Incorrect hash output**                | Double-check the key and text inputs, as any variation will change the output. Ensure the key is correct. |
 
 ## Real-World Use Cases
 

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
 import { isFlowNameAvailable } from "../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../constants/constants";
 import { flowNameSchema, flowZodSchema } from "../constants/flow-zod-schema";
@@ -94,18 +95,11 @@ export const useDefineFlowForm = () => {
       isDisabled: flowData?.isDisabled ?? false,
       // Read (view) only fields
       flowCommentCount: flowData?.flowCommentCount ?? 0,
-      createdBy:
-        flowData?.createdBy ??
-        userSession?.firstName + " " + userSession?.lastName,
-      createdOn: flowData?.createdOn
-        ? new Date(flowData?.createdOn)
-        : new Date(),
+      createdBy: flowData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+      createdOn: flowData?.createdOn ? new Date(flowData?.createdOn) : new Date(),
       lastModifiedBy:
-        flowData?.lastModifiedBy ??
-        userSession?.firstName + " " + userSession?.lastName,
-      lastModifiedOn: flowData?.lastModifiedOn
-        ? new Date(flowData?.lastModifiedOn)
-        : new Date(),
+        flowData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
+      lastModifiedOn: flowData?.lastModifiedOn ? new Date(flowData?.lastModifiedOn) : new Date(),
     });
   }, [rowId, form, queryClient, userSession]);
 

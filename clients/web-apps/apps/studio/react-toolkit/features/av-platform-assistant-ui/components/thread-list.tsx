@@ -6,12 +6,7 @@ import {
 } from "@assistant-ui/react";
 import { Skeleton } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import {
-  ArchiveIcon,
-  MoreHorizontalIcon,
-  PlusIcon,
-  TrashIcon,
-} from "lucide-react";
+import { ArchiveIcon, MoreHorizontalIcon, PlusIcon, TrashIcon } from "lucide-react";
 import type { FC } from "react";
 
 export const ThreadList: FC = () => {
@@ -22,9 +17,7 @@ export const ThreadList: FC = () => {
         <ThreadListSkeleton />
       </AuiIf>
       <AuiIf condition={(s) => !s.threads.isLoading}>
-        <ThreadListPrimitive.Items>
-          {() => <ThreadListItem />}
-        </ThreadListPrimitive.Items>
+        <ThreadListPrimitive.Items>{() => <ThreadListItem />}</ThreadListPrimitive.Items>
       </AuiIf>
     </ThreadListPrimitive.Root>
   );

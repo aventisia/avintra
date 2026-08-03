@@ -1,7 +1,8 @@
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { NodeDataType } from "@/types/node-data-type";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeDataType } from "@/types/node-data-type";
 
 export const useReplaceNode = () => {
   // Get ReactFlowExt store state & actions
@@ -28,9 +29,7 @@ export const useReplaceNode = () => {
       };
 
       // Replace the old node with the new node in the nodes array
-      const updatedNodes = nodes.map((node) =>
-        node.id === selectedNode.id ? updatedNode : node,
-      );
+      const updatedNodes = nodes.map((node) => (node.id === selectedNode.id ? updatedNode : node));
 
       // Update nodes state
       setNodes(updatedNodes);

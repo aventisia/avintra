@@ -1,4 +1,5 @@
 import { NodeInputType, NodeOutputType } from "..";
+
 interface ActivityNodeData {
   id: string;
   type: string;

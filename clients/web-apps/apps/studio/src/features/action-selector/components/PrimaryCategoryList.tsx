@@ -10,10 +10,7 @@ interface PrimaryCategoryListProps {
   firstItemRef: React.MutableRefObject<HTMLButtonElement | null>;
 }
 
-export const PrimaryCategoryList = ({
-  inputRef,
-  firstItemRef,
-}: PrimaryCategoryListProps) => {
+export const PrimaryCategoryList = ({ inputRef, firstItemRef }: PrimaryCategoryListProps) => {
   const { actionSelectorData, setPrimaryCategoryLabel } = useNodeSelectorStore(
     useShallow((state) => ({
       actionSelectorData: state.actionSelectorData,
@@ -72,11 +69,7 @@ export const PrimaryCategoryList = ({
 
   return (
     <ScrollArea className="h-full bg-background p-3">
-      <div
-        className="grid grid-cols-2 gap-3 pb-4"
-        role="grid"
-        aria-label="Primary Categories"
-      >
+      <div className="grid grid-cols-2 gap-3 pb-4" role="grid" aria-label="Primary Categories">
         {actionSelectorData.map((item, index) => (
           <button
             key={item.label}

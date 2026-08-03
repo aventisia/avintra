@@ -1,6 +1,7 @@
-import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+
+import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
 
 interface FLIOpenActionProps {
   flowId: string;

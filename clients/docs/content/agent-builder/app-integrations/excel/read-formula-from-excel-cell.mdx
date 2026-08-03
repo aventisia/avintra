@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                                                                      | Input Type | Required? | Default Value  |
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|------------|-----------|----------------|
-| **Worksheet Instance** | The Excel Worksheet object where the formula is located. By default, uses the active worksheet if not specified.                             | Text       | Yes       | _(empty)_      |
-| **Reference Type**      | Choose whether you want to reference the formula using a cell address or a named range.                                                     | Select     | Yes       | CellAddress    |
-| **Cell Address**        | Specify the cell address from which the formula should be read (e.g., 'A1', 'B2'). Only needed if Reference Type is "Cell Address".         | Text       | No        | _(empty)_      |
-| **Named Range**         | Identify the name of the range to access the formula from. Only required if Reference Type is "Named Range".                                | Text       | No        | _(empty)_      |
+| Field Name             | Description                                                                                                                         | Input Type | Required? | Default Value |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object where the formula is located. By default, uses the active worksheet if not specified.                    | Text       | Yes       | _(empty)_     |
+| **Reference Type**     | Choose whether you want to reference the formula using a cell address or a named range.                                             | Select     | Yes       | CellAddress   |
+| **Cell Address**       | Specify the cell address from which the formula should be read (e.g., 'A1', 'B2'). Only needed if Reference Type is "Cell Address". | Text       | No        | _(empty)_     |
+| **Named Range**        | Identify the name of the range to access the formula from. Only required if Reference Type is "Named Range".                        | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -58,23 +58,24 @@ Once configured, the formula from the selected cell or range will be retrievable
 </Steps>
 
 <Callout type="info" title="Tip">
-  By setting the appropriate Reference Type, either the "Cell Address" or "Named Range" field will appear for entry, depending on your selection.
+  By setting the appropriate Reference Type, either the "Cell Address" or "Named
+  Range" field will appear for entry, depending on your selection.
 </Callout>
 
 ## Input/Output Examples
 
-| Reference Type | Cell Address | Named Range | Output Formula      | Output Type |
-|----------------|--------------|-------------|---------------------|-------------|
-| Cell Address   | A1           | _(n/a)_     | =SUM(B1:B10)        | Text        |
-| Named Range    | _(n/a)_      | MyRange     | =AVERAGE(MyRange)   | Text        |
+| Reference Type | Cell Address | Named Range | Output Formula    | Output Type |
+| -------------- | ------------ | ----------- | ----------------- | ----------- |
+| Cell Address   | A1           | _(n/a)_     | =SUM(B1:B10)      | Text        |
+| Named Range    | _(n/a)_      | MyRange     | =AVERAGE(MyRange) | Text        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                        | Solution                                                                                                                                   |
-|----------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
-| **Fields not appearing based on Reference Type selection**     | Ensure the correct "Reference Type" is selected. If "Cell Address" is chosen, the cell address field will show; likewise for "Named Range". |
-| **No formula returned**                                        | Verify the cell or range selected actually contains a formula. Also, confirm the worksheet is correctly referenced.                          |
-| **Incorrect Named Range**                                      | Double-check the named range is correctly defined in the Excel workbook and spelled accurately in the configuration panel.                  |
+| Problem                                                    | Solution                                                                                                                                    |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Fields not appearing based on Reference Type selection** | Ensure the correct "Reference Type" is selected. If "Cell Address" is chosen, the cell address field will show; likewise for "Named Range". |
+| **No formula returned**                                    | Verify the cell or range selected actually contains a formula. Also, confirm the worksheet is correctly referenced.                         |
+| **Incorrect Named Range**                                  | Double-check the named range is correctly defined in the Excel workbook and spelled accurately in the configuration panel.                  |
 
 ## Real-World Use Cases
 

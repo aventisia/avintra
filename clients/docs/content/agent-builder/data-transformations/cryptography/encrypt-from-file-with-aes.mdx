@@ -12,12 +12,12 @@ This node is useful for tasks such as:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                    | Input Type | Required? | Default Value |
-| -------------------- | ---------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Input File Path**  | The full path to the file you want to encrypt.                                                 | Text       | Yes       | _(empty)_     |
-| **Encryption Key**   | The secret key used to encrypt the file. Should be kept secure.                                | Text       | Yes       | _(empty)_     |
-| **Encoding Format**  | The format that dictates how the encrypted data is encoded: Base64, Hex, or UTF8.              | Select     | Yes       | _(empty)_     |
-| **Output File Path** | The full path where the encrypted file will be saved.                                          | Text       | Yes       | _(empty)_     |
+| Field Name           | Description                                                                       | Input Type | Required? | Default Value |
+| -------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Input File Path**  | The full path to the file you want to encrypt.                                    | Text       | Yes       | _(empty)_     |
+| **Encryption Key**   | The secret key used to encrypt the file. Should be kept secure.                   | Text       | Yes       | _(empty)_     |
+| **Encoding Format**  | The format that dictates how the encrypted data is encoded: Base64, Hex, or UTF8. | Select     | Yes       | _(empty)_     |
+| **Output File Path** | The full path where the encrypted file will be saved.                             | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -54,7 +54,8 @@ Once configured, the node processes the file and saves the encrypted version at 
 </Steps>
 
 <Callout type="warning" title="Important Note">
-  The **Encryption Key** is crucial for decrypting the file later. Make sure to keep it secure and do not lose it.
+  The **Encryption Key** is crucial for decrypting the file later. Make sure to
+  keep it secure and do not lose it.
 </Callout>
 
 ## Input/Output Examples
@@ -66,12 +67,12 @@ Assuming your input file path is `/User/Documents/secret.txt` and your specified
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                         |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| **Path Errors**                              | Double-check that the input and output file paths are correct and accessible.                                     |
-| **Invalid Encryption Key**                   | Ensure the encryption key is entered correctly and meets any length/format requirements.                          |
-| **Unsupported Encoding Format**              | Choose a valid encoding format from the options provided: Base64, Hex, or UTF8.                                   |
-| **Encrypted File Not Found**                 | Verify the output path. Ensure the directory is writable and that you have appropriate permissions.               |
+| Problem                         | Solution                                                                                            |
+| ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Path Errors**                 | Double-check that the input and output file paths are correct and accessible.                       |
+| **Invalid Encryption Key**      | Ensure the encryption key is entered correctly and meets any length/format requirements.            |
+| **Unsupported Encoding Format** | Choose a valid encoding format from the options provided: Base64, Hex, or UTF8.                     |
+| **Encrypted File Not Found**    | Verify the output path. Ensure the directory is writable and that you have appropriate permissions. |
 
 ## Real-World Use Cases
 

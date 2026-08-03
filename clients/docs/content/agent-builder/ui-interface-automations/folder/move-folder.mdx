@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name             | Description                                                                          | Input Type | Required? | Default Value |
-| ---------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Folder to Move**     | Specifies the path of the folder that needs to be moved.                             | Text       | No        | _(empty)_     |
-| **Destination Folder** | Specifies the path of the destination folder where the source folder will be moved.  | Text       | No        | _(empty)_     |
+| Field Name             | Description                                                                         | Input Type | Required? | Default Value |
+| ---------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Folder to Move**     | Specifies the path of the folder that needs to be moved.                            | Text       | No        | _(empty)_     |
+| **Destination Folder** | Specifies the path of the destination folder where the source folder will be moved. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -43,23 +43,24 @@ The path of the newly moved folder will be available as **MovedFolderPath** for 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that both source and destination paths are correctly specified to avoid errors during the move.
+  Ensure that both source and destination paths are correctly specified to avoid
+  errors during the move.
 </Callout>
 
 ## Input/Output Examples
 
-| Folder to Move              | Destination Folder              | Moved Folder Path                     |
-| --------------------------- | ------------------------------- | ------------------------------------- |
-| `C:\User\Documents\Report`  | `C:\Archives\2023\Reports`      | `C:\Archives\2023\Reports\Report`     |
-| `D:\Data\Projects\ProjectX` | `D:\Data\Completed\Projects`    | `D:\Data\Completed\Projects\ProjectX` |
+| Folder to Move              | Destination Folder           | Moved Folder Path                     |
+| --------------------------- | ---------------------------- | ------------------------------------- |
+| `C:\User\Documents\Report`  | `C:\Archives\2023\Reports`   | `C:\Archives\2023\Reports\Report`     |
+| `D:\Data\Projects\ProjectX` | `D:\Data\Completed\Projects` | `D:\Data\Completed\Projects\ProjectX` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                            | Solution                                                                                         |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Incorrect Source Path**          | Check that the path in **Folder to Move** correctly points to an existing folder.                |
-| **Destination Path Not Found**     | Ensure the **Destination Folder** path exists or create it before proceeding with the move.      |
-| **Permissions Errors**             | Confirm you have the necessary permissions to move the folder to the specified location.         |
+| Problem                        | Solution                                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| **Incorrect Source Path**      | Check that the path in **Folder to Move** correctly points to an existing folder.           |
+| **Destination Path Not Found** | Ensure the **Destination Folder** path exists or create it before proceeding with the move. |
+| **Permissions Errors**         | Confirm you have the necessary permissions to move the folder to the specified location.    |
 
 ## Real-World Use Cases
 

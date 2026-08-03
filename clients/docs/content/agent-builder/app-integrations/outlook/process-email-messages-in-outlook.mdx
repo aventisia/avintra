@@ -11,12 +11,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                                         | Input Type | Required? | Default Value |
-| ------------------ | --------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Outlook Application** | The Outlook application instance where the processing will occur.                                    | Text       | Yes       | _(empty)_     |
-| **Email Messages** | The list of email messages you want to process.                                                      | Text       | Yes       | _(empty)_     |
-| **Action Type**    | Choose whether to move or delete the selected email messages.                                        | Select     | Yes       | Delete       |
-| **Target Folder**  | If the action is "Move", specify the target folder (e.g., Inbox, Sent, Junk, Outbox).                | Text       | No        | _(empty)_     |
+| Field Name              | Description                                                                           | Input Type | Required? | Default Value |
+| ----------------------- | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Outlook Application** | The Outlook application instance where the processing will occur.                     | Text       | Yes       | _(empty)_     |
+| **Email Messages**      | The list of email messages you want to process.                                       | Text       | Yes       | _(empty)_     |
+| **Action Type**         | Choose whether to move or delete the selected email messages.                         | Select     | Yes       | Delete        |
+| **Target Folder**       | If the action is "Move", specify the target folder (e.g., Inbox, Sent, Junk, Outbox). | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -57,18 +57,18 @@ If you selected **Move** as the Action Type, a **Target Folder** field will appe
 
 ## Input/Output Examples
 
-| Action Type | Email Messages | Target Folder | Outcome                                        |
-| ----------- | -------------- | ------------- | ---------------------------------------------- |
-| Delete      | message1, message2, message3 | _(n/a)_            | Emails are deleted.                            |
-| Move        | message4, message5           | Inbox          | Emails are moved to the Inbox folder.           |
+| Action Type | Email Messages               | Target Folder | Outcome                               |
+| ----------- | ---------------------------- | ------------- | ------------------------------------- |
+| Delete      | message1, message2, message3 | _(n/a)_       | Emails are deleted.                   |
+| Move        | message4, message5           | Inbox         | Emails are moved to the Inbox folder. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                                                       |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Target Folder not visible**                         | Ensure you have selected "Move" in the Action Type dropdown for the field to appear.                                                                         |
-| **Incorrect Outlook Application instance**            | Double-check that the Outlook Application field is correctly linked to your Outlook Desktop application.                                                       |
-| **Emails not moving or deleting**                     | Verify that the Email Messages field contains the correct email identifiers and that your Outlook application is correctly configured and running.             |
+| Problem                                    | Solution                                                                                                                                           |
+| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Target Folder not visible**              | Ensure you have selected "Move" in the Action Type dropdown for the field to appear.                                                               |
+| **Incorrect Outlook Application instance** | Double-check that the Outlook Application field is correctly linked to your Outlook Desktop application.                                           |
+| **Emails not moving or deleting**          | Verify that the Email Messages field contains the correct email identifiers and that your Outlook application is correctly configured and running. |
 
 ## Real-World Use Cases
 

@@ -12,8 +12,6 @@
   stroke: #22c55e !important;
 }
 
-
-
 .react-flow__edge.edge-success marker path {
   stroke: #22c55e !important;
 }
@@ -26,4 +24,3 @@
 .react-flow__edge.edge-error marker path {
   stroke: #ef4444 !important;
 }
-

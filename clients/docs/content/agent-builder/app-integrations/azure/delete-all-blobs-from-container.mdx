@@ -12,9 +12,9 @@ This node is beneficial when you want to:
 
 ## Configuration Options
 
-| Field Name             | Description                                                                          | Input Type | Required? | Default Value |
-| ---------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Blob Container Client** | The connection instance needed to access and delete all blobs from the container.    | Text       | Yes       | _(empty)_     |
+| Field Name                | Description                                                                       | Input Type | Required? | Default Value |
+| ------------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Blob Container Client** | The connection instance needed to access and delete all blobs from the container. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,21 +45,22 @@ The result, **BlobsDeletedCount**, will show you how many blobs were deleted, wh
 </Steps>
 
 <Callout type="warning" title="Important">
-The deletion process will erase all blobs in the container permanently. Ensure that you have a backup if necessary.
+  The deletion process will erase all blobs in the container permanently. Ensure
+  that you have a backup if necessary.
 </Callout>
 
 ## Input/Output Examples
 
-| Blob Container Client       | Output Value      | Output Description                 |
-| --------------------------- | ----------------- | ---------------------------------- |
-| _Your BlobContainerClient_  | 0                 | No blobs were found/deleted.       |
-| _Your BlobContainerClient_  | 15                | Fifteen blobs were successfully deleted. |
+| Blob Container Client      | Output Value | Output Description                       |
+| -------------------------- | ------------ | ---------------------------------------- |
+| _Your BlobContainerClient_ | 0            | No blobs were found/deleted.             |
+| _Your BlobContainerClient_ | 15           | Fifteen blobs were successfully deleted. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                                                           |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Blob Container Client is not provided**           | The node requires a valid BlobContainerClient instance. Please ensure you have configured the connection property correctly.                        |
+| Problem                                             | Solution                                                                                                                                             |
+| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blob Container Client is not provided**           | The node requires a valid BlobContainerClient instance. Please ensure you have configured the connection property correctly.                         |
 | **Connection issues while accessing the container** | Verify your network connection and the accessibility of the Azure Blob storage account. Is the client you're using to access Azure correctly set up? |
 
 ## Real-World Use Cases

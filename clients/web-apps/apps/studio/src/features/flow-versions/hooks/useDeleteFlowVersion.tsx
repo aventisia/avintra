@@ -9,10 +9,7 @@ import { DATA_QUERY_KEY } from "../constants";
 export const useDeleteFlowVersionMutation = () => {
   const location = useLocation();
 
-  const queryParams = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search],
-  );
+  const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
 
   const flowId = queryParams.get("f");
   const queryClient = useQueryClient();

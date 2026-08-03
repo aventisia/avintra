@@ -2,7 +2,7 @@ import { Callout, Steps } from "nextra/components";
 
 # Zip Files
 
-The **Zip Files** node allows you to compress one or more files or folders into a single ZIP archive. This is useful for reducing file size for storage or transfer, organizing multiple files into a single package, or preparing documents for distribution. 
+The **Zip Files** node allows you to compress one or more files or folders into a single ZIP archive. This is useful for reducing file size for storage or transfer, organizing multiple files into a single package, or preparing documents for distribution.
 
 Common use cases include:
 
@@ -12,11 +12,11 @@ Common use cases include:
 
 ## Configuration Options
 
-| Field Name          | Description                                                                 | Input Type | Required? | Default Value |
-| ------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Source Paths**    | Paths of the files/folders to compress. Accepts a list or comma-separated values. | Text       | Yes       | _(empty)_     |
-| **Compression Level** | Level of compression: Optimal, Fastest, or NoCompression.                   | Select     | No        | Optimal       |
-| **Output Zip Path** | Location where the resulting ZIP file will be saved.                           | Text       | Yes       | _(empty)_     |
+| Field Name            | Description                                                                       | Input Type | Required? | Default Value |
+| --------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Source Paths**      | Paths of the files/folders to compress. Accepts a list or comma-separated values. | Text       | Yes       | _(empty)_     |
+| **Compression Level** | Level of compression: Optimal, Fastest, or NoCompression.                         | Select     | No        | Optimal       |
+| **Output Zip Path**   | Location where the resulting ZIP file will be saved.                              | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -52,23 +52,24 @@ Once configured, the full path to the resulting zip file will be available as **
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the **Output Zip Path** is correct and writable to avoid errors during zip creation.
+  Ensure that the **Output Zip Path** is correct and writable to avoid errors
+  during zip creation.
 </Callout>
 
 ## Input/Output Examples
 
-| Source Paths                         | Compression Level | Output Zip Path         | Output Value                           |
-| ------------------------------------ | ----------------- | ----------------------- | -------------------------------------- |
-| "C:\logs\", "C:\reports\report1.pdf" | Optimal           | "C:\archives\monthly.zip" | "C:\archives\monthly.zip"              |
-| "C:\photos\", "C:\videos\video.mp4"  | Fastest           | "D:\backups\media.zip"  | "D:\backups\media.zip"                 |
+| Source Paths                         | Compression Level | Output Zip Path           | Output Value              |
+| ------------------------------------ | ----------------- | ------------------------- | ------------------------- |
+| "C:\logs\", "C:\reports\report1.pdf" | Optimal           | "C:\archives\monthly.zip" | "C:\archives\monthly.zip" |
+| "C:\photos\", "C:\videos\video.mp4"  | Fastest           | "D:\backups\media.zip"    | "D:\backups\media.zip"    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                                     | Solution                                                                                                                  |
-| --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid or missing Source Paths**                                         | Double-check the file paths entered. Ensure they exist and are accessible.                                                |
-| **Output path not writable**                                                | Verify that the destination folder exists and you have write permissions.                                                 |
-| **Unexpected output due to incorrect Compression Level selection**          | Review the compression level setting. Use **Optimal** for balance or test other levels based on your specific needs.      |
+| Problem                                                            | Solution                                                                                                             |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| **Invalid or missing Source Paths**                                | Double-check the file paths entered. Ensure they exist and are accessible.                                           |
+| **Output path not writable**                                       | Verify that the destination folder exists and you have write permissions.                                            |
+| **Unexpected output due to incorrect Compression Level selection** | Review the compression level setting. Use **Optimal** for balance or test other levels based on your specific needs. |
 
 ## Real-World Use Cases
 

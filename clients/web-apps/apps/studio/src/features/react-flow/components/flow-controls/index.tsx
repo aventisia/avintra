@@ -1,10 +1,12 @@
 import { Separator } from "@avplatform/ui";
 import { Panel } from "@xyflow/react";
+import { useShallow } from "zustand/react/shallow";
+
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
+
 import { FCBContainer } from "./FCBContainer";
 import { FCBRedo } from "./FCBRedo";
 import { FCBUndo } from "./FCBUndo";
-import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
-import { useShallow } from "zustand/react/shallow";
 
 export const FlowControls = () => {
   // Get Studio Preferences store state

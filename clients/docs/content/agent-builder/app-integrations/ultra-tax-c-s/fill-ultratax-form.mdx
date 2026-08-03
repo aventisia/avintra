@@ -8,13 +8,13 @@ Use this node when you have tax form data stored in JSON format and need to effi
 
 ## Configuration Options
 
-| Field Name                                       | Description                                                                                     | Input Type | Required? | Default Value |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Form Element**                                 | The specific form element to inspect and fill.                                                  | Text       | Yes       | _(empty)_     |
-| **Max Wait Time (seconds)**                      | The maximum number of seconds the system should wait while identifying the form element.        | Text       | Yes       | 5             |
-| **Number of Fields to Inspect**                  | Indicates how many fields are to be inspected and filled within the form.                       | Text       | Yes       | _(empty)_     |
-| **Form Fields to JSON Fields Mapping File Path** | The complete file path to where the form fields to JSON fields mapping is stored in a JSON file.| Text       | Yes       | _(empty)_     |
-| **JSON data to fill the form**                   | The actual JSON data that will be used to populate the form fields.                             | Text       | Yes       | _(empty)_     |
+| Field Name                                       | Description                                                                                      | Input Type | Required? | Default Value |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Form Element**                                 | The specific form element to inspect and fill.                                                   | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)**                      | The maximum number of seconds the system should wait while identifying the form element.         | Text       | Yes       | 5             |
+| **Number of Fields to Inspect**                  | Indicates how many fields are to be inspected and filled within the form.                        | Text       | Yes       | _(empty)_     |
+| **Form Fields to JSON Fields Mapping File Path** | The complete file path to where the form fields to JSON fields mapping is stored in a JSON file. | Text       | Yes       | _(empty)_     |
+| **JSON data to fill the form**                   | The actual JSON data that will be used to populate the form fields.                              | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -50,16 +50,17 @@ Supply the **JSON data to fill the form** with the appropriate content you wish 
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure that the field mappings are correct and the JSON data is formatted properly, as incorrect mappings can lead to form errors.
+  Ensure that the field mappings are correct and the JSON data is formatted
+  properly, as incorrect mappings can lead to form errors.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                   |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **Form Element not found within Max Wait Time** | Increase the wait time or confirm that the form element ID is correct. Ensure UltraTax CS is running and accessible.        |
-| **JSON data isn't populating fields**           | Verify the JSON mapping file path is correct and that the JSON contains valid and expected data for the form fields.        |
-| **Errors due to incorrect JSON format**         | Double-check the JSON formatting and ensure it matches the expected structure for the form mapping.                         |
+| Problem                                         | Solution                                                                                                             |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Form Element not found within Max Wait Time** | Increase the wait time or confirm that the form element ID is correct. Ensure UltraTax CS is running and accessible. |
+| **JSON data isn't populating fields**           | Verify the JSON mapping file path is correct and that the JSON contains valid and expected data for the form fields. |
+| **Errors due to incorrect JSON format**         | Double-check the JSON formatting and ensure it matches the expected structure for the form mapping.                  |
 
 ## Real-World Use Cases
 

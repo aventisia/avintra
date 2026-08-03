@@ -1,12 +1,8 @@
-import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogDefaultHeader,
-} from "@avplatform/ui/dialog";
+import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
 
 import { useSavePromptTemplateStore } from "../stores/save-prompt-template-store";
 import { SaveAsTemplateForm } from "./SaveAsTemplateForm";

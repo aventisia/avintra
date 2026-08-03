@@ -1,5 +1,6 @@
-import { NodeDataType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
+
+import { NodeDataType } from "@/types/node-data-type";
 
 /**
  * Extracts unique configuration keys from the inputs of an array of nodes.
@@ -17,9 +18,7 @@ export function extractUniqueConfigKeys(nodes: Node<NodeDataType>[]): string[] {
         const matches = value.match(/\{\{__config__([^}]+)\}\}/g);
         // If there are matches, extract the keys and return them as an array
         return matches
-          ? matches.map((match) =>
-              match.replace(/\{\{__config__(.*?)\}\}/, "$1"),
-            )
+          ? matches.map((match) => match.replace(/\{\{__config__(.*?)\}\}/, "$1"))
           : [];
       }
       return []; // If value is not a string, return an empty array

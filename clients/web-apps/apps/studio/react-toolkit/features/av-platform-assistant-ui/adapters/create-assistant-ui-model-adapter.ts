@@ -1,9 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  ChatModelAdapter,
-  ThreadMessage,
-  ThreadUserMessagePart,
-} from "@assistant-ui/react";
+import { ChatModelAdapter, ThreadMessage, ThreadUserMessagePart } from "@assistant-ui/react";
 
 import { executeFlowOnWeb } from "../apis/execute-flow-apis";
 import { ExecuteFlowRequestDto } from "../dtos/execute-flow-request-dto";
@@ -13,9 +9,7 @@ import { LLMMessageType } from "../types/llm-message.type";
 type CreateAssistantUIModelAdapterParams = {
   flowVersionId: string;
   // Accepts the lazy getter instead of a static string
-  getConversationId: (
-    allocateIfMissing: boolean,
-  ) => Promise<string | undefined>;
+  getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>;
   onRequestComplete?: () => void;
   onSuggestionsUpdate?: (actions: string[]) => void;
 };
@@ -34,8 +28,7 @@ const toMessageText = (
         const p = part as any;
         let contextText = `\n[Tool Call: ${p.toolName}]\nArgs: ${p.argsText || JSON.stringify(p.args || {})}\n`;
         if (p.result) {
-          const resultStr =
-            typeof p.result === "string" ? p.result : JSON.stringify(p.result);
+          const resultStr = typeof p.result === "string" ? p.result : JSON.stringify(p.result);
           contextText += `\n[System Environment Response to ${p.toolName}]\nResult: ${resultStr}\n`;
         }
         return contextText;
@@ -49,16 +42,9 @@ const toMessageText = (
 /**
  * Formats the active thread into standard DTO messages.
  */
-function mapThreadToLLMMessages(
-  messages: readonly ThreadMessage[],
-): LLMMessageType[] {
+function mapThreadToLLMMessages(messages: readonly ThreadMessage[]): LLMMessageType[] {
   return messages
-    .filter(
-      (msg) =>
-        msg.role === "user" ||
-        msg.role === "assistant" ||
-        msg.role === "system",
-    )
+    .filter((msg) => msg.role === "user" || msg.role === "assistant" || msg.role === "system")
     .map((msg) => ({
       role: msg.role as LLMMessageType["role"],
       content: toMessageText(msg.content),
@@ -81,9 +67,7 @@ export const createAssistantUIModelAdapter = ({
       const threadMessages = mapThreadToLLMMessages(allMessagesExceptLast);
 
       const lastMessage = options.messages[options.messages.length - 1];
-      const userInputText = lastMessage
-        ? toMessageText(lastMessage.content)
-        : "";
+      const userInputText = lastMessage ? toMessageText(lastMessage.content) : "";
 
       // If we don't have an conversation ID yet, this guarantees one is created right before executing.
       const conversationId = await getConversationId(true);
@@ -119,19 +103,12 @@ export const createAssistantUIModelAdapter = ({
 
         const contentParts: any[] = [];
 
-        if (
-          parsedOutput &&
-          typeof parsedOutput === "object" &&
-          !Array.isArray(parsedOutput)
-        ) {
+        if (parsedOutput && typeof parsedOutput === "object" && !Array.isArray(parsedOutput)) {
           if (parsedOutput.text) {
             contentParts.push({ type: "text", text: parsedOutput.text });
           }
 
-          if (
-            Array.isArray(parsedOutput.tools) &&
-            parsedOutput.tools.length > 0
-          ) {
+          if (Array.isArray(parsedOutput.tools) && parsedOutput.tools.length > 0) {
             parsedOutput.tools.forEach((tool: any) => {
               contentParts.push({
                 type: "tool-call",

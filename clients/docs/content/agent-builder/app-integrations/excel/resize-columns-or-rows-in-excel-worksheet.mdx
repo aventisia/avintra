@@ -12,16 +12,16 @@ Common scenarios for using this node include:
 
 ## Configuration Options
 
-| Field Name          | Description                                                                                 | Input Type | Required? | Default Value |
-| ------------------- | ------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance**   | The Excel Worksheet object where resizing should occur.                                   | Text       | Yes       | _(empty)_     |
-| **Resize Target**   | Specifies whether columns or rows should be resized.                                        | Select     | Yes       | Columns       |
-| **Selection Range** | Determines how the columns or rows are selected for resizing: all, a specific range, or a single. | Select     | Yes       | AllAvailable  |
-| **Start Column**    | Starting column of the range to resize. _Required if "Selection Range" is "Range"._         | Text       | No        | _(empty)_     |
-| **End Column**      | Ending column of the range to resize. _Required if "Selection Range" is "Range"._           | Text       | No        | _(empty)_     |
-| **Column**          | The specific column to resize. _Required if "Selection Range" is "Single"._                 | Text       | No        | _(empty)_     |
-| **Resize Type**     | Choose between automatic size adjustment or setting a custom size.                          | Select     | Yes       | CustomSize    |
-| **Width**           | The new width for columns or height for rows. _Required if "Resize Type" is "Custom Size"._ | Text       | No        | _(empty)_     |
+| Field Name             | Description                                                                                       | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object where resizing should occur.                                           | Text       | Yes       | _(empty)_     |
+| **Resize Target**      | Specifies whether columns or rows should be resized.                                              | Select     | Yes       | Columns       |
+| **Selection Range**    | Determines how the columns or rows are selected for resizing: all, a specific range, or a single. | Select     | Yes       | AllAvailable  |
+| **Start Column**       | Starting column of the range to resize. _Required if "Selection Range" is "Range"._               | Text       | No        | _(empty)_     |
+| **End Column**         | Ending column of the range to resize. _Required if "Selection Range" is "Range"._                 | Text       | No        | _(empty)_     |
+| **Column**             | The specific column to resize. _Required if "Selection Range" is "Single"._                       | Text       | No        | _(empty)_     |
+| **Resize Type**        | Choose between automatic size adjustment or setting a custom size.                                | Select     | Yes       | CustomSize    |
+| **Width**              | The new width for columns or height for rows. _Required if "Resize Type" is "Custom Size"._       | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -60,17 +60,18 @@ Select the **Resize Type**:
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you choose "Autofit" in the **Resize Type**, you don't need to enter any measurements.
+  If you choose "Autofit" in the **Resize Type**, you don't need to enter any
+  measurements.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                     |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Missing Worksheet Instance**                 | Ensure the Excel Worksheet object is provided in the **Worksheet Instance** field.                          |
-| **Range Fields Not Appearing**                 | Check that you have selected **"Range"** in **Selection Range** to unlock **Start Column** and **End Column** fields. |
-| **Invalid Column/Row Specification**           | Verify that columns are correctly labeled with letters (e.g., "A", "B") and rows with numbers if applicable. |
-| **Width Not Applied Correctly**                | Ensure you've specified "Custom Size" and entered a valid number for **Width** when applicable.              |
+| Problem                              | Solution                                                                                                              |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| **Missing Worksheet Instance**       | Ensure the Excel Worksheet object is provided in the **Worksheet Instance** field.                                    |
+| **Range Fields Not Appearing**       | Check that you have selected **"Range"** in **Selection Range** to unlock **Start Column** and **End Column** fields. |
+| **Invalid Column/Row Specification** | Verify that columns are correctly labeled with letters (e.g., "A", "B") and rows with numbers if applicable.          |
+| **Width Not Applied Correctly**      | Ensure you've specified "Custom Size" and entered a valid number for **Width** when applicable.                       |
 
 ## Real-World Use Cases
 

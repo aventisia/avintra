@@ -1,12 +1,8 @@
 import { Button } from "@avplatform/ui/buttons";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import {
-  ConditionLabel,
-  ConditionListField,
-  DCPFieldSchemaType,
-  defaultConditionObj,
-} from "../..";
+
+import { ConditionLabel, ConditionListField, DCPFieldSchemaType, defaultConditionObj } from "../..";
 
 export const ConditionGroupsField = (field: DCPFieldSchemaType) => {
   const { control } = useFormContext();
@@ -24,11 +20,7 @@ export const ConditionGroupsField = (field: DCPFieldSchemaType) => {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <ConditionLabel
-          label={field.label}
-          description={field.description}
-          className="text-base"
-        />
+        <ConditionLabel label={field.label} description={field.description} className="text-base" />
 
         <Button
           type="button"

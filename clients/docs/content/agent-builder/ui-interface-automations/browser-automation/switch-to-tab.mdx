@@ -12,14 +12,14 @@ Here are situations where it might be beneficial:
 
 ## Configuration Options
 
-| Field Name             | Description                                                                 | Input Type | Required? | Default Value |
-| ---------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
-| **Switch Mode**        | Specifies how to locate the tab: by index, title, or URL fragment.         | Select     | Yes       | ByIndex      |
-| **Tab Index**          | The index (1-based) of the tab to switch to. _Only appears if Switch Mode is "By Index"._ | Text       | No        | _(empty)_     |
-| **Tab Title**          | The title of the tab to switch to. _Only appears if Switch Mode is "By Title"._ | Text       | No        | _(empty)_     |
-| **URL Fragment**       | A partial URL to match the tab. _Only appears if Switch Mode is "By URL Fragment"._ | Text       | No        | _(empty)_     |
-| **Timeout Seconds**    | Maximum time in seconds to wait for the tab to become available.            | Text       | No        | 60            |
+| Field Name               | Description                                                                               | Input Type | Required? | Default Value |
+| ------------------------ | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.         | Text       | Yes       | _(empty)_     |
+| **Switch Mode**          | Specifies how to locate the tab: by index, title, or URL fragment.                        | Select     | Yes       | ByIndex       |
+| **Tab Index**            | The index (1-based) of the tab to switch to. _Only appears if Switch Mode is "By Index"._ | Text       | No        | _(empty)_     |
+| **Tab Title**            | The title of the tab to switch to. _Only appears if Switch Mode is "By Title"._           | Text       | No        | _(empty)_     |
+| **URL Fragment**         | A partial URL to match the tab. _Only appears if Switch Mode is "By URL Fragment"._       | Text       | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for the tab to become available.                          | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -68,24 +68,26 @@ The node will provide **CurrentTabTitle** and **CurrentTabUrl** as outputs for f
 </Steps>
 
 <Callout type="info" title="Note">
-  Remember that the additional fields like **Tab Index**, **Tab Title**, or **URL Fragment** will only appear based on your selection in the **Switch Mode** field.
+  Remember that the additional fields like **Tab Index**, **Tab Title**, or
+  **URL Fragment** will only appear based on your selection in the **Switch
+  Mode** field.
 </Callout>
 
 ## Input/Output Examples
 
-| Switch Mode     | Input Value                  | Output - Current Tab Title | Output - Current Tab URL |
-| ----------------| ---------------------------- | ---------------------------| ------------------------ |
-| By Index        | 3                            | Google                      | https://www.google.com   |
-| By Title        | Gmail                        | Gmail                       | https://mail.google.com  |
-| By URL Fragment | google                       | Google Search               | https://www.google.com   |
+| Switch Mode     | Input Value | Output - Current Tab Title | Output - Current Tab URL |
+| --------------- | ----------- | -------------------------- | ------------------------ |
+| By Index        | 3           | Google                     | https://www.google.com   |
+| By Title        | Gmail       | Gmail                      | https://mail.google.com  |
+| By URL Fragment | google      | Google Search              | https://www.google.com   |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                         |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| **Tab not switching**                        | Ensure the browser instance variable is correct and active. Also, make sure the specified tab is present.        |
-| **Timeout issues**                           | Increase the **Timeout Seconds** if your browser or system is slow in loading pages.                             |
-| **Fields not appearing**                     | Check that your selection in **Switch Mode** matches the corresponding field you are trying to use (Index/Title/URL). |
+| Problem                  | Solution                                                                                                              |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| **Tab not switching**    | Ensure the browser instance variable is correct and active. Also, make sure the specified tab is present.             |
+| **Timeout issues**       | Increase the **Timeout Seconds** if your browser or system is slow in loading pages.                                  |
+| **Fields not appearing** | Check that your selection in **Switch Mode** matches the corresponding field you are trying to use (Index/Title/URL). |
 
 ## Real-World Use Cases
 

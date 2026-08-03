@@ -35,11 +35,7 @@ import {
 } from "../../tool-widget/store/tool-call-store";
 import { useThreadConfigStore } from "../stores/assitant-ui-store";
 import Archived from "./Archived";
-import {
-  ComposerAddAttachment,
-  ComposerAttachments,
-  UserMessageAttachments,
-} from "./attachment";
+import { ComposerAddAttachment, ComposerAttachments, UserMessageAttachments } from "./attachment";
 import { MarkdownText } from "./markdown-text";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
@@ -47,9 +43,7 @@ function FollowUps() {
   const suggestions = useAuiState((s) => s.thread.suggestions);
   const hasPending = useHasPendingToolCalls();
 
-  const cancelAll = useToolCallCoordinatorStore(
-    useShallow((state) => state.cancelAll),
-  );
+  const cancelAll = useToolCallCoordinatorStore(useShallow((state) => state.cancelAll));
 
   // Return null if there are no suggestions,
   if (!suggestions || suggestions.length === 0) return null;
@@ -82,13 +76,7 @@ function FollowUps() {
   );
 }
 
-export const Thread = ({
-  title,
-  description,
-}: {
-  title?: string;
-  description?: string;
-}) => {
+export const Thread = ({ title, description }: { title?: string; description?: string }) => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
 
@@ -114,23 +102,13 @@ export const Thread = ({
           </AuiIf>
         )}
 
-        <ThreadPrimitive.Messages>
-          {() => <ThreadMessage />}
-        </ThreadPrimitive.Messages>
+        <ThreadPrimitive.Messages>{() => <ThreadMessage />}</ThreadPrimitive.Messages>
 
         <FollowUps />
 
         <ThreadPrimitive.ViewportFooter className="aui-thread-viewport-footer sticky bottom-0 mx-auto mt-auto flex w-full max-w-[var(--thread-max-width)] flex-col gap-4 overflow-visible rounded-t-[var(--composer-radius)] bg-background pb-4 md:pb-6">
           <ThreadScrollToBottom />
-          {isDisabled ? (
-            readOnly ? (
-              <ReadOnlyBanner />
-            ) : (
-              <Archived />
-            )
-          ) : (
-            <Composer />
-          )}
+          {isDisabled ? readOnly ? <ReadOnlyBanner /> : <Archived /> : <Composer />}
         </ThreadPrimitive.ViewportFooter>
       </ThreadPrimitive.Viewport>
     </ThreadPrimitive.Root>
@@ -168,13 +146,7 @@ const ThreadScrollToBottom: FC = () => {
   );
 };
 
-const ThreadWelcome = ({
-  title,
-  description,
-}: {
-  title?: string;
-  description?: string;
-}) => {
+const ThreadWelcome = ({ title, description }: { title?: string; description?: string }) => {
   return (
     <div className="aui-thread-welcome-root mx-auto my-auto flex w-full max-w-[var(--thread-max-width)] grow flex-col">
       <div className="aui-thread-welcome-center flex w-full grow flex-col items-center justify-center">
@@ -195,9 +167,7 @@ const ThreadWelcome = ({
 const ThreadSuggestions: FC = () => {
   return (
     <div className="aui-thread-welcome-suggestions flex gap-2 pb-4 w-full flex-wrap">
-      <ThreadPrimitive.Suggestions>
-        {() => <ThreadSuggestionItem />}
-      </ThreadPrimitive.Suggestions>
+      <ThreadPrimitive.Suggestions>{() => <ThreadSuggestionItem />}</ThreadPrimitive.Suggestions>
     </div>
   );
 };
@@ -247,9 +217,7 @@ const Composer: FC = () => {
 const ComposerAction: FC = () => {
   const hasPending = useHasPendingToolCalls();
 
-  const cancelAll = useToolCallCoordinatorStore(
-    useShallow((state) => state.cancelAll),
-  );
+  const cancelAll = useToolCallCoordinatorStore(useShallow((state) => state.cancelAll));
 
   return (
     <div className="aui-composer-action-wrapper relative flex items-center justify-between">
@@ -396,10 +364,7 @@ const AssistantActionBar: FC<{ readOnly: boolean }> = ({ readOnly }) => {
 
       <ActionBarMorePrimitive.Root>
         <ActionBarMorePrimitive.Trigger asChild>
-          <TooltipIconButton
-            tooltip="More"
-            className="data-[state=open]:bg-accent"
-          >
+          <TooltipIconButton tooltip="More" className="data-[state=open]:bg-accent">
             <MoreHorizontalIcon />
           </TooltipIconButton>
         </ActionBarMorePrimitive.Trigger>
@@ -455,10 +420,7 @@ const UserActionBar: FC = () => {
       className="aui-user-action-bar-root flex flex-col items-end"
     >
       <ActionBarPrimitive.Edit asChild>
-        <TooltipIconButton
-          tooltip="Edit"
-          className="aui-user-action-edit size-8 p-0"
-        >
+        <TooltipIconButton tooltip="Edit" className="aui-user-action-edit size-8 p-0">
           <PencilIcon className="size-3.5 text-[var(--icon-color)] group-hover:text-primary" />
         </TooltipIconButton>
       </ActionBarPrimitive.Edit>
@@ -489,10 +451,7 @@ const EditComposer: FC = () => {
   );
 };
 
-const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({
-  className,
-  ...rest
-}) => {
+const BranchPicker: FC<BranchPickerPrimitive.Root.Props> = ({ className, ...rest }) => {
   return (
     <BranchPickerPrimitive.Root
       hideWhenSingleBranch

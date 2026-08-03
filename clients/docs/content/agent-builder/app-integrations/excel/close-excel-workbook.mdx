@@ -12,12 +12,12 @@ This node is useful for:
 
 ## Configuration Options
 
-| Field Name                   | Description                                                                           | Input Type | Required? | Default Value |
-| ---------------------------- | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Workbook Instance**        | The Excel Workbook instance to be closed.                                             | Text       | Yes       | _(empty)_     |
-| **Excel Application Instance** | The Excel Application instance to optionally quit after closing the workbook.        | Text       | No        | _(empty)_     |
-| **Save Before Closing**      | Whether to save the workbook before closing.                                          | Switch     | No        | true          |
-| **Quit Excel Application**   | Whether to quit the Excel Application after closing the workbook.                     | Switch     | No        | true          |
+| Field Name                     | Description                                                                   | Input Type | Required? | Default Value |
+| ------------------------------ | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Workbook Instance**          | The Excel Workbook instance to be closed.                                     | Text       | Yes       | _(empty)_     |
+| **Excel Application Instance** | The Excel Application instance to optionally quit after closing the workbook. | Text       | No        | _(empty)_     |
+| **Save Before Closing**        | Whether to save the workbook before closing.                                  | Switch     | No        | true          |
+| **Quit Excel Application**     | Whether to quit the Excel Application after closing the workbook.             | Switch     | No        | true          |
 
 ## Expected Output Format
 
@@ -55,19 +55,21 @@ Use the **Quit Excel Application** switch to determine if the Excel application 
 ### Step 6
 
 Confirm that the configurations are set properly, and execute the node to close the workbook.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Specify the Excel application only if you wish to close the application as well, otherwise, it is optional.
+  Specify the Excel application only if you wish to close the application as
+  well, otherwise, it is optional.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                           | Solution                                                                                                             |
-| ----------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Workbook doesn't close**                                        | Ensure the correct **Workbook Instance** is provided and the instance still exists in your automation context.       |
-| **Changes not saved**                                             | Double-check if the **Save Before Closing** option is enabled if you intend to preserve changes before closing.      |
-| **Excel remains open**                                            | Verify if the **Quit Excel Application** switch is enabled if the Excel Application instance isn't quitting as expected. |
+| Problem                    | Solution                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Workbook doesn't close** | Ensure the correct **Workbook Instance** is provided and the instance still exists in your automation context.           |
+| **Changes not saved**      | Double-check if the **Save Before Closing** option is enabled if you intend to preserve changes before closing.          |
+| **Excel remains open**     | Verify if the **Quit Excel Application** switch is enabled if the Excel Application instance isn't quitting as expected. |
 
 ## Real-World Use Cases
 

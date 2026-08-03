@@ -1,7 +1,8 @@
 import { Badge } from "@avplatform/ui/badge";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { Loader2 } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 /**
  * Renders a flow's name and version component.
@@ -22,10 +23,7 @@ export const FPTNameAndVersion = () => {
       <span className="truncate text-xs">{currentFlow.name}</span>
 
       {/* flow version container */}
-      <Badge
-        variant={"default"}
-        className="gap-1 bg-white text-3xs text-foreground shadow"
-      >
+      <Badge variant={"default"} className="gap-1 bg-white text-3xs text-foreground shadow">
         {/* show flow version is saving */}
         {isFlowSaving ? (
           <>

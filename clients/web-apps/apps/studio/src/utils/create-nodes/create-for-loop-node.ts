@@ -1,17 +1,15 @@
-import {
-  MARKER_ARROW_PREFIX,
-  STROKE_DASHARRAY,
-  STROKE_WIDTH,
-} from "@/constants";
+import { Edge } from "@xyflow/react";
+
+import { MARKER_ARROW_PREFIX, STROKE_DASHARRAY, STROKE_WIDTH } from "@/constants";
 import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { NodeDataType } from "@/types/node-data-type";
-import { Edge } from "@xyflow/react";
+
 import { createCustomEdgeObj } from "../create-edges/create-custom-edge-obj";
 import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
 import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
+import { createBranchEndNodeObj } from "./create-branch-end-node-obj";
 import { createNodeObj } from "./create-node-obj";
 import { createSupportNodeObj } from "./create-support-node-obj";
-import { createBranchEndNodeObj } from "./create-branch-end-node-obj";
 
 export const createForLoopNode = (
   nodeData: NodeDataType,
@@ -32,22 +30,13 @@ export const createForLoopNode = (
   const source2ForLoopEdge = createPlusEdgeObj(sourceNodeId, forLoopNode.id);
 
   // For-loop node -> Loop-body branch-start node
-  const forLoop2LoopBodyStartEdge = createCustomEdgeObj(
-    forLoopNode.id,
-    loopBodyStartNode.id,
-  );
+  const forLoop2LoopBodyStartEdge = createCustomEdgeObj(forLoopNode.id, loopBodyStartNode.id);
 
   // Loop-body branch-start node -> Loop-body plus node
-  const loopBodyStart2PlusEdge = createDottedEdgeObj(
-    loopBodyStartNode.id,
-    loopBodyPlusNode.id,
-  );
+  const loopBodyStart2PlusEdge = createDottedEdgeObj(loopBodyStartNode.id, loopBodyPlusNode.id);
 
   // Loop-body plus node -> Loop-body branch-end node
-  const loopBodyPlus2BranchEndEdge = createDottedEdgeObj(
-    loopBodyPlusNode.id,
-    loopBodyEndNode.id,
-  );
+  const loopBodyPlus2BranchEndEdge = createDottedEdgeObj(loopBodyPlusNode.id, loopBodyEndNode.id);
 
   // Loop-body branch-end node -> Merge branches node
   const loopBodyEndToMergeBranchesEdge = createCustomEdgeObj(

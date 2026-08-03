@@ -6,12 +6,12 @@ The **Detect Entities (AWS Comprehend)** node helps identify named entities with
 
 ## Configuration Options
 
-| Field Name                      | Description                                                                                                | Input Type | Required? | Default Value |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Credential to connect with**  | Select the AWS credential for authentication. This is necessary to access AWS Comprehend services.         | Text       | Yes       | _(empty)_     |
-| **Language Code**               | The language in which the input text is written. Important for accurate entity recognition.                | Text       | Yes       | _(empty)_     |
-| **Text**                        | The text you want to analyze for named entities.                                                          | Text       | Yes       | _(empty)_     |
-| **AWS Region**                  | The AWS region where the Comprehend service is running. Default is `us-east-1`, but can be changed if needed. | Text       | No        | _(empty)_     |
+| Field Name                     | Description                                                                                                   | Input Type | Required? | Default Value |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential for authentication. This is necessary to access AWS Comprehend services.            | Text       | Yes       | _(empty)_     |
+| **Language Code**              | The language in which the input text is written. Important for accurate entity recognition.                   | Text       | Yes       | _(empty)_     |
+| **Text**                       | The text you want to analyze for named entities.                                                              | Text       | Yes       | _(empty)_     |
+| **AWS Region**                 | The AWS region where the Comprehend service is running. Default is `us-east-1`, but can be changed if needed. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -46,26 +46,28 @@ In the **Text** field, input the text you wish to analyze for entities.
 ### Step 6
 
 The detected entities will be available as **Entities** and the raw API response as **Response**.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Make sure your AWS credentials have permission to access the Comprehend service. Incorrect configurations may lead to access errors.
+  Make sure your AWS credentials have permission to access the Comprehend
+  service. Incorrect configurations may lead to access errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Language Code | Input Text                                   | Detected Entities                  | API Response |
-| ------------- | -------------------------------------------- | ---------------------------------- | ------------ |
-| `en`          | "Amazon is based in Seattle."                | [Person: Amazon, Location: Seattle]| `{...}`      |
-| `es`          | "Pedro vive en Madrid y trabaja en Microsoft." | [Person: Pedro, Location: Madrid, Organization: Microsoft] | `{...}` |
+| Language Code | Input Text                                     | Detected Entities                                          | API Response |
+| ------------- | ---------------------------------------------- | ---------------------------------------------------------- | ------------ |
+| `en`          | "Amazon is based in Seattle."                  | [Person: Amazon, Location: Seattle]                        | `{...}`      |
+| `es`          | "Pedro vive en Madrid y trabaja en Microsoft." | [Person: Pedro, Location: Madrid, Organization: Microsoft] | `{...}`      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                            | Solution                                                                                  |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **Invalid AWS credentials**                        | Ensure the selected AWS credential is correct and has necessary permissions.              |
-| **Incorrect language code**                        | Verify the language code matches the language of the text entered.                        |
-| **Empty or poorly formatted text**                 | Make sure the text field is filled and formatted correctly for better entity detection.   |
+| Problem                            | Solution                                                                                |
+| ---------------------------------- | --------------------------------------------------------------------------------------- |
+| **Invalid AWS credentials**        | Ensure the selected AWS credential is correct and has necessary permissions.            |
+| **Incorrect language code**        | Verify the language code matches the language of the text entered.                      |
+| **Empty or poorly formatted text** | Make sure the text field is filled and formatted correctly for better entity detection. |
 
 ## Real-World Use Cases
 

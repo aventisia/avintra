@@ -8,13 +8,13 @@ This is particularly useful when you need to automate data entry tasks, bulk upd
 
 ## Configuration Options
 
-| Field Name                      | Description                                                                                          | Input Type        | Required? | Default Value |
-| ------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------- | --------- | ------------- |
-| **M365 Excel API Credential**   | Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and secret). | Credentials Select | Yes       | _(empty)_     |
-| **Excel File (Drive and Item ID)** | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint. Format: driveId/items/itemId. | Text              | Yes       | _(empty)_     |
-| **Worksheet Name**              | The name of the worksheet in the Excel file where the value will be written (e.g., 'Sheet1').       | Text              | Yes       | Sheet1        |
-| **Range Address**               | The address of the range in the worksheet where the value will be written (e.g., 'A1' or 'A1:B10'). | Text              | Yes       | A1            |
-| **Values to Write**             | The values to write to the specified range in the worksheet (e.g., `[[“Value1”, “Value2”]]`).       | Text              | Yes       | _(empty)_     |
+| Field Name                         | Description                                                                                             | Input Type         | Required? | Default Value |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------ | --------- | ------------- |
+| **M365 Excel API Credential**      | Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and secret). | Credentials Select | Yes       | _(empty)_     |
+| **Excel File (Drive and Item ID)** | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint. Format: driveId/items/itemId.     | Text               | Yes       | _(empty)_     |
+| **Worksheet Name**                 | The name of the worksheet in the Excel file where the value will be written (e.g., 'Sheet1').           | Text               | Yes       | Sheet1        |
+| **Range Address**                  | The address of the range in the worksheet where the value will be written (e.g., 'A1' or 'A1:B10').     | Text               | Yes       | A1            |
+| **Values to Write**                | The values to write to the specified range in the worksheet (e.g., `[[“Value1”, “Value2”]]`).           | Text               | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -50,29 +50,31 @@ Provide the **Values to Write** to the specified range. Values should be structu
 ### Step 7
 
 Execute the node to perform the write operation. Check the **Write Result** for confirmation and details of the operation's success.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure correct and valid M365 credentials are used; incorrect credentials will prevent data from being written to the Excel file.
+  Ensure correct and valid M365 credentials are used; incorrect credentials will
+  prevent data from being written to the Excel file.
 </Callout>
 
 ## Input/Output Examples
 
-| Field                | Example Value                          | Notes                                                    |
-| -------------------- | -------------------------------------- | -------------------------------------------------------- |
+| Field                          | Example Value                                                 | Notes                                                          |
+| ------------------------------ | ------------------------------------------------------------- | -------------------------------------------------------------- |
 | Excel File (Drive and Item ID) | `b!1aDe5Q_GO5lkC_xx/items/01MJL5UTIFQ7YYRXXELZAYRXXXHK4FK5FX` | Use the file's unique identifiers from OneDrive or SharePoint. |
-| Worksheet Name       | `Sheet1`                               | The worksheet's exact name is crucial for correct targeting. |
-| Range Address        | `A1:B2`                                | Specifies a 2x2 range in the worksheet.                   |
-| Values to Write      | `[[“Header1”, “Header2”], [“Value1”, “Value2”]]` | Matching range and value structure avoids overwrite issues. |
+| Worksheet Name                 | `Sheet1`                                                      | The worksheet's exact name is crucial for correct targeting.   |
+| Range Address                  | `A1:B2`                                                       | Specifies a 2x2 range in the worksheet.                        |
+| Values to Write                | `[[“Header1”, “Header2”], [“Value1”, “Value2”]]`              | Matching range and value structure avoids overwrite issues.    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                                   |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
-| **Invalid M365 Credentials**                     | Double-check credential details: tenant ID, client ID, and client secret must be correct.                  |
-| **Wrong Excel File ID**                          | Ensure the correct drive and item IDs are used. These IDs are unique to each file.                         |
-| **Range Overflow**                               | Make sure the values fit the specified range (e.g., don't send a 3x3 value array to a 2x2 range address).  |
-| **Unmatched Worksheet Name**                     | Verify that the worksheet name in Excel matches what you have entered exactly (case-sensitive).            |
+| Problem                      | Solution                                                                                                  |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Invalid M365 Credentials** | Double-check credential details: tenant ID, client ID, and client secret must be correct.                 |
+| **Wrong Excel File ID**      | Ensure the correct drive and item IDs are used. These IDs are unique to each file.                        |
+| **Range Overflow**           | Make sure the values fit the specified range (e.g., don't send a 3x3 value array to a 2x2 range address). |
+| **Unmatched Worksheet Name** | Verify that the worksheet name in Excel matches what you have entered exactly (case-sensitive).           |
 
 ## Real-World Use Cases
 

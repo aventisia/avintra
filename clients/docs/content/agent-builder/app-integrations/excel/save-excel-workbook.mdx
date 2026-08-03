@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name        | Description                                                                                              | Input Type | Required? | Default Value    |
-| ----------------- | -------------------------------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **Excel Application** | The Excel Application object containing the workbook to save.                                           | Text       | Yes       | _(empty)_        |
-| **Save Mode**     | Choose how you want to save the workbook: in the current format or with a new format and path.           | Select     | Yes       | SaveDocument     |
-| **Document Path** | Provide a path to save the workbook (only needed if "Save Mode" is "Save Document As").                 | Text       | No        | _(empty)_        |
-| **Document Format**| Choose a different format for saving your workbook (only needed if "Save Mode" is "Save Document As"). | Select     | No        | _(empty)_        |
+| Field Name            | Description                                                                                            | Input Type | Required? | Default Value |
+| --------------------- | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Excel Application** | The Excel Application object containing the workbook to save.                                          | Text       | Yes       | _(empty)_     |
+| **Save Mode**         | Choose how you want to save the workbook: in the current format or with a new format and path.         | Select     | Yes       | SaveDocument  |
+| **Document Path**     | Provide a path to save the workbook (only needed if "Save Mode" is "Save Document As").                | Text       | No        | _(empty)_     |
+| **Document Format**   | Choose a different format for saving your workbook (only needed if "Save Mode" is "Save Document As"). | Select     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -51,25 +51,25 @@ If you selected **Save Document As**, fill in the additional fields:
 </Steps>
 
 <Callout type="info" title="Important">
-  If you select "Save Document As" in the **Save Mode**, ensure you specify both the **Document Path** and **Document Format**.
+  If you select "Save Document As" in the **Save Mode**, ensure you specify both
+  the **Document Path** and **Document Format**.
 </Callout>
 
 ## Input/Output Examples
 
-- **Save Document**: 
+- **Save Document**:
   - No additional inputs, saves as is.
-  
-- **Save Document As**: 
+- **Save Document As**:
   - Input: Path: `C:\Users\example\report.csv`, Format: `CSV`
   - Result: Workbook saved to specified path as CSV.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                            |
-| --------------------------------------------------- | ------------------------------------------------------------------- |
-| **Invalid File Path**                              | Ensure the path is correct and accessible by your application.      |
-| **Missing Document Path or Format**                | Check that both fields are populated when using "Save Document As". |
-| **Unsupported File Format**                        | Confirm the selected format is suitable for the workbook content.   |
+| Problem                             | Solution                                                            |
+| ----------------------------------- | ------------------------------------------------------------------- |
+| **Invalid File Path**               | Ensure the path is correct and accessible by your application.      |
+| **Missing Document Path or Format** | Check that both fields are populated when using "Save Document As". |
+| **Unsupported File Format**         | Confirm the selected format is suitable for the workbook content.   |
 
 ## Real-World Use Cases
 

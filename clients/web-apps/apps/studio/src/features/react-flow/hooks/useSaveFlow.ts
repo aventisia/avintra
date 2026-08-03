@@ -1,13 +1,13 @@
-import { FlowTypesEnum } from "@avplatform/ui/enums";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { NodeDataType } from "@/types/node-data-type";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Node } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeDataType } from "@/types/node-data-type";
 
 import { updateFlowSilently } from "../apis/react-flow-apis";
 import { LoadFlowDto } from "../dtos/load-flow-dto";
@@ -122,11 +122,8 @@ export const useSaveFlow = () => {
       (
         (
           nodes.find((node) => node.data?.name === TARGET_NODE_NAME)?.data as
-            | NodeDataType
-            | undefined
-        )?.inputs?.find((input) => input.key === INPUT_KEY)?.value as
-          | RecommendActions
-          | undefined
+            NodeDataType | undefined
+        )?.inputs?.find((input) => input.key === INPUT_KEY)?.value as RecommendActions | undefined
       )?.defaultActions ?? [];
 
     // Create react flow object
@@ -139,9 +136,7 @@ export const useSaveFlow = () => {
       }),
     };
 
-    const hasDesktopOnlyNode = doesFlowContainAnyDesktopOnlyNode(
-      nodes as Node<NodeDataType>[],
-    );
+    const hasDesktopOnlyNode = doesFlowContainAnyDesktopOnlyNode(nodes as Node<NodeDataType>[]);
 
     // Set isFlowSaving to true
     setIsFlowSaving(true);

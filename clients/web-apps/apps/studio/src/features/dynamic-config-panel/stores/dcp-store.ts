@@ -1,6 +1,6 @@
-import { NodeDataType } from "@/types/node-data-type";
-
 import { create } from "zustand";
+
+import { NodeDataType } from "@/types/node-data-type";
 
 type State = {
   showDialog: boolean;

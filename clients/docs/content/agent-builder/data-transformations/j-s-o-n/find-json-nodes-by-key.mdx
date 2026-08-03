@@ -5,14 +5,15 @@ import { Callout, Steps } from "nextra/components";
 The **Find JSON Nodes by Key** node is designed to help you search through complex JSON data structures to easily locate and extract all values associated with a specific key. This node is particularly useful when working with nested JSON data, ensuring that you efficiently retrieve every instance of a key across all hierarchical levels.
 
 For example, you might use this to:
+
 - Retrieve all instances of a specific field across varied segments of your data structure.
 - Validate the presence and value of repeated keys in data sets.
 
 ## Configuration Options
 
-| Field Name       | Description                                                                                            | Input Type | Required? | Default Value |
-| ---------------- | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **JSON Content** | The JSON data you want to search through. Enter this as a JSON string or JToken.                       | Text       | Yes       | _(empty)_     |
+| Field Name       | Description                                                                                                     | Input Type | Required? | Default Value |
+| ---------------- | --------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **JSON Content** | The JSON data you want to search through. Enter this as a JSON string or JToken.                                | Text       | Yes       | _(empty)_     |
 | **Key to Find**  | The specific JSON key you are searching for in the structure. This search is both recursive and case-sensitive. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -40,27 +41,29 @@ In the **Key to Find** field, enter the key name you wish to locate within the J
 ### Step 4
 
 The results of your search will be available as **ResultList**, accessible for subsequent use in your workflow.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure JSON is properly structured; incorrect syntax may lead to errors when the node attempts to parse it.
+  Ensure JSON is properly structured; incorrect syntax may lead to errors when
+  the node attempts to parse it.
 </Callout>
 
 ## Input/Output Examples
 
-| JSON Content Example                                                           | Key to Find | Output (Result List)                                              |
-| ------------------------------------------------------------------------------ | ----------- | ----------------------------------------------------------------- |
-| `{ "name": "Alice", "details": {"age": 30}, "friend": {"name": "Bob"}}`       | `name`      | `['Alice', 'Bob']`                                                |
-| `{"product": {"id": 1, "name": "Book", "tags": [{"name": "Education"}, {"name": "Arts"}]}}` | `name`      | `['Book', 'Education', 'Arts']`                                   |
-| `{"employee": {"name": "John", "manager": {"name": "Doe"}}}`                   | `location`  | `[]` (empty list, as key doesn't exist)                           |
+| JSON Content Example                                                                        | Key to Find | Output (Result List)                    |
+| ------------------------------------------------------------------------------------------- | ----------- | --------------------------------------- |
+| `{ "name": "Alice", "details": {"age": 30}, "friend": {"name": "Bob"}}`                     | `name`      | `['Alice', 'Bob']`                      |
+| `{"product": {"id": 1, "name": "Book", "tags": [{"name": "Education"}, {"name": "Arts"}]}}` | `name`      | `['Book', 'Education', 'Arts']`         |
+| `{"employee": {"name": "John", "manager": {"name": "Doe"}}}`                                | `location`  | `[]` (empty list, as key doesn't exist) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                   |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **Invalid JSON input**                                | Ensure the JSON string is correctly formatted and not missing braces or commas.             |
-| **Case Sensitivity**                                  | Double-check the casing of the key you're searching for; it must match exactly.             |
-| **Empty Result List**                                 | Make sure the key really exists in the given JSON structure. It's possible no such keys exist.|
+| Problem                | Solution                                                                                       |
+| ---------------------- | ---------------------------------------------------------------------------------------------- |
+| **Invalid JSON input** | Ensure the JSON string is correctly formatted and not missing braces or commas.                |
+| **Case Sensitivity**   | Double-check the casing of the key you're searching for; it must match exactly.                |
+| **Empty Result List**  | Make sure the key really exists in the given JSON structure. It's possible no such keys exist. |
 
 ## Real-World Use Cases
 

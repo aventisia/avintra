@@ -6,8 +6,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@avplatform/ui/select";
-import { selectOptions } from "../../constants";
 import { Edit2Icon, EyeIcon } from "lucide-react";
+
+import { selectOptions } from "../../constants";
 
 type Props = {
   value: string;
@@ -15,8 +16,7 @@ type Props = {
 };
 
 export const SelectType: React.FC<Props> = ({ value, onChange }) => {
-  const selectedLabel =
-    selectOptions.find((opt) => opt.value === value)?.label || "Select";
+  const selectedLabel = selectOptions.find((opt) => opt.value === value)?.label || "Select";
 
   const iconMapper: { [key: string]: JSX.Element } = {
     Viewer: <EyeIcon className="h-3 w-3" />,
@@ -35,9 +35,7 @@ export const SelectType: React.FC<Props> = ({ value, onChange }) => {
               {iconMapper[item.value]}
               <div className="flex flex-col">
                 <p className="text-2xs font-medium">{item.label}</p>
-                <span className="text-3xs text-muted-foreground">
-                  {item.description}
-                </span>
+                <span className="text-3xs text-muted-foreground">{item.description}</span>
               </div>
             </div>
           </SelectItem>

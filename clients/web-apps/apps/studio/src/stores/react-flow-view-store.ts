@@ -33,13 +33,7 @@ type Actions = {
   /** Set viewport */
   setViewport: (viewport: Viewport) => void;
 
-  setVersionMeta: ({
-    name,
-    versionNumber,
-  }: {
-    name: string;
-    versionNumber: number;
-  }) => void;
+  setVersionMeta: ({ name, versionNumber }: { name: string; versionNumber: number }) => void;
 };
 
 // Used for Change(Version)-History and Execution-Log Page
@@ -56,6 +50,5 @@ export const useReactFlowViewStore = create<State & Actions>((set) => ({
   setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
     set({ flowVariablesObject: variables }),
   setViewport: (viewport) => set({ viewport }),
-  setVersionMeta: (data) =>
-    set({ name: data.name, versionNumber: data.versionNumber }),
+  setVersionMeta: (data) => set({ name: data.name, versionNumber: data.versionNumber }),
 }));

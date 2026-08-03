@@ -6,15 +6,15 @@ The **Activate Cell in Excel Worksheet** node allows you to focus on a specific 
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                   | Input Type | Required? | Default Value |
-| ------------------------ | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance**   | The specific worksheet where the cell should be activated. Uses the active worksheet if not provided. | Text       | Yes       | _(empty)_     |
-| **Activation Mode**      | Choose how to activate the cell: absolutely, relatively, or via named range.                  | Select     | Yes       | Absolute     |
-| **Column**               | The column letter (e.g., 'A', 'B') or number (e.g., 1, 2) of the target cell.                | Text       | No        | _(empty)_    |
-| **Row**                  | The row number of the target cell.                                                            | Text       | No        | _(empty)_    |
-| **Name**                 | The name of the named range or cell to activate.                                              | Text       | No        | _(empty)_    |
-| **Direction**            | The direction to move from the currently active cell when activating relatively.              | Select     | No        | Down         |
-| **Offset From Active Cell** | Number of cells to move from the current active cell when activating relatively.              | Text       | No        | _(empty)_    |
+| Field Name                  | Description                                                                                           | Input Type | Required? | Default Value |
+| --------------------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**      | The specific worksheet where the cell should be activated. Uses the active worksheet if not provided. | Text       | Yes       | _(empty)_     |
+| **Activation Mode**         | Choose how to activate the cell: absolutely, relatively, or via named range.                          | Select     | Yes       | Absolute      |
+| **Column**                  | The column letter (e.g., 'A', 'B') or number (e.g., 1, 2) of the target cell.                         | Text       | No        | _(empty)_     |
+| **Row**                     | The row number of the target cell.                                                                    | Text       | No        | _(empty)_     |
+| **Name**                    | The name of the named range or cell to activate.                                                      | Text       | No        | _(empty)_     |
+| **Direction**               | The direction to move from the currently active cell when activating relatively.                      | Select     | No        | Down          |
+| **Offset From Active Cell** | Number of cells to move from the current active cell when activating relatively.                      | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -54,17 +54,18 @@ If you selected **Activate by Named Range**, enter the **Name** of the range or 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the worksheet you are targeting is open and accessible when using this node. An inactive or closed worksheet might prevent proper activation.
+  Ensure that the worksheet you are targeting is open and accessible when using
+  this node. An inactive or closed worksheet might prevent proper activation.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                     |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **Column and Row fields are disabled**          | Ensure "Activate by Name" is selected in the Activation Mode dropdown.                                                      |
-| **Offset fields are disabled**                  | Make sure "Activate by Offset" is selected in the Activation Mode dropdown.                                                 |
-| **Named field not appearing**                   | Ensure "Activate by Named Range" is selected in the Activation Mode dropdown.                                               |
-| **Cell doesn't activate**                       | Confirm the worksheet is open and the correct Worksheet Instance is referenced.                                             |
+| Problem                                | Solution                                                                        |
+| -------------------------------------- | ------------------------------------------------------------------------------- |
+| **Column and Row fields are disabled** | Ensure "Activate by Name" is selected in the Activation Mode dropdown.          |
+| **Offset fields are disabled**         | Make sure "Activate by Offset" is selected in the Activation Mode dropdown.     |
+| **Named field not appearing**          | Ensure "Activate by Named Range" is selected in the Activation Mode dropdown.   |
+| **Cell doesn't activate**              | Confirm the worksheet is open and the correct Worksheet Instance is referenced. |
 
 ## Real-World Use Cases
 

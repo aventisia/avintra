@@ -7,11 +7,7 @@ const RotateControl = () => {
   const { rotateLeft, rotateRight } = useRotateControls();
 
   return (
-    <div
-      className="flex items-center gap-0.5"
-      role="group"
-      aria-label="Rotate controls"
-    >
+    <div className="flex items-center gap-0.5" role="group" aria-label="Rotate controls">
       <Button
         variant="ghost"
         size="icon7"

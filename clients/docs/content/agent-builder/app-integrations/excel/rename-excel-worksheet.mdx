@@ -12,12 +12,12 @@ Consider using this node when:
 
 ## Configuration Options
 
-| Field Name             | Description                                                                                                 | Input Type | Required? | Default Value |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance** | The Excel Worksheet object used to access the workbook containing the target sheet.                         | Text       | Yes       | _(empty)_     |
-| **Selection Type**     | Specifies whether to select the worksheet by Name or Index.                                                 | Select     | Yes       | Name          |
-| **Search Value**       | The worksheet name (if selection type is 'Name') or index (if selection type is 'Index').                   | Text       | Yes       | _(empty)_     |
-| **New Worksheet Name** | The new name to assign to the selected worksheet.                                                           | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                                               | Input Type | Required? | Default Value |
+| ---------------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object used to access the workbook containing the target sheet.       | Text       | Yes       | _(empty)_     |
+| **Selection Type**     | Specifies whether to select the worksheet by Name or Index.                               | Select     | Yes       | Name          |
+| **Search Value**       | The worksheet name (if selection type is 'Name') or index (if selection type is 'Index'). | Text       | Yes       | _(empty)_     |
+| **New Worksheet Name** | The new name to assign to the selected worksheet.                                         | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -57,16 +57,17 @@ The worksheet will be renamed once this configuration is completed.
 </Steps>
 
 <Callout type="warning" title="Important Note">
-Make sure the new worksheet name does not contain any invalid characters such as: `:/\?*[]`. Excel does not allow these in sheet names.
+  Make sure the new worksheet name does not contain any invalid characters such
+  as: `:/\?*[]`. Excel does not allow these in sheet names.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                     |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Worksheet not found**                               | Ensure the correct name or index is provided in the **Search Value** field.                  |
-| **Duplicate worksheet name error**                    | Make sure the **New Worksheet Name** is unique in the workbook.                              |
-| **Invalid characters in new name**                    | Avoid using characters like `:/\?*[]` in the **New Worksheet Name**.                         |
+| Problem                            | Solution                                                                    |
+| ---------------------------------- | --------------------------------------------------------------------------- |
+| **Worksheet not found**            | Ensure the correct name or index is provided in the **Search Value** field. |
+| **Duplicate worksheet name error** | Make sure the **New Worksheet Name** is unique in the workbook.             |
+| **Invalid characters in new name** | Avoid using characters like `:/\?*[]` in the **New Worksheet Name**.        |
 
 ## Real-World Use Cases
 

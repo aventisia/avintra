@@ -6,13 +6,13 @@ The **Hover Over Element on Web Page** node allows you to move the mouse cursor 
 
 ## Configuration Options
 
-| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
-| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
-| **Find Type**        | Specifies how to find the element (e.g., ID, XPath, CSS Selector).          | Select     | Yes       | XPath         |
-| **Value To Find**    | The value used to locate the element (e.g., 'username', '//input[@id=\'email\']'). | Text       | Yes       | _(empty)_     |
-| **Wait for Element** | If true, waits for the element to appear before hovering.                   | Switch     | No        | _(empty)_     |
-| **Timeout Seconds**  | Maximum time in seconds to wait for the element before failing.             | Text       | No        | 60            |
+| Field Name               | Description                                                                        | Input Type | Required? | Default Value |
+| ------------------------ | ---------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.  | Text       | Yes       | _(empty)_     |
+| **Find Type**            | Specifies how to find the element (e.g., ID, XPath, CSS Selector).                 | Select     | Yes       | XPath         |
+| **Value To Find**        | The value used to locate the element (e.g., 'username', '//input[@id=\'email\']'). | Text       | Yes       | _(empty)_     |
+| **Wait for Element**     | If true, waits for the element to appear before hovering.                          | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for the element before failing.                    | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -44,10 +44,12 @@ Enter the **Value To Find** that corresponds to the element identifier based on 
 ### Step 6
 
 (Optional) Set the **Timeout Seconds**, which dictates how long the process should wait for the element to appear when "Wait for Element" is enabled.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Make sure that the web page and the browser instance are active and correctly initialized in your flow before using this node.
+  Make sure that the web page and the browser instance are active and correctly
+  initialized in your flow before using this node.
 </Callout>
 
 ## Input/Output Examples
@@ -57,12 +59,12 @@ Enter the **Value To Find** that corresponds to the element identifier based on 
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                            | Solution                                                                                          |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **Element not found**                              | Ensure the Value To Find is correct and matches the element's identifier on the webpage.          |
-| **Timeout occurs**                                 | Increase the Timeout Seconds value or check if the Wait for Element switch is appropriately set.  |
-| **Browser Instance not initialized**               | Verify the browser instance is active and correctly captured as a variable in your flow.          |
-| **Invalid Find Type**                              | Double-check that the selected Find Type is appropriate for the given Value To Find.              |
+| Problem                              | Solution                                                                                         |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| **Element not found**                | Ensure the Value To Find is correct and matches the element's identifier on the webpage.         |
+| **Timeout occurs**                   | Increase the Timeout Seconds value or check if the Wait for Element switch is appropriately set. |
+| **Browser Instance not initialized** | Verify the browser instance is active and correctly captured as a variable in your flow.         |
+| **Invalid Find Type**                | Double-check that the selected Find Type is appropriate for the given Value To Find.             |
 
 ## Real-World Use Cases
 

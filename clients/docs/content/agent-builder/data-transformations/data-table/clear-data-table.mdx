@@ -6,8 +6,8 @@ The **Clear Data Table** node is designed to empty out all rows from a specified
 
 ## Configuration Options
 
-| Field Name     | Description                                                                | Input Type | Required? | Default Value |
-| -------------- | -------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name     | Description                                                                          | Input Type | Required? | Default Value |
+| -------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
 | **Data Table** | The data table variable you intend to clear. It must be created or assigned earlier. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -32,7 +32,8 @@ Execute your workflow. The data table will be emptied of all rows, but its struc
 </Steps>
 
 <Callout type="info" title="Note">
-  The **Clear Data Table** node does not delete the table itself or alter its structural setup. It only removes the data within.
+  The **Clear Data Table** node does not delete the table itself or alter its
+  structural setup. It only removes the data within.
 </Callout>
 
 ## Input/Output Examples
@@ -42,10 +43,10 @@ Execute your workflow. The data table will be emptied of all rows, but its struc
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                            |
-| ------------------------------------------- | ----------------------------------------------------------------------------------- |
-| **No data table specified**                 | Ensure that the **Data Table** field is filled with an appropriate table variable.   |
-| **Table structure mistakenly thought lost** | Remember, this action only clears rows, not the structure of the table.             |
+| Problem                                     | Solution                                                                           |
+| ------------------------------------------- | ---------------------------------------------------------------------------------- |
+| **No data table specified**                 | Ensure that the **Data Table** field is filled with an appropriate table variable. |
+| **Table structure mistakenly thought lost** | Remember, this action only clears rows, not the structure of the table.            |
 
 ## Real-World Use Cases
 

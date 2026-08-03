@@ -1,5 +1,6 @@
 import { Badge } from "@avplatform/ui/badge";
 import { useShallow } from "zustand/react/shallow";
+
 import { useFlowsPopoverStore } from "../stores/flows-popover-store";
 
 /**

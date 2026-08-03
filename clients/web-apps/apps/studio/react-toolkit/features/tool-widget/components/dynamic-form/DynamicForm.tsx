@@ -1,12 +1,9 @@
-import {
-  DCPFieldSchemaType,
-  shouldRenderField,
-} from "@/features/dynamic-config-panel";
-
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button, SubmitButton } from "@avplatform/ui/buttons";
 import { Form } from "@avplatform/ui/form";
 import { z } from "zod";
+
+import { DCPFieldSchemaType, shouldRenderField } from "@/features/dynamic-config-panel";
 
 import { useDynamicForm } from "../../hooks/useDynamicForm";
 import { RenderField } from "./RenderField";

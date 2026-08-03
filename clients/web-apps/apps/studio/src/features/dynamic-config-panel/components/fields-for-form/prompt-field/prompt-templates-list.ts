@@ -52,15 +52,13 @@ export const promptTemplatesList = [
     id: "__Prompt__Vision",
     label: "Image Understanding",
     value: "ImageUnderstandingPrompt",
-    description:
-      "Interpret the overall context, objects, and relationships present in an image.",
+    description: "Interpret the overall context, objects, and relationships present in an image.",
   },
   {
     id: "__Prompt__Vision",
     label: "Visual Question Answering",
     value: "VisualQAPrompt",
-    description:
-      "Answer user questions based on the visual content of an image.",
+    description: "Answer user questions based on the visual content of an image.",
   },
   {
     id: "__Prompt__Vision",

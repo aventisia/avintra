@@ -1,48 +1,44 @@
 {
-    "type": "function",
-    "function": {
-        "name": "gmail_send_email",
-        "description": "Send an email using Gmail",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "to": {
-                    "type": "string",
-                    "description": "Recipient email address"
-                },
-                "cc": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Optional CC recipients"
-                },
-                "bcc": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Optional BCC recipients"
-                },
-                "subject": {
-                    "type": "string",
-                    "description": "Email subject"
-                },
-                "body": {
-                    "type": "string",
-                    "description": "Email body content"
-                },
-                "is_html": {
-                    "type": "boolean",
-                    "description": "Whether email body is HTML formatted"
-                }
-            },
-            "required": [
-                "to",
-                "subject",
-                "body"
-            ],
-            "additionalProperties": false
+  "type": "function",
+  "function": {
+    "name": "gmail_send_email",
+    "description": "Send an email using Gmail",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "description": "Recipient email address"
+        },
+        "cc": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional CC recipients"
+        },
+        "bcc": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional BCC recipients"
+        },
+        "subject": {
+          "type": "string",
+          "description": "Email subject"
+        },
+        "body": {
+          "type": "string",
+          "description": "Email body content"
+        },
+        "is_html": {
+          "type": "boolean",
+          "description": "Whether email body is HTML formatted"
         }
+      },
+      "required": ["to", "subject", "body"],
+      "additionalProperties": false
     }
+  }
 }

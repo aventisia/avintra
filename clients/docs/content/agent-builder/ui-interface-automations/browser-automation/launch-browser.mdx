@@ -12,12 +12,12 @@ Common scenarios for using this node include:
 
 ## Configuration Options
 
-| Field Name     | Description                                                                                  | Input Type | Required? | Default Value   |
-| -------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Browser Type** | Select the browser to launch: Microsoft Edge or Google Chrome.                               | Select     | Yes       | Microsoft Edge  |
-| **Launch Url**   | Enter the URL to open the browser with. Leave empty to open the browser homepage.           | Text       | No        | _(empty)_       |
-| **Browsing Mode** | Choose the browsing mode: normal or private/incognito.                                      | Select     | No        | Normal          |
-| **Window State**  | Define the initial state of the browser window: maximized or minimized.                     | Select     | No        | Maximized       |
+| Field Name        | Description                                                                       | Input Type | Required? | Default Value  |
+| ----------------- | --------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Browser Type**  | Select the browser to launch: Microsoft Edge or Google Chrome.                    | Select     | Yes       | Microsoft Edge |
+| **Launch Url**    | Enter the URL to open the browser with. Leave empty to open the browser homepage. | Text       | No        | _(empty)_      |
+| **Browsing Mode** | Choose the browsing mode: normal or private/incognito.                            | Select     | No        | Normal         |
+| **Window State**  | Define the initial state of the browser window: maximized or minimized.           | Select     | No        | Maximized      |
 
 ## Expected Output Format
 
@@ -53,23 +53,24 @@ The browser will launch as configured, and the **Web Browser** instance will be 
 </Steps>
 
 <Callout type="info" title="Note">
-  You do not need to fill in all optional fields if the default settings meet your needs.
+  You do not need to fill in all optional fields if the default settings meet
+  your needs.
 </Callout>
 
 ## Input/Output Examples
 
-| Browser Type    | Launch Url            | Browsing Mode | Window State | Output               |
-| --------------- | --------------------- | ------------- | ------------ | -------------------- |
-| Microsoft Edge  | https://www.example.com | Private       | Maximized    | WebBrowserInstance   |
-| Google Chrome   | _(empty)_             | Normal        | Minimized    | WebBrowserInstance   |
+| Browser Type   | Launch Url              | Browsing Mode | Window State | Output             |
+| -------------- | ----------------------- | ------------- | ------------ | ------------------ |
+| Microsoft Edge | https://www.example.com | Private       | Maximized    | WebBrowserInstance |
+| Google Chrome  | _(empty)_               | Normal        | Minimized    | WebBrowserInstance |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                                                                                        |
-| ---------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Browser not launching**                            | Confirm that Microsoft Edge or Google Chrome is installed on the desktop.                                                                                       |
-| **Incorrect URL format**                             | Ensure the URL entered includes "http://" or "https://".                                                                                                        |
-| **Window state is not as expected**                  | Double-check the selected **Window State** setting.                                                                                                             |
+| Problem                             | Solution                                                                  |
+| ----------------------------------- | ------------------------------------------------------------------------- |
+| **Browser not launching**           | Confirm that Microsoft Edge or Google Chrome is installed on the desktop. |
+| **Incorrect URL format**            | Ensure the URL entered includes "http://" or "https://".                  |
+| **Window state is not as expected** | Double-check the selected **Window State** setting.                       |
 
 ## Real-World Use Cases
 

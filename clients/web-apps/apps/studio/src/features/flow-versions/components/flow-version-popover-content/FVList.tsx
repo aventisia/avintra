@@ -1,9 +1,11 @@
 import { CommandItem } from "@avplatform/ui/command";
-import { FlowVersionDto } from "../../dtos/flow-version-dto";
-import FVItem from "./FVItem";
-import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
 import { useShallow } from "zustand/react/shallow";
+
+import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
+
+import { FlowVersionDto } from "../../dtos/flow-version-dto";
 import { useFlowVersionPopoverStore } from "../../stores/flow-version-popover-store";
+import FVItem from "./FVItem";
 
 interface FVListProps {
   flowVersionsList: FlowVersionDto[] | undefined;

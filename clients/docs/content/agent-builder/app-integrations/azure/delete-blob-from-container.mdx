@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name               | Description                                                              | Input Type | Required? | Default Value |
-| ------------------------ | ------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Blob Container Client**| The instance that connects you to the blob container where the blob resides.| Text     | Yes       | _(empty)_     |
-| **Blob Name**            | The specific blob's name that you wish to delete from the container.      | Text       | Yes       | _(empty)_     |
+| Field Name                | Description                                                                  | Input Type | Required? | Default Value |
+| ------------------------- | ---------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Blob Container Client** | The instance that connects you to the blob container where the blob resides. | Text       | Yes       | _(empty)_     |
+| **Blob Name**             | The specific blob's name that you wish to delete from the container.         | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -42,29 +42,31 @@ In the **Blob Name** field, specify the exact name of the blob you want to delet
 ### Step 4
 
 Once configured, run the node. The result will be available as **BlobWasDeleted** for use in subsequent nodes.
+
 </Steps>
 
 <Callout type="warning" title="Warning">
-  Ensure that the Blob Name is correct before executing the node, as deletion cannot be undone once processed.
+  Ensure that the Blob Name is correct before executing the node, as deletion
+  cannot be undone once processed.
 </Callout>
 
 ## Input/Output Examples
 
-| Input: Blob Name | Blob Container Client | Output: Blob Was Deleted |
-| ---------------- | --------------------- | ----------------------- |
-| "backup-2023.log"| MyStorageAccount      | True                    |
-| "user-data"      | MyStorageAccount      | False                   |
+| Input: Blob Name  | Blob Container Client | Output: Blob Was Deleted |
+| ----------------- | --------------------- | ------------------------ |
+| "backup-2023.log" | MyStorageAccount      | True                     |
+| "user-data"       | MyStorageAccount      | False                    |
 
 - In the first example, the blob "backup-2023.log" was found and successfully deleted from "MyStorageAccount".
 - In the second example, "user-data" was not found, hence the deletion was not successful.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                             | Solution                                                                                                                |
-| ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| **Blob not found**                                                  | Verify the blob name is correctly specified and exists in the provided container. Make sure to use exact case sensitive names. |
-| **Connection issues to Blob Container Client**                      | Check if your Blob Container Client details are correct and that there is a stable network connection to Azure services.     |
-| **Unexpected false status**                                         | If deletion is expected to succeed but returned false, ensure you have appropriate permissions on the Azure Blob storage.    |
+| Problem                                        | Solution                                                                                                                       |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Blob not found**                             | Verify the blob name is correctly specified and exists in the provided container. Make sure to use exact case sensitive names. |
+| **Connection issues to Blob Container Client** | Check if your Blob Container Client details are correct and that there is a stable network connection to Azure services.       |
+| **Unexpected false status**                    | If deletion is expected to succeed but returned false, ensure you have appropriate permissions on the Azure Blob storage.      |
 
 ## Real-World Use Cases
 

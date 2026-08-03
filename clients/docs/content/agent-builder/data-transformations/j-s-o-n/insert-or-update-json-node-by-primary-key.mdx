@@ -6,13 +6,13 @@ The **Insert or Update JSON Node by Primary Key** allows you to locate an object
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                   | Input Type | Required? | Default Value |
-| -------------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **JSON Content**     | The root JSON structure where the search will begin. This should either be a JSON string or token. | Text       | Yes       | _(empty)_     |
-| **Primary Key Name** | The name of the key that uniquely identifies the target object (e.g., 'id', 'name').          | Text       | Yes       | _(empty)_     |
-| **Primary Key Value**| The value of the primary key, which is used to locate the object you wish to modify.          | Text       | Yes       | _(empty)_     |
-| **Target Key Name**  | The name of the key within the matched object that you wish to insert or update.              | Text       | Yes       | _(empty)_     |
-| **Target Key Value** | The new value to assign to the target key.                                                    | Text       | Yes       | _(empty)_     |
+| Field Name            | Description                                                                                        | Input Type | Required? | Default Value |
+| --------------------- | -------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **JSON Content**      | The root JSON structure where the search will begin. This should either be a JSON string or token. | Text       | Yes       | _(empty)_     |
+| **Primary Key Name**  | The name of the key that uniquely identifies the target object (e.g., 'id', 'name').               | Text       | Yes       | _(empty)_     |
+| **Primary Key Value** | The value of the primary key, which is used to locate the object you wish to modify.               | Text       | Yes       | _(empty)_     |
+| **Target Key Name**   | The name of the key within the matched object that you wish to insert or update.                   | Text       | Yes       | _(empty)_     |
+| **Target Key Value**  | The new value to assign to the target key.                                                         | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -55,7 +55,8 @@ Check the output labeled **Updated JSON Content** for your modified JSON structu
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that your JSON content is correctly formatted. Invalid JSON will lead to errors.
+  Ensure that your JSON content is correctly formatted. Invalid JSON will lead
+  to errors.
 </Callout>
 
 ## Input/Output Examples
@@ -74,11 +75,11 @@ Check the output labeled **Updated JSON Content** for your modified JSON structu
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                           |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Node not updating the JSON**                        | Verify that the **Primary Key Name** and **Primary Key Value** correctly match an object in your JSON structure. |
-| **JSON Format Error**                                 | Ensure your JSON content is valid. Use an online JSON validator tool to check this.                |
-| **Unexpected Output**                                 | Check that you've specified the correct **Target Key Name** and **Target Key Value**.              |
+| Problem                        | Solution                                                                                                         |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| **Node not updating the JSON** | Verify that the **Primary Key Name** and **Primary Key Value** correctly match an object in your JSON structure. |
+| **JSON Format Error**          | Ensure your JSON content is valid. Use an online JSON validator tool to check this.                              |
+| **Unexpected Output**          | Check that you've specified the correct **Target Key Name** and **Target Key Value**.                            |
 
 ## Real-World Use Cases
 

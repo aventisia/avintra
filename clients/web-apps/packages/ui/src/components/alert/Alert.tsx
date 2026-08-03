@@ -10,7 +10,15 @@ interface AlertProps extends React.ComponentProps<"div">, VariantProps<typeof al
   description?: string;
 }
 
-function Alert({ className, variant, icon: Icon, title, description, children, ...props }: AlertProps) {
+function Alert({
+  className,
+  variant,
+  icon: Icon,
+  title,
+  description,
+  children,
+  ...props
+}: AlertProps) {
   return (
     <div
       data-slot="alert"

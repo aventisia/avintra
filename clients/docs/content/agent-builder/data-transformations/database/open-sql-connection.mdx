@@ -6,10 +6,10 @@ The **Open SQL Connection** node is designed to establish a new connection to a 
 
 ## Configuration Options
 
-| Field Name            | Description                                      | Input Type  | Required? | Default Value |
-| --------------------- | ------------------------------------------------ | ----------- | --------- | ------------- |
-| **Connection String** | The connection string to the database. This field requires specific details like server name, database name, user credentials, or trusted connection. | Text        | Yes       | _(empty)_     |
-| **SQL Connection**    | The opened SQL connection. This serves as the output for follow-up nodes that require database connectivity. | Output      | No        | SqlConnection |
+| Field Name            | Description                                                                                                                                           | Input Type | Required? | Default Value |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Connection String** | The connection string to the database. This field requires specific details like server name, database name, user credentials, or trusted connection. | Text       | Yes       | _(empty)_     |
+| **SQL Connection**    | The opened SQL connection. This serves as the output for follow-up nodes that require database connectivity.                                          | Output     | No        | SqlConnection |
 
 ## Expected Output Format
 
@@ -37,24 +37,25 @@ The opened connection will be available as **SQL Connection** for use in subsequ
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure your database server is running and accessible from your machine to successfully open a connection.
+  Ensure your database server is running and accessible from your machine to
+  successfully open a connection.
 </Callout>
 
 ## Input/Output Examples
 
-| Connection String                                                                                                                                                 | Output Value  | Output Type        |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------------------ |
-| Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;                                                                                 | SqlConnection | SQL Connection     |
-| Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;                                                                                                | SqlConnection | SQL Connection     |
+| Connection String                                                                  | Output Value  | Output Type    |
+| ---------------------------------------------------------------------------------- | ------------- | -------------- |
+| Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword; | SqlConnection | SQL Connection |
+| Server=myServerAddress;Database=myDataBase;Trusted_Connection=True;                | SqlConnection | SQL Connection |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                                                                          |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid connection string**                        | Double-check the details in your connection string, including server address, database name, and user credentials.                                |
-| **Server not accessible**                            | Make sure the database server is running and that your firewall or network settings allow connections.                                           |
-| **Unsupported authentication method**                | Verify that the authentication method used in the connection string is supported by your database server.                                          |
-| **Output not utilized**                              | Ensure subsequent nodes in your flow are configured to use the **SQL Connection** output.                                                         |
+| Problem                               | Solution                                                                                                           |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Invalid connection string**         | Double-check the details in your connection string, including server address, database name, and user credentials. |
+| **Server not accessible**             | Make sure the database server is running and that your firewall or network settings allow connections.             |
+| **Unsupported authentication method** | Verify that the authentication method used in the connection string is supported by your database server.          |
+| **Output not utilized**               | Ensure subsequent nodes in your flow are configured to use the **SQL Connection** output.                          |
 
 ## Real-World Use Cases
 

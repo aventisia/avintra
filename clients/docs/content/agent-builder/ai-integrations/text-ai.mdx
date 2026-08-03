@@ -12,18 +12,18 @@ For example:
 
 ## Configuration Options
 
-| Field Name                   | Description                                                                                   | Input Type     | Required? | Default Value                                                                             |
-| ---------------------------- | --------------------------------------------------------------------------------------------- | -------------- | --------- | ----------------------------------------------------------------------------------------- |
-| **Prompt**                   | Enter the text prompt you wish to provide to the AI model for processing.                     | Text           | No        | _(empty)_                                                                                 |
-| **Model Configuration**      | Select and configure the desired AI model and its parameters.                                 | Model Select   | No        | OpenAI GPT-4o-mini, Temperature: 1, Top P: 1, JSON Output: true                           |
-| **Files**                    | Attach any files the model might need for reference or processing.                            | Text           | No        | _(empty)_                                                                                 |
-| **Knowledge Base**           | Configure to use specific knowledge for generating more accurate and informed responses.      | Knowledge Base | No        | Retrieval: Basic, Source Threshold: 1, Number of Chunks: 10                               |
-| **Memory Configuration**     | Define memory settings to control storage and retrieval capacities during the session.        | Memory Config  | No        | Provider: "Memory Provider 1", Max Data Stored: 4                                         |
-| **Tool Definitions**         | Define tools or functions the model can call using JSON schema.                               | JSON Editor    | No        | _(empty)_                                                                                 |
-| **Tool Invocation Strategy** | Choose how the model should interact with the tools: automatically, as required, or not at all.| Select         | No        | Auto                                                                                      |
-| **Enable Structured Output** | Toggle to force the model to return responses in a predefined JSON structure.                  | Switch         | No        | False                                                                                     |
-| **Schema Name**              | Assign a name to the JSON schema if structured output is enabled.                             | Text           | No        | _(empty)_                                                                                 |
-| **Output Schema (JSON)**     | Define the expected output structure using JSON Schema. This ensures the AI output is predictable. | JSON Editor    | No        | _(empty)_                                                                                 |
+| Field Name                   | Description                                                                                        | Input Type     | Required? | Default Value                                                   |
+| ---------------------------- | -------------------------------------------------------------------------------------------------- | -------------- | --------- | --------------------------------------------------------------- |
+| **Prompt**                   | Enter the text prompt you wish to provide to the AI model for processing.                          | Text           | No        | _(empty)_                                                       |
+| **Model Configuration**      | Select and configure the desired AI model and its parameters.                                      | Model Select   | No        | OpenAI GPT-4o-mini, Temperature: 1, Top P: 1, JSON Output: true |
+| **Files**                    | Attach any files the model might need for reference or processing.                                 | Text           | No        | _(empty)_                                                       |
+| **Knowledge Base**           | Configure to use specific knowledge for generating more accurate and informed responses.           | Knowledge Base | No        | Retrieval: Basic, Source Threshold: 1, Number of Chunks: 10     |
+| **Memory Configuration**     | Define memory settings to control storage and retrieval capacities during the session.             | Memory Config  | No        | Provider: "Memory Provider 1", Max Data Stored: 4               |
+| **Tool Definitions**         | Define tools or functions the model can call using JSON schema.                                    | JSON Editor    | No        | _(empty)_                                                       |
+| **Tool Invocation Strategy** | Choose how the model should interact with the tools: automatically, as required, or not at all.    | Select         | No        | Auto                                                            |
+| **Enable Structured Output** | Toggle to force the model to return responses in a predefined JSON structure.                      | Switch         | No        | False                                                           |
+| **Schema Name**              | Assign a name to the JSON schema if structured output is enabled.                                  | Text           | No        | _(empty)_                                                       |
+| **Output Schema (JSON)**     | Define the expected output structure using JSON Schema. This ensures the AI output is predictable. | JSON Editor    | No        | _(empty)_                                                       |
 
 ## Expected Output Format
 
@@ -82,25 +82,26 @@ The generated response will be available as **Result** for use in subsequent wor
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use the **Knowledge Base** to enhance the AI's understanding and contextual relevance in responses.
+  Use the **Knowledge Base** to enhance the AI's understanding and contextual
+  relevance in responses.
 </Callout>
 
 ## Input/Output Examples
 
-| Example Use Case      | Prompt                        | Configuration                                   | Output                                            |
-| --------------------- | ----------------------------- | ----------------------------------------------- | ------------------------------------------------- |
-| Story Generation      | "Tell me a story about a cat" | Default Model, Basic Retrieval, No structured output  | "Once upon a time, there was a curious cat..."     |
-| JSON Data Response    | "Get sales data for Q3"       | Structured Output Enabled, JSON Schema Provided | `{ "sales": 10000, "quarter": 3, "year": 2023 }`    |
-| Q&A with Context      | "Explain quantum mechanics"   | Knowledge Base Configured, Advanced Retrieval   | "Quantum mechanics is the branch of physics..."   |
+| Example Use Case   | Prompt                        | Configuration                                        | Output                                           |
+| ------------------ | ----------------------------- | ---------------------------------------------------- | ------------------------------------------------ |
+| Story Generation   | "Tell me a story about a cat" | Default Model, Basic Retrieval, No structured output | "Once upon a time, there was a curious cat..."   |
+| JSON Data Response | "Get sales data for Q3"       | Structured Output Enabled, JSON Schema Provided      | `{ "sales": 10000, "quarter": 3, "year": 2023 }` |
+| Q&A with Context   | "Explain quantum mechanics"   | Knowledge Base Configured, Advanced Retrieval        | "Quantum mechanics is the branch of physics..."  |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                             |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **No response from model**                            | Ensure the prompt is provided and the model configuration is valid.                                                  |
-| **JSON Schema issues**                                | Make sure your JSON schema is correctly defined and matches the required structure.                                  |
-| **Tool not invoked**                                  | Check the Tool Invocation Strategy settings to ensure tools are called as expected.                                  |
-| **Output not structured as expected**                 | Verify that the structured output option is enabled and properly configured, including schema name and detail.       |
+| Problem                               | Solution                                                                                                       |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **No response from model**            | Ensure the prompt is provided and the model configuration is valid.                                            |
+| **JSON Schema issues**                | Make sure your JSON schema is correctly defined and matches the required structure.                            |
+| **Tool not invoked**                  | Check the Tool Invocation Strategy settings to ensure tools are called as expected.                            |
+| **Output not structured as expected** | Verify that the structured output option is enabled and properly configured, including schema name and detail. |
 
 ## Real-World Use Cases
 

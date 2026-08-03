@@ -11,9 +11,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name | Description                                                  | Input Type | Required? | Default Value |
-| ---------- | ------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Block It** | Toggle to enable or disable blocking of user input.          | Switch     | No        | _(empty)_     |
+| Field Name   | Description                                         | Input Type | Required? | Default Value |
+| ------------ | --------------------------------------------------- | ---------- | --------- | ------------- |
+| **Block It** | Toggle to enable or disable blocking of user input. | Switch     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -40,15 +40,18 @@ Proceed to the next steps in your flow as required.
 </Steps>
 
 <Callout type="warning" title="Important Note">
-  While blocking is enabled, regular user input (mouse and keyboard actions) will not be allowed until the node operation completes or is manually disabled. Ensure you have an exit strategy or means to regain control in emergencies.
+  While blocking is enabled, regular user input (mouse and keyboard actions)
+  will not be allowed until the node operation completes or is manually
+  disabled. Ensure you have an exit strategy or means to regain control in
+  emergencies.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                           |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Toggle not responding**                         | Ensure the flow is in a state where the node can be activated. Double-check connections and flow state. |
-| **Unintentional blocking**                        | If input needs to remain unblocked, make sure the **Block It** toggle is set to "Disable".          |
+| Problem                    | Solution                                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Toggle not responding**  | Ensure the flow is in a state where the node can be activated. Double-check connections and flow state. |
+| **Unintentional blocking** | If input needs to remain unblocked, make sure the **Block It** toggle is set to "Disable".              |
 
 ## Real-World Use Cases
 

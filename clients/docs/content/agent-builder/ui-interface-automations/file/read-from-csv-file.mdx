@@ -12,15 +12,15 @@ Typical usage scenarios include:
 
 ## Configuration Options
 
-| Field Name                           | Description                                                                                             | Input Type | Required? | Default Value |
-| ------------------------------------ | ------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **File Path**                        | The full path of the CSV file you want to read.                                                         | Text       | Yes       | _(empty)_     |
-| **Encoding**                         | Select the file encoding method. This affects how text is read from the CSV file.                        | Select     | No        | UTF8          |
-| **Trim Fields**                      | Determines if leading and trailing whitespaces should be removed from each field.                        | Switch     | No        | true          |
-| **First Line Contains Column Names** | Indicates if the first line of the CSV contains column names (or just data).                             | Switch     | No        | true          |
-| **Columns Separator**                | Specifies whether to use a predefined separator (comma, tab, etc.) or a custom separator.               | Select     | No        | Predefined    |
-| **Predefined Separator**             | Choose a predefined separator such as comma, tab, or semicolon.                                         | Select     | No        | Comma         |
-| **Custom Separator**                 | Define your custom separator if different from predefined options.                                       | Text       | No        | _(empty)_     |
+| Field Name                           | Description                                                                               | Input Type | Required? | Default Value |
+| ------------------------------------ | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File Path**                        | The full path of the CSV file you want to read.                                           | Text       | Yes       | _(empty)_     |
+| **Encoding**                         | Select the file encoding method. This affects how text is read from the CSV file.         | Select     | No        | UTF8          |
+| **Trim Fields**                      | Determines if leading and trailing whitespaces should be removed from each field.         | Switch     | No        | true          |
+| **First Line Contains Column Names** | Indicates if the first line of the CSV contains column names (or just data).              | Switch     | No        | true          |
+| **Columns Separator**                | Specifies whether to use a predefined separator (comma, tab, etc.) or a custom separator. | Select     | No        | Predefined    |
+| **Predefined Separator**             | Choose a predefined separator such as comma, tab, or semicolon.                           | Select     | No        | Comma         |
+| **Custom Separator**                 | Define your custom separator if different from predefined options.                        | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -52,6 +52,7 @@ Set **First Line Contains Column Names** to match whether your CSV's first line 
 ### Step 6
 
 Choose **Columns Separator** type:
+
 - Select **Predefined** if your file uses common delimiters (comma, tab).
 - If you select **Predefined**, choose your **Predefined Separator** like Comma.
 - Select **Custom** to input your own unique delimiter in **Custom Separator** field.
@@ -63,7 +64,8 @@ Once everything is set, execute the node to read your CSV data. The result is av
 </Steps>
 
 <Callout type="info" title="Tip">
-  See what separator your CSV uses before setting **Columns Separator** to ensure proper data reading.
+  See what separator your CSV uses before setting **Columns Separator** to
+  ensure proper data reading.
 </Callout>
 
 ## Input/Output Examples
@@ -79,12 +81,12 @@ Once everything is set, execute the node to read your CSV data. The result is av
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                                                                              |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **File not found error**                    | Ensure the **File Path** is correct, including proper folder structure and filename extensions such as `.csv`.                         |
-| **Incorrect data structure**                | Verify the **Columns Separator** setting matches your CSV file's delimiter and check if column names option is set correctly.          |
-| **Encoding issues resulting in garbled text** | Adjust the **Encoding** option to match the file's encoding – try alternatives if data is not displaying properly.                      |
-| **Missing headers or wrong column names**   | Confirm the **First Line Contains Column Names** option matches your CSV file layout.                                                 |
+| Problem                                       | Solution                                                                                                                      |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **File not found error**                      | Ensure the **File Path** is correct, including proper folder structure and filename extensions such as `.csv`.                |
+| **Incorrect data structure**                  | Verify the **Columns Separator** setting matches your CSV file's delimiter and check if column names option is set correctly. |
+| **Encoding issues resulting in garbled text** | Adjust the **Encoding** option to match the file's encoding – try alternatives if data is not displaying properly.            |
+| **Missing headers or wrong column names**     | Confirm the **First Line Contains Column Names** option matches your CSV file layout.                                         |
 
 ## Real-World Use Cases
 

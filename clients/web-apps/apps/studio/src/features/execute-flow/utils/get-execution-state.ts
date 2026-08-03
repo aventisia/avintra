@@ -1,8 +1,6 @@
 import { ExecutionStateType, WebSocketCommandType } from "..";
 
-export const getExecutionState = (
-  command: WebSocketCommandType,
-): ExecutionStateType => {
+export const getExecutionState = (command: WebSocketCommandType): ExecutionStateType => {
   switch (command) {
     case "pause":
       return "paused";

@@ -10,10 +10,10 @@ The **Attach to Running Excel Workbook** node allows you to connect to an open i
 
 ## Configuration Options
 
-| Field Name          | Description                                                                 | Input Type | Required? | Default Value |
-| ------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Excel Application** | The running Excel Application object to attach to.                           | Text       | Yes       | _(empty)_     |
-| **File Path**       | The full path of the Excel file to open or attach to in the running instance. | Text       | Yes       | _(empty)_     |
+| Field Name            | Description                                                                   | Input Type | Required? | Default Value |
+| --------------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Excel Application** | The running Excel Application object to attach to.                            | Text       | Yes       | _(empty)_     |
+| **File Path**         | The full path of the Excel file to open or attach to in the running instance. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -41,19 +41,21 @@ Once configured, the node will attempt to attach to the specified workbook. If t
 ### Step 5
 
 Use the output **Workbook Instance** in subsequent nodes to perform actions on the targeted workbook.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the Excel application is running before using this node; otherwise, the node will not be able to attach to any workbook.
+  Ensure that the Excel application is running before using this node;
+  otherwise, the node will not be able to attach to any workbook.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                             | Solution                                                                                                                                       |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **File Path Incorrect**             | Double-check the file path for errors and ensure the file exists at the specified location.                                                    |
-| **Excel Not Running**               | Start the Excel application before using the node to attach to an Excel workbook.                                                              |
-| **Wrong Excel Application Instance** | Ensure the correct Excel application instance is specified if multiple instances are running.                                                |
+| Problem                              | Solution                                                                                      |
+| ------------------------------------ | --------------------------------------------------------------------------------------------- |
+| **File Path Incorrect**              | Double-check the file path for errors and ensure the file exists at the specified location.   |
+| **Excel Not Running**                | Start the Excel application before using the node to attach to an Excel workbook.             |
+| **Wrong Excel Application Instance** | Ensure the correct Excel application instance is specified if multiple instances are running. |
 
 ## Real-World Use Cases
 

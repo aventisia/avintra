@@ -1,18 +1,10 @@
 import { Button } from "@avplatform/ui/buttons";
-import React from "react";
+import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { ScrollArea } from "@avplatform/ui/scroll";
-import {
-  Dialog,
-  DialogContent,
-  DialogDefaultHeader,
-} from "@avplatform/ui/dialog";
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
+import React from "react";
 import { useShallow } from "zustand/react/shallow";
-import {
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  ChevronDown,
-} from "lucide-react";
+
 import { useKeyboardShortcutsStore } from "./stores/keyboard-shortcuts-store";
 
 interface Shortcut {

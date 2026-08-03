@@ -12,18 +12,18 @@ Use this node when you need to:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                       | Input Type | Required? | Default Value    |
-| ----------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **Worksheet Instance**  | The Excel Worksheet to use. Uses the active worksheet if none is specified.       | Text       | Yes       | _(empty)_        |
-| **Ranges Format**       | Defines how ranges are specified: select between specific cell ranges or names.   | Select     | Yes       | SpecificRanges   |
-| **Start Column**        | The starting column of the source range (e.g., 'A').                              | Text       | No        | _(empty)_        |
-| **Start Row**           | The starting row of the source range (e.g., '1').                                 | Text       | No        | _(empty)_        |
-| **Source End Column**   | The ending column of the source range (e.g., 'B').                                | Text       | No        | _(empty)_        |
-| **Source End Row**      | The ending row of the source range (e.g., '5').                                   | Text       | No        | _(empty)_        |
-| **Destination End Column** | The ending column of the target range (e.g., 'C').                             | Text       | No        | _(empty)_        |
-| **Destination End Row** | The ending row of the target range (e.g., '10').                                  | Text       | No        | _(empty)_        |
-| **Source Cells Name**   | Name of the named range for source data, if using named ranges.                   | Text       | No        | _(empty)_        |
-| **Destination Cells Name** | Name of the named range for the target, if using named ranges.                 | Text       | No        | _(empty)_        |
+| Field Name                 | Description                                                                     | Input Type | Required? | Default Value  |
+| -------------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Worksheet Instance**     | The Excel Worksheet to use. Uses the active worksheet if none is specified.     | Text       | Yes       | _(empty)_      |
+| **Ranges Format**          | Defines how ranges are specified: select between specific cell ranges or names. | Select     | Yes       | SpecificRanges |
+| **Start Column**           | The starting column of the source range (e.g., 'A').                            | Text       | No        | _(empty)_      |
+| **Start Row**              | The starting row of the source range (e.g., '1').                               | Text       | No        | _(empty)_      |
+| **Source End Column**      | The ending column of the source range (e.g., 'B').                              | Text       | No        | _(empty)_      |
+| **Source End Row**         | The ending row of the source range (e.g., '5').                                 | Text       | No        | _(empty)_      |
+| **Destination End Column** | The ending column of the target range (e.g., 'C').                              | Text       | No        | _(empty)_      |
+| **Destination End Row**    | The ending row of the target range (e.g., '10').                                | Text       | No        | _(empty)_      |
+| **Source Cells Name**      | Name of the named range for source data, if using named ranges.                 | Text       | No        | _(empty)_      |
+| **Destination Cells Name** | Name of the named range for the target, if using named ranges.                  | Text       | No        | _(empty)_      |
 
 ## Expected Output Format
 
@@ -72,17 +72,18 @@ Execute the workflow to apply the transformations in the Excel worksheet.
 </Steps>
 
 <Callout type="info" title="Note">
-  When using named ranges, ensure they are defined in your worksheet in advance to avoid errors.
+  When using named ranges, ensure they are defined in your worksheet in advance
+  to avoid errors.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                        | Solution                                                               |
-| -------------------------------------------------------------- | ---------------------------------------------------------------------- |
-| **Worksheet does not exist**                                   | Verify that the worksheet name is correct and present in your workbook.|
-| **Specific Ranges fields not appearing**                       | Ensure **Specific Ranges** is selected in the **Ranges Format** dropdown.|
-| **Named range does not exist**                                 | Confirm that your named range is predefined in the Excel worksheet.    |
-| **Mismatched source/target dimensions**                        | Make sure the source and target ranges have compatible dimensions.     |
+| Problem                                  | Solution                                                                  |
+| ---------------------------------------- | ------------------------------------------------------------------------- |
+| **Worksheet does not exist**             | Verify that the worksheet name is correct and present in your workbook.   |
+| **Specific Ranges fields not appearing** | Ensure **Specific Ranges** is selected in the **Ranges Format** dropdown. |
+| **Named range does not exist**           | Confirm that your named range is predefined in the Excel worksheet.       |
+| **Mismatched source/target dimensions**  | Make sure the source and target ranges have compatible dimensions.        |
 
 ## Real-World Use Cases
 

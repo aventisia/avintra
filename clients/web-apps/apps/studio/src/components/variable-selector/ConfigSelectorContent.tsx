@@ -1,13 +1,10 @@
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NoContentMessage } from "@avplatform/ui";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandList,
-} from "@avplatform/ui/command";
+import { Command, CommandEmpty, CommandInput, CommandList } from "@avplatform/ui/command";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useShallow } from "zustand/react/shallow";
+
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+
 import { VariableItem } from "./VariableItem";
 
 export const ConfigSelectorContent = () => {
@@ -22,11 +19,7 @@ export const ConfigSelectorContent = () => {
     <Command>
       {/* Search Box */}
       <div className="mx-3 rounded-lg bg-slate-100">
-        <CommandInput
-          className="h-9 text-xs"
-          placeholder="Search key..."
-          autoFocus
-        />
+        <CommandInput className="h-9 text-xs" placeholder="Search key..." autoFocus />
       </div>
 
       {/* No content message */}

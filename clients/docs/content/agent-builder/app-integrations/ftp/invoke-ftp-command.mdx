@@ -37,22 +37,23 @@ Once configured, execute the node to send the command to the FTP server. Monitor
 </Steps>
 
 <Callout type="info" title="Tip">
-  Make sure your FTP server supports the command you are sending. Some servers may have restrictions or require certain permissions.
+  Make sure your FTP server supports the command you are sending. Some servers
+  may have restrictions or require certain permissions.
 </Callout>
 
 ## Input/Output Examples
 
-| Command | Expected Server Response                 | Output Value Example                      |
-| ------- | ---------------------------------------- | ----------------------------------------- |
+| Command | Expected Server Response                 | Output Value Example                    |
+| ------- | ---------------------------------------- | --------------------------------------- |
 | LIST    | Server returns a list of directory files | `"file1.txt\nfile2.txt\nsubdirectory/"` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                          |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **Connection issues**                           | Verify that the FTP connection settings are correct and the server is reachable.                  |
-| **Invalid FTP command**                         | Ensure the command is spelled correctly and is compatible with your particular FTP server setup.  |
-| **Empty output or unexpected server response**  | Check if the command requires additional parameters or a specific context to yield successful results. |
+| Problem                                        | Solution                                                                                               |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Connection issues**                          | Verify that the FTP connection settings are correct and the server is reachable.                       |
+| **Invalid FTP command**                        | Ensure the command is spelled correctly and is compatible with your particular FTP server setup.       |
+| **Empty output or unexpected server response** | Check if the command requires additional parameters or a specific context to yield successful results. |
 
 ## Real-World Use Cases
 

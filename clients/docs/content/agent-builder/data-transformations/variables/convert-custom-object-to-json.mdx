@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Convert Custom Object to JSON** node is used to transform a custom object into its JSON (JavaScript Object Notation) format. This allows you to convert structured data into a widely-used text format that is easy to share with APIs, files, or other systems that understand JSON.
 
 This node is particularly useful when you need to:
+
 - Transmit data between different applications or components where JSON is required.
 - Store data in a succinct, readable text format.
 - Facilitate data exchange for web services or APIs.
 
 ## Configuration Options
 
-| Field Name       | Description                                                                                   | Input Type | Required? | Default Value |
-| ---------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Custom Object**| The custom object you wish to convert into JSON format.                                       | Text       | Yes       | _(empty)_     |
-| **Pretty Print** | Toggles if the JSON output should be formatted with indentation and line breaks for readability.| Switch     | No        | True          |
+| Field Name        | Description                                                                                      | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Custom Object** | The custom object you wish to convert into JSON format.                                          | Text       | Yes       | _(empty)_     |
+| **Pretty Print**  | Toggles if the JSON output should be formatted with indentation and line breaks for readability. | Switch     | No        | True          |
 
 ## Expected Output Format
 
@@ -45,23 +46,24 @@ Once configured, the converted JSON string will be available as **JSON Output** 
 </Steps>
 
 <Callout type="info" title="Note">
-  Pretty Print adds whitespaces and line breaks to JSON output, which may increase its size but improves readability for humans.
+  Pretty Print adds whitespaces and line breaks to JSON output, which may
+  increase its size but improves readability for humans.
 </Callout>
 
 ## Input/Output Examples
 
-| Custom Object                  | Pretty Print | Output Type                 | JSON Output                           |
-| ------------------------------ | ------------ | --------------------------- | ------------------------------------- |
-| `{"name":"John", "age":30}`    | Off          | JSON String (Compact)       | `{"name":"John","age":30}`            |
-| `{"name":"John", "age":30}`    | On           | JSON String (Formatted)     | `{<br/>&nbsp;&nbsp;"name": "John",<br/>&nbsp;&nbsp;"age": 30<br/>}` |
+| Custom Object               | Pretty Print | Output Type             | JSON Output                                                         |
+| --------------------------- | ------------ | ----------------------- | ------------------------------------------------------------------- |
+| `{"name":"John", "age":30}` | Off          | JSON String (Compact)   | `{"name":"John","age":30}`                                          |
+| `{"name":"John", "age":30}` | On           | JSON String (Formatted) | `{<br/>&nbsp;&nbsp;"name": "John",<br/>&nbsp;&nbsp;"age": 30<br/>}` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                   |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Invalid JSON output**                        | Ensure the input is a valid custom object. Incorrect syntax will cause conversion errors.                  |
-| **Output not appearing as expected**           | Check the **Pretty Print** setting as it changes the format of the output JSON string.                      |
-| **Empty JSON Output**                          | Ensure that the **Custom Object** field isn't empty and contains the data you wish to convert.             |
+| Problem                              | Solution                                                                                       |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| **Invalid JSON output**              | Ensure the input is a valid custom object. Incorrect syntax will cause conversion errors.      |
+| **Output not appearing as expected** | Check the **Pretty Print** setting as it changes the format of the output JSON string.         |
+| **Empty JSON Output**                | Ensure that the **Custom Object** field isn't empty and contains the data you wish to convert. |
 
 ## Real-World Use Cases
 

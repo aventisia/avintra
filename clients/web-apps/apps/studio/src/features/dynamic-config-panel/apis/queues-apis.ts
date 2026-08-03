@@ -1,6 +1,5 @@
-import { axiosInstance } from "@avplatform/ui/lib";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import { QueuesTableDto } from "../dtos/queues-table-dto";
 

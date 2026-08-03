@@ -1,19 +1,15 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { ZodTypeAny, z } from "zod";
+
 import {
   DCPFieldSchemaType,
   generateZodSchema,
   getDefaultValuesForForm,
 } from "@/features/dynamic-config-panel";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { ZodTypeAny, z } from "zod";
-
-export const useDynamicForm = ({
-  config,
-}: {
-  config: DCPFieldSchemaType[];
-}) => {
+export const useDynamicForm = ({ config }: { config: DCPFieldSchemaType[] }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Flag to check if form is ready with default values.
@@ -21,9 +17,9 @@ export const useDynamicForm = ({
   // to avoid error - "A component is changing an uncontrolled input to be controlled".
   const [isFormReady, setIsFormReady] = useState(false);
 
-  const [configZodSchema, setConfigZodSchema] = useState<
-    z.ZodObject<Record<string, ZodTypeAny>>
-  >(() => z.object({}));
+  const [configZodSchema, setConfigZodSchema] = useState<z.ZodObject<Record<string, ZodTypeAny>>>(
+    () => z.object({}),
+  );
 
   // Define form with zod schema
   const form = useForm<z.infer<typeof configZodSchema>>({
@@ -53,9 +49,7 @@ export const useDynamicForm = ({
       return { key: f.name, value: f.defaultValue };
     });
 
-  const inputKeys: string[] = config
-    ?.filter((f) => f.direction === "Input")
-    ?.map((f) => f.name);
+  const inputKeys: string[] = config?.filter((f) => f.direction === "Input")?.map((f) => f.name);
 
   // Reset form values when vaultConfig or inputs/outputs change
   useEffect(() => {

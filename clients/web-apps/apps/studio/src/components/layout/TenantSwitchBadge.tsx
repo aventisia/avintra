@@ -1,7 +1,6 @@
-import { useUserSessionStore } from "@avplatform/ui/stores";
-
 // import { DotSeparator } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { useShallow } from "zustand/react/shallow";
 
@@ -19,9 +18,8 @@ const TenantSwitchBadge = () => {
       <Tooltip content={userSession?.tenantName}>
         <p className="flex items-center  text-xs font-semibold text-white">
           <span className="text-orange-400">Viewing</span>
-          <span className="h-0.5 w-0.5 bg-slate-500 rounded-full mx-2"/><span className="truncate text-2xs max-w-28">
-            {userSession?.tenantName}
-          </span>
+          <span className="h-0.5 w-0.5 bg-slate-500 rounded-full mx-2" />
+          <span className="truncate text-2xs max-w-28">{userSession?.tenantName}</span>
         </p>
       </Tooltip>
     </Badge>

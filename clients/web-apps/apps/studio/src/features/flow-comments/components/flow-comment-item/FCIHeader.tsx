@@ -1,7 +1,8 @@
-import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
 import { DotSeparator } from "@avplatform/ui";
 import { formatDistanceToNow } from "date-fns";
 import { memo } from "react";
+
+import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
 
 interface FCIHeaderProps {
   /** flow comment record data */
@@ -23,9 +24,7 @@ export const FCIHeader = memo(({ data }: FCIHeaderProps) => {
       {/* User full name and Time container */}
       <div className="flex w-[15rem] items-center">
         {/* User full name */}
-        <span className="truncate text-xs font-medium text-foreground">
-          {data.userFullName}
-        </span>
+        <span className="truncate text-xs font-medium text-foreground">{data.userFullName}</span>
 
         {/* Dot separator */}
         <DotSeparator />

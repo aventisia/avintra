@@ -1,10 +1,10 @@
-import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
-
 import { StopPropagationWrapper } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
+
+import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
 
 interface PlusEdgeLabelProps {
   edgeId?: string;

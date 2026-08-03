@@ -6,11 +6,11 @@ The **Add New Worksheet** node allows you to add a new worksheet to an existing 
 
 ## Configuration Options
 
-| Field Name                 | Description                                                                                           | Input Type         | Required? | Default Value  |
-| -------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------ | --------- | -------------- |
-| **M365 Excel Credential**  | Credentials for accessing M365, containing tenant ID, client ID, and client secret for API requests.  | Credentials Select | Yes       | _(empty)_      |
-| **Drive and Item ID**      | The Drive ID and Item ID for the Excel file in OneDrive or SharePoint. Format: driveId/items/itemId.  | Text               | Yes       | _(empty)_      |
-| **New Worksheet Name**     | Name for the new worksheet to be added.                                                               | Text               | No        | New Worksheet  |
+| Field Name                | Description                                                                                          | Input Type         | Required? | Default Value |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------ | --------- | ------------- |
+| **M365 Excel Credential** | Credentials for accessing M365, containing tenant ID, client ID, and client secret for API requests. | Credentials Select | Yes       | _(empty)_     |
+| **Drive and Item ID**     | The Drive ID and Item ID for the Excel file in OneDrive or SharePoint. Format: driveId/items/itemId. | Text               | Yes       | _(empty)_     |
+| **New Worksheet Name**    | Name for the new worksheet to be added.                                                              | Text               | No        | New Worksheet |
 
 ## Expected Output Format
 
@@ -44,29 +44,30 @@ Run the flow to execute the node. The node will add the worksheet and return the
 </Steps>
 
 <Callout type="info" title="Tip">
-To ensure the "Drive and Item ID" is correct, verify it against the details of your OneDrive or SharePoint paths.
+  To ensure the "Drive and Item ID" is correct, verify it against the details of
+  your OneDrive or SharePoint paths.
 </Callout>
 
 ## Input/Output Examples
 
-| Field Name            | Example Value                          |
-| --------------------- | -------------------------------------- |
-| M365 Excel Credential | `(provided and valid credential)`      |
-| Drive and Item ID     | `driveId/items/itemId`                 |
-| New Worksheet Name    | `FinanceReport`                        |
+| Field Name            | Example Value                     |
+| --------------------- | --------------------------------- |
+| M365 Excel Credential | `(provided and valid credential)` |
+| Drive and Item ID     | `driveId/items/itemId`            |
+| New Worksheet Name    | `FinanceReport`                   |
 
-| Output Field | Output Example                                                                          |
-| ------------ | --------------------------------------------------------------------------------------- |
+| Output Field | Output Example                                                                         |
+| ------------ | -------------------------------------------------------------------------------------- |
 | Result       | `{ "WorksheetName": "FinanceReport", "WorksheetId": "ws-12345", "StatusCode": "201" }` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                               |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Credential Error**                          | Ensure your M365 Excel credentials are correct and active. Double-check tenant ID, client ID, and client secret.         |
-| **Incorrect Drive and Item ID Format**                | Make sure the Drive and Item ID is correctly formatted as `driveId/items/itemId`.                                        |
-| **Worksheet Name Already Exists**                     | If the new worksheet name is already in use, try specifying a different name for the new worksheet.                     |
-| **Access Denied Error**                               | Verify that your credentials have the necessary permissions to add a worksheet to the target Excel file in OneDrive/SharePoint. |
+| Problem                                | Solution                                                                                                                        |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Credential Error**           | Ensure your M365 Excel credentials are correct and active. Double-check tenant ID, client ID, and client secret.                |
+| **Incorrect Drive and Item ID Format** | Make sure the Drive and Item ID is correctly formatted as `driveId/items/itemId`.                                               |
+| **Worksheet Name Already Exists**      | If the new worksheet name is already in use, try specifying a different name for the new worksheet.                             |
+| **Access Denied Error**                | Verify that your credentials have the necessary permissions to add a worksheet to the target Excel file in OneDrive/SharePoint. |
 
 ## Real-World Use Cases
 

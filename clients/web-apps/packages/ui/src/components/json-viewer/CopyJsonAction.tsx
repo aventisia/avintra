@@ -1,5 +1,4 @@
 import { CopyButton } from "@avplatform/ui/buttons";
-
 import { useCopyToClipboard } from "@avplatform/ui/hooks";
 
 /** Props for the shared header copy action. */

@@ -1,12 +1,9 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDefaultHeader,
-} from "@avplatform/ui/dialog";
-import { useInputOutputsStore } from "../stores/inputs-outputs-store";
-import { useShallow } from "zustand/react/shallow";
-import AddInputsOutputsForm from "./AddInputsOutputsForm";
+import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { ScrollArea } from "@avplatform/ui/scroll";
+import { useShallow } from "zustand/react/shallow";
+
+import { useInputOutputsStore } from "../stores/inputs-outputs-store";
+import AddInputsOutputsForm from "./AddInputsOutputsForm";
 
 const AddInputsOutputsDialog = () => {
   const { showDialog, setShowDialog } = useInputOutputsStore(

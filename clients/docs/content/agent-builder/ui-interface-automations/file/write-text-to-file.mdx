@@ -6,11 +6,11 @@ The **Write Text to File** node allows you to save textual information to a spec
 
 ## Configuration Options
 
-| Field Name       | Description                                                    | Input Type | Required? | Default Value |
-| ---------------- | -------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **File Path**    | The full file path where the text should be written.          | Text       | Yes       | _(empty)_     |
-| **Text to Write**| The text content you want to save into the file.              | Text       | Yes       | _(empty)_     |
-| **Write Mode**   | Specifies how the text should be written: Append or Overwrite.| Select     | No        | Append        |
+| Field Name        | Description                                                    | Input Type | Required? | Default Value |
+| ----------------- | -------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File Path**     | The full file path where the text should be written.           | Text       | Yes       | _(empty)_     |
+| **Text to Write** | The text content you want to save into the file.               | Text       | Yes       | _(empty)_     |
+| **Write Mode**    | Specifies how the text should be written: Append or Overwrite. | Select     | No        | Append        |
 
 ## Expected Output Format
 
@@ -45,24 +45,25 @@ Run the node to write the text to the specified file path.
 </Steps>
 
 <Callout type="warning" title="Warning">
-  Ensure the file path is correct and accessible. Mistakes in the path can cause the file operation to fail.
+  Ensure the file path is correct and accessible. Mistakes in the path can cause
+  the file operation to fail.
 </Callout>
 
 ## Input/Output Examples
 
-| File Path                  | Text to Write | Write Mode | Result                                                                       |
-| -------------------------- | ------------- | ---------- | ---------------------------------------------------------------------------- |
-| `C:\Documents\log.txt`     | "New entry"   | Append     | Adds "New entry" to the end of `log.txt`.                                    |
-| `C:\Reports\summary.txt`   | "Final report"| Overwrite  | Replaces all content in `summary.txt` with "Final report".                   |
-| `D:\Backups\notes.txt`     | "Backup data" | _(default)_ Append | Adds "Backup data" to the file `notes.txt`, as append mode is default. |
+| File Path                | Text to Write  | Write Mode         | Result                                                                 |
+| ------------------------ | -------------- | ------------------ | ---------------------------------------------------------------------- |
+| `C:\Documents\log.txt`   | "New entry"    | Append             | Adds "New entry" to the end of `log.txt`.                              |
+| `C:\Reports\summary.txt` | "Final report" | Overwrite          | Replaces all content in `summary.txt` with "Final report".             |
+| `D:\Backups\notes.txt`   | "Backup data"  | _(default)_ Append | Adds "Backup data" to the file `notes.txt`, as append mode is default. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                     | Solution                                                              |
-| ----------------------------------------------------------- | --------------------------------------------------------------------- |
-| **Incorrect file path format**                              | Double-check the path and file extension to ensure accuracy.          |
-| **Text not saving properly**                                | Check that the **Write Mode** is set correctly and the path is valid. |
-| **Access denied error**                                     | Ensure that you have permission to write to the specified location.   |
+| Problem                        | Solution                                                              |
+| ------------------------------ | --------------------------------------------------------------------- |
+| **Incorrect file path format** | Double-check the path and file extension to ensure accuracy.          |
+| **Text not saving properly**   | Check that the **Write Mode** is set correctly and the path is valid. |
+| **Access denied error**        | Ensure that you have permission to write to the specified location.   |
 
 ## Real-World Use Cases
 

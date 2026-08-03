@@ -5,10 +5,7 @@ import { TTSRequestDto } from "@/features/dynamic-config-panel/dtos/tts-model-dt
 import { useExecuteTTSMutation } from "@/features/dynamic-config-panel/hooks/useExecuteTTSMutation";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
-import {
-  getModelConfig,
-  getVoiceConfig,
-} from "../../utils/ai-node-config-helper";
+import { getModelConfig, getVoiceConfig } from "../../utils/ai-node-config-helper";
 import { useResetOnTestTabOpen } from "./useResetOnTestTabOpen";
 
 export function useTTSExecute(formData: Record<string, unknown>) {
@@ -18,9 +15,7 @@ export function useTTSExecute(formData: Record<string, unknown>) {
   const mutation = useExecuteTTSMutation();
   useResetOnTestTabOpen(mutation.reset);
 
-  async function buildPayload(
-    inputText: string,
-  ): Promise<TTSRequestDto | null> {
+  async function buildPayload(inputText: string): Promise<TTSRequestDto | null> {
     const modelConfigData = getModelConfig(formData);
     const voiceConfigData = getVoiceConfig(formData);
 

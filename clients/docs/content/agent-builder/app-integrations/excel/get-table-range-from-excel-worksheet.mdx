@@ -6,11 +6,11 @@ The **Get Table Range from Excel Worksheet** node allows you to retrieve the exa
 
 ## Configuration Options
 
-| Field Name            | Description                                                                                | Input Type | Required? | Default Value |
-| --------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Worksheet Instance**| The Excel Worksheet object containing the target table or pivot table.                     | Text       | Yes       | _(empty)_     |
-| **Table Name**        | The name of the table (ListObject) or pivot table to retrieve the range for.               | Text       | Yes       | _(empty)_     |
-| **Is Pivot Table**    | If true, retrieves the range of a pivot table instead of a regular table.                  | Switch     | No        | _(empty)_     |
+| Field Name             | Description                                                                  | Input Type | Required? | Default Value |
+| ---------------------- | ---------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object containing the target table or pivot table.       | Text       | Yes       | _(empty)_     |
+| **Table Name**         | The name of the table (ListObject) or pivot table to retrieve the range for. | Text       | Yes       | _(empty)_     |
+| **Is Pivot Table**     | If true, retrieves the range of a pivot table instead of a regular table.    | Switch     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,6 +45,7 @@ Use the **Is Pivot Table** switch to indicate whether the targeted table is a pi
 ### Step 5
 
 The node will output the range details through the following indices:
+
 - **First Column Index**
 - **First Row Index**
 - **Last Column Index**
@@ -55,23 +56,25 @@ Leverage these outputs for subsequent processing steps in your automation flow.
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the table or pivot table name matches exactly as it appears in Excel. Check for spaces, capitalization, and special characters for accurate identification.
+  Ensure that the table or pivot table name matches exactly as it appears in
+  Excel. Check for spaces, capitalization, and special characters for accurate
+  identification.
 </Callout>
 
 ## Input/Output Examples
 
-| Worksheet Instance | Table Name    | Is Pivot Table | First Column Index | First Row Index | Last Column Index | Last Row Index |
-| ------------------ | ------------- | -------------- | ------------------ | --------------- | ----------------- | -------------- |
-| `Sheet1`           | SalesData     | No             | `1`                | `2`             | `5`               | `10`           |
-| `FinanceSheet`     | SummaryPivot  | Yes            | `1`                | `1`             | `8`               | `20`           |
+| Worksheet Instance | Table Name   | Is Pivot Table | First Column Index | First Row Index | Last Column Index | Last Row Index |
+| ------------------ | ------------ | -------------- | ------------------ | --------------- | ----------------- | -------------- |
+| `Sheet1`           | SalesData    | No             | `1`                | `2`             | `5`               | `10`           |
+| `FinanceSheet`     | SummaryPivot | Yes            | `1`                | `1`             | `8`               | `20`           |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                         |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Incorrect Worksheet Instance**                    | Verify that the worksheet instance name is correct and matches the spreadsheet.                  |
-| **Table does not exist**                            | Ensure that the specified table or pivot table name is accurate and exists in the given worksheet.|
-| **Output indices are incorrect**                    | Double-check the table or pivot table selection, and ensure the worksheet is loaded correctly.   |
+| Problem                          | Solution                                                                                           |
+| -------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Incorrect Worksheet Instance** | Verify that the worksheet instance name is correct and matches the spreadsheet.                    |
+| **Table does not exist**         | Ensure that the specified table or pivot table name is accurate and exists in the given worksheet. |
+| **Output indices are incorrect** | Double-check the table or pivot table selection, and ensure the worksheet is loaded correctly.     |
 
 ## Real-World Use Cases
 

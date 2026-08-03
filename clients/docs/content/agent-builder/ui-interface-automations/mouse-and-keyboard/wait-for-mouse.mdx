@@ -6,12 +6,12 @@ The **Wait for Mouse** node is designed to pause a workflow until a specified ch
 
 ## Configuration Options
 
-| Field Name                | Description                                                                                     | Input Type | Required? | Default Value |
-| ------------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Wait for Mouse Pointer To** | Decide whether to wait for the cursor to become or stop being a specified type.              | Select     | Yes       | _(empty)_     |
-| **Mouse Pointer**         | Choose the mouse pointer type to wait for (e.g., Arrow, Hourglass).                             | Select     | Yes       | _(empty)_     |
-| **Fail with Timeout Error** | Toggle to throw an error if the cursor change does not occur within the specified timeout.    | Switch     | No        | _(empty)_     |
-| **Duration**              | Set the maximum wait time in seconds for the cursor change to occur.                           | Text       | No        | 5             |
+| Field Name                    | Description                                                                                | Input Type | Required? | Default Value |
+| ----------------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Wait for Mouse Pointer To** | Decide whether to wait for the cursor to become or stop being a specified type.            | Select     | Yes       | _(empty)_     |
+| **Mouse Pointer**             | Choose the mouse pointer type to wait for (e.g., Arrow, Hourglass).                        | Select     | Yes       | _(empty)_     |
+| **Fail with Timeout Error**   | Toggle to throw an error if the cursor change does not occur within the specified timeout. | Switch     | No        | _(empty)_     |
+| **Duration**                  | Set the maximum wait time in seconds for the cursor change to occur.                       | Text       | No        | 5             |
 
 ## Expected Output Format
 
@@ -46,16 +46,17 @@ Set the **Duration** field to specify how long (in seconds) the node should wait
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use the "Fail with Timeout Error" switch to handle exceptions gracefully if the cursor does not change as anticipated within your timeout settings.
+  Use the "Fail with Timeout Error" switch to handle exceptions gracefully if
+  the cursor does not change as anticipated within your timeout settings.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                 | Solution                                                                                           |
-| --------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Cursor does not change as expected**  | Verify that the correct mouse pointer type and condition is selected in the **Mouse Pointer** field.|
-| **Timeouts occur frequently**           | Ensure your **Duration** is sufficient for the task's completion time. You may need to increase it. |
-| **Error not thrown when expected**      | Make sure the **Fail with Timeout Error** toggle switch is turned on.                              |
+| Problem                                | Solution                                                                                             |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Cursor does not change as expected** | Verify that the correct mouse pointer type and condition is selected in the **Mouse Pointer** field. |
+| **Timeouts occur frequently**          | Ensure your **Duration** is sufficient for the task's completion time. You may need to increase it.  |
+| **Error not thrown when expected**     | Make sure the **Fail with Timeout Error** toggle switch is turned on.                                |
 
 ## Real-World Use Cases
 

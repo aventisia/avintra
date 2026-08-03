@@ -27,7 +27,8 @@ export const ToolRowDeleteAction = ({ rowId }: ToolRowDeleteActionProps) => {
           },
           confirmBtnText: "Yes, delete tool",
           title: "Delete tool?",
-          description: "Are you sure you want to delete this tool? This may break any agent that uses it.",
+          description:
+            "Are you sure you want to delete this tool? This may break any agent that uses it.",
         });
       }}
     />

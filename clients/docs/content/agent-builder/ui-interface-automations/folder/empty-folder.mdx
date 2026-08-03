@@ -8,9 +8,9 @@ Use this node when you want to quickly erase the contents of a directory, such a
 
 ## Configuration Options
 
-| Field Name          | Description                                                             | Input Type | Required? | Default Value |
-| ------------------- | ----------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Folder to Empty** | Specify the path of the folder whose contents should be deleted.        | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                              | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Folder to Empty**    | Specify the path of the folder whose contents should be deleted.         | Text       | Yes       | _(empty)_     |
 | **Include Subfolders** | Determines whether subfolders and their contents should also be deleted. | Switch     | No        | True          |
 
 ## Expected Output Format
@@ -42,16 +42,17 @@ Execute the flow to perform the emptying action. The specified folder will be cl
 </Steps>
 
 <Callout type="warning" title="Caution">
-  Ensure that the specified folder path is correct. The action is irreversible, and deleted files cannot be recovered.
+  Ensure that the specified folder path is correct. The action is irreversible,
+  and deleted files cannot be recovered.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                | Solution                                                                                               |
-| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Incorrect Folder Path**              | Verify the folder path to ensure it points to the correct directory. Complement paths with auto-complete features if available. |
-| **Files Not Deleted**                  | Make sure that there are no permissions restrictions on the folder that prevent file deletion.          |
-| **Subfolders Still Present**           | Double-check that **Include Subfolders** is turned on if you want to delete subdirectories as well.    |
+| Problem                      | Solution                                                                                                                        |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Folder Path**    | Verify the folder path to ensure it points to the correct directory. Complement paths with auto-complete features if available. |
+| **Files Not Deleted**        | Make sure that there are no permissions restrictions on the folder that prevent file deletion.                                  |
+| **Subfolders Still Present** | Double-check that **Include Subfolders** is turned on if you want to delete subdirectories as well.                             |
 
 ## Real-World Use Cases
 

@@ -1,7 +1,7 @@
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
-import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-enum";
 import { ComponentTypeEnum } from "../enums/component-type-enum";
+import { ToolAuthenticationTypeEnum } from "../enums/tool-authentication-type-enum";
 
 /**
  * Represents a data transfer object (DTO) for a tool entry.

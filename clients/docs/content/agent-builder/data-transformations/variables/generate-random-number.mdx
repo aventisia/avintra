@@ -12,13 +12,13 @@ For example:
 
 ## Configuration Options
 
-| Field Name                 | Description                                                                  | Input Type | Required? | Default Value |
-| -------------------------- | ---------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Minimum Value**          | The lower boundary for the random number(s) to generate.                     | Text       | Yes       | _(empty)_     |
-| **Maximum Value**          | The upper boundary for the random number(s) to generate.                     | Text       | Yes       | _(empty)_     |
-| **Generate Multiple Numbers** | Specify whether to generate a single number or multiple numbers.             | Switch     | No        | false         |
-| **How Many Numbers**       | Specify how many random numbers to generate.                                 | Text       | No        | _(empty)_     |
-| **Allow Duplicates**       | Specify whether to permit duplicate values in the generated list.            | Switch     | No        | false         |
+| Field Name                    | Description                                                       | Input Type | Required? | Default Value |
+| ----------------------------- | ----------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Minimum Value**             | The lower boundary for the random number(s) to generate.          | Text       | Yes       | _(empty)_     |
+| **Maximum Value**             | The upper boundary for the random number(s) to generate.          | Text       | Yes       | _(empty)_     |
+| **Generate Multiple Numbers** | Specify whether to generate a single number or multiple numbers.  | Switch     | No        | false         |
+| **How Many Numbers**          | Specify how many random numbers to generate.                      | Text       | No        | _(empty)_     |
+| **Allow Duplicates**          | Specify whether to permit duplicate values in the generated list. | Switch     | No        | false         |
 
 ## Expected Output Format
 
@@ -45,11 +45,13 @@ In the **Maximum Value** field, enter the largest number in your desired range.
 ### Step 4
 
 Decide if you want multiple numbers:
+
 - Toggle **Generate Multiple Numbers** switch if you need more than one number.
 
 ### Step 5
 
 If generating multiple numbers, additional fields appear:
+
 - **How Many Numbers**: Enter how many numbers you want.
 - **Allow Duplicates**: Toggle this switch if duplicate numbers are acceptable.
 
@@ -60,25 +62,26 @@ The generated number or numbers will be available as **RandomNumber** (single) o
 </Steps>
 
 <Callout type="info" title="Tip">
-Ensure all numeric input values are correctly set, and the minimum value is less than the maximum value to avoid errors.
+  Ensure all numeric input values are correctly set, and the minimum value is
+  less than the maximum value to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Config                      | Minimum Value | Maximum Value | Generate Multiple Numbers | How Many Numbers | Allow Duplicates | Output Value       | Output Type       |
-| --------------------------- | ------------- | ------------- | ------------------------ | ---------------- | ---------------- | ----------------- | ----------------- |
-| Single Number               | 1             | 100           | false                    | _(n/a)_          | _(n/a)_          | 42                | RandomNumber      |
-| Multiple Numbers (No Dups)  | 1             | 50            | true                     | 3                | false            | [12, 23, 37]      | RandomNumbers     |
-| Multiple Numbers (With Dups)| 1             | 10            | true                     | 5                | true             | [4, 7, 4, 2, 9]   | RandomNumbers     |
+| Config                       | Minimum Value | Maximum Value | Generate Multiple Numbers | How Many Numbers | Allow Duplicates | Output Value    | Output Type   |
+| ---------------------------- | ------------- | ------------- | ------------------------- | ---------------- | ---------------- | --------------- | ------------- |
+| Single Number                | 1             | 100           | false                     | _(n/a)_          | _(n/a)_          | 42              | RandomNumber  |
+| Multiple Numbers (No Dups)   | 1             | 50            | true                      | 3                | false            | [12, 23, 37]    | RandomNumbers |
+| Multiple Numbers (With Dups) | 1             | 10            | true                      | 5                | true             | [4, 7, 4, 2, 9] | RandomNumbers |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                   |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **Non-numeric value entered in fields**        | Ensure that all entries in **Minimum Value** and **Maximum Value** are numbers.            |
-| **Minimum Value greater than Maximum Value**   | Verify the range and ensure the minimum is less than the maximum.                           |
-| **Duplicate restriction ignored**              | Double-check the **Allow Duplicates** setting to ensure your desired configuration.         |
-| **Unexpected number of results**               | Confirm the **How Many Numbers** value if generating multiple numbers.                      |
+| Problem                                      | Solution                                                                            |
+| -------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **Non-numeric value entered in fields**      | Ensure that all entries in **Minimum Value** and **Maximum Value** are numbers.     |
+| **Minimum Value greater than Maximum Value** | Verify the range and ensure the minimum is less than the maximum.                   |
+| **Duplicate restriction ignored**            | Double-check the **Allow Duplicates** setting to ensure your desired configuration. |
+| **Unexpected number of results**             | Confirm the **How Many Numbers** value if generating multiple numbers.              |
 
 ## Real-World Use Cases
 

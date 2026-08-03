@@ -257,7 +257,7 @@ function parseNodeExecutionLog(data: string): NodeExecutionLogDto | null {
 // Sends a batch of pending node logs to the backend and clears the buffer.
 async function flushPendingNodeLogs(
   jobId: string | undefined,
-  pendingLogs: NodeExecutionLogDto[]
+  pendingLogs: NodeExecutionLogDto[],
 ): Promise<void> {
   if (!jobId || pendingLogs.length === 0) return;
 

@@ -1,15 +1,13 @@
-import { AppRedirectPage } from "@/components/layout/AppRedirectPage";
-
 import { ReactFlowProvider } from "@xyflow/react";
 import { Suspense, lazy } from "react";
 
+import { AppRedirectPage } from "@/components/layout/AppRedirectPage";
+
 // Lazy load the ReactFlowViewOnly component.
 const ReactFlowViewOnly = lazy(() =>
-  import("@/features/execution-logs/components/ReactFlowViewOnly").then(
-    (module) => ({
-      default: module.ReactFlowViewOnly,
-    }),
-  ),
+  import("@/features/execution-logs/components/ReactFlowViewOnly").then((module) => ({
+    default: module.ReactFlowViewOnly,
+  })),
 );
 
 /**

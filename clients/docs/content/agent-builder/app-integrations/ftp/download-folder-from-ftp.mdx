@@ -12,10 +12,10 @@ This node is useful for:
 
 ## Configuration Options
 
-| Field Name      | Description                                                | Input Type | Required? | Default Value |
-| --------------- | ---------------------------------------------------------- | ---------- | --------- | --------------|
-| **FTP Connection** | The FTP connection object that includes connection details. | Text       | Yes       | _(empty)_     |
-| **Folder Name**   | The specific folder name you wish to download from the FTP server. | Text       | Yes       | _(empty)_     |
+| Field Name          | Description                                                                | Input Type | Required? | Default Value |
+| ------------------- | -------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **FTP Connection**  | The FTP connection object that includes connection details.                | Text       | Yes       | _(empty)_     |
+| **Folder Name**     | The specific folder name you wish to download from the FTP server.         | Text       | Yes       | _(empty)_     |
 | **Local Directory** | The directory path on your local machine for saving the downloaded folder. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -44,30 +44,32 @@ Specify the path where you want to save the folder on your local machine in the 
 ### Step 5
 
 Once configured, execute the node to begin the folder download process. Make sure your network connection is stable to avoid interruptions.
+
 </Steps>
 
 <Callout type="warning" title="Note">
-  Ensure that the FTP server's permissions allow for folder download, and that the destination local directory has sufficient storage space.
+  Ensure that the FTP server's permissions allow for folder download, and that
+  the destination local directory has sufficient storage space.
 </Callout>
 
 ## Input/Output Examples
 
-| Field            | Input Example               |
-| ---------------- | --------------------------- |
-| FTP Connection   | ftp://user:password@host    |
-| Folder Name      | `ProjectData`               |
-| Local Directory  | `C:\Users\Name\Downloads`   |
+| Field           | Input Example             |
+| --------------- | ------------------------- |
+| FTP Connection  | ftp://user:password@host  |
+| Folder Name     | `ProjectData`             |
+| Local Directory | `C:\Users\Name\Downloads` |
 
 **Output Example**: Folder `ProjectData` is downloaded to `C:\Users\Name\Downloads`.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                       |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Invalid FTP Connection Details**                    | Verify the FTP credentials and address. Ensure you have network access to the FTP server.                                      |
-| **Folder Not Found**                                  | Check if the folder name is entered correctly and exists on the FTP server.                                                    |
-| **No Write Permission in Local Directory**            | Ensure that you have the necessary permissions to save files in the specified local directory.                                 |
-| **Incomplete Download**                               | Ensure a stable internet connection. If interrupted, reattempt the download to complete it.                                    |
+| Problem                                    | Solution                                                                                       |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| **Invalid FTP Connection Details**         | Verify the FTP credentials and address. Ensure you have network access to the FTP server.      |
+| **Folder Not Found**                       | Check if the folder name is entered correctly and exists on the FTP server.                    |
+| **No Write Permission in Local Directory** | Ensure that you have the necessary permissions to save files in the specified local directory. |
+| **Incomplete Download**                    | Ensure a stable internet connection. If interrupted, reattempt the download to complete it.    |
 
 ## Real-World Use Cases
 

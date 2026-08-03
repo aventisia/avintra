@@ -12,15 +12,15 @@ For instance, you can:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                        | Input Type | Required? | Default Value |
-| -------------------- | -------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Window Name**      | The name (title) of the window you wish to find.                                                    | Text       | Yes       | _(empty)_     |
-| **Name Match Mode**  | Define how the window name should be matched: exact match, contains text, or starts with text.    | Select     | No        | Equals        |
-| **Max Wait Time**    | Set the maximum time (in seconds) the system should wait to find the window.                        | Text       | No        | 5             |
+| Field Name          | Description                                                                                    | Input Type | Required? | Default Value |
+| ------------------- | ---------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Window Name**     | The name (title) of the window you wish to find.                                               | Text       | Yes       | _(empty)_     |
+| **Name Match Mode** | Define how the window name should be matched: exact match, contains text, or starts with text. | Select     | No        | Equals        |
+| **Max Wait Time**   | Set the maximum time (in seconds) the system should wait to find the window.                   | Text       | No        | 5             |
 
 ## Expected Output Format
 
-The output of this node is an **Automation Element** representing the found window. 
+The output of this node is an **Automation Element** representing the found window.
 
 - If the window is found, you receive an `AutomationElement` object (e.g., `WindowElement`).
 - If the window is not found, the output will indicate a failure to locate the window.
@@ -55,7 +55,8 @@ Use the found **Automation Element** (`WindowElement`) in subsequent nodes to pe
 </Steps>
 
 <Callout type="warn" title="Warning">
-  Ensure that the window you are trying to find is already open and visible on your desktop. This node cannot open windows.
+  Ensure that the window you are trying to find is already open and visible on
+  your desktop. This node cannot open windows.
 </Callout>
 
 ## Input/Output Examples
@@ -68,12 +69,12 @@ Use the found **Automation Element** (`WindowElement`) in subsequent nodes to pe
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                                                                      |
-| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Incorrect window title**                              | Double-check the window name you entered. Ensure it matches (or appropriately contains/starts with) the actual title of the window.           |
-| **Max Wait Time too short**                             | Consider increasing the **Max Wait Time** if the window is slow to appear or load.                                                            |
-| **No window is open**                                   | Ensure that the specific window you are trying to detect is actually open and visible on the screen before running the node.                  |
-| **Selection of inappropriate Match Mode**               | Re-evaluate the **Name Match Mode**; try a different mode if the current one does not yield the expected results.                             |
+| Problem                                   | Solution                                                                                                                            |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect window title**                | Double-check the window name you entered. Ensure it matches (or appropriately contains/starts with) the actual title of the window. |
+| **Max Wait Time too short**               | Consider increasing the **Max Wait Time** if the window is slow to appear or load.                                                  |
+| **No window is open**                     | Ensure that the specific window you are trying to detect is actually open and visible on the screen before running the node.        |
+| **Selection of inappropriate Match Mode** | Re-evaluate the **Name Match Mode**; try a different mode if the current one does not yield the expected results.                   |
 
 ## Real-World Use Cases
 

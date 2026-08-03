@@ -1,7 +1,7 @@
+import { Node } from "@xyflow/react";
+
 import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { NodeDataType } from "@/types/node-data-type";
-
-import { Node } from "@xyflow/react";
 
 import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
 import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
@@ -15,10 +15,7 @@ import { createSupportNodeObj } from "./create-support-node-obj";
  * @param sourceNodeId - The ID of the source node.
  * @returns An object with the new nodes, new edges, and last node ID.
  */
-export const createAINode = (
-  nodeData: NodeDataType,
-  sourceNode: Node,
-): CreateNodesAndEdgesType => {
+export const createAINode = (nodeData: NodeDataType, sourceNode: Node): CreateNodesAndEdgesType => {
   const newNode = createNodeObj(nodeData, sourceNode.parentId);
 
   // 1. Create the Support/Satellite Node

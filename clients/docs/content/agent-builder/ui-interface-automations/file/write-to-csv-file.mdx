@@ -6,15 +6,15 @@ The **Write to CSV File** node enables you to save data into a CSV (Comma-Separa
 
 ## Configuration Options
 
-| Field Name                  | Description                                                                                           | Input Type | Required? | Default Value                  |
-|-----------------------------|-------------------------------------------------------------------------------------------------------|------------|-----------|-------------------------------|
-| **Variable to Write**       | The data you want to write to the CSV file. This could be a table, single row, or list of data.       | Text       | Yes       | _(empty)_                     |
-| **File Path**               | The complete path where you want to save the CSV file.                                               | Text       | Yes       | _(empty)_                     |
-| **Encoding**                | Choose the encoding type for your CSV file to ensure it is saved correctly across different systems.  | Select     | No        | UTF-8                          |
-| **Use Custom Column Separator** | Toggle to specify whether a custom column separator is to be used, instead of a standard one.      | Switch     | No        | false                          |
-| **Custom Column Separator** | Define a custom character to separate columns. _Only appears if "Use Custom Column Separator" is enabled._ | Text       | No        | _(empty)_                     |
-| **Predefined Separator**    | Select a standard separator (Comma, Tab, or Semicolon) for your CSV file. _Only appears if "Use Custom Column Separator" is not enabled._ | Select     | No        | Comma                         |
-| **If File Exists**          | Decide how to handle the situation if the file already exists: overwrite it or append new data at the end. | Select     | No        | Overwrite                     |
+| Field Name                      | Description                                                                                                                               | Input Type | Required? | Default Value |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Variable to Write**           | The data you want to write to the CSV file. This could be a table, single row, or list of data.                                           | Text       | Yes       | _(empty)_     |
+| **File Path**                   | The complete path where you want to save the CSV file.                                                                                    | Text       | Yes       | _(empty)_     |
+| **Encoding**                    | Choose the encoding type for your CSV file to ensure it is saved correctly across different systems.                                      | Select     | No        | UTF-8         |
+| **Use Custom Column Separator** | Toggle to specify whether a custom column separator is to be used, instead of a standard one.                                             | Switch     | No        | false         |
+| **Custom Column Separator**     | Define a custom character to separate columns. _Only appears if "Use Custom Column Separator" is enabled._                                | Text       | No        | _(empty)_     |
+| **Predefined Separator**        | Select a standard separator (Comma, Tab, or Semicolon) for your CSV file. _Only appears if "Use Custom Column Separator" is not enabled._ | Select     | No        | Comma         |
+| **If File Exists**              | Decide how to handle the situation if the file already exists: overwrite it or append new data at the end.                                | Select     | No        | Overwrite     |
 
 ## Expected Output Format
 
@@ -54,23 +54,24 @@ Execute the process, after which the data is written into the specified CSV file
 </Steps>
 
 <Callout type="info" title="Note">
-  Use a custom column separator only if necessary, such as when default separators interfere with your data content.
+  Use a custom column separator only if necessary, such as when default
+  separators interfere with your data content.
 </Callout>
 
 ## Input/Output Examples
 
-| Variable to Write | File Path         | Separator | Encoding | If File Exists | Output                                   |
-|-------------------|-------------------|-----------|----------|----------------|------------------------------------------|
+| Variable to Write | File Path          | Separator | Encoding | If File Exists | Output                                   |
+| ----------------- | ------------------ | --------- | -------- | -------------- | ---------------------------------------- |
 | TableData         | C:/data/output.csv | Comma     | UTF-8    | Overwrite      | Data is written to "C:/data/output.csv". |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                            |
-|-----------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
-| **File path is incorrect or inaccessible**    | Verify that the directory path exists and you have permission to create or modify files there.                      |
-| **Data not formatted correctly in CSV**       | Check your data structure and ensure that it matches the intended format for the CSV. Ensure correct separator.     |
-| **Encoding issues**                           | Select the proper encoding that suits the desired target system. Changing from "UTF-8" to "System Default" might help. |
-| **File not found error when appending**       | Ensure that the file exists if you selected the "Append" option. If it doesn't exist, choose "Overwrite" instead.    |
+| Problem                                    | Solution                                                                                                               |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **File path is incorrect or inaccessible** | Verify that the directory path exists and you have permission to create or modify files there.                         |
+| **Data not formatted correctly in CSV**    | Check your data structure and ensure that it matches the intended format for the CSV. Ensure correct separator.        |
+| **Encoding issues**                        | Select the proper encoding that suits the desired target system. Changing from "UTF-8" to "System Default" might help. |
+| **File not found error when appending**    | Ensure that the file exists if you selected the "Append" option. If it doesn't exist, choose "Overwrite" instead.      |
 
 ## Real-World Use Cases
 

@@ -11,11 +11,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name                              | Description                                                                                         | Input Type | Required? | Default Value |
-| --------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Drop-Down or List UI Element**        | The UI element representing the drop-down or list from which you want to select an option.          | Text       | Yes       | _(empty)_     |
-| **Option to Select (Name or Index)**    | Specify the option to select by its visible name or by its zero-based index (e.g., 0 for first).    | Text       | Yes       | _(empty)_     |
-| **Maximum Wait Time (seconds)**         | The maximum number of seconds to wait for the drop-down or list element to appear.                  | Text       | No        | 5             |
+| Field Name                           | Description                                                                                      | Input Type | Required? | Default Value |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Drop-Down or List UI Element**     | The UI element representing the drop-down or list from which you want to select an option.       | Text       | Yes       | _(empty)_     |
+| **Option to Select (Name or Index)** | Specify the option to select by its visible name or by its zero-based index (e.g., 0 for first). | Text       | Yes       | _(empty)_     |
+| **Maximum Wait Time (seconds)**      | The maximum number of seconds to wait for the drop-down or list element to appear.               | Text       | No        | 5             |
 
 ## Expected Output Format
 
@@ -46,10 +46,12 @@ In the **Option to Select (Name or Index)** field, enter the visible name of the
 ### Step 5
 
 Use the output labeled **Was Option Selected?** to determine if the option was chosen successfully in subsequent nodes.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure that the option name or index you provide accurately matches an available option in the drop-down or list.
+  Ensure that the option name or index you provide accurately matches an
+  available option in the drop-down or list.
 </Callout>
 
 ## Input/Output Examples
@@ -62,10 +64,10 @@ Use the output labeled **Was Option Selected?** to determine if the option was c
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                              |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Option not found or selected**                     | Verify the option name or index matches exactly with those in the UI. Check for spelling or capitalization errors.     |
-| **Long wait times**                                  | Ensure the specified wait time is sufficient for the UI element to become visible, but not too long to delay workflows.|
+| Problem                          | Solution                                                                                                                |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Option not found or selected** | Verify the option name or index matches exactly with those in the UI. Check for spelling or capitalization errors.      |
+| **Long wait times**              | Ensure the specified wait time is sufficient for the UI element to become visible, but not too long to delay workflows. |
 
 ## Real-World Use Cases
 

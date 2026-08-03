@@ -6,10 +6,10 @@ The **If Folder Exists** node is designed to verify if a specified folder is pre
 
 ## Configuration Options
 
-| Field Name     | Description                                                          | Input Type | Required? | Default Value |
-| -------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **If Folder**  | Choose the condition to check: whether the folder exists or not.     | Select     | Yes       | Exists       |
-| **Folder Path**| Enter the directory path to check for its presence or absence.       | Text       | Yes       | _(empty)_     |
+| Field Name      | Description                                                      | Input Type | Required? | Default Value |
+| --------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **If Folder**   | Choose the condition to check: whether the folder exists or not. | Select     | Yes       | Exists        |
+| **Folder Path** | Enter the directory path to check for its presence or absence.   | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,23 +45,24 @@ Use the resulting **Result** in subsequent nodes to adapt your flow according to
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the folder path is correct and accessible to avoid errors in processing.
+  Ensure that the folder path is correct and accessible to avoid errors in
+  processing.
 </Callout>
 
 ## Input/Output Examples
 
-| Condition      | Folder Path           | Output Value | Output Type |
-| -------------- | --------------------- | ------------ | ----------- |
-| Exists         | `C:/Documents/Reports`| true         | Boolean     |
-| Doesn't Exist  | `C:/OldFiles/Archive` | false        | Boolean     |
+| Condition     | Folder Path            | Output Value | Output Type |
+| ------------- | ---------------------- | ------------ | ----------- |
+| Exists        | `C:/Documents/Reports` | true         | Boolean     |
+| Doesn't Exist | `C:/OldFiles/Archive`  | false        | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                    | Solution                                                                         |
-| ---------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| **Incorrect folder path**                                  | Double-check the folder path for typos or incorrect directory separators.        |
-| **Unexpected false result**                                | Ensure the folder permissions and path visibility are set correctly.             |
-| **Condition does not trigger as expected**                 | Make sure the selected condition matches your intended check (exists vs. doesn't exist). |
+| Problem                                    | Solution                                                                                 |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| **Incorrect folder path**                  | Double-check the folder path for typos or incorrect directory separators.                |
+| **Unexpected false result**                | Ensure the folder permissions and path visibility are set correctly.                     |
+| **Condition does not trigger as expected** | Make sure the selected condition matches your intended check (exists vs. doesn't exist). |
 
 ## Real-World Use Cases
 

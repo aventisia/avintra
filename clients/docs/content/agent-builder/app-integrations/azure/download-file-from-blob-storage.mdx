@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                 | Input Type | Required? | Default Value  |
-|-------------------------|-----------------------------------------------------------------------------|------------|-----------|----------------|
-| **Blob Container Client** | The instance needed to connect and download from your Blob container.       | Text       | Yes       | _(empty)_      |
-| **Blob Name**             | The file name within the Blob container that you want to download.          | Text       | Yes       | _(empty)_      |
-| **Save Location**         | The directory path on your local system where the downloaded file will be saved. | Text       | Yes       | _(empty)_      |
+| Field Name                | Description                                                                      | Input Type | Required? | Default Value |
+| ------------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Blob Container Client** | The instance needed to connect and download from your Blob container.            | Text       | Yes       | _(empty)_     |
+| **Blob Name**             | The file name within the Blob container that you want to download.               | Text       | Yes       | _(empty)_     |
+| **Save Location**         | The directory path on your local system where the downloaded file will be saved. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -50,16 +50,17 @@ Upon execution, the downloaded file's path will be available as **DownloadedFile
 </Steps>
 
 <Callout type="info" title="Important Note">
-Ensure that the specified Save Location has the necessary permissions configured to allow file saving, otherwise, the download will fail.
+  Ensure that the specified Save Location has the necessary permissions
+  configured to allow file saving, otherwise, the download will fail.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                    | Solution                                                                                                                                                  |
-|------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Invalid Blob Container Client**                          | Verify the connection details for the BlobContainerClient to ensure they are correct and have the necessary permissions.                                    |
-| **Blob Name does not exist in the container**              | Check the exact file name within the Blob container, noting that it is case-sensitive.                                                                      |
-| **Save Location path is incorrect or inaccessible**        | Confirm that the directory path provided exists and has appropriate write permissions. Use forward slashes for directories to ensure path compatibility. |
+| Problem                                             | Solution                                                                                                                                                 |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Blob Container Client**                   | Verify the connection details for the BlobContainerClient to ensure they are correct and have the necessary permissions.                                 |
+| **Blob Name does not exist in the container**       | Check the exact file name within the Blob container, noting that it is case-sensitive.                                                                   |
+| **Save Location path is incorrect or inaccessible** | Confirm that the directory path provided exists and has appropriate write permissions. Use forward slashes for directories to ensure path compatibility. |
 
 ## Real-World Use Cases
 

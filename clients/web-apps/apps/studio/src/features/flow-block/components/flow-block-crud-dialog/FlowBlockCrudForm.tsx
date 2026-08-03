@@ -1,27 +1,29 @@
 import { Button } from "@avplatform/ui/buttons";
+import { DefaultTenantsEnum } from "@avplatform/ui/enums";
 import { InputField } from "@avplatform/ui/form";
 import { SelectField } from "@avplatform/ui/form";
 import { Form } from "@avplatform/ui/form";
-import { createBlockFormType } from "../../constants/flow-block-zod-schema";
-import { FlowBlockDto } from "../../dtos/flow-block-dtos";
+import { useShowAlertHandler } from "@avplatform/ui/hooks";
+import { useUserSessionStore } from "@avplatform/ui/stores";
+import { enumToArray } from "@avplatform/ui/utils";
+import { Loader2, Plus } from "lucide-react";
+import { useEffect } from "react";
 import { Controller } from "react-hook-form";
+import { useShallow } from "zustand/react/shallow";
+
 import InputFields from "@/features/add-input-output/components/InputFields";
 import OutputFields from "@/features/add-input-output/components/OutputFields";
-import { useFlowBlockForm } from "../../hooks/useFlowBlockForm";
-import { Loader2, Plus } from "lucide-react";
 import { formDataToDCPJson } from "@/features/add-input-output/utils/formdataToJson";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useShallow } from "zustand/react/shallow";
-import { useFlowBlockStore } from "../../stores/flow-block-store";
+
+import { AccessTypeEnum } from "../../constants/access-type-enum";
+import { createBlockFormType } from "../../constants/flow-block-zod-schema";
+import { FlowBlockDto } from "../../dtos/flow-block-dtos";
+import { useDeleteBlockMutation } from "../../hooks/useDeleteBlockMutation";
+import { useFlowBlockForm } from "../../hooks/useFlowBlockForm";
 import { useInsertBlockMutation } from "../../hooks/useInsertBlockMutation";
 import { useUpdateBlockMutation } from "../../hooks/useUpdateBlockMutation";
-import { useDeleteBlockMutation } from "../../hooks/useDeleteBlockMutation";
-import { useShowAlertHandler } from "@avplatform/ui/hooks";
-import { useEffect } from "react";
-import { enumToArray } from "@avplatform/ui/utils";
-import { AccessTypeEnum } from "../../constants/access-type-enum";
-import { useUserSessionStore } from "@avplatform/ui/stores";
-import { DefaultTenantsEnum } from "@avplatform/ui/enums";
+import { useFlowBlockStore } from "../../stores/flow-block-store";
 
 export const FlowBlockCrudForm = () => {
   // Define flow form
@@ -60,8 +62,7 @@ export const FlowBlockCrudForm = () => {
   const { mutate: insertBlock, isPending } = useInsertBlockMutation();
 
   //Mutation to update block
-  const { mutate: updateBlock, isPending: isUpdating } =
-    useUpdateBlockMutation();
+  const { mutate: updateBlock, isPending: isUpdating } = useUpdateBlockMutation();
 
   //Mutation to delete block
   const { mutate: deleteBlock } = useDeleteBlockMutation();
@@ -109,8 +110,7 @@ export const FlowBlockCrudForm = () => {
     })),
   );
 
-  const isIndividualUser =
-    userSession?.tenantName === DefaultTenantsEnum.IndividualUsers;
+  const isIndividualUser = userSession?.tenantName === DefaultTenantsEnum.IndividualUsers;
 
   const selectOptions = enumToArray(AccessTypeEnum).filter(
     (item: { label: string; value: string }) => {
@@ -121,11 +121,7 @@ export const FlowBlockCrudForm = () => {
 
   // Return the form
   return (
-    <Form
-      methods={form}
-      onSubmit={form.handleSubmit(onSubmit)}
-      className="px-2.5 pb-5"
-    >
+    <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="px-2.5 pb-5">
       <div className="grid grid-cols-2 items-center gap-2.5">
         <Controller
           name={"name"}
@@ -170,23 +166,13 @@ export const FlowBlockCrudForm = () => {
       <div>
         <div className="mb-2 flex items-center justify-between">
           <h2>Inputs</h2>
-          <Button
-            variant="ghost"
-            type="button"
-            size="sm"
-            onClick={() => appendInput(inputDefault)}
-          >
+          <Button variant="ghost" type="button" size="sm" onClick={() => appendInput(inputDefault)}>
             <Plus className="h-4 w-4" />
             Field
           </Button>
         </div>
         {inputFields.map((field, index) => (
-          <InputFields
-            field={field}
-            control={control}
-            index={index}
-            remove={removeInput}
-          />
+          <InputFields field={field} control={control} index={index} remove={removeInput} />
         ))}
       </div>
       <div>
@@ -203,12 +189,7 @@ export const FlowBlockCrudForm = () => {
           </Button>
         </div>
         {outputFields.map((field, index) => (
-          <OutputFields
-            field={field}
-            control={control}
-            index={index}
-            remove={removeOutput}
-          />
+          <OutputFields field={field} control={control} index={index} remove={removeOutput} />
         ))}
       </div>
       {/* Submit button */}

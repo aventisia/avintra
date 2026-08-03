@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name      | Description                                                                | Input Type | Required? | Default Value   |
-| --------------- | -------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Document Path** | The full file path to the .docx document to read from.                     | Text       | Yes       | _(empty)_       |
-| **Retrieve**    | Specifies the portion of the document to retrieve: whole content, pages, or bookmark. | Select     | No        | Whole Document  |
-| **Bookmark Name** | The name of the bookmark to retrieve content from. _Only appears if Retrieve is "Bookmark"._ | Text       | No        | _(empty)_       |
+| Field Name        | Description                                                                                  | Input Type | Required? | Default Value  |
+| ----------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Document Path** | The full file path to the .docx document to read from.                                       | Text       | Yes       | _(empty)_      |
+| **Retrieve**      | Specifies the portion of the document to retrieve: whole content, pages, or bookmark.        | Select     | No        | Whole Document |
+| **Bookmark Name** | The name of the bookmark to retrieve content from. _Only appears if Retrieve is "Bookmark"._ | Text       | No        | _(empty)_      |
 
 ## Expected Output Format
 
@@ -42,7 +42,7 @@ In the **Document Path** field, enter the full file path to the `.docx` document
 Use the **Retrieve** dropdown to choose the part of the document you wish to extract:
 
 - **Whole Document**: To get all the text from the document.
-- **Pages**: To specify and retrieve text from certain pages. *(Note: Additional setup not covered here)*
+- **Pages**: To specify and retrieve text from certain pages. _(Note: Additional setup not covered here)_
 - **Bookmark**: To extract text from a specific bookmark.
 
 ### Step 4
@@ -56,23 +56,24 @@ The extracted content will be available under **Word Data** for use in subsequen
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the document path is correct and accessible by the system where this node is executed.
+  Ensure the document path is correct and accessible by the system where this
+  node is executed.
 </Callout>
 
 ## Input/Output Examples
 
-| Retrieve Method  | Document Path   | Bookmark Name | Output Value                        | Output Type |
-| ---------------- | --------------- | ------------- | ----------------------------------- | ----------- |
-| Whole Document   | /docs/report.docx | _(n/a)_       | "All text content from the document" | Text        |
-| Bookmark         | /docs/report.docx | Section1      | "Text content from the Section1 bookmark" | Text        |
+| Retrieve Method | Document Path     | Bookmark Name | Output Value                              | Output Type |
+| --------------- | ----------------- | ------------- | ----------------------------------------- | ----------- |
+| Whole Document  | /docs/report.docx | _(n/a)_       | "All text content from the document"      | Text        |
+| Bookmark        | /docs/report.docx | Section1      | "Text content from the Section1 bookmark" | Text        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                              |
-| -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Incorrect Document Path**                  | Double-check the file path entered is correct and points to a valid .docx file. Ensure file permissions are suitable. |
-| **Bookmark Name not triggering result**      | Verify that the bookmark name is correct and exists in the document.                                                  |
-| **No output returned**                       | Ensure that the retrieval settings correctly correspond to the document's structure (e.g., pages or bookmarks).       |
+| Problem                                 | Solution                                                                                                              |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Document Path**             | Double-check the file path entered is correct and points to a valid .docx file. Ensure file permissions are suitable. |
+| **Bookmark Name not triggering result** | Verify that the bookmark name is correct and exists in the document.                                                  |
+| **No output returned**                  | Ensure that the retrieval settings correctly correspond to the document's structure (e.g., pages or bookmarks).       |
 
 ## Real-World Use Cases
 

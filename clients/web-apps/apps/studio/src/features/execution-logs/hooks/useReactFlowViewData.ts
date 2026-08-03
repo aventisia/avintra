@@ -81,18 +81,14 @@ export const useReactFlowViewData = () => {
       versionNumber: data.versionNumber ?? 0,
     });
     // Parse react flow object
-    const flow = deepParse(
-      data?.reactFlowObject ?? JSON.stringify([]),
-    ) as unknown as {
+    const flow = deepParse(data?.reactFlowObject ?? JSON.stringify([])) as unknown as {
       nodes: Node[];
       edges: Edge[];
       viewport: Viewport;
     };
 
     // Parse Flow Variables Object
-    const flowVarObjs = JSON.parse(
-      data?.flowVariablesObject ?? JSON.stringify([]),
-    );
+    const flowVarObjs = JSON.parse(data?.flowVariablesObject ?? JSON.stringify([]));
 
     if (flow) {
       setNodes(flow?.nodes);
@@ -100,9 +96,7 @@ export const useReactFlowViewData = () => {
 
       if (data.nodeExecutionLogs) {
         initLogs(
-          deepParse(
-            data.nodeExecutionLogs,
-          ) as unknown as NodeExecutionLogType[],
+          deepParse(data.nodeExecutionLogs) as unknown as NodeExecutionLogType[],
           flow?.nodes,
           flow?.edges,
         );

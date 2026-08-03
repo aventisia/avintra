@@ -12,9 +12,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                 | Input Type | Required? | Default Value |
-| --------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Special Folder Name** | Select the special folder whose path you wish to retrieve.                  | Select     | No        | Desktop       |
+| Field Name              | Description                                                | Input Type | Required? | Default Value |
+| ----------------------- | ---------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Special Folder Name** | Select the special folder whose path you wish to retrieve. | Select     | No        | Desktop       |
 
 ## Expected Output Format
 
@@ -47,29 +47,30 @@ Use the output, named **SpecialFolderPath**, in subsequent nodes or processes wh
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you do not specify a folder, the default value is "Desktop", and the path to the Desktop folder will be retrieved.
+  If you do not specify a folder, the default value is "Desktop", and the path
+  to the Desktop folder will be retrieved.
 </Callout>
 
 ## Input/Output Examples
 
-| Special Folder Name   | Path Example                            |
-| --------------------- | ---------------------------------------- |
-| Desktop               | `C:\Users\YourUsername\Desktop`          |
-| Music                 | `C:\Users\YourUsername\Music`            |
-| Templates             | `C:\Users\YourUsername\Templates`        |
-| ApplicationData       | `C:\Users\YourUsername\AppData\Roaming`  |
-| LocalApplicationData  | `C:\Users\YourUsername\AppData\Local`    |
-| InternetCache         | `C:\Users\YourUsername\AppData\Local\Microsoft\Windows\INetCache` |
-| Cookies               | `C:\Users\YourUsername\AppData\Local\Microsoft\Windows\INetCookies` |
-| History               | `C:\Users\YourUsername\AppData\Local\Microsoft\Windows\History` |
+| Special Folder Name  | Path Example                                                        |
+| -------------------- | ------------------------------------------------------------------- |
+| Desktop              | `C:\Users\YourUsername\Desktop`                                     |
+| Music                | `C:\Users\YourUsername\Music`                                       |
+| Templates            | `C:\Users\YourUsername\Templates`                                   |
+| ApplicationData      | `C:\Users\YourUsername\AppData\Roaming`                             |
+| LocalApplicationData | `C:\Users\YourUsername\AppData\Local`                               |
+| InternetCache        | `C:\Users\YourUsername\AppData\Local\Microsoft\Windows\INetCache`   |
+| Cookies              | `C:\Users\YourUsername\AppData\Local\Microsoft\Windows\INetCookies` |
+| History              | `C:\Users\YourUsername\AppData\Local\Microsoft\Windows\History`     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                         |
-| ---------------------------------------------| ------------------------------------------------------------------------------------------------ |
-| **No folder path retrieved**                  | Ensure you've selected a special folder from the dropdown.                                       |
-| **Wrong path output**                         | Double-check if the correct special folder is selected that matches your intended output         |
-| **Feature not working on non-Windows OS**     | This node is designed specifically for Windows OS as it deals with Windows-specific folders.     |
+| Problem                                   | Solution                                                                                     |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **No folder path retrieved**              | Ensure you've selected a special folder from the dropdown.                                   |
+| **Wrong path output**                     | Double-check if the correct special folder is selected that matches your intended output     |
+| **Feature not working on non-Windows OS** | This node is designed specifically for Windows OS as it deals with Windows-specific folders. |
 
 ## Real-World Use Cases
 

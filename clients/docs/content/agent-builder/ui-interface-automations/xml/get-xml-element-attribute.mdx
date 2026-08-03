@@ -6,12 +6,12 @@ The **Get XML Element Attribute** node allows users to extract the value of a sp
 
 ## Configuration Options
 
-| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
-| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **XML Content**      | The XML content provided as a string.                                       | Text       | Yes       | _(empty)_     |
-| **XPath Expression** | The XPath expression used to locate the desired XML element.                | Text       | Yes       | _(empty)_     |
-| **Attribute Name**   | The name of the attribute whose value you want to retrieve.                 | Text       | Yes       | _(empty)_     |
-| **Get Value As**     | Specifies the format to return the attribute value: Text, Numeric, DateTime, or Boolean. | Select     | No        | TextValue    |
+| Field Name           | Description                                                                              | Input Type | Required? | Default Value |
+| -------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**      | The XML content provided as a string.                                                    | Text       | Yes       | _(empty)_     |
+| **XPath Expression** | The XPath expression used to locate the desired XML element.                             | Text       | Yes       | _(empty)_     |
+| **Attribute Name**   | The name of the attribute whose value you want to retrieve.                              | Text       | Yes       | _(empty)_     |
+| **Get Value As**     | Specifies the format to return the attribute value: Text, Numeric, DateTime, or Boolean. | Select     | No        | TextValue     |
 
 ## Expected Output Format
 
@@ -48,29 +48,31 @@ Optional: In the **Get Value As** dropdown, choose the desired format for your a
 ### Step 6
 
 The obtained value will be available as **XmlAttributeValue** for further use in other nodes.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that your XPath expression accurately identifies the element containing the desired attribute; incorrect XPath syntax may lead to empty results.
+  Ensure that your XPath expression accurately identifies the element containing
+  the desired attribute; incorrect XPath syntax may lead to empty results.
 </Callout>
 
 ## Input/Output Examples
 
-| XML Content                            | XPath Expression | Attribute Name | Get Value As | Output Value         | Output Type        |
-| -------------------------------------- | ---------------- | -------------- | ------------ | -------------------- | ------------------ |
-| `<user id="1234" name="John Doe"/>`    | `//user`         | `name`         | TextValue    | `John Doe`           | String/Text        |
-| `<product price="19.99"/>`             | `//product`      | `price`        | NumericValue | `19.99`              | Number (Double)    |
-| `<event start="2023-11-01T08:00:00"/>` | `//event`        | `start`        | DateTimeValue| `2023-11-01T08:00:00`| DateTime           |
-| `<setting enabled="true"/>`            | `//setting`      | `enabled`      | BooleanValue | `true`               | Boolean (True/False) |
+| XML Content                            | XPath Expression | Attribute Name | Get Value As  | Output Value          | Output Type          |
+| -------------------------------------- | ---------------- | -------------- | ------------- | --------------------- | -------------------- |
+| `<user id="1234" name="John Doe"/>`    | `//user`         | `name`         | TextValue     | `John Doe`            | String/Text          |
+| `<product price="19.99"/>`             | `//product`      | `price`        | NumericValue  | `19.99`               | Number (Double)      |
+| `<event start="2023-11-01T08:00:00"/>` | `//event`        | `start`        | DateTimeValue | `2023-11-01T08:00:00` | DateTime             |
+| `<setting enabled="true"/>`            | `//setting`      | `enabled`      | BooleanValue  | `true`                | Boolean (True/False) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                                           |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Invalid XML Content**                                   | Ensure that the XML string is well-formed and valid. Use an XML validator if necessary.                            |
-| **Incorrect XPath Expression**                            | Recheck the XPath expression for accuracy. Make sure it precisely points to the required element and considers namespaces if present. |
-| **Attribute Not Found**                                   | Verify the attribute name against the XML structure. Ensure spelling and case are correct.                         |
-| **Unexpected Conversion Results**                         | Double-check the selected format in **Get Value As**. For instance, attempting to convert non-numeric text into a NumericValue will fail. |
+| Problem                           | Solution                                                                                                                                  |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid XML Content**           | Ensure that the XML string is well-formed and valid. Use an XML validator if necessary.                                                   |
+| **Incorrect XPath Expression**    | Recheck the XPath expression for accuracy. Make sure it precisely points to the required element and considers namespaces if present.     |
+| **Attribute Not Found**           | Verify the attribute name against the XML structure. Ensure spelling and case are correct.                                                |
+| **Unexpected Conversion Results** | Double-check the selected format in **Get Value As**. For instance, attempting to convert non-numeric text into a NumericValue will fail. |
 
 ## Real-World Use Cases
 

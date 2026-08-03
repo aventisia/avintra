@@ -1,13 +1,8 @@
 // import { EDGE_BORDER_RADIUS } from "@/constants";
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-
-import {
-  BaseEdge,
-  EdgeProps,
-  getBezierPath,
-  useReactFlow,
-} from "@xyflow/react";
+import { BaseEdge, EdgeProps, getBezierPath, useReactFlow } from "@xyflow/react";
 import { memo } from "react";
+
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
 import { EdgeLabelContainer } from "./EdgeLabelContainer";

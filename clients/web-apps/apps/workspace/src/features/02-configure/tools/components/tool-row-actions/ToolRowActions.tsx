@@ -1,4 +1,4 @@
-import { DataTableRowActions, DTRowAction } from "@avplatform/ui/data-table";
+import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 
 import { RemoveResourceRowAction } from "@/features/resource-share/components/common-row-actions/RemoveResourceRowAction";

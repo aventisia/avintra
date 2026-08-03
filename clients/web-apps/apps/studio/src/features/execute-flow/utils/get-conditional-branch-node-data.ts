@@ -1,6 +1,8 @@
-import { NodeDataType, NodeInputType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
-import { ConditionalBranchNodeData, ConditionType } from "..";
+
+import { NodeDataType, NodeInputType } from "@/types/node-data-type";
+
+import { ConditionType, ConditionalBranchNodeData } from "..";
 
 export function getConditionalBranchNodeData(
   nodeObj: Node<NodeDataType> | undefined,

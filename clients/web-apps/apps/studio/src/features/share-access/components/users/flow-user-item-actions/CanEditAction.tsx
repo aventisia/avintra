@@ -1,7 +1,8 @@
-import { FlowUserDto } from "@/features/share-access/dtos/flow-user-dto";
-import { useUpdateUserTypeMutation } from "@/features/share-access/hooks/useUpdateUserTypeMutation";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { EditIcon } from "lucide-react";
+
+import { FlowUserDto } from "@/features/share-access/dtos/flow-user-dto";
+import { useUpdateUserTypeMutation } from "@/features/share-access/hooks/useUpdateUserTypeMutation";
 
 interface CanEditActionProps {
   item: FlowUserDto;
@@ -17,11 +18,6 @@ export const CanEditAction = ({ item }: CanEditActionProps) => {
   };
   // Return the component
   return (
-    <SimpleDDMenuItem
-      onClick={() => handleClick()}
-      size="sm"
-      content="Can Edit"
-      Icon={EditIcon}
-    />
+    <SimpleDDMenuItem onClick={() => handleClick()} size="sm" content="Can Edit" Icon={EditIcon} />
   );
 };

@@ -11,13 +11,13 @@ For example:
 
 ## Configuration Options
 
-| Field Name        | Description                                                                                      | Input Type | Required? | Default Value          |
-| ----------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ---------------------- |
-| **Word Instance** | The specific Word instance in which you want to write.                                           | Text       | Yes       | _(empty)_              |
-| **Text to Write** | The text content that will be written to the specified Word document.                            | Text       | Yes       | _(empty)_              |
-| **Append New Line** | Determines whether a new line should be appended after the text.                                | Switch     | No        | true                   |
-| **Write Text To** | Choose where in the document the text should be inserted: beginning, end, before or after bookmark. | Select     | No        | BeginningOfWordFile    |
-| **Bookmark Name** | The name of the bookmark if writing before or after a bookmark is selected.                      | Text       | No        | _(empty)_              |
+| Field Name          | Description                                                                                         | Input Type | Required? | Default Value       |
+| ------------------- | --------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------------- |
+| **Word Instance**   | The specific Word instance in which you want to write.                                              | Text       | Yes       | _(empty)_           |
+| **Text to Write**   | The text content that will be written to the specified Word document.                               | Text       | Yes       | _(empty)_           |
+| **Append New Line** | Determines whether a new line should be appended after the text.                                    | Switch     | No        | true                |
+| **Write Text To**   | Choose where in the document the text should be inserted: beginning, end, before or after bookmark. | Select     | No        | BeginningOfWordFile |
+| **Bookmark Name**   | The name of the bookmark if writing before or after a bookmark is selected.                         | Text       | No        | _(empty)_           |
 
 ## Expected Output Format
 
@@ -57,25 +57,26 @@ If you selected **Before Bookmark** or **After Bookmark**, provide the **Bookmar
 </Steps>
 
 <Callout type="info" title="Tip">
-  When using bookmarks, ensure the bookmark names are correctly spelled and exist within the document to avoid errors.
+  When using bookmarks, ensure the bookmark names are correctly spelled and
+  exist within the document to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Write Text To    | Text to Write   | Append New Line | Bookmark Name | Effect on Document                         |
-| ---------------- | --------------- | --------------- | ------------- | ------------------------------------------ |
-| Beginning        | "Summary text"  | true            | _(n/a)_       | Inserts "Summary text" at document start.  |
-| End              | "Conclusion"    | false           | _(n/a)_       | Appends "Conclusion" at document end.      |
-| Before Bookmark  | "Insert point"  | true            | "Section1"    | Inserts "Insert point" before "Section1".  |
-| After Bookmark   | "Notes"         | false           | "EndNote"     | Inserts "Notes" after "EndNote".           |
+| Write Text To   | Text to Write  | Append New Line | Bookmark Name | Effect on Document                        |
+| --------------- | -------------- | --------------- | ------------- | ----------------------------------------- |
+| Beginning       | "Summary text" | true            | _(n/a)_       | Inserts "Summary text" at document start. |
+| End             | "Conclusion"   | false           | _(n/a)_       | Appends "Conclusion" at document end.     |
+| Before Bookmark | "Insert point" | true            | "Section1"    | Inserts "Insert point" before "Section1". |
+| After Bookmark  | "Notes"        | false           | "EndNote"     | Inserts "Notes" after "EndNote".          |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                                                       |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Text not appearing**                         | Ensure the Word instance is correctly identified and the open document is the one intended.                                                                    |
-| **Bookmark-related issues**                     | Confirm bookmark names exist and match exactly as referenced in your settings.                                                                                 |
-| **Spurious formatting**                         | Adjust the **Append New Line** toggle to manage text formatting within paragraphs.                                                                             |
+| Problem                     | Solution                                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------------------- |
+| **Text not appearing**      | Ensure the Word instance is correctly identified and the open document is the one intended. |
+| **Bookmark-related issues** | Confirm bookmark names exist and match exactly as referenced in your settings.              |
+| **Spurious formatting**     | Adjust the **Append New Line** toggle to manage text formatting within paragraphs.          |
 
 ## Real-World Use Cases
 

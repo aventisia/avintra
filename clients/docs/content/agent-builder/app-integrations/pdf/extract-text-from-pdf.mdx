@@ -12,16 +12,16 @@ For example:
 
 ## Configuration Options
 
-| Field Name                   | Description                                                                                             | Input Type | Required? | Default Value |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **PDF File**                 | The path to the source PDF file. Use this to specify which file's contents you want to extract.          | Text       | Yes       | _(empty)_     |
-| **Page Selection Mode**      | Determine which pages to extract from: all, a single page, or a range of pages.                         | Select     | Yes       | All           |
-| **Extraction Type**          | Decide if you want to extract text, images, or both from the PDF.                                        | Select     | Yes       | Text          |
-| **Page Number (for Single)** | Specify the exact page number to extract when choosing a single page. Applies only if Page Selection is "Single". | Text       | No        | _(empty)_     |
-| **From Page Number (for Range)** | Indicate the starting page number when extracting a range. Only used if Page Selection is "Range".          | Text       | No        | _(empty)_     |
-| **To Page Number (for Range)**   | Identify the end page number for your page range extraction. Only used if Page Selection is "Range".           | Text       | No        | _(empty)_     |
-| **Password**                     | If the PDF is password-protected, enter the password here. Leave empty if not needed.                       | Password   | No        | _(empty)_     |
-| **Output Folder Path**          | Destination folder path for saved images. Only visible if the extraction includes images.                    | Text       | No        | _(empty)_     |
+| Field Name                       | Description                                                                                                       | Input Type | Required? | Default Value |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **PDF File**                     | The path to the source PDF file. Use this to specify which file's contents you want to extract.                   | Text       | Yes       | _(empty)_     |
+| **Page Selection Mode**          | Determine which pages to extract from: all, a single page, or a range of pages.                                   | Select     | Yes       | All           |
+| **Extraction Type**              | Decide if you want to extract text, images, or both from the PDF.                                                 | Select     | Yes       | Text          |
+| **Page Number (for Single)**     | Specify the exact page number to extract when choosing a single page. Applies only if Page Selection is "Single". | Text       | No        | _(empty)_     |
+| **From Page Number (for Range)** | Indicate the starting page number when extracting a range. Only used if Page Selection is "Range".                | Text       | No        | _(empty)_     |
+| **To Page Number (for Range)**   | Identify the end page number for your page range extraction. Only used if Page Selection is "Range".              | Text       | No        | _(empty)_     |
+| **Password**                     | If the PDF is password-protected, enter the password here. Leave empty if not needed.                             | Password   | No        | _(empty)_     |
+| **Output Folder Path**           | Destination folder path for saved images. Only visible if the extraction includes images.                         | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -43,6 +43,7 @@ Enter the path to your PDF file in the **PDF File** field.
 ### Step 3
 
 In the **Page Selection Mode** dropdown, choose:
+
 - **All** to extract from every page.
 - **Single** if you want to extract from one specific page only.
 - **Range** to specify a range of pages.
@@ -50,6 +51,7 @@ In the **Page Selection Mode** dropdown, choose:
 ### Step 4
 
 Select the **Extraction Type**:
+
 - **Text** for text only.
 - **Images** for images only.
 - **Both** for both text and images.
@@ -69,32 +71,34 @@ Make sure to specify the **Output Folder Path** if extracting images or both tex
 ### Step 8
 
 The extracted content will be available under **ExtractedText** for further use in your workflow.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-Ensure your PDF path is accurate, and folders specified for outputs are accessible to avoid errors.
+  Ensure your PDF path is accurate, and folders specified for outputs are
+  accessible to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Page Selection | Extraction Type | Page Input   | Output Value      | Output Data Type      |
-| ---------------| ----------------| ------------ | ----------------- | --------------------- |
-| All            | Text            | _(n/a)_      | ExtractedText     | String of extracted text  |
-| Single         | Images          | 5            | _(image file/s)_  | Image files            |
-| Range          | Both            | 1 to 3       | ExtractedText + Images | Mixed (string + files)  |
+| Page Selection | Extraction Type | Page Input | Output Value           | Output Data Type         |
+| -------------- | --------------- | ---------- | ---------------------- | ------------------------ |
+| All            | Text            | _(n/a)_    | ExtractedText          | String of extracted text |
+| Single         | Images          | 5          | _(image file/s)_       | Image files              |
+| Range          | Both            | 1 to 3     | ExtractedText + Images | Mixed (string + files)   |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                 |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Incorrect file path**                             | Verify that the PDF path you entered is correct and accessible.                                          |
-| **Missing output images**                           | Ensure you've specified an output folder path and have extraction set to **Images** or **Both**.        |
-| **Password-protected PDF not processing**           | Double-check if a password is needed and has been accurately entered in the **Password** field.          |
-| **No text extracted**                               | Confirm the PDF contains selectable text. Some PDFs are just images/scans without text recognition.       |
+| Problem                                   | Solution                                                                                            |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Incorrect file path**                   | Verify that the PDF path you entered is correct and accessible.                                     |
+| **Missing output images**                 | Ensure you've specified an output folder path and have extraction set to **Images** or **Both**.    |
+| **Password-protected PDF not processing** | Double-check if a password is needed and has been accurately entered in the **Password** field.     |
+| **No text extracted**                     | Confirm the PDF contains selectable text. Some PDFs are just images/scans without text recognition. |
 
 ## Real-World Use Cases
 
 - **Competitor Analysis**: Extract text from competitors' reports to analyze market trends.
 - **Data Entry Automation**: Quickly input information by extracting key data from standardized paper forms.
-- **Graphic Designing**: Extract images for inclusion in broader graphic projects with existing visual material. 
+- **Graphic Designing**: Extract images for inclusion in broader graphic projects with existing visual material.
 - **Legal Document Review**: Pull text from contract PDFs for use in contract analysis software.

@@ -1,9 +1,4 @@
-import {
-  NODE_HEIGHT,
-  NODE_WIDTH,
-  START_END_NODE_HEIGHT,
-  START_END_NODE_WIDTH,
-} from "@/constants";
+import { NODE_HEIGHT, NODE_WIDTH, START_END_NODE_HEIGHT, START_END_NODE_WIDTH } from "@/constants";
 import { CustomNodeType } from "@/types/custom-node-type";
 import { NodeDimensionType } from "@/types/node-dimension-type";
 

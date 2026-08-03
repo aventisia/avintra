@@ -18,26 +18,19 @@ export const useFileUpload = ({
   clearFiles,
   isPublic,
 }: FileUploadParams) => {
-  const [currentController, setCurrentController] =
-    useState<AbortController | null>(null);
+  const [currentController, setCurrentController] = useState<AbortController | null>(null);
 
   const mutation = useMutation({
     mutationFn: async (file: File) => {
       if (file.size > MAX_FILE_SIZE) {
-        throw new Error(
-          `File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`,
-        );
+        throw new Error(`File size must be less than ${MAX_FILE_SIZE / 1024 / 1024}MB`);
       }
 
       if (!ALLOWED_FILE_TYPES.includes(file.type)) {
         throw new Error("Unsupported file type.");
       }
 
-      const { data, controller } = await uploadFile(
-        file,
-        updateProgress,
-        isPublic,
-      );
+      const { data, controller } = await uploadFile(file, updateProgress, isPublic);
       setCurrentController(controller);
       return data;
     },

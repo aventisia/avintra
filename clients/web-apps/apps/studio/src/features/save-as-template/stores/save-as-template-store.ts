@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { ValidateTemplateDto } from "../dto/validate-template-dto";
 
 type State = {

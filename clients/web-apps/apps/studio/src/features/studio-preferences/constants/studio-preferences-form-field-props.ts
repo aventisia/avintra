@@ -51,8 +51,7 @@ const zoomControlsProps: SwitchFieldProps = {
   showBorder: false,
   name: "zoomControls",
   label: "Zoom Controls",
-  description:
-    "Show zoom in and zoom out buttons to adjust the flow zoom level",
+  description: "Show zoom in and zoom out buttons to adjust the flow zoom level",
 };
 
 // Enable Delete Alert
@@ -65,8 +64,10 @@ const deleteAlertProps: SwitchFieldProps = {
 };
 
 export {
-  cursorToggleProps, deleteAlertProps, layoutDirectionProps,
+  cursorToggleProps,
+  deleteAlertProps,
+  layoutDirectionProps,
   miniMapProps,
-  undoRedoProps, zoomControlsProps
+  undoRedoProps,
+  zoomControlsProps,
 };
-

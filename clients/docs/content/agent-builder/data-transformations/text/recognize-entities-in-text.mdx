@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                  | Input Type | Required? | Default Value |
-| ------------------ | ---------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Text To Analyze** | The text from which entities will be recognized.                             | Text       | Yes       | _(empty)_     |
-| **Entity Type**    | Specifies the type of entities to recognize (e.g., Date, Number, Email).      | Select     | Yes       | _(empty)_     |
-| **Language**       | The language of the text. Optional, but can improve recognition accuracy.     | Select     | No        | _(empty)_     |
+| Field Name          | Description                                                               | Input Type | Required? | Default Value |
+| ------------------- | ------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text To Analyze** | The text from which entities will be recognized.                          | Text       | Yes       | _(empty)_     |
+| **Entity Type**     | Specifies the type of entities to recognize (e.g., Date, Number, Email).  | Select     | Yes       | _(empty)_     |
+| **Language**        | The language of the text. Optional, but can improve recognition accuracy. | Select     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -52,26 +52,28 @@ Once configured, the node will produce a list of entities under **Recognized Ent
 </Steps>
 
 <Callout type="info" title="Tip">
-  Specifying the correct text language can significantly enhance entity recognition accuracy. If the language is unknown or mixed, leaving the language option blank may achieve general results.
+  Specifying the correct text language can significantly enhance entity
+  recognition accuracy. If the language is unknown or mixed, leaving the
+  language option blank may achieve general results.
 </Callout>
 
 ## Input/Output Examples
 
-| Entity Type | Example Input Text                                              | Recognized Entities                |
-| ----------- | --------------------------------------------------------------- | ---------------------------------- |
-| Date Time   | "The meeting is on the 5th of April, 2023."                    | ["5th of April, 2023"]             |
-| Currency    | "The price is €100.00 and $125.00."                            | ["€100.00", "$125.00"]             |
-| Email       | "Contact us at support@example.com for more information."      | ["support@example.com"]            |
-| URL         | "Visit our website at https://www.example.com for details."    | ["https://www.example.com"]        |
-| Phone Number| "Call us at +1 (234) 567-8901."                                | ["+1 (234) 567-8901"]              |
+| Entity Type  | Example Input Text                                          | Recognized Entities         |
+| ------------ | ----------------------------------------------------------- | --------------------------- |
+| Date Time    | "The meeting is on the 5th of April, 2023."                 | ["5th of April, 2023"]      |
+| Currency     | "The price is €100.00 and $125.00."                         | ["€100.00", "$125.00"]      |
+| Email        | "Contact us at support@example.com for more information."   | ["support@example.com"]     |
+| URL          | "Visit our website at https://www.example.com for details." | ["https://www.example.com"] |
+| Phone Number | "Call us at +1 (234) 567-8901."                             | ["+1 (234) 567-8901"]       |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                  |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **No entities recognized**                              | Ensure the correct **Entity Type** is selected and the input text includes expected entities. |
-| **Incorrect entity type selected**                      | Double-check that the **Entity Type** matches the entities present in the text.            |
-| **Unexpected results when language is ambiguous**       | Specify the **Language** when dealing with multilingual texts or unexpected recognition outcomes. |
+| Problem                                           | Solution                                                                                          |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **No entities recognized**                        | Ensure the correct **Entity Type** is selected and the input text includes expected entities.     |
+| **Incorrect entity type selected**                | Double-check that the **Entity Type** matches the entities present in the text.                   |
+| **Unexpected results when language is ambiguous** | Specify the **Language** when dealing with multilingual texts or unexpected recognition outcomes. |
 
 ## Real-World Use Cases
 

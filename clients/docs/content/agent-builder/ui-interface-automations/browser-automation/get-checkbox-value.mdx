@@ -6,13 +6,13 @@ The **Get Checkbox Value** node is designed to retrieve the current state (check
 
 ## Configuration Options
 
-| Field Name         | Description                                                                                                                       | Input Type | Required? | Default Value |
-| ------------------ | --------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                                 | Text       | Yes       | _(empty)_     |
-| **Find Type**      | Specifies how to find the element (e.g., ID, XPath, CssSelector). Choose from a wide variety of locator strategies.                | Select     | Yes       | XPath         |
-| **Value To Find**  | The value used to locate the element (e.g., `'username'`, `'//input[@id='email']'`).                                               | Text       | Yes       | _(empty)_     |
-| **Wait For Element** | If true, waits for the checkbox to appear before retrieving the value.                                                          | Switch     | No        | _(empty)_     |
-| **Timeout Seconds**| Maximum time in seconds to wait for the element before failing.                                                                   | Text       | No        | 60            |
+| Field Name               | Description                                                                                                         | Input Type | Required? | Default Value |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                   | Text       | Yes       | _(empty)_     |
+| **Find Type**            | Specifies how to find the element (e.g., ID, XPath, CssSelector). Choose from a wide variety of locator strategies. | Select     | Yes       | XPath         |
+| **Value To Find**        | The value used to locate the element (e.g., `'username'`, `'//input[@id='email']'`).                                | Text       | Yes       | _(empty)_     |
+| **Wait For Element**     | If true, waits for the checkbox to appear before retrieving the value.                                              | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for the element before failing.                                                     | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -52,23 +52,25 @@ Retrieve the output as **IsChecked**. It will return `true` if the checkbox is c
 </Steps>
 
 <Callout type="info" title="Note">
-  If the checkbox does not appear within the specified timeout, ensure that **Timeout Seconds** is appropriately set to a value that allows the element enough time to load.
+  If the checkbox does not appear within the specified timeout, ensure that
+  **Timeout Seconds** is appropriately set to a value that allows the element
+  enough time to load.
 </Callout>
 
 ## Input/Output Examples
 
-| Find Type | Value To Find                             | Wait For Element | Timing (Seconds) | Output Value | Output Type |
-| --------- | ----------------------------------------- | ---------------- | ---------------- | ------------ | ----------- |
-| XPath     | `//input[@type='checkbox']`               | Yes              | 30               | false        | Boolean     |
-| ID        | `subscribeCheckbox`                       | No               | _(default: 60)_  | true         | Boolean     |
+| Find Type | Value To Find               | Wait For Element | Timing (Seconds) | Output Value | Output Type |
+| --------- | --------------------------- | ---------------- | ---------------- | ------------ | ----------- |
+| XPath     | `//input[@type='checkbox']` | Yes              | 30               | false        | Boolean     |
+| ID        | `subscribeCheckbox`         | No               | _(default: 60)_  | true         | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                      |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| **Element not found error**                           | Double-check the **Value To Find** and ensure it correctly identifies the element on the page. Utilize subtle selectors as needed.|
-| **Timeout occurs frequently**                         | Increase **Timeout Seconds** or ensure that **Wait For Element** is active to prevent premature timeout errors.|
-| **Output not as expected**                            | Validate that the locator and the input data match exactly to the intended page structure and element properties. |
+| Problem                       | Solution                                                                                                                           |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| **Element not found error**   | Double-check the **Value To Find** and ensure it correctly identifies the element on the page. Utilize subtle selectors as needed. |
+| **Timeout occurs frequently** | Increase **Timeout Seconds** or ensure that **Wait For Element** is active to prevent premature timeout errors.                    |
+| **Output not as expected**    | Validate that the locator and the input data match exactly to the intended page structure and element properties.                  |
 
 ## Real-World Use Cases
 

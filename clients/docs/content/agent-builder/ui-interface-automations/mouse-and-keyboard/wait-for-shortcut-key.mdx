@@ -11,11 +11,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name                      | Description                                                                                               | Input Type | Required? | Default Value |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Shortcut Keys**               | The list of shortcut keys to wait for. Must be specified.                                                 | Text       | Yes       | _(empty)_     |
+| Field Name                       | Description                                                                                                | Input Type | Required? | Default Value |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Shortcut Keys**                | The list of shortcut keys to wait for. Must be specified.                                                  | Text       | Yes       | _(empty)_     |
 | **Continue Flow Run on Timeout** | Decides whether the flow should automatically resume if no key is pressed within the given timeout period. | Switch     | No        | false         |
-| **Timeout (seconds)**           | Maximum time in seconds for which the flow will wait for a key press.                                      | Text       | No        | 0             |
+| **Timeout (seconds)**            | Maximum time in seconds for which the flow will wait for a key press.                                      | Text       | No        | 0             |
 
 ## Expected Output Format
 
@@ -24,7 +24,7 @@ The output of this node is the **index of the shortcut key that was pressed** (0
 - If the first shortcut key in the list is pressed, the output will be `0`.
 - If the third shortcut key is pressed, the output will be `2`, and so on.
 
-## Step-by-Step Guide 
+## Step-by-Step Guide
 
 <Steps>
 ### Step 1
@@ -46,26 +46,28 @@ In the **Shortcut Keys** field, specify the shortcut keys that the flow should w
 ### Step 5
 
 Once a shortcut key is pressed, the flow will resume and the **Index of Shortcut Key Pressed** will be available for use in subsequent nodes.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you do not enable **Continue Flow Run on Timeout**, the flow will wait indefinitely until a specified key is pressed.
+  If you do not enable **Continue Flow Run on Timeout**, the flow will wait
+  indefinitely until a specified key is pressed.
 </Callout>
 
 ## Input/Output Examples
 
-| Shortcut Keys | Continue on Timeout | Timeout (seconds) | Key Pressed      | Output Value | Output Type           |
-| ------------- | ------------------- | ----------------- | ---------------- | ------------ | --------------------- |
-| `Ctrl+C, Ctrl+V` | true                | 30                | `Ctrl+C`         | 0            | Integer (Index Value) |
-| `Alt+Tab, Shift+Esc` | false              | 0                  | `Shift+Esc`      | 1            | Integer (Index Value) |
+| Shortcut Keys        | Continue on Timeout | Timeout (seconds) | Key Pressed | Output Value | Output Type           |
+| -------------------- | ------------------- | ----------------- | ----------- | ------------ | --------------------- |
+| `Ctrl+C, Ctrl+V`     | true                | 30                | `Ctrl+C`    | 0            | Integer (Index Value) |
+| `Alt+Tab, Shift+Esc` | false               | 0                 | `Shift+Esc` | 1            | Integer (Index Value) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                         |
-| ----------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **Flow not resuming**                           | Ensure a listed shortcut key was pressed or check "Continue Flow Run on Timeout" is properly set. |
-| **Timeout not functioning**                     | Confirm the timeout value is greater than `0` and the switch for timeout is set if needed.        |
-| **Wrong output index**                          | Verify the order of shortcut keys. The index is 0-based, starting from the first key in your list. |
+| Problem                     | Solution                                                                                           |
+| --------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Flow not resuming**       | Ensure a listed shortcut key was pressed or check "Continue Flow Run on Timeout" is properly set.  |
+| **Timeout not functioning** | Confirm the timeout value is greater than `0` and the switch for timeout is set if needed.         |
+| **Wrong output index**      | Verify the order of shortcut keys. The index is 0-based, starting from the first key in your list. |
 
 ## Real-World Use Cases
 

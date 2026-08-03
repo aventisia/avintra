@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                 | Input Type | Required? | Default Value |
-| ------------------ | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Text List**      | The list of strings to join.                                                | Text       | Yes       | _(empty)_     |
-| **Delimiter Type** | Specifies how to separate the items in the list: choose either Standard or Custom. | Select     | Yes       | _(empty)_     |
-| **Standard Delimiter**  | The standard delimiter (like Comma, Semicolon, Pipe). Appears only if Delimiter Type is "Standard". | Select     | No        | _(empty)_     |
-| **Custom Delimiter**    | The custom delimiter to use. Appears only if Delimiter Type is "Custom".        | Text       | No        | _(empty)_     |
+| Field Name             | Description                                                                                         | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text List**          | The list of strings to join.                                                                        | Text       | Yes       | _(empty)_     |
+| **Delimiter Type**     | Specifies how to separate the items in the list: choose either Standard or Custom.                  | Select     | Yes       | _(empty)_     |
+| **Standard Delimiter** | The standard delimiter (like Comma, Semicolon, Pipe). Appears only if Delimiter Type is "Standard". | Select     | No        | _(empty)_     |
+| **Custom Delimiter**   | The custom delimiter to use. Appears only if Delimiter Type is "Custom".                            | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -50,6 +50,7 @@ If you chose **Standard** in the previous step, the **Standard Delimiter** dropd
 - Choose from options like **None**, **Comma**, **Semicolon**, or **Pipe**.
 
 If you chose **Custom**, the **Custom Delimiter** field will appear:
+
 - Enter the character(s) you wish to use as a delimiter.
 
 ### Step 5
@@ -59,24 +60,25 @@ The combined text will be available as **Joined Text** for use in other nodes.
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the **Text List** is correctly prepared by separating items you wish to join, as incorrect input may lead to undesired outputs.
+  Ensure the **Text List** is correctly prepared by separating items you wish to
+  join, as incorrect input may lead to undesired outputs.
 </Callout>
 
 ## Input/Output Examples
 
-| Delimiter Type | Text List            | Delimiter        | Output Value              | Output Type     |
-| -------------- | -------------------- | ---------------- | ------------------------- | --------------- |
-| Standard       | apple, banana, orange | Comma            | apple, banana, orange     | Text (String)   |
-| Standard       | apple;banana;orange  | Semicolon        | apple;banana;orange       | Text (String)   |
-| Custom         | apple banana orange  | "_"              | apple_banana_orange       | Text (String)   |
+| Delimiter Type | Text List             | Delimiter | Output Value          | Output Type   |
+| -------------- | --------------------- | --------- | --------------------- | ------------- |
+| Standard       | apple, banana, orange | Comma     | apple, banana, orange | Text (String) |
+| Standard       | apple;banana;orange   | Semicolon | apple;banana;orange   | Text (String) |
+| Custom         | apple banana orange   | "\_"      | apple_banana_orange   | Text (String) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                         |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Delimiter not applied correctly**            | Ensure you have chosen the correct **Delimiter Type** and specified a valid delimiter under **Standard Delimiter** or **Custom Delimiter**.      |
-| **Empty output**                               | Double-check that the **Text List** is not empty and contains valid items.                                                                       |
-| **No change in delimiter when switching types**  | If switching from Standard to Custom or vice versa, make sure to clear and specify the correct delimiter again.                                     |
+| Problem                                         | Solution                                                                                                                                    |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Delimiter not applied correctly**             | Ensure you have chosen the correct **Delimiter Type** and specified a valid delimiter under **Standard Delimiter** or **Custom Delimiter**. |
+| **Empty output**                                | Double-check that the **Text List** is not empty and contains valid items.                                                                  |
+| **No change in delimiter when switching types** | If switching from Standard to Custom or vice versa, make sure to clear and specify the correct delimiter again.                             |
 
 ## Real-World Use Cases
 

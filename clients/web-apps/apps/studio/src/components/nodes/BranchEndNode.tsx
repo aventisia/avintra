@@ -1,9 +1,9 @@
-import { InputHandle } from "@/components/handles/InputHandle";
-import { OutputHandle } from "@/components/handles/OutputHandle";
-
 import { cn } from "@avplatform/ui/lib";
 import { Node, NodeProps } from "@xyflow/react";
 import { memo } from "react";
+
+import { InputHandle } from "@/components/handles/InputHandle";
+import { OutputHandle } from "@/components/handles/OutputHandle";
 
 type BranchEndNode = Node<
   {

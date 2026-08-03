@@ -1,5 +1,6 @@
-import { Button } from "@avplatform/ui/buttons";
 import { Header, HeaderContainer } from "@avplatform/layout";
+import { Button } from "@avplatform/ui/buttons";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
@@ -15,7 +16,6 @@ import { StudioPreferences } from "@/features/studio-preferences/components";
 import { VersionHistoryCloseButton } from "@/features/version-history/components/version-history-panel/VersionHistoryCloseButton";
 import { VersionHistoryTrigger } from "@/features/version-history/components/version-history-panel/VersionHistoryTrigger";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-import { useUserSessionStore } from "@avplatform/ui/stores";
 
 import AgentName from "./AgentName";
 import { AppLogo } from "./AppLogo";
@@ -68,17 +68,11 @@ const AppHeader: React.FC = () => {
           <AgentName className={isViewTenant ? "max-w-56" : ""} />
 
           {/* Version selector */}
-          {!isAgentHistory && !isExecutionLog ? (
-            <FlowVersions />
-          ) : (
-            <ViewOnlyVersionSelector />
-          )}
+          {!isAgentHistory && !isExecutionLog ? <FlowVersions /> : <ViewOnlyVersionSelector />}
           {isViewTenant && <TenantSwitchBadge />}
         </div>
         <div className="flex items-center justify-center ">
-          {userSession?.deploymentType == "Commercial" ? (
-            <AvailableCredits />
-          ) : null}{" "}
+          {userSession?.deploymentType == "Commercial" ? <AvailableCredits /> : null}{" "}
         </div>
         {!isAgentHistory && !isExecutionLog ? (
           <div className="flex items-center  justify-end">
@@ -98,9 +92,7 @@ const AppHeader: React.FC = () => {
 
               <VersionHistoryTrigger />
 
-              {import.meta.env.MODE !== "production" ? (
-                <SettingsTrigger />
-              ) : null}
+              {import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
 
               <StudioPreferences className="mt-0 mlg:mt-4" />
               <FlowComments className="mt-0 mlg:mt-4" />

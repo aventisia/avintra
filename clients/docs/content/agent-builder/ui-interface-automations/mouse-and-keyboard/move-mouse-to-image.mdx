@@ -11,22 +11,22 @@ For example, you might want to:
 
 ## Configuration Options
 
-| Field Name                       | Description                                                                                      | Input Type | Required? | Default Value  |
-| -------------------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | -------------- |
-| **Image to Move Mouse To**       | The path to the image file to locate.                                                            | Text       | Yes       | _(empty)_      |
-| **Similarity Threshold**         | The similarity threshold for image matching (0.0 to 1.0).                                        | Text       | No        | 0.9            |
-| **Search Area**                  | The search area specified by coordinates (Left, Top, Right, Bottom). Leave empty for full screen.| Text       | No        | _(empty)_      |
-| **Mouse Movement Style**         | Specifies how the mouse should move to the target position.                                      | Select     | No        | Instant        |
-| **Occurrence**                   | Which occurrence of the image to find (1-based index).                                           | Text       | No        | 1              |
-| **Send a Click After Moving Mouse** | If enabled, sends a click after moving the mouse cursor.                                         | Switch     | No        | _(empty)_      |
-| **Click Type**                   | Type of click to perform after moving the mouse.                                                | Select     | No        | LeftClick      |
-| **Wait for Image to Appear**     | If enabled, waits for the image to become visible before moving the mouse.                       | Switch     | No        | _(empty)_      |
-| **Fail Timeout**                 | Maximum time (in seconds) to wait for the image to appear.                                       | Text       | No        | 5              |
-| **Offset X**                     | Horizontal offset from the center of the image.                                                  | Text       | No        | 0              |
-| **Offset Y**                     | Vertical offset from the center of the image.                                                    | Text       | No        | 0              |
-| **Tolerance**                    | Tolerance level for image matching (as a percentage from 0 to 100).                              | Text       | No        | 10             |
-| **Search Mode**                  | Specifies if the search is on the entire screen or a subregion.                                  | Select     | No        | EntireScreen   |
-| **Search Subregion**             | Coordinates of the subregion to search (X1, Y1, X2, Y2). Only used if Search Mode is "Subregion". | Text       | No        | _(empty)_      |
+| Field Name                          | Description                                                                                       | Input Type | Required? | Default Value |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Image to Move Mouse To**          | The path to the image file to locate.                                                             | Text       | Yes       | _(empty)_     |
+| **Similarity Threshold**            | The similarity threshold for image matching (0.0 to 1.0).                                         | Text       | No        | 0.9           |
+| **Search Area**                     | The search area specified by coordinates (Left, Top, Right, Bottom). Leave empty for full screen. | Text       | No        | _(empty)_     |
+| **Mouse Movement Style**            | Specifies how the mouse should move to the target position.                                       | Select     | No        | Instant       |
+| **Occurrence**                      | Which occurrence of the image to find (1-based index).                                            | Text       | No        | 1             |
+| **Send a Click After Moving Mouse** | If enabled, sends a click after moving the mouse cursor.                                          | Switch     | No        | _(empty)_     |
+| **Click Type**                      | Type of click to perform after moving the mouse.                                                  | Select     | No        | LeftClick     |
+| **Wait for Image to Appear**        | If enabled, waits for the image to become visible before moving the mouse.                        | Switch     | No        | _(empty)_     |
+| **Fail Timeout**                    | Maximum time (in seconds) to wait for the image to appear.                                        | Text       | No        | 5             |
+| **Offset X**                        | Horizontal offset from the center of the image.                                                   | Text       | No        | 0             |
+| **Offset Y**                        | Vertical offset from the center of the image.                                                     | Text       | No        | 0             |
+| **Tolerance**                       | Tolerance level for image matching (as a percentage from 0 to 100).                               | Text       | No        | 10            |
+| **Search Mode**                     | Specifies if the search is on the entire screen or a subregion.                                   | Select     | No        | EntireScreen  |
+| **Search Subregion**                | Coordinates of the subregion to search (X1, Y1, X2, Y2). Only used if Search Mode is "Subregion". | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -92,24 +92,25 @@ Decide on a **Search Mode** and fill out **Search Subregion** if you're focusing
 </Steps>
 
 <Callout type="warning" title="Important Note">
-  Ensure the image's path is accessible and matches expected file format requirements. 
+  Ensure the image's path is accessible and matches expected file format
+  requirements.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Fields | Example Input Values                                                                                                   | Output Fields | Expected Output Values                                 |
-| ------------ | --------------------------------------------------------------------------------------------------------------------- | ------------- | ------------------------------------------------------ |
-| **Image File Path** | `C:\images\button.png`                                                                                             | **Is Found**  | true                                                   |
-| **Search Mode**  | EntireScreen                                                                                                       | **Found Position** | 450, 300                                               |
-| **Click Type**  | LeftClick                                                                                                          |                |                                                        |
+| Input Fields        | Example Input Values   | Output Fields      | Expected Output Values |
+| ------------------- | ---------------------- | ------------------ | ---------------------- |
+| **Image File Path** | `C:\images\button.png` | **Is Found**       | true                   |
+| **Search Mode**     | EntireScreen           | **Found Position** | 450, 300               |
+| **Click Type**      | LeftClick              |                    |                        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                                              |
-| --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Image not being found**                                 | Check if the image path is correct and visible on the screen. Increase Similarity Threshold or change the clock type.  |
-| **Mouse doesn't move as expected**                        | Ensure the image is in a visible area of the current screen or adjust the Search Region/Mode settings.                |
-| **Unexpected click behavior**                             | Verify that **Send a Click After Moving Mouse** and the correct **Click Type** have been selected.                    |
+| Problem                            | Solution                                                                                                              |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Image not being found**          | Check if the image path is correct and visible on the screen. Increase Similarity Threshold or change the clock type. |
+| **Mouse doesn't move as expected** | Ensure the image is in a visible area of the current screen or adjust the Search Region/Mode settings.                |
+| **Unexpected click behavior**      | Verify that **Send a Click After Moving Mouse** and the correct **Click Type** have been selected.                    |
 
 ## Real-World Use Cases
 

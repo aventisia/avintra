@@ -1,8 +1,8 @@
+import { Edge, Node } from "@xyflow/react";
+
 import { MARKER_ARROW_PREFIX } from "@/constants";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
-
-import { Edge, Node } from "@xyflow/react";
 
 import { getBranchSubgraphNodeIds } from "./getBranchSubNodeIds";
 import { getIntermediateNodeIds } from "./getIntermediateNodes";
@@ -34,16 +34,12 @@ export function getNodesAndEdgesAfterDeletion({
     //Get outgoing edges  of the node
     const outgoingEdge = edges.find((edge) => edge.source === nodeId);
 
-    const tempEdge = edges.find(
-      (edge) => edge.target === nodeId && edge.data?.isTemporary,
-    );
+    const tempEdge = edges.find((edge) => edge.target === nodeId && edge.data?.isTemporary);
 
     const isTempEdgeCase = tempEdge && incomingEdge && outgoingEdge;
 
     // Remove edges connected to the node
-    const newEdges = edges.filter(
-      (edge) => edge.source !== nodeId && edge.target !== nodeId,
-    );
+    const newEdges = edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId);
 
     if (isTempEdgeCase) {
       const nextNodeId = outgoingEdge!.target;
@@ -71,17 +67,14 @@ export function getNodesAndEdgesAfterDeletion({
 
     // If both incoming and outgoing edges exist, create a new connection
     if (incomingEdge && outgoingEdge) {
-      newEdges.push(
-        createPlusEdgeObj(incomingEdge.source, outgoingEdge.target),
-      );
+      newEdges.push(createPlusEdgeObj(incomingEdge.source, outgoingEdge.target));
     }
 
     return newEdges;
   };
   const nodeId = node.id;
 
-  const isSpecialNode =
-    node.type === "conditionalNode" || node.type === "forLoopNode";
+  const isSpecialNode = node.type === "conditionalNode" || node.type === "forLoopNode";
 
   const isAINode = node.type === "aiNode";
 
@@ -90,8 +83,7 @@ export function getNodesAndEdgesAfterDeletion({
 
   if (isBranchNode && mergeNodeId) {
     const isDefaultBranch = nodes.some(
-      (n) =>
-        n.type === "conditionalNode" && n.data?.defaultBranchNodeId === nodeId,
+      (n) => n.type === "conditionalNode" && n.data?.defaultBranchNodeId === nodeId,
     );
 
     if (isDefaultBranch && !allowBranchDeletion) {
@@ -99,9 +91,7 @@ export function getNodesAndEdgesAfterDeletion({
     }
 
     const parentNode = nodes.find(
-      (n) =>
-        n.type === "conditionalNode" &&
-        n.data?.mergeBranchesNodeId === mergeNodeId,
+      (n) => n.type === "conditionalNode" && n.data?.mergeBranchesNodeId === mergeNodeId,
     );
 
     const branches: string[] = (parentNode?.data?.branches ?? []) as string[];
@@ -110,17 +100,10 @@ export function getNodesAndEdgesAfterDeletion({
       throw new Error("At least two branches are required.");
     }
 
-    const nodeIdsToDelete = getBranchSubgraphNodeIds(
-      nodes,
-      edges,
-      nodeId,
-      mergeNodeId,
-    );
+    const nodeIdsToDelete = getBranchSubgraphNodeIds(nodes, edges, nodeId, mergeNodeId);
 
     updatedEdges = updatedEdges.filter(
-      (edge) =>
-        !nodeIdsToDelete.includes(edge.source) &&
-        !nodeIdsToDelete.includes(edge.target),
+      (edge) => !nodeIdsToDelete.includes(edge.source) && !nodeIdsToDelete.includes(edge.target),
     );
 
     updatedNodes = updatedNodes
@@ -138,21 +121,16 @@ export function getNodesAndEdgesAfterDeletion({
         return n;
       });
 
-    updatedFlowVariables = updatedFlowVariables.filter(
-      (f) => !nodeIdsToDelete.includes(f.nodeId),
-    );
+    updatedFlowVariables = updatedFlowVariables.filter((f) => !nodeIdsToDelete.includes(f.nodeId));
   } else if (isSpecialNode && mergeNodeId) {
     const nodeIdsToDelete = getIntermediateNodeIds(nodes, edges, nodeId);
 
     updatedEdges = updatedEdges.filter(
-      (edge) =>
-        !nodeIdsToDelete.includes(edge.source) &&
-        !nodeIdsToDelete.includes(edge.target),
+      (edge) => !nodeIdsToDelete.includes(edge.source) && !nodeIdsToDelete.includes(edge.target),
     );
 
     const incomingEdge = edges.find(
-      (edge) =>
-        edge.target === nodeId && edge.targetHandle !== "for-loop-repeat",
+      (edge) => edge.target === nodeId && edge.targetHandle !== "for-loop-repeat",
     );
 
     const outgoingEdge = edges.find(
@@ -160,15 +138,11 @@ export function getNodesAndEdgesAfterDeletion({
     );
 
     if (incomingEdge && outgoingEdge) {
-      updatedEdges.push(
-        createPlusEdgeObj(incomingEdge.source, outgoingEdge.target),
-      );
+      updatedEdges.push(createPlusEdgeObj(incomingEdge.source, outgoingEdge.target));
     }
 
     updatedNodes = updatedNodes.filter((n) => !nodeIdsToDelete.includes(n.id));
-    updatedFlowVariables = updatedFlowVariables.filter(
-      (f) => !nodeIdsToDelete.includes(f.nodeId),
-    );
+    updatedFlowVariables = updatedFlowVariables.filter((f) => !nodeIdsToDelete.includes(f.nodeId));
   } else if (isAINode) {
     const modelNodeIds = nodes
       .filter((n) => n.type === "modelNode" && n.parentId === nodeId)
@@ -176,22 +150,16 @@ export function getNodesAndEdgesAfterDeletion({
 
     const nodeIdsToDelete = [nodeId, ...modelNodeIds];
 
-    updatedEdges = updatedEdges.filter(
-      (edge) => !modelNodeIds.includes(edge.source),
-    );
+    updatedEdges = updatedEdges.filter((edge) => !modelNodeIds.includes(edge.source));
     updatedEdges = reconnectEdges(nodeId, updatedEdges);
 
     updatedNodes = updatedNodes.filter((n) => !nodeIdsToDelete.includes(n.id));
 
-    updatedFlowVariables = updatedFlowVariables.filter(
-      (f) => !nodeIdsToDelete.includes(f.nodeId),
-    );
+    updatedFlowVariables = updatedFlowVariables.filter((f) => !nodeIdsToDelete.includes(f.nodeId));
   } else {
     updatedEdges = reconnectEdges(nodeId, updatedEdges);
     updatedNodes = updatedNodes.filter((n) => n.id !== nodeId);
-    updatedFlowVariables = updatedFlowVariables.filter(
-      (f) => f.nodeId !== nodeId,
-    );
+    updatedFlowVariables = updatedFlowVariables.filter((f) => f.nodeId !== nodeId);
   }
 
   return {

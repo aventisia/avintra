@@ -6,11 +6,11 @@ The **Read JSON File** node is designed to extract and display the content of a 
 
 ## Configuration Options
 
-| Field Name           | Description                                                   | Input Type | Required? | Default Value |
-| -------------------- | ------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **File Path**        | The full path to the JSON file to be read from your desktop.  | Text       | Yes       | _(empty)_     |
+| Field Name                | Description                                                                   | Input Type | Required? | Default Value     |
+| ------------------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ----------------- |
+| **File Path**             | The full path to the JSON file to be read from your desktop.                  | Text       | Yes       | _(empty)_         |
 | **JSON Content (String)** | Outputs the JSON file content as a string. Returns "null" if an error occurs. | Output     | No        | JsonContentString |
-| **JSON Content (JToken)** | Outputs the JSON file content as a JToken. Returns null if an error occurs. | Output     | No        | JsonContentToken |
+| **JSON Content (JToken)** | Outputs the JSON file content as a JToken. Returns null if an error occurs.   | Output     | No        | JsonContentToken  |
 
 ## Expected Output Format
 
@@ -37,26 +37,28 @@ Once configured, the node will read the JSON file. Choose whether to use the "JS
 ### Step 4
 
 Use the outputs ("JsonContentString" or "JsonContentToken") in your automation process as required, enabling subsequent nodes to access and manipulate the JSON data.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure the file path is correct and accessible. If the node cannot find the file, it will return "null" as the output.
+  Ensure the file path is correct and accessible. If the node cannot find the
+  file, it will return "null" as the output.
 </Callout>
 
 ## Input/Output Examples
 
-| File Path               | Output Type          | Output Example                              |
-| ----------------------- | -------------------- | ------------------------------------------- |
-| `C:\data\info.json`     | JSON Content (String) | `{"key": "value", "list": [1, 2, 3]}`      |
-| `C:\data\info.json`     | JSON Content (JToken) | Equivalent structured JSON object representation |
+| File Path           | Output Type           | Output Example                                   |
+| ------------------- | --------------------- | ------------------------------------------------ |
+| `C:\data\info.json` | JSON Content (String) | `{"key": "value", "list": [1, 2, 3]}`            |
+| `C:\data\info.json` | JSON Content (JToken) | Equivalent structured JSON object representation |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                           |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Invalid File Path**                         | Double-check the file path entered. Make sure it is a full path with correct spelling and file extensions (.json). |
-| **Permission Issues**                         | Ensure you have read permissions for the file path directory.                                                      |
-| **Output is Null**                            | This could be due to an incorrect file path or invalid JSON structure within the file. Recheck the file and path.   |
+| Problem               | Solution                                                                                                           |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Invalid File Path** | Double-check the file path entered. Make sure it is a full path with correct spelling and file extensions (.json). |
+| **Permission Issues** | Ensure you have read permissions for the file path directory.                                                      |
+| **Output is Null**    | This could be due to an incorrect file path or invalid JSON structure within the file. Recheck the file and path.  |
 
 ## Real-World Use Cases
 

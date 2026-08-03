@@ -1,7 +1,3 @@
-import { useFlowOperations } from "@/features/react-flow/hooks/useFlowOperations";
-import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
-import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
-
 import { Separator } from "@avplatform/ui";
 import {
   ArrowDown,
@@ -20,27 +16,19 @@ import {
 } from "lucide-react";
 import { memo, useCallback, useEffect, useRef } from "react";
 
+import { useFlowOperations } from "@/features/react-flow/hooks/useFlowOperations";
+import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
+import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
+
 import { useNodeGrouping } from "../../hooks/useNodeGrouping";
 import { useClipboardStore } from "../../stores/useClipboardStore";
 import MenuItem from "./MenuItem";
 
 export const ReactFlowContextMenu = memo(() => {
-  const {
-    menu,
-    setMenu,
-    selectedNode,
-    selectedEdge,
-    setSelectedEdge,
-    setSelectedNode,
-  } = useContextMenuActionsStore();
-  const {
-    copyNodes,
-    cutNodes,
-    pasteNodes,
-    deleteNode,
-    disableNode,
-    cancelCut,
-  } = useFlowOperations();
+  const { menu, setMenu, selectedNode, selectedEdge, setSelectedEdge, setSelectedNode } =
+    useContextMenuActionsStore();
+  const { copyNodes, cutNodes, pasteNodes, deleteNode, disableNode, cancelCut } =
+    useFlowOperations();
   const { groupNodes, ungroupNodes } = useNodeGrouping();
   const autoLayout = useDagreAutoLayout();
   const clipboard = useClipboardStore((state) => state.clipboard);
@@ -48,10 +36,7 @@ export const ReactFlowContextMenu = memo(() => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as globalThis.Node)
-      ) {
+      if (menuRef.current && !menuRef.current.contains(event.target as globalThis.Node)) {
         setMenu(null);
       }
     };
@@ -76,20 +61,16 @@ export const ReactFlowContextMenu = memo(() => {
     "modelNode",
   ];
 
-  const isPaneOrStartOrEnd =
-    isPaneMode || restrictedTypes.includes(selectedNode?.type ?? "");
+  const isPaneOrStartOrEnd = isPaneMode || restrictedTypes.includes(selectedNode?.type ?? "");
 
   const clipboardNodes = clipboard?.nodes || [];
   const hasClipboardData = clipboardNodes.length > 0;
 
   const isBranchNode = selectedNode?.type === "branchNode1";
   const isDefaultBranchNode =
-    selectedNode?.type === "branchNode1" &&
-    selectedNode.data.name == "DefaultBranch";
+    selectedNode?.type === "branchNode1" && selectedNode.data.name == "DefaultBranch";
   const hasBranchNode = clipboardNodes.some((n) => n.type === "branchNode1");
-  const hasConditionalNode = clipboardNodes.some(
-    (n) => n.type === "conditionalNode",
-  );
+  const hasConditionalNode = clipboardNodes.some((n) => n.type === "conditionalNode");
   const isClipboardBranch = hasBranchNode && !hasConditionalNode;
   const isNodeUnderCut =
     selectedNode &&
@@ -125,9 +106,7 @@ export const ReactFlowContextMenu = memo(() => {
             icon={<Scissors size={14} />}
             label={isBranchNode ? "Cut Branch" : "Cut"}
             shortcut="Ctrl+x"
-            disabled={
-              isPaneOrStartOrEnd || isDefaultBranchNode || !selectedNode
-            }
+            disabled={isPaneOrStartOrEnd || isDefaultBranchNode || !selectedNode}
             onClick={() => {
               cutNodes();
             }}
@@ -136,9 +115,7 @@ export const ReactFlowContextMenu = memo(() => {
             icon={<Copy size={14} />}
             label={isBranchNode ? "Copy Branch" : "Copy"}
             shortcut="Ctrl+c"
-            disabled={
-              isPaneOrStartOrEnd || isDefaultBranchNode || !selectedNode
-            }
+            disabled={isPaneOrStartOrEnd || isDefaultBranchNode || !selectedNode}
             onClick={() => {
               copyNodes();
             }}
@@ -184,10 +161,7 @@ export const ReactFlowContextMenu = memo(() => {
                 label="Paste Before"
                 shortcut="Ctrl+shift+v"
                 disabled={
-                  isPaneOrStartOrEnd ||
-                  !selectedNode ||
-                  !hasClipboardData ||
-                  isClipboardBranch
+                  isPaneOrStartOrEnd || !selectedNode || !hasClipboardData || isClipboardBranch
                 }
                 onClick={() => {
                   if (selectedNode) pasteNodes(selectedNode.id, "before");
@@ -198,10 +172,7 @@ export const ReactFlowContextMenu = memo(() => {
                 label="Paste After"
                 shortcut="Ctrl+v"
                 disabled={
-                  isPaneOrStartOrEnd ||
-                  !selectedNode ||
-                  !hasClipboardData ||
-                  isClipboardBranch
+                  isPaneOrStartOrEnd || !selectedNode || !hasClipboardData || isClipboardBranch
                 }
                 onClick={() => {
                   if (selectedNode) pasteNodes(selectedNode.id, "after");
@@ -239,10 +210,7 @@ export const ReactFlowContextMenu = memo(() => {
                 icon={<GroupIcon size={14} />}
                 label="Group up"
                 disabled={
-                  isPaneOrStartOrEnd ||
-                  isBranchNode ||
-                  isDefaultBranchNode ||
-                  !selectedNode
+                  isPaneOrStartOrEnd || isBranchNode || isDefaultBranchNode || !selectedNode
                 }
                 onClick={() => {
                   groupNodes();
@@ -261,9 +229,7 @@ export const ReactFlowContextMenu = memo(() => {
           />
 
           <MenuItem
-            icon={
-              isDisabled ? <CircleCheckIcon size={14} /> : <BanIcon size={14} />
-            }
+            icon={isDisabled ? <CircleCheckIcon size={14} /> : <BanIcon size={14} />}
             label={isDisabled ? "Enable" : "Disable"}
             disabled={isPaneOrStartOrEnd || !selectedNode}
             onClick={() => {
@@ -278,9 +244,7 @@ export const ReactFlowContextMenu = memo(() => {
             label="Delete"
             shortcut="DEL"
             isDestructive
-            disabled={
-              (isPaneOrStartOrEnd || isDefaultBranchNode) && !selectedEdge
-            }
+            disabled={(isPaneOrStartOrEnd || isDefaultBranchNode) && !selectedEdge}
             onClick={() => {
               if (selectedNode) deleteNode(selectedNode.id);
             }}

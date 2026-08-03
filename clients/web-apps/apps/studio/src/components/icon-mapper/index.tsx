@@ -18,6 +18,7 @@ import {
   TimerReset,
   Webhook,
 } from "lucide-react";
+
 import {
   BlockNodeIcon,
   BreakLoopNodeIcon,
@@ -32,17 +33,12 @@ import { TriggerNodeIcon } from "./TriggerNodeIcon";
 
 export const iconMapper: { [key: string]: JSX.Element } = {
   // Nodes Categories L1
-  AppIntegrationsIcon: (
-    <NodesCategoryL1Icon Icon={Cable} className="h-5 w-5 text-primary" />
-  ),
+  AppIntegrationsIcon: <NodesCategoryL1Icon Icon={Cable} className="h-5 w-5 text-primary" />,
   DataTransformationsIcon: (
     <NodesCategoryL1Icon Icon={DatabaseZap} className="h-5 w-5 text-primary" />
   ),
   AutomationEssentialsIcon: (
-    <NodesCategoryL1Icon
-      Icon={SquareFunction}
-      className="h-5 w-5 text-primary"
-    />
+    <NodesCategoryL1Icon Icon={SquareFunction} className="h-5 w-5 text-primary" />
   ),
   UIAutomationAndUserActionsIcon: (
     <NodesCategoryL1Icon Icon={Keyboard} className="h-5 w-5 text-primary" />

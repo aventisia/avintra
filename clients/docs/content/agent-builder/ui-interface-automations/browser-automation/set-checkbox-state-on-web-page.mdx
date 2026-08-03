@@ -5,20 +5,21 @@ import { Callout, Steps } from "nextra/components";
 The **Set Checkbox State on Web Page** node allows you to automatically modify the state of a checkbox on a web page either marking it as checked or unchecked. This is particularly useful for web automation tasks, such as filling forms or changing settings on a web page without manual intervention.
 
 For example, you can:
+
 - Automatically check a "Subscribe" checkbox on a newsletter signup form.
 - Uncheck a "Receive promotional emails" option on an account settings page.
 
 ## Configuration Options
 
-| Field Name             | Description                                                                                     | Input Type | Required? | Default Value |
-| ---------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.               | Text       | Yes       | _(empty)_     |
-| **Find Type**          | Specifies how to find the checkbox element (e.g., ID, XPath, CSS Selector).                     | Select     | Yes       | XPath         |
-| **Value To Find**      | The value used to locate the checkbox element (e.g., `//input[@id='email']`).                   | Text       | Yes       | _(empty)_     |
-| **Check Box State**    | Specifies whether to set the checkbox to a checked or unchecked state.                           | Select     | Yes       | Checked       |
-| **Wait for Page Load** | Choose whether to wait for the page to fully load after changing the checkbox state.            | Switch     | No        | True          |
-| **Timeout for Page Load** | Maximum time in seconds to wait for the page to load.                                         | Text       | No        | 60            |
-| **Handle Dialog**      | Specifies the action to take if a dialog appears after setting the checkbox state.              | Select     | No        | DoNothing     |
+| Field Name                 | Description                                                                                             | Input Type | Required? | Default Value |
+| -------------------------- | ------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**   | Enter or choose the variable that contains the web browser instance to work with.                       | Text       | Yes       | _(empty)_     |
+| **Find Type**              | Specifies how to find the checkbox element (e.g., ID, XPath, CSS Selector).                             | Select     | Yes       | XPath         |
+| **Value To Find**          | The value used to locate the checkbox element (e.g., `//input[@id='email']`).                           | Text       | Yes       | _(empty)_     |
+| **Check Box State**        | Specifies whether to set the checkbox to a checked or unchecked state.                                  | Select     | Yes       | Checked       |
+| **Wait for Page Load**     | Choose whether to wait for the page to fully load after changing the checkbox state.                    | Switch     | No        | True          |
+| **Timeout for Page Load**  | Maximum time in seconds to wait for the page to load.                                                   | Text       | No        | 60            |
+| **Handle Dialog**          | Specifies the action to take if a dialog appears after setting the checkbox state.                      | Select     | No        | DoNothing     |
 | **Dialog Button to Press** | The name of the button to press if a dialog appears (useful when pressing a specific button like 'Ok'). | Text       | No        | Ok            |
 
 ## Expected Output Format
@@ -59,23 +60,24 @@ Opt for the action you want if a dialog pops up during the process in the **Hand
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the **Web Browser Instance** is correctly initialized and accessible before attempting to set the checkbox state.
+  Ensure that the **Web Browser Instance** is correctly initialized and
+  accessible before attempting to set the checkbox state.
 </Callout>
 
 ## Input/Output Examples
 
-| Scenario                       | Web Browser Instance | Find Type | Value To Find               | Check Box State | Expected Behavior              |
-| ------------------------------ | -------------------- | --------- | --------------------------- | --------------- | ------------------------------ |
-| Subscribe to newsletter        | MyBrowser            | XPath     | `//input[@name='subscribe']`| Checked         | Checkbox marked as checked     |
-| Uncheck promotional emails box | MyBrowser            | ID        | `promos`                    | Unchecked       | Checkbox marked as unchecked   |
+| Scenario                       | Web Browser Instance | Find Type | Value To Find                | Check Box State | Expected Behavior            |
+| ------------------------------ | -------------------- | --------- | ---------------------------- | --------------- | ---------------------------- |
+| Subscribe to newsletter        | MyBrowser            | XPath     | `//input[@name='subscribe']` | Checked         | Checkbox marked as checked   |
+| Uncheck promotional emails box | MyBrowser            | ID        | `promos`                     | Unchecked       | Checkbox marked as unchecked |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                   |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Checkbox not found**                            | Double-check the **Find Type** and **Value To Find** values for accuracy. Ensure the locator points to the checkbox. |
-| **No action after changing state**                | Ensure **Wait for Page Load** is configured correctly if subsequent actions depend on page events.          |
-| **Dialog not handled correctly**                  | Review and adjust the **Handle Dialog** and **Dialog Button to Press** to match dialog options present.     |
+| Problem                            | Solution                                                                                                             |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Checkbox not found**             | Double-check the **Find Type** and **Value To Find** values for accuracy. Ensure the locator points to the checkbox. |
+| **No action after changing state** | Ensure **Wait for Page Load** is configured correctly if subsequent actions depend on page events.                   |
+| **Dialog not handled correctly**   | Review and adjust the **Handle Dialog** and **Dialog Button to Press** to match dialog options present.              |
 
 ## Real-World Use Cases
 

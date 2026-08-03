@@ -8,9 +8,7 @@ describe("Calendar render", () => {
 
   it("renders range mode with default label header", () => {
     expect(() =>
-      renderToStaticMarkup(
-        <Calendar mode="range" selected={range} numberOfMonths={1} />,
-      ),
+      renderToStaticMarkup(<Calendar mode="range" selected={range} numberOfMonths={1} />),
     ).not.toThrow();
   });
 

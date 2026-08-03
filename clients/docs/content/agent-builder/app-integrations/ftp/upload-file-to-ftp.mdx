@@ -6,13 +6,13 @@ The **Upload File to FTP** node allows you to transfer a file from your local co
 
 ## Configuration Options
 
-| Field Name         | Description                                                                                 | Input Type | Required? | Default Value               |
-| ------------------ | ------------------------------------------------------------------------------------------- | ---------- | --------- | --------------------------- |
-| **FTP Connection** | The connection details for your FTP server.                                                 | Text       | Yes       | _(empty)_                   |
-| **Local File**     | The full path of the file on your computer that you want to upload.                         | Text       | Yes       | _(empty)_                   |
-| **Remote Directory** | The location on the FTP server where the file should be uploaded.                          | Text       | Yes       | _(empty)_                   |
-| **Overwrite Mode** | Choose when to overwrite existing files on the server.                                      | Select     | No        | IfNewerOrSizeDifferent      |
-| **Timeout Seconds**| Maximum time to wait before the operation times out.                                        | Text       | No        | 30                          |
+| Field Name           | Description                                                         | Input Type | Required? | Default Value          |
+| -------------------- | ------------------------------------------------------------------- | ---------- | --------- | ---------------------- |
+| **FTP Connection**   | The connection details for your FTP server.                         | Text       | Yes       | _(empty)_              |
+| **Local File**       | The full path of the file on your computer that you want to upload. | Text       | Yes       | _(empty)_              |
+| **Remote Directory** | The location on the FTP server where the file should be uploaded.   | Text       | Yes       | _(empty)_              |
+| **Overwrite Mode**   | Choose when to overwrite existing files on the server.              | Select     | No        | IfNewerOrSizeDifferent |
+| **Timeout Seconds**  | Maximum time to wait before the operation times out.                | Text       | No        | 30                     |
 
 ## Expected Output Format
 
@@ -43,6 +43,7 @@ Specify the **Remote Directory** on the FTP server where the file should be plac
 ### Step 5
 
 Select an **Overwrite Mode** from the dropdown menu:
+
 - **Always**: Always replace files.
 - **Never**: Never replace files.
 - **If newer**: Overwrite if the remote file is older.
@@ -56,30 +57,32 @@ Optionally, set the **Timeout Seconds** to determine how long to wait for a succ
 ### Step 7
 
 Once configured, the node will output:
+
 - **Uploaded Files Count**: Number of files uploaded.
 - **Skipped Files**: If any, files that weren't uploaded.
 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the FTP server connection is established before attempting to upload files, as connection failures will prevent uploads.
+  Ensure that the FTP server connection is established before attempting to
+  upload files, as connection failures will prevent uploads.
 </Callout>
 
 ## Input/Output Examples
 
-| Local File Path        | Remote Directory | Overwrite Mode             | Uploaded Files Count | Skipped Files       |
-| ---------------------- | ---------------- | -------------------------- | ------------------- | ------------------- |
-| `/path/to/myfile.txt`  | `/uploads`       | Always                     | 1                   | _(none)_            |
-| `/path/to/myfile.txt`  | `/uploads`       | Never                      | 0                   | `/path/to/myfile.txt` |
+| Local File Path       | Remote Directory | Overwrite Mode | Uploaded Files Count | Skipped Files         |
+| --------------------- | ---------------- | -------------- | -------------------- | --------------------- |
+| `/path/to/myfile.txt` | `/uploads`       | Always         | 1                    | _(none)_              |
+| `/path/to/myfile.txt` | `/uploads`       | Never          | 0                    | `/path/to/myfile.txt` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                      |
-| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
-| **Invalid FTP Connection Details**               | Verify FTP details are correct and the server is accessible.                                  |
-| **File Not Found**                               | Ensure the file path is correct and the file exists.                                          |
-| **Timeout Expired**                              | Increase the value in **Timeout Seconds** or check network stability.                         |
-| **Overwrite Mode Misunderstanding**              | Double-check the selected overwrite mode and ensure it matches your intentions.               |
+| Problem                             | Solution                                                                        |
+| ----------------------------------- | ------------------------------------------------------------------------------- |
+| **Invalid FTP Connection Details**  | Verify FTP details are correct and the server is accessible.                    |
+| **File Not Found**                  | Ensure the file path is correct and the file exists.                            |
+| **Timeout Expired**                 | Increase the value in **Timeout Seconds** or check network stability.           |
+| **Overwrite Mode Misunderstanding** | Double-check the selected overwrite mode and ensure it matches your intentions. |
 
 ## Real-World Use Cases
 

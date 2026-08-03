@@ -1,13 +1,7 @@
-import { SliderField } from "@/components/Slider/SliderField";
-
 import { SelectField } from "@avplatform/ui/form";
-import {
-  Controller,
-  FieldPath,
-  FieldValues,
-  useController,
-  useFormContext,
-} from "react-hook-form";
+import { Controller, FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
+
+import { SliderField } from "@/components/Slider/SliderField";
 
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 
@@ -18,10 +12,8 @@ interface MemoryConfigFieldProps {
 
 const MemoryConfigField = ({ name }: MemoryConfigFieldProps) => {
   // Set names for the fields
-  const memoryProviderFieldName =
-    `${name}.memoryProvider` as FieldPath<FieldValues>;
-  const maxDataStoredFieldName =
-    `${name}.maxDataStored` as FieldPath<FieldValues>;
+  const memoryProviderFieldName = `${name}.memoryProvider` as FieldPath<FieldValues>;
+  const maxDataStoredFieldName = `${name}.maxDataStored` as FieldPath<FieldValues>;
 
   // Get the form context
   const { control } = useFormContext();

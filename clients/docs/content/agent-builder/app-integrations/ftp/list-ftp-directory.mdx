@@ -6,11 +6,11 @@ The **List FTP Directory** node is designed to help you explore the contents of 
 
 ## Configuration Options
 
-| Field Name           | Description                                                                | Input Type | Required? | Default Value    |
-| -------------------- | -------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **FTP Connection**   | The FTP connection object.                                                 | Text       | Yes       | _(empty)_        |
-| **Directory Name**   | The name of the directory to list contents from.                           | Text       | Yes       | _(empty)_        |
-| **List Type**        | Specifies the type of items to list in the FTP directory.                  | Select     | No        | FilesAndFolders  |
+| Field Name         | Description                                               | Input Type | Required? | Default Value   |
+| ------------------ | --------------------------------------------------------- | ---------- | --------- | --------------- |
+| **FTP Connection** | The FTP connection object.                                | Text       | Yes       | _(empty)_       |
+| **Directory Name** | The name of the directory to list contents from.          | Text       | Yes       | _(empty)_       |
+| **List Type**      | Specifies the type of items to list in the FTP directory. | Select     | No        | FilesAndFolders |
 
 ## Expected Output Format
 
@@ -49,24 +49,25 @@ Once configured, the node will output a list in the **Files and Folders Result**
 </Steps>
 
 <Callout type="info" title="Note">
-If the specified directory does not exist, the node will result in an error. Confirm the directory location on the FTP server before running the node.
+  If the specified directory does not exist, the node will result in an error.
+  Confirm the directory location on the FTP server before running the node.
 </Callout>
 
 ## Input/Output Examples
 
-| List Type            | Input Directory | Output                           |
-| -------------------- | --------------- | -------------------------------- |
-| Files and Folders    | /myfiles        | ['file1.txt', 'file2.doc', 'folder1'] |
-| Files                | /myfiles        | ['file1.txt', 'file2.doc']       |
-| Folders              | /myfiles        | ['folder1']                      |
+| List Type         | Input Directory | Output                                |
+| ----------------- | --------------- | ------------------------------------- |
+| Files and Folders | /myfiles        | ['file1.txt', 'file2.doc', 'folder1'] |
+| Files             | /myfiles        | ['file1.txt', 'file2.doc']            |
+| Folders           | /myfiles        | ['folder1']                           |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                   |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **File not found or directory does not exist**  | Verify the directory name spelling and ensure the path exists on the FTP server.                           |
-| **Incorrect FTP connection information**        | Double-check the FTP connection details such as host, username, and password credentials.                  |
-| **Unexpected output**                           | Ensure the correct **List Type** is selected to match your desired output (Files, Folders, or both).       |
+| Problem                                        | Solution                                                                                             |
+| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **File not found or directory does not exist** | Verify the directory name spelling and ensure the path exists on the FTP server.                     |
+| **Incorrect FTP connection information**       | Double-check the FTP connection details such as host, username, and password credentials.            |
+| **Unexpected output**                          | Ensure the correct **List Type** is selected to match your desired output (Files, Folders, or both). |
 
 ## Real-World Use Cases
 

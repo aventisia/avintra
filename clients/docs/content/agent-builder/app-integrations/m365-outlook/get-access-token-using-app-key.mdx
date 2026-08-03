@@ -6,11 +6,11 @@ The **Get Access Token Using App Key** node allows you to securely acquire a Mic
 
 ## Configuration Options
 
-| Field Name      | Description                                                    | Input Type | Required? | Default Value |
-|-----------------|----------------------------------------------------------------|------------|-----------|---------------|
-| **Tenant ID**   | The Azure Active Directory tenant (directory) ID.              | Text       | Yes       | _(empty)_     |
-| **Client ID**   | The Azure AD application (client) ID.                          | Text       | Yes       | _(empty)_     |
-| **Client Secret**| The Azure AD application client secret.                       | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                       | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------- | ---------- | --------- | ------------- |
+| **Tenant ID**     | The Azure Active Directory tenant (directory) ID. | Text       | Yes       | _(empty)_     |
+| **Client ID**     | The Azure AD application (client) ID.             | Text       | Yes       | _(empty)_     |
+| **Client Secret** | The Azure AD application client secret.           | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -42,22 +42,23 @@ Once all fields are correctly filled, the node will output an **Access Token** a
 </Steps>
 
 <Callout type="warning" title="Security Notice">
-  Ensure your **Client Secret** is protected and not exposed, as it grants access to your Azure AD application.
+  Ensure your **Client Secret** is protected and not exposed, as it grants
+  access to your Azure AD application.
 </Callout>
 
 ## Input/Output Examples
 
-| Tenant ID       | Client ID     | Client Secret | Output (Access Token)    |
-|-----------------|---------------|---------------|--------------------------|
+| Tenant ID             | Client ID             | Client Secret        | Output (Access Token)  |
+| --------------------- | --------------------- | -------------------- | ---------------------- |
 | `abcd-1234-efgh-5678` | `1234-5678-9012-3456` | `secret-key-example` | `eyJhbGciOiJIUzI1N...` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                           |
-|---------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| **Invalid Client ID or Client Secret**            | Verify that you have copied the correct Client ID and Client Secret from your Azure AD application. |
-| **Empty Access Token**                            | Ensure that all required fields are filled and that there is connectivity to the Azure AD service.  |
-| **Expired Client Secret**                         | Regularly update your Client Secret in Azure to avoid expiration issues. Reconfigure with the new secret. |
+| Problem                                | Solution                                                                                                  |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Invalid Client ID or Client Secret** | Verify that you have copied the correct Client ID and Client Secret from your Azure AD application.       |
+| **Empty Access Token**                 | Ensure that all required fields are filled and that there is connectivity to the Azure AD service.        |
+| **Expired Client Secret**              | Regularly update your Client Secret in Azure to avoid expiration issues. Reconfigure with the new secret. |
 
 ## Real-World Use Cases
 

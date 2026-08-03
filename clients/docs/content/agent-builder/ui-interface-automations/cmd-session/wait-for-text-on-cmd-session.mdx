@@ -11,13 +11,13 @@ For example:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                                  | Input Type | Required? | Default Value |
-| --------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **CMD Session**       | The process representing the open CMD session.                                               | Text       | Yes       | _(empty)_     |
-| **Text to Wait For**  | The text or regular expression to wait for in the CMD session output.                        | Text       | Yes       | _(empty)_     |
-| **Is Regular Expression** | Specifies whether the 'Text to Wait For' is a regular expression.                          | Switch     | No        | false         |
-| **Ignore Case**       | Specifies whether to ignore case when matching the text.                                     | Switch     | No        | true          |
-| **Timeout**           | The maximum time (in seconds) to wait before timing out. Use 0 for no timeout.               | Text       | No        | 10            |
+| Field Name                | Description                                                                    | Input Type | Required? | Default Value |
+| ------------------------- | ------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **CMD Session**           | The process representing the open CMD session.                                 | Text       | Yes       | _(empty)_     |
+| **Text to Wait For**      | The text or regular expression to wait for in the CMD session output.          | Text       | Yes       | _(empty)_     |
+| **Is Regular Expression** | Specifies whether the 'Text to Wait For' is a regular expression.              | Switch     | No        | false         |
+| **Ignore Case**           | Specifies whether to ignore case when matching the text.                       | Switch     | No        | true          |
+| **Timeout**               | The maximum time (in seconds) to wait before timing out. Use 0 for no timeout. | Text       | No        | 10            |
 
 ## Expected Output Format
 
@@ -36,7 +36,7 @@ In the **CMD Session** field, specify the process that represents the open CMD s
 
 ### Step 3
 
-Enter the specific text or pattern you are waiting for in the **Text to Wait For** field. 
+Enter the specific text or pattern you are waiting for in the **Text to Wait For** field.
 
 ### Step 4
 
@@ -49,19 +49,21 @@ Determine if the text matching should be case-sensitive and set the **Ignore Cas
 ### Step 6
 
 Set the **Timeout** to the maximum waiting time in seconds. Enter 0 if you prefer to wait indefinitely until the text is found.
+
 </Steps>
 
 <Callout type="info" title="Important Note">
-  Ensure the CMD session specified is already open and the correct session you intend to monitor before using this node.
+  Ensure the CMD session specified is already open and the correct session you
+  intend to monitor before using this node.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                                                                  |
-| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Incorrect CMD Session specified**           | Verify that you have selected the correct CMD session process that should be monitored.                                                                   |
-| **Text never found and process times out**    | Double-check the text entered, ensuring it's accurate and reflects potential output exactly. Adjust **Timeout** if necessary to allow more time.          |
-| **Regex not working as expected**             | Make sure the **Is Regular Expression** switch is set correctly, and the regex pattern is valid.                                                          |
+| Problem                                    | Solution                                                                                                                                         |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Incorrect CMD Session specified**        | Verify that you have selected the correct CMD session process that should be monitored.                                                          |
+| **Text never found and process times out** | Double-check the text entered, ensuring it's accurate and reflects potential output exactly. Adjust **Timeout** if necessary to allow more time. |
+| **Regex not working as expected**          | Make sure the **Is Regular Expression** switch is set correctly, and the regex pattern is valid.                                                 |
 
 ## Real-World Use Cases
 

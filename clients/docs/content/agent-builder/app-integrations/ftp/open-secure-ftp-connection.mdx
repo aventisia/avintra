@@ -5,29 +5,31 @@ import { Callout, Steps } from "nextra/components";
 The **Open Secure FTP Connection** node allows you to establish a secure connection to an FTP server using SSL/TLS or SSH. This is essential for transferring files securely over the internet, ensuring that sensitive information is protected during transmission.
 
 You would use this node when:
+
 - Connecting to a server for uploading or downloading files securely.
 - Needing to send data over a secure channel to comply with data protection regulations.
 - Automating file transfers in secure IT environments.
 
 ## Configuration Options
 
-| Field Name                    | Description                                                                 | Input Type | Required? | Default Value |
-| ----------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Host**                      | The FTP server URL (e.g., ftp.example.com).                                 | Text       | Yes       | _(empty)_     |
-| **Port**                      | The port number for the FTP connection (default is 21 for FTPS, 22 for SFTP). | Text       | No        | 22            |
-| **Secure FTP Protocol**       | Specifies the secure FTP protocol to use (SFTP, FTPS explicit, FTPS implicit). | Select     | Yes       | _(empty)_     |
-| **Authentication Method**     | Specifies the authentication method to use (Username and password, Private key, Private key and passphrase). | Select     | Yes       | _(empty)_     |
-| **Username**                  | The username for authentication (only if using Username and password method). | Text       | No        | _(empty)_     |
-| **Password**                  | The password for authentication (only if using Username and password method). | Password   | No        | _(empty)_     |
-| **Path to Private Key**       | The path to the private key file (required if using SFTP with private key).   | Text       | No        | _(empty)_     |
-| **Private Key Passphrase**    | The passphrase for the private key (required if using private key with passphrase). | Text       | No        | _(empty)_     |
-| **Active Mode**               | If true, uses active mode for FTP connection.                                | Switch     | No        | _(empty)_     |
-| **Accept Untrusted Certificates** | If true, accepts untrusted certificates during TLS negotiation.          | Switch     | No        | _(empty)_     |
-| **Timeout**                   | The timeout in seconds for the FTP connection attempt.                       | Text       | No        | 10            |
+| Field Name                        | Description                                                                                                  | Input Type | Required? | Default Value |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Host**                          | The FTP server URL (e.g., ftp.example.com).                                                                  | Text       | Yes       | _(empty)_     |
+| **Port**                          | The port number for the FTP connection (default is 21 for FTPS, 22 for SFTP).                                | Text       | No        | 22            |
+| **Secure FTP Protocol**           | Specifies the secure FTP protocol to use (SFTP, FTPS explicit, FTPS implicit).                               | Select     | Yes       | _(empty)_     |
+| **Authentication Method**         | Specifies the authentication method to use (Username and password, Private key, Private key and passphrase). | Select     | Yes       | _(empty)_     |
+| **Username**                      | The username for authentication (only if using Username and password method).                                | Text       | No        | _(empty)_     |
+| **Password**                      | The password for authentication (only if using Username and password method).                                | Password   | No        | _(empty)_     |
+| **Path to Private Key**           | The path to the private key file (required if using SFTP with private key).                                  | Text       | No        | _(empty)_     |
+| **Private Key Passphrase**        | The passphrase for the private key (required if using private key with passphrase).                          | Text       | No        | _(empty)_     |
+| **Active Mode**                   | If true, uses active mode for FTP connection.                                                                | Switch     | No        | _(empty)_     |
+| **Accept Untrusted Certificates** | If true, accepts untrusted certificates during TLS negotiation.                                              | Switch     | No        | _(empty)_     |
+| **Timeout**                       | The timeout in seconds for the FTP connection attempt.                                                       | Text       | No        | 10            |
 
 ## Expected Output Format
 
 After setting up the connection, the output will be either an **SFTP Connection** or **FTPS Connection** object, which you can use in other nodes to perform file operations. These are returned as:
+
 - **SFTP Connection**: An object reference to the SFTP connection using `Renci.SshNet`.
 - **FTPS Connection**: An object reference to the FTPS connection suitable for use with `FluentFTP`.
 
@@ -85,25 +87,26 @@ Use the established **FTPS Connection** or **SFTP Connection** in subsequent nod
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure your server's FTP protocol and authentication method are correctly configured to prevent connection issues.
+  Ensure your server's FTP protocol and authentication method are correctly
+  configured to prevent connection issues.
 </Callout>
 
 ## Input/Output Examples
 
-| Secure FTP Protocol | Authentication Method      | Output Connection Type  |
-| ------------------- | -------------------------- | ----------------------- |
-| SFTP                | Username and password      | SFTP Connection         |
-| FTPS explicit       | Private key                | FTPS Connection         |
-| FTPS implicit       | Private key and passphrase | FTPS Connection         |
+| Secure FTP Protocol | Authentication Method      | Output Connection Type |
+| ------------------- | -------------------------- | ---------------------- |
+| SFTP                | Username and password      | SFTP Connection        |
+| FTPS explicit       | Private key                | FTPS Connection        |
+| FTPS implicit       | Private key and passphrase | FTPS Connection        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                                 |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Cannot Connect to FTP Server**            | Check that the **Host** and **Port** are correctly entered, and server is reachable.      |
-| **Authentication Failed**                   | Verify **Username/Password** or **Private Key** information is correctly configured.     |
-| **FTPS connection errors**                  | Ensure **Active Mode** and certificate trust settings match your server configuration.   |
-| **Timeout Errors**                          | Increase the **Timeout** value to allow more time for establishing the connection.       |
+| Problem                          | Solution                                                                               |
+| -------------------------------- | -------------------------------------------------------------------------------------- |
+| **Cannot Connect to FTP Server** | Check that the **Host** and **Port** are correctly entered, and server is reachable.   |
+| **Authentication Failed**        | Verify **Username/Password** or **Private Key** information is correctly configured.   |
+| **FTPS connection errors**       | Ensure **Active Mode** and certificate trust settings match your server configuration. |
+| **Timeout Errors**               | Increase the **Timeout** value to allow more time for establishing the connection.     |
 
 ## Real-World Use Cases
 

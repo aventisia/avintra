@@ -1,8 +1,9 @@
+import { Node, NodeProps } from "@xyflow/react";
+import { memo } from "react";
+
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { NodeDataType } from "@/types/node-data-type";
-import { Node, NodeProps } from "@xyflow/react";
-import { memo } from "react";
 
 import BaseNode from "./BaseNode";
 

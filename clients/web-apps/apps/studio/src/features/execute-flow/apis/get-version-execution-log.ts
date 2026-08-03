@@ -20,29 +20,21 @@ export const getLocalExecutionLog = async (versionId: string) => {
         isSuccess: false,
         executedOn: new Date().toISOString(),
         duration: 0,
-        nodes: versionLog.versionLog.map(
-          (nodeLog): ExecutionNode => ({
-            nodeExecutionId: nodeLog.nodeExecutionId,
-            retryAttempt: nodeLog.retryAttempt,
-            nodeId: nodeLog.nodeId,
-            nodeName: nodeLog.nodeName,
-            isSuccess: nodeLog.isSuccess,
-            duration: nodeLog.duration,
-            nodeUniqueName: nodeLog.nodeUniqueName,
-            inputs: Object.fromEntries(
-              nodeLog.inputs.map((input) => [input.key, input.value]),
-            ),
-            outputs: Object.fromEntries(
-              nodeLog.outputs.map((output) => [output.key, output.value]),
-            ),
-          }),
-        ),
+        nodes: versionLog.versionLog.map((nodeLog): ExecutionNode => ({
+          nodeExecutionId: nodeLog.nodeExecutionId,
+          retryAttempt: nodeLog.retryAttempt,
+          nodeId: nodeLog.nodeId,
+          nodeName: nodeLog.nodeName,
+          isSuccess: nodeLog.isSuccess,
+          duration: nodeLog.duration,
+          nodeUniqueName: nodeLog.nodeUniqueName,
+          inputs: Object.fromEntries(nodeLog.inputs.map((input) => [input.key, input.value])),
+          outputs: Object.fromEntries(nodeLog.outputs.map((output) => [output.key, output.value])),
+        })),
       },
     ] as Execution[];
   } catch {
-    console.log(
-      "Unable to load agent execution logs from local storage. Please try again.",
-    );
+    console.log("Unable to load agent execution logs from local storage. Please try again.");
     return null;
   }
 };

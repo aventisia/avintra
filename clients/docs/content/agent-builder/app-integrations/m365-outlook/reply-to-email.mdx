@@ -6,14 +6,14 @@ The **Reply to Email** node allows you to send a response to an existing email b
 
 ## Configuration Options
 
-| Field Name             | Description                                                   | Input Type | Required? | Default Value |
-| ---------------------- | ------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Message ID**         | The unique identifier of the email you want to reply to.      | Text       | Yes       | _(empty)_     |
-| **Reply Message JSON** | A JSON string that describes the reply content and structure. | Text       | Yes       | _(empty)_     |
-| **User Email**         | The email address owning the mailbox from which to send reply.| Text       | Yes       | _(empty)_     |
-| **Tenant ID**          | The Azure AD Tenant Directory ID.                             | Text       | Yes       | _(empty)_     |
-| **Client ID**          | The Azure AD Application (Client) ID.                         | Text       | Yes       | _(empty)_     |
-| **Client Secret**      | The confidential Azure AD Application Client Secret.          | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                    | Input Type | Required? | Default Value |
+| ---------------------- | -------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Message ID**         | The unique identifier of the email you want to reply to.       | Text       | Yes       | _(empty)_     |
+| **Reply Message JSON** | A JSON string that describes the reply content and structure.  | Text       | Yes       | _(empty)_     |
+| **User Email**         | The email address owning the mailbox from which to send reply. | Text       | Yes       | _(empty)_     |
+| **Tenant ID**          | The Azure AD Tenant Directory ID.                              | Text       | Yes       | _(empty)_     |
+| **Client ID**          | The Azure AD Application (Client) ID.                          | Text       | Yes       | _(empty)_     |
+| **Client Secret**      | The confidential Azure AD Application Client Secret.           | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -53,12 +53,14 @@ In the **Client Secret** field, input your Azure AD Application Client Secret. T
 </Steps>
 
 <Callout type="warning" title="Important">
-  Verify the **Reply Message JSON** format before submission to avoid errors or sending unintended replies.
+  Verify the **Reply Message JSON** format before submission to avoid errors or
+  sending unintended replies.
 </Callout>
 
 ## Input/Output Examples
 
 ### Input Example
+
 - **Message ID**: `1234567`
 - **Reply Message JSON**: `{"subject": "Re: Meeting Update", "body": "Thank you for the update."}`
 - **User Email**: `user@example.com`
@@ -67,15 +69,16 @@ In the **Client Secret** field, input your Azure AD Application Client Secret. T
 - **Client Secret**: `abcdef123456ghijklmnop789`
 
 ### Output
+
 - The node sends an email reply based on the inputs but does not display a specific output within the platform.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                   |
-| ------------------------------------------------| -------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Message ID**                          | Ensure that the Message ID corresponds to an existing email within the mailbox. Check that no typographical errors exist.  |
-| **Incorrect JSON Format for Reply Message**     | Validate the JSON string. Use online JSON validators to ensure proper syntax before entering it into the field.             |
-| **Authentication Failure due to Client ID/Secret** | Double-check the Azure AD Client ID and Client Secret values for accuracy. Verify your Azure credentials are up-to-date.    |
+| Problem                                            | Solution                                                                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Message ID**                             | Ensure that the Message ID corresponds to an existing email within the mailbox. Check that no typographical errors exist. |
+| **Incorrect JSON Format for Reply Message**        | Validate the JSON string. Use online JSON validators to ensure proper syntax before entering it into the field.           |
+| **Authentication Failure due to Client ID/Secret** | Double-check the Azure AD Client ID and Client Secret values for accuracy. Verify your Azure credentials are up-to-date.  |
 
 ## Real-World Use Cases
 

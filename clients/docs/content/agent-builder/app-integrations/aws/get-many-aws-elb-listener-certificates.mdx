@@ -12,13 +12,13 @@ For example:
 
 ## Configuration Options
 
-| Field Name                 | Description                                                                            | Input Type | Required? | Default Value |
-| -------------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).                | Text       | Yes       | _(empty)_     |
-| **Listener ARN**           | The ARN of the listener (e.g., arn:aws:elasticloadbalancing:...:listener/...).         | Text       | Yes       | _(empty)_     |
-| **Return All**             | If enabled, retrieves all certificates (no pagination). Otherwise, limits results by 'Limit'. | Switch     | No        | _(empty)_     |
-| **Limit**                  | Maximum number of certificates to return (max 100). Appears only if 'Return All' is not selected. | Text       | No        | 100           |
-| **AWS Region**             | The AWS region where the load balancer is located (e.g., us-east-1).                   | Text       | No        | us-east-1     |
+| Field Name                     | Description                                                                                       | Input Type | Required? | Default Value |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).                          | Text       | Yes       | _(empty)_     |
+| **Listener ARN**               | The ARN of the listener (e.g., arn:aws:elasticloadbalancing:...:listener/...).                    | Text       | Yes       | _(empty)_     |
+| **Return All**                 | If enabled, retrieves all certificates (no pagination). Otherwise, limits results by 'Limit'.     | Switch     | No        | _(empty)_     |
+| **Limit**                      | Maximum number of certificates to return (max 100). Appears only if 'Return All' is not selected. | Text       | No        | 100           |
+| **AWS Region**                 | The AWS region where the load balancer is located (e.g., us-east-1).                              | Text       | No        | us-east-1     |
 
 ## Expected Output Format
 
@@ -59,23 +59,24 @@ The list of retrieved certificates will be available as **Certificates**, and th
 </Steps>
 
 <Callout type="info" title="Note">
-  If you select "Return All", the "Limit" field will not appear as it is not needed.
+  If you select "Return All", the "Limit" field will not appear as it is not
+  needed.
 </Callout>
 
 ## Input/Output Examples
 
-| Credential to connect with | Listener ARN                       | Return All | Limit | AWS Region | Output                                         |
-| -------------------------- | ---------------------------------- | ---------- | ----- | ---------- | ---------------------------------------------- |
-| **MyAWSKey**               | arn:aws:elasticloadbalancing:...   | Yes        | N/A   | us-east-1  | List of Certificates, Complete API JSON        |
-| **MyAWSKey**               | arn:aws:elasticloadbalancing:...   | No         | 10    | us-west-2  | Up to 10 Certificates, Complete API JSON       |
+| Credential to connect with | Listener ARN                     | Return All | Limit | AWS Region | Output                                   |
+| -------------------------- | -------------------------------- | ---------- | ----- | ---------- | ---------------------------------------- |
+| **MyAWSKey**               | arn:aws:elasticloadbalancing:... | Yes        | N/A   | us-east-1  | List of Certificates, Complete API JSON  |
+| **MyAWSKey**               | arn:aws:elasticloadbalancing:... | No         | 10    | us-west-2  | Up to 10 Certificates, Complete API JSON |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                       |
-| --------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Invalid AWS credentials**                         | Ensure your AWS credentials are valid and have the necessary permissions.                      |
-| **Listener ARN not found**                          | Verify the listener ARN is correct and exists within the specified region.                     |
-| **Exceeded certificate limit**                      | Use the **Return All** option or ensure the **Limit** is set to 100 or less.                   |
+| Problem                        | Solution                                                                     |
+| ------------------------------ | ---------------------------------------------------------------------------- |
+| **Invalid AWS credentials**    | Ensure your AWS credentials are valid and have the necessary permissions.    |
+| **Listener ARN not found**     | Verify the listener ARN is correct and exists within the specified region.   |
+| **Exceeded certificate limit** | Use the **Return All** option or ensure the **Limit** is set to 100 or less. |
 
 ## Real-World Use Cases
 

@@ -10,9 +10,7 @@ export const useTableTab = () => {
   const [searchParams] = useSearchParams();
 
   const currentTab = (searchParams.get(TABLE_TAB_QUERY_PARAM) ?? "personal") as
-    | "personal"
-    | "shared"
-    | "library";
+    "personal" | "shared" | "library";
 
   const isPersonal = currentTab === "personal";
   const isShared = currentTab === "shared";

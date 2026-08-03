@@ -1,6 +1,6 @@
-import { SearchFlowVersionResDto } from "@/dtos/search-flow-version-res-dto";
-
 import { useReactFlow } from "@xyflow/react";
+
+import { SearchFlowVersionResDto } from "@/dtos/search-flow-version-res-dto";
 
 export type SelectedCallAgent = Pick<
   SearchFlowVersionResDto,
@@ -18,9 +18,7 @@ export const useGetSelectedAgentData = () => {
    */
   const getSelectedAgentData = (nodeId: string): SelectedCallAgent | null => {
     const node = getNode(nodeId);
-    const selectedAgent = node?.data?.selectedAgent as
-      | Partial<SelectedCallAgent>
-      | undefined;
+    const selectedAgent = node?.data?.selectedAgent as Partial<SelectedCallAgent> | undefined;
 
     if (
       selectedAgent &&

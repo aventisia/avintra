@@ -2,6 +2,7 @@ import { Separator } from "@avplatform/ui";
 import { Form, RadioGroupField, SwitchField } from "@avplatform/ui/form";
 import { useCallback, useEffect } from "react";
 import { z } from "zod";
+
 import {
   cursorToggleProps,
   deleteAlertProps,

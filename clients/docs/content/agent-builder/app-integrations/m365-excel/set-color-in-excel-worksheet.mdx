@@ -12,13 +12,13 @@ For example:
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                                                                  | Input Type          | Required? | Default Value |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | --------- | ------------- |
-| **M365 Excel Credential**| The M365 Excel credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests.                | Select Credentials  | Yes       | _(empty)_     |
-| **Drive and Item ID**    | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint (format: driveId/items/itemId).                                            | Text                | Yes       | _(empty)_     |
-| **Worksheet Name**       | The name of the worksheet to apply the color.                                                                                                 | Text                | Yes       | Sheet1        |
-| **Range Address**        | The specific range of cells in the worksheet where color will be applied (e.g., A1:B10).                                                      | Text                | Yes       | A1            |
-| **Color**                | The color code to apply to the specified range; use Excel-friendly color codes (e.g., `#FF5733`, `RGB(255,0,0)`).                            | Text                | Yes       | None          |
+| Field Name                | Description                                                                                                                    | Input Type         | Required? | Default Value |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------ | --------- | ------------- |
+| **M365 Excel Credential** | The M365 Excel credential containing valid tenant ID, client ID, and client secret which is used to authenticate API requests. | Select Credentials | Yes       | _(empty)_     |
+| **Drive and Item ID**     | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint (format: driveId/items/itemId).                           | Text               | Yes       | _(empty)_     |
+| **Worksheet Name**        | The name of the worksheet to apply the color.                                                                                  | Text               | Yes       | Sheet1        |
+| **Range Address**         | The specific range of cells in the worksheet where color will be applied (e.g., A1:B10).                                       | Text               | Yes       | A1            |
+| **Color**                 | The color code to apply to the specified range; use Excel-friendly color codes (e.g., `#FF5733`, `RGB(255,0,0)`).              | Text               | Yes       | None          |
 
 ## Expected Output Format
 
@@ -54,27 +54,29 @@ Enter the **Color** code to set. Acceptable formats include hex codes like `#FF5
 ### Step 7
 
 Once configured, the node will output the **Result**, detailing the color application specifics for further usage in your process.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the range address is correctly formatted to avoid application errors.
+  Ensure that the range address is correctly formatted to avoid application
+  errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Worksheet Name | Range Address | Color Code    | Output Value                                              |
-| -------------- | ------------- | ------------- | --------------------------------------------------------- |
-| Sheet1         | A1:A5         | #FF5733       | "Color successfully applied to Sheet1 A1:A5 with #FF5733" |
-| Data           | B2:C4         | RGB(0,255,0)  | "Color successfully applied to Data B2:C4 with RGB(0,255,0)" |
+| Worksheet Name | Range Address | Color Code   | Output Value                                                 |
+| -------------- | ------------- | ------------ | ------------------------------------------------------------ |
+| Sheet1         | A1:A5         | #FF5733      | "Color successfully applied to Sheet1 A1:A5 with #FF5733"    |
+| Data           | B2:C4         | RGB(0,255,0) | "Color successfully applied to Data B2:C4 with RGB(0,255,0)" |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                         | Solution                                                                                                           |
-| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| **Invalid Drive and Item ID**                                   | Ensure the ID is correctly formatted as `driveId/items/itemId`.                                                    |
-| **Range Address Errors**                                        | Verify the format and existence of the range in your Excel sheet.                                                  |
-| **Unsupported Color Format**                                    | Color must be specified in a recognizable format like hex or RGB; avoid ambiguous descriptions.                     |
-| **Authentication Failure**                                      | Check that M365 Excel Credential is valid and correctly selected.                                                  |
+| Problem                       | Solution                                                                                        |
+| ----------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Invalid Drive and Item ID** | Ensure the ID is correctly formatted as `driveId/items/itemId`.                                 |
+| **Range Address Errors**      | Verify the format and existence of the range in your Excel sheet.                               |
+| **Unsupported Color Format**  | Color must be specified in a recognizable format like hex or RGB; avoid ambiguous descriptions. |
+| **Authentication Failure**    | Check that M365 Excel Credential is valid and correctly selected.                               |
 
 ## Real-World Use Cases
 

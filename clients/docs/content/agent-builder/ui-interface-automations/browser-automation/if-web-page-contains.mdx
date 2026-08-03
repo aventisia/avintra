@@ -12,16 +12,16 @@ You might use this node to:
 
 ## Configuration Options
 
-| Field Name               | Description                                                                 | Input Type | Required? | Default Value    |
-| ------------------------ | --------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_        |
-| **Check Condition**      | Specifies what condition to check, such as if an element or text is contained.   | Select     | Yes       | ContainsElement  |
-| **Find Type**            | Specifies how to locate the element (e.g., ID, XPath, CSS Selector).            | Select     | No        | XPath            |
-| **Value To Find**        | The value used to locate the element (e.g., 'username', '//input[@id='email']'). | Text       | No        | _(empty)_        |
-| **Check UI Element State** | If true, checks if the found element is enabled or disabled.                     | Switch     | No        | False            |
-| **State**                | Specifies the expected state of the element (enabled or disabled).             | Select     | No        | Enabled          |
-| **Text To Search**       | The text to search for in the web page body or title.                          | Text       | No        | _(empty)_        |
-| **Search Location**      | Specifies where to search for the text (e.g., Body, Title).                      | Select     | No        | Body             |
+| Field Name                 | Description                                                                       | Input Type | Required? | Default Value   |
+| -------------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Web Browser Instance**   | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_       |
+| **Check Condition**        | Specifies what condition to check, such as if an element or text is contained.    | Select     | Yes       | ContainsElement |
+| **Find Type**              | Specifies how to locate the element (e.g., ID, XPath, CSS Selector).              | Select     | No        | XPath           |
+| **Value To Find**          | The value used to locate the element (e.g., 'username', '//input[@id='email']').  | Text       | No        | _(empty)_       |
+| **Check UI Element State** | If true, checks if the found element is enabled or disabled.                      | Switch     | No        | False           |
+| **State**                  | Specifies the expected state of the element (enabled or disabled).                | Select     | No        | Enabled         |
+| **Text To Search**         | The text to search for in the web page body or title.                             | Text       | No        | _(empty)_       |
+| **Search Location**        | Specifies where to search for the text (e.g., Body, Title).                       | Select     | No        | Body            |
 
 ## Expected Output Format
 
@@ -67,26 +67,27 @@ The outcome will be shown as **Result**, returning true if the condition is sati
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the web browser instance is correctly provided; otherwise, the node will not work as expected.
+  Ensure the web browser instance is correctly provided; otherwise, the node
+  will not work as expected.
 </Callout>
 
 ## Input/Output Examples
 
-| Check Condition      | Value To Find       | Text To Search | Search Location | Result  | Output Type  |
-| -------------------- | ------------------- | -------------- | --------------- | ------- | ------------ |
-| Contains Element     | "#submit-button"    | _(n/a)_        | _(n/a)_         | true    | Boolean      |
-| Doesn't Contain Text | _(n/a)_             | "Error"        | Body            | false   | Boolean      |
-| Contains Text        | _(n/a)_             | "Welcome"      | Title           | true    | Boolean      |
-| Doesn't Contain Element | "//div[@class='alert']" | _(n/a)_    | _(n/a)_         | false   | Boolean      |
+| Check Condition         | Value To Find           | Text To Search | Search Location | Result | Output Type |
+| ----------------------- | ----------------------- | -------------- | --------------- | ------ | ----------- |
+| Contains Element        | "#submit-button"        | _(n/a)_        | _(n/a)_         | true   | Boolean     |
+| Doesn't Contain Text    | _(n/a)_                 | "Error"        | Body            | false  | Boolean     |
+| Contains Text           | _(n/a)_                 | "Welcome"      | Title           | true   | Boolean     |
+| Doesn't Contain Element | "//div[@class='alert']" | _(n/a)_        | _(n/a)_         | false  | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                                                                      |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Incorrect Web Browser Instance**            | Verify that the browser instance variable is correctly set and accessible.                                                                                     |
-| **Element not found**                         | Make sure the **Find Type** and **Value To Find** are correct and match an actual element on the page.                                                          |
-| **Unexpected text search result**             | Double-check the text and **Search Location** to ensure they match what appears on the page.                                                                    |
-| **Check UI Element State not showing**        | Enable the **Check UI Element State** toggle to use the state-checking feature.                                                                                |
+| Problem                                | Solution                                                                                               |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Incorrect Web Browser Instance**     | Verify that the browser instance variable is correctly set and accessible.                             |
+| **Element not found**                  | Make sure the **Find Type** and **Value To Find** are correct and match an actual element on the page. |
+| **Unexpected text search result**      | Double-check the text and **Search Location** to ensure they match what appears on the page.           |
+| **Check UI Element State not showing** | Enable the **Check UI Element State** toggle to use the state-checking feature.                        |
 
 ## Real-World Use Cases
 

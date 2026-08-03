@@ -166,7 +166,12 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
       />
 
       <div className="grid grid-cols-2 gap-2">
-        <DateTimePickerField {...effectiveDateProps} hourCycle={12} granularity="minute" disabled={disableEffectiveInputs} />
+        <DateTimePickerField
+          {...effectiveDateProps}
+          hourCycle={12}
+          granularity="minute"
+          disabled={disableEffectiveInputs}
+        />
         <DateTimePickerField {...endDateProps} hourCycle={12} granularity="minute" />
       </div>
 

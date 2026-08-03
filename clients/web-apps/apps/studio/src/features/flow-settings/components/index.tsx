@@ -5,8 +5,9 @@ import {
   PanelHeader,
   PanelTitle,
 } from "@/components/panel/components/Panel";
-import { SettingsForm } from "./SettingsForm";
+
 import { PANEL_ID } from "../constants";
+import { SettingsForm } from "./SettingsForm";
 
 export const FlowSettings = () => {
   return (

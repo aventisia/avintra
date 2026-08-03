@@ -6,10 +6,10 @@ The **If Service** node is a powerful tool that helps you create automated workf
 
 ## Configuration Options
 
-| Field Name        | Description                                                   | Input Type | Required? | Default Value |
-| ----------------- | ------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **If Service**    | Choose the condition to check for the service's status.       | Select     | Yes       | _(empty)_     |
-| **Service Name**  | Select the name of the service you want to check.             | Select     | Yes       | _(empty)_     |
+| Field Name       | Description                                             | Input Type | Required? | Default Value |
+| ---------------- | ------------------------------------------------------- | ---------- | --------- | ------------- |
+| **If Service**   | Choose the condition to check for the service's status. | Select     | Yes       | _(empty)_     |
+| **Service Name** | Select the name of the service you want to check.       | Select     | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -46,23 +46,24 @@ The node will output a value of `ConditionResult`, which you can use to control 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Be sure to select both a service and a condition. Missing either will prevent the node from functioning correctly.
+  Be sure to select both a service and a condition. Missing either will prevent
+  the node from functioning correctly.
 </Callout>
 
 ## Input/Output Examples
 
-| Service Name    | If Service   | Output       | Explanation                                         |
-| --------------- | ------------ | ------------ | --------------------------------------------------- |
-| Task Scheduler  | Is running   | `true`       | The Task Scheduler service is currently running.    |
-| Remote Registry | Is stopped   | `false`      | The Remote Registry service is not currently stopped.|
+| Service Name    | If Service | Output  | Explanation                                           |
+| --------------- | ---------- | ------- | ----------------------------------------------------- |
+| Task Scheduler  | Is running | `true`  | The Task Scheduler service is currently running.      |
+| Remote Registry | Is stopped | `false` | The Remote Registry service is not currently stopped. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                 |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **No service or condition selected**         | Ensure you've selected an option in both the **Service Name** and **If Service** fields. |
-| **Service not behaving as expected**         | Double-check the service's actual status and match it to the selected condition.         |
-| **Output always false**                      | Verify that both service name and condition inputs are correct and appropriate.          |
+| Problem                              | Solution                                                                                 |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- |
+| **No service or condition selected** | Ensure you've selected an option in both the **Service Name** and **If Service** fields. |
+| **Service not behaving as expected** | Double-check the service's actual status and match it to the selected condition.         |
+| **Output always false**              | Verify that both service name and condition inputs are correct and appropriate.          |
 
 ## Real-World Use Cases
 

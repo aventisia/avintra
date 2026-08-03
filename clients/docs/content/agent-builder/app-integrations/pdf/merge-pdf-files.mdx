@@ -12,9 +12,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name      | Description                                       | Input Type | Required? | Default Value |
-| --------------- | ------------------------------------------------- | ---------- | --------- | ------------- |
-| **PDF File Paths**  | The full paths to all PDF files you want to merge.  | Text       | Yes       | _(empty)_     |
+| Field Name          | Description                                             | Input Type | Required? | Default Value |
+| ------------------- | ------------------------------------------------------- | ---------- | --------- | ------------- |
+| **PDF File Paths**  | The full paths to all PDF files you want to merge.      | Text       | Yes       | _(empty)_     |
 | **Output PDF Path** | The path where you want the new merged PDF to be saved. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -43,23 +43,24 @@ Execute the flow to initiate the PDF merging process. The merged file will be av
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use absolute paths for both input and output fields to avoid any issues related to file access.
+  Use absolute paths for both input and output fields to avoid any issues
+  related to file access.
 </Callout>
 
 ## Input/Output Examples
 
-| PDF File Paths           | Output PDF Path          | Output Type    |
-| ------------------------ | ------------------------ | -------------- |
+| PDF File Paths                   | Output PDF Path          | Output Type     |
+| -------------------------------- | ------------------------ | --------------- |
 | `/docs/doc1.pdf, /docs/doc2.pdf` | `/output/mergedDocs.pdf` | PDF File (Path) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                 |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **Missing Input Files**                        | Ensure all the paths for **PDF File Paths** are correct and the files exist.                                                            |
-| **Invalid Output Path**                        | Validate the **Output PDF Path** to make sure you have permission to write to the specified directory, and the directory exists.         |
-| **Empty Output**                               | Verify that there are no typos in the file paths and that each input file is a valid PDF.                                               |
-| **File Access Errors**                         | Check for permission issues on the paths accessed for both input and output files.                                                      |
+| Problem                 | Solution                                                                                                                         |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Missing Input Files** | Ensure all the paths for **PDF File Paths** are correct and the files exist.                                                     |
+| **Invalid Output Path** | Validate the **Output PDF Path** to make sure you have permission to write to the specified directory, and the directory exists. |
+| **Empty Output**        | Verify that there are no typos in the file paths and that each input file is a valid PDF.                                        |
+| **File Access Errors**  | Check for permission issues on the paths accessed for both input and output files.                                               |
 
 ## Real-World Use Cases
 

@@ -6,12 +6,12 @@ The **Select Range In Excel Worksheet** node allows you to target a specific ran
 
 ## Configuration Options
 
-| Field Name                | Description                                                                                                                                 | Input Type           | Required? | Default Value |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | --------- | ------------- |
-| **M365 Excel Credential** | The credentials required to authenticate with Microsoft 365 Excel services. This includes tenant ID, client ID, and client secret.          | Credentials Select   | Yes       | _(empty)_     |
-| **Drive and Item ID**     | Identifies the Excel file in OneDrive or SharePoint you want to work with. Format should be `driveId/items/itemId`.                         | Text                 | Yes       | _(empty)_     |
-| **Worksheet Name**        | The name of the worksheet where the specified range will be selected.                                                                       | Text                 | No        | Sheet1        |
-| **Range Address**         | Determines which cells to select within the specified worksheet. For example, `A1:B5` to select from cell A1 to B5.                         | Text                 | No        | A1            |
+| Field Name                | Description                                                                                                                        | Input Type         | Required? | Default Value |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- | ------------------ | --------- | ------------- |
+| **M365 Excel Credential** | The credentials required to authenticate with Microsoft 365 Excel services. This includes tenant ID, client ID, and client secret. | Credentials Select | Yes       | _(empty)_     |
+| **Drive and Item ID**     | Identifies the Excel file in OneDrive or SharePoint you want to work with. Format should be `driveId/items/itemId`.                | Text               | Yes       | _(empty)_     |
+| **Worksheet Name**        | The name of the worksheet where the specified range will be selected.                                                              | Text               | No        | Sheet1        |
+| **Range Address**         | Determines which cells to select within the specified worksheet. For example, `A1:B5` to select from cell A1 to B5.                | Text               | No        | A1            |
 
 ## Expected Output Format
 
@@ -43,27 +43,29 @@ Enter the **Range Address** you wish to select, such as `A1` for a single cell o
 ### Step 6
 
 The output, named **Result**, will be generated containing the details of the specified range in the Excel file.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure you have access permissions and valid credentials for the files and data you attempt to access.
+  Ensure you have access permissions and valid credentials for the files and
+  data you attempt to access.
 </Callout>
 
 ## Input/Output Examples
 
-| Worksheet Name | Range Address | Output Value | Description                                  |
-| -------------- | ------------- | ------------ | -------------------------------------------- |
-| Sheet1         | A1            | Result       | Details of cell A1                           |
+| Worksheet Name | Range Address | Output Value | Description                                              |
+| -------------- | ------------- | ------------ | -------------------------------------------------------- |
+| Sheet1         | A1            | Result       | Details of cell A1                                       |
 | Employees      | A1:B5         | Result       | Information from cells A1 to B5 in "Employees" worksheet |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                 | Solution                                                                                                                                   |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Invalid Credential Error**            | Double-check your M365 credentials and ensure they include a valid tenant ID, client ID, and client secret.                                 |
-| **Incorrect Drive/Item ID Format**      | Verify the format in **Drive and Item ID** is `driveId/items/itemId`.                                                                      |
-| **Range Not Found**                     | Make sure the **Worksheet Name** and **Range Address** exist in the file. Misspellings can lead to range not being found.                  |
-| **Access Denied**                       | Confirm you have the necessary permissions for the Excel file in OneDrive or SharePoint.                                                   |
+| Problem                            | Solution                                                                                                                  |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Credential Error**       | Double-check your M365 credentials and ensure they include a valid tenant ID, client ID, and client secret.               |
+| **Incorrect Drive/Item ID Format** | Verify the format in **Drive and Item ID** is `driveId/items/itemId`.                                                     |
+| **Range Not Found**                | Make sure the **Worksheet Name** and **Range Address** exist in the file. Misspellings can lead to range not being found. |
+| **Access Denied**                  | Confirm you have the necessary permissions for the Excel file in OneDrive or SharePoint.                                  |
 
 ## Real-World Use Cases
 

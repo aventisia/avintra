@@ -96,13 +96,11 @@ const useFetchSubFlows = () => {
             edges: parsedFlow.edges,
           });
 
-          extractSubFlowVersionIds(parsedFlow.nodes).forEach(
-            (nestedSubFlowId) => {
-              if (!processedSubFlowIds.has(nestedSubFlowId)) {
-                nextLevelSubFlowIds.add(nestedSubFlowId);
-              }
-            },
-          );
+          extractSubFlowVersionIds(parsedFlow.nodes).forEach((nestedSubFlowId) => {
+            if (!processedSubFlowIds.has(nestedSubFlowId)) {
+              nextLevelSubFlowIds.add(nestedSubFlowId);
+            }
+          });
         });
 
         pendingSubFlowIds = Array.from(nextLevelSubFlowIds);
@@ -121,9 +119,7 @@ const useFetchSubFlows = () => {
       try {
         return await fetchAndStoreSubFlows(parentNodes);
       } catch (error) {
-        toast.error(
-          `Failed to fetch sub-flow data. Please try again. Error: ${error}`,
-        );
+        toast.error(`Failed to fetch sub-flow data. Please try again. Error: ${error}`);
         throw error;
       }
     },

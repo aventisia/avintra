@@ -1,7 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@avplatform/ui/avatar";
 import { cn } from "@avplatform/ui/lib";
-import { HistoryEntry } from "../../types/agent-history-type";
 import { useEffect, useRef } from "react";
+
+import { HistoryEntry } from "../../types/agent-history-type";
 import VersionHistoryActions from "./version-history-actions";
 
 interface Props {
@@ -27,11 +28,7 @@ export default function VHAccordionItem({ entry, isSelected, onClick }: Props) {
   }, [isSelected]);
 
   return (
-    <div
-      ref={ref}
-      className="relative pb-1 last:pb-0.5"
-      onClick={() => onClick(entry.id)}
-    >
+    <div ref={ref} className="relative pb-1 last:pb-0.5" onClick={() => onClick(entry.id)}>
       {isSelected && (
         <div className="pointer-events-none absolute -left-0.5 top-1 h-[calc(100%-0.5rem)] w-1 rounded-full bg-primary" />
       )}
@@ -54,9 +51,7 @@ export default function VHAccordionItem({ entry, isSelected, onClick }: Props) {
 
           <div className="flex flex-col">
             <span className="text-xs font-medium">{entry.time}</span>
-            <span className="text-2xs text-muted-foreground">
-              {entry.user.name}
-            </span>
+            <span className="text-2xs text-muted-foreground">{entry.user.name}</span>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { NodeDataType } from "@/types/node-data-type";
+
 import { createCustomEdgeObj } from "../create-edges/create-custom-edge-obj";
 import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
 import { createLabelEdgeObj } from "../create-edges/create-label-edge-obj";
@@ -22,17 +23,17 @@ export const createIfElseNode = (
   const ifElseNode = createNodeObj(nodeData);
 
   // True branch nodes
-  const trueBranchStartNode = createSupportNodeObj("branchStartNode",ifElseNode.id);
-  const truePlusNode = createSupportNodeObj("plusNode",ifElseNode.id);
-  const trueBranchEndNode = createSupportNodeObj("branchEndNode",ifElseNode.id);
+  const trueBranchStartNode = createSupportNodeObj("branchStartNode", ifElseNode.id);
+  const truePlusNode = createSupportNodeObj("plusNode", ifElseNode.id);
+  const trueBranchEndNode = createSupportNodeObj("branchEndNode", ifElseNode.id);
 
   // False branch nodes
-  const falseBranchStartNode = createSupportNodeObj("branchStartNode",ifElseNode.id);
-  const falsePlusNode = createSupportNodeObj("plusNode",ifElseNode.id);
-  const falseBranchEndNode = createSupportNodeObj("branchEndNode",ifElseNode.id);
+  const falseBranchStartNode = createSupportNodeObj("branchStartNode", ifElseNode.id);
+  const falsePlusNode = createSupportNodeObj("plusNode", ifElseNode.id);
+  const falseBranchEndNode = createSupportNodeObj("branchEndNode", ifElseNode.id);
 
   // Merge branches node
-  const mergeBranchesNode = createSupportNodeObj("mergeBranchesNode",ifElseNode.id);
+  const mergeBranchesNode = createSupportNodeObj("mergeBranchesNode", ifElseNode.id);
 
   // Source node -> If-else node
   const source2IfElseEdge = createPlusEdgeObj(sourceNodeId, ifElseNode.id);
@@ -45,16 +46,10 @@ export const createIfElseNode = (
   );
 
   // True branch-start node -> True plus node
-  const trueBranchStart2PlusEdge = createDottedEdgeObj(
-    trueBranchStartNode.id,
-    truePlusNode.id,
-  );
+  const trueBranchStart2PlusEdge = createDottedEdgeObj(trueBranchStartNode.id, truePlusNode.id);
 
   // True plus node -> True branch-end node
-  const truePlus2BranchEndEdge = createDottedEdgeObj(
-    truePlusNode.id,
-    trueBranchEndNode.id,
-  );
+  const truePlus2BranchEndEdge = createDottedEdgeObj(truePlusNode.id, trueBranchEndNode.id);
 
   // True branch-end node -> Merge branches node
   const trueBranchEndToMergeBranchesEdge = createCustomEdgeObj(
@@ -70,16 +65,10 @@ export const createIfElseNode = (
   );
 
   // False branch-start node -> False plus node
-  const falseBranchStart2PlusEdge = createDottedEdgeObj(
-    falseBranchStartNode.id,
-    falsePlusNode.id,
-  );
+  const falseBranchStart2PlusEdge = createDottedEdgeObj(falseBranchStartNode.id, falsePlusNode.id);
 
   // False plus node -> False branch-end node
-  const falsePlus2BranchEndEdge = createDottedEdgeObj(
-    falsePlusNode.id,
-    falseBranchEndNode.id,
-  );
+  const falsePlus2BranchEndEdge = createDottedEdgeObj(falsePlusNode.id, falseBranchEndNode.id);
 
   // False branch-end node -> Merge branches node
   const falseBranchEndToMergeBranchesEdge = createCustomEdgeObj(

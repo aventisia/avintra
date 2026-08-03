@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Close Excel Application** node allows you to terminate the active Excel instance running on your desktop. This is particularly useful when you want to ensure all Excel files are properly closed, including handling unsaved changes. This node can be configured to save changes or discard them before closing, providing flexibility based on your requirements.
 
 For example:
+
 - Automatically close an Excel file after processing data.
 - Ensure changes are saved or not saved depending on the situation.
 
 ## Configuration Options
 
-| Field Name            | Description                                                                                  | Input Type | Required? | Default Value     |
-| --------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ----------------- |
-| **Excel Application** | The Excel Application object you want to close. This refers to the active instance of Excel. | Text       | Yes       | _(empty)_         |
-| **Before Closing Excel** | Decide if you want to save changes before closing Excel. Options include not saving, saving, or saving as a new file.  | Select     | No        | SaveDocument      |
-| **Save Path**         | The file path where you want to save the document if "Save Document As" is selected.          | Text       | No        | _(empty)_         |
+| Field Name               | Description                                                                                                           | Input Type | Required? | Default Value |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Excel Application**    | The Excel Application object you want to close. This refers to the active instance of Excel.                          | Text       | Yes       | _(empty)_     |
+| **Before Closing Excel** | Decide if you want to save changes before closing Excel. Options include not saving, saving, or saving as a new file. | Select     | No        | SaveDocument  |
+| **Save Path**            | The file path where you want to save the document if "Save Document As" is selected.                                  | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -50,24 +51,25 @@ Execute the node to close the Excel application with your specified settings.
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you do not select "Save Document As" in the **Before Closing Excel** dropdown, the "Save Path" field will not appear.
+  If you do not select "Save Document As" in the **Before Closing Excel**
+  dropdown, the "Save Path" field will not appear.
 </Callout>
 
 ## Input/Output Examples
 
-| Option Selected       | Save Path          | Output                         | Output Type   |
-| --------------------- | ------------------ | ------------------------------ | ------------- |
-| Do not save document  | _(empty)_          | Excel closed, no save          | Confirmation  |
-| Save document         | _(empty)_          | Excel closed, changes saved    | Confirmation  |
-| Save document as      | C:\Documents\Excel\ | Excel closed, file saved as new | Confirmation  |
+| Option Selected      | Save Path            | Output                          | Output Type  |
+| -------------------- | -------------------- | ------------------------------- | ------------ |
+| Do not save document | _(empty)_            | Excel closed, no save           | Confirmation |
+| Save document        | _(empty)_            | Excel closed, changes saved     | Confirmation |
+| Save document as     | C:\Documents\Excel\  | Excel closed, file saved as new | Confirmation |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                  |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **Save Path not appearing**                   | Ensure "Save Document As" is selected in the Before Closing Excel dropdown.               |
-| **Invalid Excel Application reference**       | Double-check that the Excel Application field properly references a live Excel instance.  |
-| **Invalid Save Path entered**                 | Confirm the path is valid and the directory is accessible.                                |
+| Problem                                 | Solution                                                                                 |
+| --------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Save Path not appearing**             | Ensure "Save Document As" is selected in the Before Closing Excel dropdown.              |
+| **Invalid Excel Application reference** | Double-check that the Excel Application field properly references a live Excel instance. |
+| **Invalid Save Path entered**           | Confirm the path is valid and the directory is accessible.                               |
 
 ## Real-World Use Cases
 

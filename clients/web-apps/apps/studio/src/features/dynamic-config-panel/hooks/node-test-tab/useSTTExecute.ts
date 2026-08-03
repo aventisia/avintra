@@ -19,9 +19,7 @@ export function useSTTExecute(formData: Record<string, unknown>) {
   const mutation = useExecuteSTTMutation();
   useResetOnTestTabOpen(mutation.reset);
 
-  async function buildPayload(
-    input: STTInputValue,
-  ): Promise<STTRequestDto | null> {
+  async function buildPayload(input: STTInputValue): Promise<STTRequestDto | null> {
     const modelConfigData = getModelConfig(formData);
     if (!modelConfigData) {
       toast.error("Model configuration is missing");

@@ -54,8 +54,9 @@ export function useToolCallManager({
 
   const provider = output?.provider?.toLowerCase() as ToolProvider;
 
-  const { mutate: executeMutation, isPending: isExecuting } =
-    useToolExecutionMutation({ provider });
+  const { mutate: executeMutation, isPending: isExecuting } = useToolExecutionMutation({
+    provider,
+  });
 
   /**
    * Status resolution order:
@@ -134,10 +135,7 @@ export function useToolCallManager({
             }
           },
           onError: (error) =>
-            handleExecutionOutcome(
-              "failed",
-              error?.message || "Execution failed",
-            ),
+            handleExecutionOutcome("failed", error?.message || "Execution failed"),
         },
       );
     },
@@ -155,10 +153,7 @@ export function useToolCallManager({
   }, [output?.approval, output?.payload, isAwaitingUser, executeTool]);
 
   const cancelTool = useCallback(() => {
-    handleExecutionOutcome(
-      "cancelled",
-      TOOL_CALL_RESULT_MESSAGES.USER_CANCELLED,
-    );
+    handleExecutionOutcome("cancelled", TOOL_CALL_RESULT_MESSAGES.USER_CANCELLED);
   }, [handleExecutionOutcome]);
 
   // Coordinator registration
@@ -170,13 +165,9 @@ export function useToolCallManager({
   // We use a ref for cancelTool so that the registered entry always calls the
   // latest version of cancelTool without re-registering on every render.
 
-  const registerToolCall = useToolCallCoordinatorStore(
-    (state) => state.register,
-  );
+  const registerToolCall = useToolCallCoordinatorStore((state) => state.register);
 
-  const unregisterToolCall = useToolCallCoordinatorStore(
-    (state) => state.unregister,
-  );
+  const unregisterToolCall = useToolCallCoordinatorStore((state) => state.unregister);
 
   const cancelToolRef = useRef(cancelTool);
 
@@ -206,13 +197,7 @@ export function useToolCallManager({
     return () => {
       unregisterToolCall(coordId);
     };
-  }, [
-    isActiveInCoordinator,
-    coordId,
-    toolName,
-    registerToolCall,
-    unregisterToolCall,
-  ]);
+  }, [isActiveInCoordinator, coordId, toolName, registerToolCall, unregisterToolCall]);
 
   return {
     status,

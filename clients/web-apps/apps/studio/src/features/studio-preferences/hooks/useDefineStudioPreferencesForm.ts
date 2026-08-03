@@ -1,12 +1,14 @@
 import { USER_PREFERENCES_LS_KEY } from "@avplatform/ui/constants";
 import { UserPreferencesType } from "@avplatform/ui/types";
-import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
-import { studioPreferencesZodSchema } from "../constants/studio-preferences-zod-schema";
+
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
+
 import { INITIAL_PREFERENCES } from "../constants";
+import { studioPreferencesZodSchema } from "../constants/studio-preferences-zod-schema";
 
 export const useDefineStudioPreferencesForm = () => {
   // Get user preferences from browser local storage

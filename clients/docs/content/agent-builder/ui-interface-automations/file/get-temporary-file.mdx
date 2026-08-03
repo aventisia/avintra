@@ -40,22 +40,24 @@ The generated temporary file's information will be available as **TempFile** and
 </Steps>
 
 <Callout type="info" title="Note">
-  The **temporary file** created by this node is not meant to be permanent. It is ideal for short-term usage within the flow and may be automatically deleted after the process is complete or upon application closure.
+  The **temporary file** created by this node is not meant to be permanent. It
+  is ideal for short-term usage within the flow and may be automatically deleted
+  after the process is complete or upon application closure.
 </Callout>
 
 ## Input/Output Examples
 
-| Description          | Output Value | Output Type |
-| -------------------- | ------------ | ----------- |
-| Temporary file path  | `/tmp/tmp123` | FileInfo (File Path) |
-| Temporary file name  | `tmp123`     | FileInfo (File Name)  |
+| Description         | Output Value  | Output Type          |
+| ------------------- | ------------- | -------------------- |
+| Temporary file path | `/tmp/tmp123` | FileInfo (File Path) |
+| Temporary file name | `tmp123`      | FileInfo (File Name) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                               | Solution                                                                                                                   |
-| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
-| **File not found error**              | Ensure the temporary file is being used immediately after creation, as it may be deleted post-operation or upon app close. |
-| **Output not connecting properly**    | Verify that the **TempFile** output is properly routed to subsequent nodes requiring a file.                               |
+| Problem                            | Solution                                                                                                                   |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **File not found error**           | Ensure the temporary file is being used immediately after creation, as it may be deleted post-operation or upon app close. |
+| **Output not connecting properly** | Verify that the **TempFile** output is properly routed to subsequent nodes requiring a file.                               |
 
 ## Real-World Use Cases
 

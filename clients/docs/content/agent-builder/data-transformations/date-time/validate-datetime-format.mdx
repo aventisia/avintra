@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name        | Description                                                                               | Input Type | Required? | Default Value |
-| ----------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **DateTime String**   | The date and time string to validate.                                                     | Text       | Yes       | _(empty)_     |
-| **Expected Format**   | The expected format pattern to validate against (e.g., yyyy-MM-dd HH:mm:ss).             | Text       | Yes       | _(empty)_     |
+| Field Name          | Description                                                                  | Input Type | Required? | Default Value |
+| ------------------- | ---------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **DateTime String** | The date and time string to validate.                                        | Text       | Yes       | _(empty)_     |
+| **Expected Format** | The expected format pattern to validate against (e.g., yyyy-MM-dd HH:mm:ss). | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -42,28 +42,30 @@ In the **Expected Format** field, provide the pattern that the input should matc
 ### Step 4
 
 The result of the format validation will be available as **Is Format Valid** for further use in your automation workflow.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the date and time string adheres precisely to the pattern specified in the **Expected Format** field to avoid false negatives.
+  Ensure the date and time string adheres precisely to the pattern specified in
+  the **Expected Format** field to avoid false negatives.
 </Callout>
 
 ## Input/Output Examples
 
-| DateTime String          | Expected Format       | Output Value | Output Type |
-| ------------------------ | --------------------- | ------------ | ----------- |
-| 2023-10-15 14:30:00      | yyyy-MM-dd HH:mm:ss   | true         | Boolean     |
-| 2023/10/15 2:30 PM       | yyyy-MM-dd HH:mm:ss   | false        | Boolean     |
-| 10-15-2023 14:30:00      | dd-MM-yyyy HH:mm:ss   | true         | Boolean     |
-| October 15, 2023 14:30   | MMMM dd, yyyy HH:mm   | true         | Boolean     |
+| DateTime String        | Expected Format     | Output Value | Output Type |
+| ---------------------- | ------------------- | ------------ | ----------- |
+| 2023-10-15 14:30:00    | yyyy-MM-dd HH:mm:ss | true         | Boolean     |
+| 2023/10/15 2:30 PM     | yyyy-MM-dd HH:mm:ss | false        | Boolean     |
+| 10-15-2023 14:30:00    | dd-MM-yyyy HH:mm:ss | true         | Boolean     |
+| October 15, 2023 14:30 | MMMM dd, yyyy HH:mm | true         | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                          | Solution                                                                                                                                       |
-| ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Mismatched date format**                                       | Double-check if the Input DateTime string matches the specified Expected Format pattern.                                                      |
-| **Unexpected false output**                                      | Ensure there are no extra spaces or incorrect separators in the DateTime String that might prevent matching.                                  |
-| **Unsupported format symbols**                                   | Make sure the Expected Format uses valid datetime pattern symbols. Reference documentation or examples if in doubt.                           |
+| Problem                        | Solution                                                                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| **Mismatched date format**     | Double-check if the Input DateTime string matches the specified Expected Format pattern.                            |
+| **Unexpected false output**    | Ensure there are no extra spaces or incorrect separators in the DateTime String that might prevent matching.        |
+| **Unsupported format symbols** | Make sure the Expected Format uses valid datetime pattern symbols. Reference documentation or examples if in doubt. |
 
 ## Real-World Use Cases
 

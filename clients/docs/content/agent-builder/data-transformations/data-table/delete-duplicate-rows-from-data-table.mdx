@@ -12,15 +12,15 @@ Here's when you might use this node:
 
 ## Configuration Options
 
-| Field Name                | Description                                                                 | Input Type | Required? | Default Value   |
-| ------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Data Table**            | The data table you want to process for duplicate removal.                  | Text       | Yes       | _(empty)_       |
-| **Compare Mode**          | Determines whether to compare all columns or only specific columns to find duplicates. | Select     | No        | AllColumns     |
-| **Column Names To Compare**| Specifies which columns to compare if "Compare Mode" is set to "Selected Columns".   | Text       | No        | _(empty)_       |
+| Field Name                  | Description                                                                            | Input Type | Required? | Default Value |
+| --------------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**              | The data table you want to process for duplicate removal.                              | Text       | Yes       | _(empty)_     |
+| **Compare Mode**            | Determines whether to compare all columns or only specific columns to find duplicates. | Select     | No        | AllColumns    |
+| **Column Names To Compare** | Specifies which columns to compare if "Compare Mode" is set to "Selected Columns".     | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
-The output of this node is a **modified data table** (without duplicate rows). The resultant data will match the structure of your input data table but without repeated entries. 
+The output of this node is a **modified data table** (without duplicate rows). The resultant data will match the structure of your input data table but without repeated entries.
 
 The output data field you can use in subsequent nodes:
 
@@ -57,23 +57,24 @@ The cleaned data table will be available as **ModifiedDataTable** for further us
 </Steps>
 
 <Callout type="info" title="Note">
-  When selecting "Selected Columns" for **Compare Mode**, ensure that all specified columns exist in the data table to avoid errors.
+  When selecting "Selected Columns" for **Compare Mode**, ensure that all
+  specified columns exist in the data table to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Compare Mode     | Input Data Table                          | Column Names To Compare | Output Data Table                                                       |
-| ---------------- | ----------------------------------------- | ----------------------- | ---------------------------------------------------------------------- |
-| All Columns      | Table with duplicate rows in all columns  | _(n/a)_                 | Table with all duplicate rows removed                                  |
-| Selected Columns | Table with duplicates based on select columns | "Name, Date"           | Table with duplicates in "Name" and "Date" columns removed             |
+| Compare Mode     | Input Data Table                              | Column Names To Compare | Output Data Table                                          |
+| ---------------- | --------------------------------------------- | ----------------------- | ---------------------------------------------------------- |
+| All Columns      | Table with duplicate rows in all columns      | _(n/a)_                 | Table with all duplicate rows removed                      |
+| Selected Columns | Table with duplicates based on select columns | "Name, Date"            | Table with duplicates in "Name" and "Date" columns removed |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                                                            |
-| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **Empty Data Table output**                               | Ensure that the input **Data Table** is correctly specified and not empty.                                                          |
-| **Comparison Columns field not appearing**                | This field only appears when you set **Compare Mode** to **"Selected Columns"**.                                                     |
-| **Incorrect column names in Column Names To Compare**     | Double-check the spelling and existence of column names entered to avoid missing out intended duplicates for removal.               |
+| Problem                                               | Solution                                                                                                              |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Empty Data Table output**                           | Ensure that the input **Data Table** is correctly specified and not empty.                                            |
+| **Comparison Columns field not appearing**            | This field only appears when you set **Compare Mode** to **"Selected Columns"**.                                      |
+| **Incorrect column names in Column Names To Compare** | Double-check the spelling and existence of column names entered to avoid missing out intended duplicates for removal. |
 
 ## Real-World Use Cases
 

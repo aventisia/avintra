@@ -14,10 +14,7 @@ export default function ExecutionLogContent() {
    */
   const { data: logList, isFetching, isLoading } = useFetchExecutionLogsList();
 
-  const groupedLogs = useMemo(
-    () => groupHistoryByDay(logList?.data),
-    [logList?.data],
-  );
+  const groupedLogs = useMemo(() => groupHistoryByDay(logList?.data), [logList?.data]);
 
   /**
    *  If no jobId(j) in query param present, auto select first.

@@ -6,20 +6,20 @@ The **Get Many AWS DynamoDB Items** node allows you to retrieve multiple items f
 
 ## Configuration Options
 
-| Field Name                      | Description                                                                                        | Input Type | Required? | Default Value |
-| ------------------------------- | -------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Credential to connect with**  | Select the AWS credential to use for authentication.                                               | Text       | Yes       | _(empty)_     |
-| **Table Name or ID**            | The name of the DynamoDB table to retrieve items from.                                             | Text       | Yes       | _(empty)_     |
-| **Scan**                        | If enabled, performs a full table scan instead of a query.                                        | Switch     | No        | _(empty)_     |
-| **Key Condition Expression**    | The condition expression for querying items (e.g., `'id = :id'`). _Shown only if Scan is disabled._ | Text       | No        | _(empty)_     |
-| **Filter Expression**           | The filter expression to apply after scanning (e.g., `'status = 'active''`). _Shown only if Scan is enabled._ | Text       | No        | _(empty)_     |
-| **Expression Attribute Values** | Values for placeholders in condition or filter expressions.                                        | Text       | No        | _(empty)_     |
-| **Return All**                  | If enabled, retrieves all items (with pagination). Otherwise, limits results by 'Limit'.           | Switch     | No        | _(empty)_     |
-| **Limit**                       | Maximum number of items to return per page (max 100). Default is 50. _Only shown if 'Return All' is disabled._ | Text       | No        | 50            |
+| Field Name                      | Description                                                                                                         | Input Type | Required? | Default Value |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with**  | Select the AWS credential to use for authentication.                                                                | Text       | Yes       | _(empty)_     |
+| **Table Name or ID**            | The name of the DynamoDB table to retrieve items from.                                                              | Text       | Yes       | _(empty)_     |
+| **Scan**                        | If enabled, performs a full table scan instead of a query.                                                          | Switch     | No        | _(empty)_     |
+| **Key Condition Expression**    | The condition expression for querying items (e.g., `'id = :id'`). _Shown only if Scan is disabled._                 | Text       | No        | _(empty)_     |
+| **Filter Expression**           | The filter expression to apply after scanning (e.g., `'status = 'active''`). _Shown only if Scan is enabled._       | Text       | No        | _(empty)_     |
+| **Expression Attribute Values** | Values for placeholders in condition or filter expressions.                                                         | Text       | No        | _(empty)_     |
+| **Return All**                  | If enabled, retrieves all items (with pagination). Otherwise, limits results by 'Limit'.                            | Switch     | No        | _(empty)_     |
+| **Limit**                       | Maximum number of items to return per page (max 100). Default is 50. _Only shown if 'Return All' is disabled._      | Text       | No        | 50            |
 | **Select**                      | Specifies which attributes to return. Choose from All Attributes, All Projected Attributes, or Specific Attributes. | Select     | No        | _(empty)_     |
-| **Simplify**                    | If enabled, returns only the key values of the retrieved items.                                    | Switch     | No        | _(empty)_     |
-| **Options**                     | Additional options for the request.                                                                | Text       | No        | _(empty)_     |
-| **AWS Region**                  | The AWS region where the DynamoDB table is located (e.g., `us-east-1`). Default is `us-east-1`.    | Text       | No        | us-east-1     |
+| **Simplify**                    | If enabled, returns only the key values of the retrieved items.                                                     | Switch     | No        | _(empty)_     |
+| **Options**                     | Additional options for the request.                                                                                 | Text       | No        | _(empty)_     |
+| **AWS Region**                  | The AWS region where the DynamoDB table is located (e.g., `us-east-1`). Default is `us-east-1`.                     | Text       | No        | us-east-1     |
 
 ## Expected Output Format
 
@@ -82,24 +82,25 @@ Specify the **AWS Region** where your DynamoDB table is located (default is `us-
 </Steps>
 
 <Callout type="info" title="Tip">
-  Be cautious when using the **Scan** operation on large tables as it may result in higher latency and costs.
+  Be cautious when using the **Scan** operation on large tables as it may result
+  in higher latency and costs.
 </Callout>
 
 ## Input/Output Examples
 
-| Operation | Table Name | Scan | Key Condition | Filter | Limit | Expected Output                              |
-| --------- | ---------- | ---- | ------------- | ------ | ----- | -------------------------------------------- |
-| Query     | Orders     | No   | `id = :id`    | -      | -     | List of matching order items                 |
-| Scan      | Users      | Yes  | -             | `status = 'active'` | 100   | List of up to 100 active users               |
-| Query     | Products   | No   | `category = :category` | -  | 50    | List of up to 50 products in the specified category |
+| Operation | Table Name | Scan | Key Condition          | Filter              | Limit | Expected Output                                     |
+| --------- | ---------- | ---- | ---------------------- | ------------------- | ----- | --------------------------------------------------- |
+| Query     | Orders     | No   | `id = :id`             | -                   | -     | List of matching order items                        |
+| Scan      | Users      | Yes  | -                      | `status = 'active'` | 100   | List of up to 100 active users                      |
+| Query     | Products   | No   | `category = :category` | -                   | 50    | List of up to 50 products in the specified category |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                                                        |
-| ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| **Credential error or access denied**                        | Verify the AWS credentials are correct and have permission to access the specified resources.                    |
-| **Items not retrieved as expected**                          | Check the logical conditions in your **Key Condition Expression** or **Filter Expression** for syntax errors.    |
-| **Unexpected results with pagination**                       | Ensure the **Return All** switch is set correctly, and verify the **Limit** value if specific page sizes are important. |
+| Problem                                | Solution                                                                                                                |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Credential error or access denied**  | Verify the AWS credentials are correct and have permission to access the specified resources.                           |
+| **Items not retrieved as expected**    | Check the logical conditions in your **Key Condition Expression** or **Filter Expression** for syntax errors.           |
+| **Unexpected results with pagination** | Ensure the **Return All** switch is set correctly, and verify the **Limit** value if specific page sizes are important. |
 
 ## Real-World Use Cases
 

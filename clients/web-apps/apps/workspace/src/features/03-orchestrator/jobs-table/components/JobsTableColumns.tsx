@@ -230,11 +230,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
   {
     accessorKey: "retryCount",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("retryCount")}
-      />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("retryCount")} />
     ),
     cell: ({ row }) => (
       <div className="w-auto truncate font-medium">{row.getValue("retryCount") ?? 0}</div>

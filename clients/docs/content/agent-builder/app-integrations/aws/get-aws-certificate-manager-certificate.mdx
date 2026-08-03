@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name                   | Description                                                                                 | Input Type | Required? | Default Value |
-| ---------------------------- | ------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **AWS Credential (Vault ID)** | Choose the AWS credential for authentication (Stored Vault ID).                             | Text       | Yes       | _(empty)_     |
-| **Certificate ARN**          | The Amazon Resource Name (ARN) of the certificate you want to retrieve from ACM.            | Text       | Yes       | _(empty)_     |
-| **AWS Region**               | The AWS region where your certificate is stored (e.g., `us-east-1`). Default is `us-east-1`. | Text       | No        | _(empty)_     |
+| Field Name                    | Description                                                                                  | Input Type | Required? | Default Value |
+| ----------------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **AWS Credential (Vault ID)** | Choose the AWS credential for authentication (Stored Vault ID).                              | Text       | Yes       | _(empty)_     |
+| **Certificate ARN**           | The Amazon Resource Name (ARN) of the certificate you want to retrieve from ACM.             | Text       | Yes       | _(empty)_     |
+| **AWS Region**                | The AWS region where your certificate is stored (e.g., `us-east-1`). Default is `us-east-1`. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -52,31 +52,33 @@ Use the output fields **Certificate Body** and **Certificate Chain** in subseque
 ### Step 6
 
 For detailed review or troubleshooting, refer to the **API Response** for complete transaction details.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the AWS Credential (Vault ID) has required permissions to access AWS Certificate Manager and retrieve the specified certificate.
+  Ensure the AWS Credential (Vault ID) has required permissions to access AWS
+  Certificate Manager and retrieve the specified certificate.
 </Callout>
 
 ## Input/Output Examples
 
-| Field                | Example Value                                                 | Expected Output                               |
-| -------------------- | ------------------------------------------------------------- | --------------------------------------------- |
-| AWS Credential (Vault ID) | `myAWSVault123`                                               | -                                             |
-| Certificate ARN      | `arn:aws:acm:us-east-1:123456789012:certificate/abc123efg456` | -                                             |
-| AWS Region           | `us-east-1`                                                   | -                                             |
-| Output Example       | _(Certificate Body) : PEM formatted string_                   | PEM output of the certificate body            |
-| Output Example       | _(Certificate Chain) : PEM formatted string_                  | PEM output of the certificate chain           |
-| Output Example       | _(API Response)_                                              | Raw JSON containing detailed response from AWS |
+| Field                     | Example Value                                                 | Expected Output                                |
+| ------------------------- | ------------------------------------------------------------- | ---------------------------------------------- |
+| AWS Credential (Vault ID) | `myAWSVault123`                                               | -                                              |
+| Certificate ARN           | `arn:aws:acm:us-east-1:123456789012:certificate/abc123efg456` | -                                              |
+| AWS Region                | `us-east-1`                                                   | -                                              |
+| Output Example            | _(Certificate Body) : PEM formatted string_                   | PEM output of the certificate body             |
+| Output Example            | _(Certificate Chain) : PEM formatted string_                  | PEM output of the certificate chain            |
+| Output Example            | _(API Response)_                                              | Raw JSON containing detailed response from AWS |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                              | Solution                                                                                                        |
-| -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------|
-| **AWS Credential (Vault ID) is incorrect**                           | Verify that you have selected the correct Vault ID with sufficient permissions to retrieve the certificate.     |
-| **Invalid or incorrectly formatted Certificate ARN**                 | Double-check the ARN format and ensure no typos when pasting into the configuration field.                      |
-| **Certificate not found in specified AWS Region**                    | Confirm the correct region is selected or specified where the certificate exists.                               |
-| **Access Denied error in API Response**                              | Check IAM policies and permissions associated with the AWS Credential (Vault ID) used.                         |
+| Problem                                              | Solution                                                                                                    |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **AWS Credential (Vault ID) is incorrect**           | Verify that you have selected the correct Vault ID with sufficient permissions to retrieve the certificate. |
+| **Invalid or incorrectly formatted Certificate ARN** | Double-check the ARN format and ensure no typos when pasting into the configuration field.                  |
+| **Certificate not found in specified AWS Region**    | Confirm the correct region is selected or specified where the certificate exists.                           |
+| **Access Denied error in API Response**              | Check IAM policies and permissions associated with the AWS Credential (Vault ID) used.                      |
 
 ## Real-World Use Cases
 

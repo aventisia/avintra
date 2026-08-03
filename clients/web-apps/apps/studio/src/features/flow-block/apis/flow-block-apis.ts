@@ -1,6 +1,5 @@
-import { axiosInstance } from "@avplatform/ui/lib";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import { FlowBlockDto } from "../dtos/flow-block-dtos";
 
@@ -51,10 +50,4 @@ const deleteFlowBlock = (id: string) => {
     .then((res) => res.data);
 };
 
-export {
-  getFlowBlock,
-  getFlowBlocks,
-  insertFlowBlock,
-  updateFlowBlock,
-  deleteFlowBlock,
-};
+export { getFlowBlock, getFlowBlocks, insertFlowBlock, updateFlowBlock, deleteFlowBlock };

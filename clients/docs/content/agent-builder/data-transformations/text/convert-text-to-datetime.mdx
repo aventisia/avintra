@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name          | Description                                                                                  | Input Type | Required? | Default Value   |
-| ------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Text to Convert** | The text value that you want to convert into a DateTime.                                     | Text       | Yes       | _(empty)_       |
-| **Use Custom Format** | A toggle to decide whether to use a custom format string for conversion.                     | Switch     | No        | False           |
-| **Format String**   | The format string to interpret the input. Appears only if "Use Custom Format" is enabled.    | Text       | No        | _(empty)_       |
+| Field Name            | Description                                                                               | Input Type | Required? | Default Value |
+| --------------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text to Convert**   | The text value that you want to convert into a DateTime.                                  | Text       | Yes       | _(empty)_     |
+| **Use Custom Format** | A toggle to decide whether to use a custom format string for conversion.                  | Switch     | No        | False         |
+| **Format String**     | The format string to interpret the input. Appears only if "Use Custom Format" is enabled. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -44,27 +44,29 @@ If you've enabled **Use Custom Format**, the **Format String** field will appear
 ### Step 5
 
 The converted date and/or time can now be used as **ResultDateTime** in subsequent nodes.
+
 </Steps>
 
 <Callout type="important" title="Note">
-  Remember, enabling **Use Custom Format** without providing an accurate **Format String** may lead to conversion errors.
+  Remember, enabling **Use Custom Format** without providing an accurate
+  **Format String** may lead to conversion errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Use Custom Format | Input Text      | Format String | Output Value                         | Output Type  |
-| ----------------- | --------------- | ------------- | ------------------------------------ | ------------ |
-| No                | "2023-02-25"    | _(n/a)_       | DateTime equivalent of February 25, 2023 | DateTime    |
-| Yes               | "25-Feb-2023"   | `dd-MMM-yyyy` | DateTime equivalent of February 25, 2023 | DateTime    |
-| Yes               | "2:30 PM"       | `h:mm a`      | DateTime equivalent for 2:30 PM today | DateTime    |
+| Use Custom Format | Input Text    | Format String | Output Value                             | Output Type |
+| ----------------- | ------------- | ------------- | ---------------------------------------- | ----------- |
+| No                | "2023-02-25"  | _(n/a)_       | DateTime equivalent of February 25, 2023 | DateTime    |
+| Yes               | "25-Feb-2023" | `dd-MMM-yyyy` | DateTime equivalent of February 25, 2023 | DateTime    |
+| Yes               | "2:30 PM"     | `h:mm a`      | DateTime equivalent for 2:30 PM today    | DateTime    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                          |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **Format String option not visible**                  | Ensure you have enabled the **Use Custom Format** switch to reveal the **Format String** field.    |
-| **Conversion errors despite correct format**          | Double-check if the **Text to Convert** matches exactly with the supplied **Format String**.       |
-| **Unexpected results without custom format**          | If the text format isn't standard (e.g., "MM/dd/yyyy"), ensure there's no typo or formatting issue.|
+| Problem                                      | Solution                                                                                            |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Format String option not visible**         | Ensure you have enabled the **Use Custom Format** switch to reveal the **Format String** field.     |
+| **Conversion errors despite correct format** | Double-check if the **Text to Convert** matches exactly with the supplied **Format String**.        |
+| **Unexpected results without custom format** | If the text format isn't standard (e.g., "MM/dd/yyyy"), ensure there's no typo or formatting issue. |
 
 ## Real-World Use Cases
 

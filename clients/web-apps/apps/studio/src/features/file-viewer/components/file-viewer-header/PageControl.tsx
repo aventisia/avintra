@@ -38,11 +38,7 @@ const PageControl = () => {
   };
 
   return (
-    <div
-      className="flex items-center flex-1 gap-0.5"
-      role="group"
-      aria-label="Page navigation"
-    >
+    <div className="flex items-center flex-1 gap-0.5" role="group" aria-label="Page navigation">
       <Button
         variant="ghost"
         size="icon7"

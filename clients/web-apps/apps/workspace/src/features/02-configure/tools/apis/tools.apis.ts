@@ -1,17 +1,8 @@
-import {
-  IHttpResponse,
-  IOptimisticMutation,
-  TrueFalseResultDto,
-} from "@avplatform/ui/dtos";
+import { IHttpResponse, IOptimisticMutation, TrueFalseResultDto } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import {
-  TestToolDto,
-  TestToolResponseDto,
-  ToolAvailabilityDto,
-  ToolDto,
-} from "../dtos/index";
+import { TestToolDto, TestToolResponseDto, ToolAvailabilityDto, ToolDto } from "../dtos/index";
 
 export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tools`;
 
@@ -38,9 +29,7 @@ export const isToolNameAvailable = (postObj: ToolAvailabilityDto) => {
  * Retrieves a single tool by its identifier.
  */
 export const getToolById = (id: string) => {
-  return axiosInstance
-    .get<IHttpResponse<ToolDto>>(`${baseAPIURL}/${id}`)
-    .then((res) => res.data);
+  return axiosInstance.get<IHttpResponse<ToolDto>>(`${baseAPIURL}/${id}`).then((res) => res.data);
 };
 
 /**

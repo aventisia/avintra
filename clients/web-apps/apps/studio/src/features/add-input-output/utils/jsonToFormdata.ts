@@ -1,13 +1,12 @@
 import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
+
 import {
   FieldItemFormValues,
   InputsOutputsFieldsFormType,
   OutputFieldFormValues,
 } from "../constants/inputs-outputs-zod-schema";
 
-export const DCPJsonToFormData = (
-  data: DCPFieldSchemaType[],
-): InputsOutputsFieldsFormType => {
+export const DCPJsonToFormData = (data: DCPFieldSchemaType[]): InputsOutputsFieldsFormType => {
   const toLabel = (str: string) =>
     str
       .replace(/([A-Z])/g, " $1")
@@ -17,16 +16,8 @@ export const DCPJsonToFormData = (
   const transformField = (
     field: DCPFieldSchemaType,
   ): FieldItemFormValues | OutputFieldFormValues => {
-    const {
-      direction,
-      type,
-      name,
-      label,
-      description,
-      defaultValue,
-      required,
-      selectOptions,
-    } = field;
+    const { direction, type, name, label, description, defaultValue, required, selectOptions } =
+      field;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const baseField: any = {
@@ -42,19 +33,14 @@ export const DCPJsonToFormData = (
       baseField.required = required ?? false;
 
       if (type === "select" && Array.isArray(selectOptions)) {
-        baseField.selectOptions = selectOptions
-          .map((opt) => opt.label)
-          .join(";");
+        baseField.selectOptions = selectOptions.map((opt) => opt.label).join(";");
       }
     }
 
     return baseField;
   };
 
-  const transformDefaultValueFromAPI = (
-    type: string,
-    value: unknown,
-  ): unknown => {
+  const transformDefaultValueFromAPI = (type: string, value: unknown): unknown => {
     if (type === "config-panel-output" && typeof value === "object" && value) {
       return (value as { value: string }).value || "";
     }

@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from "react";
-import { Node, Edge } from "@xyflow/react";
+import { Edge, Node } from "@xyflow/react";
+import { useCallback, useEffect, useState } from "react";
 
 // Key to store clipboard data in localStorage
 const CLIPBOARD_KEY = "react-flow-clipboard";
@@ -12,9 +12,7 @@ export interface FlowClipboard {
 }
 // Custom hook to manage clipboard data
 export const useClipboard = () => {
-  const [clipboardState, setClipboardState] = useState<FlowClipboard | null>(
-    null,
-  );
+  const [clipboardState, setClipboardState] = useState<FlowClipboard | null>(null);
 
   // Sync with local storage on mount
   useEffect(() => {
@@ -30,9 +28,7 @@ export const useClipboard = () => {
 
   const getClipboard = useCallback((): FlowClipboard => {
     const stored = localStorage.getItem(CLIPBOARD_KEY);
-    return stored
-      ? JSON.parse(stored)
-      : { nodes: [], edges: [], operation: "copy" };
+    return stored ? JSON.parse(stored) : { nodes: [], edges: [], operation: "copy" };
   }, []);
 
   // Store clipboard data in localStorage

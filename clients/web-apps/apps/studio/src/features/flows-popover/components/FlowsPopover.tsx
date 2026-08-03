@@ -1,15 +1,13 @@
 import { cn } from "@avplatform/ui/lib";
-import {
-  PopoverContent,
-  PopoverDefaultHeader,
-} from "@avplatform/ui/popover";
+import { PopoverContent, PopoverDefaultHeader } from "@avplatform/ui/popover";
 import { PopoverWrapper } from "@avplatform/ui/popover";
 import { useShallow } from "zustand/react/shallow";
+
 import { useFlowsPopoverStore } from "../stores/flows-popover-store";
-import { FlowCrudDialog } from "./flow-crud-dialog";
-import { FlowsPopoverContent } from "./flows-popover-content";
 import { FPCreateButton } from "./FPCreateButton";
 import { FPHeading } from "./FPHeading";
+import { FlowCrudDialog } from "./flow-crud-dialog";
+import { FlowsPopoverContent } from "./flows-popover-content";
 import { FlowsPopoverTrigger } from "./flows-popover-trigger";
 
 export const FlowsPopover = ({
@@ -26,19 +24,11 @@ export const FlowsPopover = ({
 
   // Return Popover
   return (
-    <PopoverWrapper
-      open={isPopoverOpen}
-      onOpenChangeFn={() => togglePopoverOpen(!isPopoverOpen)}
-    >
+    <PopoverWrapper open={isPopoverOpen} onOpenChangeFn={() => togglePopoverOpen(!isPopoverOpen)}>
       {/* Custom flows popover trigger */}
       <FlowsPopoverTrigger />
       {/* Popover content */}
-      <PopoverContent
-        align="start"
-        variant={"responsive"}
-        className={cn(className)}
-        {...props}
-      >
+      <PopoverContent align="start" variant={"responsive"} className={cn(className)} {...props}>
         {/* Crud Dialog for flow crud operation */}
         <FlowCrudDialog>
           {/* Flows popover custom header */}

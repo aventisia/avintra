@@ -1,16 +1,11 @@
-import {
-  DialogContent,
-  DialogDefaultHeader,
-  Dialog,
-} from "@avplatform/ui/dialog";
-
+import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
+import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
-
-import { SaveAsTemplateForm } from "./SaveAsTemplateForm";
 import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
-import { useEffect } from "react";
+
+import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
+import { SaveAsTemplateForm } from "./SaveAsTemplateForm";
 
 /**
  * SaveAsTemplateDialog component

@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name                       | Description                                                       | Input Type | Required? | Default Value |
-| -------------------------------- | ----------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Window**                       | Select the window you want to change.                             | Text       | Yes       | _(empty)_     |
-| **Window State**                 | Choose how you want the window to appear (Normal, Maximized, Minimized). | Select     | Yes       | Normal        |
-| **Is Window State Changed Successfully** | Indicates whether the window state was changed successfully.     | Output     | No        | IsWindowStateChanged |
+| Field Name                               | Description                                                              | Input Type | Required? | Default Value        |
+| ---------------------------------------- | ------------------------------------------------------------------------ | ---------- | --------- | -------------------- |
+| **Window**                               | Select the window you want to change.                                    | Text       | Yes       | _(empty)_            |
+| **Window State**                         | Choose how you want the window to appear (Normal, Maximized, Minimized). | Select     | Yes       | Normal               |
+| **Is Window State Changed Successfully** | Indicates whether the window state was changed successfully.             | Output     | No        | IsWindowStateChanged |
 
 ## Expected Output Format
 
@@ -48,24 +48,25 @@ The node will automatically execute the change. The result can be verified by th
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure you select the correct window name in the **Window** field to avoid changing the wrong window's state.
+  Ensure you select the correct window name in the **Window** field to avoid
+  changing the wrong window's state.
 </Callout>
 
 ## Input/Output Examples
 
 | Window  | Window State | Is Window State Changed Successfully | Description                                     |
-| ------- | ------------ | ------------------------------------- | ----------------------------------------------- |
-| Browser | Maximized    | True                                  | The browser window was successfully maximized.  |
-| Editor  | Minimized    | True                                  | The editor window was successfully minimized.   |
-| Player  | Normal       | True                                  | The media player window was restored to normal. |
+| ------- | ------------ | ------------------------------------ | ----------------------------------------------- |
+| Browser | Maximized    | True                                 | The browser window was successfully maximized.  |
+| Editor  | Minimized    | True                                 | The editor window was successfully minimized.   |
+| Player  | Normal       | True                                 | The media player window was restored to normal. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                     |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Incorrect Window Name**                      | Ensure you entered the correct window identifier or title in the **Window** field to target the right window. |
-| **Window Not Visible After Change**            | After minimizing, you can restore the window from the taskbar or dock if it disappears from view.           |
-| **Output Indicator Always False**              | Double-check your window and state selections to ensure they are correctly set before executing the change.  |
+| Problem                             | Solution                                                                                                      |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Window Name**           | Ensure you entered the correct window identifier or title in the **Window** field to target the right window. |
+| **Window Not Visible After Change** | After minimizing, you can restore the window from the taskbar or dock if it disappears from view.             |
+| **Output Indicator Always False**   | Double-check your window and state selections to ensure they are correctly set before executing the change.   |
 
 ## Real-World Use Cases
 

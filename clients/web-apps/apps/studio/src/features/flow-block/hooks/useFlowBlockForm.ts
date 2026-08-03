@@ -1,19 +1,21 @@
+import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useShallow } from "zustand/react/shallow";
+
+import { DCPJsonToFormData } from "@/features/add-input-output/utils/jsonToFormdata";
+
+import { getFlowBlock } from "../apis/flow-block-apis";
 import {
-  createBlockFormSchema,
-  createBlockFormType,
   FieldItemFormValues,
   InputsOutputsFieldsFormType,
   OutputFieldFormValues,
+  createBlockFormSchema,
+  createBlockFormType,
 } from "../constants/flow-block-zod-schema";
-import { DCPJsonToFormData } from "@/features/add-input-output/utils/jsonToFormdata";
-import { useUserSessionStore } from "@avplatform/ui/stores";
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
-import { getFlowBlock } from "../apis/flow-block-apis";
 
 /**
  * Custom hook for defining a form.
@@ -89,13 +91,8 @@ export const useFlowBlockForm = () => {
   useEffect(() => {
     let IOObj: InputsOutputsFieldsFormType = {};
     if (flowData) {
-      if (
-        Object.keys(JSON.parse(flowData?.data.inputOutputObject || "")).length >
-        0
-      ) {
-        IOObj = DCPJsonToFormData(
-          JSON.parse(flowData?.data.inputOutputObject || ""),
-        );
+      if (Object.keys(JSON.parse(flowData?.data.inputOutputObject || "")).length > 0) {
+        IOObj = DCPJsonToFormData(JSON.parse(flowData?.data.inputOutputObject || ""));
       }
 
       // Set flow data to form
@@ -107,14 +104,10 @@ export const useFlowBlockForm = () => {
         ...IOObj,
 
         createdBy:
-          flowData?.data?.createdBy ??
-          userSession?.firstName + " " + userSession?.lastName,
-        createdOn: flowData?.data?.createdOn
-          ? new Date(flowData?.data?.createdOn)
-          : new Date(),
+          flowData?.data?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
+        createdOn: flowData?.data?.createdOn ? new Date(flowData?.data?.createdOn) : new Date(),
         lastModifiedBy:
-          flowData?.data?.lastModifiedBy ??
-          userSession?.firstName + " " + userSession?.lastName,
+          flowData?.data?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
         lastModifiedOn: flowData?.data?.lastModifiedOn
           ? new Date(flowData?.data?.lastModifiedOn)
           : new Date(),

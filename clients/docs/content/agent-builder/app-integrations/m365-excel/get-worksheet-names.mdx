@@ -11,10 +11,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name                | Description                                                                                           | Input Type         | Required? | Default Value  |
-| ------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------ | --------- | -------------- |
-| **M365 Excel API Credential** | Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret). | Credential Selector | Yes       | _(empty)_      |
-| **Excel File (Drive and Item ID)**    | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint to retrieve worksheet names from. Format: `driveId/items/itemId`. | Text               | Yes       | _(empty)_      |
+| Field Name                         | Description                                                                                                                            | Input Type          | Required? | Default Value |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | --------- | ------------- |
+| **M365 Excel API Credential**      | Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret).                         | Credential Selector | Yes       | _(empty)_     |
+| **Excel File (Drive and Item ID)** | The Drive ID and Item ID of the Excel file in OneDrive or SharePoint to retrieve worksheet names from. Format: `driveId/items/itemId`. | Text                | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,26 +45,27 @@ Execute or run your flow to retrieve the list of worksheet names. The result wil
 </Steps>
 
 <Callout type="info" title="Note">
-  Make sure your credentials are up-to-date. Expired or incorrect credentials will prevent the node from authenticating with Microsoft 365 services.
+  Make sure your credentials are up-to-date. Expired or incorrect credentials
+  will prevent the node from authenticating with Microsoft 365 services.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Detail                               | Example Value                  |
-| ------------------------------------------ | ------------------------------ |
-| **Excel File (Drive and Item ID)**         | `driveRootId/items/item12345`  |
+| Input Detail                       | Example Value                 |
+| ---------------------------------- | ----------------------------- |
+| **Excel File (Drive and Item ID)** | `driveRootId/items/item12345` |
 
-| Output Name             | Example Output                                         |
-| ----------------------- | ------------------------------------------------------ |
-| **Worksheet Names Result** | `["Sheet1", "Finances", "Annual Report"]`            |
+| Output Name                | Example Output                            |
+| -------------------------- | ----------------------------------------- |
+| **Worksheet Names Result** | `["Sheet1", "Finances", "Annual Report"]` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                    | Solution                                                                                          |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **Invalid or Expired Credentials**                         | Verify and update the M365 Excel API credentials. Ensure they are correctly configured with necessary permissions. |
-| **Incorrect Drive and Item ID Format**                     | Check to ensure the Drive and Item ID follows the correct format: `driveId/items/itemId`.         |
-| **Unable to Retrieve Worksheets**                          | Ensure that the Excel file is accessible and that you have the necessary permissions in OneDrive or SharePoint. |
+| Problem                                | Solution                                                                                                           |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| **Invalid or Expired Credentials**     | Verify and update the M365 Excel API credentials. Ensure they are correctly configured with necessary permissions. |
+| **Incorrect Drive and Item ID Format** | Check to ensure the Drive and Item ID follows the correct format: `driveId/items/itemId`.                          |
+| **Unable to Retrieve Worksheets**      | Ensure that the Excel file is accessible and that you have the necessary permissions in OneDrive or SharePoint.    |
 
 ## Real-World Use Cases
 

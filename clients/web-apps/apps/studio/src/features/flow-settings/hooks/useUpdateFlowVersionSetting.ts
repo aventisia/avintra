@@ -7,13 +7,8 @@ import { ExecutionSettings } from "../types/setting-types";
 export const useUpdateFlowVersionSetting = () => {
   // Create a mutation to update flow
   const { mutateAsync: updateFlowSettings, isPending } = useMutation({
-    mutationFn: ({
-      payload,
-      versionId,
-    }: {
-      versionId: string;
-      payload: ExecutionSettings;
-    }) => updateFlowVersionSetting({ versionId, payload }),
+    mutationFn: ({ payload, versionId }: { versionId: string; payload: ExecutionSettings }) =>
+      updateFlowVersionSetting({ versionId, payload }),
     onSuccess: () => {
       toast.success("Settings updated successfully.", {
         className: "sonner-toaster-sm",

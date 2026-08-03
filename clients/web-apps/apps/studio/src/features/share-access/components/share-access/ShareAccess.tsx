@@ -1,8 +1,9 @@
 import { Checkbox, LoadingSpinner } from "@avplatform/ui";
+import { Button } from "@avplatform/ui/buttons";
+
 import { useSearchMultiSelect } from "../../hooks/useSearchMultiSelect";
 import { MultiSelector } from "./MultiSelector";
 import { SelectType } from "./SelectType";
-import { Button } from "@avplatform/ui/buttons";
 
 export const SearchMultiSelect: React.FC = () => {
   const {
@@ -41,14 +42,11 @@ export const SearchMultiSelect: React.FC = () => {
       {/* Actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1 text-sm">
-          <Checkbox checked disabled={selectedItems.length === 0} /> Notify
-          people
+          <Checkbox checked disabled={selectedItems.length === 0} /> Notify people
         </div>
         <div className="flex items-center gap-2">
           <div className="text-sm text-muted-foreground">
-            {selectedItems.length > 0 && (
-              <span>{selectedItems.length} people selected</span>
-            )}
+            {selectedItems.length > 0 && <span>{selectedItems.length} people selected</span>}
           </div>
 
           <Button

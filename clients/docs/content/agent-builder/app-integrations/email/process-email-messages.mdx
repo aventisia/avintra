@@ -12,17 +12,17 @@ For example:
 
 ## Configuration Options
 
-| Field Name                    | Description                                                                                           | Input Type  | Required? | Default Value  |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------- | ----------- | --------- | -------------- |
-| **Operation**                 | The action you want to perform – delete, mark as unread, or move to a folder.                         | Select      | Yes       | Delete         |
-| **Email Messages to Process** | Enter the IDs of the email messages that you want to manipulate.                                      | Text        | Yes       | _(empty)_      |
-| **IMAP Server**               | Provide the address of your email's IMAP server for accessing emails.                                 | Text        | No        | _(empty)_      |
-| **Port**                      | Enter the port number for the IMAP server connection.                                                 | Text        | No        | _(empty)_      |
-| **Enable SSL**                | Toggle to secure the connection using SSL encryption.                                                 | Switch      | No        | Off            |
-| **Username**                  | Your email account's username for server authentication.                                              | Text        | No        | _(empty)_      |
-| **Password**                  | Your email account's password for server authentication.                                              | Password    | No        | _(empty)_      |
-| **Accept Untrusted Certificates** | Toggle to accept SSL certificates that are not trusted.                                            | Switch      | No        | Off            |
-| **Mail Folder**               | Specify the folder to move emails to. This is required if the operation selected is "Move to Folder". | Text        | No        | _(empty)_      |
+| Field Name                        | Description                                                                                           | Input Type | Required? | Default Value |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Operation**                     | The action you want to perform – delete, mark as unread, or move to a folder.                         | Select     | Yes       | Delete        |
+| **Email Messages to Process**     | Enter the IDs of the email messages that you want to manipulate.                                      | Text       | Yes       | _(empty)_     |
+| **IMAP Server**                   | Provide the address of your email's IMAP server for accessing emails.                                 | Text       | No        | _(empty)_     |
+| **Port**                          | Enter the port number for the IMAP server connection.                                                 | Text       | No        | _(empty)_     |
+| **Enable SSL**                    | Toggle to secure the connection using SSL encryption.                                                 | Switch     | No        | Off           |
+| **Username**                      | Your email account's username for server authentication.                                              | Text       | No        | _(empty)_     |
+| **Password**                      | Your email account's password for server authentication.                                              | Password   | No        | _(empty)_     |
+| **Accept Untrusted Certificates** | Toggle to accept SSL certificates that are not trusted.                                               | Switch     | No        | Off           |
+| **Mail Folder**                   | Specify the folder to move emails to. This is required if the operation selected is "Move to Folder". | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -62,25 +62,26 @@ If you selected **Move to Mail Folder** in Step 2, specify the target folder in 
 </Steps>
 
 <Callout type="info" title="Note">
-  Remember to input the correct email IDs and verify the operation you are choosing to perform to ensure intended results.
+  Remember to input the correct email IDs and verify the operation you are
+  choosing to perform to ensure intended results.
 </Callout>
 
 ## Input/Output Examples
 
-| Operation       | Email IDs               | Mail Folder     | Connection Settings                 | Result                                                |
-| --------------- | ----------------------- | --------------- | ----------------------------------- | ----------------------------------------------------- |
-| Delete          | 123, 456                | _(n/a)_         | Server: mail.example.com, SSL: On   | Deletes emails 123 and 456 from the server.           |
-| Mark as Unread  | 789                     | _(n/a)_         | Server: mail.example.com, SSL: Off  | Marks email 789 as unread.                            |
-| Move to Folder  | 101, 102                | "Important"     | Server: imap.example.com, SSL: On   | Moves emails 101 and 102 to "Important" folder.       |
+| Operation      | Email IDs | Mail Folder | Connection Settings                | Result                                          |
+| -------------- | --------- | ----------- | ---------------------------------- | ----------------------------------------------- |
+| Delete         | 123, 456  | _(n/a)_     | Server: mail.example.com, SSL: On  | Deletes emails 123 and 456 from the server.     |
+| Mark as Unread | 789       | _(n/a)_     | Server: mail.example.com, SSL: Off | Marks email 789 as unread.                      |
+| Move to Folder | 101, 102  | "Important" | Server: imap.example.com, SSL: On  | Moves emails 101 and 102 to "Important" folder. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                     |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **Operation Not Applied**                     | Double-check email IDs and verify connections (server, port, SSL). Ensure the correct operation is selected. |
-| **Access Denied or Failed Login**             | Validate the entered username and password. Ensure SSL settings match server requirements.                   |
-| **Mail Folder Missing**                       | Make sure you specify the **Mail Folder** if the operation is set to move emails.                            |
-| **Untrusted Certificate Warnings**            | Consider enabling **Accept Untrusted Certificates** if the warning persists and security policies allow it.   |
+| Problem                            | Solution                                                                                                     |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Operation Not Applied**          | Double-check email IDs and verify connections (server, port, SSL). Ensure the correct operation is selected. |
+| **Access Denied or Failed Login**  | Validate the entered username and password. Ensure SSL settings match server requirements.                   |
+| **Mail Folder Missing**            | Make sure you specify the **Mail Folder** if the operation is set to move emails.                            |
+| **Untrusted Certificate Warnings** | Consider enabling **Accept Untrusted Certificates** if the warning persists and security policies allow it.  |
 
 ## Real-World Use Cases
 

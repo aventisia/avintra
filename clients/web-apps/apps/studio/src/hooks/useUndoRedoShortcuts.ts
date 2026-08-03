@@ -1,6 +1,6 @@
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-
 import { useEffect } from "react";
+
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 /**
  * Attaches global keyboard listeners for Undo (Ctrl+Z) and Redo (Ctrl+Y / Ctrl+Shift+Z).
@@ -15,8 +15,7 @@ export const useUndoRedoShortcuts = () => {
       const activeElement = document.activeElement as HTMLElement;
       const isInsideDialog = activeElement.closest('[role="dialog"]');
       if (
-        (activeElement &&
-          ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) ||
+        (activeElement && ["INPUT", "TEXTAREA"].includes(activeElement.tagName)) ||
         isInsideDialog
       )
         return;

@@ -143,15 +143,15 @@ export const voiceProviderData: Record<string, VoiceProviderData> = {
   },
 
   // Future providers can be added easily here following the same structure
-//   openai: {
-//     languages: [{ label: "English", value: "en" }],
-//     voices: [
-//       { label: "Alloy", value: "alloy", languageId: "en" },
-//       { label: "Echo", value: "echo", languageId: "en" },
-//       { label: "Fable", value: "fable", languageId: "en" },
-//       { label: "Onyx", value: "onyx", languageId: "en" },
-//       { label: "Nova", value: "nova", languageId: "en" },
-//       { label: "Shimmer", value: "shimmer", languageId: "en" },
-//     ],
-//   },
+  //   openai: {
+  //     languages: [{ label: "English", value: "en" }],
+  //     voices: [
+  //       { label: "Alloy", value: "alloy", languageId: "en" },
+  //       { label: "Echo", value: "echo", languageId: "en" },
+  //       { label: "Fable", value: "fable", languageId: "en" },
+  //       { label: "Onyx", value: "onyx", languageId: "en" },
+  //       { label: "Nova", value: "nova", languageId: "en" },
+  //       { label: "Shimmer", value: "shimmer", languageId: "en" },
+  //     ],
+  //   },
 };

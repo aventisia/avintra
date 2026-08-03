@@ -1,4 +1,5 @@
 import { LoadingSpinner } from "@avplatform/ui";
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import {
   Edge,
   Node,
@@ -17,7 +18,6 @@ import { defaultEdgeOptions } from "@/constants/default-edge-options";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
-import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";

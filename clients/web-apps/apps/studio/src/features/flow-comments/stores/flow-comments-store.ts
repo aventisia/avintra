@@ -60,13 +60,11 @@ export const useFlowCommentsStore = create<State & Actions>((set) => ({
 
   toggleCreateFormDirty: (value) =>
     set((state) => ({
-      isCreateFormDirty:
-        typeof value === "boolean" ? value : !state.isCreateFormDirty,
+      isCreateFormDirty: typeof value === "boolean" ? value : !state.isCreateFormDirty,
     })),
 
   toggleEditFormDirty: (value) =>
     set((state) => ({
-      isEditFormDirty:
-        typeof value === "boolean" ? value : !state.isEditFormDirty,
+      isEditFormDirty: typeof value === "boolean" ? value : !state.isEditFormDirty,
     })),
 }));

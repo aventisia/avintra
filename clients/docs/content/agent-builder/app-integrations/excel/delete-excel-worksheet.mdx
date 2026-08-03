@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                 | Input Type | Required? | Default Value  |
-| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Worksheet Instance** | The Excel Worksheet object to delete. This is optional if you're using Deletion Mode. | Text       | No        | _(empty)_      |
-| **Deletion Mode**    | Specifies how to identify the worksheet to delete: by Name or Index.        | Select     | Yes       | Name           |
-| **Worksheet Name**   | The name of the worksheet to delete. Required if Deletion Mode is "Name".   | Text       | No        | _(empty)_      |
-| **Worksheet Index**  | The index of the worksheet to delete. Required if Deletion Mode is "Index". | Text       | No        | _(empty)_      |
+| Field Name             | Description                                                                           | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object to delete. This is optional if you're using Deletion Mode. | Text       | No        | _(empty)_     |
+| **Deletion Mode**      | Specifies how to identify the worksheet to delete: by Name or Index.                  | Select     | Yes       | Name          |
+| **Worksheet Name**     | The name of the worksheet to delete. Required if Deletion Mode is "Name".             | Text       | No        | _(empty)_     |
+| **Worksheet Index**    | The index of the worksheet to delete. Required if Deletion Mode is "Index".           | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -58,18 +58,18 @@ Execute the node to remove the specified worksheet from the Excel workbook.
 
 ## Input/Output Examples
 
-| Deletion Mode | Worksheet Name | Worksheet Index | Action Taken                     |
-| ------------- | -------------- | --------------- | -------------------------------- |
-| Name          | "Quarter1"     | _(n/a)_         | Deletes the sheet named "Quarter1" |
+| Deletion Mode | Worksheet Name | Worksheet Index | Action Taken                                  |
+| ------------- | -------------- | --------------- | --------------------------------------------- |
+| Name          | "Quarter1"     | _(n/a)_         | Deletes the sheet named "Quarter1"            |
 | Index         | _(n/a)_        | 3               | Deletes the 4th worksheet (index starts at 0) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                                                  |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Worksheet is not deleted**                 | Verify that the worksheet name or index is correct, and ensure the correct Deletion Mode is selected.                                      |
-| **Worksheet Name/Index fields not showing**  | Make sure you select the appropriate Deletion Mode (Name or Index) so relevant fields appear for input.                                      |
-| **Excel workbook not updated**               | Confirm that you save the workbook after modification to apply and keep changes.                                                           |
+| Problem                                     | Solution                                                                                                |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Worksheet is not deleted**                | Verify that the worksheet name or index is correct, and ensure the correct Deletion Mode is selected.   |
+| **Worksheet Name/Index fields not showing** | Make sure you select the appropriate Deletion Mode (Name or Index) so relevant fields appear for input. |
+| **Excel workbook not updated**              | Confirm that you save the workbook after modification to apply and keep changes.                        |
 
 ## Real-World Use Cases
 

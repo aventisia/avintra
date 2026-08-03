@@ -17,9 +17,7 @@ interface UNDialogTriggerProps {
  * Renders a trigger component for the notifications Dialog.
  * This component displays a bell icon button with a tooltip.
  */
-export const UNDialogTrigger = ({
-  triggerSize = "icon8",
-}: UNDialogTriggerProps) => {
+export const UNDialogTrigger = ({ triggerSize = "icon8" }: UNDialogTriggerProps) => {
   // Get store state and actions
   const { isOpen, toggleOpen } = useUnreadNotificationsStore(
     useShallow((state) => ({

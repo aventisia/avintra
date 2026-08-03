@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name          | Description                                                      | Input Type | Required? | Default Value |
-| ------------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **XML Content**     | The XML content as a string.                                     | Text       | Yes       | _(empty)_     |
-| **XPath Expression**| The XPath expression to locate the XML element.                  | Text       | Yes       | _(empty)_     |
-| **Get Value As**    | Specifies how the XML element value should be returned.          | Select     | No        | TextValue     |
+| Field Name           | Description                                             | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**      | The XML content as a string.                            | Text       | Yes       | _(empty)_     |
+| **XPath Expression** | The XPath expression to locate the XML element.         | Text       | Yes       | _(empty)_     |
+| **Get Value As**     | Specifies how the XML element value should be returned. | Select     | No        | TextValue     |
 
 ## Expected Output Format
 
@@ -59,25 +59,26 @@ The extracted value will be available as **XmlElementValue** for use in other no
 </Steps>
 
 <Callout type="info" title="Tip">
-  Make sure your XPath expression is correct. An incorrect XPath expression will result in no value being extracted.
+  Make sure your XPath expression is correct. An incorrect XPath expression will
+  result in no value being extracted.
 </Callout>
 
 ## Input/Output Examples
 
-| XML Content                               | XPath Expression | Get Value As  | Output Value    | Output Type        |
-| ----------------------------------------- | ---------------- | ------------- | --------------- | ------------------ |
-| `<user><name>John Doe</name></user>`      | `/user/name`     | Text Value    | "John Doe"      | String (Text)      |
-| `<product><price>99.99</price></product>` | `/product/price` | Numeric Value | 99.99           | Number (Double)    |
-| `<date><created>2023-10-21</created></date>` | `/date/created` | DateTime Value| 2023-10-21T00:00:00 | DateTime         |
-| `<flag><active>true</active></flag>`      | `/flag/active`   | Boolean Value | true            | Boolean (true/false)|
+| XML Content                                  | XPath Expression | Get Value As   | Output Value        | Output Type          |
+| -------------------------------------------- | ---------------- | -------------- | ------------------- | -------------------- |
+| `<user><name>John Doe</name></user>`         | `/user/name`     | Text Value     | "John Doe"          | String (Text)        |
+| `<product><price>99.99</price></product>`    | `/product/price` | Numeric Value  | 99.99               | Number (Double)      |
+| `<date><created>2023-10-21</created></date>` | `/date/created`  | DateTime Value | 2023-10-21T00:00:00 | DateTime             |
+| `<flag><active>true</active></flag>`         | `/flag/active`   | Boolean Value  | true                | Boolean (true/false) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                   |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **XPath does not return a value**              | Confirm the XPath expression matches the XML structure. Use an online XPath tester for debugging.                                           |
-| **Entered XML is not well-formed**             | Ensure the XML content is valid. Missing or unmatched tags will cause errors.                                                              |
-| **Incorrect output format**                    | Double-check the **Get Value As** setting to ensure it matches your expected output format.                                                |
+| Problem                            | Solution                                                                                          |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **XPath does not return a value**  | Confirm the XPath expression matches the XML structure. Use an online XPath tester for debugging. |
+| **Entered XML is not well-formed** | Ensure the XML content is valid. Missing or unmatched tags will cause errors.                     |
+| **Incorrect output format**        | Double-check the **Get Value As** setting to ensure it matches your expected output format.       |
 
 ## Real-World Use Cases
 

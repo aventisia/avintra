@@ -1,10 +1,3 @@
-import { OutputHandle } from "@/components/handles/OutputHandle";
-import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
-import { NodeImage } from "@/components/node-container/node-header/NodeImage";
-import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
-import { ModelConfigType } from "@/types/model-config-type";
-import { NodeDataType, NodeInputType } from "@/types/node-data-type";
-
 import { cn } from "@avplatform/ui/lib";
 import {
   NodeProps,
@@ -15,6 +8,13 @@ import {
 } from "@xyflow/react";
 import { memo, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { OutputHandle } from "@/components/handles/OutputHandle";
+import { NodeHeading } from "@/components/node-container/node-header/NodeHeading";
+import { NodeImage } from "@/components/node-container/node-header/NodeImage";
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
+import { ModelConfigType } from "@/types/model-config-type";
+import { NodeDataType, NodeInputType } from "@/types/node-data-type";
 
 export const ModelNode = memo(({ id, data }: NodeProps) => {
   const { updateNodeData } = useReactFlow();
@@ -47,9 +47,7 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
   }, [connectedNodeData]);
 
   function getProvider(config: NodeInputType[] | undefined): string {
-    const modelConfigItem = config?.find((item) =>
-      item.key.includes("__ModelConfig__"),
-    );
+    const modelConfigItem = config?.find((item) => item.key.includes("__ModelConfig__"));
 
     if (!modelConfigItem) return "";
 
@@ -74,16 +72,15 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
     elevenlabs: "Elevenlabs",
   };
 
-  const { setShowDialog, setNodeId, setNodeData, setSelectedTab } =
-    useDynamicConfigPanelStore(
-      useShallow((state) => ({
-        showDialog: state.showDialog,
-        setNodeId: state.setNodeId,
-        setShowDialog: state.setShowDialog,
-        setNodeData: state.setNodeData,
-        setSelectedTab: state.setSelectedTab,
-      })),
-    );
+  const { setShowDialog, setNodeId, setNodeData, setSelectedTab } = useDynamicConfigPanelStore(
+    useShallow((state) => ({
+      showDialog: state.showDialog,
+      setNodeId: state.setNodeId,
+      setShowDialog: state.setShowDialog,
+      setNodeData: state.setNodeData,
+      setSelectedTab: state.setSelectedTab,
+    })),
+  );
 
   return (
     <>
@@ -91,10 +88,8 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
         <div
           className={cn(
             "flex h-16 w-16 items-center justify-center rounded-full   border border-slate-300   bg-white hover:ring hover:ring-ring cursor-pointer",
-            (connectedNodeData?.data?.isDisabled as NodeDataType) &&
-              "opacity-50",
-            (connectedNodeData?.data?.isCut as NodeDataType) &&
-              "border-red-400 opacity-60",
+            (connectedNodeData?.data?.isDisabled as NodeDataType) && "opacity-50",
+            (connectedNodeData?.data?.isCut as NodeDataType) && "border-red-400 opacity-60",
           )}
           onDoubleClick={() => {
             setShowDialog(true);
@@ -110,9 +105,7 @@ export const ModelNode = memo(({ id, data }: NodeProps) => {
             src={vaultAppIconMapper[data?.label as string]}
           />
         </div>
-        <NodeHeading className=" w-16">
-          {providerLabelMapper[data?.label as string]}
-        </NodeHeading>
+        <NodeHeading className=" w-16">{providerLabelMapper[data?.label as string]}</NodeHeading>
       </div>
 
       <OutputHandle position={Position.Top} className="opacity-0" />

@@ -6,12 +6,12 @@ The **Find File in Folder** node lets you automate the search for a single file 
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                | Input Type | Required? | Default Value |
-| -------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Folder Path**      | The path to the folder you want to search through.                                         | Text       | Yes       | _(empty)_     |
-| **Search Option**    | Choose the criteria to find the file: Largest, Smallest, Newest, Oldest, etc.              | Select     | Yes       | Largest       |
-| **File Filter**      | Apply file type filters like '*.txt' or '*.jpg;*.png' to narrow down search results.       | Text       | No        | *             |
-| **Include Subfolders**| Option to include files from subfolders in the search process.                             | Switch     | No        | true          |
+| Field Name             | Description                                                                           | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Folder Path**        | The path to the folder you want to search through.                                    | Text       | Yes       | _(empty)_     |
+| **Search Option**      | Choose the criteria to find the file: Largest, Smallest, Newest, Oldest, etc.         | Select     | Yes       | Largest       |
+| **File Filter**        | Apply file type filters like '_.txt' or '_.jpg;\*.png' to narrow down search results. | Text       | No        | \*            |
+| **Include Subfolders** | Option to include files from subfolders in the search process.                        | Switch     | No        | true          |
 
 ## Expected Output Format
 
@@ -59,16 +59,17 @@ The file matching your criteria will be available as **ResultFilePath** for furt
 </Steps>
 
 <Callout type="info" title="Tip">
-  By default, the search includes subfolders. To exclude them, switch **Include Subfolders** to false.
+  By default, the search includes subfolders. To exclude them, switch **Include
+  Subfolders** to false.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                                                      |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Invalid Folder Path**                   | Ensure the directory path is correct and the folder is accessible from your system.           |
-| **Criteria Doesn't Match Any File**       | Try using different search criteria or check if files matching filters exist in the directory.|
-| **No File Filter Applied**                | If no file filter is specified, all file types will be considered in the search.              |
+| Problem                             | Solution                                                                                       |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Invalid Folder Path**             | Ensure the directory path is correct and the folder is accessible from your system.            |
+| **Criteria Doesn't Match Any File** | Try using different search criteria or check if files matching filters exist in the directory. |
+| **No File Filter Applied**          | If no file filter is specified, all file types will be considered in the search.               |
 
 ## Real-World Use Cases
 

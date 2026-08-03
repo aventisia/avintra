@@ -14,17 +14,12 @@ export const AppErrorPage = () => {
   };
 
   useEffect(() => {
-    if (
-      error?.message?.includes("Failed to fetch dynamically imported module")
-    ) {
+    if (error?.message?.includes("Failed to fetch dynamically imported module")) {
       window.location.reload();
     }
   }, [error?.message]);
 
   return (
-    <ErrorPage
-      appLogo={<AppLogo logoSrc="/logo.svg" />}
-      minimalFooter={<AppMinimalFooter />}
-    />
+    <ErrorPage appLogo={<AppLogo logoSrc="/logo.svg" />} minimalFooter={<AppMinimalFooter />} />
   );
 };

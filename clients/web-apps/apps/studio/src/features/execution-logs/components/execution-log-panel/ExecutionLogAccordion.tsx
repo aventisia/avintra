@@ -10,19 +10,13 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-export default function ExecutionLogAccordion({
-  data,
-  selectedEntry,
-  onSelect,
-}: Props) {
+export default function ExecutionLogAccordion({ data, selectedEntry, onSelect }: Props) {
   const [openItems, setOpenItems] = useState<string[]>([]);
 
   useEffect(() => {
     if (!selectedEntry) return;
 
-    const section = data.find((day) =>
-      day.entries.some((entry) => entry.id === selectedEntry),
-    );
+    const section = data.find((day) => day.entries.some((entry) => entry.id === selectedEntry));
 
     if (section) {
       setOpenItems([section.date]); // open that section

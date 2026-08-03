@@ -1,6 +1,8 @@
+import { Node } from "@xyflow/react";
+
 import { LoopNodeDataType } from "@/types/loop-node-data-type";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
-import { Node } from "@xyflow/react";
+
 import { ConditionType, WpfLoopNodeData } from "..";
 
 export function getWpfLoopNodeData(
@@ -13,9 +15,8 @@ export function getWpfLoopNodeData(
   )?.value as ConditionType[][];
 
   // Find the input with key "LoopType"
-  const loopType = nodeObj?.data?.inputs?.find(
-    (input: NodeInputType) => input.key === "LoopType",
-  )?.value as "ConditionalLoop" | "ForEachLoop";
+  const loopType = nodeObj?.data?.inputs?.find((input: NodeInputType) => input.key === "LoopType")
+    ?.value as "ConditionalLoop" | "ForEachLoop";
 
   // Find the input with key "ListVariableName"
   const listVariableName = nodeObj?.data?.inputs?.find(

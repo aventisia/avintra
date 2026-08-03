@@ -5,19 +5,20 @@ import { Callout, Steps } from "nextra/components";
 The **Download Attachments** node enables you to automatically download all attachments from a specific email message using the Microsoft Graph API. This is particularly useful for organizing and saving relevant email data without manually handling each attachment.
 
 You might use this node to:
+
 - Retrieve important documents sent via email.
 - Automate the organization of downloadable content from business correspondence.
 - Streamline processes that require attachment retrieval for record-keeping or further analysis.
 
 ## Configuration Options
 
-| Field Name      | Description                                                                            | Input Type | Required? | Default Value |
-| --------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **User Email**  | The email address of the mailbox owner.                                                | Text       | Yes       | _(empty)_     |
-| **Tenant ID**   | The Azure Active Directory tenant (directory) ID.                                       | Text       | Yes       | _(empty)_     |
-| **Client ID**   | The Azure AD application (client) ID.                                                  | Text       | Yes       | _(empty)_     |
-| **Client Secret** | The Azure AD application client secret.                                             | Text       | Yes       | _(empty)_     |
-| **Message ID**  | The ID of the email message from which to download attachments.                          | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                                     | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **User Email**    | The email address of the mailbox owner.                         | Text       | Yes       | _(empty)_     |
+| **Tenant ID**     | The Azure Active Directory tenant (directory) ID.               | Text       | Yes       | _(empty)_     |
+| **Client ID**     | The Azure AD application (client) ID.                           | Text       | Yes       | _(empty)_     |
+| **Client Secret** | The Azure AD application client secret.                         | Text       | Yes       | _(empty)_     |
+| **Message ID**    | The ID of the email message from which to download attachments. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -56,25 +57,27 @@ Enter the **Message ID** of the email whose attachments you wish to download.
 ### Step 7
 
 Once the node executes, the attachments will be listed in the **Attachments JSON** output field for further use.
+
 </Steps>
 
 <Callout type="info" title="Note">
-Ensure that all IDs and secrets are correctly entered to enable proper authentication and downloading of attachments.
+  Ensure that all IDs and secrets are correctly entered to enable proper
+  authentication and downloading of attachments.
 </Callout>
 
 ## Input/Output Examples
 
-| User Email           | Tenant ID | Client ID | Client Secret | Message ID       | Output Value                                                    |
-| -------------------- | --------- | --------- | ------------- | ---------------- | --------------------------------------------------------------- |
-| user@example.com     | 12345     | ABCD1234  | ZXCVBNM0987   | A1B2C3D4E5       | `{"attachment1": "file.pdf", "attachment2": "image.jpg"}`       |
+| User Email       | Tenant ID | Client ID | Client Secret | Message ID | Output Value                                              |
+| ---------------- | --------- | --------- | ------------- | ---------- | --------------------------------------------------------- |
+| user@example.com | 12345     | ABCD1234  | ZXCVBNM0987   | A1B2C3D4E5 | `{"attachment1": "file.pdf", "attachment2": "image.jpg"}` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                                         |
-| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| **Incorrect Tenant ID/Client ID/Client Secret**        | Double-check all Azure credentials for accuracy. Incorrect details will prevent successful authentication.     |
-| **Invalid or Empty Message ID**                        | Verify that the Message ID is correct and corresponds to an existing email with attachments.                    |
-| **No Attachments Found in Output**                     | Confirm that the specified email contains attachments and that the correct Message ID is provided.              |
+| Problem                                         | Solution                                                                                                   |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Incorrect Tenant ID/Client ID/Client Secret** | Double-check all Azure credentials for accuracy. Incorrect details will prevent successful authentication. |
+| **Invalid or Empty Message ID**                 | Verify that the Message ID is correct and corresponds to an existing email with attachments.               |
+| **No Attachments Found in Output**              | Confirm that the specified email contains attachments and that the correct Message ID is provided.         |
 
 ## Real-World Use Cases
 

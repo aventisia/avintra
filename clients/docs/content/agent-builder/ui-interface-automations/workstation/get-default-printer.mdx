@@ -5,13 +5,14 @@ import { Callout, Steps } from "nextra/components";
 The **Get Default Printer** node helps you retrieve the name of the currently set default printer on your desktop. This node can be particularly useful when automating processes that require printer information or when ensuring that print jobs are sent to the correct printer without manual verification.
 
 ### Why use this node?
+
 - To automatically identify the default printer without needing to check printer settings manually.
 - Useful in scenarios where print jobs need to be automated and directed to a specific printer already set as default.
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                                                                       | Input Type | Required? | Default Value |
-| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name           | Description                                                                                                                                                               | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
 | **Retrieval Method** | Select the method to use for retrieving the default printer. Choose "Auto" to let the system try all methods. Options include "Auto", "Registry", "Win32 API", and "WMI". | Select     | No        | Auto          |
 
 ## Expected Output Format
@@ -42,25 +43,26 @@ Once the node has completed processing, it will output the name of the default p
 </Steps>
 
 <Callout type="info" title="Tip">
-  If unsure, use "Auto" as your Retrieval Method for the best chance of obtaining the correct printer information regardless of system configuration.
+  If unsure, use "Auto" as your Retrieval Method for the best chance of
+  obtaining the correct printer information regardless of system configuration.
 </Callout>
 
 ## Input/Output Examples
 
-| Retrieval Method | Example Output          | Output Type |
-| ---------------- | ----------------------- | ----------- |
-| Auto             | HP_LaserJet_Pro_M404    | String      |
-| Registry         | Brother_MFC_L6900DW     | String      |
-| Win32 API        | Canon_Pixma_TS9120      | String      |
-| WMI              | Epson_EcoTank_ET-4760   | String      |
+| Retrieval Method | Example Output        | Output Type |
+| ---------------- | --------------------- | ----------- |
+| Auto             | HP_LaserJet_Pro_M404  | String      |
+| Registry         | Brother_MFC_L6900DW   | String      |
+| Win32 API        | Canon_Pixma_TS9120    | String      |
+| WMI              | Epson_EcoTank_ET-4760 | String      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                                                |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
-| **No output value**                                    | Ensure your system has a default printer set. Try selecting "Auto" for Retrieval Method as it tests multiple approaches. |
-| **Method preference not working as expected**          | Double-check system permissions and ensure the method chosen is valid and supported on your machine.                    |
-| **Unexpected printer name retrieved**                  | Verify that the printer's settings are correctly configured and that the node has the necessary permissions to access them. |
+| Problem                                       | Solution                                                                                                                    |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **No output value**                           | Ensure your system has a default printer set. Try selecting "Auto" for Retrieval Method as it tests multiple approaches.    |
+| **Method preference not working as expected** | Double-check system permissions and ensure the method chosen is valid and supported on your machine.                        |
+| **Unexpected printer name retrieved**         | Verify that the printer's settings are correctly configured and that the node has the necessary permissions to access them. |
 
 ## Real-World Use Cases
 

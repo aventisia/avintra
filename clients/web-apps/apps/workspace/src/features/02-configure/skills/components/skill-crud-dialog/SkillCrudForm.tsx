@@ -46,11 +46,11 @@ export const SkillCrudForm = ({ rowId, crudAction }: SkillCrudFormProps) => {
     mutate: mutateSkill,
     isPending,
     isSuccess,
-  } = useListOptimisticMutation<
-    SkillTableDto,
-    SkillTableDto | boolean,
-    SkillTableDto
-  >([rowId], skillOptimisticMutationFn, queryKey);
+  } = useListOptimisticMutation<SkillTableDto, SkillTableDto | boolean, SkillTableDto>(
+    [rowId],
+    skillOptimisticMutationFn,
+    queryKey,
+  );
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof skillZodSchema>) => {

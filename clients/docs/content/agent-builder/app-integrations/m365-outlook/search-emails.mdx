@@ -6,13 +6,13 @@ The **Search Emails** node enables you to find specific emails in an inbox by us
 
 ## Configuration Options
 
-| Field Name       | Description                                                                 | Input Type | Required? | Default Value |
-| ---------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Filter Query** | OData filter query, e.g., `subject eq 'Test'` for searching based on subject.| Text       | Yes       | _(empty)_     |
-| **User Email**   | The email address of the mailbox owner.                                      | Text       | Yes       | _(empty)_     |
-| **Tenant ID**    | The Azure AD Tenant ID (Directory ID).                                       | Text       | Yes       | _(empty)_     |
-| **Client ID**    | The Azure AD Application (Client) ID.                                         | Text       | Yes       | _(empty)_     |
-| **Client Secret**| The Azure AD Application Client Secret.                                        | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                                                   | Input Type | Required? | Default Value |
+| ----------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Filter Query**  | OData filter query, e.g., `subject eq 'Test'` for searching based on subject. | Text       | Yes       | _(empty)_     |
+| **User Email**    | The email address of the mailbox owner.                                       | Text       | Yes       | _(empty)_     |
+| **Tenant ID**     | The Azure AD Tenant ID (Directory ID).                                        | Text       | Yes       | _(empty)_     |
+| **Client ID**     | The Azure AD Application (Client) ID.                                         | Text       | Yes       | _(empty)_     |
+| **Client Secret** | The Azure AD Application Client Secret.                                       | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -52,22 +52,23 @@ Upon completing these inputs, the node will process and output the searched emai
 </Steps>
 
 <Callout type="info" title="Security Tip">
-  Ensure your Azure AD credentials, especially **Client Secret**, are stored securely and not exposed or shared unnecessarily.
+  Ensure your Azure AD credentials, especially **Client Secret**, are stored
+  securely and not exposed or shared unnecessarily.
 </Callout>
 
 ## Input/Output Examples
 
-| Filter Query            | User Email          | Example Output                                  |
-| ----------------------- | ------------------- | ----------------------------------------------- |
-| `subject eq 'Welcome'`  | john.doe@example.com| Emails containing subject "Welcome" in JSON format |
+| Filter Query           | User Email           | Example Output                                     |
+| ---------------------- | -------------------- | -------------------------------------------------- |
+| `subject eq 'Welcome'` | john.doe@example.com | Emails containing subject "Welcome" in JSON format |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                              |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **Invalid Filter Query Format**                         | Make sure your filter query is in a valid OData format, e.g., `subject eq 'Important'`.             |
-| **Incorrect Email Address**                             | Double-check the email address provided under **User Email** to ensure it's valid.                    |
-| **Azure AD Credentials Error**                          | Verify the **Tenant ID**, **Client ID**, and **Client Secret**. These must be correct for authentication. |
+| Problem                         | Solution                                                                                                  |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Invalid Filter Query Format** | Make sure your filter query is in a valid OData format, e.g., `subject eq 'Important'`.                   |
+| **Incorrect Email Address**     | Double-check the email address provided under **User Email** to ensure it's valid.                        |
+| **Azure AD Credentials Error**  | Verify the **Tenant ID**, **Client ID**, and **Client Secret**. These must be correct for authentication. |
 
 ## Real-World Use Cases
 

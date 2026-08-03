@@ -1,7 +1,6 @@
-import { useState } from "react";
-
 import { Button } from "@avplatform/ui/buttons";
 import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
 import { activateTool, testTool } from "../../apis/tools.apis";
 import { TestToolDto, TestToolResponseDto } from "../../dtos/index";
@@ -43,7 +42,9 @@ export const StepPlayground = () => {
     <div className="space-y-4">
       <div className="rounded border p-3">
         <p className="text-sm font-medium">Tool: {draftTool.name}</p>
-        <p className="text-xs text-muted-foreground">Operation testing will be wired once operations are parsed from the spec.</p>
+        <p className="text-xs text-muted-foreground">
+          Operation testing will be wired once operations are parsed from the spec.
+        </p>
       </div>
 
       <Button onClick={handleTest} disabled={testMutation.isPending}>
@@ -54,7 +55,9 @@ export const StepPlayground = () => {
         <div className="rounded border p-3">
           <p className="text-sm">Success: {lastResponse.success ? "Yes" : "No"}</p>
           {lastResponse.statusCode && <p className="text-sm">Status: {lastResponse.statusCode}</p>}
-          {lastResponse.durationMs && <p className="text-sm">Duration: {lastResponse.durationMs}ms</p>}
+          {lastResponse.durationMs && (
+            <p className="text-sm">Duration: {lastResponse.durationMs}ms</p>
+          )}
           {lastResponse.body !== undefined && lastResponse.body !== null && (
             <pre className="mt-2 max-h-48 overflow-auto rounded bg-muted p-2 text-xs">
               {JSON.stringify(lastResponse.body, null, 2)}

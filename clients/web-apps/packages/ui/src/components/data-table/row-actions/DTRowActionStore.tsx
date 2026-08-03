@@ -1,8 +1,8 @@
 import { ArrowUpRightIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
+import { useShallow } from "zustand/react/shallow";
 
 import { SimpleDDMenuItem } from "@/ui/components/dropdown-menu";
 import { useDTCrudDialogStore } from "@/ui/stores";
-import { useShallow } from "zustand/react/shallow";
 
 interface DTEditRowActionStoreProps {
   rowId: string;

@@ -6,17 +6,17 @@ The **Send Email Message Through Outlook** node enables you to send emails direc
 
 ## Configuration Options
 
-| Field Name          | Description                                                                     | Input Type | Required? | Default Value |
-| ------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Outlook Application** | The Outlook Application object used to send the email.                         | Text       | Yes       | _(empty)_     |
-| **Recipient(s)**    | The email address(es) of the recipient(s). Separate multiple addresses using semicolons (;). | Text       | Yes       | _(empty)_     |
-| **CC Recipient(s)** | Optional: The CC email address(es), separated by semicolons (;).                 | Text       | No        | _(empty)_     |
-| **BCC Recipient(s)**| Optional: The BCC email address(es), separated by semicolons (;).                | Text       | No        | _(empty)_     |
-| **Subject**         | The subject line of the email.                                                  | Text       | Yes       | _(empty)_     |
-| **Body**            | The body content of the email message.                                          | Text       | Yes       | _(empty)_     |
-| **Is Body HTML**    | Determines whether the body should be interpreted as HTML.                      | Switch     | No        | False         |
-| **Save As Draft**   | If true, the email is saved as a draft instead of being sent immediately.       | Switch     | No        | False         |
-| **Attachments**     | Full path of any attachment files. Separate multiple paths with spaces.         | Text       | No        | _(empty)_     |
+| Field Name              | Description                                                                                  | Input Type | Required? | Default Value |
+| ----------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Outlook Application** | The Outlook Application object used to send the email.                                       | Text       | Yes       | _(empty)_     |
+| **Recipient(s)**        | The email address(es) of the recipient(s). Separate multiple addresses using semicolons (;). | Text       | Yes       | _(empty)_     |
+| **CC Recipient(s)**     | Optional: The CC email address(es), separated by semicolons (;).                             | Text       | No        | _(empty)_     |
+| **BCC Recipient(s)**    | Optional: The BCC email address(es), separated by semicolons (;).                            | Text       | No        | _(empty)_     |
+| **Subject**             | The subject line of the email.                                                               | Text       | Yes       | _(empty)_     |
+| **Body**                | The body content of the email message.                                                       | Text       | Yes       | _(empty)_     |
+| **Is Body HTML**        | Determines whether the body should be interpreted as HTML.                                   | Switch     | No        | False         |
+| **Save As Draft**       | If true, the email is saved as a draft instead of being sent immediately.                    | Switch     | No        | False         |
+| **Attachments**         | Full path of any attachment files. Separate multiple paths with spaces.                      | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -68,29 +68,30 @@ Add any file attachments by specifying their full file paths in the **Attachment
 </Steps>
 
 <Callout type="info" title="Tip">
-  To send emails correctly, ensure all recipient email addresses are valid and the Outlook application is properly configured on your desktop.
+  To send emails correctly, ensure all recipient email addresses are valid and
+  the Outlook application is properly configured on your desktop.
 </Callout>
 
 ## Input/Output Examples
 
 While this node does not yield an output value, below are examples of how to configure the inputs:
 
-| Field            | Example Input                                                     |
-| ---------------- | ----------------------------------------------------------------- |
-| Recipient(s)     | john.doe@example.com; jane.smith@example.com                      |
-| CC Recipient(s)  | manager@example.com                                               |
-| BCC Recipient(s) | confidential@example.com                                          |
-| Subject          | Quarterly Sales Report                                            |
+| Field            | Example Input                                                             |
+| ---------------- | ------------------------------------------------------------------------- |
+| Recipient(s)     | john.doe@example.com; jane.smith@example.com                              |
+| CC Recipient(s)  | manager@example.com                                                       |
+| BCC Recipient(s) | confidential@example.com                                                  |
+| Subject          | Quarterly Sales Report                                                    |
 | Body             | Dear Team, Please find attached the quarterly sales report. Regards, John |
-| Attachments      | C:\Documents\Report.pdf C:\Documents\Overview.xlsx                |
+| Attachments      | C:\Documents\Report.pdf C:\Documents\Overview.xlsx                        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                            | Solution                                                      |
-| ---------------------------------- | ------------------------------------------------------------- |
-| **Invalid email addresses**        | Double-check that all email addresses are correctly formatted. |
-| **Emails not sending**             | Ensure Outlook is configured correctly and is responsive.      |
-| **SMTP server issues**             | Check your Outlook configuration and internet connection.      |
+| Problem                     | Solution                                                       |
+| --------------------------- | -------------------------------------------------------------- |
+| **Invalid email addresses** | Double-check that all email addresses are correctly formatted. |
+| **Emails not sending**      | Ensure Outlook is configured correctly and is responsive.      |
+| **SMTP server issues**      | Check your Outlook configuration and internet connection.      |
 
 ## Real-World Use Cases
 

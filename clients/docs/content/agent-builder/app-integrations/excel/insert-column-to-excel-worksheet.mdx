@@ -6,8 +6,8 @@ The **Insert Column to Excel Worksheet** node allows you to add a new column to 
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                          | Input Type | Required? | Default Value |
-| -------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name             | Description                                                                                         | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
 | **Worksheet Instance** | The Excel Worksheet object where the new column will be inserted.                                   | Text       | Yes       | _(empty)_     |
 | **Column Reference**   | The 1-based index or letter (e.g., 'A', 'B') of the column where the new column should be inserted. | Text       | Yes       | _(empty)_     |
 
@@ -41,16 +41,17 @@ Execute the flow to apply the change. The worksheet will now have a new column i
 </Steps>
 
 <Callout type="info" title="Note">
-  Double-check that the Excel file is not locked by another application while inserting the column.
+  Double-check that the Excel file is not locked by another application while
+  inserting the column.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                 | Solution                                                                                  |
-| --------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **Excel worksheet not accessible**      | Ensure the file is not open in another application, which could prevent modifications.    |
-| **Invalid Column Reference error**      | Verify that the column reference provided is correct and exists within the worksheet.     |
-| **Inserted column not appearing**       | Make sure the worksheet instance is set correctly and the Excel file is being saved.      |
+| Problem                            | Solution                                                                               |
+| ---------------------------------- | -------------------------------------------------------------------------------------- |
+| **Excel worksheet not accessible** | Ensure the file is not open in another application, which could prevent modifications. |
+| **Invalid Column Reference error** | Verify that the column reference provided is correct and exists within the worksheet.  |
+| **Inserted column not appearing**  | Make sure the worksheet instance is set correctly and the Excel file is being saved.   |
 
 ## Real-World Use Cases
 

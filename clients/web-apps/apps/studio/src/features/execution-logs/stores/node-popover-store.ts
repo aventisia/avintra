@@ -1,7 +1,7 @@
 // stores/useNodePopoverStore.ts
-import { NodeDataType } from "@/types/node-data-type";
-
 import { create } from "zustand";
+
+import { NodeDataType } from "@/types/node-data-type";
 
 interface NodePopoverState {
   openNodeId: string | null;

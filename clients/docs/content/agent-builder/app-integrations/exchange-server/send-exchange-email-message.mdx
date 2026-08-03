@@ -5,23 +5,24 @@ import { Callout, Steps } from "nextra/components";
 The **Send Exchange Email Message** node allows you to create and send an email using an Exchange server connection. This node is beneficial for automating email dispatches directly through your business's Exchange account, making it ideal for sending reports, notifications, or any standard communication effortlessly.
 
 For example:
+
 - Sending automated reports to stakeholders.
 - Dispatching notifications or alerts.
 - Communicating with customer service teams directly over Exchange.
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                              | Input Type | Required? | Default Value |
-| ---------------------| -------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Exchange Connection** | The connection details for accessing the Exchange server.                                            | Text       | Yes       | _(empty)_     |
-| **From**             | The email address or display name of the sender.                                                         | Text       | Yes       | _(empty)_     |
-| **To**               | Recipient email addresses separated by commas.                                                           | Text       | Yes       | _(empty)_     |
-| **CC**               | CC recipient email addresses separated by commas.                                                        | Text       | No        | _(empty)_     |
-| **BCC**              | BCC recipient email addresses separated by commas.                                                       | Text       | No        | _(empty)_     |
-| **Subject**          | The subject line of the email.                                                                           | Text       | Yes       | _(empty)_     |
-| **Body**             | The main content of the email.                                                                           | Text       | Yes       | _(empty)_     |
-| **Body is HTML**     | Indicates if the email body content is in HTML format.                                                   | Switch     | No        | _(empty)_     |
-| **Attachments**      | Paths to files to be included as attachments, separated by commas.                                       | Text       | No        | _(empty)_     |
+| Field Name              | Description                                                        | Input Type | Required? | Default Value |
+| ----------------------- | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Exchange Connection** | The connection details for accessing the Exchange server.          | Text       | Yes       | _(empty)_     |
+| **From**                | The email address or display name of the sender.                   | Text       | Yes       | _(empty)_     |
+| **To**                  | Recipient email addresses separated by commas.                     | Text       | Yes       | _(empty)_     |
+| **CC**                  | CC recipient email addresses separated by commas.                  | Text       | No        | _(empty)_     |
+| **BCC**                 | BCC recipient email addresses separated by commas.                 | Text       | No        | _(empty)_     |
+| **Subject**             | The subject line of the email.                                     | Text       | Yes       | _(empty)_     |
+| **Body**                | The main content of the email.                                     | Text       | Yes       | _(empty)_     |
+| **Body is HTML**        | Indicates if the email body content is in HTML format.             | Switch     | No        | _(empty)_     |
+| **Attachments**         | Paths to files to be included as attachments, separated by commas. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -69,7 +70,8 @@ Double-check all fields to ensure accuracy and click to execute the flow, sendin
 </Steps>
 
 <Callout type="info" title="Tip">
-Ensure that the Exchange server credentials and connection details are correct to avoid sending failures.
+  Ensure that the Exchange server credentials and connection details are correct
+  to avoid sending failures.
 </Callout>
 
 ## Input/Output Examples
@@ -86,12 +88,12 @@ Ensure that the Exchange server credentials and connection details are correct t
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                                              |
-| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Exchange Connection Details**           | Verify the Exchange connection information for accuracy.                                                                              |
-| **Emails Not Sending**                            | Ensure all required fields are populated and the network connection to the server is stable.                                          |
-| **Incorrect Email Addresses**                     | Double-check recipient email formats to prevent send errors.                                                                          |
-| **HTML Content Not Displaying Correctly**         | Make sure to toggle on **Body is HTML** if you're including HTML content in the email body.                                           |
+| Problem                                   | Solution                                                                                     |
+| ----------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Invalid Exchange Connection Details**   | Verify the Exchange connection information for accuracy.                                     |
+| **Emails Not Sending**                    | Ensure all required fields are populated and the network connection to the server is stable. |
+| **Incorrect Email Addresses**             | Double-check recipient email formats to prevent send errors.                                 |
+| **HTML Content Not Displaying Correctly** | Make sure to toggle on **Body is HTML** if you're including HTML content in the email body.  |
 
 ## Real-World Use Cases
 

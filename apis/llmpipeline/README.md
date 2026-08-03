@@ -43,20 +43,20 @@ sudo apt -y install python3 python3-pip python3-venv tesseract-ocr ocrmypdf ffmp
    python3 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
-2. **Install Python dependencies:**
+3. **Install Python dependencies:**
    ```sh
    pip install -r requirements.txt
    ```
-3. **Install Tesseract OCR (for image text extraction):**
+4. **Install Tesseract OCR (for image text extraction):**
    ```sh
    sudo apt-get update
    sudo apt-get install tesseract-ocr
    ```
-4. **(Optional) Install Pandoc for RTF support:**
+5. **(Optional) Install Pandoc for RTF support:**
    ```sh
    sudo apt-get install pandoc
    ```
-5. **To freeze dependencies:**
+6. **To freeze dependencies:**
    ```sh
    pip freeze > requirements.txt
    ```

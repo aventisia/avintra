@@ -12,11 +12,11 @@ By setting environment variables, you can:
 
 ## Configuration Options
 
-| Field Name                     | Description                                                                                  | Input Type | Required? | Default Value |
-| ------------------------------ | ---------------------------------------------------------------------------------------------| ---------- | --------- | ------------- |
-| **Environment Variable Name**  | Select which environment variable you wish to modify.                                        | Select     | Yes       | _(empty)_     |
-| **New Environment Variable Value** | Specify the new value for the selected environment variable.                                | Text       | Yes       | _(empty)_     |
-| **Type**                       | Choose whether to set the variable at the User level or System level (machine-wide).          | Select     | No        | User          |
+| Field Name                         | Description                                                                          | Input Type | Required? | Default Value |
+| ---------------------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Environment Variable Name**      | Select which environment variable you wish to modify.                                | Select     | Yes       | _(empty)_     |
+| **New Environment Variable Value** | Specify the new value for the selected environment variable.                         | Text       | Yes       | _(empty)_     |
+| **Type**                           | Choose whether to set the variable at the User level or System level (machine-wide). | Select     | No        | User          |
 
 ## Step-by-Step Guide
 
@@ -44,7 +44,8 @@ The updated environment variable can now be accessed by other system processes o
 </Steps>
 
 <Callout type="info" title="Caution">
-  Changes to system environment variables can affect applications globally. Use the "System" type only if necessary and you have appropriate permissions.
+  Changes to system environment variables can affect applications globally. Use
+  the "System" type only if necessary and you have appropriate permissions.
 </Callout>
 
 ## Expected Output Format
@@ -53,10 +54,10 @@ This node does not produce a visible output as it operates by changing system se
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                            | Solution                                                                                      |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Environment variable no effect**                 | Ensure the correct variable is selected and the value is properly entered.                    |
-| **Permissions error when setting System variable** | You may need administrative privileges to modify system-level environment variables.          |
+| Problem                                            | Solution                                                                                           |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Environment variable no effect**                 | Ensure the correct variable is selected and the value is properly entered.                         |
+| **Permissions error when setting System variable** | You may need administrative privileges to modify system-level environment variables.               |
 | **Changes not recognized by applications**         | Restarting your application or logging off and back into Windows may be required to apply changes. |
 
 ## Real-World Use Cases

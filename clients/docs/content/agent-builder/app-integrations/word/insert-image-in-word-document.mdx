@@ -2,20 +2,20 @@ import { Callout, Steps } from "nextra/components";
 
 # Insert Image in Word Document
 
-The **Insert Image in Word Document** node allows you to seamlessly add images into a Word document at specific locations. This node is particularly useful when you want to automate the process of enhancing your documents with media, such as reports, proposals, or presentations. 
+The **Insert Image in Word Document** node allows you to seamlessly add images into a Word document at specific locations. This node is particularly useful when you want to automate the process of enhancing your documents with media, such as reports, proposals, or presentations.
 
 Whether you're injecting images from a file or pasting from your clipboard, this node gives precision control over placement at the beginning, end, or around specific content in the document.
 
 ## Configuration Options
 
-| Field Name         | Description                                                                               | Input Type | Required? | Default Value   |
-| ------------------ | ----------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Word Instance**  | Specifies the particular Word document you want to modify.                                | Text       | Yes       | _(empty)_       |
-| **Insert Image To**| Determines where in the document the image should be inserted.                            | Select     | Yes       | EndOfWordFile   |
-| **Image Source**   | Choose the image source: from file path or clipboard.                                     | Select     | Yes       | File            |
-| **Image Path**     | Specify the file path of the image if you're inserting from a file.                       | Text       | Yes       | _(empty)_       |
-| **Bookmark Name**  | Name of a bookmark for inserting images before or after it (if applicable).               | Text       | No        | _(empty)_       |
-| **Text to Search** | Text to find for inserting images before or after it (if applicable).                     | Text       | No        | _(empty)_       |
+| Field Name          | Description                                                                 | Input Type | Required? | Default Value |
+| ------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Word Instance**   | Specifies the particular Word document you want to modify.                  | Text       | Yes       | _(empty)_     |
+| **Insert Image To** | Determines where in the document the image should be inserted.              | Select     | Yes       | EndOfWordFile |
+| **Image Source**    | Choose the image source: from file path or clipboard.                       | Select     | Yes       | File          |
+| **Image Path**      | Specify the file path of the image if you're inserting from a file.         | Text       | Yes       | _(empty)_     |
+| **Bookmark Name**   | Name of a bookmark for inserting images before or after it (if applicable). | Text       | No        | _(empty)_     |
+| **Text to Search**  | Text to find for inserting images before or after it (if applicable).       | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -35,6 +35,7 @@ In the **Word Instance** field, specify the Word document you wish to edit.
 ### Step 3
 
 Use the **Insert Image To** dropdown to select where the image will be placed in the document. Options include:
+
 - **Beginning of Word file**, **End of Word file**
 - **Before Bookmark**, **After Bookmark**
 - **Before Specific Text**, **After Specific Text**
@@ -58,7 +59,9 @@ Verify all fields are correctly filled and adjust as necessary, then run your fl
 </Steps>
 
 <Callout type="info" title="Tip">
-  Double-check the file path and Word instance input to ensure no errors in image placement. This is crucial, especially in shared or network environments where file paths and document instances may differ.
+  Double-check the file path and Word instance input to ensure no errors in
+  image placement. This is crucial, especially in shared or network environments
+  where file paths and document instances may differ.
 </Callout>
 
 ## Input/Output Examples
@@ -66,17 +69,18 @@ Verify all fields are correctly filled and adjust as necessary, then run your fl
 _No direct output value, as changes are applied directly to the document._
 
 **Example Settings**:
+
 - **Insert Image To**: Beginning of Word file
 - **Image Source**: File
 - **Image Path**: `/path/to/image.jpg`
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                             |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Image does not insert**                      | Ensure that the **Word Instance** and **Image Path** are correctly specified.                         |
-| **Bookmark or Text not found**                 | Double-check spelling and existence of the bookmark or text in the Word document.                    |
-| **No image from clipboard**                    | Ensure the correct image is copied to the clipboard prior to running the node if using Clipboard.    |
+| Problem                        | Solution                                                                                          |
+| ------------------------------ | ------------------------------------------------------------------------------------------------- |
+| **Image does not insert**      | Ensure that the **Word Instance** and **Image Path** are correctly specified.                     |
+| **Bookmark or Text not found** | Double-check spelling and existence of the bookmark or text in the Word document.                 |
+| **No image from clipboard**    | Ensure the correct image is copied to the clipboard prior to running the node if using Clipboard. |
 
 ## Real-World Use Cases
 

@@ -12,14 +12,14 @@ For example:
 
 ## Configuration Options
 
-| Field Name               | Description                                                                           | Input Type  | Required? | Default Value  |
-| ------------------------ | ------------------------------------------------------------------------------------- | ----------- | --------- | -------------- |
-| **Dialog Title**         | The title of the file selection dialog window.                                        | Text        | Yes       | _(empty)_      |
-| **Initial Folder**       | The folder path where the dialog starts. Defaults to Desktop if left empty.           | Text        | No        | _(empty)_      |
-| **File Filter**          | Filter for file types (e.g., "Text Files (*.txt)|*.txt"). Defaults to All Files.      | Text        | No        | _(empty)_      |
-| **Keep Dialog On Top**   | Keeps the dialog on top of all other windows if set to true.                          | Switch      | No        | _(empty)_      |
-| **Allow Multiple Selection** | Allows user to select multiple files if set to true.                             | Switch      | No        | _(empty)_      |
-| **Check If File Exists** | Validates that the selected file(s) exist before returning.                           | Switch      | No        | _(empty)_      |
+| Field Name                   | Description                                                                 | Input Type                       | Required? | Default Value |
+| ---------------------------- | --------------------------------------------------------------------------- | -------------------------------- | --------- | ------------- | --------- |
+| **Dialog Title**             | The title of the file selection dialog window.                              | Text                             | Yes       | _(empty)_     |
+| **Initial Folder**           | The folder path where the dialog starts. Defaults to Desktop if left empty. | Text                             | No        | _(empty)_     |
+| **File Filter**              | Filter for file types (e.g., "Text Files (\*.txt)                           | \*.txt"). Defaults to All Files. | Text      | No            | _(empty)_ |
+| **Keep Dialog On Top**       | Keeps the dialog on top of all other windows if set to true.                | Switch                           | No        | _(empty)_     |
+| **Allow Multiple Selection** | Allows user to select multiple files if set to true.                        | Switch                           | No        | _(empty)_     |
+| **Check If File Exists**     | Validates that the selected file(s) exist before returning.                 | Switch                           | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -66,24 +66,25 @@ The selected files and user interaction results will be available as **Selected 
 </Steps>
 
 <Callout type="info" title="Tip">
-  You can enable the **Allow Multiple Selection** option if you anticipate that users need to process or upload multiple files at once.
+  You can enable the **Allow Multiple Selection** option if you anticipate that
+  users need to process or upload multiple files at once.
 </Callout>
 
 ## Input/Output Examples
 
-| Dialog Title      | Initial Folder | File Filter      | Allow Multiple Selection | Check If File Exists | Output: Selected Files   | Output: Button Pressed |
-| ----------------- | -------------- | ---------------- | ------------------------ | -------------------- | -------------------------| ---------------------- |
-| "Choose an Image" | C:\Images      | "Image Files|*.jpg;*.png" | Yes                    | Yes                  | ["C:\Images\pic1.jpg"]   | True                   |
-| "Open Document"   |                | "All Files|*.*"  | No                       | No                   | []                       | False                  |
+| Dialog Title      | Initial Folder | File Filter  | Allow Multiple Selection | Check If File Exists | Output: Selected Files | Output: Button Pressed |
+| ----------------- | -------------- | ------------ | ------------------------ | -------------------- | ---------------------- | ---------------------- | ----- |
+| "Choose an Image" | C:\Images      | "Image Files | _.jpg;_.png"             | Yes                  | Yes                    | ["C:\Images\pic1.jpg"] | True  |
+| "Open Document"   |                | "All Files   | _._"                     | No                   | No                     | []                     | False |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                                             |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **File dialog doesn't open in specified folder**          | Ensure the **Initial Folder** path is correct and exists on the user's machine.                                       |
-| **Cannot select multiple files**                          | Double-check if the **Allow Multiple Selection** option is set to true.                                               |
-| **File filter not working**                               | Verify that the **File Filter** syntax is correct, using designated formats like `"Text Files (*.txt)|*.txt"`.         |
-| **Unexpected 'File not found' errors**                    | Ensure **Check If File Exists** is enabled only when file existence validation is necessary.                           |
+| Problem                                          | Solution                                                                                               |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | --------- |
+| **File dialog doesn't open in specified folder** | Ensure the **Initial Folder** path is correct and exists on the user's machine.                        |
+| **Cannot select multiple files**                 | Double-check if the **Allow Multiple Selection** option is set to true.                                |
+| **File filter not working**                      | Verify that the **File Filter** syntax is correct, using designated formats like `"Text Files (\*.txt) | \*.txt"`. |
+| **Unexpected 'File not found' errors**           | Ensure **Check If File Exists** is enabled only when file existence validation is necessary.           |
 
 ## Real-World Use Cases
 

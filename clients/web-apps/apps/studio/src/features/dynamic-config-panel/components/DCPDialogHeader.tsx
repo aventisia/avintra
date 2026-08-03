@@ -1,16 +1,12 @@
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-
 import { Input } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
-import {
-  DialogClose,
-  DialogDescription,
-  DialogTitle,
-} from "@avplatform/ui/dialog";
+import { DialogClose, DialogDescription, DialogTitle } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { PencilIcon, SquareArrowOutUpRightIcon, X } from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 import { useDynamicConfigPanelStore } from "../stores/dcp-store";
 
@@ -94,9 +90,7 @@ const DCPDialogHeader = () => {
               <span className="max-w-[24rem] overflow-hidden truncate text-[0.91rem]">
                 {nodeLabel}
               </span>
-              {!isAgentHistory && (
-                <PencilIcon className="h-3 w-3 text-muted-foreground" />
-              )}
+              {!isAgentHistory && <PencilIcon className="h-3 w-3 text-muted-foreground" />}
             </div>
           )}
         </DialogTitle>
@@ -104,18 +98,15 @@ const DCPDialogHeader = () => {
           <DialogDescription
             className={cn(
               "!inline !max-w-[24rem] !truncate text-xs tracking-normal text-muted-foreground",
-              nodeData?.name === "ConditionalBranchActivity" &&
-                "!max-w-[35rem]",
+              nodeData?.name === "ConditionalBranchActivity" && "!max-w-[35rem]",
               nodeData?.name === "LoopActivity" && "!max-w-[35rem]",
-              (nodeData?.name.includes("AIAgent") ||
-                nodeData?.name.includes("WorkItem")) &&
+              (nodeData?.name.includes("AIAgent") || nodeData?.name.includes("WorkItem")) &&
                 "!max-w-[calc(((100vw-(2*var(--header-padding)))/2)-8rem)]",
             )}
             title={nodeData?.description}
           >
             {nodeData?.description
-              ? nodeData?.description +
-                (nodeData?.description?.endsWith(".") ? "" : ".")
+              ? nodeData?.description + (nodeData?.description?.endsWith(".") ? "" : ".")
               : "Node Configuration."}
           </DialogDescription>
           {renderInfoLink()}
@@ -123,9 +114,7 @@ const DCPDialogHeader = () => {
       </div>
 
       {/* Right side - Close Dialog action buttons */}
-      <DialogClose
-        className={buttonVariants({ variant: "ghost", size: "icon8" })}
-      >
+      <DialogClose className={buttonVariants({ variant: "ghost", size: "icon8" })}>
         <X className="h-5 w-5 text-[--icon-color]" />
         <span className="sr-only">Close</span>
       </DialogClose>

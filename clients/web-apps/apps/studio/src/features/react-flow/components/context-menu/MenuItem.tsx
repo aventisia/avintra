@@ -53,9 +53,7 @@ export default function MenuItem({
       <span className="truncate">{label}</span>
 
       {shortcut && !disabled && (
-        <span className="ml-auto text-2xs tracking-widest text-muted-foreground">
-          {shortcut}
-        </span>
+        <span className="ml-auto text-2xs tracking-widest text-muted-foreground">{shortcut}</span>
       )}
     </Button>
   );

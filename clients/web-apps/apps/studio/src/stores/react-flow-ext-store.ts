@@ -1,9 +1,4 @@
-import { MARKER_ARROW_PREFIX } from "@/constants";
-import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
-import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
-import { HistoryState } from "@/utils/history-equality-checker";
-
 import {
   Connection,
   Edge,
@@ -20,6 +15,11 @@ import {
 } from "@xyflow/react";
 import { create } from "zustand";
 import { subscribeWithSelector } from "zustand/middleware";
+
+import { MARKER_ARROW_PREFIX } from "@/constants";
+import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
+import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
+import { HistoryState } from "@/utils/history-equality-checker";
 
 const MAX_HISTORY_STEPS = 100;
 
@@ -109,15 +109,9 @@ type Actions = {
   setViewport: (viewport: Viewport) => void;
 
   /** Set context menu origin */
-  setContextMenuOrigin: (
-    origin: "Node" | "Edge" | "Pane" | "Selection" | null,
-  ) => void;
+  setContextMenuOrigin: (origin: "Node" | "Edge" | "Pane" | "Selection" | null) => void;
 
-  hydrateFlow: (
-    nodes: Node[],
-    edges: Edge[],
-    variables: FlowVariablesObjectType[],
-  ) => void;
+  hydrateFlow: (nodes: Node[], edges: Edge[], variables: FlowVariablesObjectType[]) => void;
   setSavedSnapshot: (snapshot: HistoryState) => void;
   commitSnapshot: (snapshot: HistoryState) => void;
   undo: () => void;
@@ -172,15 +166,12 @@ export const useReactFlowExtStore = create<State & Actions>()(
     setNodes: (nodes: Node[]) => set({ nodes }),
     setEdges: (edges: Edge[]) => set({ edges }),
     setIsPublished: (isPublished: boolean) => set({ isPublished }),
-    setFlowType: (flowType: FlowTypesEnum) =>
-      set({ flowType, isTestChatOpen: false }),
+    setFlowType: (flowType: FlowTypesEnum) => set({ flowType, isTestChatOpen: false }),
     setIsTestChatOpen: (isTestChatOpen: boolean) => set({ isTestChatOpen }),
     setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
       set({ flowVariablesObject: variables }),
-    setConfigVariables: (variables: string[]) =>
-      set({ configVariables: variables }),
-    setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) =>
-      set({ inputOutputObject }),
+    setConfigVariables: (variables: string[]) => set({ configVariables: variables }),
+    setInputOutputObject: (inputOutputObject: DCPFieldSchemaType[]) => set({ inputOutputObject }),
     togglePanOnDrag: (value) =>
       set((state) => ({
         panOnDrag: typeof value === "boolean" ? value : !state.panOnDrag,

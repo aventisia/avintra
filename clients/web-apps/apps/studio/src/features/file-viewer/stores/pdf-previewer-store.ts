@@ -23,31 +23,29 @@ const DEFAULT_STATE: PdfViewerState = {
   pageNumber: 1,
 };
 
-export const usePdfViewerStore = create<PdfViewerState & PdfViewerActions>(
-  (set, get) => ({
-    ...DEFAULT_STATE,
+export const usePdfViewerStore = create<PdfViewerState & PdfViewerActions>((set, get) => ({
+  ...DEFAULT_STATE,
 
-    setNumPages: (numPages) => set({ numPages }),
+  setNumPages: (numPages) => set({ numPages }),
 
-    setPageNumber: (pageNumber) => {
-      const { numPages } = get();
-      const clamped = Math.min(Math.max(1, pageNumber), numPages ?? pageNumber);
-      set({ pageNumber: clamped });
-    },
+  setPageNumber: (pageNumber) => {
+    const { numPages } = get();
+    const clamped = Math.min(Math.max(1, pageNumber), numPages ?? pageNumber);
+    set({ pageNumber: clamped });
+  },
 
-    goToPreviousPage: () => {
-      const { pageNumber, setPageNumber } = get();
-      if (pageNumber > 1) setPageNumber(pageNumber - 1);
-    },
+  goToPreviousPage: () => {
+    const { pageNumber, setPageNumber } = get();
+    if (pageNumber > 1) setPageNumber(pageNumber - 1);
+  },
 
-    goToNextPage: () => {
-      const { pageNumber, numPages, setPageNumber } = get();
-      if (numPages && pageNumber < numPages) setPageNumber(pageNumber + 1);
-    },
+  goToNextPage: () => {
+    const { pageNumber, numPages, setPageNumber } = get();
+    if (numPages && pageNumber < numPages) setPageNumber(pageNumber + 1);
+  },
 
-    reset: () => set(DEFAULT_STATE),
-  }),
-);
+  reset: () => set(DEFAULT_STATE),
+}));
 
 //  Selectors
 

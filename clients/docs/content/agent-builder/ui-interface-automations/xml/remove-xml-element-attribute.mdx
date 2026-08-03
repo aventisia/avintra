@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name             | Description                                                                                | Input Type | Required? | Default Value   |
-| ---------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | --------------- |
-| **XML Content**        | The XML data containing the element from which you want to remove an attribute.            | Text       | Yes       | _(empty)_       |
-| **XPath Expression**   | The XPath to locate the element in the XML document.                                       | Text       | Yes       | _(empty)_       |
-| **Attribute Name**     | The specific name of the attribute you wish to be removed from the XML element.            | Text       | Yes       | _(empty)_       |
+| Field Name           | Description                                                                     | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**      | The XML data containing the element from which you want to remove an attribute. | Text       | Yes       | _(empty)_     |
+| **XPath Expression** | The XPath to locate the element in the XML document.                            | Text       | Yes       | _(empty)_     |
+| **Attribute Name**   | The specific name of the attribute you wish to be removed from the XML element. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -48,23 +48,24 @@ The node will output the **Updated XML Content**, now without the specified attr
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the XPath expression is correctly formed and accurate, as an incorrect expression will prevent successful location of your desired element.
+  Ensure that the XPath expression is correctly formed and accurate, as an
+  incorrect expression will prevent successful location of your desired element.
 </Callout>
 
 ## Input/Output Examples
 
-| XML Content                      | XPath Expression | Attribute Name | Updated XML Content                           |
-| -------------------------------- | ---------------- | -------------- | --------------------------------------------- |
-| `<item id="123" name="Book"/>`   | `//item`         | `name`         | `<item id="123"/>`                            |
-| `<user active="true" role="admin"/>` | `//user`         | `active`       | `<user role="admin"/>`                        |
+| XML Content                          | XPath Expression | Attribute Name | Updated XML Content    |
+| ------------------------------------ | ---------------- | -------------- | ---------------------- |
+| `<item id="123" name="Book"/>`       | `//item`         | `name`         | `<item id="123"/>`     |
+| `<user active="true" role="admin"/>` | `//user`         | `active`       | `<user role="admin"/>` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                         |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Incorrect XPath Expression**                           | Verify the XPath expression to ensure it correctly identifies the XML element you're targeting.   |
-| **Attribute Not Found**                                 | Double-check the attribute name for typos or incorrect casing as XML is case-sensitive.           |
-| **No Output or Changes Observed**                        | Make sure the XML contains the attributes you're trying to remove and that the XPath expression successfully selects an element. |
+| Problem                           | Solution                                                                                                                         |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect XPath Expression**    | Verify the XPath expression to ensure it correctly identifies the XML element you're targeting.                                  |
+| **Attribute Not Found**           | Double-check the attribute name for typos or incorrect casing as XML is case-sensitive.                                          |
+| **No Output or Changes Observed** | Make sure the XML contains the attributes you're trying to remove and that the XPath expression successfully selects an element. |
 
 ## Real-World Use Cases
 

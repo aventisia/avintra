@@ -1,14 +1,9 @@
+import { InputField, MultiSelectField, SelectField, SwitchField } from "@avplatform/ui/form";
+import { cn } from "@avplatform/ui/lib";
+
 import { SliderField } from "@/components/Slider/SliderField";
 import { CodeEditorField } from "@/components/code-editor/CodeEditorField";
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
-
-import {
-  InputField,
-  MultiSelectField,
-  SelectField,
-  SwitchField,
-} from "@avplatform/ui/form";
-import { cn } from "@avplatform/ui/lib";
 
 import {
   ConditionGroupsField,
@@ -87,12 +82,7 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "prompt-input":
       return <PromptConfigField {...baseProps} rows={field.min ?? 5} />;
     case "multi-selector":
-      return (
-        <MultiSelectField
-          {...baseProps}
-          selectOptions={field.selectOptions || []}
-        />
-      );
+      return <MultiSelectField {...baseProps} selectOptions={field.selectOptions || []} />;
     case "slider":
       return (
         <SliderField
@@ -121,12 +111,7 @@ export const RenderField = (field: DCPFieldSchemaType) => {
     case "suggestions":
       return <SuggestionsField {...field} size="sm" />;
     case "code-editor":
-      return (
-        <CodeEditorField
-          {...field}
-          className={cn("dcp-code-editor", field.className)}
-        />
-      );
+      return <CodeEditorField {...field} className={cn("dcp-code-editor", field.className)} />;
     default:
       return null;
   }

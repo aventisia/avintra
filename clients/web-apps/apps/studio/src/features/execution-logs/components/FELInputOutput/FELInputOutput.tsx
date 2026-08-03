@@ -12,11 +12,7 @@ const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
           <span className="text-sm">{title}</span>
         </div>
       </div>
-      <JsonViewer
-        jsonData={jsonData}
-        className="h-[15rem] w-[27rem] p-1"
-        enableClipboard
-      />
+      <JsonViewer jsonData={jsonData} className="h-[15rem] w-[27rem] p-1" enableClipboard />
     </div>
   );
 };

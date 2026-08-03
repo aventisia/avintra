@@ -1,8 +1,10 @@
+import { memo } from "react";
+import { useShallow } from "zustand/react/shallow";
+
 import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
 import { useDefineEditCommentForm } from "@/features/flow-comments/hooks/useDefineEditCommentForm";
 import { useFlowCommentsStore } from "@/features/flow-comments/stores/flow-comments-store";
-import { memo } from "react";
-import { useShallow } from "zustand/react/shallow";
+
 import { FCMessageComposer } from "../FCMessageComposer";
 
 interface FCIMessageProps {
@@ -26,15 +28,9 @@ export const FCIMessage = memo(({ data }: FCIMessageProps) => {
   return (
     <>
       {data.id === flowCommentId ? (
-        <FCMessageComposer
-          form={form}
-          crudAction="update"
-          className="mx-0 my-1 w-full"
-        />
+        <FCMessageComposer form={form} crudAction="update" className="mx-0 my-1 w-full" />
       ) : (
-        <p className="flex items-center text-xs tracking-wide text-foreground">
-          {data.comment}
-        </p>
+        <p className="flex items-center text-xs tracking-wide text-foreground">{data.comment}</p>
       )}
     </>
   );

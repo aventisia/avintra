@@ -1,12 +1,6 @@
-import {
-  useRef,
-  useState,
-  useEffect,
-  forwardRef,
-  InputHTMLAttributes,
-} from "react";
+import { InputHTMLAttributes, forwardRef, useEffect, useRef, useState } from "react";
 
-type AutoSizeInputProps = InputHTMLAttributes<HTMLInputElement>
+type AutoSizeInputProps = InputHTMLAttributes<HTMLInputElement>;
 
 const AutoSizeInput = forwardRef<HTMLInputElement, AutoSizeInputProps>(
   ({ value = "", placeholder = "", className = "", ...props }, ref) => {
@@ -25,10 +19,7 @@ const AutoSizeInput = forwardRef<HTMLInputElement, AutoSizeInputProps>(
     return (
       <div className="relative inline-block">
         {/* Hidden span to measure text width */}
-        <span
-          ref={spanRef}
-          className="invisible absolute whitespace-pre p-0 text-xs"
-        />
+        <span ref={spanRef} className="invisible absolute whitespace-pre p-0 text-xs" />
         <input
           ref={ref}
           value={value}

@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { enUS, type Locale } from "date-fns/locale";
+import { type Locale, enUS } from "date-fns/locale";
 
 /** Default +/- year range around today used by calendar year dropdowns. */
 export const DEFAULT_YEAR_RANGE = 50;
@@ -18,7 +18,9 @@ export type YearOption = {
  * Generates localized month options for the calendar month dropdown.
  * @param locale - date-fns locale object (options/localize/formatLong only).
  */
-export function genMonths(locale?: Pick<Locale, "options" | "localize" | "formatLong">): MonthOption[] {
+export function genMonths(
+  locale?: Pick<Locale, "options" | "localize" | "formatLong">,
+): MonthOption[] {
   const resolved = locale ?? enUS;
   return Array.from({ length: 12 }, (_, i) => ({
     value: i,
@@ -56,10 +58,15 @@ export function getEndDate(yearRange: number = DEFAULT_YEAR_RANGE): Date {
  * @param month - currently displayed month.
  * @param yearRange - year range used by the calendar.
  */
-export function isLeftNavigationDisabled(month: Date | undefined, yearRange: number = DEFAULT_YEAR_RANGE): boolean {
+export function isLeftNavigationDisabled(
+  month: Date | undefined,
+  yearRange: number = DEFAULT_YEAR_RANGE,
+): boolean {
   if (!month) return false;
   const startDate = getStartDate(yearRange);
-  return month.getMonth() === startDate.getMonth() && month.getFullYear() === startDate.getFullYear();
+  return (
+    month.getMonth() === startDate.getMonth() && month.getFullYear() === startDate.getFullYear()
+  );
 }
 
 /**
@@ -67,7 +74,10 @@ export function isLeftNavigationDisabled(month: Date | undefined, yearRange: num
  * @param month - currently displayed month.
  * @param yearRange - year range used by the calendar.
  */
-export function isRightNavigationDisabled(month: Date | undefined, yearRange: number = DEFAULT_YEAR_RANGE): boolean {
+export function isRightNavigationDisabled(
+  month: Date | undefined,
+  yearRange: number = DEFAULT_YEAR_RANGE,
+): boolean {
   if (!month) return false;
   const endDate = getEndDate(yearRange);
   return month.getMonth() === endDate.getMonth() && month.getFullYear() === endDate.getFullYear();
@@ -77,7 +87,9 @@ export function isRightNavigationDisabled(month: Date | undefined, yearRange: nu
  * Normalizes a locale into the minimal shape needed by `genMonths`.
  * Falls back to `enUS` when incomplete.
  */
-export function getValidLocale(locale?: Partial<Locale>): Pick<Locale, "options" | "localize" | "formatLong"> {
+export function getValidLocale(
+  locale?: Partial<Locale>,
+): Pick<Locale, "options" | "localize" | "formatLong"> {
   if (locale?.options && locale.localize && locale.formatLong) {
     return {
       options: locale.options,
@@ -89,6 +101,8 @@ export function getValidLocale(locale?: Partial<Locale>): Pick<Locale, "options"
 }
 
 /** Casts a DayPicker locale to the minimal shape needed by date-fns format. */
-export function toDateFnsLocale(locale: Partial<Locale> | undefined): Pick<Locale, "options" | "localize" | "formatLong"> {
+export function toDateFnsLocale(
+  locale: Partial<Locale> | undefined,
+): Pick<Locale, "options" | "localize" | "formatLong"> {
   return getValidLocale(locale);
 }

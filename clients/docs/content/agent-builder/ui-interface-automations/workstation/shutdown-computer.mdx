@@ -6,8 +6,8 @@ The **Shutdown Computer** node allows you to control the power state of your com
 
 ## Configuration Options
 
-| Field Name       | Description                                                                     | Input Type | Required? | Default Value |
-| ---------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name        | Description                                                                                                                                             | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
 | **Shutdown Mode** | Select how you want to power down or modify the state of the computer. Options include powering off, restarting, logging off, sleeping, or hibernating. | Select     | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -42,7 +42,8 @@ Integrate this node with other nodes in your flow to automate tasks, ensuring th
 </Steps>
 
 <Callout type="warning" title="Warning">
-  Make sure all important data is saved, as selected actions like **Power Off** or **Restart** will close all applications without saving.
+  Make sure all important data is saved, as selected actions like **Power Off**
+  or **Restart** will close all applications without saving.
 </Callout>
 
 ## Input/Output Examples
@@ -52,11 +53,11 @@ Integrate this node with other nodes in your flow to automate tasks, ensuring th
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                                                                                         |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Node not executing**                                 | Ensure the node is properly connected and the flow conditions allow it to execute.                                                                               |
-| **Shutdown action not desired**                        | Double-check the selected **Shutdown Mode** to make sure you have chosen the correct action.                                                                     |
-| **Computer does not respond to shutdown command**      | Verify system settings to ensure it allows programmed commands. Some systems may require administrative privileges.                                               |
+| Problem                                           | Solution                                                                                                            |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Node not executing**                            | Ensure the node is properly connected and the flow conditions allow it to execute.                                  |
+| **Shutdown action not desired**                   | Double-check the selected **Shutdown Mode** to make sure you have chosen the correct action.                        |
+| **Computer does not respond to shutdown command** | Verify system settings to ensure it allows programmed commands. Some systems may require administrative privileges. |
 
 ## Real-World Use Cases
 

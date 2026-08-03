@@ -22,16 +22,8 @@ export async function killBinaries(): Promise<boolean> {
   let uiInspectorKillCmd = null;
   let nodeExecutorKillCmd = null;
   if (platformName === "windows") {
-    uiInspectorKillCmd = Command.create("taskkill", [
-      "/F",
-      "/IM",
-      "UIInspector.exe",
-    ]);
-    nodeExecutorKillCmd = Command.create("taskkill", [
-      "/F",
-      "/IM",
-      "NodeExecutor.exe",
-    ]);
+    uiInspectorKillCmd = Command.create("taskkill", ["/F", "/IM", "UIInspector.exe"]);
+    nodeExecutorKillCmd = Command.create("taskkill", ["/F", "/IM", "NodeExecutor.exe"]);
   } else if (platformName === "macos" || platformName === "linux") {
     uiInspectorKillCmd = Command.create("pkill", ["-f", "UIInspector"]);
     nodeExecutorKillCmd = Command.create("pkill", ["-f", "NodeExecutor"]);
@@ -42,14 +34,8 @@ export async function killBinaries(): Promise<boolean> {
 
   // Execute the commands
   try {
-    console.log(
-      "UIInspector kill command executed:",
-      await uiInspectorKillCmd?.execute(),
-    );
-    console.log(
-      "NodeExecutor kill command executed:",
-      await nodeExecutorKillCmd?.execute(),
-    );
+    console.log("UIInspector kill command executed:", await uiInspectorKillCmd?.execute());
+    console.log("NodeExecutor kill command executed:", await nodeExecutorKillCmd?.execute());
   } catch (error) {
     console.error("Failed to kill binaries:", error);
     return false;

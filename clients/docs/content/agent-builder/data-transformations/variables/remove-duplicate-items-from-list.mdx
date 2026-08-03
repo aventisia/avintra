@@ -5,15 +5,16 @@ import { Callout, Steps } from "nextra/components";
 The **Remove Duplicate Items From List** node helps you clean up your data by eliminating repeated entries in a list. You can choose whether the duplicates should be identified in a case-sensitive or case-insensitive manner. This node is particularly useful when you want to ensure uniqueness in a dataset or list, making your data more accurate and easier to manage.
 
 For example:
+
 - Removing repeated names or entries from a contact list before processing.
 - Ensuring a list of products only contains unique items, avoiding repetitions.
 
 ## Configuration Options
 
-| Field Name           | Description                                                                             | Input Type | Required? | Default Value  |
-| -------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **List to Deduplicate** | The list variable from which you want to remove duplicate values.                     | Text       | Yes       | _(empty)_      |
-| **Ignore Case**      | Check this option to ignore case when identifying duplicates (e.g., "apple" = "Apple"). | Switch     | No        | false          |
+| Field Name              | Description                                                                             | Input Type | Required? | Default Value |
+| ----------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **List to Deduplicate** | The list variable from which you want to remove duplicate values.                       | Text       | Yes       | _(empty)_     |
+| **Ignore Case**         | Check this option to ignore case when identifying duplicates (e.g., "apple" = "Apple"). | Switch     | No        | false         |
 
 ## Expected Output Format
 
@@ -41,24 +42,25 @@ The processed list, with duplicates removed, will be available as **Deduplicated
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you want to ensure "apple" and "Apple" are treated as the same item, make sure to check the **Ignore Case** option.
+  If you want to ensure "apple" and "Apple" are treated as the same item, make
+  sure to check the **Ignore Case** option.
 </Callout>
 
 ## Input/Output Examples
 
-| Input List                                      | Ignore Case | Output List                        |
-| ------------------------------------------------| ----------- | ---------------------------------- |
-| `["Apple", "Banana", "apple", "Banana"]`        | true        | `["Apple", "Banana"]`              |
-| `["Car", "Bike", "car", "Bike"]`                | false       | `["Car", "Bike", "car"]`           |
-| `["Dog", "Dog", "dog"]`                         | true        | `["Dog"]`                          |
-| `["Dog", "Cat", "dog", "CAT"]`                  | false       | `["Dog", "Cat", "dog", "CAT"]`     |
+| Input List                               | Ignore Case | Output List                    |
+| ---------------------------------------- | ----------- | ------------------------------ |
+| `["Apple", "Banana", "apple", "Banana"]` | true        | `["Apple", "Banana"]`          |
+| `["Car", "Bike", "car", "Bike"]`         | false       | `["Car", "Bike", "car"]`       |
+| `["Dog", "Dog", "dog"]`                  | true        | `["Dog"]`                      |
+| `["Dog", "Cat", "dog", "CAT"]`           | false       | `["Dog", "Cat", "dog", "CAT"]` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                          |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Problem                                      | Solution                                                                                                  |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | **Output list contains expected duplicates** | Ensure **Ignore Case** is set correctly as per your requirement; without enabling, "apple" isn't "Apple". |
-| **List to Deduplicate is empty**             | Ensure you've entered the correct list variable to deduplicate.                                     |
+| **List to Deduplicate is empty**             | Ensure you've entered the correct list variable to deduplicate.                                           |
 
 ## Real-World Use Cases
 

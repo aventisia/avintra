@@ -8,11 +8,11 @@ You can choose to launch Word in a hidden mode or ensure the window appears on y
 
 ## Configuration Options
 
-| Field Name             | Description                                                                                      | Input Type | Required? | Default Value     |
-| ---------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ----------------- |
-| **Launch Mode**        | Select whether to start a new blank document or open an existing file.                          | Select     | No        | BlankDocument     |
-| **Document Path**      | File path for an existing document to open. Necessary if the Launch Mode is "Open Existing Document". | Text       | No        | _(empty)_         |
-| **Make Instance Visible** | Choose whether the Word window should be visible upon launch.                                    | Switch     | No        | true              |
+| Field Name                | Description                                                                                           | Input Type | Required? | Default Value |
+| ------------------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Launch Mode**           | Select whether to start a new blank document or open an existing file.                                | Select     | No        | BlankDocument |
+| **Document Path**         | File path for an existing document to open. Necessary if the Launch Mode is "Open Existing Document". | Text       | No        | _(empty)_     |
+| **Make Instance Visible** | Choose whether the Word window should be visible upon launch.                                         | Switch     | No        | true          |
 
 ## Expected Output Format
 
@@ -47,23 +47,24 @@ The launched Word session will be accessible via the **Word Instance** value, to
 </Steps>
 
 <Callout type="info" title="Note">
-  If "Open Existing Document" is selected in the **Launch Mode**, the **Document Path** field becomes essential and must have a valid file path.
+  If "Open Existing Document" is selected in the **Launch Mode**, the **Document
+  Path** field becomes essential and must have a valid file path.
 </Callout>
 
 ## Input/Output Examples
 
-| Launch Mode            | Document Path                  | Make Instance Visible | Output Value   | Output Type   |
-| ---------------------- | ------------------------------ | --------------------- | -------------- | ------------- |
-| Blank Document         | _(n/a)_                        | true                  | WordInstance   | Word Instance |
-| Open Existing Document | C:\Documents\Report.docx       | false                 | WordInstance   | Word Instance |
+| Launch Mode            | Document Path            | Make Instance Visible | Output Value | Output Type   |
+| ---------------------- | ------------------------ | --------------------- | ------------ | ------------- |
+| Blank Document         | _(n/a)_                  | true                  | WordInstance | Word Instance |
+| Open Existing Document | C:\Documents\Report.docx | false                 | WordInstance | Word Instance |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                  | Solution                                                                                     |
-| -------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Document Path is empty but mode is 'Open Existing'**   | Ensure to enter a valid file path if you select 'Open Existing Document'.                     |
-| **Word application not visible**                         | Check if the **Make Instance Visible** option is set to 'true' if you want to see the window. |
-| **Invalid file path leads to error**                     | Verify the document path is correct and points to an actual file.                             |
+| Problem                                                | Solution                                                                                      |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| **Document Path is empty but mode is 'Open Existing'** | Ensure to enter a valid file path if you select 'Open Existing Document'.                     |
+| **Word application not visible**                       | Check if the **Make Instance Visible** option is set to 'true' if you want to see the window. |
+| **Invalid file path leads to error**                   | Verify the document path is correct and points to an actual file.                             |
 
 ## Real-World Use Cases
 

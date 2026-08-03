@@ -1,8 +1,4 @@
-import {
-  KBConfigType,
-  ModelConfigType,
-  VoiceConfigType,
-} from "@/types/model-config-type";
+import { KBConfigType, ModelConfigType, VoiceConfigType } from "@/types/model-config-type";
 
 export interface ToolActionConfig {
   action: string;

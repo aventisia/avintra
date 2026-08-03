@@ -1,15 +1,10 @@
 import { cn } from "@avplatform/ui/lib";
 
-interface FallbackImageIconProps
-  extends React.HTMLAttributes<HTMLImageElement> {
+interface FallbackImageIconProps extends React.HTMLAttributes<HTMLImageElement> {
   src?: string;
 }
 
-export const FallbackImageIcon = ({
-  className,
-  src,
-  ...props
-}: FallbackImageIconProps) => {
+export const FallbackImageIcon = ({ className, src, ...props }: FallbackImageIconProps) => {
   const basePath = import.meta.env.VITE_STUDIO_PATH.replace(/\/$/, "");
 
   return (

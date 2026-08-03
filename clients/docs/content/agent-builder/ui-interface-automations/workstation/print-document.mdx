@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                               | Input Type | Required? | Default Value |
-| ------------------ | ------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Document Path**  | Full path to the document you want to print.                              | Text       | Yes       | _(empty)_     |
-| **Printer Name**   | The specific printer to use for the job. Leave blank to use the default.  | Text       | No        | _(empty)_     |
-| **Print Method**   | Choose how the document is printed: Default, Process Start, or Direct.    | Select     | No        | Default       |
-| **Copies**         | The number of copies of the document to print.                            | Text       | No        | 1             |
+| Field Name        | Description                                                              | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Document Path** | Full path to the document you want to print.                             | Text       | Yes       | _(empty)_     |
+| **Printer Name**  | The specific printer to use for the job. Leave blank to use the default. | Text       | No        | _(empty)_     |
+| **Print Method**  | Choose how the document is printed: Default, Process Start, or Direct.   | Select     | No        | Default       |
+| **Copies**        | The number of copies of the document to print.                           | Text       | No        | 1             |
 
 ## Expected Output Format
 
@@ -56,27 +56,29 @@ In the **Print Method** dropdown, select your preferred method of printing. Opti
 ### Step 6
 
 The results of the print operation can be accessed through the **Success** message and **Job ID** (if available) output fields.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Be sure the document path is correct and accessible to avoid errors during the printing process.
+  Be sure the document path is correct and accessible to avoid errors during the
+  printing process.
 </Callout>
 
 ## Input/Output Examples
 
-| Document Path   | Printer Name        | Print Method | Copies | Success    | Job ID   |
-| --------------- | ------------------- | ------------ | ------ | ---------- | -------- |
-| C:\Documents\file.pdf | HP LaserJet  | Default      | 2      | Success    | 12345    |
-| C:\Docs\invoice.docx | _(empty)_      | ProcessStart | 1      | Success    | 67890    |
-| C:\Reports\report.pdf | Canon Pixma   | Direct       | 5      | Success    | 13579    |
+| Document Path         | Printer Name | Print Method | Copies | Success | Job ID |
+| --------------------- | ------------ | ------------ | ------ | ------- | ------ |
+| C:\Documents\file.pdf | HP LaserJet  | Default      | 2      | Success | 12345  |
+| C:\Docs\invoice.docx  | _(empty)_    | ProcessStart | 1      | Success | 67890  |
+| C:\Reports\report.pdf | Canon Pixma  | Direct       | 5      | Success | 13579  |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                   |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Document not printing**                    | Verify the document path is correct and the printer is set up correctly and connected.                     |
-| **Printer not found**                        | Double-check the printer name is entered correctly. Use the device's exact name as listed in your settings. |
-| **No print job ID returned**                 | Not all printers provide job IDs. Check printer capabilities or try a different print method.              |
+| Problem                      | Solution                                                                                                    |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Document not printing**    | Verify the document path is correct and the printer is set up correctly and connected.                      |
+| **Printer not found**        | Double-check the printer name is entered correctly. Use the device's exact name as listed in your settings. |
+| **No print job ID returned** | Not all printers provide job IDs. Check printer capabilities or try a different print method.               |
 
 ## Real-World Use Cases
 

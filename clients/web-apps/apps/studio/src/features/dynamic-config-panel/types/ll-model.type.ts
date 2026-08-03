@@ -17,13 +17,6 @@ export type LLModelType = {
    * For now, we are keeping it optional
    */
   specialty?: (
-    | "text"
-    | "vision"
-    | "image"
-    | "tts"
-    | "stt"
-    | "video"
-    | "realtime"
-    | "deep-search"
+    "text" | "vision" | "image" | "tts" | "stt" | "video" | "realtime" | "deep-search"
   )[];
 };

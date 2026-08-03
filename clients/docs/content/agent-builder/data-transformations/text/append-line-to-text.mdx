@@ -12,9 +12,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name   | Description                                           | Input Type | Required? | Default Value |
-| ------------ | ----------------------------------------------------- | ---------- | --------- | ------------- |
-| **OriginalText** | The existing text you want to append a line to.        | Text       | No        | _(empty)_     |
+| Field Name       | Description                                           | Input Type | Required? | Default Value |
+| ---------------- | ----------------------------------------------------- | ---------- | --------- | ------------- |
+| **OriginalText** | The existing text you want to append a line to.       | Text       | No        | _(empty)_     |
 | **NewLine**      | The new line of text you want to add to the original. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
@@ -43,24 +43,25 @@ The newly combined text will be available as **ResultOutput** for further use in
 </Steps>
 
 <Callout type="info" title="Tip">
-  You can leave either the **OriginalText** or **NewLine** fields empty if you want to use only the value from the other field.
+  You can leave either the **OriginalText** or **NewLine** fields empty if you
+  want to use only the value from the other field.
 </Callout>
 
 ## Input/Output Examples
 
-| Original Text                | New Line          | Output Value                           | Output Type |
-| ---------------------------- | ----------------- | -------------------------------------- | ----------- |
-| "Hello, world!"              | "Welcome!"        | "Hello, world!\nWelcome!"              | String      |
-| "Dear Customer,"             | "Thank you!"      | "Dear Customer,\nThank you!"           | String      |
-| _(empty)_                    | "Start fresh."    | "Start fresh."                         | String      |
-| "Existing content here."     | _(empty)_         | "Existing content here."               | String      |
+| Original Text            | New Line       | Output Value                 | Output Type |
+| ------------------------ | -------------- | ---------------------------- | ----------- |
+| "Hello, world!"          | "Welcome!"     | "Hello, world!\nWelcome!"    | String      |
+| "Dear Customer,"         | "Thank you!"   | "Dear Customer,\nThank you!" | String      |
+| _(empty)_                | "Start fresh." | "Start fresh."               | String      |
+| "Existing content here." | _(empty)_      | "Existing content here."     | String      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                                                   |
-| ------------------------------------------------| ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **No output or missing text**                   | Ensure at least one of the fields (**OriginalText** or **NewLine**) contains a value. Without input, there will be no meaningful output.                     |
-| **Unexpected text format**                      | Confirm that you're entering text properly, ensuring that newline characters or special symbols are used as intended by your use case.                       |
+| Problem                       | Solution                                                                                                                                 |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **No output or missing text** | Ensure at least one of the fields (**OriginalText** or **NewLine**) contains a value. Without input, there will be no meaningful output. |
+| **Unexpected text format**    | Confirm that you're entering text properly, ensuring that newline characters or special symbols are used as intended by your use case.   |
 
 ## Real-World Use Cases
 

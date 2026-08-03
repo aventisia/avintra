@@ -8,11 +8,11 @@ For instance, automatically selecting a product from a dropdown list, or choosin
 
 ## Configuration Options
 
-| Field Name          | Description                                                                      | Input Type | Required? | Default Value |
-| ------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **UI Element**      | The UI element you would like to select.                                         | Text       | Yes       | _(empty)_     |
-| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).                   | Text       | No        | 5             |
-| **Was Selected**    | True if the element was selected successfully, otherwise false.                  | Output     | No        | WasSelected   |
+| Field Name                  | Description                                                     | Input Type | Required? | Default Value |
+| --------------------------- | --------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**              | The UI element you would like to select.                        | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).       | Text       | No        | 5             |
+| **Was Selected**            | True if the element was selected successfully, otherwise false. | Output     | No        | WasSelected   |
 
 ## Expected Output Format
 
@@ -40,23 +40,24 @@ The result, indicating whether the selection was successful, will be automatical
 </Steps>
 
 <Callout type="info" title="Note">
-  The default wait time is 5 seconds. Adjust this if the UI element typically takes longer to appear.
+  The default wait time is 5 seconds. Adjust this if the UI element typically
+  takes longer to appear.
 </Callout>
 
 ## Input/Output Examples
 
-| UI Element | Max Wait Time (seconds) | Was Selected (Output) |
-| ---------- | ----------------------- | --------------------- |
-| "SubmitButton" | 3                         | true                  |
-| "DropdownItem2" | 10                        | false                 |
+| UI Element      | Max Wait Time (seconds) | Was Selected (Output) |
+| --------------- | ----------------------- | --------------------- |
+| "SubmitButton"  | 3                       | true                  |
+| "DropdownItem2" | 10                      | false                 |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                | Solution                                                                                                                                       |
-| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **UI Element field is empty**          | Ensure that you have entered the name/path of the UI element you intend to select.                                                             |
-| **Wait time too short**                | If the operation often fails, consider increasing the **Max Wait Time** to give more time for the UI element to load fully.                     |
-| **Element not found error**            | Double-check that the UI element's identifier is correct, and ensure the application window is in focus and not obscured by other windows.     |
+| Problem                       | Solution                                                                                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| **UI Element field is empty** | Ensure that you have entered the name/path of the UI element you intend to select.                                                         |
+| **Wait time too short**       | If the operation often fails, consider increasing the **Max Wait Time** to give more time for the UI element to load fully.                |
+| **Element not found error**   | Double-check that the UI element's identifier is correct, and ensure the application window is in focus and not obscured by other windows. |
 
 ## Real-World Use Cases
 

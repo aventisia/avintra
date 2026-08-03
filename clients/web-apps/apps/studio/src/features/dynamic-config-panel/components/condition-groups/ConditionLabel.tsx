@@ -14,12 +14,7 @@ export const ConditionLabel: React.FC<ConditionLabelProps> = ({
   className,
 }) => (
   <div className="flex items-center gap-1">
-    <span
-      className={cn(
-        "ml-1 flex items-center gap-0.5 text-xs font-medium",
-        className,
-      )}
-    >
+    <span className={cn("ml-1 flex items-center gap-0.5 text-xs font-medium", className)}>
       {label}
     </span>
     {description ? (

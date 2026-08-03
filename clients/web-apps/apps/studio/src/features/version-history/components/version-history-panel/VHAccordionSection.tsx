@@ -1,9 +1,6 @@
-import {
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@avplatform/ui/accordion";
+import { AccordionContent, AccordionItem, AccordionTrigger } from "@avplatform/ui/accordion";
 import { ChevronDown } from "lucide-react";
+
 import { DaySection } from "../../types/agent-history-type";
 import VHAccordionItem from "./VHAccordionItem";
 
@@ -13,17 +10,9 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-export default function VHAccordionSection({
-  section,
-  selectedEntry,
-  onSelect,
-}: Props) {
+export default function VHAccordionSection({ section, selectedEntry, onSelect }: Props) {
   return (
-    <AccordionItem
-      key={section.date}
-      value={section.date}
-      className="border-none"
-    >
+    <AccordionItem key={section.date} value={section.date} className="border-none">
       {/* Date Header */}
       <AccordionTrigger className="group relative flex w-full items-center justify-start gap-3 rounded-lg py-2 [&>svg]:hidden">
         <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-indigo-100">

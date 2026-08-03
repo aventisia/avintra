@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name      | Description                                           | Input Type | Required? | Default Value |
-| --------------- | ----------------------------------------------------- | ---------- | --------- | ------------- |
-| **First List**  | The first list to compare.                            | Text       | Yes       | _(empty)_     |
-| **Second List** | The second list to compare.                           | Text       | Yes       | _(empty)_     |
+| Field Name      | Description                 | Input Type | Required? | Default Value |
+| --------------- | --------------------------- | ---------- | --------- | ------------- |
+| **First List**  | The first list to compare.  | Text       | Yes       | _(empty)_     |
+| **Second List** | The second list to compare. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -47,24 +47,25 @@ Review the output field **Intersection List**, where the common items from both 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure your list formatting is consistent (e.g., using commas or semicolons) to prevent mismatches and achieve an accurate comparison.
+  Ensure your list formatting is consistent (e.g., using commas or semicolons)
+  to prevent mismatches and achieve an accurate comparison.
 </Callout>
 
 ## Input/Output Examples
 
-| First List                 | Second List                | Output Value                     |
-| -------------------------- | -------------------------- | -------------------------------- |
-| `["apple", "banana"]`      | `["banana", "cherry"]`     | `["banana"]`                     |
-| `["1", "2", "3"]`          | `["3", "4", "5"]`          | `["3"]`                          |
-| `["email@example.com"]`    | `["user@example.com"]`     | `[]`                             |
+| First List              | Second List            | Output Value |
+| ----------------------- | ---------------------- | ------------ |
+| `["apple", "banana"]`   | `["banana", "cherry"]` | `["banana"]` |
+| `["1", "2", "3"]`       | `["3", "4", "5"]`      | `["3"]`      |
+| `["email@example.com"]` | `["user@example.com"]` | `[]`         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                 | Solution                                                                                                                                       |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **No output or empty list returned**    | Double-check that both input lists contain items and are correctly formatted. Lists must have overlapping items for the node to find a match.   |
-| **Unexpected items in output list**     | Ensure there are no additional whitespace or formatting issues, such as spaces, affecting list item comparison.                                 |
-| **Non-standard list delimiters used**   | Use standard delimiters (like commas or semicolons, consistently across both lists) for accurate comparison.                                    |
+| Problem                               | Solution                                                                                                                                      |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No output or empty list returned**  | Double-check that both input lists contain items and are correctly formatted. Lists must have overlapping items for the node to find a match. |
+| **Unexpected items in output list**   | Ensure there are no additional whitespace or formatting issues, such as spaces, affecting list item comparison.                               |
+| **Non-standard list delimiters used** | Use standard delimiters (like commas or semicolons, consistently across both lists) for accurate comparison.                                  |
 
 ## Real-World Use Cases
 

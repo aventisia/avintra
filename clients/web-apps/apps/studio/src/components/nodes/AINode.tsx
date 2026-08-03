@@ -2,13 +2,7 @@ import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import {
-  Node,
-  NodeProps,
-  NodeToolbar,
-  Position,
-  useReactFlow,
-} from "@xyflow/react";
+import { Node, NodeProps, NodeToolbar, Position, useReactFlow } from "@xyflow/react";
 import { BrainCircuitIcon, ExpandIcon, ShrinkIcon } from "lucide-react";
 import { memo, useEffect } from "react";
 
@@ -28,13 +22,7 @@ import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
 type AINode = Node<NodeDataType, "aiNode">;
 
 export const AINode = memo(
-  ({
-    data,
-    selected,
-    sourcePosition,
-    targetPosition,
-    id,
-  }: NodeProps<AINode>) => {
+  ({ data, selected, sourcePosition, targetPosition, id }: NodeProps<AINode>) => {
     const { toggleGroupExpand } = useGroupToggle();
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
 
@@ -43,9 +31,7 @@ export const AINode = memo(
     useEffect(() => {
       if (data.type !== "aiNode") return;
       if (data.inputs) {
-        const modelNode = getNodes().find(
-          (n) => n.type == "modelNode" && n?.parentId == id,
-        );
+        const modelNode = getNodes().find((n) => n.type == "modelNode" && n?.parentId == id);
         if (modelNode) updateNode(modelNode.id, { hidden: false });
       }
 
@@ -61,9 +47,7 @@ export const AINode = memo(
     }, [data.label, data?.inputs, data?.selectedModel]);
 
     function getModel(config: NodeInputType[] | undefined): string[] {
-      const modelConfigItem = config?.find((item) =>
-        item.key.includes("__ModelConfig__"),
-      );
+      const modelConfigItem = config?.find((item) => item.key.includes("__ModelConfig__"));
 
       if (!modelConfigItem) return [];
 
@@ -96,10 +80,7 @@ export const AINode = memo(
           <OpenNodeConfig {...{ nodeData: data, nodeId: id }}>
             <div className="h-full w-full flex items-center gap-2 px-2.5">
               {data.img ? (
-                <NodeImage
-                  className="!opacity-100 !brightness-[5] h-7 w-7"
-                  src={data.img}
-                />
+                <NodeImage className="!opacity-100 !brightness-[5] h-7 w-7" src={data.img} />
               ) : (
                 <BrainCircuitIcon className="text-white" />
               )}

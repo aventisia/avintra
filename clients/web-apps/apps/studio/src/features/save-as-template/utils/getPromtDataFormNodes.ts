@@ -1,6 +1,7 @@
-import { NodeDataType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
+
 import { CustomNodeType } from "@/types/custom-node-type";
+import { NodeDataType } from "@/types/node-data-type";
 
 // Define the allowed node types to filter relevant nodes
 const allowedNodeTypes: CustomNodeType[] = [
@@ -30,9 +31,7 @@ export function getPromptDataFromNodes(
   allowAllNodes: boolean = false,
 ) {
   return nodes
-    .filter(
-      (node) => allowAllNodes || allowedNodeTypes.includes(node?.data?.type),
-    ) // Filter only allowed node types
+    .filter((node) => allowAllNodes || allowedNodeTypes.includes(node?.data?.type)) // Filter only allowed node types
     .map((node) => {
       const data = node.data;
       const result: Record<string, unknown> = {};

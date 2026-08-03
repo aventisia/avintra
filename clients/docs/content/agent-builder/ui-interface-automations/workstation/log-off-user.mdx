@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Log Off User** node lets you automatically log off the current user from a desktop environment using different methods. This can be especially useful in scenarios where scheduled or remote log offs are needed to maintain security, save energy, or prepare devices for updates.
 
 Common situations to use this node include:
+
 - Logging off users at scheduled times to save energy.
 - Preparing a system for updates by ensuring no users are logged on.
 - Automating log offs in a shared device environment.
 
 ## Configuration Options
 
-| Field Name        | Description                                                                   | Input Type | Required? | Default Value    |
-| ----------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **Logoff Method** | Choose the method to log off the user.                                        | Select     | No        | ShutdownCommand  |
-| **Force Logoff**  | Enable this option to force a logoff if applications are not closing neatly.  | Switch     | No        | Off              |
+| Field Name        | Description                                                                  | Input Type | Required? | Default Value   |
+| ----------------- | ---------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Logoff Method** | Choose the method to log off the user.                                       | Select     | No        | ShutdownCommand |
+| **Force Logoff**  | Enable this option to force a logoff if applications are not closing neatly. | Switch     | No        | Off             |
 
 ## Expected Output Format
 
@@ -50,23 +51,24 @@ Use the output value **Success** to determine if the logoff process started corr
 </Steps>
 
 <Callout type="warning" title="Important Note">
-  Forced logoffs can result in unsaved data loss. Use this cautiously when automating log offs.
+  Forced logoffs can result in unsaved data loss. Use this cautiously when
+  automating log offs.
 </Callout>
 
 ## Input/Output Examples
 
-| Logoff Method      | Force Logoff | Expected Output |
-| ------------------ | ------------ | --------------- |
-| Shutdown Command   | No           | True            |
-| Windows API        | Yes          | True            |
-| WTS API            | No           | True            |
+| Logoff Method    | Force Logoff | Expected Output |
+| ---------------- | ------------ | --------------- |
+| Shutdown Command | No           | True            |
+| Windows API      | Yes          | True            |
+| WTS API          | No           | True            |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                        | Solution                                                                                             |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| **Logoff fails to initiate**   | Ensure that your system allows the chosen method for logging off and that necessary permissions are set. |
-| **Applications not closing**   | Consider enabling **Force Logoff** if applications are not closing automatically during the logoff.  |
+| Problem                      | Solution                                                                                                 |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Logoff fails to initiate** | Ensure that your system allows the chosen method for logging off and that necessary permissions are set. |
+| **Applications not closing** | Consider enabling **Force Logoff** if applications are not closing automatically during the logoff.      |
 
 ## Real-World Use Cases
 

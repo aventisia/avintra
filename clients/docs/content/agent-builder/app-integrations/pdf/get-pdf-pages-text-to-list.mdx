@@ -12,9 +12,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                            | Input Type | Required? | Default Value |
-| ------------------ | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **PDF File Path**  | Full path to the PDF file from which you want to extract text (e.g., `C:\\docs\\input.pdf`). | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                                                                  | Input Type | Required? | Default Value |
+| ----------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **PDF File Path** | Full path to the PDF file from which you want to extract text (e.g., `C:\\docs\\input.pdf`). | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -37,6 +37,7 @@ In the **PDF File Path** field, enter the complete path to your PDF file. Ensure
 ### Step 3
 
 Once set up, the node will process the PDF and output:
+
 - **Page Texts** as a list of text blocks, each representing one page.
 - **Page Count** with the total number of pages.
 
@@ -47,22 +48,23 @@ You can use the **Page Texts** and **Page Count** in subsequent steps of your wo
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure your PDF file is not locked or password-protected. This node cannot process protected PDFs.
+  Ensure your PDF file is not locked or password-protected. This node cannot
+  process protected PDFs.
 </Callout>
 
 ## Input/Output Examples
 
-| PDF File Path       | Expected Output                                             |
-| ------------------- | ----------------------------------------------------------- |
+| PDF File Path         | Expected Output                                                              |
+| --------------------- | ---------------------------------------------------------------------------- |
 | `C:\\docs\\input.pdf` | Page Texts: [`"Page 1 Text..."`, `"Page 2 Text..."`] <br /> Page Count: `10` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                                                              |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
-| **File Not Found Error**                                     | Double-check the file path entered in the **PDF File Path** field to ensure it points to the correct and accessible PDF. |
-| **Empty Output List**                                        | Verify that the PDF file contains text and is not entirely image-based (consider using OCR if needed).                |
-| **Password-Protected PDF**                                   | Ensure the PDF is not locked with a password. If so, remove the protection before processing.                         |
+| Problem                    | Solution                                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **File Not Found Error**   | Double-check the file path entered in the **PDF File Path** field to ensure it points to the correct and accessible PDF. |
+| **Empty Output List**      | Verify that the PDF file contains text and is not entirely image-based (consider using OCR if needed).                   |
+| **Password-Protected PDF** | Ensure the PDF is not locked with a password. If so, remove the protection before processing.                            |
 
 ## Real-World Use Cases
 
