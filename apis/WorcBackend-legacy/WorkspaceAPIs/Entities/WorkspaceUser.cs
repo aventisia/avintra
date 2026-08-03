@@ -60,6 +60,11 @@ public class WorkspaceUser : IMustHaveTenant
     public virtual ICollection<SupportTicketRemark>? SupportTicketRemarks { get; set; }
 
     /// <summary>
+    /// Gets or sets the list of Machines to manage the one-to-many relation.
+    /// </summary>
+    public virtual ICollection<Machine>? Machines { get; set; }
+
+    /// <summary>
     /// Gets or sets the version number used for row versioning. Row versioning helps detect conflicts between concurrent transactions.
     /// </summary>
     /// <remarks>

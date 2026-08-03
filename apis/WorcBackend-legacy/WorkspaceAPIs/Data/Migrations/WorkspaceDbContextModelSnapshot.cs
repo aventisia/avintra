@@ -1067,35 +1067,18 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("CreatedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Environment")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Hostname")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<string>("IpAddress")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
                     b.Property<DateTime>("LastCheckedIn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("LastModifiedByUserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
@@ -1115,6 +1098,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -1128,12 +1114,10 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreatedByUserId");
-
-                    b.HasIndex("LastModifiedByUserId");
-
                     b.HasIndex("Name")
                         .IsUnique();
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Machines");
                 });
@@ -2963,21 +2947,13 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Machine", b =>
                 {
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
-                        .WithMany()
-                        .HasForeignKey("CreatedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "User")
+                        .WithMany("Machines")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
-                        .WithMany()
-                        .HasForeignKey("LastModifiedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CreatedByUser");
-
-                    b.Navigation("LastModifiedByUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Machine_FlowVersion", b =>
@@ -3579,6 +3555,8 @@ namespace WorkspaceAPIs.Data.Migrations
             modelBuilder.Entity("WorkspaceAPIs.Entities.WorkspaceUser", b =>
                 {
                     b.Navigation("FlowComments");
+
+                    b.Navigation("Machines");
 
                     b.Navigation("NotificationUsers");
 

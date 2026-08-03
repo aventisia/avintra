@@ -52,7 +52,6 @@ public static class WorkspaceDbInitialSeed
         {
             // Update the MachineName for each machine record
             machine.Name = MachinesTableHelpers.BuildMachineName(
-                machine.Environment,
                 machine.OperatingSystem,
                 machine.OsID,
                 machine.Username);

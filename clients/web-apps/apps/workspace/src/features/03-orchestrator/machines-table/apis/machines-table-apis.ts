@@ -2,11 +2,9 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
-import type { AddMachineDto } from "../dtos/add-machine.dto";
 import type { MachineRecordDto } from "../dtos/machine-record.dto";
 import { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
 import type { UpdateMachineDto } from "../dtos/update-machine.dto";
-
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/machine`;
 
 /**
@@ -24,15 +22,6 @@ const getMachines = () => {
 const getMachine = (machineId: string) => {
   return axiosInstance
     .get<IHttpResponse<MachineRecordDto>>(`${baseAPIURL}/${machineId}`)
-    .then((res) => res.data);
-};
-
-/**
- * Inserts a new machine
- */
-const insertMachine = (addMachineDto: AddMachineDto) => {
-  return axiosInstance
-    .post<IHttpResponse<MachinesTableRowDto>>(`${baseAPIURL}`, addMachineDto)
     .then((res) => res.data);
 };
 
@@ -63,20 +52,10 @@ const deleteMachines = (ids: string[]) => {
     .then((res) => res.data);
 };
 
-/**
- * For insert or update machine optimistic mutation
- */
-const insertOrUpdateMachine = (mutateObj: AddMachineDto | UpdateMachineDto) => {
-  if ("id" in mutateObj) return updateMachine(mutateObj as UpdateMachineDto);
-  else return insertMachine(mutateObj as AddMachineDto);
-};
-
 export {
   getMachines,
   getMachine,
-  insertMachine,
   updateMachine,
   deleteMachine,
   deleteMachines,
-  insertOrUpdateMachine,
 };

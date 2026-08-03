@@ -21,11 +21,6 @@ public class MachinesTableRowDto
     public required string Name { get; set; }
 
     /// <summary>
-    /// Represents the environment of the machine, e.g., Development, UAT, Production.
-    /// </summary>
-    public required EnvironmentTypesEnum Environment { get; set; }
-
-    /// <summary>
     /// Represents the operating system of the machine, e.g., Windows, Linux.
     /// </summary>
     [Display(Name = "Operating System")]
@@ -51,13 +46,6 @@ public class MachinesTableRowDto
     public required string Hostname { get; set; }
 
     /// <summary>
-    /// Optional IP address of the machine (supports IPv4 or IPv6, max length 100).
-    /// </summary>
-    [StringLength(100)]
-    [Display(Name = "IP Address")]
-    public string? IpAddress { get; set; }
-
-    /// <summary>
     /// Represents the timestamp of when the machine was last checked in.
     /// </summary>
     [Display(Name = "Last Checked In")]
@@ -81,30 +69,17 @@ public class MachinesTableRowDto
     public bool IsDisabled { get; set; }
 
     /// <summary>
-    /// Gets or sets the username of the user who created the user record. 
+    /// Gets or sets the linked user account of the machine.
+    /// The value could be the linked user's unique username or user id.
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
-    [Display(Name = "Created By")]
-    public required string CreatedBy { get; set; }
+    [Display(Name = "Linked User Account")]
+    public required string LinkedUserAccount { get; set; }
 
     /// <summary>
-    /// Gets or sets the date and time when the user record was created. 
+    /// Gets or sets the date and time when the machine record was created. 
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     [Display(Name = "Created At")]
-    public DateTimeOffset CreatedOn { get; set; }
-
-    /// <summary>
-    /// Gets or sets the username of the user who last modified the user record.
-    /// This property is intended for use in responses only and should not be included in requests.
-    /// </summary>
-    [Display(Name = "Last Modified By")]
-    public required string LastModifiedBy { get; set; }
-
-    /// <summary>
-    /// Gets or sets the date and time when the user record was last modified. 
-    /// This property is intended for use in responses only and should not be included in requests.
-    /// </summary>
-    [Display(Name = "Last Modified At")]
-    public DateTimeOffset LastModifiedOn { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 }

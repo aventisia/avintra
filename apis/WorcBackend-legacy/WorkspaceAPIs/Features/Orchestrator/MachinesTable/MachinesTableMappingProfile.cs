@@ -7,26 +7,14 @@ public class MachinesTableMappingProfile : IRegister
         // For - Retrieves list of machines or Retrieve machine by its ID
         config.NewConfig<Machine, MachinesTableRowDto>()
             .Map(dest => dest.FlowVersionCount, src => src.MachineFlowVersions != null ? src.MachineFlowVersions.Count : 0)
-            .Map(dest => dest.CreatedBy,
-                src => src.CreatedByUser != null
-                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
-                    : null)
-            .Map(dest => dest.LastModifiedBy,
-                src => src.LastModifiedByUser != null
-                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null);
+            .Map(dest => dest.LinkedUserAccount,
+                src => src.User != null ? src.User.UserName : null);
 
         // For - Retrieves machine by its ID
         config.NewConfig<Machine, MachineRecordDto>()
             .Map(dest => dest.MachineFlowVersions, src => src.MachineFlowVersions)
-            .Map(dest => dest.CreatedBy,
-                src => src.CreatedByUser != null
-                    ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
-                    : null)
-            .Map(dest => dest.LastModifiedBy,
-                src => src.LastModifiedByUser != null
-                    ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null);
+            .Map(dest => dest.LinkedUserAccount,
+                src => src.User != null ? src.User.UserName : null);
 
         // For - Extension_Retrieves machine by its ID (assigned flow versions)
         config.NewConfig<Machine_FlowVersion, MachineFlowVersion>()
@@ -44,24 +32,10 @@ public class MachinesTableMappingProfile : IRegister
             .Map(dest => dest.VersionNumber,
                 src => src.FlowVersion != null ? src.FlowVersion.VersionNumber : 0);
 
-        // For - Insert new machine
-        config.NewConfig<AddMachineDto, Machine>()
-            .Map(dest => dest.OsID, src => src.OsID.Trim().ToLowerInvariant())
-            .Map(dest => dest.Username, src => src.Username.Trim().ToLowerInvariant())
-            .Map(dest => dest.Hostname, src => src.Hostname.Trim().ToLowerInvariant())
-            .Map(dest => dest.IpAddress, src => src.IpAddress != null ? src.IpAddress.Trim().ToLowerInvariant() : null)
-            .Ignore(dest => dest.Id)
-            .Ignore(dest => dest.Name)
-            .Ignore(dest => dest.CreatedOn)
-            .Ignore(dest => dest.LastModifiedOn)
-            .Ignore(dest => dest.TenantId)
-            .IgnoreNullValues(true);
-
         // For - Update existing machine
         config.NewConfig<UpdateMachineDto, Machine>()
             .Ignore(dest => dest.Name)
-            .Ignore(dest => dest.CreatedOn)
-            .Ignore(dest => dest.LastModifiedOn)
+            .Ignore(dest => dest.CreatedAt)
             .Ignore(dest => dest.TenantId)
             .IgnoreNullValues(true);
 

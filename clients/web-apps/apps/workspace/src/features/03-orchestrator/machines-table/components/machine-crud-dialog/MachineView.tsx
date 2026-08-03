@@ -2,7 +2,6 @@ import { CopyableText, LoadingSpinner, NoContentMessage, Separator } from "@avpl
 import { Badge } from "@avplatform/ui/badge";
 import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
 import {
-  AuditTrailCard,
   ViewBadge,
   ViewContainer,
   ViewField,
@@ -13,12 +12,11 @@ import {
 import { ViewDefaultCard } from "@avplatform/ui/components/view-record/ViewDefaultCard";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { cn } from "@avplatform/ui/lib";
-import { formatDate, maskIP } from "@avplatform/ui/utils";
+import { formatDate } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import {
   BanIcon,
   CheckCircleIcon,
-  HardDriveIcon,
   MonitorCogIcon,
   MonitorIcon,
   NetworkIcon,
@@ -35,7 +33,7 @@ import { MachineFlowVersionRowActions } from "./MachineFlowVersionRowActions";
  * MachineView component displays the details of a machine in a read-only view.
  * It fetches the machine data from the API using the rowId from the crud dialog store.
  * If the machine data is not found, it displays a message indicating that the record is not available.
- * Otherwise, it renders the machine details including profile, environment, OS type, connection status,
+ * Otherwise, it renders the machine details including profile, OS type, connection status,
  * assigned flow versions/agents with their metadata, and audit trail.
  * The component uses various UI components such as CopyableText, Badge, and ViewInfoRowsCard to present the information in a structured manner.
  *
@@ -98,9 +96,8 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
           />
         </div>
 
-        {/* Env, OS Type, and Disabled status section */}
+        {/* OS Type and Disabled status section */}
         <div className="flex flex-wrap items-center gap-2.5">
-          <ViewBadge Icon={HardDriveIcon} text={machine.environment} />
           <ViewBadge Icon={MonitorCogIcon} text={machine.operatingSystem} />
           {machine.isDisabled ? (
             <ViewBadge Icon={BanIcon} text="Disabled" viewStyle="disabled" />
@@ -109,12 +106,12 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
           )}
         </div>
 
-        {/* OS Unique Id, Hostname, Username, and IP Address section */}
+        {/* OS Unique Id, Hostname, Username, and User section */}
         <div className="grid grid-cols-2 gap-2">
           <ViewFieldWithCopy textClassName="font-mono" label="OS Unique Id" value={machine.osID} />
           <ViewField label="Hostname" value={machine.hostname} />
           <ViewField label="Username" value={machine.username} />
-          <ViewField label="IP Address" value={maskIP(machine.ipAddress)} />
+          <ViewField label="Linked User Account" value={machine.linkedUserAccount} />
         </div>
       </ViewDefaultCard>
 
@@ -170,13 +167,6 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
         <Separator className="h-[0.5px]" />
         <ViewInfoRow label="Last Checked In" value={formatDate(machine.lastCheckedIn, true)} />
       </ViewInfoRowsCard>
-
-      <AuditTrailCard
-        createdBy={machine.createdBy}
-        createdOn={machine.createdOn}
-        lastModifiedBy={machine.lastModifiedBy}
-        lastModifiedOn={machine.lastModifiedOn}
-      />
     </ViewContainer>
   );
 };

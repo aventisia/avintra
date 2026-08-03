@@ -98,7 +98,6 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<ProjectTemplate>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ProjectTemplateStatusesEnum>());
         modelBuilder.Entity<ProjectTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<TemplateAccessTypesEnum>());
         modelBuilder.Entity<Machine>().Property(e => e.OperatingSystem).HasConversion(new EnumToStringConverter<OsTypesEnum>());
-        modelBuilder.Entity<Machine>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());
         modelBuilder.Entity<Queue>().Property(e => e.Type).HasConversion(new EnumToStringConverter<QueueTypesEnum>());
         modelBuilder.Entity<Queue>().Property(e => e.ViewType).HasConversion(new EnumToStringConverter<QueueViewTypeEnum>());
         modelBuilder.Entity<QueueTransaction>().Property(e => e.Status).HasConversion(new EnumToStringConverter<QueueTransactionStatusTypesEnum>());
@@ -135,6 +134,9 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Machine_FlowVersion>().HasKey(mf => new { mf.MachineId, mf.FlowVersionId });
         modelBuilder.Entity<Machine>().HasMany(many => many.MachineFlowVersions).WithOne(one => one.Machine).HasForeignKey(fKey => fKey.MachineId).IsRequired().OnDelete(DeleteBehavior.Cascade);
         modelBuilder.Entity<FlowVersion>().HasMany(many => many.FlowVersionMachines).WithOne(one => one.FlowVersion).HasForeignKey(fKey => fKey.FlowVersionId).IsRequired();
+
+        // Configure One-to-Many relationship between User and Machine
+        modelBuilder.Entity<Machine>().HasOne(one => one.User).WithMany(many => many.Machines).HasForeignKey(fKey => fKey.UserId).OnDelete(DeleteBehavior.Restrict);
 
         // Configure One-to-Many relationship
         modelBuilder.Entity<Flow>().HasMany(many => many.FlowLog).WithOne(one => one.Flow).HasForeignKey(fKey => fKey.FlowId).OnDelete(DeleteBehavior.Restrict);

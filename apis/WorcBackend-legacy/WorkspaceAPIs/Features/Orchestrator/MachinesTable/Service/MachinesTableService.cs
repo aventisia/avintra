@@ -35,8 +35,9 @@ public class MachinesTableService : IMachinesTableService
             // Retrieve the list of records
             var machines = await _unitOfWork.MachineRepo
                             .GetAllAsync()
-                            .OrderByDescending(o => o.CreatedOn)
+                            .OrderByDescending(o => o.CreatedAt)
                             .AsNoTracking()
+                            .Include(i => i.User)
                             .ProjectToType<MachinesTableRowDto>()
                             .ToListAsync();
 
@@ -83,6 +84,7 @@ public class MachinesTableService : IMachinesTableService
             // Retrieve the record
             var machine = await _unitOfWork.MachineRepo
                             .GetByConditionAsync(w => w.Id == machineId)
+                            .Include(i => i.User)
                             .Include(i => i.MachineFlowVersions)
                             .AsNoTracking()
                             .ProjectToType<MachineRecordDto>()
@@ -117,64 +119,6 @@ public class MachinesTableService : IMachinesTableService
         }
     }
 
-    // Inserts a new machine.
-    public async Task<ServiceResponse<MachinesTableRowDto>> InsertMachineAsync(AddMachineDto addMachineDto)
-    {
-        // Initialize ServiceResponse with a failed response
-        var serviceResponse = ServiceResponse<MachinesTableRowDto>.Create("Failed to add machine", 500);
-
-        try
-        {
-            // Trim DTO's string properties
-            addMachineDto = TrimDtoStringPropsUtil.TrimDtoStringProps(addMachineDto);
-
-            // Check if machine exists with the same env, os type, OS ID and Username
-            var existingMachine = await _unitOfWork.MachineRepo
-                                    .GetByConditionAsync(w =>
-                                        w.Environment == addMachineDto.Environment &&
-                                        w.OperatingSystem == addMachineDto.OperatingSystem &&
-                                        w.OsID.ToLower() == addMachineDto.OsID.ToLower() &&
-                                        w.Username.ToLower() == addMachineDto.Username.ToLower())
-                                    .FirstOrDefaultAsync();
-
-            // If machine exists, return
-            if (existingMachine != null)
-                return serviceResponse.Update($"A machine with same environment, OS type, OS ID and username already exists.", 409);
-
-            // Mapping
-            var newMachine = addMachineDto.Adapt<Machine>();
-            newMachine.Name = MachinesTableHelpers.BuildMachineName(newMachine.Environment, newMachine.OperatingSystem, newMachine.OsID, newMachine.Username);
-            newMachine.CreatedByUserId = _userId;
-            newMachine.LastModifiedByUserId = _userId;
-
-            // Insert machine
-            await _unitOfWork.MachineRepo.InsertAsync(newMachine);
-
-            // Add Machine_FlowVersion for the provided FlowVersionIds
-            if (addMachineDto.FlowVersionIds != null && addMachineDto.FlowVersionIds.Any())
-            {
-                var distinctFlowVersionIds = MachinesTableHelpers.GetDistinctGuids(addMachineDto.FlowVersionIds);
-                var machineFlowVersions = MachinesTableHelpers.CreateMachineFlowVersions(newMachine.Id, distinctFlowVersionIds);
-
-                // Insert Machine_FlowVersion records
-                if (machineFlowVersions.Any())
-                    await _unitOfWork.Machine_FlowVersionRepo.InsertAsync(machineFlowVersions);
-            }
-
-            // If saving changes fails, return
-            if (!await _unitOfWork.SaveAsync())
-                return serviceResponse.Update("An error occurred while saving changes.", 500);
-
-            // Task successful
-            return serviceResponse.Update("Machine added", 201, newMachine.Adapt<MachinesTableRowDto>());
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error occurred while adding machine with OS ID {OsID} and Username {Username}", addMachineDto.OsID, addMachineDto.Username);
-            return serviceResponse;
-        }
-    }
-
     // Updates an existing machine.
     public async Task<ServiceResponse<MachinesTableRowDto>> UpdateMachineAsync(UpdateMachineDto updateMachineDto)
     {
@@ -183,9 +127,6 @@ public class MachinesTableService : IMachinesTableService
 
         try
         {
-            // Trim DTO's string properties
-            updateMachineDto = TrimDtoStringPropsUtil.TrimDtoStringProps(updateMachineDto);
-
             // Retrieve the record
             var machine = await _unitOfWork.MachineRepo
                             .GetByConditionAsync(w => w.Id == updateMachineDto.Id)
@@ -195,25 +136,9 @@ public class MachinesTableService : IMachinesTableService
             if (machine == null)
                 return serviceResponse.Update("Machine not found", 404);
 
-            // Check if machine exists with the same same env, os type, OS ID and Username
-            var existingMachine = await _unitOfWork.MachineRepo
-                                    .GetByConditionAsync(w =>
-                                        w.Environment == updateMachineDto.Environment &&
-                                        w.OperatingSystem == updateMachineDto.OperatingSystem &&
-                                        w.OsID.ToLower() == updateMachineDto.OsID.ToLower() &&
-                                        w.Username.ToLower() == updateMachineDto.Username.ToLower() &&
-                                        w.Id != updateMachineDto.Id)
-                                    .FirstOrDefaultAsync();
-
-            // If machine exists, return
-            if (existingMachine != null)
-                return serviceResponse.Update($"A machine with same environment, OS type, OS ID and username already exists.", 409);
-
-            // Mapping
-            updateMachineDto.Adapt(machine);
-            machine.Name = MachinesTableHelpers.BuildMachineName(machine.Environment, machine.OperatingSystem, machine.OsID, machine.Username);
-            machine.LastModifiedByUserId = _userId;
-            machine.LastModifiedOn = DateTimeOffset.UtcNow;
+            // Update the disabled state when provided
+            if (updateMachineDto.IsDisabled.HasValue)
+                machine.IsDisabled = updateMachineDto.IsDisabled.Value;
 
             // Update machine
             _unitOfWork.MachineRepo.Update(machine);

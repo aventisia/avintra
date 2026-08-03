@@ -31,7 +31,6 @@ namespace WorkspaceAPIs.Data
             // Enum configurations to store enums as strings in the database for easy readability
             modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
             modelBuilder.Entity<Machine>().Property(e => e.OperatingSystem).HasConversion(new EnumToStringConverter<OsTypesEnum>());
-            modelBuilder.Entity<Machine>().Property(e => e.Environment).HasConversion(new EnumToStringConverter<EnvironmentTypesEnum>());
             modelBuilder.Entity<TimeTrigger>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
             modelBuilder.Entity<Trigger>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
             modelBuilder.Entity<Job>().Property(e => e.Status).HasConversion(new EnumToStringConverter<JobStatusEnum>());

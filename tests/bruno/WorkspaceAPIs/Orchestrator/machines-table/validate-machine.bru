@@ -1,0 +1,39 @@
+meta {
+  name: Validate machine
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/machine/validate
+  body: json
+  auth: none
+}
+
+headers {
+  X-API-KEY: {{CUSTOM_API_KEY}}
+  X-TENANT-ID: {{TENANT_ID}}
+}
+
+body:json {
+  {
+    "operatingSystem": "Windows",
+    "osID": "bruno-register-test-machine-guid",
+    "hostname": "bruno-register-host",
+    "username": "bruno.register.user",
+    "linkedUserAccountId": "{{ACCOUNT_USER_ID}}"
+  }
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "MACHINE_ID",
+          res.getBody().data.machineId
+      );
+      bru.setGlobalEnvVar(
+          "MACHINE_JWT",
+          res.getBody().data.jwt
+      );
+  }
+}

@@ -1,4 +1,3 @@
-import { EnvironmentTypesEnum } from "@avplatform/ui/enums/environment-types-enum";
 import { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
 import type { OsTypesEnum } from "@avplatform/ui/enums/os-types-enum";
 
@@ -20,12 +19,7 @@ export interface AssignMachineDto {
   agentId: string;
   name: string;
   isDisabled: boolean;
-  createdBy: string;
-  createdOn: Date;
-  lastModifiedBy: string;
   type?: OsTypesEnum;
-  environment?: EnvironmentTypesEnum;
-  lastModifiedOn: Date;
   isAssigned: boolean;
   osId?: string;
   /**

@@ -24,13 +24,6 @@ public class MachinesTableController : BaseApiController
         return ResultHelper(await _machinesTableService.GetMachineAsync(machineId));
     }
 
-    // Inserts a new machine.
-    [HttpPost]
-    public async Task<ActionResult<ServiceResponse<MachinesTableRowDto>>> InsertMachine([FromBody] AddMachineDto addMachineDto)
-    {
-        return ResultHelper(await _machinesTableService.InsertMachineAsync(addMachineDto));
-    }
-
     // Updates an existing machine.
     [HttpPut]
     public async Task<ActionResult<ServiceResponse<MachinesTableRowDto>>> UpdateMachine([FromBody] UpdateMachineDto updateMachineDto)
