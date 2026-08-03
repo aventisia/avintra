@@ -42,14 +42,15 @@ public class QueueWorkItemController : BaseApiController
     }
 
     // Add single/multiple work items to the specified queue
+    [AllowAnonymous, ApiKeyAuthorize("createQueueWorkItem", allowJwtAuth: true)]
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<QueueWorkItemDto>>> InsertMultipleWorkItemsAsync([FromBody] QueueWorkItemDto queueWorkItemDto)
     {
         return ResultHelper(await _queueWorkItemService.InsertWorkItemsAsync(queueWorkItemDto));
     }
 
-    // Add multiple work items to the specified queue
-    [AllowAnonymous, CustomAuthorize]
+    // Add multiple work items to the specified queue via data-items route
+    [AllowAnonymous, ApiKeyAuthorize("createQueueWorkItem", allowJwtAuth: true)]
     [HttpPost("data-items")]
     public async Task<ActionResult<ServiceResponse<QueueWorkItemDto>>> AddWorkItemAsync([FromBody] QueueWorkItemDto queueWorkItemDto)
     {

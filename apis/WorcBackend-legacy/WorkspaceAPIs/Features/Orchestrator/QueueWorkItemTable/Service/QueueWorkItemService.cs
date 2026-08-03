@@ -4,6 +4,7 @@ public class QueueWorkItemService : IQueueWorkItemService
 {
     private readonly ILogger<QueueWorkItemService> _logger;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly Guid _userId;
     private readonly string _username;
     private readonly IStringEncryptionService _stringEncryptionService;
@@ -21,8 +22,26 @@ public class QueueWorkItemService : IQueueWorkItemService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _httpContextAccessor = httpContextAccessor;
         _stringEncryptionService = stringEncryptionService;
         _queueTransactionEventService = queueTransactionEventService;
+    }
+
+    // Returns the creator name: JWT username, validated API key name, or a generic fallback.
+    private string GetCreatedBy()
+    {
+        if (!string.IsNullOrEmpty(_username))
+        {
+            return _username;
+        }
+
+        if (_httpContextAccessor.HttpContext?.Items.TryGetValue(ApiKeyAuthorizeAttribute.ApiKeyNameContextItem, out var apiKeyName) == true &&
+            apiKeyName is string name && !string.IsNullOrEmpty(name))
+        {
+            return name;
+        }
+
+        return "api-key";
     }
 
     // Retrieve all workitems for a specific queue
@@ -645,7 +664,7 @@ public class QueueWorkItemService : IQueueWorkItemService
                     // Ensure CreatedBy is set
                     if (string.IsNullOrEmpty(queueWorkItemDto.CreatedBy))
                     {
-                        queueWorkItemDto.CreatedBy = _username;
+                        queueWorkItemDto.CreatedBy = GetCreatedBy();
                     }
 
                     // Encrypt payload if queue is configured for encryption

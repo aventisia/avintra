@@ -5,17 +5,31 @@ public class ApiKeyAuthorizeAttribute : Attribute, IAsyncAuthorizationFilter
 {
     private const string ApiKeyHeaderName = "X-API-KEY";
 
-    public ApiKeyAuthorizeAttribute(string permission)
+    /// <summary>
+    /// Key used to store the validated API key name in <see cref="HttpContext.Items"/> for downstream audit/logging.
+    /// </summary>
+    public const string ApiKeyNameContextItem = "avplatform:ApiKeyName";
+
+    public ApiKeyAuthorizeAttribute(string permission, bool allowJwtAuth = false)
     {
         Permission = permission;
+        AllowJwtAuth = allowJwtAuth;
     }
 
     public string Permission { get; }
+
+    public bool AllowJwtAuth { get; }
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
         var httpContext = context.HttpContext;
         var cancellationToken = httpContext.RequestAborted;
+
+        // JWT-authenticated requests bypass API key validation when the endpoint supports dual auth.
+        if (AllowJwtAuth && httpContext.User.Identity?.IsAuthenticated == true)
+        {
+            return;
+        }
 
         // Resolve required services from DI.
         var workspaceDbContext = httpContext.RequestServices.GetRequiredService<WorkspaceDbContext>();
@@ -70,7 +84,8 @@ public class ApiKeyAuthorizeAttribute : Attribute, IAsyncAuthorizationFilter
             logger.LogError(ex, "Failed to update LastUsedAt for API key {ApiKeyId}.", apiKeyEntity.Id);
         }
 
-        // Authorization successful.
+        // Authorization successful; make the API key name available to downstream components for audit.
+        httpContext.Items[ApiKeyNameContextItem] = apiKeyEntity.Name;
     }
 
     private static bool HasPermission(ApiKeyPermissions? permissions, string permission)
