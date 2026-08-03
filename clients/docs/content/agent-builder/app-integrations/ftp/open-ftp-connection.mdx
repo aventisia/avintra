@@ -12,13 +12,13 @@ Common uses include:
 
 ## Configuration Options
 
-| Field Name    | Description                                          | Input Type | Required? | Default Value |
-| ------------- | ---------------------------------------------------- | ---------- | --------- | ------------- |
-| **Host**      | The FTP server URL (e.g., ftp.example.com).          | Text       | Yes       | _(empty)_     |
-| **Port**      | The port number for the FTP connection.              | Text       | No        | 21            |
-| **Active Mode** | If enabled, uses active mode for FTP connection.   | Switch     | No        | _(empty)_     |
-| **Username**  | The username for authentication.                     | Text       | Yes       | _(empty)_     |
-| **Password**  | The password for authentication.                     | Password   | Yes       | _(empty)_     |
+| Field Name      | Description                                      | Input Type | Required? | Default Value |
+| --------------- | ------------------------------------------------ | ---------- | --------- | ------------- |
+| **Host**        | The FTP server URL (e.g., ftp.example.com).      | Text       | Yes       | _(empty)_     |
+| **Port**        | The port number for the FTP connection.          | Text       | No        | 21            |
+| **Active Mode** | If enabled, uses active mode for FTP connection. | Switch     | No        | _(empty)_     |
+| **Username**    | The username for authentication.                 | Text       | Yes       | _(empty)_     |
+| **Password**    | The password for authentication.                 | Password   | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -58,26 +58,28 @@ The established connection will be saved as a variable named **FtpConnection**, 
 </Steps>
 
 <Callout type="warning" title="Security Note">
-  Ensure that you have appropriate permissions and security measures in place when connecting to an FTP server. Avoid using public or unsecured networks when entering your credentials.
+  Ensure that you have appropriate permissions and security measures in place
+  when connecting to an FTP server. Avoid using public or unsecured networks
+  when entering your credentials.
 </Callout>
 
 ## Input/Output Examples
 
-| Field    | Example Value          | Description                                                   |
-| -------- | ---------------------- | ------------------------------------------------------------- |
-| Host     | ftp.example.com        | The server name or IP address of the FTP server.              |
-| Port     | 21                     | The network port to use for the connection (default is 21).   |
-| Username | user123                | The login username for the FTP server.                        |
-| Password | ••••••••               | A Password for the FTP account (hidden for security reasons). |
-| Output   | FtpConnection          | A variable storing the FTP connection object.                 |
+| Field    | Example Value   | Description                                                   |
+| -------- | --------------- | ------------------------------------------------------------- |
+| Host     | ftp.example.com | The server name or IP address of the FTP server.              |
+| Port     | 21              | The network port to use for the connection (default is 21).   |
+| Username | user123         | The login username for the FTP server.                        |
+| Password | ••••••••        | A Password for the FTP account (hidden for security reasons). |
+| Output   | FtpConnection   | A variable storing the FTP connection object.                 |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                | Solution                                                                                              |
-| -------------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| **Cannot connect to the server**       | Check that the server address and port number are correct, and ensure your network allows the connection. |
-| **Authentication failure**             | Verify your username and password. Ensure credentials are correctly entered.                           |
-| **Connection timeouts**                | Check your network conditions and retry connecting, or switch between active/passive FTP modes.        |
+| Problem                          | Solution                                                                                                  |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Cannot connect to the server** | Check that the server address and port number are correct, and ensure your network allows the connection. |
+| **Authentication failure**       | Verify your username and password. Ensure credentials are correctly entered.                              |
+| **Connection timeouts**          | Check your network conditions and retry connecting, or switch between active/passive FTP modes.           |
 
 ## Real-World Use Cases
 

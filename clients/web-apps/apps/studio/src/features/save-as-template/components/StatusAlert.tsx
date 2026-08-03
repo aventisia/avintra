@@ -1,5 +1,6 @@
 import { Alert } from "@avplatform/ui/alert";
 import { CheckCircle2Icon, ClockIcon, XCircleIcon } from "lucide-react";
+
 import { StatusType } from "../dto/save-as-template";
 
 interface StatusAlertProps {
@@ -8,11 +9,7 @@ interface StatusAlertProps {
   approvedBy?: string;
 }
 
-export const StatusAlert: React.FC<StatusAlertProps> = ({
-  status,
-  remark,
-  approvedBy,
-}) => {
+export const StatusAlert: React.FC<StatusAlertProps> = ({ status, remark, approvedBy }) => {
   switch (status) {
     case "Approved":
       return (
@@ -41,8 +38,7 @@ export const StatusAlert: React.FC<StatusAlertProps> = ({
           icon={XCircleIcon}
           title="Rejected"
           description={
-            remark ??
-            "The template was not approved. You may revise and resubmit it for review."
+            remark ?? "The template was not approved. You may revise and resubmit it for review."
           }
         />
       );

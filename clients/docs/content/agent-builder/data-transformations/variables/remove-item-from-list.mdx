@@ -6,12 +6,12 @@ The **Remove Item From List** node helps you efficiently remove specific items f
 
 ## Configuration Options
 
-| Field Name         | Description                                                      | Input Type | Required? | Default Value |
-| ------------------ | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Remove Mode**    | Choose whether to remove an item by its position (index) or its value. | Select     | Yes       | _(empty)_     |
-| **Index To Remove**| Specify the zero-based position of the item to remove. _Only visible if Remove Mode is "Index"._ | Text       | No        | _(empty)_     |
-| **Value To Remove**| Specify the value of the item to remove. _Only visible if Remove Mode is "Value"._ | Text       | No        | _(empty)_     |
-| **Source List**    | Enter the list from which you want to remove the item.              | Text       | Yes       | _(empty)_     |
+| Field Name          | Description                                                                                      | Input Type | Required? | Default Value |
+| ------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Remove Mode**     | Choose whether to remove an item by its position (index) or its value.                           | Select     | Yes       | _(empty)_     |
+| **Index To Remove** | Specify the zero-based position of the item to remove. _Only visible if Remove Mode is "Index"._ | Text       | No        | _(empty)_     |
+| **Value To Remove** | Specify the value of the item to remove. _Only visible if Remove Mode is "Value"._               | Text       | No        | _(empty)_     |
+| **Source List**     | Enter the list from which you want to remove the item.                                           | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -49,23 +49,24 @@ Once configured, the updated list without the removed item(s) will appear as **M
 </Steps>
 
 <Callout type="info" title="Note">
-  The node only requires you to fill either **Index To Remove** or **Value To Remove** based on the selection in **Remove Mode**.
+  The node only requires you to fill either **Index To Remove** or **Value To
+  Remove** based on the selection in **Remove Mode**.
 </Callout>
 
 ## Input/Output Examples
 
-| Remove Mode | Source List           | Index To Remove | Value To Remove | Output Value        |
-| ----------- | --------------------- | --------------- | --------------- | ------------------  |
-| Index       | `[5, 12, 19, 22]`     | 2               | _(n/a)_         | `[5, 12, 22]`       |
-| Value       | `["apple", "banana", "cherry"]` | _(n/a)_     | "banana"       | `["apple", "cherry"]` |
+| Remove Mode | Source List                     | Index To Remove | Value To Remove | Output Value          |
+| ----------- | ------------------------------- | --------------- | --------------- | --------------------- |
+| Index       | `[5, 12, 19, 22]`               | 2               | _(n/a)_         | `[5, 12, 22]`         |
+| Value       | `["apple", "banana", "cherry"]` | _(n/a)_         | "banana"        | `["apple", "cherry"]` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                  | Solution                                                                                   |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **'Remove Mode' Not Selected**           | Ensure you have selected either **Index** or **Value** in the Remove Mode field.            |
+| Problem                                        | Solution                                                                                    |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **'Remove Mode' Not Selected**                 | Ensure you have selected either **Index** or **Value** in the Remove Mode field.            |
 | **'IndexToRemove' or 'ValueToRemove' Missing** | Fill the appropriate field based on your **Remove Mode** choice.                            |
-| **Non-existent Index or Value**          | Verify the index or value exists in the provided list. Remove operation fails if not found. |
+| **Non-existent Index or Value**                | Verify the index or value exists in the provided list. Remove operation fails if not found. |
 
 ## Real-World Use Cases
 

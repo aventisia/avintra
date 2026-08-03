@@ -1,15 +1,16 @@
-import { useListOptimisticMutation } from "@avplatform/ui/hooks";
-import { cn } from "@avplatform/ui/lib";
 import { AutosizeTextarea } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Form } from "@avplatform/ui/form";
 import { FormControl } from "@avplatform/ui/form";
 import { FormField } from "@avplatform/ui/form";
 import { FormItem } from "@avplatform/ui/form";
+import { useListOptimisticMutation } from "@avplatform/ui/hooks";
+import { cn } from "@avplatform/ui/lib";
 import { CheckIcon, PaperAirplaneIcon } from "@heroicons/react/24/outline";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
 import { flowCommentOptimisticMutationFn } from "../apis/flow-comments-apis";
 import { flowCommentZodSchema } from "../constants/flow-comment-zod-schema";
 import { FlowCommentDto } from "../dtos/flow-comment-dto";
@@ -28,11 +29,7 @@ interface FCMessageComposerProps {
  * @param {Object} props.form - The form object. Seperate form object are being used for create and update flow comment
  * @param {string} props.className - The CSS class name for the component.
  */
-export const FCMessageComposer = ({
-  crudAction,
-  form,
-  className,
-}: FCMessageComposerProps) => {
+export const FCMessageComposer = ({ crudAction, form, className }: FCMessageComposerProps) => {
   // Get store state and actions
   const { fcQueryKey, setFlowCommentId } = useFlowCommentsStore(
     useShallow((state) => ({
@@ -46,13 +43,7 @@ export const FCMessageComposer = ({
     FlowCommentDto,
     FlowCommentDto | boolean,
     FlowCommentDto
-  >(
-    [form.getValues("id")],
-    flowCommentOptimisticMutationFn,
-    fcQueryKey,
-    "asc",
-    false,
-  );
+  >([form.getValues("id")], flowCommentOptimisticMutationFn, fcQueryKey, "asc", false);
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof flowCommentZodSchema>) => {

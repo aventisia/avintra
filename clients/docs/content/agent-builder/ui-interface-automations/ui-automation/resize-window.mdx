@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name              | Description                                             | Input Type | Required? | Default Value       |
-| ----------------------- | ------------------------------------------------------- | ---------- | --------- | ------------------- |
-| **Window**              | Select the window you want to resize.                   | Text       | Yes       | _(empty)_           |
-| **Width**               | Enter the new width for the window (in pixels).         | Text       | Yes       | _(empty)_           |
-| **Height**              | Enter the new height for the window (in pixels).        | Text       | Yes       | _(empty)_           |
+| Field Name | Description                                      | Input Type | Required? | Default Value |
+| ---------- | ------------------------------------------------ | ---------- | --------- | ------------- |
+| **Window** | Select the window you want to resize.            | Text       | Yes       | _(empty)_     |
+| **Width**  | Enter the new width for the window (in pixels).  | Text       | Yes       | _(empty)_     |
+| **Height** | Enter the new height for the window (in pixels). | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -51,24 +51,25 @@ The node will output a status indicating whether the window resizing was success
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the width and height values correspond to a size that fits on your screen to prevent window positioning issues.
+  Ensure that the width and height values correspond to a size that fits on your
+  screen to prevent window positioning issues.
 </Callout>
 
 ## Input/Output Examples
 
-| Window         | Width | Height | Output (IsWindowResized) | Output Type |
-| -------------- | ----- | ------ | ------------------------ | ----------- |
-| "Browser"      | 800   | 600    | True                     | Boolean     |
-| "Edit Document"| 1024  | 768    | True                     | Boolean     |
-| "Spreadsheet"  | 1600  | 1200   | True                     | Boolean     |
+| Window          | Width | Height | Output (IsWindowResized) | Output Type |
+| --------------- | ----- | ------ | ------------------------ | ----------- |
+| "Browser"       | 800   | 600    | True                     | Boolean     |
+| "Edit Document" | 1024  | 768    | True                     | Boolean     |
+| "Spreadsheet"   | 1600  | 1200   | True                     | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                       |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **Window not resizing**                      | Check if the window you selected is open and can be resized. Some applications may restrict window resizing.   |
-| **Unintended window size**                   | Double-check the width and height inputs to ensure they match your intended dimensions.                        |
-| **Window displaced off-screen**              | Ensure the new dimensions fit within your screen resolution and reposition manually if necessary.              |
+| Problem                         | Solution                                                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Window not resizing**         | Check if the window you selected is open and can be resized. Some applications may restrict window resizing. |
+| **Unintended window size**      | Double-check the width and height inputs to ensure they match your intended dimensions.                      |
+| **Window displaced off-screen** | Ensure the new dimensions fit within your screen resolution and reposition manually if necessary.            |
 
 ## Real-World Use Cases
 

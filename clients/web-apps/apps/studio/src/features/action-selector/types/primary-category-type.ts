@@ -6,13 +6,13 @@ import { ActionCategoryType } from "./action-category-type";
 export type PrimaryCategoryType = {
   /** The display label for the primary category. */
   label: string;
-  
+
   /** A brief description of the primary category. */
   description: string;
-  
+
   /** The icon associated with the primary category. */
   icon?: string;
-  
+
   /** The image associated with the primary category. */
   img?: string;
 

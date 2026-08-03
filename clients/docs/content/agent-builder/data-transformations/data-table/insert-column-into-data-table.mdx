@@ -12,13 +12,13 @@ Use this node to:
 
 ## Configuration Options
 
-| Field Name       | Description                                                                            | Input Type | Required? | Default Value     |
-| ---------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ----------------- |
-| **Data Table**   | The data table where the new column will be inserted.                                  | Text       | Yes       | _(empty)_         |
-| **Column Name**  | The name of the new column you want to add to the data table.                          | Text       | Yes       | _(empty)_         |
-| **Data Type**    | The type of data that the new column will hold (String, Integer, Decimal, etc.).       | Select     | Yes       | _(empty)_         |
-| **Insert Location** | Choose if the new column should be added before a specific index or at the table's end. | Select     | No        | EndOfDataTable    |
-| **Column Index** | The index position where the new column should be inserted if not at the end.          | Text       | No        | _(empty)_         |
+| Field Name          | Description                                                                             | Input Type | Required? | Default Value  |
+| ------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Data Table**      | The data table where the new column will be inserted.                                   | Text       | Yes       | _(empty)_      |
+| **Column Name**     | The name of the new column you want to add to the data table.                           | Text       | Yes       | _(empty)_      |
+| **Data Type**       | The type of data that the new column will hold (String, Integer, Decimal, etc.).        | Select     | Yes       | _(empty)_      |
+| **Insert Location** | Choose if the new column should be added before a specific index or at the table's end. | Select     | No        | EndOfDataTable |
+| **Column Index**    | The index position where the new column should be inserted if not at the end.           | Text       | No        | _(empty)_      |
 
 ## Expected Output Format
 
@@ -46,6 +46,7 @@ Select the appropriate **Data Type** for the new column from the dropdown menu.
 ### Step 5
 
 In the **Insert Location** dropdown, select where you want the new column to be placed:
+
 - **Before Column Index**: Insert the column before a specific index.
 - **End of Data Table**: Append the column to the end.
 
@@ -60,24 +61,25 @@ The updated data table with the new column will be available as **ModifiedDataTa
 </Steps>
 
 <Callout type="info" title="Note">
-  If you choose "End of Data Table" in the **Insert Location**, the **Column Index** field will not appear.
+  If you choose "End of Data Table" in the **Insert Location**, the **Column
+  Index** field will not appear.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Data Table          | Insert Location    | Column Index | Output Data Table                      |
-| ------------------------- | ------------------ | ------------ | -------------------------------------- |
-| Name, Age, Country        | End of Data Table  | _(n/a)_      | Name, Age, Country, NewColumn          |
-| Name, Age, Country        | Before Column Index| 1            | Name, NewColumn, Age, Country          |
-| Temperature, Humidity     | End of Data Table  | _(n/a)_      | Temperature, Humidity, NewColumn       |
+| Input Data Table      | Insert Location     | Column Index | Output Data Table                |
+| --------------------- | ------------------- | ------------ | -------------------------------- |
+| Name, Age, Country    | End of Data Table   | _(n/a)_      | Name, Age, Country, NewColumn    |
+| Name, Age, Country    | Before Column Index | 1            | Name, NewColumn, Age, Country    |
+| Temperature, Humidity | End of Data Table   | _(n/a)_      | Temperature, Humidity, NewColumn |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                  | Solution                                                                 |
-| -------------------------------------------------------- | ------------------------------------------------------------------------ |
-| **Insert Location is "Before Column Index" but no index entered** | Ensure you enter the index position in the **Column Index** field.       |
-| **Non-existent table name in Data Table field**          | Verify that the data table name entered actually exists in your workflow. |
-| **Data Type not selected**                               | Always select a data type to ensure the column is correctly formatted.   |
+| Problem                                                           | Solution                                                                  |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| **Insert Location is "Before Column Index" but no index entered** | Ensure you enter the index position in the **Column Index** field.        |
+| **Non-existent table name in Data Table field**                   | Verify that the data table name entered actually exists in your workflow. |
+| **Data Type not selected**                                        | Always select a data type to ensure the column is correctly formatted.    |
 
 ## Real-World Use Cases
 

@@ -5,21 +5,23 @@ import { Callout, Steps } from "nextra/components";
 The **Get AWS Certificate Manager Certificate Metadata** node allows you to retrieve detailed information about a specific AWS Certificate Manager (ACM) certificate. By using this node, you can obtain essential metadata such as the certificate's domain, status, and expiration date. This is especially useful for auditing and managing your AWS resources efficiently.
 
 For example:
+
 - Fetching certificate details for monitoring purposes.
 - Validating certificate status as part of security audits.
 - Ensuring certificates are up-to-date and compliant.
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                                     | Input Type | Required? | Default Value |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).                                          | Text       | Yes       | _(empty)_     |
-| **Certificate ARN**      | The ARN of the AWS Certificate Manager certificate to retrieve metadata for (e.g., arn:aws:acm:us-east-1:... ). | Text       | Yes       | _(empty)_     |
-| **AWS Region**           | The AWS region where the certificate is located (e.g., us-east-1).                                              | Text       | No        | us-east-1     |
+| Field Name                     | Description                                                                                                     | Input Type | Required? | Default Value |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).                                        | Text       | Yes       | _(empty)_     |
+| **Certificate ARN**            | The ARN of the AWS Certificate Manager certificate to retrieve metadata for (e.g., arn:aws:acm:us-east-1:... ). | Text       | Yes       | _(empty)_     |
+| **AWS Region**                 | The AWS region where the certificate is located (e.g., us-east-1).                                              | Text       | No        | us-east-1     |
 
 ## Expected Output Format
 
 The output will include:
+
 - **Certificate Metadata**: Structured details about the certificate (e.g., domain, status, expiration).
 - **API Response**: The raw JSON response received from AWS Certificate Manager.
 
@@ -51,24 +53,25 @@ The retrieved metadata will be available as **Metadata** and the complete API re
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the provided **AWS Credential** has the necessary permissions to access AWS Certificate Manager and fetch the certificate metadata.
+  Ensure the provided **AWS Credential** has the necessary permissions to access
+  AWS Certificate Manager and fetch the certificate metadata.
 </Callout>
 
 ## Input/Output Examples
 
-| Field               | Example Input                                                                                                                                   | Output Type          | Sample Output                       |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------- |
-| **Credential to connect with** | my-aws-credentials                                                                                                                      | _(N/A)_              | _(N/A)_                             |
-| **Certificate ARN** | arn:aws:acm:us-east-1:123456789012:certificate/abc123                                                                                           | Metadata             | Details about domain, expiration, etc. |
-| **AWS Region**      | us-east-1                                                                                                                                       | Response             | Raw JSON API response               |
+| Field                          | Example Input                                         | Output Type | Sample Output                          |
+| ------------------------------ | ----------------------------------------------------- | ----------- | -------------------------------------- |
+| **Credential to connect with** | my-aws-credentials                                    | _(N/A)_     | _(N/A)_                                |
+| **Certificate ARN**            | arn:aws:acm:us-east-1:123456789012:certificate/abc123 | Metadata    | Details about domain, expiration, etc. |
+| **AWS Region**                 | us-east-1                                             | Response    | Raw JSON API response                  |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                                              |
-| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Certificate ARN**                             | Double-check the ARN format and ensure it corresponds to an existing certificate in AWS.                              |
-| **Credential Authentication Failed**                    | Verify that the credentials are correct and have the necessary permissions to access AWS Certificate Manager.          |
-| **Region Mismatch**                                     | Make sure the chosen AWS Region matches the region where the certificate is actually stored.                          |
+| Problem                              | Solution                                                                                                      |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| **Invalid Certificate ARN**          | Double-check the ARN format and ensure it corresponds to an existing certificate in AWS.                      |
+| **Credential Authentication Failed** | Verify that the credentials are correct and have the necessary permissions to access AWS Certificate Manager. |
+| **Region Mismatch**                  | Make sure the chosen AWS Region matches the region where the certificate is actually stored.                  |
 
 ## Real-World Use Cases
 

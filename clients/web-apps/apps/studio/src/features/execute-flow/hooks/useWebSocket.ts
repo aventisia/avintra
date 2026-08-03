@@ -18,8 +18,8 @@ import {
   sendNextNodeToProcess,
   sendNodeToProcess,
 } from "..";
-import { insertNodeExecutionLogs } from "../apis/node-execution-log-apis";
 import { updateJobData } from "../apis/jobs-table-apis";
+import { insertNodeExecutionLogs } from "../apis/node-execution-log-apis";
 import { NodeExecutionLogDto } from "../dtos/node-execution-log-dto";
 import { JobStatusEnum } from "../enums/job-status-enum";
 import { useJobDataStore } from "../stores/job-data-store";
@@ -319,7 +319,7 @@ function parseNodeExecutionLog(data: string): NodeExecutionLogDto | null {
 // Sends a batch of pending node logs to the backend and clears the buffer.
 async function flushPendingNodeLogs(
   jobId: string | undefined,
-  pendingLogs: NodeExecutionLogDto[]
+  pendingLogs: NodeExecutionLogDto[],
 ): Promise<void> {
   if (!jobId || pendingLogs.length === 0) return;
 

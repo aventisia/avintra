@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                              | Input Type | Required? | Default Value |
-| ----------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **UI Element**          | The radio button group you want to select from.                                          | Text       | Yes       | _(empty)_     |
-| **Radio Button Identifier** | The name or zero-based index of the radio button to select.                                | Text       | Yes       | _(empty)_     |
-| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).                               | Text       | No        | 5             |
+| Field Name                  | Description                                                 | Input Type | Required? | Default Value |
+| --------------------------- | ----------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**              | The radio button group you want to select from.             | Text       | Yes       | _(empty)_     |
+| **Radio Button Identifier** | The name or zero-based index of the radio button to select. | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).   | Text       | No        | 5             |
 
 ## Expected Output Format
 
@@ -51,7 +51,8 @@ The result will be available as **Was Selected**, indicating success (`true`) or
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the **Radio Button Identifier** accurately matches the target radio button's name or index to avoid errors.
+  Ensure that the **Radio Button Identifier** accurately matches the target
+  radio button's name or index to avoid errors.
 </Callout>
 
 ## Input/Output Examples
@@ -63,11 +64,11 @@ The result will be available as **Was Selected**, indicating success (`true`) or
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                                                  |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| **UI Element not found**                                     | Double-check the **UI Element** path to ensure it's correct.                                               |
-| **Incorrect Radio Button Identifier**                        | Verify the name or index used in the **Radio Button Identifier** and ensure it corresponds to a valid option. |
-| **Selection taking too long**                                | Consider increasing **Max Wait Time (seconds)** if UI elements load asynchronously or slowly.               |
+| Problem                               | Solution                                                                                                      |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **UI Element not found**              | Double-check the **UI Element** path to ensure it's correct.                                                  |
+| **Incorrect Radio Button Identifier** | Verify the name or index used in the **Radio Button Identifier** and ensure it corresponds to a valid option. |
+| **Selection taking too long**         | Consider increasing **Max Wait Time (seconds)** if UI elements load asynchronously or slowly.                 |
 
 ## Real-World Use Cases
 

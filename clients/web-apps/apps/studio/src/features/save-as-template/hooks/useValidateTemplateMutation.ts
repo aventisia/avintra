@@ -1,8 +1,9 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
+import { useShallow } from "zustand/react/shallow";
+
 import { validateTemplate } from "../apis/save-as-template-apis";
 import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
-import { useShallow } from "zustand/react/shallow";
 
 /**
  * useValidateTemplateMutation

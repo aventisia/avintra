@@ -11,9 +11,9 @@ When to use this node:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                           | Input Type | Required? | Default Value  |
-| ---------------------| ------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Worksheet Instance** | The target Excel worksheet instance to get the selected cell range from.              | Text       | Yes       | _(empty)_      |
+| Field Name             | Description                                                              | Input Type | Required? | Default Value |
+| ---------------------- | ------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The target Excel worksheet instance to get the selected cell range from. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -46,7 +46,8 @@ The output will provide you with the indices of the selected cells, available as
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure Excel is open and the correct worksheet is active when using this node to capture the cell range selection.
+  Ensure Excel is open and the correct worksheet is active when using this node
+  to capture the cell range selection.
 </Callout>
 
 ## Input/Output Examples
@@ -58,11 +59,11 @@ The output will provide you with the indices of the selected cells, available as
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                    | Solution                                                                                                                 |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| **Worksheet not specified**                | Ensure you provide a valid worksheet instance name that is open and accessible.                                           |
-| **No selection range retrieved**           | Verify that the Excel application is running and the intended worksheet is active with a selected range visible.          |
-| **Output values seem incorrect**           | Confirm the worksheet and the selected range before activating the node to ensure you fetch the desired cell coordinates. |
+| Problem                          | Solution                                                                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Worksheet not specified**      | Ensure you provide a valid worksheet instance name that is open and accessible.                                           |
+| **No selection range retrieved** | Verify that the Excel application is running and the intended worksheet is active with a selected range visible.          |
+| **Output values seem incorrect** | Confirm the worksheet and the selected range before activating the node to ensure you fetch the desired cell coordinates. |
 
 ## Real-World Use Cases
 

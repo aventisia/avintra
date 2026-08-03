@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name      | Description                                                                               | Input Type | Required? | Default Value |
-| --------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Image Path**  | The path to the image file (e.g., .png, .jpg) you want to process for text extraction.    | Text       | Yes       | _(empty)_     |
-| **Language Code** | The language code used by Tesseract (e.g., 'eng' for English).                           | Text       | No        | `eng`         |
+| Field Name        | Description                                                                             | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Image Path**    | The path to the image file (e.g., .png, .jpg) you want to process for text extraction.  | Text       | Yes       | _(empty)_     |
+| **Language Code** | The language code used by Tesseract (e.g., 'eng' for English).                          | Text       | No        | `eng`         |
 | **TessData Path** | Directory containing the tessdata folder. Leave blank for auto setup by the OCR engine. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
@@ -44,27 +44,29 @@ Optionally provide the **TessData Path** if you have a custom tessdata directory
 ### Step 5
 
 Extracted text will automatically be available as **ExtractedText** for further use in your workflow.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the image file is clear and readable to increase OCR accuracy. Blurry or low-quality images may reduce the successful text extraction rate.
+  Ensure the image file is clear and readable to increase OCR accuracy. Blurry
+  or low-quality images may reduce the successful text extraction rate.
 </Callout>
 
 ## Input/Output Examples
 
-| Image Path          | Language Code | TessData Path | Extracted Text      | Output Type  |
-| ------------------- | ------------- | ------------- | ------------------- | ------------ |
-| /images/invoice.png | eng           | _(empty)_     | "Invoice Number..." | Text String  |
-| /photos/letter.jpg  | fre           | /custom/tess  | "Chère Madame..."   | Text String  |
+| Image Path          | Language Code | TessData Path | Extracted Text      | Output Type |
+| ------------------- | ------------- | ------------- | ------------------- | ----------- |
+| /images/invoice.png | eng           | _(empty)_     | "Invoice Number..." | Text String |
+| /photos/letter.jpg  | fre           | /custom/tess  | "Chère Madame..."   | Text String |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                    |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| **Incorrect image path error**                | Verify the image file path is correct and accessible.                                       |
-| **Unclear extracted text**                    | Ensure the image is of good quality and properly oriented. Consider adjusting brightness.    |
-| **Incorrect language output**                 | Double-check the specified language code. Confirm it's valid for the text in the image.     |
-| **Empty extracted text**                      | Ensure the OCR engine supports the provided text in the image's language and quality.        |
+| Problem                        | Solution                                                                                  |
+| ------------------------------ | ----------------------------------------------------------------------------------------- |
+| **Incorrect image path error** | Verify the image file path is correct and accessible.                                     |
+| **Unclear extracted text**     | Ensure the image is of good quality and properly oriented. Consider adjusting brightness. |
+| **Incorrect language output**  | Double-check the specified language code. Confirm it's valid for the text in the image.   |
+| **Empty extracted text**       | Ensure the OCR engine supports the provided text in the image's language and quality.     |
 
 ## Real-World Use Cases
 

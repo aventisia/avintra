@@ -22,15 +22,11 @@ import {
  * @param isReadOnly If true, prevents appending new data to the database.
  */
 export const createHistoryAdapter = (
-  getConversationId: (
-    allocateIfMissing: boolean,
-  ) => Promise<string | undefined>,
+  getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>,
   flowVersionId: string,
   isReadOnly: boolean,
 ): ThreadHistoryAdapter => {
-  const mapRole = (
-    role: ConversationMessageSenderEnum,
-  ): ThreadMessage["role"] => {
+  const mapRole = (role: ConversationMessageSenderEnum): ThreadMessage["role"] => {
     switch (role) {
       case ConversationMessageSenderEnum.USER:
         return "user";
@@ -43,9 +39,7 @@ export const createHistoryAdapter = (
     }
   };
 
-  const mapToDtoRole = (
-    role: ThreadMessage["role"],
-  ): ConversationMessageSenderEnum => {
+  const mapToDtoRole = (role: ThreadMessage["role"]): ConversationMessageSenderEnum => {
     switch (role) {
       case "user":
         return ConversationMessageSenderEnum.USER;
@@ -63,9 +57,7 @@ export const createHistoryAdapter = (
     return "";
   };
 
-  const mapDtoToThreadMessage = (
-    msg: ConversationMessageDto,
-  ): ThreadMessage => {
+  const mapDtoToThreadMessage = (msg: ConversationMessageDto): ThreadMessage => {
     const role = mapRole(msg.role);
 
     const base = {
@@ -102,19 +94,14 @@ export const createHistoryAdapter = (
   };
 
   // Takes dynamic threadId now
-  const mapThreadToDto = (
-    msg: ThreadMessage,
-    threadId: string,
-  ): ConversationMessageDto => ({
+  const mapThreadToDto = (msg: ThreadMessage, threadId: string): ConversationMessageDto => ({
     conversationId: threadId,
     flowVersionId,
     content: extractText(msg),
     role: mapToDtoRole(msg.role),
     metadata: msg.metadata as Record<string, unknown>,
     files: null,
-    createdOn: msg.createdAt
-      ? msg.createdAt.toISOString()
-      : new Date().toISOString(),
+    createdOn: msg.createdAt ? msg.createdAt.toISOString() : new Date().toISOString(),
   });
 
   return {
@@ -148,9 +135,7 @@ export const createHistoryAdapter = (
 
     async append(item: ExportedMessageRepositoryItem): Promise<void> {
       if (isReadOnly) {
-        console.warn(
-          "History Adapter: Attempted to append in readOnly mode. Action blocked.",
-        );
+        console.warn("History Adapter: Attempted to append in readOnly mode. Action blocked.");
         return;
       }
 

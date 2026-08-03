@@ -1,5 +1,6 @@
-import * as Tooltip from "@radix-ui/react-tooltip";
 import { Avatar, AvatarFallback, AvatarImage } from "@avplatform/ui/avatar";
+import * as Tooltip from "@radix-ui/react-tooltip";
+
 import { Participant } from "../../constants/types";
 
 interface FacePileTooltipProps {
@@ -20,9 +21,7 @@ export const FacePileTooltip: React.FC<FacePileTooltipProps> = ({
   return (
     <Tooltip.Root open={open}>
       <Tooltip.Trigger asChild>
-        <div
-          style={{ position: "absolute", pointerEvents: "none", opacity: 0 }}
-        />
+        <div style={{ position: "absolute", pointerEvents: "none", opacity: 0 }} />
       </Tooltip.Trigger>
       <Tooltip.Portal>
         <Tooltip.Content
@@ -41,9 +40,7 @@ export const FacePileTooltip: React.FC<FacePileTooltipProps> = ({
             </Avatar>
             <div>
               <h3 className="font-medium text-white">{data.userFullName}</h3>
-              <span className="text-2xs text-muted-foreground">
-                {data.userName}
-              </span>
+              <span className="text-2xs text-muted-foreground">{data.userName}</span>
               {data.type && <div className="mt-1 text-2xs">{data.type}</div>}
             </div>
           </div>

@@ -63,7 +63,10 @@ type GetValidArrowNumberConfig = {
 };
 
 /** Adds a step to a value and wraps/clamps it. */
-export function getValidArrowNumber(value: string, { min, max, step }: GetValidArrowNumberConfig): string {
+export function getValidArrowNumber(
+  value: string,
+  { min, max, step }: GetValidArrowNumberConfig,
+): string {
   const numericValue = parseInt(value, 10);
   if (Number.isNaN(numericValue)) return "00";
   return getValidNumber(String(numericValue + step), { min, max, loop: true });
@@ -114,7 +117,12 @@ export function set12Hours(date: Date, value: string, period: Period): Date {
 }
 
 /** Sets a time component on a date by type. */
-export function setDateByType(date: Date, value: string, type: TimePickerType, period?: Period): Date {
+export function setDateByType(
+  date: Date,
+  value: string,
+  type: TimePickerType,
+  period?: Period,
+): Date {
   switch (type) {
     case "minutes":
       return setMinutes(date, value);

@@ -6,11 +6,11 @@ The **Hash from File with Key** node allows you to generate a secure hashed vers
 
 ## Configuration Options
 
-| Field Name          | Description                                                         | Input Type | Required? | Default Value    |
-| ------------------- | ------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **File Path to Hash** | The path to the file you want to hash                             | Text       | Yes       | _(empty)_        |
-| **Key to Use**      | The key to use in hashing                                           | Text       | Yes       | _(empty)_        |
-| **Hashing Algorithm** | The algorithm to use for hashing (SHA256, SHA512, or MD5)         | Select     | Yes       | _(empty)_        |
+| Field Name            | Description                                               | Input Type | Required? | Default Value |
+| --------------------- | --------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File Path to Hash** | The path to the file you want to hash                     | Text       | Yes       | _(empty)_     |
+| **Key to Use**        | The key to use in hashing                                 | Text       | Yes       | _(empty)_     |
+| **Hashing Algorithm** | The algorithm to use for hashing (SHA256, SHA512, or MD5) | Select     | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,23 +45,24 @@ The resulting hashed document will be available as **HashedContent** for further
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the file path and key are correctly entered to avoid any hash mismatches.
+  Ensure the file path and key are correctly entered to avoid any hash
+  mismatches.
 </Callout>
 
 ## Input/Output Examples
 
-| File Path       | Key          | Algorithm | Hashed Content                                      | Output Type  |
-| --------------- | ------------ | --------- | --------------------------------------------------- | ------------ |
-| /docs/sample.txt | MySecretKey | SHA256    | a7615874bd56a59d...94823742                         | String       |
-| /images/logo.png | Key123      | MD5       | 098f6bcd4621d373cade4e832627b4f6                    | String       |
+| File Path        | Key         | Algorithm | Hashed Content                   | Output Type |
+| ---------------- | ----------- | --------- | -------------------------------- | ----------- |
+| /docs/sample.txt | MySecretKey | SHA256    | a7615874bd56a59d...94823742      | String      |
+| /images/logo.png | Key123      | MD5       | 098f6bcd4621d373cade4e832627b4f6 | String      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                      |
-| ----------------------------------------------- | ------------------------------------------------------------- |
-| **File path not found**                         | Double-check the file path is correct and accessible.         |
-| **Incorrect key entered**                       | Verify the key to avoid incorrect hash values.                |
-| **Invalid hashing algorithm selected**          | Ensure you select a supported algorithm: SHA256, SHA512, MD5. |
+| Problem                                | Solution                                                      |
+| -------------------------------------- | ------------------------------------------------------------- |
+| **File path not found**                | Double-check the file path is correct and accessible.         |
+| **Incorrect key entered**              | Verify the key to avoid incorrect hash values.                |
+| **Invalid hashing algorithm selected** | Ensure you select a supported algorithm: SHA256, SHA512, MD5. |
 
 ## Real-World Use Cases
 

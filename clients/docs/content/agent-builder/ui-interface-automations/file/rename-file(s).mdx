@@ -6,31 +6,31 @@ The **Rename File(s)** node is designed to help you effortlessly change the name
 
 ## Configuration Options
 
-| Field Name                | Description                                                                                     | Input Type | Required? | Default Value    |
-| ------------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **File(s) to rename**     | The path(s) of the file(s) to rename. Supports wildcards like \*.txt.                           | Text       | Yes       | _(empty)_        |
-| **Rename scheme**         | Specifies the rename scheme to apply.                                                           | Select     | Yes       | SetNewName       |
-| **Keep extension**        | Indicates whether to keep the original file extension.                                          | Switch     | Yes       | _(empty)_        |
-| **If file exists**        | Specifies the behavior when a file already exists in the destination folder.                    | Select     | Yes       | DoNothing        |
-| **New file name**         | The new name for the file(s). Required for 'Set new name'.                                      | Text       | No        | _(empty)_        |
-| **Text to add**           | The text to append or prepend to the filename.                                                  | Text       | No        | _(empty)_        |
-| **Add text position**     | Where to add the text: before or after the filename.                                            | Select     | No        | AfterName        |
-| **Text to remove**        | The text to remove from the filename.                                                           | Text       | No        | _(empty)_        |
-| **Text to replace**       | The text to be replaced in the filename.                                                        | Text       | No        | _(empty)_        |
-| **Replace with**          | The replacement text for the matched string.                                                    | Text       | No        | _(empty)_        |
-| **New extension**         | The new file extension (e.g., .pdf). Must include the dot (.).                                  | Text       | No        | _(empty)_        |
-| **Add datetime**          | Appends a timestamp to the file name.                                                           | Switch     | No        | _(empty)_        |
-| **Datetime source**       | Choose between current system time or a custom datetime value.                                  | Select     | No        | CurrentDateTime  |
-| **Add datetime position** | Where to place the datetime: before or after the filename.                                      | Select     | No        | AfterName        |
-| **Separator**             | Character used to separate filename from datetime (e.g., '_', '-', '.').                        | Select     | No        | Underscore       |
-| **Datetime format**       | Custom format for the datetime (e.g., yyyyMMdd_HHmmss). Leave empty for default.                | Text       | No        | yyyyMMdd_HHmmss  |
-| **Make sequential**       | Renames files with sequential numbers (e.g., File_001, File_002).                               | Text       | No        | _(empty)_        |
-| **Add number position**   | Where to place the sequential number: before or after the base name.                            | Select     | No        | AfterName        |
-| **Start numbering at**    | The first number in the sequence (e.g., 1).                                                     | Text       | No        | 1                |
-| **Increment by**          | How much to increase the number for each subsequent file (e.g., 1, 5).                         | Text       | No        | 1                |
-| **Number separator**      | Character used to separate filename from number (e.g., '_', '-', space).                        | Select     | No        | Underscore       |
-| **Use padding**           | Whether to pad numbers with leading zeros (e.g., 001, 010).                                     | Switch     | No        | false            |
-| **Minimum digits**        | Minimum number of digits for padded numbers (e.g., 3 → 001, 002).                               | Text       | No        | 3                |
+| Field Name                | Description                                                                      | Input Type | Required? | Default Value   |
+| ------------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **File(s) to rename**     | The path(s) of the file(s) to rename. Supports wildcards like \*.txt.            | Text       | Yes       | _(empty)_       |
+| **Rename scheme**         | Specifies the rename scheme to apply.                                            | Select     | Yes       | SetNewName      |
+| **Keep extension**        | Indicates whether to keep the original file extension.                           | Switch     | Yes       | _(empty)_       |
+| **If file exists**        | Specifies the behavior when a file already exists in the destination folder.     | Select     | Yes       | DoNothing       |
+| **New file name**         | The new name for the file(s). Required for 'Set new name'.                       | Text       | No        | _(empty)_       |
+| **Text to add**           | The text to append or prepend to the filename.                                   | Text       | No        | _(empty)_       |
+| **Add text position**     | Where to add the text: before or after the filename.                             | Select     | No        | AfterName       |
+| **Text to remove**        | The text to remove from the filename.                                            | Text       | No        | _(empty)_       |
+| **Text to replace**       | The text to be replaced in the filename.                                         | Text       | No        | _(empty)_       |
+| **Replace with**          | The replacement text for the matched string.                                     | Text       | No        | _(empty)_       |
+| **New extension**         | The new file extension (e.g., .pdf). Must include the dot (.).                   | Text       | No        | _(empty)_       |
+| **Add datetime**          | Appends a timestamp to the file name.                                            | Switch     | No        | _(empty)_       |
+| **Datetime source**       | Choose between current system time or a custom datetime value.                   | Select     | No        | CurrentDateTime |
+| **Add datetime position** | Where to place the datetime: before or after the filename.                       | Select     | No        | AfterName       |
+| **Separator**             | Character used to separate filename from datetime (e.g., '\_', '-', '.').        | Select     | No        | Underscore      |
+| **Datetime format**       | Custom format for the datetime (e.g., yyyyMMdd_HHmmss). Leave empty for default. | Text       | No        | yyyyMMdd_HHmmss |
+| **Make sequential**       | Renames files with sequential numbers (e.g., File_001, File_002).                | Text       | No        | _(empty)_       |
+| **Add number position**   | Where to place the sequential number: before or after the base name.             | Select     | No        | AfterName       |
+| **Start numbering at**    | The first number in the sequence (e.g., 1).                                      | Text       | No        | 1               |
+| **Increment by**          | How much to increase the number for each subsequent file (e.g., 1, 5).           | Text       | No        | 1               |
+| **Number separator**      | Character used to separate filename from number (e.g., '\_', '-', space).        | Select     | No        | Underscore      |
+| **Use padding**           | Whether to pad numbers with leading zeros (e.g., 001, 010).                      | Switch     | No        | false           |
+| **Minimum digits**        | Minimum number of digits for padded numbers (e.g., 3 → 001, 002).                | Text       | No        | 3               |
 
 ## Expected Output Format
 
@@ -78,28 +78,29 @@ Execute the renaming operation to apply the changes.
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use the **wildcard feature** (e.g., `*.txt`) to batch process files within a specific type.
+  Use the **wildcard feature** (e.g., `*.txt`) to batch process files within a
+  specific type.
 </Callout>
 
 ## Input/Output Examples
 
-| Rename Scheme    | Example Input File      | Action                             | Example Output File  |
-| ---------------- | ----------------------- | ---------------------------------- | -------------------- |
-| Set new name     | report1.doc             | Set new name to "summary.docx"     | summary.docx         |
-| Add text         | notes.txt               | Add "project_" before name         | project_notes.txt    |
-| Remove text      | final_project.txt       | Remove "final_" from name          | project.txt          |
-| Replace text     | data_old.csv            | Replace "old" with "new"           | data_new.csv         |
-| Change extension | graphic.jpeg            | Change extension to ".png"         | graphic.png          |
-| Add datetime     | document.docx           | Append current date and time       | document_20230101.docx |
-| Make sequential  | photo.jpg               | Rename to sequence "file_"         | file_001.jpg         |
+| Rename Scheme    | Example Input File | Action                         | Example Output File    |
+| ---------------- | ------------------ | ------------------------------ | ---------------------- |
+| Set new name     | report1.doc        | Set new name to "summary.docx" | summary.docx           |
+| Add text         | notes.txt          | Add "project\_" before name    | project_notes.txt      |
+| Remove text      | final_project.txt  | Remove "final\_" from name     | project.txt            |
+| Replace text     | data_old.csv       | Replace "old" with "new"       | data_new.csv           |
+| Change extension | graphic.jpeg       | Change extension to ".png"     | graphic.png            |
+| Add datetime     | document.docx      | Append current date and time   | document_20230101.docx |
+| Make sequential  | photo.jpg          | Rename to sequence "file\_"    | file_001.jpg           |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                 |
-| --------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **File not found**                            | Ensure the file path is correct and accessible, especially when using wildcards.         |
-| **Unexpected file name changes**              | Double-check the rename scheme options and ensure that correct text/replacements are inputted. |
-| **Missing fields based on scheme selected**   | Review the dynamic options for each rename scheme and confirm they are correctly configured.|
+| Problem                                     | Solution                                                                                       |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **File not found**                          | Ensure the file path is correct and accessible, especially when using wildcards.               |
+| **Unexpected file name changes**            | Double-check the rename scheme options and ensure that correct text/replacements are inputted. |
+| **Missing fields based on scheme selected** | Review the dynamic options for each rename scheme and confirm they are correctly configured.   |
 
 ## Real-World Use Cases
 

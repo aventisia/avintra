@@ -6,11 +6,11 @@ The **Get UI Element Details** node allows you to retrieve specific information 
 
 ## Configuration Options
 
-| Field Name                  | Description                                                                          | Input Type | Required? | Default Value        |
-| --------------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | -------------------- |
-| **UI Element**              | The UI element from which you want to retrieve details.                              | Text       | Yes       | _(empty)_            |
-| **Detail Type**             | Choose the information to retrieve, like coordinates, text, or state of the element. | Select     | Yes       | Bounding Rectangle   |
-| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).                            | Text       | No        | 5                    |
+| Field Name                  | Description                                                                          | Input Type | Required? | Default Value      |
+| --------------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------------ |
+| **UI Element**              | The UI element from which you want to retrieve details.                              | Text       | Yes       | _(empty)_          |
+| **Detail Type**             | Choose the information to retrieve, like coordinates, text, or state of the element. | Select     | Yes       | Bounding Rectangle |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).                            | Text       | No        | 5                  |
 
 ## Expected Output Format
 
@@ -37,6 +37,7 @@ In the **UI Element** field, specify the UI element you are inspecting. This is 
 ### Step 3
 
 From the **Detail Type** dropdown, select the type of detail you wish to retrieve:
+
 - **Bounding Rectangle**: Get size and position data.
 - **Clickable Point**: Get a point within the element where clicks can occur.
 - **Label Text**: Get the text contained within the element.
@@ -55,27 +56,28 @@ The extracted detail will be available as output from this node for further use 
 </Steps>
 
 <Callout type="info" title="Note">
-  Each selected detail in the **Detail Type** dropdown generates a specific output type. Ensure you choose the correct type for your task requirements.
+  Each selected detail in the **Detail Type** dropdown generates a specific
+  output type. Ensure you choose the correct type for your task requirements.
 </Callout>
 
 ## Input/Output Examples
 
-| Detail Type        | Example Input   | Example Output         | Output Value                  | Output Type |
-| ------------------ | --------------- | ---------------------- | ----------------------------- | ----------- |
-| Bounding Rectangle | UIComponent1    | `{x: 10, y: 20, width: 100, height: 200}` | "Bounding Rectangle" | Rectangle   |
-| Clickable Point    | UIComponent2    | `{x: 15, y: 25}`         | "Clickable Point"             | Point       |
-| Label Text         | TextBoxLabel    | "Username"             | "Label Text"                  | Text        |
-| Is Enabled         | Button1         | true                   | "Is Enabled"                  | Boolean     |
-| Is Offscreen       | PopupWindow     | false                  | "Is Offscreen"                | Boolean     |
-| Is Password        | PasswordField   | true                   | "Is Password"                 | Boolean     |
+| Detail Type        | Example Input | Example Output                            | Output Value         | Output Type |
+| ------------------ | ------------- | ----------------------------------------- | -------------------- | ----------- |
+| Bounding Rectangle | UIComponent1  | `{x: 10, y: 20, width: 100, height: 200}` | "Bounding Rectangle" | Rectangle   |
+| Clickable Point    | UIComponent2  | `{x: 15, y: 25}`                          | "Clickable Point"    | Point       |
+| Label Text         | TextBoxLabel  | "Username"                                | "Label Text"         | Text        |
+| Is Enabled         | Button1       | true                                      | "Is Enabled"         | Boolean     |
+| Is Offscreen       | PopupWindow   | false                                     | "Is Offscreen"       | Boolean     |
+| Is Password        | PasswordField | true                                      | "Is Password"        | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                               |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **UI Element not found**                     | Ensure the element identifier/reference is correct. Adjust **Max Wait Time** to higher if the element loads slowly.    |
-| **Unexpected output type**                   | Verify that the **Detail Type** matches the desired output format.                                                     |
-| **False results for "Is Offscreen"**         | Elements might be incorrectly marked offscreen. Check UI layout or verify with other tools if possible.                 |
+| Problem                              | Solution                                                                                                            |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| **UI Element not found**             | Ensure the element identifier/reference is correct. Adjust **Max Wait Time** to higher if the element loads slowly. |
+| **Unexpected output type**           | Verify that the **Detail Type** matches the desired output format.                                                  |
+| **False results for "Is Offscreen"** | Elements might be incorrectly marked offscreen. Check UI layout or verify with other tools if possible.             |
 
 ## Real-World Use Cases
 

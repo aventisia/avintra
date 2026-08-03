@@ -1,12 +1,14 @@
-import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { Node } from "@xyflow/react";
+
+import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
+import { CustomNodeType } from "@/types/custom-node-type";
+
 import { createCustomEdgeObj } from "../create-edges/create-custom-edge-obj";
 import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
-import { getNewNodeXY } from "../create-node-and-edges-util";
-import { createSupportNodeObj } from "./create-support-node-obj";
-import { CustomNodeType } from "@/types/custom-node-type";
 import { createSimpleEdgeObj } from "../create-edges/create-simple-edge-obj";
+import { getNewNodeXY } from "../create-node-and-edges-util";
 import { createBranchEndNodeObj } from "./create-branch-end-node-obj";
+import { createSupportNodeObj } from "./create-support-node-obj";
 
 export const createNewConditionalBranch = (
   sourceNode: Node,
@@ -15,10 +17,7 @@ export const createNewConditionalBranch = (
 ): CreateNodesAndEdgesType => {
   // Case branch nodes
   const casePlusNode = createSupportNodeObj("plusNode");
-  const caseBranchEndNode = createBranchEndNodeObj(
-    "CondtionalBranch",
-    sourceNode.id,
-  );
+  const caseBranchEndNode = createBranchEndNodeObj("CondtionalBranch", sourceNode.id);
 
   // Conditional node -> Case branch-start node
   const conditional2CaseBranchStartEdge = createSimpleEdgeObj(
@@ -28,16 +27,10 @@ export const createNewConditionalBranch = (
   );
 
   // Case branch-start node -> Case plus node
-  const caseBranchStart2PlusEdge = createDottedEdgeObj(
-    newBranchStartNode.id,
-    casePlusNode.id,
-  );
+  const caseBranchStart2PlusEdge = createDottedEdgeObj(newBranchStartNode.id, casePlusNode.id);
 
   // Case plus node -> Case branch-end node
-  const casePlus2CaseBranchEndEdge = createDottedEdgeObj(
-    casePlusNode.id,
-    caseBranchEndNode.id,
-  );
+  const casePlus2CaseBranchEndEdge = createDottedEdgeObj(casePlusNode.id, caseBranchEndNode.id);
 
   // Case branch-end node -> Merge branches node
   const caseBranchEndToMergeBranchesEdge = createCustomEdgeObj(

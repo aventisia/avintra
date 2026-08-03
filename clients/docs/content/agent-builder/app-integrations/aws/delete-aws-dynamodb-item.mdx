@@ -5,21 +5,22 @@ import { Callout, Steps } from "nextra/components";
 The **Delete AWS DynamoDB Item** node allows you to remove an item from your DynamoDB table. This is useful when you want to automate the process of cleaning up or removing data without manually accessing AWS services.
 
 For example, you might use this node to:
+
 - Delete obsolete records from a database table to maintain data hygiene.
 - Automate the removal of entries that meet certain criteria.
 - Simplify database management tasks by integrating them into your workflows.
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                    | Input Type | Required? | Default Value |
-| ----------------------- | ---------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Credential to connect with** | Select the AWS credential to use for authentication.                                        | Text       | Yes       | _(empty)_     |
-| **Table Name or ID**    | The name of the DynamoDB table to remove an item from.                                         | Text       | Yes       | _(empty)_     |
-| **Return**              | Specifies whether to return attribute values of the deleted item.                              | Select     | Yes       | _(empty)_     |
-| **Keys**                | The primary key(s) of the item to delete. _Only shows if Return is "Attribute Values"._        | Text       | No        | _(empty)_     |
-| **Simplify**            | If enabled, returns only the key values of the deleted item.                                   | Switch     | No        | _(empty)_     |
-| **Additional Fields**   | Optional additional fields to include in the request.                                          | Text       | No        | _(empty)_     |
-| **AWS Region**          | The AWS region where the table is located (e.g., us-east-1). Default is `us-east-1`.           | Text       | No        | _(empty)_     |
+| Field Name                     | Description                                                                             | Input Type | Required? | Default Value |
+| ------------------------------ | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication.                                    | Text       | Yes       | _(empty)_     |
+| **Table Name or ID**           | The name of the DynamoDB table to remove an item from.                                  | Text       | Yes       | _(empty)_     |
+| **Return**                     | Specifies whether to return attribute values of the deleted item.                       | Select     | Yes       | _(empty)_     |
+| **Keys**                       | The primary key(s) of the item to delete. _Only shows if Return is "Attribute Values"._ | Text       | No        | _(empty)_     |
+| **Simplify**                   | If enabled, returns only the key values of the deleted item.                            | Switch     | No        | _(empty)_     |
+| **Additional Fields**          | Optional additional fields to include in the request.                                   | Text       | No        | _(empty)_     |
+| **AWS Region**                 | The AWS region where the table is located (e.g., us-east-1). Default is `us-east-1`.    | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -49,6 +50,7 @@ Choose an option from the **Return** dropdown to specify if you want to retrieve
 ### Step 5
 
 Depending on your choice in **Return**:
+
 - If "Attribute Values", fill in the **Keys** field with the primary keys of the item to be deleted.
 
 ### Step 6
@@ -66,37 +68,44 @@ Execute the node to proceed with the deletion. The result will be available in t
 </Steps>
 
 <Callout type="warning" title="Important">
-  Make sure the AWS credentials used have permission to delete items from the specified DynamoDB table to avoid unauthorized errors.
+  Make sure the AWS credentials used have permission to delete items from the
+  specified DynamoDB table to avoid unauthorized errors.
 </Callout>
 
 ## Input/Output Examples
 
 ### Example 1
+
 **Input**:
+
 - Table Name: "Orders"
 - Primary Key: OrderId (12345)
 - Return: Attribute Values
 
 **Output**:
+
 - **Deleted Item**: Returns item attributes like `{"OrderId": 12345, "Status": "Cancelled"}`.
 
 ### Example 2
+
 **Input**:
+
 - Table Name: "Products"
 - Primary Key: ProductId (98765)
 - Return: Nothing
 - Simplify: Enabled
 
 **Output**:
+
 - **Key Values**: Returns only the key values `{"ProductId": 98765}`.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                  | Solution                                                                                                  |
-| -------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| **Receiving an authentication error**                    | Double-check your AWS credentials. Ensure they are correct and have the necessary permissions.             |
-| **Keys field not appearing**                             | This field only appears when "Return" is set to "Attribute Values". Review your selection in **Return**.   |
-| **Incorrect region specified**                           | Ensure the AWS Region matches where your DynamoDB table is located. Default is `us-east-1` if unspecified. |
+| Problem                               | Solution                                                                                                   |
+| ------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Receiving an authentication error** | Double-check your AWS credentials. Ensure they are correct and have the necessary permissions.             |
+| **Keys field not appearing**          | This field only appears when "Return" is set to "Attribute Values". Review your selection in **Return**.   |
+| **Incorrect region specified**        | Ensure the AWS Region matches where your DynamoDB table is located. Default is `us-east-1` if unspecified. |
 
 ## Real-World Use Cases
 

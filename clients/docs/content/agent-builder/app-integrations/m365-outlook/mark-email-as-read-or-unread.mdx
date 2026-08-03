@@ -12,14 +12,14 @@ Use cases include:
 
 ## Configuration Options
 
-| Field Name     | Description                                                                    | Input Type | Required? | Default Value |
-| -------------- | ------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **User Email** | The email address of the mailbox owner.                                        | Text       | Yes       | _(empty)_     |
-| **Message ID** | The ID of the message to update.                                               | Text       | Yes       | _(empty)_     |
-| **Is Read**    | Use the switch to set email status: True for read, False for unread.           | Switch     | Yes       | _(empty)_     |
-| **Tenant ID**  | Azure Active Directory tenant (directory) ID. Required for authentication.     | Text       | Yes       | _(empty)_     |
-| **Client ID**  | Azure AD application (client) ID for identifying your app to Microsoft Graph.  | Text       | Yes       | _(empty)_     |
-| **Client Secret** | Azure AD application client secret for authenticating your app.             | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                                                   | Input Type | Required? | Default Value |
+| ----------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **User Email**    | The email address of the mailbox owner.                                       | Text       | Yes       | _(empty)_     |
+| **Message ID**    | The ID of the message to update.                                              | Text       | Yes       | _(empty)_     |
+| **Is Read**       | Use the switch to set email status: True for read, False for unread.          | Switch     | Yes       | _(empty)_     |
+| **Tenant ID**     | Azure Active Directory tenant (directory) ID. Required for authentication.    | Text       | Yes       | _(empty)_     |
+| **Client ID**     | Azure AD application (client) ID for identifying your app to Microsoft Graph. | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD application client secret for authenticating your app.               | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -59,27 +59,30 @@ Supply the **Client Secret** to authenticate your application with Azure AD.
 ### Step 8
 
 Finalize your setup and execute the workflow to mark the email with the selected status.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure that all Azure credentials such as Tenant ID, Client ID, and Client Secret are kept secure and are not shared or exposed in unsecured environments.
+  Ensure that all Azure credentials such as Tenant ID, Client ID, and Client
+  Secret are kept secure and are not shared or exposed in unsecured
+  environments.
 </Callout>
 
 ## Input/Output Examples
 
-| User Email        | Message ID | Is Read | Expected Output       |
-| ----------------- | ---------- | ------- | --------------------- |
-| user@example.com  | 123456     | True    | Email marked as read  |
-| user@example.com  | 654321     | False   | Email marked as unread |
+| User Email       | Message ID | Is Read | Expected Output        |
+| ---------------- | ---------- | ------- | ---------------------- |
+| user@example.com | 123456     | True    | Email marked as read   |
+| user@example.com | 654321     | False   | Email marked as unread |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                                                                          |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid credentials**                              | Double-check Tenant ID, Client ID, and Client Secret to ensure they are correct and correspond to your Azure environment.                        |
-| **Email not found**                                  | Verify the Message ID is correct for the specified User Email. Consider retrieving the Message ID using Microsoft Graph Explorer if unknown.      |
-| **Network or API errors**                            | Check your network connection and ensure the Microsoft Graph API service is available. Retry the operation if necessary.                          |
-| **Unauthorized access**                              | Ensure that the Azure app permissions are adequately set up to access the user's mailbox in the Microsoft environment.                            |
+| Problem                   | Solution                                                                                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid credentials**   | Double-check Tenant ID, Client ID, and Client Secret to ensure they are correct and correspond to your Azure environment.                    |
+| **Email not found**       | Verify the Message ID is correct for the specified User Email. Consider retrieving the Message ID using Microsoft Graph Explorer if unknown. |
+| **Network or API errors** | Check your network connection and ensure the Microsoft Graph API service is available. Retry the operation if necessary.                     |
+| **Unauthorized access**   | Ensure that the Azure app permissions are adequately set up to access the user's mailbox in the Microsoft environment.                       |
 
 ## Real-World Use Cases
 

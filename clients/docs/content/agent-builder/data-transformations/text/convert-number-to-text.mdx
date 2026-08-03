@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name               | Description                                                                           | Input Type | Required? | Default Value |
-| ------------------------ | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Number to Convert**    | The numeric value to convert to text.                                                 | Text       | Yes       | _(empty)_     |
-| **Decimal Places**       | The number of decimal places to include in the formatted text.                        | Text       | No        | 2             |
-| **Use Thousands Separator** | If true, includes a thousands separator in the formatted text.                     | Switch     | No        | True          |
+| Field Name                  | Description                                                    | Input Type | Required? | Default Value |
+| --------------------------- | -------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Number to Convert**       | The numeric value to convert to text.                          | Text       | Yes       | _(empty)_     |
+| **Decimal Places**          | The number of decimal places to include in the formatted text. | Text       | No        | 2             |
+| **Use Thousands Separator** | If true, includes a thousands separator in the formatted text. | Switch     | No        | True          |
 
 ## Expected Output Format
 
@@ -51,24 +51,25 @@ The processed text will appear as **FormattedNumber** for further use in the flo
 </Steps>
 
 <Callout type="info" title="Note">
-  The thousands separator is a great way to make large numbers more readable, especially in financial or detailed report outputs.
+  The thousands separator is a great way to make large numbers more readable,
+  especially in financial or detailed report outputs.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Number | Decimal Places | Use Thousands Separator | Output Value  | Output Type |
-| ------------ | -------------- | ----------------------- | ------------- | ----------- |
-| 1234567.89   | 2              | True                    | 1,234,567.89  | Text        |
-| 9876.54321   | 3              | False                   | 9876.543      | Text        |
-| 5000         | 0              | True                    | 5,000         | Text        |
+| Input Number | Decimal Places | Use Thousands Separator | Output Value | Output Type |
+| ------------ | -------------- | ----------------------- | ------------ | ----------- |
+| 1234567.89   | 2              | True                    | 1,234,567.89 | Text        |
+| 9876.54321   | 3              | False                   | 9876.543     | Text        |
+| 5000         | 0              | True                    | 5,000        | Text        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                                                                  |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Unexpected text output format**                   | Check the **Decimal Places** and **Use Thousands Separator** settings to ensure they align with your desired format.                                       |
-| **Non-numeric value in Number to Convert**          | Ensure the input is a numeric value. Avoid entering text or special characters that are not numbers.                                                      |
-| **FormattedNumber not used properly in further nodes** | Make sure other nodes in the flow are configured to accept text inputs if using the converted number further.                                             |
+| Problem                                                | Solution                                                                                                             |
+| ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| **Unexpected text output format**                      | Check the **Decimal Places** and **Use Thousands Separator** settings to ensure they align with your desired format. |
+| **Non-numeric value in Number to Convert**             | Ensure the input is a numeric value. Avoid entering text or special characters that are not numbers.                 |
+| **FormattedNumber not used properly in further nodes** | Make sure other nodes in the flow are configured to accept text inputs if using the converted number further.        |
 
 ## Real-World Use Cases
 

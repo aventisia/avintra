@@ -5,8 +5,9 @@ import {
 } from "@avplatform/ui/form";
 import { SelectFieldProps } from "@avplatform/ui/form";
 import { enumToArray } from "@avplatform/ui/utils";
-import { SaveAsEnum } from "./save-as-enums";
+
 import { AccessTypeEnum } from "./access-type-enums ";
+import { SaveAsEnum } from "./save-as-enums";
 
 // Save As
 const saveAsProps: SelectFieldProps = {
@@ -49,10 +50,4 @@ const spacesProps: MultiSelectFieldProps = {
   ],
 };
 
-export {
-  saveAsProps,
-  accessLevelProps,
-  spacesProps,
-  templateNameProps,
-  descriptionProps,
-};
+export { saveAsProps, accessLevelProps, spacesProps, templateNameProps, descriptionProps };

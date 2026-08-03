@@ -5,14 +5,15 @@ import { Callout, Steps } from "nextra/components";
 The **Get Mouse Position** node retrieves the current position of the mouse cursor on your screen in pixel coordinates. This can be helpful if you need to track mouse movements for user interaction analysis, create dynamic interfaces that respond to cursor position, or log mouse positions for diagnostics.
 
 For example, you might use this node to:
+
 - Determine where a user clicked on the screen or a window.
 - Trigger specific actions based on the mouse position relative to a graphic element.
 - Log cursor movements for debugging purposes.
 
 ## Configuration Options
 
-| Field Name      | Description                                                                                      | Input Type | Required? | Default Value |
-| --------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| Field Name      | Description                                                                                          | Input Type | Required? | Default Value |
+| --------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
 | **Relative To** | Specifies whether the mouse position is relative to the entire screen or just the foreground window. | Select     | No        | _(empty)_     |
 
 ## Expected Output Format
@@ -33,7 +34,7 @@ Add the **Get Mouse Position** node to your flow.
 
 ### Step 2
 
-In the **Relative To** dropdown, choose whether to measure the mouse position relative to the "Screen" or the "Foreground Window". 
+In the **Relative To** dropdown, choose whether to measure the mouse position relative to the "Screen" or the "Foreground Window".
 
 - **Screen**: Captures the mouse position relative to the entire screen.
 - **Foreground Window**: Captures the mouse position relative to the active window only.
@@ -41,25 +42,27 @@ In the **Relative To** dropdown, choose whether to measure the mouse position re
 ### Step 3
 
 The current mouse position will be available as **MousePosX** and **MousePosY** for use in other nodes or further operations.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you're unsure whether to choose "Screen" or "Foreground Window", consider whether you need cursor data for the full screen or just the active window.
+  If you're unsure whether to choose "Screen" or "Foreground Window", consider
+  whether you need cursor data for the full screen or just the active window.
 </Callout>
 
 ## Input/Output Examples
 
-| Relative To       | Mouse Pos X | Mouse Pos Y | Output Value Example  |
-| ----------------- | ----------- | ----------- | --------------------- |
-| Screen            | 1024        | 768         | (1024, 768)           |
-| Foreground Window | 200         | 150         | (200, 150)            |
+| Relative To       | Mouse Pos X | Mouse Pos Y | Output Value Example |
+| ----------------- | ----------- | ----------- | -------------------- |
+| Screen            | 1024        | 768         | (1024, 768)          |
+| Foreground Window | 200         | 150         | (200, 150)           |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                              | Solution                                                                                                 |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| **Unexpected values for output**     | Ensure the correct "Relative To" option is selected to match where you want to measure the mouse position. |
-| **No output appears**                | Verify that the node is correctly added to the flow and connected as necessary.                           |
+| Problem                          | Solution                                                                                                   |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Unexpected values for output** | Ensure the correct "Relative To" option is selected to match where you want to measure the mouse position. |
+| **No output appears**            | Verify that the node is correctly added to the flow and connected as necessary.                            |
 
 ## Real-World Use Cases
 

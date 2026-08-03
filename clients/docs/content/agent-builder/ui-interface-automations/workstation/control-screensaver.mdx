@@ -11,10 +11,10 @@ This node is useful if you want to automate screensaver behavior for instance, e
 
 ## Configuration Options
 
-| Field Name         | Description                                                     | Input Type | Required? | Default Value |
-| ------------------ | --------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Action**         | The action to take on the screensaver: Enable, Disable, Start, or Stop. | Select     | Yes       | _(empty)_      |
-| **Time Out Seconds** | Specify the time in seconds before the screensaver activates. Only relevant when enabling. | Text       | No        | _(empty)_      |
+| Field Name           | Description                                                                                | Input Type | Required? | Default Value |
+| -------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Action**           | The action to take on the screensaver: Enable, Disable, Start, or Stop.                    | Select     | Yes       | _(empty)_     |
+| **Time Out Seconds** | Specify the time in seconds before the screensaver activates. Only relevant when enabling. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -47,16 +47,17 @@ Review your settings and proceed. The node will execute the chosen screensaver c
 </Steps>
 
 <Callout type="info" title="Note">
-  The **Time Out Seconds** field only applies when you want to set a timeout duration for enabling the screensaver.
+  The **Time Out Seconds** field only applies when you want to set a timeout
+  duration for enabling the screensaver.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                      |
-| ---------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Failed Action Execution**                    | Ensure that your desktop environment supports screensaver commands.                           |
-| **Unintended Screensaver Timeout**             | Double-check the **Time Out Seconds** value for accuracy. Avoid leaving it blank if required. |
-| **No Reaction to Start or Stop Command**       | Confirm screensaver settings on your desktop aren't locked or controlled by another policy.   |
+| Problem                                  | Solution                                                                                      |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Failed Action Execution**              | Ensure that your desktop environment supports screensaver commands.                           |
+| **Unintended Screensaver Timeout**       | Double-check the **Time Out Seconds** value for accuracy. Avoid leaving it blank if required. |
+| **No Reaction to Start or Stop Command** | Confirm screensaver settings on your desktop aren't locked or controlled by another policy.   |
 
 ## Real-World Use Cases
 

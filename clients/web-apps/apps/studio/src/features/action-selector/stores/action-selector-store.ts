@@ -1,6 +1,6 @@
-import { ActionSelectorOriginType } from "@/types/action-selector-origin-type";
-
 import { create } from "zustand";
+
+import { ActionSelectorOriginType } from "@/types/action-selector-origin-type";
 
 import { PrimaryCategoryType } from "../types/primary-category-type";
 

@@ -1,5 +1,6 @@
-import { ExecutionSettings } from "@/features/flow-settings/types/setting-types";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
+
+import { ExecutionSettings } from "@/features/flow-settings/types/setting-types";
 
 /** To get flow props to load when user opens a flow in studio */
 export interface LoadFlowDto {

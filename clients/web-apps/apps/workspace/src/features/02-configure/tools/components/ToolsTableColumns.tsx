@@ -4,12 +4,12 @@ import { DTColumnHeader } from "@avplatform/ui/data-table";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { type ColumnDef } from "@tanstack/react-table";
 
-import { AUTHENTICATION_TYPE_DISPLAY_NAMES } from "@/features/02-configure/tools/constants/tools-display-names.constant";
-import { getColumnName } from "@/features/02-configure/tools/constants/tools-column-display-names";
-import { ToolDto } from "@/features/02-configure/tools/dtos/index";
-import { ToolAuthenticationTypeEnum } from "@/features/02-configure/tools/enums/tool-authentication-type-enum";
-import { ComponentTypeEnum } from "@/features/02-configure/tools/enums/component-type-enum";
 import { ToolRowActions } from "@/features/02-configure/tools/components/tool-row-actions/ToolRowActions";
+import { getColumnName } from "@/features/02-configure/tools/constants/tools-column-display-names";
+import { AUTHENTICATION_TYPE_DISPLAY_NAMES } from "@/features/02-configure/tools/constants/tools-display-names.constant";
+import { ToolDto } from "@/features/02-configure/tools/dtos/index";
+import { ComponentTypeEnum } from "@/features/02-configure/tools/enums/component-type-enum";
+import { ToolAuthenticationTypeEnum } from "@/features/02-configure/tools/enums/tool-authentication-type-enum";
 
 export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): ColumnDef<ToolDto>[] => [
   {
@@ -30,7 +30,9 @@ export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): Column
   },
   {
     accessorKey: "name",
-    header: ({ column }) => <DTColumnHeader column={column} tableKey="tools" title={getColumnName("name")} />,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("name")} />
+    ),
     cell: ({ row }) => (
       <div className="flex max-w-80 items-center gap-3">
         <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
@@ -44,22 +46,40 @@ export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): Column
   },
   {
     accessorKey: "description",
-    header: ({ column }) => <DTColumnHeader column={column} tableKey="tools" title={getColumnName("description")} />,
-    cell: ({ row }) => <div className="truncate max-w-60 text-muted-foreground">{(row.getValue("description") as string) ?? "-"}</div>,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("description")} />
+    ),
+    cell: ({ row }) => (
+      <div className="truncate max-w-60 text-muted-foreground">
+        {(row.getValue("description") as string) ?? "-"}
+      </div>
+    ),
   },
   {
     accessorKey: "type",
-    header: ({ column }) => <DTColumnHeader column={column} tableKey="tools" title={getColumnName("type")} />,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("type")} />
+    ),
     cell: ({ row }) => <div>{getEnumValueByKey(ComponentTypeEnum, row.getValue("type"))}</div>,
   },
   {
     accessorKey: "baseUrl",
-    header: ({ column }) => <DTColumnHeader column={column} tableKey="tools" title={getColumnName("baseUrl")} />,
-    cell: ({ row }) => <div className="truncate max-w-60">{(row.getValue("baseUrl") as string) ?? "-"}</div>,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("baseUrl")} />
+    ),
+    cell: ({ row }) => (
+      <div className="truncate max-w-60">{(row.getValue("baseUrl") as string) ?? "-"}</div>
+    ),
   },
   {
     accessorKey: "authenticationType",
-    header: ({ column }) => <DTColumnHeader column={column} tableKey="tools" title={getColumnName("authenticationType")} />,
+    header: ({ column }) => (
+      <DTColumnHeader
+        column={column}
+        tableKey="tools"
+        title={getColumnName("authenticationType")}
+      />
+    ),
     cell: ({ row }) => {
       const value = row.getValue("authenticationType") as ToolAuthenticationTypeEnum | undefined;
       return <div>{(value && AUTHENTICATION_TYPE_DISPLAY_NAMES[value]) ?? "-"}</div>;
@@ -67,7 +87,9 @@ export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): Column
   },
   {
     accessorKey: "isActive",
-    header: ({ column }) => <DTColumnHeader column={column} tableKey="tools" title={getColumnName("isActive")} />,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("isActive")} />
+    ),
     cell: ({ row }) => (
       <Badge variant={row.getValue("isActive") ? "default" : "secondary"}>
         {row.getValue("isActive") ? "Active" : "Inactive"}
@@ -76,7 +98,9 @@ export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): Column
   },
   {
     accessorKey: "isVerified",
-    header: ({ column }) => <DTColumnHeader column={column} tableKey="tools" title={getColumnName("isVerified")} />,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("isVerified")} />
+    ),
     cell: ({ row }) => (
       <Badge variant={row.getValue("isVerified") ? "default" : "outline"}>
         {row.getValue("isVerified") ? "Verified" : "Draft"}
@@ -85,12 +109,20 @@ export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): Column
   },
   {
     accessorKey: "isTenantWideAccess",
-    header: ({ column }) => <DTColumnHeader column={column} tableKey="tools" title={getColumnName("isTenantWideAccess")} />,
+    header: ({ column }) => (
+      <DTColumnHeader
+        column={column}
+        tableKey="tools"
+        title={getColumnName("isTenantWideAccess")}
+      />
+    ),
     cell: ({ row }) => <div>{row.getValue("isTenantWideAccess") ? "Yes" : "No"}</div>,
   },
   {
     accessorKey: "createdOn",
-    header: ({ column }) => <DTColumnHeader column={column} tableKey="tools" title={getColumnName("createdOn")} />,
+    header: ({ column }) => (
+      <DTColumnHeader column={column} tableKey="tools" title={getColumnName("createdOn")} />
+    ),
     cell: ({ row }) => <div>{formatDate(row.getValue("createdOn"))}</div>,
   },
   {

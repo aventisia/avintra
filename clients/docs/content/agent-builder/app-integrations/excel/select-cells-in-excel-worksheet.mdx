@@ -12,19 +12,19 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                                   | Input Type | Required? | Default Value |
-| ------------------ | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance** | The Excel Worksheet object where the cell selection will be performed.                      | Text       | Yes       | _(empty)_     |
-| **Selection Mode** | Specifies how to select the cells. Options are: Named Cells, Range of Cells, Relative to Active Cell. | Select     | Yes       | NamedCells    |
-| **Name**           | The name of the named range to select. _Only needed if Selection Mode is "Named Cells"._       | Text       | No        | _(empty)_     |
-| **Start Column**   | The starting column of the range to select. _Only needed if Selection Mode is "Range of Cells"._ | Text       | No        | _(empty)_     |
-| **End Column**     | The ending column of the range to select. _Only needed if Selection Mode is "Range of Cells"._ | Text       | No        | _(empty)_     |
-| **Start Row**      | The starting row of the range to select. _Only needed if Selection Mode is "Range of Cells"._  | Text       | No        | _(empty)_     |
-| **End Row**        | The ending row of the range to select. _Only needed if Selection Mode is "Range of Cells"._    | Text       | No        | _(empty)_     |
-| **X-Axis Direction** | Direction along the X-axis for relative selection. _Only needed if Selection Mode is "Relative to Active Cell"._ | Select   | No        | Right         |
-| **Y-Axis Direction** | Direction along the Y-axis for relative selection. _Only needed if Selection Mode is "Relative to Active Cell"._ | Select   | No        | Above         |
-| **X Offset**       | Number of columns to offset from the active cell. _Only needed if Selection Mode is "Relative to Active Cell"._     | Text       | No        | _(empty)_     |
-| **Y Offset**       | Number of rows to offset from the active cell. _Only needed if Selection Mode is "Relative to Active Cell"._        | Text       | No        | _(empty)_     |
+| Field Name             | Description                                                                                                      | Input Type | Required? | Default Value |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object where the cell selection will be performed.                                           | Text       | Yes       | _(empty)_     |
+| **Selection Mode**     | Specifies how to select the cells. Options are: Named Cells, Range of Cells, Relative to Active Cell.            | Select     | Yes       | NamedCells    |
+| **Name**               | The name of the named range to select. _Only needed if Selection Mode is "Named Cells"._                         | Text       | No        | _(empty)_     |
+| **Start Column**       | The starting column of the range to select. _Only needed if Selection Mode is "Range of Cells"._                 | Text       | No        | _(empty)_     |
+| **End Column**         | The ending column of the range to select. _Only needed if Selection Mode is "Range of Cells"._                   | Text       | No        | _(empty)_     |
+| **Start Row**          | The starting row of the range to select. _Only needed if Selection Mode is "Range of Cells"._                    | Text       | No        | _(empty)_     |
+| **End Row**            | The ending row of the range to select. _Only needed if Selection Mode is "Range of Cells"._                      | Text       | No        | _(empty)_     |
+| **X-Axis Direction**   | Direction along the X-axis for relative selection. _Only needed if Selection Mode is "Relative to Active Cell"._ | Select     | No        | Right         |
+| **Y-Axis Direction**   | Direction along the Y-axis for relative selection. _Only needed if Selection Mode is "Relative to Active Cell"._ | Select     | No        | Above         |
+| **X Offset**           | Number of columns to offset from the active cell. _Only needed if Selection Mode is "Relative to Active Cell"._  | Text       | No        | _(empty)_     |
+| **Y Offset**           | Number of rows to offset from the active cell. _Only needed if Selection Mode is "Relative to Active Cell"._     | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -56,16 +56,17 @@ Upon completing the configuration, the cell selection will be enacted on the spe
 </Steps>
 
 <Callout type="info" title="Note">
-  Fields are conditional based on the selected **Selection Mode**. Ensure you choose the correct mode to reveal and fill the appropriate fields.
+  Fields are conditional based on the selected **Selection Mode**. Ensure you
+  choose the correct mode to reveal and fill the appropriate fields.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                                                                                 |
-| -----------------------------------------------------| -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Fields not appearing for selection**               | Ensure that you have chosen a **Selection Mode** to make relevant fields visible. Each mode has specific fields that will only appear when selected.     |
-| **Invalid Worksheet Instance**                       | Make sure the **Worksheet Instance** field contains a valid Excel worksheet reference. Check for typos or incorrect references.                          |
-| **Cells not being selected as expected**             | Double-check the values in related fields. If using relative selection, confirm your offset and direction inputs are correct.                            |
+| Problem                                  | Solution                                                                                                                                             |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Fields not appearing for selection**   | Ensure that you have chosen a **Selection Mode** to make relevant fields visible. Each mode has specific fields that will only appear when selected. |
+| **Invalid Worksheet Instance**           | Make sure the **Worksheet Instance** field contains a valid Excel worksheet reference. Check for typos or incorrect references.                      |
+| **Cells not being selected as expected** | Double-check the values in related fields. If using relative selection, confirm your offset and direction inputs are correct.                        |
 
 ## Real-World Use Cases
 

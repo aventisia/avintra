@@ -1,11 +1,8 @@
-import { useDTCrudDialogStore } from "@avplatform/ui/stores";
-import {
-  Dialog,
-  DialogContent,
-  DialogDefaultHeader,
-} from "@avplatform/ui/dialog";
+import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { ScrollArea } from "@avplatform/ui/scroll";
+import { useDTCrudDialogStore } from "@avplatform/ui/stores";
 import { useShallow } from "zustand/react/shallow";
+
 import { FlowBlockCrudForm } from "./FlowBlockCrudForm";
 
 /**

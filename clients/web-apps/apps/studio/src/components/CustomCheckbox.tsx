@@ -16,17 +16,11 @@ export default function CustomCheckbox({
 }) {
   return (
     <Label className="flex items-start gap-2 rounded-lg border p-3 hover:bg-accent/50 data-[state=checked]:border-primary/48 data-[state=checked]:bg-accent/50">
-      <Checkbox
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        disabled={disabled}
-      />
+      <Checkbox checked={checked} onCheckedChange={onCheckedChange} disabled={disabled} />
 
       <div className="flex flex-col gap-1">
         <p>{label}</p>
-        {description && (
-          <p className="text-muted-foreground text-xs">{description}</p>
-        )}
+        {description && <p className="text-muted-foreground text-xs">{description}</p>}
       </div>
     </Label>
   );

@@ -12,22 +12,22 @@ For example:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                      | Input Type | Required? | Default Value   |
-| ----------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | --------------- |
-| **Web Browser Instance**| Enter or select the variable containing the web browser to use.                                  | Text       | Yes       | _(empty)_       |
-| **Find Type**           | Choose how to identify the element on the web page (ID, XPath, CssSelector, etc.).               | Select     | No        | XPath           |
-| **Value To Find**       | The specific value that identifies the target element. (e.g., 'username', '//input[@id='email']').| Text       | No        | _(empty)_       |
-| **Text To Populate**    | The exact text to type into the text field.                                                      | Text       | Yes       | _(empty)_       |
-| **Input Mode**          | Choose between plain text or encrypted input method.                                             | Select     | No        | PlainText       |
-| **Field Content Action**| Decide whether to replace existing text or append new text.                                      | Select     | No        | ReplaceText     |
-| **Wait For Element**    | Wait for the element to be available before entering text.                                       | Switch     | No        | True            |
-| **Timeout Seconds**     | Maximum number of seconds to wait for the element to appear before stopping.                     | Text       | No        | 60              |
-| **Emulate Typing**      | Simulate typing by entering text character-by-character.                                         | Switch     | No        | _(empty)_       |
-| **Use Physical Keystrokes**| Enable to simulate real keyboard input through JavaScript.                                       | Switch     | No        | _(empty)_       |
-| **Unfocus After Typing**| Unfocus the text field after filling, for example, to activate auto-complete.                      | Switch     | No        | _(empty)_       |
-| **Wait for Page Load**  | Delay further steps until the page has completely loaded.                                        | Switch     | No        | _(empty)_       |
-| **Handle Dialog**       | Define actions if a dialog box appears after populating the text field.                          | Select     | No        | DoNothing       |
-| **Dialog Button to Press**| Specify the button to press if dialogs appear (e.g., 'Ok', 'Cancel').                              | Text       | No        | Ok              |
+| Field Name                  | Description                                                                                        | Input Type | Required? | Default Value |
+| --------------------------- | -------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**    | Enter or select the variable containing the web browser to use.                                    | Text       | Yes       | _(empty)_     |
+| **Find Type**               | Choose how to identify the element on the web page (ID, XPath, CssSelector, etc.).                 | Select     | No        | XPath         |
+| **Value To Find**           | The specific value that identifies the target element. (e.g., 'username', '//input[@id='email']'). | Text       | No        | _(empty)_     |
+| **Text To Populate**        | The exact text to type into the text field.                                                        | Text       | Yes       | _(empty)_     |
+| **Input Mode**              | Choose between plain text or encrypted input method.                                               | Select     | No        | PlainText     |
+| **Field Content Action**    | Decide whether to replace existing text or append new text.                                        | Select     | No        | ReplaceText   |
+| **Wait For Element**        | Wait for the element to be available before entering text.                                         | Switch     | No        | True          |
+| **Timeout Seconds**         | Maximum number of seconds to wait for the element to appear before stopping.                       | Text       | No        | 60            |
+| **Emulate Typing**          | Simulate typing by entering text character-by-character.                                           | Switch     | No        | _(empty)_     |
+| **Use Physical Keystrokes** | Enable to simulate real keyboard input through JavaScript.                                         | Switch     | No        | _(empty)_     |
+| **Unfocus After Typing**    | Unfocus the text field after filling, for example, to activate auto-complete.                      | Switch     | No        | _(empty)_     |
+| **Wait for Page Load**      | Delay further steps until the page has completely loaded.                                          | Switch     | No        | _(empty)_     |
+| **Handle Dialog**           | Define actions if a dialog box appears after populating the text field.                            | Select     | No        | DoNothing     |
+| **Dialog Button to Press**  | Specify the button to press if dialogs appear (e.g., 'Ok', 'Cancel').                              | Text       | No        | Ok            |
 
 ## Expected Output Format
 
@@ -71,16 +71,17 @@ Configure other optional settings like **Timeout Seconds** and **Handle Dialog**
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use **Emulate Typing** to simulate human-like typing speed, which can help bypass some bot detection systems.
+  Use **Emulate Typing** to simulate human-like typing speed, which can help
+  bypass some bot detection systems.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                                         | Solution                                                                                           |
-| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Element not found**                                                           | Ensure that the **Find Type** and **Value To Find** settings are correct for the web page structure.|
-| **Text not typed into field**                                                   | Check if the **Web Browser Instance** is running and properly referenced.                          |
-| **Dialog handling not occurring**                                               | Verify **Handle Dialog** settings and whether dialogs are actually appearing.                       |
+| Problem                           | Solution                                                                                             |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Element not found**             | Ensure that the **Find Type** and **Value To Find** settings are correct for the web page structure. |
+| **Text not typed into field**     | Check if the **Web Browser Instance** is running and properly referenced.                            |
+| **Dialog handling not occurring** | Verify **Handle Dialog** settings and whether dialogs are actually appearing.                        |
 
 ## Real-World Use Cases
 

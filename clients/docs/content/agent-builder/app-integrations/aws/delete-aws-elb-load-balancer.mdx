@@ -9,11 +9,11 @@ The **Delete AWS ELB Load Balancer** node allows you to remove an Application Lo
 
 ## Configuration Options
 
-| Field Name                | Description                                                                        | Input Type | Required? | Default Value |
-| ------------------------- | ---------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).             | Text       | Yes       | _(empty)_     |
-| **Load Balancer ARN**     | The ARN of the load balancer to delete.                                            | Text       | Yes       | _(empty)_     |
-| **AWS Region**            | The AWS region where the load balancer is located (e.g., us-east-1). Default: us-east-1. | Text       | No        | _(empty)_     |
+| Field Name                     | Description                                                                              | Input Type | Required? | Default Value |
+| ------------------------------ | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).                 | Text       | Yes       | _(empty)_     |
+| **Load Balancer ARN**          | The ARN of the load balancer to delete.                                                  | Text       | Yes       | _(empty)_     |
+| **AWS Region**                 | The AWS region where the load balancer is located (e.g., us-east-1). Default: us-east-1. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -50,17 +50,18 @@ The result of the deletion attempt will be available as **Response** and **Succe
 </Steps>
 
 <Callout type="info" title="Important Note">
-  Ensure that you have the right permissions to delete load balancers in your AWS account to avoid permission-related errors.
+  Ensure that you have the right permissions to delete load balancers in your
+  AWS account to avoid permission-related errors.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                | Solution                                                                                      |
-| -------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Invalid ARN**                        | Confirm that the ARN you entered is correct and corresponds to an existing load balancer.     |
-| **Permission Denied**                  | Verify that the AWS credentials have the correct permissions to delete load balancers.        |
-| **Region Misconfiguration**            | Make sure the region specified matches the region where the load balancer is located.         |
-| **Empty or Incorrect Credentials**     | Double-check that the AWS credentials are correctly entered and functional.                   |
+| Problem                            | Solution                                                                                  |
+| ---------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Invalid ARN**                    | Confirm that the ARN you entered is correct and corresponds to an existing load balancer. |
+| **Permission Denied**              | Verify that the AWS credentials have the correct permissions to delete load balancers.    |
+| **Region Misconfiguration**        | Make sure the region specified matches the region where the load balancer is located.     |
+| **Empty or Incorrect Credentials** | Double-check that the AWS credentials are correctly entered and functional.               |
 
 ## Real-World Use Cases
 

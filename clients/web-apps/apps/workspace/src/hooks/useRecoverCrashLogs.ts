@@ -52,20 +52,14 @@ export const useRecoverCrashLogs = (): void => {
                 nodeUniqueName: nodeLog.nodeUniqueName,
                 isSuccess: nodeLog.isSuccess,
                 duration: nodeLog.duration,
-                inputs: Object.fromEntries(
-                  nodeLog.inputs.map((item) => [item.key, item.value]),
-                ),
-                outputs: Object.fromEntries(
-                  nodeLog.outputs.map((item) => [item.key, item.value]),
-                ),
+                inputs: Object.fromEntries(nodeLog.inputs.map((item) => [item.key, item.value])),
+                outputs: Object.fromEntries(nodeLog.outputs.map((item) => [item.key, item.value])),
               })),
             });
 
             // 5. Mark safe locally in IndexedDB so we don't process it again
             await markLogAsSynced(log.jobId);
-            console.log(
-              `Recovery: Job ${log.jobId} closed as Failed with logs synced.`,
-            );
+            console.log(`Recovery: Job ${log.jobId} closed as Failed with logs synced.`);
           } catch (apiErr) {
             console.error(
               `Recovery: Failed to process crash recovery for job ${log.jobId}:`,

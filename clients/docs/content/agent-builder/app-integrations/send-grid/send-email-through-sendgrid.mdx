@@ -8,17 +8,17 @@ You can define sender and recipient details, compose your subject and body, and 
 
 ## Configuration Options
 
-| Field Name          | Description                                                                                       | Input Type        | Required? | Default Value |
-| ------------------- | ------------------------------------------------------------------------------------------------- | ----------------- | --------- | ------------- |
-| **SendGrid Credential** | The SendGrid credential containing a valid API key for authentication.                          | Credentials Select | Yes       | _(empty)_     |
-| **From**            | The sender's email address.                                                                       | Text              | Yes       | _(empty)_     |
-| **To**              | The recipient's email address(es), separated by commas for multiple addresses.                   | Text              | Yes       | _(empty)_     |
-| **CC**              | The email addresses to send carbon copies, comma-separated.                                       | Text              | No        | _(empty)_     |
-| **BCC**             | The email addresses to send blind carbon copies, comma-separated.                                 | Text              | No        | _(empty)_     |
-| **Subject**         | The subject line of the email.                                                                    | Text              | Yes       | _(empty)_     |
-| **Body**            | The main content of the email message.                                                            | Text              | Yes       | _(empty)_     |
-| **Body Format**     | Choose between plain text or HTML format for the body content.                                   | Select            | Yes       | Text          |
-| **Attachments**     | Paths to any files to be sent as attachments, separated by commas.                               | Text              | No        | _(empty)_     |
+| Field Name              | Description                                                                    | Input Type         | Required? | Default Value |
+| ----------------------- | ------------------------------------------------------------------------------ | ------------------ | --------- | ------------- |
+| **SendGrid Credential** | The SendGrid credential containing a valid API key for authentication.         | Credentials Select | Yes       | _(empty)_     |
+| **From**                | The sender's email address.                                                    | Text               | Yes       | _(empty)_     |
+| **To**                  | The recipient's email address(es), separated by commas for multiple addresses. | Text               | Yes       | _(empty)_     |
+| **CC**                  | The email addresses to send carbon copies, comma-separated.                    | Text               | No        | _(empty)_     |
+| **BCC**                 | The email addresses to send blind carbon copies, comma-separated.              | Text               | No        | _(empty)_     |
+| **Subject**             | The subject line of the email.                                                 | Text               | Yes       | _(empty)_     |
+| **Body**                | The main content of the email message.                                         | Text               | Yes       | _(empty)_     |
+| **Body Format**         | Choose between plain text or HTML format for the body content.                 | Select             | Yes       | Text          |
+| **Attachments**         | Paths to any files to be sent as attachments, separated by commas.             | Text               | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -66,23 +66,24 @@ The result after sending will be accessible as **Result**, showing SendGrid's re
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure that all email addresses are correctly formatted and valid to avoid email delivery errors.
+  Ensure that all email addresses are correctly formatted and valid to avoid
+  email delivery errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Action                | Input Fields                                                                                                                   | Output Value | Output Type  |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------- | ------------ | ------------ |
-| Basic email sending   | From: `sender@example.com`, To: `recipient@example.com`, Subject: `Hello World`, Body: `Hello!`, Body Format: `Plain`          | Result       | SendGrid Response Data |
-| Email with attachments| From: `me@example.com`, To: `you@example.com`, Subject: `Check this out`, Body: `See attached.`, Attachments: `file1.pdf,file2.jpg` | Result       | SendGrid Response Data |
+| Action                 | Input Fields                                                                                                                        | Output Value | Output Type            |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------ | ---------------------- |
+| Basic email sending    | From: `sender@example.com`, To: `recipient@example.com`, Subject: `Hello World`, Body: `Hello!`, Body Format: `Plain`               | Result       | SendGrid Response Data |
+| Email with attachments | From: `me@example.com`, To: `you@example.com`, Subject: `Check this out`, Body: `See attached.`, Attachments: `file1.pdf,file2.jpg` | Result       | SendGrid Response Data |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                                     |
-| --------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| **Missing SendGrid Credential**                     | Ensure you've selected a valid credential with your SendGrid API key.                                                         |
-| **Invalid recipient address format**                | Double-check all email addresses for correct syntax.                                                                         |
-| **Email not sent**                                  | Verify API key validity and check any error messages in the SendGrid response for more details.                              |
+| Problem                              | Solution                                                                                        |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------- |
+| **Missing SendGrid Credential**      | Ensure you've selected a valid credential with your SendGrid API key.                           |
+| **Invalid recipient address format** | Double-check all email addresses for correct syntax.                                            |
+| **Email not sent**                   | Verify API key validity and check any error messages in the SendGrid response for more details. |
 
 ## Real-World Use Cases
 

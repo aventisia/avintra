@@ -2,16 +2,16 @@ import { Callout, Steps } from "nextra/components";
 
 # Delete Row from Excel Worksheet
 
-The **Delete Row from Excel Worksheet** node allows you to remove a specific row from a given worksheet within an Excel workbook. This functionality is particularly useful when you need to clean up data, remove empty rows, or exclude certain entries from further processing or analysis in your spreadsheet. 
+The **Delete Row from Excel Worksheet** node allows you to remove a specific row from a given worksheet within an Excel workbook. This functionality is particularly useful when you need to clean up data, remove empty rows, or exclude certain entries from further processing or analysis in your spreadsheet.
 
 Use this node when you want to programmatically control the data within your Excel files by excluding unwanted rows before any further operations.
 
 ## Configuration Options
 
-| Field Name            | Description                                                | Input Type | Required? | Default Value |
-| --------------------- | ---------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance**| The Excel Worksheet object where the row will be deleted.  | Text       | Yes       | _(empty)_     |
-| **Row Index**         | The index (1-based) of the row to delete.                  | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                               | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object where the row will be deleted. | Text       | Yes       | _(empty)_     |
+| **Row Index**          | The index (1-based) of the row to delete.                 | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -35,10 +35,13 @@ In the **Row Index** field, specify the 1-based index number of the row you want
 ### Step 4
 
 Execute the flow to apply the deletion of the specified row from your worksheet.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the **Row Index** provided is within the existing range of rows in the worksheet. Invalid indexes (e.g., a number greater than the total number of rows) will result in an error.
+  Ensure that the **Row Index** provided is within the existing range of rows in
+  the worksheet. Invalid indexes (e.g., a number greater than the total number
+  of rows) will result in an error.
 </Callout>
 
 ## Input/Output Examples
@@ -48,11 +51,11 @@ Execute the flow to apply the deletion of the specified row from your worksheet.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                         |
-| ------------------------------------------- | --------------------------------------------------------------------------------- |
-| **Row not deleted**                         | Ensure the **Row Index** is a valid number and exists within the worksheet range. |
-| **Incorrect worksheet**                     | Double-check the **Worksheet Instance** input to ensure it's referencing the correct sheet. |
-| **Node fails with a range error**           | The **Row Index** might be set to a number greater than the total number of rows. |
+| Problem                           | Solution                                                                                    |
+| --------------------------------- | ------------------------------------------------------------------------------------------- |
+| **Row not deleted**               | Ensure the **Row Index** is a valid number and exists within the worksheet range.           |
+| **Incorrect worksheet**           | Double-check the **Worksheet Instance** input to ensure it's referencing the correct sheet. |
+| **Node fails with a range error** | The **Row Index** might be set to a number greater than the total number of rows.           |
 
 ## Real-World Use Cases
 

@@ -8,14 +8,14 @@ This node is essential when you need to download reports, documents, or data fil
 
 ## Configuration Options
 
-| Field Name                  | Description                                                                                 | Input Type | Required? | Default Value |
-| --------------------------- | ------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance**    | Enter or choose the variable that contains the web browser instance to work with.           | Text       | Yes       | _(empty)_     |
-| **Find Type**               | Specifies how to find the element (e.g., ID, XPath, CssSelector).                           | Select     | Yes       | XPath         |
-| **Value To Find**           | The selector (XPath, ID, etc.) used to locate the download link on the page.                | Text       | Yes       | _(empty)_     |
-| **Destination Folder**      | The full path of the folder where the downloaded file will be saved.                        | Text       | Yes       | _(empty)_     |
-| **Wait for File to Download** | If true, waits until the file appears in the destination folder.                          | Switch     | No        | False         |
-| **Maximum Wait Time (Seconds)** | The maximum time to wait for the file to appear in the destination folder. *Only appears if "Wait for File to Download" is true.* | Text       | No        | 30            |
+| Field Name                      | Description                                                                                                                       | Input Type | Required? | Default Value |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**        | Enter or choose the variable that contains the web browser instance to work with.                                                 | Text       | Yes       | _(empty)_     |
+| **Find Type**                   | Specifies how to find the element (e.g., ID, XPath, CssSelector).                                                                 | Select     | Yes       | XPath         |
+| **Value To Find**               | The selector (XPath, ID, etc.) used to locate the download link on the page.                                                      | Text       | Yes       | _(empty)_     |
+| **Destination Folder**          | The full path of the folder where the downloaded file will be saved.                                                              | Text       | Yes       | _(empty)_     |
+| **Wait for File to Download**   | If true, waits until the file appears in the destination folder.                                                                  | Switch     | No        | False         |
+| **Maximum Wait Time (Seconds)** | The maximum time to wait for the file to appear in the destination folder. _Only appears if "Wait for File to Download" is true._ | Text       | No        | 30            |
 
 ## Expected Output Format
 
@@ -24,6 +24,7 @@ The output of this node is a **string** that represents the full path of the dow
 For example, if the file is successfully downloaded and saved, you will receive a path string like `"C:/Downloads/myFile.pdf"`.
 
 ## Step-by-Step Guide
+
 <Steps>
 ### Step 1
 
@@ -60,22 +61,23 @@ Once the file is downloaded, it will be accessible as **DownloadedFile** for fur
 </Steps>
 
 <Callout type="info" title="Note">
-  Each download requires an active web browser instance and correct element selectors to successfully click on the link.
+  Each download requires an active web browser instance and correct element
+  selectors to successfully click on the link.
 </Callout>
 
 ## Input/Output Examples
 
-| Find Type | Value To Find | Destination Folder        | Output Value                          |
-| --------- | ------------- | ------------------------- | ------------------------------------- |
-| XPath     | `//a[@id='download-link']` | `C:/Downloads` | `C:/Downloads/downloaded-file.pdf`   |
+| Find Type | Value To Find              | Destination Folder | Output Value                       |
+| --------- | -------------------------- | ------------------ | ---------------------------------- |
+| XPath     | `//a[@id='download-link']` | `C:/Downloads`     | `C:/Downloads/downloaded-file.pdf` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                                                                           |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Incorrect selector used**                               | Verify the selector in **Value To Find** matches an actual download link on your webpage.                                                         |
-| **File not appearing in the destination folder**          | Ensure the **Destination Folder** path is correct and accessible by the application.                                                              |
-| **Automation does not wait for download**                 | Enable **Wait for File to Download** and ensure **Maximum Wait Time (Seconds)** is set appropriately to allow enough time for file download. |
+| Problem                                          | Solution                                                                                                                                     |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect selector used**                      | Verify the selector in **Value To Find** matches an actual download link on your webpage.                                                    |
+| **File not appearing in the destination folder** | Ensure the **Destination Folder** path is correct and accessible by the application.                                                         |
+| **Automation does not wait for download**        | Enable **Wait for File to Download** and ensure **Maximum Wait Time (Seconds)** is set appropriately to allow enough time for file download. |
 
 ## Real-World Use Cases
 

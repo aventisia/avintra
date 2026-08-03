@@ -1,6 +1,9 @@
+import { getMySession } from "@avplatform/ui/apis";
 import { Button } from "@avplatform/ui/buttons";
 import { IS_TAURI } from "@avplatform/ui/constants";
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { toast } from "@avplatform/ui/sonner";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useQueryClient } from "@tanstack/react-query";
@@ -12,9 +15,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 import { useSaveFlow } from "@/features/react-flow/hooks/useSaveFlow";
-import { getMySession } from "@avplatform/ui/apis";
-import { FlowTypesEnum } from "@avplatform/ui/enums";
-import { useUserSessionStore } from "@avplatform/ui/stores";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
@@ -51,21 +51,16 @@ const ExecuteFlow = () => {
   );
 
   // Get current flow and execution state from current flow store
-  const {
-    currentFlow,
-    isFlowLoading,
-    executionState,
-    setCurrentFlow,
-    setExecutionState,
-  } = useCurrentFlowStore(
-    useShallow((state) => ({
-      currentFlow: state.currentFlow,
-      isFlowLoading: state.isFlowLoading,
-      executionState: state.executionState,
-      setCurrentFlow: state.setCurrentFlow,
-      setExecutionState: state.setExecutionState,
-    })),
-  );
+  const { currentFlow, isFlowLoading, executionState, setCurrentFlow, setExecutionState } =
+    useCurrentFlowStore(
+      useShallow((state) => ({
+        currentFlow: state.currentFlow,
+        isFlowLoading: state.isFlowLoading,
+        executionState: state.executionState,
+        setCurrentFlow: state.setCurrentFlow,
+        setExecutionState: state.setExecutionState,
+      })),
+    );
 
   const { osID } = useTuariUserMetadataStore(
     useShallow((state) => ({
@@ -106,13 +101,8 @@ const ExecuteFlow = () => {
       // Handle job completion notification
       console.log("Job completed:", notification);
 
-      if (
-        notification.status === "Completed" &&
-        flowType !== FlowTypesEnum.ChatAgent
-      ) {
-        toast.success(
-          notification.message || "Flow execution completed successfully!",
-        );
+      if (notification.status === "Completed" && flowType !== FlowTypesEnum.ChatAgent) {
+        toast.success(notification.message || "Flow execution completed successfully!");
         setExecutionState("stopped");
       } else if (notification.status === "Failed") {
         toast.error(notification.message || "Flow execution failed.");
@@ -142,13 +132,8 @@ const ExecuteFlow = () => {
   // Start execution
   const startExecution = async () => {
     // Skip this run if an execution is already in progress
-    if (
-      executionState === "executing" ||
-      executionState === "launching-executor"
-    ) {
-      console.log(
-        "Skipping new execution run: previous execution still in progress",
-      );
+    if (executionState === "executing" || executionState === "launching-executor") {
+      console.log("Skipping new execution run: previous execution still in progress");
       return;
     }
 
@@ -162,9 +147,7 @@ const ExecuteFlow = () => {
 
       // Validate: published flow version can only be executed via orchestrator
       if (currentFlow?.isPublished) {
-        toast.info(
-          "Published agents can only be executed via the Orchestrator.",
-        );
+        toast.info("Published agents can only be executed via the Orchestrator.");
         return;
       }
 
@@ -184,9 +167,7 @@ const ExecuteFlow = () => {
       }
 
       // Get flag indicating whether flow can only be executed in desktop executor
-      let isDesktopOnlyFlow = doesFlowContainAnyDesktopOnlyNode(
-        nodes as Node<NodeDataType>[],
-      );
+      let isDesktopOnlyFlow = doesFlowContainAnyDesktopOnlyNode(nodes as Node<NodeDataType>[]);
 
       // Temporary fix to run all flows in desktop executor if app is running in Tauri until our web executor is bugs free and supports all nodes
       if (IS_TAURI) isDesktopOnlyFlow = true;
@@ -200,10 +181,7 @@ const ExecuteFlow = () => {
       }
 
       // Validate: Invalid react flow object or flow graph
-      const flowGraphError = isValidFlowGraph(
-        nodes as Node<NodeDataType>[],
-        edges,
-      );
+      const flowGraphError = isValidFlowGraph(nodes as Node<NodeDataType>[], edges);
       if (flowGraphError) {
         toast.error(`Flow graph is invalid: ${flowGraphError}`);
         return;
@@ -213,10 +191,7 @@ const ExecuteFlow = () => {
       if (isCommercial) {
         const creditsData = await getAvailableCredits();
 
-        if (
-          creditsData?.data &&
-          creditsData.data.availableCredits < minCredits
-        ) {
+        if (creditsData?.data && creditsData.data.availableCredits < minCredits) {
           // Show toast notification for insufficient credits
           toast.error("Insufficient credits. Please top up to continue.");
           return;
@@ -287,9 +262,7 @@ const ExecuteFlow = () => {
       );
 
       // Step 2: Resolve config key placeholders into trigger inputs
-      const configInputs = await getConfigKeyValuePairsInputs(
-        nodes as Node<NodeDataType>[],
-      );
+      const configInputs = await getConfigKeyValuePairsInputs(nodes as Node<NodeDataType>[]);
 
       // Step 3: Merge and deduplicate by key while preserving order
       const mergedInputs = [...inputVariables, ...configInputs];
@@ -355,9 +328,7 @@ const ExecuteFlow = () => {
       updateField("startTime", new Date());
     } catch (error) {
       // Inform the user about the failure
-      toast.error(
-        `Failed to launch the executor. Please try again. Error: ${error}`,
-      );
+      toast.error(`Failed to launch the executor. Please try again. Error: ${error}`);
 
       // Reset the executing state on failure
       setExecutionState("stopped");
@@ -401,10 +372,7 @@ const ExecuteFlow = () => {
               size="icon8"
               className="hover:bg-white/10"
               onClick={() => {
-                localStorage.setItem(
-                  "conditionalExecutionGroup",
-                  JSON.stringify([]),
-                );
+                localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
                 localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
                 setExecutionState("stopped");
                 sendCommand("abort");

@@ -6,9 +6,9 @@ The **Escape Text for Regular Expression** node is designed to help you prepare 
 
 ## Configuration Options
 
-| Field Name       | Description                                                                 | Input Type | Required? | Default Value |
-| ---------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Text to Escape** | The text value that will be escaped for use in regular expressions.        | Text       | Yes       | _(empty)_     |
+| Field Name         | Description                                                         | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text to Escape** | The text value that will be escaped for use in regular expressions. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -32,24 +32,25 @@ The processed text, with special characters escaped, will be available as **Esca
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use this node when dynamically constructing regular expressions to prevent syntax errors from unescaped special characters.
+  Use this node when dynamically constructing regular expressions to prevent
+  syntax errors from unescaped special characters.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Text          | Output Value                                       | Output Type     |
-| ------------------- | -------------------------------------------------- | --------------- |
-| `sample.text*`      | `sample\.text\*`                                   | String (Text)   |
-| `abc[123]`          | `abc\[123\]`                                       | String (Text)   |
-| `match this (maybe)`| `match this \(maybe\)`                             | String (Text)   |
+| Input Text           | Output Value           | Output Type   |
+| -------------------- | ---------------------- | ------------- |
+| `sample.text*`       | `sample\.text\*`       | String (Text) |
+| `abc[123]`           | `abc\[123\]`           | String (Text) |
+| `match this (maybe)` | `match this \(maybe\)` | String (Text) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                            |
-| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **No output or empty result**                  | Ensure that the **Text to Escape** field is not empty. If it is, there will be nothing to escape.                                               |
-| **Unexpected characters being escaped**        | Double-check the input text for accidental inclusion of characters not meant to be escaped.                                                      |
-| **Text not escaped as needed**                 | Be sure the input text contains characters that require escaping for use in regular expressions (e.g., `*`, `+`, `.`).                            |
+| Problem                                 | Solution                                                                                                               |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **No output or empty result**           | Ensure that the **Text to Escape** field is not empty. If it is, there will be nothing to escape.                      |
+| **Unexpected characters being escaped** | Double-check the input text for accidental inclusion of characters not meant to be escaped.                            |
+| **Text not escaped as needed**          | Be sure the input text contains characters that require escaping for use in regular expressions (e.g., `*`, `+`, `.`). |
 
 ## Real-World Use Cases
 

@@ -12,9 +12,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name        | Description                                      | Input Type | Required? | Default Value |
-| ----------------- | ------------------------------------------------ | ---------- | --------- | ------------- |
-| **Clipboard Text** | The text you wish to set to the clipboard.       | Text       | No        | _(empty)_     |
+| Field Name         | Description                                | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------ | ---------- | --------- | ------------- |
+| **Clipboard Text** | The text you wish to set to the clipboard. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -38,24 +38,25 @@ After completing your flow, execute it to copy the specified text into your clip
 </Steps>
 
 <Callout type="info" title="Note">
-  The text entered in the **Clipboard Text** field can be updated at any time to copy a different text next time the node is executed.
+  The text entered in the **Clipboard Text** field can be updated at any time to
+  copy a different text next time the node is executed.
 </Callout>
 
 ## Input/Output Examples
 
-| Clipboard Text   | System Clipboard (Result) |
-| ---------------- | ------------------------- |
-| "Hello, World!"  | Hello, World!             |
-| `{User's Name}`  | `{User's Name}`             |
-| "www.example.com"| www.example.com           |
+| Clipboard Text    | System Clipboard (Result) |
+| ----------------- | ------------------------- |
+| "Hello, World!"   | Hello, World!             |
+| `{User's Name}`   | `{User's Name}`           |
+| "www.example.com" | www.example.com           |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                            | Solution                                                                  |
-| ---------------------------------- | ------------------------------------------------------------------------- |
-| **Text not appearing on clipboard**| Ensure the node is executed successfully within your flow.                |
-| **Clipboard Text field left empty**| Confirm that you have entered the desired text into the Clipboard Text field. |
-| **Old text being copied**          | If you're re-running a flow, ensure the Clipboard Text field is updated.  |
+| Problem                             | Solution                                                                      |
+| ----------------------------------- | ----------------------------------------------------------------------------- |
+| **Text not appearing on clipboard** | Ensure the node is executed successfully within your flow.                    |
+| **Clipboard Text field left empty** | Confirm that you have entered the desired text into the Clipboard Text field. |
+| **Old text being copied**           | If you're re-running a flow, ensure the Clipboard Text field is updated.      |
 
 ## Real-World Use Cases
 

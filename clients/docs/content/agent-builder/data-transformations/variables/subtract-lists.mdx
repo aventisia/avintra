@@ -11,10 +11,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                 | Input Type | Required? | Default Value  |
-| --------------------- | --------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **First List**        | The variable that holds the first list to compare.                         | Text       | Yes       | _(empty)_      |
-| **Second List**       | The variable that contains the second list used to subtract items from the first list. | Text       | Yes       | _(empty)_      |
+| Field Name      | Description                                                                            | Input Type | Required? | Default Value |
+| --------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **First List**  | The variable that holds the first list to compare.                                     | Text       | Yes       | _(empty)_     |
+| **Second List** | The variable that contains the second list used to subtract items from the first list. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -42,23 +42,24 @@ Once configured, the resulting list after subtraction will be available as **Lis
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure both **First List** and **Second List** are properly formatted as lists before using this node.
+  Ensure both **First List** and **Second List** are properly formatted as lists
+  before using this node.
 </Callout>
 
 ## Input/Output Examples
 
-| First List      | Second List     | Output Value           | Output Type  |
-| --------------- | --------------- | ---------------------- | ------------ |
-| [apple, banana, cherry] | [banana, grape] | [apple, cherry]         | List         |
-| [1, 2, 3, 4]    | [2, 4]          | [1, 3]                 | List         |
-| [item1, item2]  | [item3, item4]  | [item1, item2]         | List         |
+| First List              | Second List     | Output Value    | Output Type |
+| ----------------------- | --------------- | --------------- | ----------- |
+| [apple, banana, cherry] | [banana, grape] | [apple, cherry] | List        |
+| [1, 2, 3, 4]            | [2, 4]          | [1, 3]          | List        |
+| [item1, item2]          | [item3, item4]  | [item1, item2]  | List        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                       |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Lists are not being properly subtracted**       | Verify that both lists are correctly defined and formatted as text inputs recognized as lists.  |
-| **Unexpected output of ListDifference**           | Double-check the contents of your lists to ensure they contain the items in expected formats.  |
+| Problem                                     | Solution                                                                                       |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Lists are not being properly subtracted** | Verify that both lists are correctly defined and formatted as text inputs recognized as lists. |
+| **Unexpected output of ListDifference**     | Double-check the contents of your lists to ensure they contain the items in expected formats.  |
 
 ## Real-World Use Cases
 

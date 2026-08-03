@@ -6,8 +6,8 @@ The **Convert Base64 to Text** node is designed to decode a Base64-encoded strin
 
 ## Configuration Options
 
-| Field Name        | Description                                  | Input Type | Required? | Default Value |
-| ----------------- | -------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name        | Description                                   | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------- | ---------- | --------- | ------------- |
 | **Base64 String** | The Base64-encoded string you wish to decode. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -28,24 +28,26 @@ In the **Base64 String** field, input the encoded string you want to convert to 
 ### Step 3
 
 The decoded text will be available as **PlainText** for use in subsequent nodes.
+
 </Steps>
 
 <Callout type="warning" title="Ensure Valid Input">
-  Make sure that the string entered in the **Base64 String** field is correctly Base64-encoded. Any invalid input may result in errors.
+  Make sure that the string entered in the **Base64 String** field is correctly
+  Base64-encoded. Any invalid input may result in errors.
 </Callout>
 
 ## Input/Output Examples
 
 | Example Input (Base64 String) | Example Output (Plain Text) |
 | ----------------------------- | --------------------------- |
-| SGVsbG8sIFdvcmxkIQ==         | Hello, World!               |
-| U29sdXRpb24=                 | Solution                   |
+| SGVsbG8sIFdvcmxkIQ==          | Hello, World!               |
+| U29sdXRpb24=                  | Solution                    |
 
 ## Common Mistakes & Troubleshooting
 
 | Problem                       | Solution                                                                                                       |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **Invalid Base64 Input**      | Double-check the input string for proper Base64 encoding. Ensure there are no stray characters or symbols.    |
+| **Invalid Base64 Input**      | Double-check the input string for proper Base64 encoding. Ensure there are no stray characters or symbols.     |
 | **Blank Output**              | Ensure that the **Base64 String** field is not empty and contains a valid Base64 string.                       |
 | **Unrecognizable Characters** | This may indicate an encoding issue. Verify that the text was originally encoded using Base64 before decoding. |
 

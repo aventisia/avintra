@@ -6,16 +6,16 @@ The **Write Values to Specific Excel Columns** node enables you to insert a list
 
 ### Configuration Options
 
-| Field Name       | Description                                                                                  | Input Type | Required? | Default Value |
-| ---------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance** | The Excel Worksheet instance where values will be written.                            | Text       | Yes       | _(empty)_     |
-| **Values to Write**   | A list or array of values that you wish to add to the worksheet.                       | Text       | Yes       | _(empty)_     |
-| **Target Columns**    | The letters of the column for each value (e.g., ['A','D','G']). Must match value count. | Text       | Yes       | _(empty)_     |
-| **Row**               | The specific row number where the data should be written.                              | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                                             | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet instance where values will be written.                              | Text       | Yes       | _(empty)_     |
+| **Values to Write**    | A list or array of values that you wish to add to the worksheet.                        | Text       | Yes       | _(empty)_     |
+| **Target Columns**     | The letters of the column for each value (e.g., ['A','D','G']). Must match value count. | Text       | Yes       | _(empty)_     |
+| **Row**                | The specific row number where the data should be written.                               | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
-This node does not produce a direct data output but performs an action by writing the input values to specified Excel columns. 
+This node does not produce a direct data output but performs an action by writing the input values to specified Excel columns.
 
 ## Step-by-Step Guide
 
@@ -43,23 +43,24 @@ Specify the row number in the **Row** field where the data should be written. En
 </Steps>
 
 <Callout type="info" title="Tip">
-  Check that the number of target columns matches the number of values to write. Mismatches may lead to incorrect data placement.
+  Check that the number of target columns matches the number of values to write.
+  Mismatches may lead to incorrect data placement.
 </Callout>
 
 ## Input/Output Examples
 
-| Worksheet Instance | Values to Write         | Target Columns      | Row | Action Description                                           |
-| ------------------ | ----------------------- | ------------------- | --- | ------------------------------------------------------------ |
-| Worksheet 1        | ["John", "Apple", "200"] | ["A", "B", "C"]     | 5   | Inserts "John" in A5, "Apple" in B5, and "200" in C5.        |
-| FinancialReport    | ["Q1", "Revenue"]       | ["D", "E"]          | 3   | Inserts "Q1" in D3 and "Revenue" in E3 when positioning financial terms. |
+| Worksheet Instance | Values to Write          | Target Columns  | Row | Action Description                                                       |
+| ------------------ | ------------------------ | --------------- | --- | ------------------------------------------------------------------------ |
+| Worksheet 1        | ["John", "Apple", "200"] | ["A", "B", "C"] | 5   | Inserts "John" in A5, "Apple" in B5, and "200" in C5.                    |
+| FinancialReport    | ["Q1", "Revenue"]        | ["D", "E"]      | 3   | Inserts "Q1" in D3 and "Revenue" in E3 when positioning financial terms. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                                                                          |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Mismatch in values and columns count**         | Verify that the list of **Values to Write** and **Target Columns** are of equal length. Each value must have a corresponding column.                |
-| **Incorrect worksheet instance specified**       | Ensure the **Worksheet Instance** accurately refers to an existing Excel worksheet on your computer.                                               |
-| **Invalid row number entered**                   | Make sure the **Row** number is valid within your Excel worksheet and there is no conflict, like writing over protected cells without permission.   |
+| Problem                                    | Solution                                                                                                                                          |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Mismatch in values and columns count**   | Verify that the list of **Values to Write** and **Target Columns** are of equal length. Each value must have a corresponding column.              |
+| **Incorrect worksheet instance specified** | Ensure the **Worksheet Instance** accurately refers to an existing Excel worksheet on your computer.                                              |
+| **Invalid row number entered**             | Make sure the **Row** number is valid within your Excel worksheet and there is no conflict, like writing over protected cells without permission. |
 
 ## Real-World Use Cases
 

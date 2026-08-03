@@ -1,8 +1,8 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-
 import { useSearchParams } from "react-router-dom";
+
 import { getAgentsHistory } from "../apis/agents-history-apis";
 
 /**

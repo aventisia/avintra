@@ -5,28 +5,29 @@ import { Callout, Steps } from "nextra/components";
 The **Retrieve Exchange Email Messages** node allows you to automatically access and retrieve emails from an Exchange server. This is particularly handy when you need to programmatically handle emails, such as collecting unread messages, fetching emails from specific folders, or downloading attachments. Using this node can streamline your email workflows and reduce manual effort significantly.
 
 For example, use it to:
+
 - Collect unread emails from your main Inbox at regular intervals.
 - Retrieve emails from a shared mailbox without having to manually access it each time.
 - Automatically save email attachments to a specified directory for further processing.
 
 ## Configuration Options
 
-| Field Name                                     | Description                                                                                                                                               | Input Type | Required? | Default Value |
-|------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|------------|-----------|---------------|
-| **Exchange Connection**                        | The Exchange service object representing the connection to the Exchange server.                                                                           | Text       | Yes       | _(empty)_     |
-| **Mailbox Type**                               | Specifies whether the mailbox is personal or shared.                                                                                                      | Select     | Yes       | _(empty)_     |
-| **Shared Mailbox Address**                     | The email address of the shared mailbox. Required if "Mailbox Type" is 'Shared'.                                                                          | Text       | No        | _(empty)_     |
-| **Retrieve Email Messages from Custom Folder** | If true, retrieves emails from a custom folder instead of predefined folders.                                                                             | Switch     | No        | _(empty)_     |
-| **Exchange Folder**                            | The folder to retrieve emails from (like Inbox, Sent Items, etc.). _Appears only if not retrieving from a custom folder._                                  | Select     | No        | _(empty)_     |
-| **Mail Folder**                                | The name of the custom folder to retrieve emails from. Required if "Retrieve Email Messages from Custom Folder" is enabled.                                | Text       | No        | _(empty)_     |
-| **Retrieve**                                   | Specifies which emails to retrieve (e.g., all, unread, or read).                                                                                          | Select     | No        | _(empty)_     |
-| **Mark as Read**                               | If true, marks retrieved emails as read.                                                                                                                  | Switch     | No        | _(empty)_     |
-| **From Contains**                              | Filters emails where the sender's address contains this text.                                                                                             | Text       | No        | _(empty)_     |
-| **To Contains**                                | Filters emails where the recipient's address contains this text.                                                                                          | Text       | No        | _(empty)_     |
-| **Subject Contains**                           | Filters emails where the subject contains this text.                                                                                                      | Text       | No        | _(empty)_     |
-| **Body Contains**                              | Filters emails where the body contains this text.                                                                                                         | Text       | No        | _(empty)_     |
-| **Attachments**                                | Specifies how to handle attachments (e.g., save or not save them).                                                                                        | Select     | No        | _(empty)_     |
-| **Save Attachments Into**                      | The directory to save attachments. Required if "Attachments" is set to 'Save Attachments'.                                                                | Text       | No        | _(empty)_     |
+| Field Name                                     | Description                                                                                                                 | Input Type | Required? | Default Value |
+| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Exchange Connection**                        | The Exchange service object representing the connection to the Exchange server.                                             | Text       | Yes       | _(empty)_     |
+| **Mailbox Type**                               | Specifies whether the mailbox is personal or shared.                                                                        | Select     | Yes       | _(empty)_     |
+| **Shared Mailbox Address**                     | The email address of the shared mailbox. Required if "Mailbox Type" is 'Shared'.                                            | Text       | No        | _(empty)_     |
+| **Retrieve Email Messages from Custom Folder** | If true, retrieves emails from a custom folder instead of predefined folders.                                               | Switch     | No        | _(empty)_     |
+| **Exchange Folder**                            | The folder to retrieve emails from (like Inbox, Sent Items, etc.). _Appears only if not retrieving from a custom folder._   | Select     | No        | _(empty)_     |
+| **Mail Folder**                                | The name of the custom folder to retrieve emails from. Required if "Retrieve Email Messages from Custom Folder" is enabled. | Text       | No        | _(empty)_     |
+| **Retrieve**                                   | Specifies which emails to retrieve (e.g., all, unread, or read).                                                            | Select     | No        | _(empty)_     |
+| **Mark as Read**                               | If true, marks retrieved emails as read.                                                                                    | Switch     | No        | _(empty)_     |
+| **From Contains**                              | Filters emails where the sender's address contains this text.                                                               | Text       | No        | _(empty)_     |
+| **To Contains**                                | Filters emails where the recipient's address contains this text.                                                            | Text       | No        | _(empty)_     |
+| **Subject Contains**                           | Filters emails where the subject contains this text.                                                                        | Text       | No        | _(empty)_     |
+| **Body Contains**                              | Filters emails where the body contains this text.                                                                           | Text       | No        | _(empty)_     |
+| **Attachments**                                | Specifies how to handle attachments (e.g., save or not save them).                                                          | Select     | No        | _(empty)_     |
+| **Save Attachments Into**                      | The directory to save attachments. Required if "Attachments" is set to 'Save Attachments'.                                  | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -47,6 +48,7 @@ In the **Exchange Connection** field, provide the connection details for your Ex
 ### Step 3
 
 Select the **Mailbox Type**:
+
 - **Personal** for your mailbox.
 - **Shared** if retrieving from a shared mailbox.
 
@@ -85,25 +87,26 @@ Retrieved emails will be available as **RetrievedEmails** for further automation
 </Steps>
 
 <Callout type="info" title="Note">
-  The **Mail Folder** field becomes active only if the "Retrieve Email Messages from Custom Folder" option is enabled.
+  The **Mail Folder** field becomes active only if the "Retrieve Email Messages
+  from Custom Folder" option is enabled.
 </Callout>
 
 ## Input/Output Examples
 
-| Mailbox Type | Retrieve Mode           | Output Type                                     |
-|--------------|-------------------------|-------------------------------------------------|
-| Personal     | All email messages      | List of all emails with details like sender info|
-| Shared       | Unread email messages   | List of unread emails only                      |
-| Personal     | Read email messages     | List of read emails only                        |
+| Mailbox Type | Retrieve Mode         | Output Type                                      |
+| ------------ | --------------------- | ------------------------------------------------ |
+| Personal     | All email messages    | List of all emails with details like sender info |
+| Shared       | Unread email messages | List of unread emails only                       |
+| Personal     | Read email messages   | List of read emails only                         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                                 |
-|---------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| **Connection errors**                                   | Verify the connection details for the Exchange server are correct.                                       |
-| **Shared Mailbox Address required**                     | Ensure you input the address when using a "Shared" mailbox.                                              |
-| **Attachments not saving**                              | Check whether "Save Attachments Into" directory is correctly set, and accessible on your machine.        |
-| **Emails not filtering as expected**                    | Recheck text filters (sender, recipient, subject, body) for typos or incorrect values.                   |
+| Problem                              | Solution                                                                                          |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| **Connection errors**                | Verify the connection details for the Exchange server are correct.                                |
+| **Shared Mailbox Address required**  | Ensure you input the address when using a "Shared" mailbox.                                       |
+| **Attachments not saving**           | Check whether "Save Attachments Into" directory is correctly set, and accessible on your machine. |
+| **Emails not filtering as expected** | Recheck text filters (sender, recipient, subject, body) for typos or incorrect values.            |
 
 ## Real-World Use Cases
 

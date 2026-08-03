@@ -1,6 +1,6 @@
-import { NodeDataType } from "@/types/node-data-type";
-
 import { Node } from "@xyflow/react";
+
+import { NodeDataType } from "@/types/node-data-type";
 
 const DEFAULT_IMAGE = "/function.png";
 const TRIGGER_ICON = "ManualTriggerIcon";

@@ -36,68 +36,66 @@ interface ToolCallCoordinatorStore {
 }
 
 // Store
-export const useToolCallCoordinatorStore = create<ToolCallCoordinatorStore>(
-  (set, get) => ({
-    pendingMap: new Map(),
+export const useToolCallCoordinatorStore = create<ToolCallCoordinatorStore>((set, get) => ({
+  pendingMap: new Map(),
 
-    register: (entry) => {
-      set((state) => {
-        const existing = state.pendingMap.get(entry.toolCallId);
+  register: (entry) => {
+    set((state) => {
+      const existing = state.pendingMap.get(entry.toolCallId);
 
-        // Avoid unnecessary rerenders
-        if (existing === entry) {
-          return state;
-        }
-
-        const next = new Map(state.pendingMap);
-        next.set(entry.toolCallId, entry);
-
-        return {
-          pendingMap: next,
-        };
-      });
-    },
-
-    unregister: (toolCallId) => {
-      const { pendingMap } = get();
-
-      if (!pendingMap.has(toolCallId)) {
-        return;
+      // Avoid unnecessary rerenders
+      if (existing === entry) {
+        return state;
       }
 
-      const next = new Map(pendingMap);
-      next.delete(toolCallId);
+      const next = new Map(state.pendingMap);
+      next.set(entry.toolCallId, entry);
 
-      set({
+      return {
         pendingMap: next,
-      });
-    },
+      };
+    });
+  },
 
-    cancelAll: () => {
-      const { pendingMap } = get();
+  unregister: (toolCallId) => {
+    const { pendingMap } = get();
 
-      // Execute cancel handlers
-      pendingMap.forEach((entry) => {
-        try {
-          entry.cancel();
-        } catch (error) {
-          console.error(`Failed to cancel tool: ${entry.toolName}`, error);
-        }
-      });
+    if (!pendingMap.has(toolCallId)) {
+      return;
+    }
 
-      // Clear in single update
-      set({
-        pendingMap: new Map(),
-      });
-    },
+    const next = new Map(pendingMap);
+    next.delete(toolCallId);
 
-    reset: () => {
-      set({
-        pendingMap: new Map(),
-      });
-    },
-  }),
-);
+    set({
+      pendingMap: next,
+    });
+  },
+
+  cancelAll: () => {
+    const { pendingMap } = get();
+
+    // Execute cancel handlers
+    pendingMap.forEach((entry) => {
+      try {
+        entry.cancel();
+      } catch (error) {
+        console.error(`Failed to cancel tool: ${entry.toolName}`, error);
+      }
+    });
+
+    // Clear in single update
+    set({
+      pendingMap: new Map(),
+    });
+  },
+
+  reset: () => {
+    set({
+      pendingMap: new Map(),
+    });
+  },
+}));
 
 // Selectors
 export const useHasPendingToolCalls = () =>

@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name             | Description                                                                      | Input Type | Required? | Default Value |
-| ---------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name                | Description                                                                                | Input Type | Required? | Default Value |
+| ------------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
 | **Blob Container Client** | The BlobContainerClient instance used for the upload. This connects to Azure Blob Storage. | Text       | Yes       | _(empty)_     |
-| **File Path**          | The full path on your computer to the file you want to upload.                    | Text       | Yes       | _(empty)_     |
+| **File Path**             | The full path on your computer to the file you want to upload.                             | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,16 +45,17 @@ Upon successful upload, the node will provide the file's blob URL as **BlobUrl**
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that your credentials and connection string for the blob container are correct to avoid connection errors.
+  Ensure that your credentials and connection string for the blob container are
+  correct to avoid connection errors.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                                            |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Blob Container Client**                   | Verify your blob container connection details. The client information must be accurate and match your Azure setup requirements.      |
-| **File Path Not Found**                             | Make sure the file path entered exists on your local system and is correctly formatted. Check for typos or missing directories.     |
-| **Blob URL Not Generated**                          | If the Blob URL isn't displayed, ensure both input fields are filled correctly and the file is accessible and retry the upload.     |
+| Problem                           | Solution                                                                                                                        |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Blob Container Client** | Verify your blob container connection details. The client information must be accurate and match your Azure setup requirements. |
+| **File Path Not Found**           | Make sure the file path entered exists on your local system and is correctly formatted. Check for typos or missing directories. |
+| **Blob URL Not Generated**        | If the Blob URL isn't displayed, ensure both input fields are filled correctly and the file is accessible and retry the upload. |
 
 ## Real-World Use Cases
 

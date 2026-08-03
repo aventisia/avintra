@@ -9,24 +9,23 @@ export type TooltipIconButtonProps = ComponentPropsWithRef<typeof Button> & {
   side?: "top" | "bottom" | "left" | "right";
 };
 
-export const TooltipIconButton = forwardRef<
-  HTMLButtonElement,
-  TooltipIconButtonProps
->(({ children, tooltip, side = "bottom", className, ...rest }, ref) => {
-  return (
-    <Tooltip content={tooltip} side={side}>
-      <Button
-        variant="ghost"
-        size="icon6"
-        {...rest}
-        className={cn("aui-button-icon size-6 p-1", className)}
-        ref={ref}
-      >
-        <Slot.Slottable>{children}</Slot.Slottable>
-        <span className="aui-sr-only sr-only">{tooltip}</span>
-      </Button>
-    </Tooltip>
-  );
-});
+export const TooltipIconButton = forwardRef<HTMLButtonElement, TooltipIconButtonProps>(
+  ({ children, tooltip, side = "bottom", className, ...rest }, ref) => {
+    return (
+      <Tooltip content={tooltip} side={side}>
+        <Button
+          variant="ghost"
+          size="icon6"
+          {...rest}
+          className={cn("aui-button-icon size-6 p-1", className)}
+          ref={ref}
+        >
+          <Slot.Slottable>{children}</Slot.Slottable>
+          <span className="aui-sr-only sr-only">{tooltip}</span>
+        </Button>
+      </Tooltip>
+    );
+  },
+);
 
 TooltipIconButton.displayName = "TooltipIconButton";

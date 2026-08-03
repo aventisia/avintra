@@ -1,6 +1,6 @@
-import { MARKER_ARROW_PREFIX, STROKE_WIDTH } from "@/constants";
 import { Edge } from "@xyflow/react";
 
+import { MARKER_ARROW_PREFIX, STROKE_WIDTH } from "@/constants";
 
 /**
  * Creates an edge object with label.
@@ -25,7 +25,7 @@ export const createLabelEdgeObj = (
     target: targetNodeId,
     deletable: false,
     selectable: false,
-      style: { strokeWidth: STROKE_WIDTH },
+    style: { strokeWidth: STROKE_WIDTH },
 
     markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
     label,

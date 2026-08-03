@@ -1,13 +1,13 @@
 // ─── useGroupToggle ──────────────────────────────────────────────────────────
+import { toast } from "@avplatform/ui/sonner";
+import { Edge } from "@xyflow/react";
+import { useShallow } from "zustand/react/shallow";
+
 import { MARKER_ARROW_PREFIX } from "@/constants";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
-
-import { toast } from "@avplatform/ui/sonner";
-import { Edge } from "@xyflow/react";
-import { useShallow } from "zustand/react/shallow";
 
 import { getIntermediateNodeIds } from "../utils/getIntermediateNodes";
 import { areNodesConnected } from "../utils/getNodesConnectivity";
@@ -16,15 +16,14 @@ import { syncModelNodeVisibility } from "./useGroupToggle";
 // ─── useNodeGrouping ──────────────────────────────────────────────────────────
 
 export function useNodeGrouping() {
-  const { selectedNode, setMenu, setSelectedNode, setSelectedEdge } =
-    useContextMenuActionsStore(
-      useShallow((state) => ({
-        selectedNode: state.selectedNode,
-        setMenu: state.setMenu,
-        setSelectedNode: state.setSelectedNode,
-        setSelectedEdge: state.setSelectedEdge,
-      })),
-    );
+  const { selectedNode, setMenu, setSelectedNode, setSelectedEdge } = useContextMenuActionsStore(
+    useShallow((state) => ({
+      selectedNode: state.selectedNode,
+      setMenu: state.setMenu,
+      setSelectedNode: state.setSelectedNode,
+      setSelectedEdge: state.setSelectedEdge,
+    })),
+  );
 
   const autoLayout = useDagreAutoLayout();
 
@@ -54,15 +53,8 @@ export function useNodeGrouping() {
 
     const expandedNodeIds = new Set<string>();
 
-    if (
-      selectedNodes.length === 1 &&
-      selectedNodes[0]?.data?.mergeBranchesNodeId
-    ) {
-      const branchSubgraph = getIntermediateNodeIds(
-        nodes,
-        edges,
-        selectedNodes[0].id,
-      );
+    if (selectedNodes.length === 1 && selectedNodes[0]?.data?.mergeBranchesNodeId) {
+      const branchSubgraph = getIntermediateNodeIds(nodes, edges, selectedNodes[0].id);
       branchSubgraph.forEach((id) => expandedNodeIds.add(id));
     } else {
       selectedNodes.forEach((node) => {
@@ -77,19 +69,13 @@ export function useNodeGrouping() {
 
     const fullSelectedNodes = nodes.filter((n) => expandedNodeIds.has(n.id));
 
-    const alreadyGrouped = fullSelectedNodes.some(
-      (node) => !!node.data?.groupId,
-    );
+    const alreadyGrouped = fullSelectedNodes.some((node) => !!node.data?.groupId);
     if (alreadyGrouped) {
-      toast.warning(
-        "One or more selected nodes are already part of another group.",
-      );
+      toast.warning("One or more selected nodes are already part of another group.");
       return;
     }
 
-    const hasBlock = fullSelectedNodes.some(
-      (node) => node.type === "blockNode",
-    );
+    const hasBlock = fullSelectedNodes.some((node) => node.type === "blockNode");
 
     const isValidGroup = areNodesConnected(fullSelectedNodes, edges);
     if (!isValidGroup) {
@@ -103,22 +89,15 @@ export function useNodeGrouping() {
 
     const groupFirstNode = fullSelectedNodes.find(
       (node) =>
-        !edges.some(
-          (edge) =>
-            groupedNodeIds.includes(edge.source) && edge.target === node.id,
-        ),
+        !edges.some((edge) => groupedNodeIds.includes(edge.source) && edge.target === node.id),
     );
     const groupLastNode = fullSelectedNodes.find(
       (node) =>
-        !edges.some(
-          (edge) =>
-            edge.source === node.id && groupedNodeIds.includes(edge.target),
-        ),
+        !edges.some((edge) => edge.source === node.id && groupedNodeIds.includes(edge.target)),
     );
 
     const groupHead = groupFirstNode ?? fullSelectedNodes[0];
-    const lastNode =
-      groupLastNode ?? fullSelectedNodes[fullSelectedNodes.length - 1];
+    const lastNode = groupLastNode ?? fullSelectedNodes[fullSelectedNodes.length - 1];
 
     const outgoingEdge = edges.find(
       (e) => e.source === lastNode.id && !groupedNodeIds.includes(e.target),
@@ -184,9 +163,7 @@ export function useNodeGrouping() {
           ...node,
           hidden: false,
           data: Object.fromEntries(
-            Object.entries(node.data).filter(
-              ([key]) => !keysToRemove.includes(key),
-            ),
+            Object.entries(node.data).filter(([key]) => !keysToRemove.includes(key)),
           ),
         };
       }

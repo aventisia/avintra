@@ -1,7 +1,8 @@
 import { useEffect, useMemo } from "react";
-import { groupHistoryByDay } from "../../utils/groupHistoryByDay";
-import { useVersionHistoryQueryParams } from "../../hooks/useVersionHistoryQueryParams";
+
 import { useFetchVersionHistoryList } from "../../hooks/useFetchVersionHistoryList";
+import { useVersionHistoryQueryParams } from "../../hooks/useVersionHistoryQueryParams";
+import { groupHistoryByDay } from "../../utils/groupHistoryByDay";
 import VersionAccordionSkeleton from "./VersionAccordionSkeleton";
 import VersionHistoryAccordion from "./VersionHistoryAccordion";
 
@@ -13,10 +14,7 @@ export default function VersionHistoryContent() {
    */
   const { data: historyList, isLoading } = useFetchVersionHistoryList();
 
-  const groupedHistory = useMemo(
-    () => groupHistoryByDay(historyList?.data),
-    [historyList?.data],
-  );
+  const groupedHistory = useMemo(() => groupHistoryByDay(historyList?.data), [historyList?.data]);
 
   /**
    *  If no historyId(h) in query param present, auto select first

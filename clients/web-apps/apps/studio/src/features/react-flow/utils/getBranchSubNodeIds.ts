@@ -1,4 +1,4 @@
-import { Node, Edge } from "@xyflow/react";
+import { Edge, Node } from "@xyflow/react";
 
 /**
  * Collects all node IDs from a branch start node up to (but not including) the merge node.
@@ -30,9 +30,7 @@ export function getBranchSubgraphNodeIds(
     if (!node) return;
 
     const outgoingEdges = edges.filter((e) => e.source === nodeId);
-    const hasEdgeToMerge = outgoingEdges.some(
-      (e) => e.target === mergeBranchesNodeId,
-    );
+    const hasEdgeToMerge = outgoingEdges.some((e) => e.target === mergeBranchesNodeId);
 
     // Stop at branchEndNode pointing to the merge node
     if (node.type === "branchEndNode" && hasEdgeToMerge) return;

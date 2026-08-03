@@ -25,9 +25,7 @@ export const flowZodSchema = z.object({
   id: z.string(),
   type: z.string().min(1, { message: reqError("Agent type") }),
   name: flowNameSchema,
-  description: z
-    .string()
-    .max(500, { message: maxLenError("Agent description", 500) }),
+  description: z.string().max(500, { message: maxLenError("Agent description", 500) }),
   thumbnail: z.string(),
   isDisabled: z.boolean().default(false),
   // Read (view) only fields

@@ -6,9 +6,9 @@ The **Attach to Running Word** node allows you to connect to a Microsoft Word do
 
 ## Configuration Options
 
-| Field Name        | Description                                                                     | Input Type | Required? | Default Value |
-| ----------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Document Path** | The full path or file name of the Word document to attach to.                   | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                                   | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Document Path** | The full path or file name of the Word document to attach to. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -38,22 +38,23 @@ The document is now connected, and the Word instance is available as **WordInsta
 </Steps>
 
 <Callout type="info" title="Note">
-  If the specified document path is incorrect, the node will be unable to open or attach to the document. Double-check your path for accuracy.
+  If the specified document path is incorrect, the node will be unable to open
+  or attach to the document. Double-check your path for accuracy.
 </Callout>
 
 ## Input/Output Examples
 
-| Document Path              | Word Instance      | Output Type         |
-| -------------------------- | ------------------ | ------------------- |
-| C:\Documents\Report.docx   | WordInstance       | Word Document Object|
+| Document Path            | Word Instance | Output Type          |
+| ------------------------ | ------------- | -------------------- |
+| C:\Documents\Report.docx | WordInstance  | Word Document Object |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                 |
-| --------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Incorrect Document Path**                   | Verify the file path and ensure it is complete and points to an existing file.            |
-| **Document Not Opening**                      | Check if your machine has Microsoft Word installed and if the document format is supported.|
-| **Multiple Instances of the Document Detected** | Close extra copies of the document to ensure only one instance is being modified.          |
+| Problem                                         | Solution                                                                                    |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **Incorrect Document Path**                     | Verify the file path and ensure it is complete and points to an existing file.              |
+| **Document Not Opening**                        | Check if your machine has Microsoft Word installed and if the document format is supported. |
+| **Multiple Instances of the Document Detected** | Close extra copies of the document to ensure only one instance is being modified.           |
 
 ## Real-World Use Cases
 

@@ -1,9 +1,11 @@
+import { Edge } from "@xyflow/react";
+import { useCallback } from "react";
+
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
-import { Edge } from "@xyflow/react";
-import { useCallback } from "react";
+
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
 
 export const useAddFirstNodeToBranch = () => {
@@ -15,32 +17,20 @@ export const useAddFirstNodeToBranch = () => {
       // JIT State Fetching: Get latest state instantly without subscribing
       const { nodes, edges } = useReactFlowExtStore.getState();
 
-      const branchStartNodeEdge = edges.find(
-        (edge) => edge.target === plusNodeId,
-      ) as Edge;
+      const branchStartNodeEdge = edges.find((edge) => edge.target === plusNodeId) as Edge;
 
       // Get branch start node (source node)
-      const branchStartNode = nodes.find(
-        (node) => node.id === branchStartNodeEdge.source,
-      );
+      const branchStartNode = nodes.find((node) => node.id === branchStartNodeEdge.source);
       if (!branchStartNode) return;
 
       // Get branch end node edge
-      const branchEndNodeEdge = edges.find(
-        (edge) => edge.source === plusNodeId,
-      ) as Edge;
+      const branchEndNodeEdge = edges.find((edge) => edge.source === plusNodeId) as Edge;
 
       // Create new node & edge
-      const { newNodes, newEdges, lastNode } = createNodesAndEdgesUtil(
-        branchStartNode,
-        nodeData,
-      );
+      const { newNodes, newEdges, lastNode } = createNodesAndEdgesUtil(branchStartNode, nodeData);
 
       // Create edge from last node to branch end node
-      const lastNodeToBranchEndEdge = createPlusEdgeObj(
-        lastNode.id,
-        branchEndNodeEdge.target,
-      );
+      const lastNodeToBranchEndEdge = createPlusEdgeObj(lastNode.id, branchEndNodeEdge.target);
 
       // Get plus node index
       const plusNodeIndex = nodes.findIndex((node) => node.id === plusNodeId);

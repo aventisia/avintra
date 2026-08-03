@@ -8,8 +8,8 @@ Common scenarios include extracting data from financial statements, performance 
 
 ## Configuration Options
 
-| Field Name      | Description                                   | Input Type | Required? | Default Value |
-| --------------- | --------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name        | Description                                                          | Input Type | Required? | Default Value |
+| ----------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
 | **PDF File Path** | The full file path to the PDF from which you want to extract tables. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -35,29 +35,31 @@ The node will process the specified PDF and generate a list of tables under the 
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the PDF document is not password-protected or encrypted, as this may prevent the node from accessing the data within.
+  Ensure the PDF document is not password-protected or encrypted, as this may
+  prevent the node from accessing the data within.
 </Callout>
 
 <Callout type="warning" title="Warning">
-  If the file path is incorrect, or the file format does not match the expected PDF standard, the extraction process will fail.
+  If the file path is incorrect, or the file format does not match the expected
+  PDF standard, the extraction process will fail.
 </Callout>
 
 ## Input/Output Examples
 
-| PDF File Path           | Output Value     |
-| ----------------------- | ---------------- |
-| `/documents/report.pdf` | ExtractedTables  |
+| PDF File Path           | Output Value    |
+| ----------------------- | --------------- |
+| `/documents/report.pdf` | ExtractedTables |
 
 - **Input Example**: `/user/documents/q1_financials.pdf`
 - **Output Example**: A list of tables extracted, each represented as data objects.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                      |
-| ----------------------------------------- | --------------------------------------------- |
-| **PDF File Path is not found**            | Double-check the file path for correctness.   |
-| **Tables not extracting properly**        | Ensure the PDF is formatted with proper tables. |
-| **Encrypted PDF file**                    | Disable encryption or use an unprotected file. |
+| Problem                            | Solution                                        |
+| ---------------------------------- | ----------------------------------------------- |
+| **PDF File Path is not found**     | Double-check the file path for correctness.     |
+| **Tables not extracting properly** | Ensure the PDF is formatted with proper tables. |
+| **Encrypted PDF file**             | Disable encryption or use an unprotected file.  |
 
 ## Real-World Use Cases
 

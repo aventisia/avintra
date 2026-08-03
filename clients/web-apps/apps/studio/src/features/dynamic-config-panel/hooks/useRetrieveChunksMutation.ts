@@ -1,18 +1,14 @@
+import { toast } from "@avplatform/ui/sonner";
+import { useMutation } from "@tanstack/react-query";
+
 import {
   VectorStoreQueryRequestDto,
   VectorStoreQueryResponseDto,
   queryVectorStore,
 } from "@/features/dynamic-config-panel/apis/vector-store-apis";
 
-import { toast } from "@avplatform/ui/sonner";
-import { useMutation } from "@tanstack/react-query";
-
 export function useRetrieveChunksMutation() {
-  return useMutation<
-    VectorStoreQueryResponseDto,
-    Error,
-    VectorStoreQueryRequestDto
-  >({
+  return useMutation<VectorStoreQueryResponseDto, Error, VectorStoreQueryRequestDto>({
     mutationFn: async (payload: VectorStoreQueryRequestDto) => {
       return await queryVectorStore(payload);
     },

@@ -2,22 +2,23 @@ import { Callout, Steps } from "nextra/components";
 
 # Update Work Item
 
-The **Update Work Item** node enables you to modify the fields or status of an existing work item. This is especially useful when you need to change the state of a task within a workflow or update its associated data with new information. 
+The **Update Work Item** node enables you to modify the fields or status of an existing work item. This is especially useful when you need to change the state of a task within a workflow or update its associated data with new information.
 
 This feature can be used for:
+
 - Changing the status of a work item, like marking it as "Completed".
 - Adding notes or remarks to record contextual information.
 - Updating data associated with a work item, like modifying its payload in JSON format.
 
 ## Configuration Options
 
-| Field Name                 | Description                                                                                       | Input Type   | Required? | Default Value |
-| -------------------------- | ------------------------------------------------------------------------------------------------- | ------------ | --------- | ------------- |
-| **WorkItem ID**            | Enter the unique identifier of the work item you want to update.                                  | Text         | Yes       | _(empty)_     |
-| **Status**                 | Select the new status to assign to the work item.                                                 | Select       | No        | Pending       |
-| **Remark**                 | Enter the remark for the work item.                                                               | Text         | No        | _(empty)_     |
-| **Update WorkItem Data**   | Enable this option if you also want to update the data payload of the work item.                  | Switch       | No        | False         |
-| **Work Item Data**         | Provide the updated work item data in JSON format (only if 'Update WorkItem Data' is enabled).    | JSON Editor  | Yes       | _(empty)_     |
+| Field Name               | Description                                                                                    | Input Type  | Required? | Default Value |
+| ------------------------ | ---------------------------------------------------------------------------------------------- | ----------- | --------- | ------------- |
+| **WorkItem ID**          | Enter the unique identifier of the work item you want to update.                               | Text        | Yes       | _(empty)_     |
+| **Status**               | Select the new status to assign to the work item.                                              | Select      | No        | Pending       |
+| **Remark**               | Enter the remark for the work item.                                                            | Text        | No        | _(empty)_     |
+| **Update WorkItem Data** | Enable this option if you also want to update the data payload of the work item.               | Switch      | No        | False         |
+| **Work Item Data**       | Provide the updated work item data in JSON format (only if 'Update WorkItem Data' is enabled). | JSON Editor | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -37,6 +38,7 @@ In the **WorkItem ID** field, enter the unique ID for the work item you want to 
 ### Step 3
 
 Choose the new status for the work item from the **Status** dropdown menu. Options include:
+
 - **Pending**: Work item is not yet started.
 - **In Progress**: Work item is being processed.
 - **Completed**: Work item has been successfully completed.
@@ -48,7 +50,7 @@ Choose the new status for the work item from the **Status** dropdown menu. Optio
 
 ### Step 5
 
-(Optional) To update the work item's data payload, toggle **Update WorkItem Data** on. 
+(Optional) To update the work item's data payload, toggle **Update WorkItem Data** on.
 
 ### Step 6
 
@@ -61,29 +63,30 @@ The updated state of the work item will be available as **UpdatedWorkItem** for 
 </Steps>
 
 <Callout type="info" title="Note">
-  If you do not enable "Update WorkItem Data", the "Work Item Data" field will not appear.
-  Ensure the JSON data provided in the "Work Item Data" field is properly formatted. 
+  If you do not enable "Update WorkItem Data", the "Work Item Data" field will
+  not appear. Ensure the JSON data provided in the "Work Item Data" field is
+  properly formatted.
 </Callout>
 
 ## Input/Output Examples
 
-| Field               | Example Input                             | Output Value               |
-| ------------------- | ----------------------------------------- | -------------------------- |
-| WorkItem ID         | `W1234`                                   | _(n/a)_                    |
-| Status              | `Completed`                               | _(n/a)_                    |
-| Remark              | `Final review completed`                  | _(n/a)_                    |
-| Update WorkItem Data| `True`                                    | _(n/a)_                    |
-| Work Item Data      | `{"priority": "high", "assignee": "John"}`| _(n/a)_                    |
-| UpdatedWorkItem     | _(n/a)_                                   | UpdatedWorkItem object     |
+| Field                | Example Input                              | Output Value           |
+| -------------------- | ------------------------------------------ | ---------------------- |
+| WorkItem ID          | `W1234`                                    | _(n/a)_                |
+| Status               | `Completed`                                | _(n/a)_                |
+| Remark               | `Final review completed`                   | _(n/a)_                |
+| Update WorkItem Data | `True`                                     | _(n/a)_                |
+| Work Item Data       | `{"priority": "high", "assignee": "John"}` | _(n/a)_                |
+| UpdatedWorkItem      | _(n/a)_                                    | UpdatedWorkItem object |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                        |
-| ---------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **Missing Work Item ID**                       | Ensure you enter a valid `WorkItem ID` as it is required to identify the work item you wish to update.          |
-| **Invalid JSON in Work Item Data**             | Double-check your JSON syntax in **Work Item Data**; malformed JSON will prevent the update from applying.      |
-| **Work Item Data not visible**                 | Make sure **Update WorkItem Data** is enabled, as this field only appears when data updates are desired.        |
-| **Status not changing**                        | Recheck if you have selected the desired status from the dropdown under **Status**.                             |
+| Problem                            | Solution                                                                                                   |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Missing Work Item ID**           | Ensure you enter a valid `WorkItem ID` as it is required to identify the work item you wish to update.     |
+| **Invalid JSON in Work Item Data** | Double-check your JSON syntax in **Work Item Data**; malformed JSON will prevent the update from applying. |
+| **Work Item Data not visible**     | Make sure **Update WorkItem Data** is enabled, as this field only appears when data updates are desired.   |
+| **Status not changing**            | Recheck if you have selected the desired status from the dropdown under **Status**.                        |
 
 ## Real-World Use Cases
 

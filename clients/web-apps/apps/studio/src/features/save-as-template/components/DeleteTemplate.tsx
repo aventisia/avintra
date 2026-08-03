@@ -1,6 +1,7 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
+
 import { useDeleteTemplateMutation } from "../hooks/useDeleteTemplateMutation";
 
 const DeleteTemplate = ({ id }: { id: string }) => {

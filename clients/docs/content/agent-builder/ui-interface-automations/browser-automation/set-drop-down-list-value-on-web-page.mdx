@@ -8,19 +8,19 @@ Use this node when you need to automate the selection of items from drop-down li
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                                                                  | Input Type | Required? | Default Value         |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | --------------------- |
-| **Web Browser Instance**| Enter or choose the variable that contains the web browser instance to work with.                                                            | Text       | Yes       | _(empty)_             |
-| **Find Type**           | Specifies how to find the drop-down list element (e.g., ID, XPath, CSS Selector).                                                            | Select     | Yes       | XPath                 |
-| **Search Keywords**     | The value used to locate the drop-down list (e.g., 'country', '//select[@id='country']').                                                    | Text       | Yes       | _(empty)_             |
-| **Operation**           | Specifies whether to select by name, index, or clear the selection.                                                                          | Select     | Yes       | Select Options by Name|
-| **Option Names**        | Comma-separated option names to select. Only the first is used if not multi-select.                                                          | Text       | No        | _(empty)_             |
-| **Use Regular Expressions** | If true, matches option names using regular expressions.                                                                                 | Switch     | No        | False                 |
-| **Option Indices**      | Comma-separated indices of options to select.                                                                                                | Text       | No        | _(empty)_             |
-| **Wait for Page Load**  | If true, waits for the page to load after setting the dropdown value.                                                                        | Switch     | No        | True                  |
-| **Timeout for Page Load** | Maximum time in seconds to wait for the page to load.                                                                                      | Text       | No        | 60                    |
-| **Handle Dialog**       | Specifies what to do if a dialog appears after setting the dropdown value.                                                                   | Select     | No        | DoNothing             |
-| **Dialog Button to Press** | The button to press if a dialog appears (e.g., 'Ok', 'Cancel').                                                                           | Text       | No        | Ok                    |
+| Field Name                  | Description                                                                               | Input Type | Required? | Default Value          |
+| --------------------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ---------------------- |
+| **Web Browser Instance**    | Enter or choose the variable that contains the web browser instance to work with.         | Text       | Yes       | _(empty)_              |
+| **Find Type**               | Specifies how to find the drop-down list element (e.g., ID, XPath, CSS Selector).         | Select     | Yes       | XPath                  |
+| **Search Keywords**         | The value used to locate the drop-down list (e.g., 'country', '//select[@id='country']'). | Text       | Yes       | _(empty)_              |
+| **Operation**               | Specifies whether to select by name, index, or clear the selection.                       | Select     | Yes       | Select Options by Name |
+| **Option Names**            | Comma-separated option names to select. Only the first is used if not multi-select.       | Text       | No        | _(empty)_              |
+| **Use Regular Expressions** | If true, matches option names using regular expressions.                                  | Switch     | No        | False                  |
+| **Option Indices**          | Comma-separated indices of options to select.                                             | Text       | No        | _(empty)_              |
+| **Wait for Page Load**      | If true, waits for the page to load after setting the dropdown value.                     | Switch     | No        | True                   |
+| **Timeout for Page Load**   | Maximum time in seconds to wait for the page to load.                                     | Text       | No        | 60                     |
+| **Handle Dialog**           | Specifies what to do if a dialog appears after setting the dropdown value.                | Select     | No        | DoNothing              |
+| **Dialog Button to Press**  | The button to press if a dialog appears (e.g., 'Ok', 'Cancel').                           | Text       | No        | Ok                     |
 
 ## Expected Output Format
 
@@ -68,24 +68,25 @@ Configure how to handle dialogues that may appear using the **Handle Dialog** an
 </Steps>
 
 <Callout type="info" title="Tip">
-  Utilize "Use Regular Expressions" only if you're comfortable with regex patterns for option names.
+  Utilize "Use Regular Expressions" only if you're comfortable with regex
+  patterns for option names.
 </Callout>
 
 ## Input/Output Examples
 
-| Find Type | Search Keywords              | Operation               | Option Names/Indices | Dialog Action  | Outcome                                                            |
-| --------- | ---------------------------- | ----------------------- | -------------------- | -------------- | ------------------------------------------------------------------ |
-| XPath     | //select[@id='country']      | Select Options by Name  | United States        | DoNothing      | "United States" option selected from the country dropdown list.     |
-| ID        | country-dropdown             | Clear All Options       | _(n/a)_              | Close It       | All options cleared and any pop-up closed.                          |
-| CssSelector | .dropdown-class         | Select Options by Index | 2                    | Accept Alert   | The second option selected, and any alerts accepted automatically.  |
+| Find Type   | Search Keywords         | Operation               | Option Names/Indices | Dialog Action | Outcome                                                            |
+| ----------- | ----------------------- | ----------------------- | -------------------- | ------------- | ------------------------------------------------------------------ |
+| XPath       | //select[@id='country'] | Select Options by Name  | United States        | DoNothing     | "United States" option selected from the country dropdown list.    |
+| ID          | country-dropdown        | Clear All Options       | _(n/a)_              | Close It      | All options cleared and any pop-up closed.                         |
+| CssSelector | .dropdown-class         | Select Options by Index | 2                    | Accept Alert  | The second option selected, and any alerts accepted automatically. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                                                               |
-| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| **Incorrect Find Type chosen**              | Double-check the drop-down list locator type to ensure correct selection (e.g., XPath, ID).                         |
-| **Regular expressions causing errors**      | Make sure to use valid regular expressions or disable the "Use Regular Expressions" option if unsure.               |
-| **Page load timeouts**                      | Extend the "Timeout for Page Load" setting if pages are loading slowly, or reduce it if it causes unnecessary delays. |
+| Problem                                | Solution                                                                                                              |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Find Type chosen**         | Double-check the drop-down list locator type to ensure correct selection (e.g., XPath, ID).                           |
+| **Regular expressions causing errors** | Make sure to use valid regular expressions or disable the "Use Regular Expressions" option if unsure.                 |
+| **Page load timeouts**                 | Extend the "Timeout for Page Load" setting if pages are loading slowly, or reduce it if it causes unnecessary delays. |
 
 ## Real-World Use Cases
 

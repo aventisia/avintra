@@ -29,7 +29,7 @@ export const activitiesList: NodeDataType[] = [
     type: "activityNode",
     category: "Folder",
     name: "createFolder",
-    label: "Create folder", 
+    label: "Create folder",
     description: "Create a new folder",
     img: `${import.meta.env.BASE_URL}function.png`,
   },
@@ -76,7 +76,7 @@ export const activitiesList: NodeDataType[] = [
   {
     type: "activityNode",
     category: "Folder",
-    name:"getspecialFolder",
+    name: "getspecialFolder",
     label: "Get special folder",
     description: "Retreve the path of a special folder such as My Documents, Desktop, etc.",
     img: `${import.meta.env.BASE_URL}function.png`,

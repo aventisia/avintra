@@ -11,11 +11,11 @@ This is particularly useful for tasks like:
 
 ## Configuration Options
 
-| Field Name     | Description                                                                                   | Input Type | Required? | Default Value  |
-| -------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **JSON Content** | The JSON data you want to search through. It can be a JSON string or a JToken.                | Text       | Yes       | _(empty)_      |
-| **Key to Find**   | The specific JSON key you wish to retrieve. The search is case-sensitive and recursive.       | Text       | Yes       | _(empty)_      |
-| **Result Node**   | This provides the first matching result from the search. Returns null if no match is found or an error occurs. | Config-panel-output | No | ResultNode |
+| Field Name       | Description                                                                                                    | Input Type          | Required? | Default Value |
+| ---------------- | -------------------------------------------------------------------------------------------------------------- | ------------------- | --------- | ------------- |
+| **JSON Content** | The JSON data you want to search through. It can be a JSON string or a JToken.                                 | Text                | Yes       | _(empty)_     |
+| **Key to Find**  | The specific JSON key you wish to retrieve. The search is case-sensitive and recursive.                        | Text                | Yes       | _(empty)_     |
+| **Result Node**  | This provides the first matching result from the search. Returns null if no match is found or an error occurs. | Config-panel-output | No        | ResultNode    |
 
 ## Expected Output Format
 
@@ -46,25 +46,26 @@ Run your flow to execute the search. The first found value associated with the p
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure your JSON string is correctly formatted to avoid unexpected errors or result as `null`.
+  Ensure your JSON string is correctly formatted to avoid unexpected errors or
+  result as `null`.
 </Callout>
 
 ## Input/Output Examples
 
-| JSON Content                  | Key to Find | Expected Output      | Output Type  |
-| ----------------------------- | ----------- | -------------------- | ------------ |
-| `{"id": 1, "name": "John"}`   | name        | "John"               | String       |
-| `{"order": {"id": 731}}`      | id          | 731                  | Number       |
-| `[{"x": 1}, {"y": 2}]`        | x           | 1                    | Number       |
-| `{"user": {"profile": "A"}}`  | profile     | "A"                  | String       |
+| JSON Content                 | Key to Find | Expected Output | Output Type |
+| ---------------------------- | ----------- | --------------- | ----------- |
+| `{"id": 1, "name": "John"}`  | name        | "John"          | String      |
+| `{"order": {"id": 731}}`     | id          | 731             | Number      |
+| `[{"x": 1}, {"y": 2}]`       | x           | 1               | Number      |
+| `{"user": {"profile": "A"}}` | profile     | "A"             | String      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                              |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Invalid JSON Content**                       | Ensure that your JSON is properly formatted. Use a JSON validator if necessary.                       |
-| **Key Not Found**                              | Double-check the key input; it's case-sensitive. Verify capitalization and spelling.                  |
-| **Unexpected Result**                          | Make sure there are no duplicate keys, and only the first occurrence is returned.                     |
+| Problem                  | Solution                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------ |
+| **Invalid JSON Content** | Ensure that your JSON is properly formatted. Use a JSON validator if necessary.      |
+| **Key Not Found**        | Double-check the key input; it's case-sensitive. Verify capitalization and spelling. |
+| **Unexpected Result**    | Make sure there are no duplicate keys, and only the first occurrence is returned.    |
 
 ## Real-World Use Cases
 

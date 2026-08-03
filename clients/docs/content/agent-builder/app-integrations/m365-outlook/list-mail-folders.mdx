@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name        | Description                                                | Input Type | Required? | Default Value |
-| ----------------- | ---------------------------------------------------------- | ---------- | --------- | ------------- |
-| **User Email**    | The email address of the mailbox owner.                    | Text       | Yes       | _(empty)_     |
-| **Tenant ID**     | Azure Active Directory tenant (directory) ID.              | Text       | Yes       | _(empty)_     |
-| **Client ID**     | Azure AD application (client) ID.                          | Text       | Yes       | _(empty)_     |
-| **Client Secret** | Azure AD application client secret.                        | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                   | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------- | ---------- | --------- | ------------- |
+| **User Email**    | The email address of the mailbox owner.       | Text       | Yes       | _(empty)_     |
+| **Tenant ID**     | Azure Active Directory tenant (directory) ID. | Text       | Yes       | _(empty)_     |
+| **Client ID**     | Azure AD application (client) ID.             | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD application client secret.           | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -51,25 +51,27 @@ Enter the **Client Secret** of your Azure AD application. Ensure that you keep t
 ### Step 6
 
 Once configured, the node will output the list of mail folders as **MailFolders** in JSON format.
+
 </Steps>
 
 <Callout type="warning" title="Security Note">
-  Ensure your **Client Secret** is secure and not shared with unauthorized individuals to avoid security risks.
+  Ensure your **Client Secret** is secure and not shared with unauthorized
+  individuals to avoid security risks.
 </Callout>
 
 ## Input/Output Examples
 
-| User Email          | Tenant ID     | Client ID     | Client Secret | Output                      | Output Data Type |
-| ------------------- | ------------- | ------------- | ------------- | --------------------------- | ---------------- |
-| user@example.com    | 12345-tenant  | abcde-client  | ***secret***  | `[{"id":"inbox"}, {...}]`   | JSON Array       |
+| User Email       | Tenant ID    | Client ID    | Client Secret | Output                    | Output Data Type |
+| ---------------- | ------------ | ------------ | ------------- | ------------------------- | ---------------- |
+| user@example.com | 12345-tenant | abcde-client | **_secret_**  | `[{"id":"inbox"}, {...}]` | JSON Array       |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                                                |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| **Authentication Failure**                                   | Verify your **Tenant ID**, **Client ID**, and **Client Secret** to ensure they are correct and up-to-date.|
-| **Invalid Email Address**                                    | Ensure the **User Email** is correct and belongs to the right mailbox.                                  |
-| **Missing Output**                                           | Double-check all required fields are filled and there are no typographical errors.                     |
+| Problem                    | Solution                                                                                                   |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Authentication Failure** | Verify your **Tenant ID**, **Client ID**, and **Client Secret** to ensure they are correct and up-to-date. |
+| **Invalid Email Address**  | Ensure the **User Email** is correct and belongs to the right mailbox.                                     |
+| **Missing Output**         | Double-check all required fields are filled and there are no typographical errors.                         |
 
 ## Real-World Use Cases
 

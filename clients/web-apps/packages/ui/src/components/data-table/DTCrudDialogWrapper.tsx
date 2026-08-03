@@ -1,9 +1,9 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useEffect, useRef } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useShowAlertHandler } from "@/ui/hooks";
 import { useAlertDialogStore, useDTCrudDialogStore } from "@/ui/stores";
-import { useShallow } from "zustand/react/shallow";
 
 /**
  * Wraps Radix Dialog.Root and connects it to the DTCrudDialogStore.

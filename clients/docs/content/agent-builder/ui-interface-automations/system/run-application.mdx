@@ -12,14 +12,14 @@ For example, you might use it to:
 
 ## Configuration Options
 
-| Field Name                  | Description                                                                                                                                              | Input Type | Required? | Default Value |
-| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Application path**        | The path to the application or document to execute.                                                                                                      | Text       | Yes       | _(empty)_     |
-| **Command line arguments**  | Optional parameters to control how the application starts (e.g., a file to open or a silent mode flag).                                                  | Text       | No        | _(empty)_     |
-| **Working Directory**       | The folder the application uses as its "current location" when running. If empty, it defaults to the application's folder.                               | Text       | No        | _(empty)_     |
-| **Window style**            | Specifies how the application window should be displayed.                                                                                                | Select     | No        | _(empty)_     |
-| **After application launch**| Specifies the behavior after launching the application.                                                                                                  | Select     | No        | _(empty)_     |
-| **Timeout**                 | The maximum time (in seconds) to wait for the application to complete. (Appears only if "Continue Immediately" is selected in After application launch.)   | Text       | No        | 0             |
+| Field Name                   | Description                                                                                                                                              | Input Type | Required? | Default Value |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Application path**         | The path to the application or document to execute.                                                                                                      | Text       | Yes       | _(empty)_     |
+| **Command line arguments**   | Optional parameters to control how the application starts (e.g., a file to open or a silent mode flag).                                                  | Text       | No        | _(empty)_     |
+| **Working Directory**        | The folder the application uses as its "current location" when running. If empty, it defaults to the application's folder.                               | Text       | No        | _(empty)_     |
+| **Window style**             | Specifies how the application window should be displayed.                                                                                                | Select     | No        | _(empty)_     |
+| **After application launch** | Specifies the behavior after launching the application.                                                                                                  | Select     | No        | _(empty)_     |
+| **Timeout**                  | The maximum time (in seconds) to wait for the application to complete. (Appears only if "Continue Immediately" is selected in After application launch.) | Text       | No        | 0             |
 
 ## Expected Output Format
 
@@ -66,25 +66,26 @@ The node will return an **AppProcessId** value to help track the running applica
 </Steps>
 
 <Callout type="info" title="Tip">
-  To improve efficiency, use the **Command line arguments** to automate repetitive tasks within the applications being launched.
+  To improve efficiency, use the **Command line arguments** to automate
+  repetitive tasks within the applications being launched.
 </Callout>
 
 ## Input/Output Examples
 
-| Action                                | Input Values                                                                                        | Output                                               |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Launch Notepad                        | Application path: `C:\Windows\System32\notepad.exe`                                                 | AppProcessId: (unique process ID)                    |
-| Open Excel file in silent mode        | Application path: `C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE`, <br/>Command line: `"/s /q"`   | AppProcessId: (unique process ID)                    |
-| Run script with config file           | Application path: `C:\MyScripts\run.bat`, <br/>Command line: `--config=config.json`, <br/>Working Directory: `C:\Config` | AppProcessId and AppExitCode (if applicable)         |
+| Action                         | Input Values                                                                                                             | Output                                       |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| Launch Notepad                 | Application path: `C:\Windows\System32\notepad.exe`                                                                      | AppProcessId: (unique process ID)            |
+| Open Excel file in silent mode | Application path: `C:\Program Files\Microsoft Office\root\Office16\EXCEL.EXE`, <br/>Command line: `"/s /q"`              | AppProcessId: (unique process ID)            |
+| Run script with config file    | Application path: `C:\MyScripts\run.bat`, <br/>Command line: `--config=config.json`, <br/>Working Directory: `C:\Config` | AppProcessId and AppExitCode (if applicable) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                                           |
-| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Application fails to launch**                | Ensure that the **Application path** is correctly specified and the application is installed.                                                                     |
-| **Timeout not working as expected**            | Make sure to specify a valid timeout value and select "Continue Immediately" in the **After application launch** field.                                            |
-| **Cannot find Working Directory**              | Verify the path entered in the **Working Directory** matches the expected location on the filesystem.                                                              |
-| **Unexpected window style**                    | Reconfirm your selection in the **Window style** option to ensure the desired display setting is chosen.                                                           |
+| Problem                             | Solution                                                                                                                |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Application fails to launch**     | Ensure that the **Application path** is correctly specified and the application is installed.                           |
+| **Timeout not working as expected** | Make sure to specify a valid timeout value and select "Continue Immediately" in the **After application launch** field. |
+| **Cannot find Working Directory**   | Verify the path entered in the **Working Directory** matches the expected location on the filesystem.                   |
+| **Unexpected window style**         | Reconfirm your selection in the **Window style** option to ensure the desired display setting is chosen.                |
 
 ## Real-World Use Cases
 

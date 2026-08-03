@@ -12,10 +12,10 @@ For example, you can use this node to:
 
 ## Configuration Options
 
-| Field Name           | Description                                         | Input Type | Required? | Default Value |
-| -------------------- | --------------------------------------------------- | ---------- | --------- | ------------- |
-| **Python Script Code** | The Python script code to execute.                  | Text       | Yes       | _(empty)_     |
-| **Script Output**    | Returns the output of the script.                    | Text       | No        | ScriptOutput  |
+| Field Name             | Description                        | Input Type | Required? | Default Value |
+| ---------------------- | ---------------------------------- | ---------- | --------- | ------------- |
+| **Python Script Code** | The Python script code to execute. | Text       | Yes       | _(empty)_     |
+| **Script Output**      | Returns the output of the script.  | Text       | No        | ScriptOutput  |
 
 ## Expected Output Format
 
@@ -53,20 +53,20 @@ Test the configuration to ensure the script runs correctly and yields the desire
 
 ## Input/Output Examples
 
-| Example Script                           | Output       | Output Type  |
-| ---------------------------------------- | ------------ | ------------ |
-| `print("Hello World")`                   | Hello World  | Text         |
-| `for i in range(5): print(i)`            | 0\n1\n2\n3\n4 | List (Text)  |
-| `print(3 + 7)`                           | 10           | Number       |
+| Example Script                | Output        | Output Type |
+| ----------------------------- | ------------- | ----------- |
+| `print("Hello World")`        | Hello World   | Text        |
+| `for i in range(5): print(i)` | 0\n1\n2\n3\n4 | List (Text) |
+| `print(3 + 7)`                | 10            | Number      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                                                                                          |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Python syntax**                                    | Double-check your script for syntax errors. Useful tools like PyCharm or online syntax checkers can be helpful.                                    |
-| **Script does not execute**                                  | Ensure that the script is correctly entered in the **Python Script Code** field and there's no missing import of necessary libraries.              |
-| **Output not as expected**                                   | Test the script independently to see the raw output and make adjustments as necessary for the correct automation output.                           |
-| **Security warnings when using external script content**     | Ensure scripts from external sources are verified and safe to execute. Vulnerabilities can compromise your system and data integrity.              |
+| Problem                                                  | Solution                                                                                                                              |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Python syntax**                                | Double-check your script for syntax errors. Useful tools like PyCharm or online syntax checkers can be helpful.                       |
+| **Script does not execute**                              | Ensure that the script is correctly entered in the **Python Script Code** field and there's no missing import of necessary libraries. |
+| **Output not as expected**                               | Test the script independently to see the raw output and make adjustments as necessary for the correct automation output.              |
+| **Security warnings when using external script content** | Ensure scripts from external sources are verified and safe to execute. Vulnerabilities can compromise your system and data integrity. |
 
 ## Real-World Use Cases
 

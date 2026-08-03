@@ -12,12 +12,12 @@ You might use this node if you:
 
 ## Configuration Options
 
-| Field Name                    | Description                                                                                                | Input Type | Required? | Default Value |
-| ----------------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Credential to connect with** | Select the AWS credential to use for authentication.                                                       | Text       | Yes       | _(empty)_     |
-| **Listener ARN**              | The ARN (Amazon Resource Name) of the listener you want to add the certificate to.                         | Text       | Yes       | _(empty)_     |
-| **Certificate ARN**           | The ARN of the ACM (AWS Certificate Manager) certificate to attach to the listener.                        | Text       | Yes       | _(empty)_     |
-| **AWS Region**                | The AWS region where the load balancer is located. Enter the full region code (e.g., us-east-1).            | Text       | No        | us-east-1     |
+| Field Name                     | Description                                                                                      | Input Type | Required? | Default Value |
+| ------------------------------ | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication.                                             | Text       | Yes       | _(empty)_     |
+| **Listener ARN**               | The ARN (Amazon Resource Name) of the listener you want to add the certificate to.               | Text       | Yes       | _(empty)_     |
+| **Certificate ARN**            | The ARN of the ACM (AWS Certificate Manager) certificate to attach to the listener.              | Text       | Yes       | _(empty)_     |
+| **AWS Region**                 | The AWS region where the load balancer is located. Enter the full region code (e.g., us-east-1). | Text       | No        | us-east-1     |
 
 ## Expected Output Format
 
@@ -56,26 +56,29 @@ Once the above fields are populated, review your settings and add the node to in
 </Steps>
 
 <Callout type="warning" title="Important Note">
-  Ensure the credentials used have the necessary permissions on AWS to add certificates to load balancer listeners. Unauthorized requests will fail.
+  Ensure the credentials used have the necessary permissions on AWS to add
+  certificates to load balancer listeners. Unauthorized requests will fail.
 </Callout>
 
 <Callout type="info" title="Tip">
-  It's helpful to verify the ARNs (both Listener and Certificate) and AWS region if you encounter errors. A mismatch in these values is a common source of issues.
+  It's helpful to verify the ARNs (both Listener and Certificate) and AWS region
+  if you encounter errors. A mismatch in these values is a common source of
+  issues.
 </Callout>
 
 ## Input/Output Examples
 
-| Listener ARN                         | Certificate ARN                      | AWS Region | API Response Example                          | Success  |
-| ------------------------------------ | ------------------------------------ | ---------- | --------------------------------------------- | -------- |
-| arn:aws:elasticloadbalancing:xyz...  | arn:aws:acm:region:xyz...            | us-east-1  | `{ "HTTPStatusCode": 200, "Message": "OK" }`    | Success  |
-| arn:aws:elasticloadbalancing:xyz...  | arn:aws:acm:region:xyz...            | us-west-2  | `{ "HTTPStatusCode": 400, "Message": "Error" }` | Failure  |
+| Listener ARN                        | Certificate ARN           | AWS Region | API Response Example                            | Success |
+| ----------------------------------- | ------------------------- | ---------- | ----------------------------------------------- | ------- |
+| arn:aws:elasticloadbalancing:xyz... | arn:aws:acm:region:xyz... | us-east-1  | `{ "HTTPStatusCode": 200, "Message": "OK" }`    | Success |
+| arn:aws:elasticloadbalancing:xyz... | arn:aws:acm:region:xyz... | us-west-2  | `{ "HTTPStatusCode": 400, "Message": "Error" }` | Failure |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                               |
-| ------------------------------------------------| ------------------------------------------------------------------------------------------------------ |
-| **Invalid ARN format**                          | Double-check the ARN structure for both listener and certificate. It should follow AWS ARN guidelines.  |
-| **Credentials not working**                     | Ensure that the AWS credentials used have permissions for the ELB service. Recheck your credential ID. |
+| Problem                     | Solution                                                                                               |
+| --------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Invalid ARN format**      | Double-check the ARN structure for both listener and certificate. It should follow AWS ARN guidelines. |
+| **Credentials not working** | Ensure that the AWS credentials used have permissions for the ELB service. Recheck your credential ID. |
 
 ## Real-World Use Cases
 

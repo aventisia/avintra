@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name                          | Description                                                                                          | Input Type | Required? | Default Value  |
-| ----------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Position X**                      | Specifies the X coordinate on the screen where the mouse should be moved.                            | Text       | No        | _(empty)_      |
-| **Position Y**                      | Specifies the Y coordinate on the screen where the mouse should be moved.                            | Text       | No        | _(empty)_      |
-| **Relative To**                     | Determines the reference point for the mouse movement: relative to the screen or a specific window.  | Select     | No        | _(empty)_      |
-| **Move Mouse From Previous Position** | Specifies if the mouse should move from its current location with an animated effect, and sets speed. | Select     | No        | _(empty)_      |
+| Field Name                            | Description                                                                                           | Input Type | Required? | Default Value |
+| ------------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Position X**                        | Specifies the X coordinate on the screen where the mouse should be moved.                             | Text       | No        | _(empty)_     |
+| **Position Y**                        | Specifies the Y coordinate on the screen where the mouse should be moved.                             | Text       | No        | _(empty)_     |
+| **Relative To**                       | Determines the reference point for the mouse movement: relative to the screen or a specific window.   | Select     | No        | _(empty)_     |
+| **Move Mouse From Previous Position** | Specifies if the mouse should move from its current location with an animated effect, and sets speed. | Select     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -61,23 +61,24 @@ The final position of the cursor will be provided as **CurrentCursorPosition** f
 </Steps>
 
 <Callout type="info" title="Tip">
-  If accurate positioning is crucial, ensure your screen or the window is stable and unchanged during mouse movement.
+  If accurate positioning is crucial, ensure your screen or the window is stable
+  and unchanged during mouse movement.
 </Callout>
 
 ## Input/Output Examples
 
-| X Coordinate | Y Coordinate | Relative To         | Animation Effect         | Output Value           | Output Type       |
-| ------------ | ------------ | ------------------- | ------------------------ | ---------------------- | ----------------- |
-| 500          | 300          | Screen              | Instant                  | 500,300                | CurrentCursorPosition |
-| 100          | 200          | Foreground Window   | Low Speed                | 100,200                | CurrentCursorPosition |
+| X Coordinate | Y Coordinate | Relative To       | Animation Effect | Output Value | Output Type           |
+| ------------ | ------------ | ----------------- | ---------------- | ------------ | --------------------- |
+| 500          | 300          | Screen            | Instant          | 500,300      | CurrentCursorPosition |
+| 100          | 200          | Foreground Window | Low Speed        | 100,200      | CurrentCursorPosition |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                                   | Solution                                                                                                                  |
-| ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **Mouse doesn't move as expected**                                        | Ensure the correct coordinates and reference point (Screen or Foreground Window) are selected.                            |
-| **Movement is too slow or fast**                                          | Adjust the **Move Mouse From Previous Position** setting to your desired speed.                                           |
-| **Cursor moves off-screen**                                               | Double-check the coordinates to ensure they fall within your screen or active window boundaries.                          |
+| Problem                            | Solution                                                                                         |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Mouse doesn't move as expected** | Ensure the correct coordinates and reference point (Screen or Foreground Window) are selected.   |
+| **Movement is too slow or fast**   | Adjust the **Move Mouse From Previous Position** setting to your desired speed.                  |
+| **Cursor moves off-screen**        | Double-check the coordinates to ensure they fall within your screen or active window boundaries. |
 
 ## Real-World Use Cases
 

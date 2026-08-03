@@ -86,11 +86,7 @@ const AddInputsOutputsForm = () => {
 
   return (
     <>
-      <Form
-        methods={form}
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="px-2.5 pb-5"
-      >
+      <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="px-2.5 pb-5">
         <div>
           <div className="mb-2 flex items-center justify-between">
             <h2>Inputs</h2>
@@ -105,12 +101,7 @@ const AddInputsOutputsForm = () => {
             </Button>
           </div>
           {inputFields.map((field, index) => (
-            <InputFields
-              field={field}
-              control={control}
-              index={index}
-              remove={removeInput}
-            />
+            <InputFields field={field} control={control} index={index} remove={removeInput} />
           ))}
         </div>
         <div>
@@ -127,12 +118,7 @@ const AddInputsOutputsForm = () => {
             </Button>
           </div>
           {outputFields.map((field, index) => (
-            <OutputFields
-              field={field}
-              control={control}
-              index={index}
-              remove={removeOutput}
-            />
+            <OutputFields field={field} control={control} index={index} remove={removeOutput} />
           ))}
         </div>
         {/* Submit button */}

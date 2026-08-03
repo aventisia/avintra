@@ -5,18 +5,19 @@ import { Callout, Steps } from "nextra/components";
 The **Insert Row Into Data Table** node is designed to add a new row to an existing data table at a specified location. This can be useful for updating datasets, adding new entries, or rearranging data dynamically without manually editing the table, thereby enhancing workflow efficiency.
 
 For example:
+
 - Adding new records to a customer database.
 - Inserting missing data entries within specific indexes.
 - Appending new data automatically at the end of a list.
 
 ## Configuration Options
 
-| Field Name        | Description                                                                                                                                 | Input Type | Required? | Default Value     |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ----------------- |
-| **Data Table**    | The data table where the new row will be added. Ensure the table structure matches the new row's values.                                     | Text       | Yes       | _(empty)_         |
-| **Row Values**    | An array of values to add as a new row. Ensure these values match the table's column count and types. Example: `[1, 'John', 30]`            | Text       | Yes       | _(empty)_         |
-| **Insert Location** | Choose whether to append the row at the end or insert it before a specific row index.                                                     | Select     | No        | End of Data Table |
-| **Row Index**     | The zero-based index before which to insert the new row (only applicable if "Insert Location" is set to "Before Row Index").                  | Text       | No        | _(empty)_         |
+| Field Name          | Description                                                                                                                      | Input Type | Required? | Default Value     |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ----------------- |
+| **Data Table**      | The data table where the new row will be added. Ensure the table structure matches the new row's values.                         | Text       | Yes       | _(empty)_         |
+| **Row Values**      | An array of values to add as a new row. Ensure these values match the table's column count and types. Example: `[1, 'John', 30]` | Text       | Yes       | _(empty)_         |
+| **Insert Location** | Choose whether to append the row at the end or insert it before a specific row index.                                            | Select     | No        | End of Data Table |
+| **Row Index**       | The zero-based index before which to insert the new row (only applicable if "Insert Location" is set to "Before Row Index").     | Text       | No        | _(empty)_         |
 
 ## Expected Output Format
 
@@ -55,24 +56,25 @@ The updated data table, now with the new row, will be available as **ModifiedDat
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use "End of Data Table" for continuous data additions like logging or growing datasets to always append new entries at the end.
+  Use "End of Data Table" for continuous data additions like logging or growing
+  datasets to always append new entries at the end.
 </Callout>
 
 ## Input/Output Examples
 
-| Insert Location   | Input Row Values     | Row Index | Modified Data Table Output                            | Output Description                                     |
-| ----------------- | -------------------- | --------- | ----------------------------------------------------- | ------------------------------------------------------ |
-| Before Row Index  | `[2, 'Jane', 25]`    | 1         | Updated table with Jane's data inserted before index 1 | Jane's row appears as the second row in the data table. |
-| End of Data Table | `[3, 'Doe', 40]`     | _(n/a)_   | Table with new row for Doe added to the end            | Doe's data is appended at the bottom of the data table. |
+| Insert Location   | Input Row Values  | Row Index | Modified Data Table Output                             | Output Description                                      |
+| ----------------- | ----------------- | --------- | ------------------------------------------------------ | ------------------------------------------------------- |
+| Before Row Index  | `[2, 'Jane', 25]` | 1         | Updated table with Jane's data inserted before index 1 | Jane's row appears as the second row in the data table. |
+| End of Data Table | `[3, 'Doe', 40]`  | _(n/a)_   | Table with new row for Doe added to the end            | Doe's data is appended at the bottom of the data table. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                                                    |
-| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Missing Row Values**                                | Ensure you provide all required values matching the column count and types of the data table.                                                               |
-| **Row Index field not appearing**                     | This field only appears if "Insert Location" is set to "Before Row Index". Select it first to configure the index value.                                   |
-| **Incorrect Insert Location**                         | Verify if you wish to append or insert at a specific index to avoid unexpected data arrangement.                                                            |
-| **Non-numeric Row Index**                             | Ensure the Row Index is a valid number reflecting a position within the table.                                                                              |
+| Problem                           | Solution                                                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Missing Row Values**            | Ensure you provide all required values matching the column count and types of the data table.                            |
+| **Row Index field not appearing** | This field only appears if "Insert Location" is set to "Before Row Index". Select it first to configure the index value. |
+| **Incorrect Insert Location**     | Verify if you wish to append or insert at a specific index to avoid unexpected data arrangement.                         |
+| **Non-numeric Row Index**         | Ensure the Row Index is a valid number reflecting a position within the table.                                           |
 
 ## Real-World Use Cases
 

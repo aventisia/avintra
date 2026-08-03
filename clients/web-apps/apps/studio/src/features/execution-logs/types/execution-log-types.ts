@@ -27,11 +27,7 @@ export interface ExecutionState {
 }
 
 export interface ExecutionActions {
-  initLogs: (
-    logs: NodeExecutionLogType[],
-    nodes: Node[],
-    edges: Edge[],
-  ) => void;
+  initLogs: (logs: NodeExecutionLogType[], nodes: Node[], edges: Edge[]) => void;
   setIteration: (loopId: string, index: number) => void;
   toggleBranchStats: () => void;
 }

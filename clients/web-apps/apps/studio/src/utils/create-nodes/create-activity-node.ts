@@ -1,8 +1,10 @@
+import { Node } from "@xyflow/react";
+
 import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { NodeDataType } from "@/types/node-data-type";
+
 import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
 import { createNodeObj } from "./create-node-obj";
-import { Node } from "@xyflow/react";
 
 /**
  * Creates an activity node and returns an object containing the new node, new edge, and last node ID.
@@ -15,7 +17,7 @@ export const createActivityNode = (
   nodeData: NodeDataType,
   sourceNode: Node,
 ): CreateNodesAndEdgesType => {
-  const newNode = createNodeObj(nodeData,sourceNode.parentId);
+  const newNode = createNodeObj(nodeData, sourceNode.parentId);
   const newEdge = createPlusEdgeObj(sourceNode.id, newNode.id);
   return {
     newNodes: [newNode],

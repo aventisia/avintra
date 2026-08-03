@@ -6,11 +6,11 @@ The **Get First Free Column or Row from Excel Worksheet** node enables you to id
 
 ## Configuration Options
 
-| Field Name           | Description                                                          | Input Type | Required? | Default Value |
-| -------------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance** | The target Excel worksheet instance to analyze.                      | Text       | Yes       | _(empty)_     |
-| **First Free Column** | Returns the first free column as a letter (e.g., 'A', 'B', 'C').     | Output     | No        | FirstFreeColumn |
-| **First Free Row**    | Returns the first free row as a number.                              | Output     | No        | FirstFreeRow |
+| Field Name             | Description                                                      | Input Type | Required? | Default Value   |
+| ---------------------- | ---------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Worksheet Instance** | The target Excel worksheet instance to analyze.                  | Text       | Yes       | _(empty)_       |
+| **First Free Column**  | Returns the first free column as a letter (e.g., 'A', 'B', 'C'). | Output     | No        | FirstFreeColumn |
+| **First Free Row**     | Returns the first free row as a number.                          | Output     | No        | FirstFreeRow    |
 
 ## Expected Output Format
 
@@ -37,23 +37,24 @@ Execute the node to determine the first free column and/or row. The outcomes, **
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the Worksheet Instance is correctly referenced; otherwise, the node may fail to identify the first free spaces accurately.
+  Ensure that the Worksheet Instance is correctly referenced; otherwise, the
+  node may fail to identify the first free spaces accurately.
 </Callout>
 
 ## Input/Output Examples
 
 - **Input**: An Excel worksheet with columns A to C filled and rows 1 to 4 populated.
-- **Output**: 
+- **Output**:
 
   - First Free Column: `D`
   - First Free Row: `5`
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                    | Solution                                                                                         |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------- |
-| **Worksheet Instance is invalid**          | Verify that you have entered a valid Excel worksheet instance. Ensure it is loaded and open.     |
-| **Unexpected results**                     | Double-check the data in your worksheet to ensure there are no hidden or unexpected filled cells.|
+| Problem                           | Solution                                                                                          |
+| --------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Worksheet Instance is invalid** | Verify that you have entered a valid Excel worksheet instance. Ensure it is loaded and open.      |
+| **Unexpected results**            | Double-check the data in your worksheet to ensure there are no hidden or unexpected filled cells. |
 
 ## Real-World Use Cases
 

@@ -12,14 +12,14 @@ For example:
 
 ## Configuration Options
 
-| Field Name      | Description                                                                 | Input Type | Required? | Default Value |
-| --------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **User Email**  | The email address of the mailbox owner.                                     | Text       | Yes       | _(empty)_     |
-| **Message ID**  | The ID of the email message to move.                                        | Text       | Yes       | _(empty)_     |
-| **Folder ID**   | The destination folder ID to move the message into.                         | Text       | Yes       | _(empty)_     |
-| **Tenant ID**   | Azure Active Directory tenant (directory) ID.                               | Text       | Yes       | _(empty)_     |
-| **Client ID**   | Azure AD application (client) ID.                                           | Text       | Yes       | _(empty)_     |
-| **Client Secret** | Azure AD application client secret.                                        | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                         | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------------- | ---------- | --------- | ------------- |
+| **User Email**    | The email address of the mailbox owner.             | Text       | Yes       | _(empty)_     |
+| **Message ID**    | The ID of the email message to move.                | Text       | Yes       | _(empty)_     |
+| **Folder ID**     | The destination folder ID to move the message into. | Text       | Yes       | _(empty)_     |
+| **Tenant ID**     | Azure Active Directory tenant (directory) ID.       | Text       | Yes       | _(empty)_     |
+| **Client ID**     | Azure AD application (client) ID.                   | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD application client secret.                 | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -59,16 +59,18 @@ Verify that all required fields are correctly filled, then execute the workflow 
 </Steps>
 
 <Callout type="warning" title="Warning">
-  Be cautious while entering authentication details such as **Tenant ID**, **Client ID**, and **Client Secret**. Ensure they are correct to avoid authentication issues.
+  Be cautious while entering authentication details such as **Tenant ID**,
+  **Client ID**, and **Client Secret**. Ensure they are correct to avoid
+  authentication issues.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                       |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| **Invalid Email or Folder ID**                    | Ensure you're using the correct IDs as referenced from your email system.                      |
-| **Authentication Failure**                        | Double-check the **Tenant ID**, **Client ID**, and **Client Secret** are correct and up to date.|
-| **Empty Required Fields**                         | All fields marked as required must be filled before the node can execute properly.             |
+| Problem                        | Solution                                                                                         |
+| ------------------------------ | ------------------------------------------------------------------------------------------------ |
+| **Invalid Email or Folder ID** | Ensure you're using the correct IDs as referenced from your email system.                        |
+| **Authentication Failure**     | Double-check the **Tenant ID**, **Client ID**, and **Client Secret** are correct and up to date. |
+| **Empty Required Fields**      | All fields marked as required must be filled before the node can execute properly.               |
 
 ## Real-World Use Cases
 

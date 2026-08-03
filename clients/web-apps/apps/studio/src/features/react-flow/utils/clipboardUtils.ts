@@ -1,4 +1,4 @@
-import { Node, Edge } from "@xyflow/react";
+import { Edge, Node } from "@xyflow/react";
 
 /**
  * Deep clones the clipboard subgraph.
@@ -16,22 +16,15 @@ export const generatePastedSubgraph = (
   const clipboardNodeIds = new Set(clipboardNodes.map((n) => n.id));
 
   // 1. Generate new UUIDs for all nodes and edges
-  clipboardNodes.forEach((node) =>
-    idMap.set(node.id, window.crypto.randomUUID()),
-  );
-  clipboardEdges.forEach((edge) =>
-    edgeIdMap.set(edge.id, window.crypto.randomUUID()),
-  );
+  clipboardNodes.forEach((node) => idMap.set(node.id, window.crypto.randomUUID()));
+  clipboardEdges.forEach((edge) => edgeIdMap.set(edge.id, window.crypto.randomUUID()));
 
   // 2. Map nodes and deep-clone internal relational data payloads
   const newNodes = clipboardNodes.map((node) => {
     const newId = idMap.get(node.id)!;
     const newData = { ...node.data };
 
-    if (
-      newData.mergeBranchesNodeId &&
-      typeof newData.mergeBranchesNodeId === "string"
-    ) {
+    if (newData.mergeBranchesNodeId && typeof newData.mergeBranchesNodeId === "string") {
       newData.mergeBranchesNodeId =
         idMap.get(newData.mergeBranchesNodeId) || newData.mergeBranchesNodeId;
     }
@@ -47,15 +40,10 @@ export const generatePastedSubgraph = (
     }
 
     if (Array.isArray(newData.branches)) {
-      newData.branches = newData.branches.map(
-        (bId: string) => idMap.get(bId) || bId,
-      );
+      newData.branches = newData.branches.map((bId: string) => idMap.get(bId) || bId);
     }
 
-    if (
-      newData.defaultBranchNodeId &&
-      typeof newData.defaultBranchNodeId === "string"
-    ) {
+    if (newData.defaultBranchNodeId && typeof newData.defaultBranchNodeId === "string") {
       newData.defaultBranchNodeId =
         idMap.get(newData.defaultBranchNodeId) || newData.defaultBranchNodeId;
     }
@@ -72,8 +60,7 @@ export const generatePastedSubgraph = (
 
     // Remap customParentId for Branch End Nodes
     if (newData.customParentId && typeof newData.customParentId === "string") {
-      newData.customParentId =
-        idMap.get(newData.customParentId) || newData.customParentId;
+      newData.customParentId = idMap.get(newData.customParentId) || newData.customParentId;
     }
 
     // Safely remap the native React Flow parentId if it exists on the node

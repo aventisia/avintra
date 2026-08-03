@@ -8,12 +8,12 @@ This directory contains [Bruno](https://www.usebruno.com/) collections used to m
 
 ## Collections
 
-| Collection         | Description                                          |
-| ------------------ | ---------------------------------------------------- |
-| `AccountsAPIs`     | Identity, accounts, tenants, subscriptions, billing  |
-| `WorkspaceAPIs`    | Flows, executions, files, chat, connectors, projects |
-| `GlobalAdminAPIs`  | Global admin and on-prem instance management         |
-| `llmpipelineapis`  | Text extraction, OCR, TTS, STT, LLM providers        |
+| Collection        | Description                                          |
+| ----------------- | ---------------------------------------------------- |
+| `AccountsAPIs`    | Identity, accounts, tenants, subscriptions, billing  |
+| `WorkspaceAPIs`   | Flows, executions, files, chat, connectors, projects |
+| `GlobalAdminAPIs` | Global admin and on-prem instance management         |
+| `llmpipelineapis` | Text extraction, OCR, TTS, STT, LLM providers        |
 
 ## Getting Started
 

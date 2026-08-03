@@ -1,12 +1,11 @@
-import { NodeDetail } from "@/features/execution-logs/components/NodeDetails";
-
 import { Popover, PopoverContent } from "@avplatform/ui/popover";
+
+import { NodeDetail } from "@/features/execution-logs/components/NodeDetails";
 
 import { useNodePopoverStore } from "../../stores/node-popover-store";
 
 export const NodePopover = () => {
-  const { nodeData, anchorRect, closePopover, setHoveringPopover } =
-    useNodePopoverStore();
+  const { nodeData, anchorRect, closePopover, setHoveringPopover } = useNodePopoverStore();
 
   if (!nodeData || !anchorRect) return null;
 
@@ -29,10 +28,7 @@ export const NodePopover = () => {
   // Keep aligned to trigger, but inside viewport
   const top = Math.max(
     VIEWPORT_PADDING,
-    Math.min(
-      anchorRect.top,
-      viewportHeight - POPOVER_HEIGHT - VIEWPORT_PADDING,
-    ),
+    Math.min(anchorRect.top, viewportHeight - POPOVER_HEIGHT - VIEWPORT_PADDING),
   );
 
   return (

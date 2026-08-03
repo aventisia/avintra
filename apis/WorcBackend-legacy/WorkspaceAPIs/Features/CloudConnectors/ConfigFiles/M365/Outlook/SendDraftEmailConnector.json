@@ -3,10 +3,7 @@
   "description": "Sends an existing draft email from a specified Microsoft 365 mailbox using Microsoft Graph.",
   "version": "1.0.0",
   "author": "@rahmat",
-  "supportedPlatforms": [
-    "cloud",
-    "windows"
-  ],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

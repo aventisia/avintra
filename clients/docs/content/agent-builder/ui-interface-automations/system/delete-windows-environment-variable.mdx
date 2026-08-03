@@ -6,10 +6,10 @@ The **Delete Windows Environment Variable** node is designed to remove specific 
 
 ## Configuration Options
 
-| Field Name                 | Description                                                                                               | Input Type | Required? | Default Value |
-| -------------------------- | --------------------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Environment Variable Name** | Select the environment variable you wish to delete from your system or user profile.                         | Select     | No        | None            |
-| **Scope**                  | Choose whether the deletion should occur in the User's environment variables or System-wide variables.       | Select     | No        | User            |
+| Field Name                    | Description                                                                                            | Input Type | Required? | Default Value |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Environment Variable Name** | Select the environment variable you wish to delete from your system or user profile.                   | Select     | No        | None          |
+| **Scope**                     | Choose whether the deletion should occur in the User's environment variables or System-wide variables. | Select     | No        | User          |
 
 ## Expected Output Format
 
@@ -31,7 +31,7 @@ In the **Environment Variable Name** dropdown, select the variable you want to d
 Select the **Scope** for the deletion action:
 
 - **User**: Deletes the environment variable from the current user's profile.
-- **System**: Deletes the environment variable from the entire system. 
+- **System**: Deletes the environment variable from the entire system.
 
 ### Step 4
 
@@ -40,23 +40,25 @@ Confirm your selection and execute the node to perform the deletion.
 </Steps>
 
 <Callout type="warning" title="Caution">
-Deleting system environment variables can affect application performance and system functionality. Ensure you know the purpose of the variable before removal.
+  Deleting system environment variables can affect application performance and
+  system functionality. Ensure you know the purpose of the variable before
+  removal.
 </Callout>
 
 ## Input/Output Examples
 
-| Environment Variable Name | Scope  | Action Outcome                                        |
-| ------------------------- | ------ | ----------------------------------------------------- |
-| `TEMP`                    | User   | Removes user-specific temporary directory setting     |
+| Environment Variable Name | Scope  | Action Outcome                                          |
+| ------------------------- | ------ | ------------------------------------------------------- |
+| `TEMP`                    | User   | Removes user-specific temporary directory setting       |
 | `PATH`                    | System | System path variable is deleted; may break applications |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                                           |
-| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| **Variable not deleted**                                     | Ensure the correct scope (User/System) is selected. Check if you have the necessary permissions.   |
-| **Accidentally deleted a critical variable**                 | Restore the variable manually by creating it in the system settings or contact IT support.         |
-| **Node execution error**                                     | Check that the selected variable exists in the current scope. Verify system permissions and rights.|
+| Problem                                      | Solution                                                                                            |
+| -------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Variable not deleted**                     | Ensure the correct scope (User/System) is selected. Check if you have the necessary permissions.    |
+| **Accidentally deleted a critical variable** | Restore the variable manually by creating it in the system settings or contact IT support.          |
+| **Node execution error**                     | Check that the selected variable exists in the current scope. Verify system permissions and rights. |
 
 ## Real-World Use Cases
 

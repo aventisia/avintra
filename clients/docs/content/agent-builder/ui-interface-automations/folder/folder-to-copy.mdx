@@ -2,17 +2,17 @@ import { Callout, Steps } from "nextra/components";
 
 # Folder to Copy
 
-The **Folder to Copy** node is used to duplicate a folder from one location to another on your computer. This is particularly helpful when you need to back up files, share folders between projects, or maintain an organized file structure by replicating folder contents. 
+The **Folder to Copy** node is used to duplicate a folder from one location to another on your computer. This is particularly helpful when you need to back up files, share folders between projects, or maintain an organized file structure by replicating folder contents.
 
 This node lets you specify the source folder you want to duplicate, choose where it should be copied to, and decide what should happen if the folder already exists at the destination.
 
 ## Configuration Options
 
-| Field Name             | Description                                                                 | Input Type | Required? | Default Value |
-| ---------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Folder to Copy**     | The path of the folder you want to duplicate.                               | Text       | Yes       | _(empty)_     |
-| **Destination Folder** | The path where the duplicated folder should be copied.                      | Text       | Yes       | _(empty)_     |
-| **If Folder Exists**   | Action to take if the destination folder already exists: do nothing or overwrite. | Select     | Yes       | DoNothing    |
+| Field Name             | Description                                                                       | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Folder to Copy**     | The path of the folder you want to duplicate.                                     | Text       | Yes       | _(empty)_     |
+| **Destination Folder** | The path where the duplicated folder should be copied.                            | Text       | Yes       | _(empty)_     |
+| **If Folder Exists**   | Action to take if the destination folder already exists: do nothing or overwrite. | Select     | Yes       | DoNothing     |
 
 ## Expected Output Format
 
@@ -49,16 +49,17 @@ The newly copied folder path will be available as the **Copied Folder** output f
 </Steps>
 
 <Callout type="info" title="Tip">
-Double-check the destination path to ensure the folder is copied to the correct location.
+  Double-check the destination path to ensure the folder is copied to the
+  correct location.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                       |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Invalid folder path entered**                       | Ensure that the path is correct and that the folder actually exists at that location.          |
-| **Folder not copying when it already exists**         | Review the **If Folder Exists** option; select **Overwrite** if you want to replace existing folders. |
-| **Missing required fields error**                     | Both **Folder to Copy** and **Destination Folder** fields must be filled out with valid paths. |
+| Problem                                       | Solution                                                                                              |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Invalid folder path entered**               | Ensure that the path is correct and that the folder actually exists at that location.                 |
+| **Folder not copying when it already exists** | Review the **If Folder Exists** option; select **Overwrite** if you want to replace existing folders. |
+| **Missing required fields error**             | Both **Folder to Copy** and **Destination Folder** fields must be filled out with valid paths.        |
 
 ## Real-World Use Cases
 

@@ -45,9 +45,7 @@ export function findRightmostNodePosition(
 
   // Safely grab the rightmost node by absolute X position
   const rightmostNode = nodesInPath.reduce((rightmost, current) =>
-    (current.position?.x || 0) > (rightmost.position?.x || 0)
-      ? current
-      : rightmost,
+    (current.position?.x || 0) > (rightmost.position?.x || 0) ? current : rightmost,
   );
 
   return {

@@ -1,13 +1,13 @@
-import { NODE_HEIGHT, NODE_WIDTH } from "@/constants";
-import { nodeDimensionLookup } from "@/constants/node-dimension-lookup";
 import { LayoutDirectionType } from "@avplatform/ui/types";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
-import { CustomNodeType } from "@/types/custom-node-type";
-
 import dagre from "@dagrejs/dagre";
 import { Edge, Node, Position, useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
+
+import { NODE_HEIGHT, NODE_WIDTH } from "@/constants";
+import { nodeDimensionLookup } from "@/constants/node-dimension-lookup";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
+import { CustomNodeType } from "@/types/custom-node-type";
 
 // // Get the minlen for the edge based on the node type
 // const getEdgeMinlen = (
@@ -20,11 +20,7 @@ import { useCallback } from "react";
 //   return 1; // Default 40px gap
 // };
 // Function to layout the elements using dagre
-const getLayoutedElements = (
-  nodes: Node[],
-  edges: Edge[],
-  direction: LayoutDirectionType,
-) => {
+const getLayoutedElements = (nodes: Node[], edges: Edge[], direction: LayoutDirectionType) => {
   // Create a new dagre graph instance
   const dagreGraph = new dagre.graphlib.Graph();
   // TODO: Set an object for the default edge label
@@ -108,11 +104,9 @@ export const useDagreAutoLayout = () => {
     }): { nodes: Node[]; edges: Edge[] } => {
       const currentNodes = newNodesEdgesObj?.newNodes || getNodes();
       const currentEdges = newNodesEdgesObj?.newEdges || getEdges();
-      const { layoutDirection } =
-        useStudioPreferencesStore.getState().studioPreferences;
+      const { layoutDirection } = useStudioPreferencesStore.getState().studioPreferences;
       const { setNodes, setEdges } = useReactFlowExtStore.getState();
-      if (currentNodes.length === 0)
-        return { nodes: currentNodes, edges: currentEdges };
+      if (currentNodes.length === 0) return { nodes: currentNodes, edges: currentEdges };
       const visibleNodes = currentNodes
         .filter((node) => !node.hidden)
         .filter((n) => n.type !== "modelNode");
@@ -131,9 +125,7 @@ export const useDagreAutoLayout = () => {
         layoutDirection,
       );
       //  Create a map of layouted visible nodes
-      const layoutedNodeMap = new Map(
-        layoutedVisibleNodes.map((node) => [node.id, node]),
-      );
+      const layoutedNodeMap = new Map(layoutedVisibleNodes.map((node) => [node.id, node]));
       // Rebuild full nodes array in original order
       const allLayoutedNodes = currentNodes.map(
         (originalNode) =>
@@ -146,12 +138,8 @@ export const useDagreAutoLayout = () => {
       const interpolatedNodes = allLayoutedNodes.map((node, index) => ({
         ...node,
         position: {
-          x:
-            startPositions[index]?.x +
-            (endPositions[index]?.x - startPositions[index]?.x),
-          y:
-            startPositions[index]?.y +
-            (endPositions[index]?.y - startPositions[index]?.y),
+          x: startPositions[index]?.x + (endPositions[index]?.x - startPositions[index]?.x),
+          y: startPositions[index]?.y + (endPositions[index]?.y - startPositions[index]?.y),
         },
       }));
       // Set the nodes with the interpolated positions

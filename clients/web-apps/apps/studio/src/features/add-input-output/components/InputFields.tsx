@@ -1,14 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@avplatform/ui/buttons";
-import { FieldItemFormValues } from "../constants/inputs-outputs-zod-schema";
-import {
-  Control,
-  Controller,
-  UseFieldArrayRemove,
-  useWatch,
-} from "react-hook-form";
-import { Trash2 } from "lucide-react";
 import { InputField, SelectField, SwitchField } from "@avplatform/ui/form";
+import { Trash2 } from "lucide-react";
+import { Control, Controller, UseFieldArrayRemove, useWatch } from "react-hook-form";
+
+import { FieldItemFormValues } from "../constants/inputs-outputs-zod-schema";
 
 interface InputFieldsProps extends FieldItemFormValues {
   id: string;

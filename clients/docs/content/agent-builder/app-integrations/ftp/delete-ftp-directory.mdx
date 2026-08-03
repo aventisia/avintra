@@ -8,10 +8,10 @@ Use this node when you need to automatically delete directories on an FTP server
 
 ## Configuration Options
 
-| Field Name        | Description                                   | Input Type | Required? | Default Value |
-| ----------------- | --------------------------------------------- | ---------- | --------- | ------------- |
-| **FTP Connection**| The connection details for accessing the FTP server. | Text       | Yes       | _(empty)_     |
-| **Directory Name**| The name of the directory you wish to delete. | Text       | Yes       | _(empty)_     |
+| Field Name         | Description                                          | Input Type | Required? | Default Value |
+| ------------------ | ---------------------------------------------------- | ---------- | --------- | ------------- |
+| **FTP Connection** | The connection details for accessing the FTP server. | Text       | Yes       | _(empty)_     |
+| **Directory Name** | The name of the directory you wish to delete.        | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -39,16 +39,17 @@ Ensure all details are correct and execute the node to delete the specified dire
 </Steps>
 
 <Callout type="info" title="Tip">
-  Double-check the directory name for accuracy to avoid accidentally deleting the incorrect directory.
+  Double-check the directory name for accuracy to avoid accidentally deleting
+  the incorrect directory.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                 |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Invalid FTP Connection Settings**               | Verify that the FTP connection details are correct and that you have logged in successfully.              |
-| **Directory Not Found**                           | Confirm the directory name is typed correctly. Check for typos or incorrect path settings.                |
-| **Permissions Error**                             | Ensure the FTP user account has the necessary permissions to delete directories.                          |
+| Problem                             | Solution                                                                                     |
+| ----------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Invalid FTP Connection Settings** | Verify that the FTP connection details are correct and that you have logged in successfully. |
+| **Directory Not Found**             | Confirm the directory name is typed correctly. Check for typos or incorrect path settings.   |
+| **Permissions Error**               | Ensure the FTP user account has the necessary permissions to delete directories.             |
 
 ## Real-World Use Cases
 

@@ -29,9 +29,7 @@ const LLMTestContent = ({
 
   // Payload preview shown before execution — kept in sync with userPrompt
   // via the effect below so it always reflects what Execute would send.
-  const [previewPayload, setPreviewPayload] = useState<LLMRequestDto | null>(
-    null,
-  );
+  const [previewPayload, setPreviewPayload] = useState<LLMRequestDto | null>(null);
 
   const { files: storedFiles, activeFileId } = useLocalFileStore(
     useShallow((state) => ({
@@ -40,9 +38,7 @@ const LLMTestContent = ({
     })),
   );
 
-  const activeFile = storedFiles.find(
-    (f) => f.id === activeFileId,
-  )?.originalFile;
+  const activeFile = storedFiles.find((f) => f.id === activeFileId)?.originalFile;
 
   const filesToExecute: File[] = useCurrentFileOnly
     ? activeFile
@@ -86,9 +82,7 @@ const LLMTestContent = ({
   return (
     <DCPTabsContent
       tabValue="Test"
-      footer={
-        <TestTabExecuteButton isPending={isPending} onExecute={handleExecute} />
-      }
+      footer={<TestTabExecuteButton isPending={isPending} onExecute={handleExecute} />}
     >
       <div className="flex flex-col gap-4 p-1">
         <AutosizeTextarea

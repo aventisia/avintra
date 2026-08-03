@@ -1,8 +1,10 @@
+import { Button } from "@avplatform/ui/buttons";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { Settings } from "lucide-react";
-import { Button } from "@avplatform/ui/buttons";
-import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { useShallow } from "zustand/react/shallow";
+
+import { usePanelStore } from "@/components/panel/stores/panel-store";
+
 import { PANEL_ID } from "../constants";
 
 export const SettingsTrigger = () => {

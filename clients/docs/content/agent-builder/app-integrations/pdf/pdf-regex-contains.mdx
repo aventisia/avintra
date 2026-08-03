@@ -8,10 +8,10 @@ Imagine you are looking to confirm if an automated report or form includes speci
 
 ## Configuration Options
 
-| Field Name       | Description                                                                                | Input Type | Required? | Default Value |
-| ---------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **PDF File Path**| The full path to the PDF file to search (e.g., C:\docs\document.pdf).                       | Text       | Yes       | _(empty)_     |
-| **Regex Pattern**| The regular expression used to search for text within the PDF. It is case-sensitive.        | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                                                          | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **PDF File Path** | The full path to the PDF file to search (e.g., C:\docs\document.pdf).                | Text       | Yes       | _(empty)_     |
+| **Regex Pattern** | The regular expression used to search for text within the PDF. It is case-sensitive. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -38,10 +38,12 @@ Enter the desired **Regex Pattern** into the respective field. This pattern need
 ### Step 4
 
 Once configured, the node will output **True** if any text in the PDF matches the regex pattern, and **False** if there are no matches.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use a regex testing tool to refine and test your regular expressions before applying them in this node.
+  Use a regex testing tool to refine and test your regular expressions before
+  applying them in this node.
 </Callout>
 
 ## Input/Output Examples
@@ -53,11 +55,11 @@ Once configured, the node will output **True** if any text in the PDF matches th
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                 |
-| ------------------------------------------------------- | ------------------------------------------------------------------------ |
-| **Incorrect file path**                                 | Ensure the file path is accurate and the PDF file is accessible.         |
-| **Regex pattern not matching expected text**            | Verify the regular expression is correct and consider case sensitivity.  |
-| **Unexpected output (always False)**                    | Double-check the file path and ensure the PDF is not encrypted/protected.|
+| Problem                                      | Solution                                                                  |
+| -------------------------------------------- | ------------------------------------------------------------------------- |
+| **Incorrect file path**                      | Ensure the file path is accurate and the PDF file is accessible.          |
+| **Regex pattern not matching expected text** | Verify the regular expression is correct and consider case sensitivity.   |
+| **Unexpected output (always False)**         | Double-check the file path and ensure the PDF is not encrypted/protected. |
 
 ## Real-World Use Cases
 

@@ -1,8 +1,5 @@
-import MarkdownContainer from "@/components/markdown/MarkdownContainer";
-import FileUploadList from "@/features/file-uploader-setup/components/FileUploadList";
-import { Alert } from "@avplatform/ui/alert";
-
 import { LoadingSpinner, TagInput } from "@avplatform/ui";
+import { Alert } from "@avplatform/ui/alert";
 import { Button } from "@avplatform/ui/buttons";
 import {
   Form,
@@ -20,6 +17,9 @@ import { ScrollArea } from "@avplatform/ui/scroll";
 import { ExclamationCircleIcon } from "@heroicons/react/24/outline";
 import { XCircleIcon } from "lucide-react";
 import { Controller } from "react-hook-form";
+
+import MarkdownContainer from "@/components/markdown/MarkdownContainer";
+import FileUploadList from "@/features/file-uploader-setup/components/FileUploadList";
 
 import {
   accessLevelProps,
@@ -88,8 +88,7 @@ export const SaveAsTemplateForm = () => {
                 <div className="mt-2 flex flex-wrap gap-3">
                   {invalidNodes.map((item) => (
                     <p className="flex items-center gap-1">
-                      <XCircleIcon className="h-3.5 w-3.5" />{" "}
-                      {`${item.name} (${item.type})`}
+                      <XCircleIcon className="h-3.5 w-3.5" /> {`${item.name} (${item.type})`}
                     </p>
                   ))}
                 </div>
@@ -100,11 +99,7 @@ export const SaveAsTemplateForm = () => {
 
         {/* Show approval status if validation passes */}
         {areAllTemplatesApproved(validationStatus) && (
-          <StatusAlert
-            status={status}
-            remark={templateRemark}
-            approvedBy={lastModifiedBy}
-          />
+          <StatusAlert status={status} remark={templateRemark} approvedBy={lastModifiedBy} />
         )}
 
         <div className="grid grid-cols-1 gap-3.5 xs:grid-cols-2">
@@ -168,13 +163,8 @@ export const SaveAsTemplateForm = () => {
           <div className="flex items-center justify-end gap-4 pb-4">
             {templateId && <DeleteTemplate id={templateId || ""} />}
 
-            <Button
-              disabled={isPending || isUpdatePending || !validationStatus}
-              type="submit"
-            >
-              {isPending || isUpdatePending ? (
-                <LoadingSpinner className="mr-2 h-4 w-4" />
-              ) : null}
+            <Button disabled={isPending || isUpdatePending || !validationStatus} type="submit">
+              {isPending || isUpdatePending ? <LoadingSpinner className="mr-2 h-4 w-4" /> : null}
               Submit For Approval
             </Button>
           </div>

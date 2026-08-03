@@ -1,7 +1,8 @@
-import { useTrackSelectionStore } from "@/stores/track-selection-store";
 import { Edge, Node, useOnSelectionChange } from "@xyflow/react";
 import { useCallback } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useTrackSelectionStore } from "@/stores/track-selection-store";
 
 type SelectionType = {
   nodes: Node[];
@@ -15,15 +16,14 @@ type SelectionType = {
  */
 export const useTrackSelection = () => {
   // Get TrackSelection store state & actions
-  const { setSelectedNodes, setSelectedEdges, setMultipleNodesSelected } =
-    useTrackSelectionStore(
-      useShallow((state) => ({
-        selectedNodes: state.selectedNodes,
-        setSelectedNodes: state.setSelectedNodes,
-        setSelectedEdges: state.setSelectedEdges,
-        setMultipleNodesSelected: state.setMultipleNodesSelected,
-      })),
-    );
+  const { setSelectedNodes, setSelectedEdges, setMultipleNodesSelected } = useTrackSelectionStore(
+    useShallow((state) => ({
+      selectedNodes: state.selectedNodes,
+      setSelectedNodes: state.setSelectedNodes,
+      setSelectedEdges: state.setSelectedEdges,
+      setMultipleNodesSelected: state.setMultipleNodesSelected,
+    })),
+  );
 
   // Handler to update selected node & edges Ids. Note: The passed handler has to be memoized, otherwise the hook will not work correctly
   const updateSelectionState = useCallback(

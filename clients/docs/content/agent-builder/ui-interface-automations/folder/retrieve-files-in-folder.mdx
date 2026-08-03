@@ -12,15 +12,15 @@ For example:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                 | Input Type | Required? | Default Value |
-| ----------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Folder Path**         | Specifies the path to the folder where files will be retrieved.             | Text       | No        | _(empty)_     |
-| **File Filter**         | A pattern to filter the files (e.g., `*.txt` for text files).               | Text       | No        | `*`           |
-| **Include Subfolders**  | Include files from all subfolders within the specified folder.              | Switch     | No        | True          |
-| **Fail on Denied Access** | The node will stop if access to any subfolder is denied.                    | Switch     | No        | True          |
-| **Sort By**             | Criterion to sort the retrieved files (e.g., `Name`, `LastWriteTime`).       | Select     | No        | NoSort        |
-| **Descending Order**    | Sorts files in descending order based on the primary sort criterion.        | Switch     | No        | False         |
-| **Then By**             | Secondary criterion for additional sorting of files.                        | Select     | No        | NoSort        |
+| Field Name                | Description                                                            | Input Type | Required? | Default Value |
+| ------------------------- | ---------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Folder Path**           | Specifies the path to the folder where files will be retrieved.        | Text       | No        | _(empty)_     |
+| **File Filter**           | A pattern to filter the files (e.g., `*.txt` for text files).          | Text       | No        | `*`           |
+| **Include Subfolders**    | Include files from all subfolders within the specified folder.         | Switch     | No        | True          |
+| **Fail on Denied Access** | The node will stop if access to any subfolder is denied.               | Switch     | No        | True          |
+| **Sort By**               | Criterion to sort the retrieved files (e.g., `Name`, `LastWriteTime`). | Select     | No        | NoSort        |
+| **Descending Order**      | Sorts files in descending order based on the primary sort criterion.   | Switch     | No        | False         |
+| **Then By**               | Secondary criterion for additional sorting of files.                   | Select     | No        | NoSort        |
 
 ## Expected Output Format
 
@@ -69,25 +69,26 @@ The retrieved and organized files will be available as `RetrievedFiles` for furt
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use careful path and file patterns to refine the list of files retrieved, especially in large directories.
+  Use careful path and file patterns to refine the list of files retrieved,
+  especially in large directories.
 </Callout>
 
 ## Input/Output Examples
 
-| Folder Path    | File Filter | Include Subfolders | Sort By | Output Value Example                                    |
-| -------------- | ----------- | ------------------ | ------- | ------------------------------------------------------- |
-| `/documents`   | *.txt       | Yes                | Name    | `/documents/file1.txt, /documents/sub/file2.txt`        |
-| `/images`      | *.jpg       | No                 | Size    | `/images/a.jpg, /images/b.jpg` (sorted by size)         |
-| `/reports`     | *           | Yes                | NoSort  | `/reports/January.pdf, /reports/February.pdf, ...`      |
+| Folder Path  | File Filter | Include Subfolders | Sort By | Output Value Example                               |
+| ------------ | ----------- | ------------------ | ------- | -------------------------------------------------- |
+| `/documents` | \*.txt      | Yes                | Name    | `/documents/file1.txt, /documents/sub/file2.txt`   |
+| `/images`    | \*.jpg      | No                 | Size    | `/images/a.jpg, /images/b.jpg` (sorted by size)    |
+| `/reports`   | \*          | Yes                | NoSort  | `/reports/January.pdf, /reports/February.pdf, ...` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                 |
-| -------------------------------------------- | ------------------------------------------------------------------------ |
-| **Incorrect Folder Path**                    | Verify the folder path is accurately typed, and ensure it exists.        |
-| **Unexpected Files Retrieved**               | Check and correct the file filter used; ensure patterns match your goal. |
-| **Access Denied Error**                      | If access is denied, check folder permissions or switch off "Fail on Denied Access". |
-| **Not all files appearing**                  | Ensure "Include Subfolders" is activated if subfolder files are needed.  |
+| Problem                        | Solution                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------ |
+| **Incorrect Folder Path**      | Verify the folder path is accurately typed, and ensure it exists.                    |
+| **Unexpected Files Retrieved** | Check and correct the file filter used; ensure patterns match your goal.             |
+| **Access Denied Error**        | If access is denied, check folder permissions or switch off "Fail on Denied Access". |
+| **Not all files appearing**    | Ensure "Include Subfolders" is activated if subfolder files are needed.              |
 
 ## Real-World Use Cases
 

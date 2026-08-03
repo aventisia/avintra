@@ -43,7 +43,8 @@ export const TemplatePagination = ({
           value={`${itemsPerPage}`}
           onValueChange={(value) => {
             onItemsPerPageChange(Number(value));
-          }}>
+          }}
+        >
           <SelectTrigger className="h-8 w-[4rem]">
             <SelectValue />
           </SelectTrigger>
@@ -69,7 +70,8 @@ export const TemplatePagination = ({
           variant="outline"
           className="hidden h-8 w-8 p-0 lg:flex"
           onClick={() => onPageChange(1)}
-          disabled={currentPage === 1}>
+          disabled={currentPage === 1}
+        >
           <span className="sr-only">Go to first page</span>
           <ChevronsLeftIcon className="h-4 w-4" />
         </Button>
@@ -79,7 +81,8 @@ export const TemplatePagination = ({
           variant="outline"
           className="h-8 w-8 p-0"
           onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
-          disabled={currentPage === 1}>
+          disabled={currentPage === 1}
+        >
           <span className="sr-only">Go to previous page</span>
           <ChevronLeftIcon className="h-4 w-4" />
         </Button>
@@ -89,7 +92,8 @@ export const TemplatePagination = ({
           variant="outline"
           className="h-8 w-8 p-0"
           onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
-          disabled={currentPage === totalPages}>
+          disabled={currentPage === totalPages}
+        >
           <span className="sr-only">Go to next page</span>
           <ChevronRightIcon className="h-4 w-4" />
         </Button>
@@ -99,7 +103,8 @@ export const TemplatePagination = ({
           variant="outline"
           className="hidden h-8 w-8 p-0 lg:flex"
           onClick={() => onPageChange(totalPages)}
-          disabled={currentPage === totalPages}>
+          disabled={currentPage === totalPages}
+        >
           <span className="sr-only">Go to last page</span>
           <ChevronsRightIcon className="h-4 w-4" />
         </Button>

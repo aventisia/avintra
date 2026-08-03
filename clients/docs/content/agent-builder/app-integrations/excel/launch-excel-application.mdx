@@ -6,16 +6,16 @@ The **Launch Excel Application** node allows you to open an existing Excel docum
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                      | Input Type | Required? | Default Value   |
-| ------------------------ | ------------------------------------------------------------------------------------------------ | ---------- | --------- | --------------- |
-| **Launch Mode**          | Specify whether to open an existing Excel document or create a new workbook.                     | Select     | No        | OpenExisting    |
-| **Document Path**        | The path to the Excel document to open. Required if **Launch Mode** is **Open Existing**.         | Text       | No        | _(empty)_       |
-| **Make Instance Visible**| If true, the Excel application will be visible.                                                  | Switch     | No        | true            |
-| **Open as ReadOnly**     | If true, opens the document in read-only mode. Applicable if **Launch Mode** is **Open Existing**.| Switch     | No        | _(empty)_       |
-| **Nest Under New Process**| If true, launches Excel in a new process.                                                       | Switch     | No        | _(empty)_       |
-| **Use Machine Locale**   | If true, utilizes the machine's locale settings for Excel operations.                            | Switch     | No        | _(empty)_       |
-| **Read Protection Password** | Optional password to protect the document from modification. Applicable if **Launch Mode** is **Open Existing**.| Password    | No        | _(empty)_       |
-| **Write Protection Password**| Optional password to prevent the document from being saved. Applicable if **Launch Mode** is **Open Existing**.| Password   | No        | _(empty)_       |
+| Field Name                    | Description                                                                                                      | Input Type | Required? | Default Value |
+| ----------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Launch Mode**               | Specify whether to open an existing Excel document or create a new workbook.                                     | Select     | No        | OpenExisting  |
+| **Document Path**             | The path to the Excel document to open. Required if **Launch Mode** is **Open Existing**.                        | Text       | No        | _(empty)_     |
+| **Make Instance Visible**     | If true, the Excel application will be visible.                                                                  | Switch     | No        | true          |
+| **Open as ReadOnly**          | If true, opens the document in read-only mode. Applicable if **Launch Mode** is **Open Existing**.               | Switch     | No        | _(empty)_     |
+| **Nest Under New Process**    | If true, launches Excel in a new process.                                                                        | Switch     | No        | _(empty)_     |
+| **Use Machine Locale**        | If true, utilizes the machine's locale settings for Excel operations.                                            | Switch     | No        | _(empty)_     |
+| **Read Protection Password**  | Optional password to protect the document from modification. Applicable if **Launch Mode** is **Open Existing**. | Password   | No        | _(empty)_     |
+| **Write Protection Password** | Optional password to prevent the document from being saved. Applicable if **Launch Mode** is **Open Existing**.  | Password   | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -64,23 +64,24 @@ Once configured, the node will output **ExcelInstance** and **WorkbookInstance**
 </Steps>
 
 <Callout type="info" title="Tip">
-  You don't need to fill out all fields. Depending on your chosen **Launch Mode**, some fields are automatically irrelevant and won't need your input.
+  You don't need to fill out all fields. Depending on your chosen **Launch
+  Mode**, some fields are automatically irrelevant and won't need your input.
 </Callout>
 
 ## Input/Output Examples
 
-| Launch Mode     | Document Path | Make Instance Visible | Open as ReadOnly | Output Values                  |
-| --------------- | ------------- | --------------------- | ---------------- | ------------------------------ |
-| Open Existing   | C:\Files\report.xlsx | true                | false           | ExcelInstance, WorkbookInstance|
-| New Workbook    | _(n/a)_       | false                 | _(n/a)_          | ExcelInstance, WorkbookInstance|
+| Launch Mode   | Document Path        | Make Instance Visible | Open as ReadOnly | Output Values                   |
+| ------------- | -------------------- | --------------------- | ---------------- | ------------------------------- |
+| Open Existing | C:\Files\report.xlsx | true                  | false            | ExcelInstance, WorkbookInstance |
+| New Workbook  | _(n/a)_              | false                 | _(n/a)_          | ExcelInstance, WorkbookInstance |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                 |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Excel won't launch visibly**               | Check if **Make Instance Visible** is set to true.                                                       |
-| **Error when opening a document**            | Verify that the **Document Path** is correct and that the file exists.                                   |
-| **Incorrect password errors**                | Confirm that the **Read/Write Protection Passwords** are entered correctly when required.                |
+| Problem                           | Solution                                                                                  |
+| --------------------------------- | ----------------------------------------------------------------------------------------- |
+| **Excel won't launch visibly**    | Check if **Make Instance Visible** is set to true.                                        |
+| **Error when opening a document** | Verify that the **Document Path** is correct and that the file exists.                    |
+| **Incorrect password errors**     | Confirm that the **Read/Write Protection Passwords** are entered correctly when required. |
 
 ## Real-World Use Cases
 

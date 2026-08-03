@@ -6,10 +6,10 @@ The **Get File Drive and Item ID** node helps you retrieve the Drive ID and Item
 
 ## Configuration Options
 
-| Field Name       | Description                                                                                                   | Input Type          | Required? | Default Value |
-| ---------------- | ------------------------------------------------------------------------------------------------------------- | ------------------- | --------- | ------------- |
-| **M365 Credential** | The M365 credential containing valid tenant ID, client ID, and client secret used to authenticate API requests. | Credential Setting  | Yes       | _(none)_      |
-| **File URL**     | The URL of the file located in OneDrive or SharePoint.                                                        | Text                | Yes       | _(empty)_     |
+| Field Name          | Description                                                                                                     | Input Type         | Required? | Default Value |
+| ------------------- | --------------------------------------------------------------------------------------------------------------- | ------------------ | --------- | ------------- |
+| **M365 Credential** | The M365 credential containing valid tenant ID, client ID, and client secret used to authenticate API requests. | Credential Setting | Yes       | _(none)_      |
+| **File URL**        | The URL of the file located in OneDrive or SharePoint.                                                          | Text               | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -42,21 +42,22 @@ Once configured, execute the node to retrieve and view the **Drive ID** and **It
 </Steps>
 
 <Callout type="info" title="Note">
-Ensure your M365 credentials are valid and have the necessary permissions to access files within OneDrive or SharePoint.
+  Ensure your M365 credentials are valid and have the necessary permissions to
+  access files within OneDrive or SharePoint.
 </Callout>
 
 ## Input/Output Examples
 
-| File URL | Drive ID | Item ID |
-| -------- | -------- | ------- |
+| File URL                                                     | Drive ID  | Item ID  |
+| ------------------------------------------------------------ | --------- | -------- |
 | `https://contoso.sharepoint.com/sites/documents/sample.xlsx` | `b!12345` | `01xYZA` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                                         |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| **Invalid Credentials**                          | Double-check your M365 Credential details (tenant ID, client ID, and client secret) to ensure they are correct.  |
-| **Incorrect or Inaccessible File URL**           | Verify the File URL. Confirm it is correctly formatted and that you have the necessary permissions to access it.  |
+| Problem                                | Solution                                                                                                         |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Invalid Credentials**                | Double-check your M365 Credential details (tenant ID, client ID, and client secret) to ensure they are correct.  |
+| **Incorrect or Inaccessible File URL** | Verify the File URL. Confirm it is correctly formatted and that you have the necessary permissions to access it. |
 
 ## Real-World Use Cases
 

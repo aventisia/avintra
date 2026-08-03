@@ -1,13 +1,13 @@
+import { Edge } from "@xyflow/react";
+import { useCallback } from "react";
+import { useShallow } from "zustand/react/shallow";
+
 import { MARKER_ARROW_PREFIX } from "@/constants";
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeDataType } from "@/types/node-data-type";
 import { createPlusEdgeObj } from "@/utils/create-edges/create-plus-edge-obj";
 import { createNodesAndEdgesUtil } from "@/utils/create-node-and-edges-util";
-
-import { Edge } from "@xyflow/react";
-import { useCallback } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
 
@@ -47,10 +47,7 @@ export const useAddNodeFromEdge = () => {
         if (!realSourceNode || !realTargetNode || !groupHeadNode) return;
 
         // Create new node between realSource → realTarget
-        const { newNodes, newEdges, lastNode } = createNodesAndEdgesUtil(
-          realSourceNode,
-          nodeData,
-        );
+        const { newNodes, newEdges, lastNode } = createNodesAndEdgesUtil(realSourceNode, nodeData);
 
         // Insert after the realSource (last node of group)
         const realSourceIndex = nodes.findIndex((n) => n.id === realSourceId);
@@ -65,21 +62,15 @@ export const useAddNodeFromEdge = () => {
         // 2. Real edge from last-in-group → next
         const cleanedEdges = edges.filter((e) => {
           const isOriginalEdgeToNext =
-            e.source === realSourceId &&
-            e.target === realTargetId &&
-            !e.data?.isTemporary;
+            e.source === realSourceId && e.target === realTargetId && !e.data?.isTemporary;
 
-          const isTriggeredTempEdge =
-            e.id === stepEdgeId && e.data?.isTemporary;
+          const isTriggeredTempEdge = e.id === stepEdgeId && e.data?.isTemporary;
 
           return !(isOriginalEdgeToNext || isTriggeredTempEdge);
         });
 
         // Add new edge from new node to real target
-        const newToNextEdge: Edge = createPlusEdgeObj(
-          lastNode.id,
-          realTargetId,
-        );
+        const newToNextEdge: Edge = createPlusEdgeObj(lastNode.id, realTargetId);
 
         // Add temp edge from group head to new node (collapsed view)
         const updatedTempEdge: Edge = {
@@ -97,12 +88,7 @@ export const useAddNodeFromEdge = () => {
           },
         };
 
-        const finalEdges = [
-          ...cleanedEdges,
-          ...newEdges,
-          newToNextEdge,
-          updatedTempEdge,
-        ];
+        const finalEdges = [...cleanedEdges, ...newEdges, newToNextEdge, updatedTempEdge];
 
         // Show config panel
         setNodeData(nodeData);
@@ -120,15 +106,10 @@ export const useAddNodeFromEdge = () => {
 
       // Create new node & edge
       // eslint-disable-next-line prefer-const
-      let { newNodes, newEdges, lastNode } = createNodesAndEdgesUtil(
-        sourceNode,
-        nodeData,
-      );
+      let { newNodes, newEdges, lastNode } = createNodesAndEdgesUtil(sourceNode, nodeData);
 
       // Get source node index
-      const sourceNodeIndex = nodes.findIndex(
-        (node) => node.id === stepEdge.source,
-      );
+      const sourceNodeIndex = nodes.findIndex((node) => node.id === stepEdge.source);
 
       if (sourceNode?.data?.groupId == targetNode?.data?.groupId) {
         newNodes = newNodes.map((newNode) => {
@@ -159,9 +140,7 @@ export const useAddNodeFromEdge = () => {
       );
 
       // Get step edge index
-      const stepEdgeIndex = updatedEdges1.findIndex(
-        (edge) => edge.id === stepEdgeId,
-      );
+      const stepEdgeIndex = updatedEdges1.findIndex((edge) => edge.id === stepEdgeId);
 
       // Add new edges before step edge
       const updatedEdges2 = [

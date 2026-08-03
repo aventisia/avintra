@@ -6,16 +6,16 @@ The **Display Message** node is designed to present a dialog box with a custom m
 
 ## Configuration Options
 
-| Field Name                            | Description                                                                                          | Input Type | Required? | Default Value |
-| ------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Message Box Title**                 | The title text displayed at the top of the message box.                                              | Text       | No        | (empty)       |
-| **Message to Display**                | The main content of the message box. Supports strings, tables, or any object.                        | Text       | No        | (empty)       |
-| **Message Box Icon**                  | The icon to be displayed in the message box.                                                         | Select     | No        | None          |
-| **Message Box Buttons**               | The buttons to display in the message box.                                                           | Select     | No        | OK            |
-| **Default Button**                    | The button that is highlighted by default.                                                           | Select     | No        | First Button  |
-| **Keep Message Box Always on Top**    | If true, the message box will stay on top of other windows.                                         | Switch     | No        | Off           |
-| **Close Message Box Automatically**   | If true, the message box will close automatically after the specified timeout.                      | Switch     | No        | Off           |
-| **Timeout (Seconds)**                 | Duration in seconds after which the message box closes automatically if the auto-close is enabled.  | Text       | No        | (empty)       |
+| Field Name                          | Description                                                                                        | Input Type | Required? | Default Value |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Message Box Title**               | The title text displayed at the top of the message box.                                            | Text       | No        | (empty)       |
+| **Message to Display**              | The main content of the message box. Supports strings, tables, or any object.                      | Text       | No        | (empty)       |
+| **Message Box Icon**                | The icon to be displayed in the message box.                                                       | Select     | No        | None          |
+| **Message Box Buttons**             | The buttons to display in the message box.                                                         | Select     | No        | OK            |
+| **Default Button**                  | The button that is highlighted by default.                                                         | Select     | No        | First Button  |
+| **Keep Message Box Always on Top**  | If true, the message box will stay on top of other windows.                                        | Switch     | No        | Off           |
+| **Close Message Box Automatically** | If true, the message box will close automatically after the specified timeout.                     | Switch     | No        | Off           |
+| **Timeout (Seconds)**               | Duration in seconds after which the message box closes automatically if the auto-close is enabled. | Text       | No        | (empty)       |
 
 ## Expected Output Format
 
@@ -63,31 +63,32 @@ The boolean value indicating if a button was pressed will be available as **Butt
 </Steps>
 
 <Callout type="info" title="Tip">
-  Configure **Timeout (Seconds)** only if **Close Message Box Automatically** is enabled. Otherwise, this setting is disregarded.
+  Configure **Timeout (Seconds)** only if **Close Message Box Automatically** is
+  enabled. Otherwise, this setting is disregarded.
 </Callout>
 
 ## Input/Output Examples
 
-| Field                   | Example Input                          | Description                         |
-| ----------------------- | -------------------------------------- | ----------------------------------- |
-| **Message Box Title**   | "Data Entry Alert"                     | Header text for the message box.    |
-| **Message to Display**  | "Please review the data entries below" | Message content for the user.       |
-| **Message Box Icon**    | Information                            | Displays (i) icon for info messages.|
-| **Message Box Buttons** | OKCancel                               | Displays OK and Cancel buttons.     |
-| **Default Button**      | First Button                           | OK button is highlighted by default.|
+| Field                   | Example Input                          | Description                          |
+| ----------------------- | -------------------------------------- | ------------------------------------ |
+| **Message Box Title**   | "Data Entry Alert"                     | Header text for the message box.     |
+| **Message to Display**  | "Please review the data entries below" | Message content for the user.        |
+| **Message Box Icon**    | Information                            | Displays (i) icon for info messages. |
+| **Message Box Buttons** | OKCancel                               | Displays OK and Cancel buttons.      |
+| **Default Button**      | First Button                           | OK button is highlighted by default. |
 
-| Output Field    | Example Output | Output Description                                 |
-| --------------- | -------------- |---------------------------------------------------|
+| Output Field      | Example Output | Output Description                                |
+| ----------------- | -------------- | ------------------------------------------------- |
 | **ButtonPressed** | true           | Indicates if the user pressed one of the buttons. |
 
 ## Common Mistakes & Troubleshooting
 
-| Issue                                                      | Solution                                                                                                                  |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| **Timeout not functioning as expected**                    | Ensure **Close Message Box Automatically** is enabled; otherwise, **Timeout** settings are ignored.                      |
-| **No buttons displayed**                                   | Check if the **Message Box Buttons** dropdown has been set.                                                               |
-| **Message box not staying on top**                         | Enable **Keep Message Box Always on Top** to ensure the message remains visible above other windows.                      |
-| **Unexpected default button behavior**                     | Verify that the **Default Button** is set to correspond with the desired default button in the current button configuration. |
+| Issue                                   | Solution                                                                                                                     |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **Timeout not functioning as expected** | Ensure **Close Message Box Automatically** is enabled; otherwise, **Timeout** settings are ignored.                          |
+| **No buttons displayed**                | Check if the **Message Box Buttons** dropdown has been set.                                                                  |
+| **Message box not staying on top**      | Enable **Keep Message Box Always on Top** to ensure the message remains visible above other windows.                         |
+| **Unexpected default button behavior**  | Verify that the **Default Button** is set to correspond with the desired default button in the current button configuration. |
 
 ## Real-World Use Cases
 

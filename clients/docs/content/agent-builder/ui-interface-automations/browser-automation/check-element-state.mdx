@@ -12,14 +12,14 @@ For example:
 
 ## Configuration Options
 
-| Field Name          | Description                                                                                     | Input Type | Required? | Default Value |
-| ------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.            | Text       | Yes       | _(empty)_     |
-| **Find Type**       | Specifies how to find the element (e.g., ID, XPath, CssSelector).                               | Select     | Yes       | XPath         |
-| **Value To Find**   | The value used to locate the element (e.g., 'username', '//input[@id="email"]').                | Text       | Yes       | _(empty)_     |
-| **State To Check**  | Specifies which state to verify: Visible, Enabled, Selected.                                    | Select     | Yes       | Visible       |
-| **Wait For Element**| If true, waits for the element to appear before checking its state.                             | Switch     | No        | _(empty)_     |
-| **Timeout Seconds** | Maximum time in seconds to wait for the element before failing.                                 | Text       | No        | 60            |
+| Field Name               | Description                                                                       | Input Type | Required? | Default Value |
+| ------------------------ | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **Find Type**            | Specifies how to find the element (e.g., ID, XPath, CssSelector).                 | Select     | Yes       | XPath         |
+| **Value To Find**        | The value used to locate the element (e.g., 'username', '//input[@id="email"]').  | Text       | Yes       | _(empty)_     |
+| **State To Check**       | Specifies which state to verify: Visible, Enabled, Selected.                      | Select     | Yes       | Visible       |
+| **Wait For Element**     | If true, waits for the element to appear before checking its state.               | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for the element before failing.                   | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -63,25 +63,26 @@ Select the state you want to check from the **State To Check** options: Visible,
 </Steps>
 
 <Callout type="warn" title="Note">
-Ensure that the **Web Browser Instance** is correctly set and active before running this node, or element checks may fail.
+  Ensure that the **Web Browser Instance** is correctly set and active before
+  running this node, or element checks may fail.
 </Callout>
 
 ## Input/Output Examples
 
-| Find Type | Value To Find               | State To Check | Wait For Element | Timeout Seconds | Is State Met | Output Type |
-| --------- | --------------------------- | -------------- | ---------------- | --------------- | ------------ | ----------- |
-| XPath     | `//button[@id="submit"]`    | Visible        | true             | 30              | true         | Boolean     |
-| CssSelector | `.login-button`            | Enabled        | false            | _(default)_     | false        | Boolean     |
-| ID        | `username`                  | Selected       | true             | 60              | false        | Boolean     |
+| Find Type   | Value To Find            | State To Check | Wait For Element | Timeout Seconds | Is State Met | Output Type |
+| ----------- | ------------------------ | -------------- | ---------------- | --------------- | ------------ | ----------- |
+| XPath       | `//button[@id="submit"]` | Visible        | true             | 30              | true         | Boolean     |
+| CssSelector | `.login-button`          | Enabled        | false            | _(default)_     | false        | Boolean     |
+| ID          | `username`               | Selected       | true             | 60              | false        | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                                                             |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Element not found**                           | Check the **Find Type** and **Value To Find** fields for accuracy. Verify the element's presence on the page manually.                                               |
-| **State not as expected**                       | Ensure the correct **State To Check** was selected. Double-check web page conditions that might affect the element's state (e.g., modal dialogs covering elements). |
-| **Timeout errors**                              | Increase the **Timeout Seconds** if elements take longer to appear due to page load issues.                                                                          |
-| **Empty Web Browser Instance**                  | Ensure the browser instance is initialized and assigned to a variable before calling this node.                                                                      |
+| Problem                        | Solution                                                                                                                                                            |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Element not found**          | Check the **Find Type** and **Value To Find** fields for accuracy. Verify the element's presence on the page manually.                                              |
+| **State not as expected**      | Ensure the correct **State To Check** was selected. Double-check web page conditions that might affect the element's state (e.g., modal dialogs covering elements). |
+| **Timeout errors**             | Increase the **Timeout Seconds** if elements take longer to appear due to page load issues.                                                                         |
+| **Empty Web Browser Instance** | Ensure the browser instance is initialized and assigned to a variable before calling this node.                                                                     |
 
 ## Real-World Use Cases
 

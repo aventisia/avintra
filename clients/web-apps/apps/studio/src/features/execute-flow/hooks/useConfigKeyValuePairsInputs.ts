@@ -20,12 +20,9 @@ type SubflowReference = {
   versionId?: string;
 };
 
-const isSubflowNode = (node: Node<NodeDataType>) =>
-  SUBFLOW_NODE_TYPES.has(node?.type ?? "");
+const isSubflowNode = (node: Node<NodeDataType>) => SUBFLOW_NODE_TYPES.has(node?.type ?? "");
 
-const getSubflowReference = (
-  node: Node<NodeDataType>,
-): SubflowReference | null => {
+const getSubflowReference = (node: Node<NodeDataType>): SubflowReference | null => {
   if (node.type === "blockNode") {
     const selectedBlock = node.data?.selectedBlock;
     if (selectedBlock?.flowId && selectedBlock?.id) {
@@ -102,11 +99,7 @@ export const useConfigKeyValuePairsInputs = () => {
               subflowReference.flowId,
               subflowReference.versionId ?? "latest",
             ],
-            queryFn: () =>
-              getFlowToLoad(
-                subflowReference.flowId,
-                subflowReference.versionId,
-              ),
+            queryFn: () => getFlowToLoad(subflowReference.flowId, subflowReference.versionId),
           });
 
           const subflowNodes = toFlowNodes(flowResponse?.data?.reactFlowObject);
@@ -118,10 +111,7 @@ export const useConfigKeyValuePairsInputs = () => {
           mergedNodes.push(...subflowNodes);
           nodesToVisit.push(...subflowNodes);
         } catch (error) {
-          console.error(
-            `Failed to load subflow ${subflowReference.flowId}:`,
-            error,
-          );
+          console.error(`Failed to load subflow ${subflowReference.flowId}:`, error);
         }
       }
 
@@ -148,10 +138,7 @@ export const useConfigKeyValuePairsInputs = () => {
         const configKeyValueByName = new Map<string, unknown>(
           (configKeyValuePairs?.data ?? [])
             .filter((item: ConfigKeyValueDto) => item?.key)
-            .map(
-              (item: ConfigKeyValueDto) =>
-                [item.key, item.value ?? ""] as const,
-            ),
+            .map((item: ConfigKeyValueDto) => [item.key, item.value ?? ""] as const),
         );
 
         return configKeys.map((key) => ({

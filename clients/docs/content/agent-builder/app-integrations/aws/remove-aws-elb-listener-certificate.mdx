@@ -6,12 +6,12 @@ The **Remove AWS ELB Listener Certificate** node allows you to remove a specific
 
 ## Configuration Options
 
-| Field Name                | Description                                                                           | Input Type | Required? | Default Value |
-| ------------------------- | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).                | Text       | Yes       | _(empty)_     |
-| **Listener ARN**          | The ARN of the listener (e.g., arn:aws:elasticloadbalancing:...:listener/...).       | Text       | Yes       | _(empty)_     |
-| **Certificate ARN**       | The ARN of the ACM certificate to remove from the listener.                           | Text       | Yes       | _(empty)_     |
-| **AWS Region**            | The AWS region where the load balancer is located (e.g., us-east-1). Default: us-east-1. | Text       | No        | us-east-1     |
+| Field Name                     | Description                                                                              | Input Type | Required? | Default Value |
+| ------------------------------ | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication (AWSServiceVaultId).                 | Text       | Yes       | _(empty)_     |
+| **Listener ARN**               | The ARN of the listener (e.g., arn:aws:elasticloadbalancing:...:listener/...).           | Text       | Yes       | _(empty)_     |
+| **Certificate ARN**            | The ARN of the ACM certificate to remove from the listener.                              | Text       | Yes       | _(empty)_     |
+| **AWS Region**                 | The AWS region where the load balancer is located (e.g., us-east-1). Default: us-east-1. | Text       | No        | us-east-1     |
 
 ## Expected Output Format
 
@@ -50,17 +50,18 @@ Review the settings, then execute the node to start the certificate removal proc
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the Listener ARN and Certificate ARN values are correctly copied from your AWS Management Console to prevent errors.
+  Ensure that the Listener ARN and Certificate ARN values are correctly copied
+  from your AWS Management Console to prevent errors.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                          |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **Invalid ARNs entered**                     | Double-check the ARN values. They must be correctly formatted and copied directly from AWS.       |
-| **Authentication failure**                   | Verify that the AWS credential is valid and has permissions to access ELB resources.              |
-| **Region mismatch**                          | Ensure the specified AWS region matches that of the load balancer.                                |
-| **No certificate found**                     | Confirm that the certificate is currently associated with the listener before trying to remove it. |
+| Problem                    | Solution                                                                                           |
+| -------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Invalid ARNs entered**   | Double-check the ARN values. They must be correctly formatted and copied directly from AWS.        |
+| **Authentication failure** | Verify that the AWS credential is valid and has permissions to access ELB resources.               |
+| **Region mismatch**        | Ensure the specified AWS region matches that of the load balancer.                                 |
+| **No certificate found**   | Confirm that the certificate is currently associated with the listener before trying to remove it. |
 
 ## Real-World Use Cases
 

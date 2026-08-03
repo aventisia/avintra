@@ -74,23 +74,17 @@ export const useRecoverCrashLogs = (): void => {
             });
 
             // 3.1 Sync any captured node execution logs separately.
-            const nodeLogs = (log.versionLog || []).map(
-              (nodeLog): NodeExecutionLogDto => ({
-                nodeExecutionId: nodeLog.nodeExecutionId,
-                retryAttempt: nodeLog.retryAttempt,
-                nodeId: nodeLog.nodeId,
-                nodeDisplayName: nodeLog.nodeName,
-                nodeUniqueName: nodeLog.nodeUniqueName,
-                isSuccess: nodeLog.isSuccess,
-                duration: nodeLog.duration,
-                inputs: Object.fromEntries(
-                  nodeLog.inputs.map((item) => [item.key, item.value]),
-                ),
-                outputs: Object.fromEntries(
-                  nodeLog.outputs.map((item) => [item.key, item.value]),
-                ),
-              }),
-            );
+            const nodeLogs = (log.versionLog || []).map((nodeLog): NodeExecutionLogDto => ({
+              nodeExecutionId: nodeLog.nodeExecutionId,
+              retryAttempt: nodeLog.retryAttempt,
+              nodeId: nodeLog.nodeId,
+              nodeDisplayName: nodeLog.nodeName,
+              nodeUniqueName: nodeLog.nodeUniqueName,
+              isSuccess: nodeLog.isSuccess,
+              duration: nodeLog.duration,
+              inputs: Object.fromEntries(nodeLog.inputs.map((item) => [item.key, item.value])),
+              outputs: Object.fromEntries(nodeLog.outputs.map((item) => [item.key, item.value])),
+            }));
 
             if (nodeLogs.length > 0) {
               await insertNodeExecutionLogs(log.jobId, nodeLogs);

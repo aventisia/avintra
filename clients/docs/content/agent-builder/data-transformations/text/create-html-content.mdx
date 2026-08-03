@@ -6,10 +6,10 @@ The **Create HTML Content** node allows you to generate a basic HTML structure, 
 
 ## Configuration Options
 
-| Field Name      | Description                                        | Input Type | Required? | Default Value |
-| --------------- | -------------------------------------------------- | ---------- | --------- | ------------- |
-| **Title**       | The title of the HTML document.                    | Text       | Yes       | _(empty)_     |
-| **Body Content**| The body content of the HTML document.             | Text       | Yes       | _(empty)_     |
+| Field Name       | Description                            | Input Type | Required? | Default Value |
+| ---------------- | -------------------------------------- | ---------- | --------- | ------------- |
+| **Title**        | The title of the HTML document.        | Text       | Yes       | _(empty)_     |
+| **Body Content** | The body content of the HTML document. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -50,22 +50,23 @@ The generated HTML will automatically be available as **ResultHtml**. You can us
 </Steps>
 
 <Callout type="info" title="Tip">
-  Make sure to properly format your HTML if including more than just plain text in the **Body Content** field.
+  Make sure to properly format your HTML if including more than just plain text
+  in the **Body Content** field.
 </Callout>
 
 ## Input/Output Examples
 
-| Title            | Body Content                | Output Type    | Example Output                                              |
-| ---------------- | --------------------------- | -------------- | ----------------------------------------------------------- |
-| My Document      | Welcome to my website!      | String (HTML)  | `<html><head><title>My Document</title></head><body>Welcome to my website!</body></html>`       |
-| Product List     | <ul><li>Item 1</li></ul>    | String (HTML)  | `<html><head><title>Product List</title></head><body><ul><li>Item 1</li></ul></body></html>`    |
+| Title        | Body Content             | Output Type   | Example Output                                                                               |
+| ------------ | ------------------------ | ------------- | -------------------------------------------------------------------------------------------- |
+| My Document  | Welcome to my website!   | String (HTML) | `<html><head><title>My Document</title></head><body>Welcome to my website!</body></html>`    |
+| Product List | <ul><li>Item 1</li></ul> | String (HTML) | `<html><head><title>Product List</title></head><body><ul><li>Item 1</li></ul></body></html>` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                             | Solution                                                                                               |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Title or Body left empty**        | Both fields are required; ensure you fill them in to generate any HTML content.                         |
-| **Invalid HTML tags in Body Content** | Review and correct any HTML syntax within the body content to ensure it renders as expected.             |
+| Problem                               | Solution                                                                                     |
+| ------------------------------------- | -------------------------------------------------------------------------------------------- |
+| **Title or Body left empty**          | Both fields are required; ensure you fill them in to generate any HTML content.              |
+| **Invalid HTML tags in Body Content** | Review and correct any HTML syntax within the body content to ensure it renders as expected. |
 
 ## Real-World Use Cases
 

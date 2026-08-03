@@ -12,11 +12,11 @@ For example, you can use this node to:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                             | Input Type | Required? | Default Value |
-| ----------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **UI Element**          | The UI element from which you need to read selected checkboxes.                         | Text       | Yes       | _(empty)_     |
-| **Max Wait Time (seconds)** | Maximum time to wait for locating the UI element (specified in seconds).               | Text       | No        | 5             |
-| **Selected Checkboxes** | Returns the list of selected checkbox names.                                            | Output     | No        | SelectedCheckboxes |
+| Field Name                  | Description                                                              | Input Type | Required? | Default Value      |
+| --------------------------- | ------------------------------------------------------------------------ | ---------- | --------- | ------------------ |
+| **UI Element**              | The UI element from which you need to read selected checkboxes.          | Text       | Yes       | _(empty)_          |
+| **Max Wait Time (seconds)** | Maximum time to wait for locating the UI element (specified in seconds). | Text       | No        | 5                  |
+| **Selected Checkboxes**     | Returns the list of selected checkbox names.                             | Output     | No        | SelectedCheckboxes |
 
 ## Expected Output Format
 
@@ -44,7 +44,8 @@ Upon execution, the node retrieves and lists the selected checkbox names under *
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the UI path or identifier provided accurately directs to the targeted checkbox group.
+  Ensure that the UI path or identifier provided accurately directs to the
+  targeted checkbox group.
 </Callout>
 
 ## Input/Output Examples
@@ -56,11 +57,11 @@ Upon execution, the node retrieves and lists the selected checkbox names under *
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                 |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Failing to retrieve selected checkboxes**           | Ensure the **UI Element** path is correct and accurately points to the checkbox group.                   |
-| **Timeout errors**                                    | Increase the **Max Wait Time (seconds)** if the element takes longer to appear.                          |
-| **Unexpected results**                                | Double-check that the UI element is not being updated or altered dynamically after being read.           |
+| Problem                                     | Solution                                                                                       |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Failing to retrieve selected checkboxes** | Ensure the **UI Element** path is correct and accurately points to the checkbox group.         |
+| **Timeout errors**                          | Increase the **Max Wait Time (seconds)** if the element takes longer to appear.                |
+| **Unexpected results**                      | Double-check that the UI element is not being updated or altered dynamically after being read. |
 
 ## Real-World Use Cases
 

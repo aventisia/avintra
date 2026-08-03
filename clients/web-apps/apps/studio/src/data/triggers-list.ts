@@ -25,16 +25,14 @@ export const triggersList: NodeDataType[] = [
   {
     name: "intervalTrigger",
     label: "Interval-Based",
-    description:
-      "Trigger at fixed intervals (e.g., every hour, every 15 minutes)",
+    description: "Trigger at fixed intervals (e.g., every hour, every 15 minutes)",
     icon: "IntervalTriggerIcon",
     ...commonProps,
   },
   {
     name: "fileSystemEventTrigger",
     label: "File System Events Trigger",
-    description:
-      "Trigger when files are created, modified, or deleted in a specific directory",
+    description: "Trigger when files are created, modified, or deleted in a specific directory",
     icon: "FileSystemEventTrigger",
     ...commonProps,
   },
@@ -49,8 +47,7 @@ export const triggersList: NodeDataType[] = [
   {
     name: "databaseEventTrigger",
     label: "Database Event Trigger",
-    description:
-      "Trigger when changes occur in a database, such as a new record being added",
+    description: "Trigger when changes occur in a database, such as a new record being added",
     icon: "DatabaseEventTriggerIcon",
     ...commonProps,
   },
@@ -64,8 +61,7 @@ export const triggersList: NodeDataType[] = [
   {
     name: "systemEventTrigger",
     label: "System Event Trigger",
-    description:
-      "Trigger when a specific system events occur, such as system startup or shutdown",
+    description: "Trigger when a specific system events occur, such as system startup or shutdown",
     icon: "SystemEventTriggerIcon",
     ...commonProps,
   },
@@ -80,8 +76,7 @@ export const triggersList: NodeDataType[] = [
   {
     name: "webhookTrigger",
     label: "Webhook Trigger",
-    description:
-      "Trigger when a specific webhook notification, typically from an external service",
+    description: "Trigger when a specific webhook notification, typically from an external service",
     icon: "WebhookTriggerIcon",
     ...commonProps,
   },
@@ -95,8 +90,7 @@ export const triggersList: NodeDataType[] = [
   {
     name: "errorDetectionTrigger",
     label: "Error Detection Trigger",
-    description:
-      "Trigger a flow in response to error detection in other automated processes",
+    description: "Trigger a flow in response to error detection in other automated processes",
     icon: "ErrorDetectionTriggerIcon",
     ...commonProps,
   },

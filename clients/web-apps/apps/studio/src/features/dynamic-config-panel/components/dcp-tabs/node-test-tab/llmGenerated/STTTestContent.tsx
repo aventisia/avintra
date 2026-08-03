@@ -32,11 +32,7 @@ function STTResultPanel({ data }: { data: STTResponseDto }) {
 }
 
 /** Dedicated test screen for the Speech-to-Text AI agent node. */
-const STTTestContent = ({
-  formData,
-}: {
-  formData: Record<string, unknown>;
-}) => {
+const STTTestContent = ({ formData }: { formData: Record<string, unknown> }) => {
   const [file, setFile] = useState<File | null>(null);
   const { isPending, data, execute } = useSTTExecute(formData);
   const sttData = data as unknown as STTResponseDto | undefined;
@@ -48,12 +44,7 @@ const STTTestContent = ({
   return (
     <DCPTabsContent
       tabValue="Test"
-      footer={
-        <TestTabExecuteButton
-          isPending={isPending}
-          onExecute={() => execute(sttInput)}
-        />
-      }
+      footer={<TestTabExecuteButton isPending={isPending} onExecute={() => execute(sttInput)} />}
     >
       <div className="flex flex-col gap-4 p-3">
         <div>

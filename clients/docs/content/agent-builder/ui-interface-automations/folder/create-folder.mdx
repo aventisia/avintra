@@ -12,10 +12,10 @@ You might use this when:
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                            | Input Type | Required? | Default Value |
-| ------------------------ | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Create New Folder Into** | The full path of the parent directory where the new folder should be created.                          | Text       | Yes       | _(empty)_     |
-| **New Folder Name**        | The name of the folder to be created inside the specified parent directory.                           | Text       | Yes       | _(empty)_     |
+| Field Name                 | Description                                                                   | Input Type | Required? | Default Value |
+| -------------------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Create New Folder Into** | The full path of the parent directory where the new folder should be created. | Text       | Yes       | _(empty)_     |
+| **New Folder Name**        | The name of the folder to be created inside the specified parent directory.   | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,24 +45,25 @@ Upon execution, the node will create the folder at the specified location. The f
 </Steps>
 
 <Callout type="warning" title="Important">
-  Make sure the parent directory path you provide is valid and accessible. Otherwise, the folder creation will fail.
+  Make sure the parent directory path you provide is valid and accessible.
+  Otherwise, the folder creation will fail.
 </Callout>
 
 ## Input/Output Examples
 
-| ParentDirectory  | FolderName  | Output Path              |
-| ---------------- | ----------- | ------------------------ |
-| `C:\Documents`   | Reports     | `C:\Documents\Reports`   |
-| `C:\Projects`    | NewProject  | `C:\Projects\NewProject` |
-| `D:\Data`        | 2023Data    | `D:\Data\2023Data`       |
+| ParentDirectory | FolderName | Output Path              |
+| --------------- | ---------- | ------------------------ |
+| `C:\Documents`  | Reports    | `C:\Documents\Reports`   |
+| `C:\Projects`   | NewProject | `C:\Projects\NewProject` |
+| `D:\Data`       | 2023Data   | `D:\Data\2023Data`       |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                          |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| **Invalid parent directory path**                | Ensure the path is entered correctly and the directory exists on your system.                     |
-| **Folder with same name already exists**         | Manually verify the folder does not already exist or choose a different name for the new folder.  |
-| **Permission denied**                            | Make sure you have the necessary permissions to create a folder in the specified directory.       |
+| Problem                                  | Solution                                                                                         |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Invalid parent directory path**        | Ensure the path is entered correctly and the directory exists on your system.                    |
+| **Folder with same name already exists** | Manually verify the folder does not already exist or choose a different name for the new folder. |
+| **Permission denied**                    | Make sure you have the necessary permissions to create a folder in the specified directory.      |
 
 ## Real-World Use Cases
 

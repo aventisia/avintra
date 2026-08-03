@@ -1,7 +1,15 @@
 import { enUS } from "date-fns/locale";
 import { describe, expect, it } from "vitest";
 
-import { genMonths, genYears, getEndDate, getStartDate, getValidLocale, isLeftNavigationDisabled, isRightNavigationDisabled } from "../calendar.util";
+import {
+  genMonths,
+  genYears,
+  getEndDate,
+  getStartDate,
+  getValidLocale,
+  isLeftNavigationDisabled,
+  isRightNavigationDisabled,
+} from "../calendar.util";
 
 describe("calendar.util", () => {
   describe("genMonths", () => {

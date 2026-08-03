@@ -1,9 +1,7 @@
 import { DTRowActionStore } from "@avplatform/ui/data-table";
-import {
-  DropdownMenuContent,
-  DropdownMenuSeparator,
-} from "@avplatform/ui/dropdown-menu";
+import { DropdownMenuContent, DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { DropdownMenu } from "@avplatform/ui/dropdown-menu";
+
 import { FLIActionsTrigger } from "./FLIActionsTrigger";
 import { FLIDeleteAction } from "./FLIDeleteAction";
 import { FLIOpenAction } from "./FLIOpenAction";

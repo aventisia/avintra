@@ -1,5 +1,2 @@
 export type ActionSelectorOriginType =
-  | "ReplaceTrigger"
-  | "PlusEdgeLabel"
-  | "plusFirstNode"
-  | "plusNode";
+  "ReplaceTrigger" | "PlusEdgeLabel" | "plusFirstNode" | "plusNode";

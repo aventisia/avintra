@@ -11,9 +11,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name             | Description                                                                          | Input Type | Required? | Default Value |
-| ---------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Specify the browser instance you wish to close.                                      | Text       | Yes       | _(empty)_     |
+| Field Name               | Description                                                                         | Input Type | Required? | Default Value |
+| ------------------------ | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Specify the browser instance you wish to close.                                     | Text       | Yes       | _(empty)_     |
 | **Close All Instances**  | Enable this option to close all currently open browser windows instead of just one. | Switch     | No        | _(empty)_     |
 
 ## Expected Output Format
@@ -43,7 +43,9 @@ Once configured, the node will close the selected browser instance or all instan
 </Steps>
 
 <Callout type="info" title="Note">
-  The **Close All Instances** option overrides the need for a specific browser instance input. If enabled, all browsers will be closed regardless of the input in **Web Browser Instance**.
+  The **Close All Instances** option overrides the need for a specific browser
+  instance input. If enabled, all browsers will be closed regardless of the
+  input in **Web Browser Instance**.
 </Callout>
 
 ## Input/Output Examples
@@ -52,11 +54,11 @@ There are no specific data input/output examples since the action is performed d
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                  |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **No instance closes**                                  | Ensure that the correct **Web Browser Instance** is specified and the instance is active.  |
-| **All instances close unintentionally**                 | Check that the **Close All Instances** switch is set according to your desired action.     |
-| **Error on non-existent instance**                      | Double-check the identifier for the **Web Browser Instance** to ensure it is valid.        |
+| Problem                                 | Solution                                                                                  |
+| --------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **No instance closes**                  | Ensure that the correct **Web Browser Instance** is specified and the instance is active. |
+| **All instances close unintentionally** | Check that the **Close All Instances** switch is set according to your desired action.    |
+| **Error on non-existent instance**      | Double-check the identifier for the **Web Browser Instance** to ensure it is valid.       |
 
 ## Real-World Use Cases
 

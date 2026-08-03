@@ -1,11 +1,13 @@
 // import { useViewport } from "@xyflow/react";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useShallow } from "zustand/react/shallow";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { useJsonDownload } from "./useJSONDowndloader";
 import { Edge, Node } from "@xyflow/react";
-import { NodeDataType } from "@/types/node-data-type";
+import { useShallow } from "zustand/react/shallow";
+
 import { getPromptDataFromNodes } from "@/features/save-as-template/utils/getPromtDataFormNodes";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeDataType } from "@/types/node-data-type";
+
+import { useJsonDownload } from "./useJSONDowndloader";
 
 // Hook for exporting flow data
 export const useExportFlow = () => {
@@ -42,10 +44,7 @@ export const useExportFlow = () => {
   };
 
   const exportFlowTrimmed = () => {
-    const trimmedNodes = getPromptDataFromNodes(
-      nodes as Node<NodeDataType>[],
-      true,
-    );
+    const trimmedNodes = getPromptDataFromNodes(nodes as Node<NodeDataType>[], true);
     const trimmedEdges = edges.map((edge: Edge) => {
       return { id: edge.id, source: edge.source, target: edge.target };
     });

@@ -11,12 +11,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name           | Description                                                         | Input Type | Required? | Default Value |
-| -------------------- | ------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **First Data Table** | The first table you want to use in the join operation.              | Text       | Yes       | _(empty)_     |
-| **Second Data Table**| The second table you want to combine with the first.                | Text       | Yes       | _(empty)_     |
-| **Join Operation**   | Choose the type of join: Inner, Left, or Full.                      | Select     | Yes       | Inner         |
-| **Join Rules**       | The condition to determine how tables will be joined.               | Text       | Yes       | _(empty)_     |
+| Field Name            | Description                                            | Input Type | Required? | Default Value |
+| --------------------- | ------------------------------------------------------ | ---------- | --------- | ------------- |
+| **First Data Table**  | The first table you want to use in the join operation. | Text       | Yes       | _(empty)_     |
+| **Second Data Table** | The second table you want to combine with the first.   | Text       | Yes       | _(empty)_     |
+| **Join Operation**    | Choose the type of join: Inner, Left, or Full.         | Select     | Yes       | Inner         |
+| **Join Rules**        | The condition to determine how tables will be joined.  | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -56,24 +56,25 @@ The resulting combination of both tables will be output as **JoinedDataTable** f
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the **Join Rules** accurately reference column names from both tables, maintaining consistent naming conventions to avoid errors.
+  Ensure that the **Join Rules** accurately reference column names from both
+  tables, maintaining consistent naming conventions to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Join Operation | First Table                    | Second Table                  | Join Rule                   | Output Table                |
-| -------------- | ------------------------------ | ----------------------------- | --------------------------- | --------------------------- |
-| Inner          | Customers                      | Orders                        | Customers.ID = Orders.CustID | Matched customer and order records only |
-| Left           | Employees                      | Departments                   | Employees.DeptID = Departments.ID | All employees, matched departments |
-| Full           | Products                       | Inventory                     | Products.ID = Inventory.ProductID | All products and inventory items |
+| Join Operation | First Table | Second Table | Join Rule                         | Output Table                            |
+| -------------- | ----------- | ------------ | --------------------------------- | --------------------------------------- |
+| Inner          | Customers   | Orders       | Customers.ID = Orders.CustID      | Matched customer and order records only |
+| Left           | Employees   | Departments  | Employees.DeptID = Departments.ID | All employees, matched departments      |
+| Full           | Products    | Inventory    | Products.ID = Inventory.ProductID | All products and inventory items        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                                                  |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **Empty or incorrect output table**       | Check **Join Rules** for syntax errors or correct column referencing in both tables.       |
-| **Invalid Join Operation selection**      | Ensure that your selected join operation matches your intended data merging strategy.      |
-| **Mismatched data types in join columns** | Ensure matching columns are of compatible data types in both tables.                      |
+| Problem                                   | Solution                                                                              |
+| ----------------------------------------- | ------------------------------------------------------------------------------------- |
+| **Empty or incorrect output table**       | Check **Join Rules** for syntax errors or correct column referencing in both tables.  |
+| **Invalid Join Operation selection**      | Ensure that your selected join operation matches your intended data merging strategy. |
+| **Mismatched data types in join columns** | Ensure matching columns are of compatible data types in both tables.                  |
 
 ## Real-World Use Cases
 

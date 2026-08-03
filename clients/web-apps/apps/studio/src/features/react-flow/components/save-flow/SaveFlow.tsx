@@ -40,11 +40,7 @@ export default function SaveFlow() {
       className="mr-2.5 min-w-16 text-xs"
       onClick={() => saveData()}
     >
-      {isPending ? (
-        <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
-      ) : (
-        "Save"
-      )}
+      {isPending ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : "Save"}
     </Button>
   );
 }

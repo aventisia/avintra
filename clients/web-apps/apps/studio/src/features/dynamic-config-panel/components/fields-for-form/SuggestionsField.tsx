@@ -1,9 +1,5 @@
 import { Separator } from "@avplatform/ui";
-import {
-  AutosizeTextareaField,
-  BaseFieldProps,
-  SwitchField,
-} from "@avplatform/ui/form";
+import { AutosizeTextareaField, BaseFieldProps, SwitchField } from "@avplatform/ui/form";
 import { FormFieldSizeType } from "@avplatform/ui/types";
 import { useMemo } from "react";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
@@ -20,12 +16,7 @@ interface SuggestionsFieldProps extends BaseFieldProps {
   size?: FormFieldSizeType;
 }
 
-export function SuggestionsField({
-  name,
-  disabled,
-  isRequired,
-  size,
-}: SuggestionsFieldProps) {
+export function SuggestionsField({ name, disabled, isRequired, size }: SuggestionsFieldProps) {
   // Connect to the parent form context
   const { watch } = useFormContext();
 

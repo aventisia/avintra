@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MultiSelectField } from "@/react-toolkit/ui/searchable-multi-select/MultiSelectField";
-import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
-
 import { DotSeparator, NoContentMessage } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
@@ -11,11 +8,10 @@ import { Grip, PencilIcon, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
-import {
-  APPROVAL_OPTIONS,
-  TOOLS,
-  TOOL_ACTIONS,
-} from "../../stores/platform-tools";
+import { MultiSelectField } from "@/react-toolkit/ui/searchable-multi-select/MultiSelectField";
+import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
+
+import { APPROVAL_OPTIONS, TOOLS, TOOL_ACTIONS } from "../../stores/platform-tools";
 import { CredentialsSelectField } from "./CredentialsSelectField";
 import { GroupedFieldsWrapper } from "./GroupedFieldsWrapper";
 
@@ -62,8 +58,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     name: fieldNames.credential_id,
   });
   const currentActions = useWatch({ control, name: fieldNames.actions }) || [];
-  const currentApproval =
-    useWatch({ control, name: fieldNames.approval }) || "human";
+  const currentApproval = useWatch({ control, name: fieldNames.approval }) || "human";
 
   const prevToolRef = useRef(currentTool);
 
@@ -71,10 +66,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
   useEffect(() => {
     if (prevToolRef.current !== currentTool) {
       // Only clear if adding a new tool OR if editing but the user explicitly changed the tool type
-      if (
-        editingIndex === null ||
-        (editingIndex !== null && currentTool !== initialEditTool)
-      ) {
+      if (editingIndex === null || (editingIndex !== null && currentTool !== initialEditTool)) {
         setValue(fieldNames.credential_id, "", { shouldValidate: true });
         setValue(fieldNames.actions, [], { shouldValidate: true });
       }
@@ -105,13 +97,11 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
   }, [fields, currentTool, currentApproval, editingIndex]);
 
   // Validation: Ensure required builder fields are populated (Duplicate check excluded so they can click the button to see the error)
-  const isAddDisabled =
-    !currentTool || !currentCredential || currentActions.length === 0;
+  const isAddDisabled = !currentTool || !currentCredential || currentActions.length === 0;
 
   // Validation: Check if the builder form has unsaved data (used to trigger discard warnings)
   const isFieldDirty = Boolean(
-    (currentTool || currentCredential || currentActions.length > 0) &&
-      editingIndex === null,
+    (currentTool || currentCredential || currentActions.length > 0) && editingIndex === null,
   );
 
   // Helper: Clears the builder inputs and resets editing state
@@ -248,8 +238,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
           actionSelect={{
             options: APPROVAL_OPTIONS,
             value: currentApproval,
-            onChange: (val) =>
-              setValue(fieldNames.approval, val, { shouldValidate: true }),
+            onChange: (val) => setValue(fieldNames.approval, val, { shouldValidate: true }),
           }}
         />
 
@@ -257,8 +246,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
         {duplicateAttempted && isDuplicate && (
           <p className="text-2xs ml-1.5 font-medium text-destructive">
             A configuration for this tool with{" "}
-            <span className="capitalize">'{currentApproval}'</span> approval
-            already exists.
+            <span className="capitalize">'{currentApproval}'</span> approval already exists.
           </p>
         )}
 
@@ -305,8 +293,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
             // Format actions for display, capping at 3 with an overflow indicator
             const displayActions = actionNames.slice(0, 3).join(", ");
-            const extraCount =
-              actionNames.length > 3 ? actionNames.length - 3 : 0;
+            const extraCount = actionNames.length > 3 ? actionNames.length - 3 : 0;
 
             return (
               <div

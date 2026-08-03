@@ -1,3 +1,12 @@
+import { LoadingSpinner } from "@avplatform/ui";
+import { Button } from "@avplatform/ui/buttons";
+import { AsyncSingleSelectField, Form } from "@avplatform/ui/form";
+import { cn } from "@avplatform/ui/lib";
+import { toast } from "@avplatform/ui/sonner";
+import { InfoIcon } from "lucide-react";
+import { useMemo, useState } from "react";
+import { z } from "zod";
+
 import { searchFlowVersions } from "@/apis/search-flow-versions-api";
 import { SearchFlowVersionResDto } from "@/dtos/search-flow-version-res-dto";
 import {
@@ -13,15 +22,6 @@ import { DCPTabsTrigger } from "@/features/dynamic-config-panel/components/dcp-t
 import { DCPTabsWrapper } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsWrapper";
 import { refineSubmittedIO } from "@/features/dynamic-config-panel/utils/refine-submitted-io";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-
-import { LoadingSpinner } from "@avplatform/ui";
-import { Button } from "@avplatform/ui/buttons";
-import { AsyncSingleSelectField, Form } from "@avplatform/ui/form";
-import { cn } from "@avplatform/ui/lib";
-import { toast } from "@avplatform/ui/sonner";
-import { InfoIcon } from "lucide-react";
-import { useMemo, useState } from "react";
-import { z } from "zod";
 
 import { useCallBlockForm } from "./useCallBlockForm";
 
@@ -47,18 +47,12 @@ const CallBlockConfigForm = () => {
   const selectedBlock = watch("selectBlock");
 
   const renderedInputFields = useMemo(
-    () =>
-      nodeConfig.filter((field) =>
-        shouldRenderField("Input", field, watchedValues),
-      ),
+    () => nodeConfig.filter((field) => shouldRenderField("Input", field, watchedValues)),
     [nodeConfig, watchedValues],
   );
 
   const renderedOutputFields = useMemo(
-    () =>
-      nodeConfig.filter((field) =>
-        shouldRenderField("Output", field, watchedValues),
-      ),
+    () => nodeConfig.filter((field) => shouldRenderField("Output", field, watchedValues)),
     [nodeConfig, watchedValues],
   );
 
@@ -75,23 +69,11 @@ const CallBlockConfigForm = () => {
     const outputKeys = renderedOutputFields.map((field) => field.name);
 
     // Extract node inputs and outputs from formData
-    const { inputs, outputs } = refineSubmittedIO(
-      nodeUniqueName,
-      formData,
-      inputKeys,
-      outputKeys,
-    );
+    const { inputs, outputs } = refineSubmittedIO(nodeUniqueName, formData, inputKeys, outputKeys);
 
     // Update node data inputs outputs and selectBlock
     if (nodeId) {
-      updateNodeDataIO(
-        nodeId,
-        inputs,
-        outputs,
-        nodeLabel,
-        undefined,
-        formData?.selectBlock,
-      );
+      updateNodeDataIO(nodeId, inputs, outputs, nodeLabel, undefined, formData?.selectBlock);
 
       // Update flow variables object
       if (outputs.length > 0) updateFlowVariablesObject(nodeId, outputs);
@@ -139,17 +121,13 @@ const CallBlockConfigForm = () => {
                 placeholder="Search block"
                 queryKeyBase={["call-block-search-flow-versions"]}
                 fetcher={(query, filters) =>
-                  searchFlowVersions(
-                    query,
-                    filters.type,
-                    filters.includePublishedOnly,
-                  ).then((res) => res.data || [])
+                  searchFlowVersions(query, filters.type, filters.includePublishedOnly).then(
+                    (res) => res.data || [],
+                  )
                 }
                 filters={{ type: "Block", includePublishedOnly: false }}
                 getItemId={(item) => item.id}
-                getItemLabel={(item) =>
-                  `${item.name} - v${item.versionNumber ?? "-"}`
-                }
+                getItemLabel={(item) => `${item.name} - v${item.versionNumber ?? "-"}`}
               />
 
               {isLoading ? (
@@ -205,23 +183,14 @@ const CallBlockConfigForm = () => {
             </div>
           </DCPTabsContent>
           {/* Save button */}
-          <DCPTabsFooterWrapper
-            className={cn(isAgentHistory && "justify-between")}
-          >
+          <DCPTabsFooterWrapper className={cn(isAgentHistory && "justify-between")}>
             {isAgentHistory ? (
               <div className="flex items-center gap-1 text-muted-foreground">
                 <InfoIcon className="h-3.5 w-3.5" />
-                <span className="mt-0.5 text-xs">
-                  Changes will not be saved
-                </span>
+                <span className="mt-0.5 text-xs">Changes will not be saved</span>
               </div>
             ) : null}
-            <Button
-              size={"sm"}
-              disabled={isAgentHistory}
-              type="submit"
-              className="min-w-[5rem]"
-            >
+            <Button size={"sm"} disabled={isAgentHistory} type="submit" className="min-w-[5rem]">
               Save
             </Button>
           </DCPTabsFooterWrapper>

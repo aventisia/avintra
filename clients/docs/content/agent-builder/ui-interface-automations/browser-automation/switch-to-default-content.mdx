@@ -8,10 +8,10 @@ For instance, if you've been interacting with elements inside an iframe on a web
 
 ## Configuration Options
 
-| Field Name           | Description                                                          | Input Type | Required? | Default Value |
-| -------------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Browser Instance** | The active IWebDriver instance representing the browser.             | Text       | Yes       | _(empty)_     |
-| **Switched**         | Shows if switching back was successful: `true` or `false`.             | Output     | No        | Switched      |
+| Field Name           | Description                                                | Input Type | Required? | Default Value |
+| -------------------- | ---------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Browser Instance** | The active IWebDriver instance representing the browser.   | Text       | Yes       | _(empty)_     |
+| **Switched**         | Shows if switching back was successful: `true` or `false`. | Output     | No        | Switched      |
 
 ## Expected Output Format
 
@@ -42,23 +42,24 @@ Check the Switched output status to confirm if the operation was successful (dis
 </Steps>
 
 <Callout type="info" title="Important Note">
-  Ensure that the **Browser Instance** provided is active and correctly initialized, as this will determine the success of the switch operation.
+  Ensure that the **Browser Instance** provided is active and correctly
+  initialized, as this will determine the success of the switch operation.
 </Callout>
 
 ## Input/Output Examples
 
-| Browser Instance | Output Value | Output Type  |
-| -----------------| ------------ | ------------ |
-| MyWebDriver      | true         | Boolean      |
-| MyWebDriver      | false        | Boolean      |
+| Browser Instance | Output Value | Output Type |
+| ---------------- | ------------ | ----------- |
+| MyWebDriver      | true         | Boolean     |
+| MyWebDriver      | false        | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                                                                                              |
-|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **WebDriver instance is not working**       | Double-check if the **Browser Instance** is correctly assigned to an active, initialized WebDriver instance.                                           |
-| **Output is always `false`**                | This may occur if there are issues with the iframe's state or if the browser session has ended. Verify that the WebDriver session is active and valid. |
-| **Unable to switch back**                   | Ensure no unhandled exceptions within the iframe operation that could block the switch back to the main document.                                      |
+| Problem                               | Solution                                                                                                                                               |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **WebDriver instance is not working** | Double-check if the **Browser Instance** is correctly assigned to an active, initialized WebDriver instance.                                           |
+| **Output is always `false`**          | This may occur if there are issues with the iframe's state or if the browser session has ended. Verify that the WebDriver session is active and valid. |
+| **Unable to switch back**             | Ensure no unhandled exceptions within the iframe operation that could block the switch back to the main document.                                      |
 
 ## Real-World Use Cases
 

@@ -5,25 +5,26 @@ import { Callout, Steps } from "nextra/components";
 The **Extract Data From Web Page** node is designed to retrieve information directly from elements found on a web page. This node allows you to specify which web elements to target and extract data from, making it useful for automating tasks such as data entry, online research, or web scraping.
 
 With this node, you can:
+
 - Extract a single piece of information.
 - Retrieve lists or tables of data.
 - Automate navigation through multiple web pages to collect information.
 
 ## Configuration Options
 
-| Field Name                       | Description                                                                                      | Input Type | Required? | Default Value       |
-| -------------------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------------- |
-| **Web Browser Instance**         | Enter or select the variable containing the web browser instance to interact with.               | Text       | Yes       | _(empty)_           |
-| **Find Type**                    | Choose method to locate the HTML element (e.g., ID, XPath, CSS Selector).                        | Select     | No        | XPath               |
-| **Value To Find**                | The selector value used to locate the web element, such as ID or class.                          | Text       | No        | _(empty)_           |
-| **Extraction Mode**              | Defines the type of content to extract - single value, list, or table.                           | Select     | No        | SingleValue         |
-| **Use Paging**                   | Enable this to handle multiple web pages using pagination.                                       | Switch     | No        | _(empty)_           |
-| **Get All Web Pages**            | If set to true, it retrieves data from all pages instead of just the first one.                  | Switch     | No        | _(empty)_           |
-| **Max Web Pages To Process**     | Maximum number of pages to navigate and extract information from when paging is applied.         | Text       | No        | 10                  |
-| **Page CSS Selector**            | CSS selector to identify the element for next page navigation.                                   | Text       | No        | _(empty)_           |
-| **Send Physical Click for Next Page** | Simulates a physical click to go to the next page.                                             | Switch     | No        | _(empty)_           |
-| **Process Data Upon Extraction** | Process the extracted data to reflect visual layout; not advisable for large data sets.          | Switch     | No        | _(empty)_           |
-| **Timeout Seconds**              | Maximum wait time in seconds before abandoning an attempt to interact with an element.           | Text       | No        | 60                  |
+| Field Name                            | Description                                                                              | Input Type | Required? | Default Value |
+| ------------------------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**              | Enter or select the variable containing the web browser instance to interact with.       | Text       | Yes       | _(empty)_     |
+| **Find Type**                         | Choose method to locate the HTML element (e.g., ID, XPath, CSS Selector).                | Select     | No        | XPath         |
+| **Value To Find**                     | The selector value used to locate the web element, such as ID or class.                  | Text       | No        | _(empty)_     |
+| **Extraction Mode**                   | Defines the type of content to extract - single value, list, or table.                   | Select     | No        | SingleValue   |
+| **Use Paging**                        | Enable this to handle multiple web pages using pagination.                               | Switch     | No        | _(empty)_     |
+| **Get All Web Pages**                 | If set to true, it retrieves data from all pages instead of just the first one.          | Switch     | No        | _(empty)_     |
+| **Max Web Pages To Process**          | Maximum number of pages to navigate and extract information from when paging is applied. | Text       | No        | 10            |
+| **Page CSS Selector**                 | CSS selector to identify the element for next page navigation.                           | Text       | No        | _(empty)_     |
+| **Send Physical Click for Next Page** | Simulates a physical click to go to the next page.                                       | Switch     | No        | _(empty)_     |
+| **Process Data Upon Extraction**      | Process the extracted data to reflect visual layout; not advisable for large data sets.  | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**                   | Maximum wait time in seconds before abandoning an attempt to interact with an element.   | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -33,7 +34,7 @@ The output from this node can vary based on the **Extraction Mode** selected:
 - **Handpicked Values**: A collection of manually chosen values.
 - **List**: An array of text items originating from similar elements.
 - **Table**: A structured format of data resembling table rows and columns.
-  
+
 Output is labeled as **DataFromWebPageOutput**.
 
 ## Step-by-Step Guide
@@ -72,19 +73,19 @@ Choose the **Extraction Mode** based on what type of data you wish to extract, s
 
 ## Input/Output Examples
 
-| Extraction Mode | Web Element Type | Example Selector Type | Example ValueToFind | Output Example          | Output Type        |
-| --------------- | ---------------- | --------------------- | ------------------- | ----------------------- | ------------------ |
-| Single Value    | Text Field       | XPath                 | `//input[@id='name']` | `John Doe`              | Single Text Value  |
-| List            | List Items       | CssSelector           | `.product-title`    | `["Item1", "Item2"]`    | Array of Text Items|
-| Table           | Table Rows       | CssSelector           | `#data-table tr`    | `[["Row1Col1", "Row1Col2"], ["Row2Col1", "Row2Col2"]]` | Array (2D) |
+| Extraction Mode | Web Element Type | Example Selector Type | Example ValueToFind   | Output Example                                         | Output Type         |
+| --------------- | ---------------- | --------------------- | --------------------- | ------------------------------------------------------ | ------------------- |
+| Single Value    | Text Field       | XPath                 | `//input[@id='name']` | `John Doe`                                             | Single Text Value   |
+| List            | List Items       | CssSelector           | `.product-title`      | `["Item1", "Item2"]`                                   | Array of Text Items |
+| Table           | Table Rows       | CssSelector           | `#data-table tr`      | `[["Row1Col1", "Row1Col2"], ["Row2Col1", "Row2Col2"]]` | Array (2D)          |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                  | Solution                                                                                           |
-| ---------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Element not found**                    | Double-check the `Find Type` and `Value To Find` to make sure they correctly identify your target.  |
-| **Timeout occurred**                     | Increase the `Timeout Seconds` to allow more time for page elements to load.                        |
-| **Incorrect data format in output**      | Verify the selected `Extraction Mode` aligns with the data structure you expect.                    |
+| Problem                             | Solution                                                                                           |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Element not found**               | Double-check the `Find Type` and `Value To Find` to make sure they correctly identify your target. |
+| **Timeout occurred**                | Increase the `Timeout Seconds` to allow more time for page elements to load.                       |
+| **Incorrect data format in output** | Verify the selected `Extraction Mode` aligns with the data structure you expect.                   |
 
 ## Real-World Use Cases
 

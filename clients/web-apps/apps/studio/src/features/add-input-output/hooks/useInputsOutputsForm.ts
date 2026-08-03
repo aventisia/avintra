@@ -1,17 +1,19 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFieldArray, useForm } from "react-hook-form";
-import {
-  InputsOutputsFieldsFormType,
-  inputsOutputsFieldsSchema,
-  FieldItemFormValues,
-  OutputFieldFormValues,
-} from "../constants/inputs-outputs-zod-schema";
 import { useQuery } from "@tanstack/react-query";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useShallow } from "zustand/react/shallow";
 import { useEffect } from "react";
-import { DCPJsonToFormData } from "../utils/jsonToFormdata";
+import { useFieldArray, useForm } from "react-hook-form";
+import { useShallow } from "zustand/react/shallow";
+
 import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+
+import {
+  FieldItemFormValues,
+  InputsOutputsFieldsFormType,
+  OutputFieldFormValues,
+  inputsOutputsFieldsSchema,
+} from "../constants/inputs-outputs-zod-schema";
+import { DCPJsonToFormData } from "../utils/jsonToFormdata";
 
 /**
  * Custom hook for defining a form.
@@ -53,20 +55,14 @@ export const useInputsOutputsForm = () => {
   const { control } = form;
 
   const { data } = useQuery({
-    queryFn: () =>
-      getFlowToLoad(currentFlow.id || "flowId", currentFlow.versionId),
+    queryFn: () => getFlowToLoad(currentFlow.id || "flowId", currentFlow.versionId),
     queryKey: ["flow", currentFlow.id, currentFlow.versionId],
     enabled: !!currentFlow.id,
   });
 
   useEffect(() => {
-    if (
-      data &&
-      Object.keys(JSON.parse(data?.data?.inputOutputObject || "{}")).length > 0
-    ) {
-      form.reset(
-        DCPJsonToFormData(JSON.parse(data.data.inputOutputObject || "")),
-      );
+    if (data && Object.keys(JSON.parse(data?.data?.inputOutputObject || "{}")).length > 0) {
+      form.reset(DCPJsonToFormData(JSON.parse(data.data.inputOutputObject || "")));
     }
   }, [data, form]);
 

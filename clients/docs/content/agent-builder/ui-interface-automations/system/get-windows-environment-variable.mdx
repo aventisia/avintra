@@ -8,11 +8,11 @@ For instance, you can retrieve the current user's username or find out where tem
 
 ## Configuration Options
 
-| Field Name                       | Description                                                                                      | Input Type | Required? | Default Value |
-| -------------------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Environment Variable Name**    | The name of the environment variable to retrieve.                                                | Select     | Yes       | USERNAME      |
-| **Search for variable only in scope** | Indicates whether to search for the variable only within the specified scope.                  | Switch     | No        | _(empty)_     |
-| **Scope**                        | Specifies the scope (User or System) for searching the environment variable.                     | Select     | No        | User          |
+| Field Name                            | Description                                                                   | Input Type | Required? | Default Value |
+| ------------------------------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Environment Variable Name**         | The name of the environment variable to retrieve.                             | Select     | Yes       | USERNAME      |
+| **Search for variable only in scope** | Indicates whether to search for the variable only within the specified scope. | Switch     | No        | _(empty)_     |
+| **Scope**                             | Specifies the scope (User or System) for searching the environment variable.  | Select     | No        | User          |
 
 ## Expected Output Format
 
@@ -44,24 +44,25 @@ The retrieved value will be available as **Environment Variable Value** for use 
 </Steps>
 
 <Callout type="info" title="Tip">
-  The **Scope** option only appears if "Search for variable only in scope" is enabled.
+  The **Scope** option only appears if "Search for variable only in scope" is
+  enabled.
 </Callout>
 
 ## Input/Output Examples
 
-| Environment Variable Name | Search in Scope | Scope | Output Value          | Output Type |
-| ------------------------- | --------------- | ----- | --------------------- | ----------- |
-| USERNAME                  | No              | N/A   | johndoe               | String      |
-| PATH                      | Yes             | User  | C:\Users\johndoe\bin  | String      |
-| OS                        | Yes             | System| Windows_NT            | String      |
+| Environment Variable Name | Search in Scope | Scope  | Output Value         | Output Type |
+| ------------------------- | --------------- | ------ | -------------------- | ----------- |
+| USERNAME                  | No              | N/A    | johndoe              | String      |
+| PATH                      | Yes             | User   | C:\Users\johndoe\bin | String      |
+| OS                        | Yes             | System | Windows_NT           | String      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                 | Solution                                                                                                                                    |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Variable not found**                  | Ensure the correct environment variable name is selected from the dropdown.                                                                 |
-| **Scope not applicable**                | The **Scope** field is active only when "Search for variable only in scope" is enabled. Verify this setting if you can't find the Scope option.                  |
-| **Empty result**                        | Check if the environment variable exists in the selected scope (User/System) or if it's enabled anymore.                                    |
+| Problem                  | Solution                                                                                                                                        |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Variable not found**   | Ensure the correct environment variable name is selected from the dropdown.                                                                     |
+| **Scope not applicable** | The **Scope** field is active only when "Search for variable only in scope" is enabled. Verify this setting if you can't find the Scope option. |
+| **Empty result**         | Check if the environment variable exists in the selected scope (User/System) or if it's enabled anymore.                                        |
 
 ## Real-World Use Cases
 

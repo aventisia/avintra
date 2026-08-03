@@ -12,15 +12,15 @@ For example:
 
 ## Configuration Options
 
-| Field Name        | Description                                                                                      | Input Type | Required? | Default Value |
-| ----------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Run Delay (ms)**| Delay in milliseconds before creating the instance. Helps manage rate limits.                     | Text       | Yes       | _(empty)_     |
-| **Account Type**  | The type of Google service account (e.g., `service_account`).                                    | Text       | Yes       | _(empty)_     |
-| **Project ID**    | The project ID linked with your Google Cloud Platform service account.                           | Text       | Yes       | _(empty)_     |
-| **Private Key ID**| The private key ID found within your service account JSON file.                                  | Text       | Yes       | _(empty)_     |
-| **Private Key**   | The private key, which must include escape characters like `\\n` from your JSON file.            | Text       | Yes       | _(empty)_     |
-| **Client Email**  | The email address associated with your Google service account.                                   | Text       | Yes       | _(empty)_     |
-| **Client ID**     | The unique client ID for the Google service account.                                             | Text       | Yes       | _(empty)_     |
+| Field Name         | Description                                                                           | Input Type | Required? | Default Value |
+| ------------------ | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Run Delay (ms)** | Delay in milliseconds before creating the instance. Helps manage rate limits.         | Text       | Yes       | _(empty)_     |
+| **Account Type**   | The type of Google service account (e.g., `service_account`).                         | Text       | Yes       | _(empty)_     |
+| **Project ID**     | The project ID linked with your Google Cloud Platform service account.                | Text       | Yes       | _(empty)_     |
+| **Private Key ID** | The private key ID found within your service account JSON file.                       | Text       | Yes       | _(empty)_     |
+| **Private Key**    | The private key, which must include escape characters like `\\n` from your JSON file. | Text       | Yes       | _(empty)_     |
+| **Client Email**   | The email address associated with your Google service account.                        | Text       | Yes       | _(empty)_     |
+| **Client ID**      | The unique client ID for the Google service account.                                  | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -68,16 +68,17 @@ The configured service will now output a **SheetsService** instance for further 
 </Steps>
 
 <Callout type="info" title="Important">
-Ensure all credentials and IDs are pasted exactly as provided in your Google service account JSON file to avoid authentication errors.
+  Ensure all credentials and IDs are pasted exactly as provided in your Google
+  service account JSON file to avoid authentication errors.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                                                             |
-| ------------------------------------------| ---------------------------------------------------------------------------------------------------- |
-| **Missing escape characters in Private Key** | Double-check your private key input, ensure all `\\n` escape characters are correctly formatted.    |
-| **Incorrect Account Type**                | Verify that you entered the exact type as `service_account`.                                        |
-| **Invalid Project ID, Private Key ID or other credentials**| Confirm each value by checking against your Google Cloud Platform service account details.|
+| Problem                                                     | Solution                                                                                         |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Missing escape characters in Private Key**                | Double-check your private key input, ensure all `\\n` escape characters are correctly formatted. |
+| **Incorrect Account Type**                                  | Verify that you entered the exact type as `service_account`.                                     |
+| **Invalid Project ID, Private Key ID or other credentials** | Confirm each value by checking against your Google Cloud Platform service account details.       |
 
 ## Real-World Use Cases
 

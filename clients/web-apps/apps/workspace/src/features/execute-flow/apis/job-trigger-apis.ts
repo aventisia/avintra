@@ -1,11 +1,11 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
+import { JobRecordDto } from "@/features/03-orchestrator/jobs-table/dtos/job-record-dto";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { JobCloseDto } from "../dtos/job-close-dto";
 import { JobDetailsDto } from "../dtos/job-details-dto";
 import { JobStartDto } from "../dtos/job-start-dto";
-import { JobRecordDto } from "@/features/03-orchestrator/jobs-table/dtos/job-record-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/job`;
 

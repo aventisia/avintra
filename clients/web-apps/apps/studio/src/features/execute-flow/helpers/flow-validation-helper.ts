@@ -1,8 +1,8 @@
+import { Edge, Node } from "@xyflow/react";
+
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 import { LoopNodeDataType } from "@/types/loop-node-data-type";
 import { NodeDataType } from "@/types/node-data-type";
-
-import { Edge, Node } from "@xyflow/react";
 
 /**
  * Support/placeholder node types that are not considered as executable nodes.
@@ -36,9 +36,7 @@ export const isEmptyFlow = (nodes: Node<NodeDataType>[]): boolean => {
  * Examples allowed: [cloud, windows], [cloud], [cloud, linux], [cloud, windows, linux], [].
  * Note: If supportedPlatforms property is missing or empty, we will consider the node as cross-platform and allow it to be executed.
  */
-export const doesFlowContainAnyDesktopOnlyNode = (
-  nodes: Node<NodeDataType>[],
-): boolean => {
+export const doesFlowContainAnyDesktopOnlyNode = (nodes: Node<NodeDataType>[]): boolean => {
   const desktopOnlyNodeCount = nodes.filter((node) => {
     // Skip support node types since they are not executable nodes
     if (SUPPORT_NODE_TYPES.has(node.type || "")) return false;
@@ -49,9 +47,7 @@ export const doesFlowContainAnyDesktopOnlyNode = (
     // If supportedPlatforms is missing or empty or contains "cloud", consider the node executable on cloud
     const supportedPlatforms = node.data?.supportedPlatforms;
     return (
-      supportedPlatforms &&
-      supportedPlatforms.length > 0 &&
-      !supportedPlatforms.includes("cloud")
+      supportedPlatforms && supportedPlatforms.length > 0 && !supportedPlatforms.includes("cloud")
     );
   }).length;
 
@@ -71,8 +67,7 @@ const resolveConditionalBranches = (
   // First, try to get branches from node data
   const branchesFromNodeData =
     conditionalNode.data.branches?.filter(
-      (b: string) =>
-        b && b.trim() !== "" && b.toLowerCase() !== mergeNodeId.toLowerCase(),
+      (b: string) => b && b.trim() !== "" && b.toLowerCase() !== mergeNodeId.toLowerCase(),
     ) || [];
 
   if (branchesFromNodeData.length > 0) {
@@ -85,8 +80,7 @@ const resolveConditionalBranches = (
       edges
         .filter(
           (e) =>
-            e.source === conditionalNode.id &&
-            e.target.toLowerCase() !== mergeNodeId.toLowerCase(),
+            e.source === conditionalNode.id && e.target.toLowerCase() !== mergeNodeId.toLowerCase(),
         )
         .map((e) => e.target)
         .filter((target) => target && target.trim() !== ""),
@@ -98,10 +92,7 @@ const resolveConditionalBranches = (
  * Validates the structure of a React Flow graph.
  * Returns a string describing the validation error if the graph is invalid; otherwise, null if the graph is valid.
  */
-export const isValidFlowGraph = (
-  nodes: Node<NodeDataType>[],
-  edges: Edge[],
-): string | null => {
+export const isValidFlowGraph = (nodes: Node<NodeDataType>[], edges: Edge[]): string | null => {
   if (nodes.length === 0) {
     return "Flow has no nodes.";
   }
@@ -110,19 +101,11 @@ export const isValidFlowGraph = (
 
   // Validate edges
   for (const edge of edges) {
-    if (
-      !edge.source ||
-      edge.source.trim() === "" ||
-      !edge.target ||
-      edge.target.trim() === ""
-    ) {
+    if (!edge.source || edge.source.trim() === "" || !edge.target || edge.target.trim() === "") {
       return "Flow contains edge(s) with missing source or target.";
     }
 
-    if (
-      !nodeIdSet.has(edge.source.toLowerCase()) ||
-      !nodeIdSet.has(edge.target.toLowerCase())
-    ) {
+    if (!nodeIdSet.has(edge.source.toLowerCase()) || !nodeIdSet.has(edge.target.toLowerCase())) {
       return `Flow contains dangling edge: '${edge.source}' -> '${edge.target}'.`;
     }
   }
@@ -143,11 +126,7 @@ export const isValidFlowGraph = (
       return `Conditional node '${conditionalNode.id}' has invalid merge node id '${mergeNodeId}'.`;
     }
 
-    const branches = resolveConditionalBranches(
-      conditionalNode,
-      edges,
-      mergeNodeId,
-    );
+    const branches = resolveConditionalBranches(conditionalNode, edges, mergeNodeId);
     if (branches.length === 0) {
       return `Conditional node '${conditionalNode.id}' has no branch entry nodes.`;
     }
@@ -170,9 +149,7 @@ export const isValidFlowGraph = (
     }
 
     const hasBodyEdge = edges.some(
-      (e) =>
-        e.source === loopNode.id &&
-        e.target.toLowerCase() !== mergeNodeId.toLowerCase(),
+      (e) => e.source === loopNode.id && e.target.toLowerCase() !== mergeNodeId.toLowerCase(),
     );
 
     if (!hasBodyEdge) {

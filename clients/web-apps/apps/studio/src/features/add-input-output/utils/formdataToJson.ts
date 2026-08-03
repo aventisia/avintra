@@ -1,13 +1,12 @@
 import { DCPFieldSchemaType } from "@/features/dynamic-config-panel";
+
 import {
   FieldItemFormValues,
   InputsOutputsFieldsFormType,
   OutputFieldFormValues,
 } from "../constants/inputs-outputs-zod-schema";
 
-export const formDataToDCPJson = (
-  formData: InputsOutputsFieldsFormType,
-): DCPFieldSchemaType[] => {
+export const formDataToDCPJson = (formData: InputsOutputsFieldsFormType): DCPFieldSchemaType[] => {
   const transformField = (
     field: FieldItemFormValues | OutputFieldFormValues,
   ): DCPFieldSchemaType => {
@@ -40,11 +39,7 @@ export const formDataToDCPJson = (
     return baseField;
   };
 
-  const transformDefaultValue = (
-    type: string,
-    value: unknown,
-    name: string,
-  ): unknown => {
+  const transformDefaultValue = (type: string, value: unknown, name: string): unknown => {
     if (type === "config-panel-output") {
       return {
         value: value || name, // output field's default value should be the name

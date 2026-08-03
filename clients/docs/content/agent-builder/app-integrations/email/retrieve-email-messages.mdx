@@ -5,29 +5,30 @@ import { Callout, Steps } from "nextra/components";
 The **Retrieve Email Messages** node is designed to connect to an IMAP server and retrieve email messages. This node can be used in workflows where extracting and processing emails are needed, such as customer service setups, automated ticket systems, and data logging.
 
 Use this node if you need to:
+
 - Fetch emails from specific folders like "Inbox".
 - Filter emails based on sender, recipient, or content for targeted processing.
 - Retrieve and optionally mark emails as read or save attachments.
 
 ## Configuration Options
 
-| Field Name                     | Description                                                                                | Input Type | Required? | Default Value               |
-| ------------------------------ | ------------------------------------------------------------------------------------------ | ---------- | --------- | --------------------------- |
-| **IMAP Server**                | The URL of the IMAP server you need to connect to.                                         | Text       | Yes       | _(empty)_                   |
-| **Username**                   | Your email username for logging into the server.                                           | Text       | Yes       | _(empty)_                   |
-| **Password**                   | The password for your email account.                                                       | Password   | Yes       | _(empty)_                   |
-| **Port**                       | The port number for connecting to the IMAP server.                                         | Text       | No        | 993                         |
-| **Enable SSL**                 | Enables SSL encryption for secure email retrieval.                                         | Switch     | No        | true                        |
-| **Accept Untrusted Certificates** | Allows connection with untrusted SSL certificates.                                  | Switch     | No        | false                       |
-| **Mail Folder**                | The folder name to retrieve emails from, like "Inbox".                                     | Text       | No        | Inbox                       |
-| **Retrieve Mode**              | Specifies which emails to retrieve (all, unread, or read).                                 | Select     | No        | AllEmails                   |
-| **Mark as Read**               | Sets retrieved emails as read if checked.                                                  | Switch     | No        | false                       |
-| **From Field Contains**        | Retrieves emails from senders whose addresses contain this text.                           | Text       | No        | _(empty)_                   |
-| **To Field Contains**          | Retrieves emails to recipients whose addresses contain this text.                          | Text       | No        | _(empty)_                   |
-| **Subject Contains**           | Retrieves emails with subjects containing this specific text.                              | Text       | No        | _(empty)_                   |
-| **Body Contains**              | Filters emails whose bodies contain this particular text.                                  | Text       | No        | _(empty)_                   |
-| **Save Attachments**           | Optionally save attached files from the emails.                                            | Select     | No        | DoNotSaveAttachments        |
-| **Save Attachments Into**      | Specifies directory path to save attachments (required if "Save Attachments" is enabled).   | Text       | No        | _(empty)_                   |
+| Field Name                        | Description                                                                               | Input Type | Required? | Default Value        |
+| --------------------------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | -------------------- |
+| **IMAP Server**                   | The URL of the IMAP server you need to connect to.                                        | Text       | Yes       | _(empty)_            |
+| **Username**                      | Your email username for logging into the server.                                          | Text       | Yes       | _(empty)_            |
+| **Password**                      | The password for your email account.                                                      | Password   | Yes       | _(empty)_            |
+| **Port**                          | The port number for connecting to the IMAP server.                                        | Text       | No        | 993                  |
+| **Enable SSL**                    | Enables SSL encryption for secure email retrieval.                                        | Switch     | No        | true                 |
+| **Accept Untrusted Certificates** | Allows connection with untrusted SSL certificates.                                        | Switch     | No        | false                |
+| **Mail Folder**                   | The folder name to retrieve emails from, like "Inbox".                                    | Text       | No        | Inbox                |
+| **Retrieve Mode**                 | Specifies which emails to retrieve (all, unread, or read).                                | Select     | No        | AllEmails            |
+| **Mark as Read**                  | Sets retrieved emails as read if checked.                                                 | Switch     | No        | false                |
+| **From Field Contains**           | Retrieves emails from senders whose addresses contain this text.                          | Text       | No        | _(empty)_            |
+| **To Field Contains**             | Retrieves emails to recipients whose addresses contain this text.                         | Text       | No        | _(empty)_            |
+| **Subject Contains**              | Retrieves emails with subjects containing this specific text.                             | Text       | No        | _(empty)_            |
+| **Body Contains**                 | Filters emails whose bodies contain this particular text.                                 | Text       | No        | _(empty)_            |
+| **Save Attachments**              | Optionally save attached files from the emails.                                           | Select     | No        | DoNotSaveAttachments |
+| **Save Attachments Into**         | Specifies directory path to save attachments (required if "Save Attachments" is enabled). | Text       | No        | _(empty)_            |
 
 ## Expected Output Format
 
@@ -63,6 +64,7 @@ Set the **Mail Folder** you wish to retrieve emails from, e.g., "Inbox".
 ### Step 7
 
 Select **Retrieve Mode** to specify which emails you want:
+
 - **All email messages**
 - **Unread email messages only**
 - **Read email messages only**
@@ -82,25 +84,26 @@ The emails retrieved will be available as **RetrievedEmails** for further proces
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure your server credentials and mail folder are correct to retrieve emails successfully.
+  Ensure your server credentials and mail folder are correct to retrieve emails
+  successfully.
 </Callout>
 
 ## Input/Output Examples
 
-| Retrieve Mode                | Filter                  | Save Attachments | Output Value         |
-| ---------------------------- | ----------------------- | ---------------- | -------------------- |
-| All email messages           | _(none)_                | No               | Collection of emails |
-| Unread email messages only   | From example@domain.com | No               | Emails from domain   |
-| Read email messages only     | Subject 'Invoice'       | Yes              | Emails with invoices |
+| Retrieve Mode              | Filter                  | Save Attachments | Output Value         |
+| -------------------------- | ----------------------- | ---------------- | -------------------- |
+| All email messages         | _(none)_                | No               | Collection of emails |
+| Unread email messages only | From example@domain.com | No               | Emails from domain   |
+| Read email messages only   | Subject 'Invoice'       | Yes              | Emails with invoices |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                            | Solution                                                                                  |
-| ---------------------------------- | ----------------------------------------------------------------------------------------- |
-| **Unable to connect**              | Double-check the IMAP server address, username, password, and ensure network connectivity. |
-| **Port number mismatch**           | Confirm if the correct IMAP port number is used (default is 993).                         |
-| **SSL issues**                     | If encountering SSL certificate problems, verify SSL settings or set Accept Untrusted Certificates to true cautiously. |
-| **Missing emails**                 | Ensure the correct Mail Folder and Retrieve Mode are selected.                            |
+| Problem                  | Solution                                                                                                               |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| **Unable to connect**    | Double-check the IMAP server address, username, password, and ensure network connectivity.                             |
+| **Port number mismatch** | Confirm if the correct IMAP port number is used (default is 993).                                                      |
+| **SSL issues**           | If encountering SSL certificate problems, verify SSL settings or set Accept Untrusted Certificates to true cautiously. |
+| **Missing emails**       | Ensure the correct Mail Folder and Retrieve Mode are selected.                                                         |
 
 ## Real-World Use Cases
 

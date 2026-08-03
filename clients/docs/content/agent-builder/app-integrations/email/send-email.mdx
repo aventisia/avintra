@@ -5,30 +5,31 @@ import { Callout, Steps } from "nextra/components";
 The **Send Email** node allows you to create and send email messages effortlessly. Use it to notify clients, share reports, or collaborate with team members via email directly from the platform.
 
 With this node, you can:
+
 - Specify recipient details (To, CC, BCC).
 - Define the email content (Subject, Body) and choose a format (Text or HTML).
 - Attach files and configure SMTP server settings.
 
 ## Configuration Options
 
-| Field Name                           | Description                                                                                                                                         | Input Type | Required? | Default Value |
-| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **From**                             | The sender's email address.                                                                                                                         | Text       | Yes       | (empty)       |
-| **To**                               | The recipient's email address(es), comma-separated.                                                                                                 | Text       | Yes       | (empty)       |
-| **CC**                               | The CC recipients' email addresses, comma-separated.                                                                                                | Text       | No        | (empty)       |
-| **BCC**                              | The BCC recipients' email addresses, comma-separated.                                                                                               | Text       | No        | (empty)       |
-| **Subject**                          | The subject of the email.                                                                                                                           | Text       | Yes       | (empty)       |
-| **Body**                             | The body of the email.                                                                                                                              | Text       | Yes       | (empty)       |
-| **Body Format**                      | The format of the email body; choose **Plain** for text or **Html** for HTML formatting.                                                            | Select     | No        | Text          |
-| **Attachments**                      | Paths to files to attach to the email, comma-separated.                                                                                             | Text       | No        | (empty)       |
-| **SMTP Server**                      | The SMTP server URL used to send the email.                                                                                                         | Text       | Yes       | (empty)       |
-| **Server Port**                      | The port number for the SMTP server. Adjust if not using the default `587`.                                                                         | Text       | No        | 587           |
-| **Security Protocol**                | The security protocol for the connection. Options include **None**, **Auto**, **SslOnConnect**, **StartTls**, **StartTlsWhenAvailable**.           | Select     | No        | Auto          |
-| **SMTP Server Needs Authentication** | Enable if your SMTP server requires an authentication login.                                                                                        | Switch     | No        | True          |
-| **User Name**                        | The username for authenticating with the SMTP server.                                                                                               | Text       | No        | (empty)       |
-| **Password**                         | The password for authenticating with the SMTP server.                                                                                               | Password   | No        | (empty)       |
-| **Accept Untrusted Certificates**    | Enable if the SMTP server accepts untrusted SSL certificates.                                                                                       | Switch     | No        | False         |
-| **Timeout (seconds)**                | Specify the connection timeout in seconds. Adjust using longer times for slower networks or servers.                                                | Text       | No        | 30            |
+| Field Name                           | Description                                                                                                                              | Input Type | Required? | Default Value |
+| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **From**                             | The sender's email address.                                                                                                              | Text       | Yes       | (empty)       |
+| **To**                               | The recipient's email address(es), comma-separated.                                                                                      | Text       | Yes       | (empty)       |
+| **CC**                               | The CC recipients' email addresses, comma-separated.                                                                                     | Text       | No        | (empty)       |
+| **BCC**                              | The BCC recipients' email addresses, comma-separated.                                                                                    | Text       | No        | (empty)       |
+| **Subject**                          | The subject of the email.                                                                                                                | Text       | Yes       | (empty)       |
+| **Body**                             | The body of the email.                                                                                                                   | Text       | Yes       | (empty)       |
+| **Body Format**                      | The format of the email body; choose **Plain** for text or **Html** for HTML formatting.                                                 | Select     | No        | Text          |
+| **Attachments**                      | Paths to files to attach to the email, comma-separated.                                                                                  | Text       | No        | (empty)       |
+| **SMTP Server**                      | The SMTP server URL used to send the email.                                                                                              | Text       | Yes       | (empty)       |
+| **Server Port**                      | The port number for the SMTP server. Adjust if not using the default `587`.                                                              | Text       | No        | 587           |
+| **Security Protocol**                | The security protocol for the connection. Options include **None**, **Auto**, **SslOnConnect**, **StartTls**, **StartTlsWhenAvailable**. | Select     | No        | Auto          |
+| **SMTP Server Needs Authentication** | Enable if your SMTP server requires an authentication login.                                                                             | Switch     | No        | True          |
+| **User Name**                        | The username for authenticating with the SMTP server.                                                                                    | Text       | No        | (empty)       |
+| **Password**                         | The password for authenticating with the SMTP server.                                                                                    | Password   | No        | (empty)       |
+| **Accept Untrusted Certificates**    | Enable if the SMTP server accepts untrusted SSL certificates.                                                                            | Switch     | No        | False         |
+| **Timeout (seconds)**                | Specify the connection timeout in seconds. Adjust using longer times for slower networks or servers.                                     | Text       | No        | 30            |
 
 ## Expected Output Format
 
@@ -84,7 +85,9 @@ Set the desired **Timeout** period to prevent early termination of the connectio
 </Steps>
 
 <Callout type="warning" title="Security Notice">
-  Always ensure connection security by using reliable SMTP server configurations and avoiding the acceptance of untrusted certificates unless absolutely necessary.
+  Always ensure connection security by using reliable SMTP server configurations
+  and avoiding the acceptance of untrusted certificates unless absolutely
+  necessary.
 </Callout>
 
 ## Input/Output Examples
@@ -96,12 +99,12 @@ Set the desired **Timeout** period to prevent early termination of the connectio
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                            | Solution                                                                                                                                                                      |
-| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Email not sending**                              | Verify SMTP server settings and ensure credentials are correct. If using authentication, make sure **User Name** and **Password** are accurate. Check internet connection.     |
-| **Attachments not appearing**                      | Make sure file paths in **Attachments** are correct and accessible. Ensure they're separated by commas without spaces.                                                         |
-| **Format rendering incorrectly**                   | Double-check **Body Format** setting use HTML only when familiar with HTML structuring and styling. For simple emails, ensure "Plain" is selected.                             |
-| **Timeout issues**                                 | Increase the **Timeout** setting if initial attempts to send do not complete. Check if firewall settings may be obstructing longer connections.                                |
+| Problem                          | Solution                                                                                                                                                                   |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Email not sending**            | Verify SMTP server settings and ensure credentials are correct. If using authentication, make sure **User Name** and **Password** are accurate. Check internet connection. |
+| **Attachments not appearing**    | Make sure file paths in **Attachments** are correct and accessible. Ensure they're separated by commas without spaces.                                                     |
+| **Format rendering incorrectly** | Double-check **Body Format** setting use HTML only when familiar with HTML structuring and styling. For simple emails, ensure "Plain" is selected.                         |
+| **Timeout issues**               | Increase the **Timeout** setting if initial attempts to send do not complete. Check if firewall settings may be obstructing longer connections.                            |
 
 ## Real-World Use Cases
 

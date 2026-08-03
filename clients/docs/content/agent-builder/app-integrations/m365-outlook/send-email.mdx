@@ -6,13 +6,13 @@ The **Send Email** node allows you to send emails through Microsoft 365 using th
 
 ## Configuration Options
 
-| Field Name              | Description                                                        | Input Type | Required? | Default Value |
-| ----------------------- | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Email Message JSON**  | JSON string that represents the email message you want to send.    | Text       | Yes       | _(empty)_     |
-| **User Email**          | The email address of the mailbox owner.                            | Text       | Yes       | _(empty)_     |
-| **Tenant ID**           | The Azure AD Tenant ID (Directory ID).                             | Text       | Yes       | _(empty)_     |
-| **Client ID**           | The Azure AD Application (Client) ID.                              | Text       | Yes       | _(empty)_     |
-| **Client Secret**       | The Azure AD Application Client Secret.                            | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                     | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Email Message JSON** | JSON string that represents the email message you want to send. | Text       | Yes       | _(empty)_     |
+| **User Email**         | The email address of the mailbox owner.                         | Text       | Yes       | _(empty)_     |
+| **Tenant ID**          | The Azure AD Tenant ID (Directory ID).                          | Text       | Yes       | _(empty)_     |
+| **Client ID**          | The Azure AD Application (Client) ID.                           | Text       | Yes       | _(empty)_     |
+| **Client Secret**      | The Azure AD Application Client Secret.                         | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -48,10 +48,12 @@ Input the **Client Secret** for the Azure AD application, ensuring you keep this
 ### Step 7
 
 Once configured, the email will be sent automatically upon the execution of the flow.
+
 </Steps>
 
 <Callout type="warning" title="Security Notice">
-  Ensure your **Client Secret** is stored securely and not exposed to unauthorized users, as it grants access to your email-sending capabilities.
+  Ensure your **Client Secret** is stored securely and not exposed to
+  unauthorized users, as it grants access to your email-sending capabilities.
 </Callout>
 
 ## Input/Output Examples
@@ -61,11 +63,11 @@ Once configured, the email will be sent automatically upon the execution of the 
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                                                          |
-|-------------------------------------------------| ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Email JSON format**                   | Double-check the JSON string for correct syntax and necessary fields.                                                                                             |
-| **Incorrect Tenant ID, Client ID, or Secret**   | Ensure these credentials match those in your Azure AD setup. Incorrect details will prevent the email from being sent.                                            |
-| **Emails not being sent**                       | Confirm all fields are correctly filled and that your Azure AD app has the required permissions to send emails via Microsoft Graph API.                            |
+| Problem                                       | Solution                                                                                                                                |
+| --------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Email JSON format**                 | Double-check the JSON string for correct syntax and necessary fields.                                                                   |
+| **Incorrect Tenant ID, Client ID, or Secret** | Ensure these credentials match those in your Azure AD setup. Incorrect details will prevent the email from being sent.                  |
+| **Emails not being sent**                     | Confirm all fields are correctly filled and that your Azure AD app has the required permissions to send emails via Microsoft Graph API. |
 
 ## Real-World Use Cases
 

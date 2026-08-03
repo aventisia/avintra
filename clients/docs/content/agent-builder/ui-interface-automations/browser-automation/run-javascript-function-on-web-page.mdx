@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                                                                     | Input Type | Required? | Default Value |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                                                  | Text       | Yes       | _(empty)_     |
-| **JavaScript Function**  | The JavaScript function to execute (e.g., `document.getElementById("myId").value = "test";` or `return document.title`).                        | Text       | Yes       | _(empty)_     |
-| **Arguments**            | Optional arguments to pass to the script function.                                                                                             | Text       | No        | _(empty)_     |
-| **Timeout Seconds**      | Maximum time in seconds to wait for script execution before failing.                                                                           | Text       | No        | 60            |
+| Field Name               | Description                                                                                                              | Input Type | Required? | Default Value |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                        | Text       | Yes       | _(empty)_     |
+| **JavaScript Function**  | The JavaScript function to execute (e.g., `document.getElementById("myId").value = "test";` or `return document.title`). | Text       | Yes       | _(empty)_     |
+| **Arguments**            | Optional arguments to pass to the script function.                                                                       | Text       | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for script execution before failing.                                                     | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -56,7 +56,8 @@ The outcome of the execution will be available as **Result** for use in subseque
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the JavaScript code you input is compatible with the structure of the web page you are working with.
+  Ensure that the JavaScript code you input is compatible with the structure of
+  the web page you are working with.
 </Callout>
 
 ## Input/Output Examples
@@ -69,12 +70,12 @@ The outcome of the execution will be available as **Result** for use in subseque
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                                                                                                                                           |
-| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Web Browser Instance is not valid**       | Ensure the web browser instance variable is correctly set and is active.                                                                                                                           |
-| **JavaScript Function syntax errors**       | Double-check your JavaScript syntax for errors or missing components.                                                                                                                              |
-| **No results are returned**                 | Verify that your JavaScript function includes a `return` statement if you expect a result.                                                                                                         |
-| **Timeout exceeded**                        | Increase the **Timeout Seconds** to allow more time for script execution if the webpage or script complexity causes slow processing.                                                                |
+| Problem                               | Solution                                                                                                                             |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Web Browser Instance is not valid** | Ensure the web browser instance variable is correctly set and is active.                                                             |
+| **JavaScript Function syntax errors** | Double-check your JavaScript syntax for errors or missing components.                                                                |
+| **No results are returned**           | Verify that your JavaScript function includes a `return` statement if you expect a result.                                           |
+| **Timeout exceeded**                  | Increase the **Timeout Seconds** to allow more time for script execution if the webpage or script complexity causes slow processing. |
 
 ## Real-World Use Cases
 

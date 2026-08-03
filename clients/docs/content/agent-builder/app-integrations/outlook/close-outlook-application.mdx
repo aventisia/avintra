@@ -6,9 +6,9 @@ The **Close Outlook Application** node is designed to safely close an instance o
 
 ## Configuration Options
 
-| Field Name              | Description                                           | Input Type | Required? | Default Value |
-| ----------------------- | ----------------------------------------------------- | ---------- | --------- | ------------- |
-| **Outlook Application** | The specific instance of Outlook you want to close.   | Text       | Yes       | _(empty)_     |
+| Field Name              | Description                                         | Input Type | Required? | Default Value |
+| ----------------------- | --------------------------------------------------- | ---------- | --------- | ------------- |
+| **Outlook Application** | The specific instance of Outlook you want to close. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -32,22 +32,23 @@ Once configured, proceed with your flow to execute and close the Outlook applica
 </Steps>
 
 <Callout type="warning" title="Important Note">
-  Ensure that all necessary data is saved in the Outlook instance before closing it to prevent data loss.
+  Ensure that all necessary data is saved in the Outlook instance before closing
+  it to prevent data loss.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Instance Reference | Action                | Output      |
-| ------------------------ | --------------------- | ----------- |
-| `OutlookApp123`          | Application closed    | None        |
+| Input Instance Reference | Action             | Output |
+| ------------------------ | ------------------ | ------ |
+| `OutlookApp123`          | Application closed | None   |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                              | Solution                                                                                                                                                   |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Outlook Instance**         | Ensure that the instance you specify matches an actively running Outlook application. Validate your instance reference before using it in this node.        |
-| **Unsaved Changes in Outlook**       | Remember to save any unsaved emails or work in Outlook to prevent data loss. This node will close Outlook without prompting to save changes.               |
-| **Outlook Application Not Closing**  | Verify that there are no security or permission issues preventing Outlook from closing. Check if manual intervention is needed to close any open dialogs.   |
+| Problem                             | Solution                                                                                                                                                  |
+| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Outlook Instance**        | Ensure that the instance you specify matches an actively running Outlook application. Validate your instance reference before using it in this node.      |
+| **Unsaved Changes in Outlook**      | Remember to save any unsaved emails or work in Outlook to prevent data loss. This node will close Outlook without prompting to save changes.              |
+| **Outlook Application Not Closing** | Verify that there are no security or permission issues preventing Outlook from closing. Check if manual intervention is needed to close any open dialogs. |
 
 ## Real-World Use Cases
 

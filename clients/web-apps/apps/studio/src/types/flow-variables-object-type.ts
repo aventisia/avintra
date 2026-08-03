@@ -1,4 +1,4 @@
 export interface FlowVariablesObjectType {
-    nodeId: string,
-    outputs: string[],
+  nodeId: string;
+  outputs: string[];
 }

@@ -2,16 +2,16 @@ import { Callout, Steps } from "nextra/components";
 
 # Get Selected Radio Button
 
-The **Get Selected Radio Button** node allows you to retrieve the name of the selected radio button from a group on a user interface. This functionality is useful when you need to process or respond to user choices made through radio buttons, often used in forms or settings selection. 
+The **Get Selected Radio Button** node allows you to retrieve the name of the selected radio button from a group on a user interface. This functionality is useful when you need to process or respond to user choices made through radio buttons, often used in forms or settings selection.
 
 For example, if you're automating a form submission process, you can use this node to determine which option a user selected, enabling subsequent workflow actions to handle the choice appropriately.
 
 ## Configuration Options
 
-| Field Name                   | Description                                                                                   | Input Type | Required? | Default Value |
-| ---------------------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **UI Element**               | The specific UI component (group of radio buttons) you want to read the selection from.       | Text       | Yes       | _(empty)_     |
-| **Max Wait Time (seconds)**  | The maximum duration to wait for the UI element to be available, in seconds.                  | Text       | No        | 5             |
+| Field Name                  | Description                                                                             | Input Type | Required? | Default Value |
+| --------------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**              | The specific UI component (group of radio buttons) you want to read the selection from. | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)** | The maximum duration to wait for the UI element to be available, in seconds.            | Text       | No        | 5             |
 
 ## Expected Output Format
 
@@ -41,23 +41,24 @@ Once configured, the node will output the name of the selected radio button, ava
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the UI Element field is correctly specified to avoid issues with locating the radio button group.
+  Ensure that the UI Element field is correctly specified to avoid issues with
+  locating the radio button group.
 </Callout>
 
 ## Input/Output Examples
 
-| UI Element          | Max Wait Time (seconds) | Selected Radio Button Name | Output Value | Output Type |
-| ------------------- | ----------------------- | -------------------------- | ------------ | ----------- |
-| FormRadioGroup      | 5                       | Option A                   | Option A     | String      |
-| UserPreferences     | 10                      | Option B                   | Option B     | String      |
-| SettingsRadioGroup  | 3                       | _(none)_                   | _(empty)_    | String      |
+| UI Element         | Max Wait Time (seconds) | Selected Radio Button Name | Output Value | Output Type |
+| ------------------ | ----------------------- | -------------------------- | ------------ | ----------- |
+| FormRadioGroup     | 5                       | Option A                   | Option A     | String      |
+| UserPreferences    | 10                      | Option B                   | Option B     | String      |
+| SettingsRadioGroup | 3                       | _(none)_                   | _(empty)_    | String      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                    | Solution                                                                                                                                               |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **UI Element not found**                                   | Check that the UI Element path is correctly specified and that the element is active on the screen within the max wait time configured.                  |
-| **No radio button selected but expected**                  | Ensure that the UI is correctly updating on screen, as the process may be checking too early. Increasing the wait time or reviewing the flow timing may help. |
+| Problem                                   | Solution                                                                                                                                                      |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **UI Element not found**                  | Check that the UI Element path is correctly specified and that the element is active on the screen within the max wait time configured.                       |
+| **No radio button selected but expected** | Ensure that the UI is correctly updating on screen, as the process may be checking too early. Increasing the wait time or reviewing the flow timing may help. |
 
 ## Real-World Use Cases
 

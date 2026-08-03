@@ -1,11 +1,13 @@
 import { cn } from "@avplatform/ui/lib";
-import { format } from "date-fns";
-import { FlowVersionItemActions } from "../flow-version-item-actions";
 import { EyeIcon, PencilSquareIcon } from "@heroicons/react/24/outline";
-import { useFlowsVersionsStore } from "../../stores/flow-versions-store";
-import { useShallow } from "zustand/react/shallow";
-import { FlowVersionDto } from "../../dtos/flow-version-dto";
+import { format } from "date-fns";
 import { RocketIcon } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
+
+import { FlowVersionDto } from "../../dtos/flow-version-dto";
+import { useFlowsVersionsStore } from "../../stores/flow-versions-store";
+import { FlowVersionItemActions } from "../flow-version-item-actions";
+
 interface FVItemProps {
   flowVersion: FlowVersionDto;
 }
@@ -24,11 +26,7 @@ const FVItem = ({ flowVersion }: FVItemProps) => {
 
   const isView = id == versionID;
   return (
-    <div
-      className={cn(
-        "mb-2 flex w-full items-center gap-3 px-1 py-0.5 last:mb-0",
-      )}
-    >
+    <div className={cn("mb-2 flex w-full items-center gap-3 px-1 py-0.5 last:mb-0")}>
       {/* User thumbnail */}
 
       {isPublished ? (
@@ -43,8 +41,7 @@ const FVItem = ({ flowVersion }: FVItemProps) => {
 
         {/* Time container */}
         <div className="mt-[1px] flex items-center text-2xs text-muted-foreground">
-          {isPublished && "Published on "}{" "}
-          {createdOn && getFormattedDate(createdOn)}
+          {isPublished && "Published on "} {createdOn && getFormattedDate(createdOn)}
         </div>
       </div>
 

@@ -62,9 +62,9 @@ const SkillsCrudDialogContent = lazy(() =>
   ),
 );
 const ToolCrudDialogContent = lazy(() =>
-  import("@/features/02-configure/tools/components/tool-crud-dialog/ToolCrudDialog").then(
-    (m) => ({ default: m.ToolCrudDialogContent }),
-  ),
+  import("@/features/02-configure/tools/components/tool-crud-dialog/ToolCrudDialog").then((m) => ({
+    default: m.ToolCrudDialogContent,
+  })),
 );
 const VaultCrudDialogContent = lazy(() =>
   import("@/features/02-configure/vault-table/components/vault-crud-dialog/VaultCrudDialogContent").then(

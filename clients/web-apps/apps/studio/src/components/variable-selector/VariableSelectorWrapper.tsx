@@ -1,13 +1,16 @@
-import { useVariableSelectorStore } from "@/stores/variable-selector-store";
 import { cn } from "@avplatform/ui/lib";
 import { Popover, PopoverContent } from "@avplatform/ui/popover";
-import { useShallow } from "zustand/react/shallow";
-import { VariableSelectorContent } from "./VariableSelectorContent";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { ConfigSelectorContent } from "./ConfigSelectorContent";
+import { useShallow } from "zustand/react/shallow";
 
-interface VariableSelectorWrapperProps
-  extends React.ComponentPropsWithoutRef<typeof PopoverContent> {
+import { useVariableSelectorStore } from "@/stores/variable-selector-store";
+
+import { ConfigSelectorContent } from "./ConfigSelectorContent";
+import { VariableSelectorContent } from "./VariableSelectorContent";
+
+interface VariableSelectorWrapperProps extends React.ComponentPropsWithoutRef<
+  typeof PopoverContent
+> {
   /** Name of the input field */
   inputUniqueName?: string;
 

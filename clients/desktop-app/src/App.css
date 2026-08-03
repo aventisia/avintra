@@ -80,7 +80,9 @@
   border: 1.5px solid var(--input);
   border-radius: var(--radius);
 
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .ui-input::placeholder {
@@ -173,7 +175,9 @@
   border-radius: calc(var(--radius) * 2.5);
   padding: 3rem 2.5rem;
 
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.08),
+    0 2px 8px rgba(0, 0, 0, 0.04);
 
   animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }

@@ -4,9 +4,9 @@
  * - Normalizes so `label === value`
  * - Last occurrence wins
  */
-export function uniqueAndNormalizeArray<
-  T extends { value: string; label: string },
->(arr: readonly T[]): T[] {
+export function uniqueAndNormalizeArray<T extends { value: string; label: string }>(
+  arr: readonly T[],
+): T[] {
   const map = new Map<string, T>();
 
   for (const item of arr) {

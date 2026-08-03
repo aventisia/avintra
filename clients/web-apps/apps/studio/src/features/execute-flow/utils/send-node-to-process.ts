@@ -73,10 +73,7 @@ const findNearestLoopBranchEndNode = (startNodeId: string) => {
     visited.add(currentId);
 
     const currentNode = nodes.find((node) => node.id === currentId);
-    if (
-      currentNode?.type === "branchEndNode" &&
-      currentNode.data?.groupType === "LoopBranch"
-    ) {
+    if (currentNode?.type === "branchEndNode" && currentNode.data?.groupType === "LoopBranch") {
       return currentNode;
     }
 
@@ -138,9 +135,7 @@ const sendNextNodeToProcess = (
 
   // If currentNodeId is not provided, then execution has just started, then send the trigger node to process
   if (!currentNodeId) {
-    const triggerNode = getNodesFromLS().find(
-      (node) => node.type === "triggerNode",
-    );
+    const triggerNode = getNodesFromLS().find((node) => node.type === "triggerNode");
 
     // Send node to process
     sendNodeToProcess(triggerNode?.id || "nodeId", sendCommand);
@@ -154,8 +149,7 @@ const sendNextNodeToProcess = (
   const targetNodeId = getEdgesFromLS().find(
     (edge) =>
       edge.source === currentNodeId &&
-      (edge.sourceHandle === undefined ||
-        edge.sourceHandle !== "branch-return") &&
+      (edge.sourceHandle === undefined || edge.sourceHandle !== "branch-return") &&
       edge.type != "loopBack",
   )?.target;
 
@@ -188,9 +182,7 @@ const sendExecutionComplete = (
       toast.info("Execution paused");
       break;
     case "error":
-      toast.error(
-        "Execution failed. Please check the execution logs for details.",
-      );
+      toast.error("Execution failed. Please check the execution logs for details.");
       try {
         const parsedData = data ? JSON.parse(data) : {};
         console.error("Execution failed", parsedData);
@@ -232,21 +224,14 @@ const processConditionalNode = (
     conditionalNodeData.branches = conditionalNodeData.branches.slice(1);
 
     // Add conditionalNodeData to execution group
-    const newExecutionGroup = [
-      ...getConditionalExecutionGroupFromLS(),
-      conditionalNodeData,
-    ];
+    const newExecutionGroup = [...getConditionalExecutionGroupFromLS(), conditionalNodeData];
 
     // Set execution group with conditional node data
-    localStorage.setItem(
-      "conditionalExecutionGroup",
-      JSON.stringify(newExecutionGroup),
-    );
+    localStorage.setItem("conditionalExecutionGroup", JSON.stringify(newExecutionGroup));
   } else {
     // If branch is processed and conditionalMode is SwitchCase, then exit the conditional group processing
     if (
-      (isBranchProcessed &&
-        currentExecutionGroup.conditionalMode === "SwitchCase") ||
+      (isBranchProcessed && currentExecutionGroup.conditionalMode === "SwitchCase") ||
       currentExecutionGroup.branches.length === 0
     ) {
       // Send mergeBranchesNode to process
@@ -255,11 +240,7 @@ const processConditionalNode = (
       // If processing left, remove the conditional node data from execution group
       localStorage.setItem(
         "conditionalExecutionGroup",
-        JSON.stringify(
-          getConditionalExecutionGroupFromLS().filter(
-            (item) => item.id !== node.id,
-          ),
-        ),
+        JSON.stringify(getConditionalExecutionGroupFromLS().filter((item) => item.id !== node.id)),
       );
 
       return;
@@ -287,8 +268,7 @@ const processConditionalNode = (
 
   // Get branch node
   const branchNode = getNodesFromLS().find((node) => node.id === branchId) as
-    | Node<NodeDataType>
-    | undefined; // Added undefined for safety
+    Node<NodeDataType> | undefined; // Added undefined for safety
 
   // Exclude disabled OR missing branches
   if (!branchNode || branchNode.data?.isDisabled) {
@@ -301,9 +281,8 @@ const processConditionalNode = (
 
   // Get next node id from edges
   const nextNodeId =
-    getEdgesFromLS().find(
-      (edge) => edge.source === branchNode?.id && edge.type != "loopBack",
-    )?.target ?? "nextNodeId";
+    getEdgesFromLS().find((edge) => edge.source === branchNode?.id && edge.type != "loopBack")
+      ?.target ?? "nextNodeId";
 
   // If branch is default branch, then send next node to process
   if (branchNode.data?.name === "DefaultBranch") {
@@ -315,9 +294,7 @@ const processConditionalNode = (
   if (sendCommand) {
     sendCommand(
       "check-condition",
-      JSON.stringify(
-        getConditionalBranchNodeData(branchNode, node.id, nextNodeId),
-      ),
+      JSON.stringify(getConditionalBranchNodeData(branchNode, node.id, nextNodeId)),
     );
   }
 };
@@ -343,33 +320,24 @@ const processLoopNode = (
     const newExecutionGroup = [...getLoopExecutionGroupFromLS(), loopNodeData];
 
     // Set execution group with loop node data
-    localStorage.setItem(
-      "loopExecutionGroup",
-      JSON.stringify(newExecutionGroup),
-    );
+    localStorage.setItem("loopExecutionGroup", JSON.stringify(newExecutionGroup));
 
     currentExecutionGroup = loopNodeData;
   }
 
   // Get next node id from edges
   const nextNodeId =
-    getEdgesFromLS().find(
-      (edge) => edge.source === node.id && edge.type != "loopBack",
-    )?.target ?? "nextNodeId";
+    getEdgesFromLS().find((edge) => edge.source === node.id && edge.type != "loopBack")?.target ??
+    "nextNodeId";
 
   if (currentExecutionGroup?.controlAction === "break") {
-    const updatedGroup = getLoopExecutionGroupFromLS().filter(
-      (item) => item.id !== node.id,
-    );
+    const updatedGroup = getLoopExecutionGroupFromLS().filter((item) => item.id !== node.id);
     localStorage.setItem("loopExecutionGroup", JSON.stringify(updatedGroup));
     sendNodeToProcess(nextNodeId, sendCommand);
     return;
   }
   // Send loop node to check condition
-  sendCommand(
-    "check-loop-condition",
-    JSON.stringify(getWpfLoopNodeData(node, nextNodeId)),
-  );
+  sendCommand("check-loop-condition", JSON.stringify(getWpfLoopNodeData(node, nextNodeId)));
 };
 
 async function executeSubflow(
@@ -377,9 +345,9 @@ async function executeSubflow(
   sendCommand: (command: WebSocketCommandType, data?: string) => void,
   isBlock: boolean = false,
 ) {
-  const subFlowObj = (
-    isBlock ? node.data?.selectedBlock : node.data?.selectedAgent
-  ) as { [key: string]: string };
+  const subFlowObj = (isBlock ? node.data?.selectedBlock : node.data?.selectedAgent) as {
+    [key: string]: string;
+  };
 
   if (!subFlowObj?.flowId || !subFlowObj?.id) {
     toast.error("Subflow data is missing.");
@@ -391,11 +359,8 @@ async function executeSubflow(
   )?.target;
 
   try {
-    const subFlowGraphs =
-      (await get<SubFlowGraph[]>(SUB_FLOW_GRAPH_DB_KEY)) || [];
-    const subFlowGraph = subFlowGraphs.find(
-      (item) => item.subFlowId === subFlowObj.id,
-    );
+    const subFlowGraphs = (await get<SubFlowGraph[]>(SUB_FLOW_GRAPH_DB_KEY)) || [];
+    const subFlowGraph = subFlowGraphs.find((item) => item.subFlowId === subFlowObj.id);
 
     if (!subFlowGraph) {
       toast.error("Subflow data not found in local cache.");
@@ -421,9 +386,7 @@ async function executeSubflow(
     });
 
     // Push current execution context to stack
-    const executionStack = JSON.parse(
-      localStorage.getItem("flowExecutionStack") || "[]",
-    );
+    const executionStack = JSON.parse(localStorage.getItem("flowExecutionStack") || "[]");
 
     executionStack.push({
       nodes: getNodesFromLS(),
@@ -488,18 +451,15 @@ const sendNodeToProcess = async (
 
   // Get next node id
   const nextNodeId =
-    getEdgesFromLS().find(
-      (edge) => edge.source === nodeToProcess.id && edge.type != "loopBack",
-    )?.target ?? "nextNodeId";
+    getEdgesFromLS().find((edge) => edge.source === nodeToProcess.id && edge.type != "loopBack")
+      ?.target ?? "nextNodeId";
 
   // Check the type of the target node and handle accordingly
   switch (nodeToProcess.type) {
     case "triggerNode":
       sendCommand(
         "setup-execution-context",
-        JSON.stringify(
-          getActivityNodeData(nodeToProcess as Node<NodeDataType>, nextNodeId),
-        ),
+        JSON.stringify(getActivityNodeData(nodeToProcess as Node<NodeDataType>, nextNodeId)),
       );
       return;
     case "plusNode": // Empty node, go to next node
@@ -512,28 +472,17 @@ const sendNodeToProcess = async (
     case "aiNode": // Get ai node data -> Send the command to websocket
       sendCommand(
         "process-node",
-        JSON.stringify(
-          getActivityNodeData(nodeToProcess as Node<NodeDataType>, nextNodeId),
-        ),
+        JSON.stringify(getActivityNodeData(nodeToProcess as Node<NodeDataType>, nextNodeId)),
       );
       return;
     case "cloudConnectorNode": // Get cloud connector node data -> Send the command to websocket
       sendCommand(
         "process-node",
-        JSON.stringify(
-          getCloudConnectorNodeData(
-            nodeToProcess as Node<NodeDataType>,
-            nextNodeId,
-          ),
-        ),
+        JSON.stringify(getCloudConnectorNodeData(nodeToProcess as Node<NodeDataType>, nextNodeId)),
       );
       return;
     case "conditionalNode": // Save conditional mode (SwitchCase or nestedIfElse) in store and pick the branch node as per execution state
-      processConditionalNode(
-        nodeToProcess as Node<ConditionalNodeDataType>,
-        false,
-        sendCommand,
-      );
+      processConditionalNode(nodeToProcess as Node<ConditionalNodeDataType>, false, sendCommand);
       return;
     case "branchEndNode": {
       // Either Conditional or loop branch ends, so we need to process the conditional or loop node to move forward or end the group execution
@@ -543,29 +492,17 @@ const sendNodeToProcess = async (
       );
 
       if (nodeToProcess.data.groupType === "CondtionalBranch") {
-        processConditionalNode(
-          parentNode as Node<ConditionalNodeDataType>,
-          true,
-          sendCommand,
-        );
+        processConditionalNode(parentNode as Node<ConditionalNodeDataType>, true, sendCommand);
       } else if (nodeToProcess.data.groupType === "LoopBranch") {
         processLoopNode(parentNode as Node<LoopNodeDataType>, sendCommand);
       }
       return;
     }
     case "breakLoopNode":
-      handleLoopControlNode(
-        nodeToProcess as Node<NodeDataType>,
-        "break",
-        sendCommand,
-      );
+      handleLoopControlNode(nodeToProcess as Node<NodeDataType>, "break", sendCommand);
       return;
     case "continueLoopNode":
-      handleLoopControlNode(
-        nodeToProcess as Node<NodeDataType>,
-        "continue",
-        sendCommand,
-      );
+      handleLoopControlNode(nodeToProcess as Node<NodeDataType>, "continue", sendCommand);
       return;
     case "forLoopNode": // loop. Check condition
       // TODO: We need to change the name from "forLoopNode" to "LoopNode" only.
@@ -574,33 +511,20 @@ const sendNodeToProcess = async (
     case "flowExitNode":
     case "flowEndNode": {
       //Execution is complete
-      const executionStack = JSON.parse(
-        localStorage.getItem("flowExecutionStack") || "[]",
-      );
+      const executionStack = JSON.parse(localStorage.getItem("flowExecutionStack") || "[]");
 
       if (executionStack.length > 0) {
-        const {
-          nodes,
-          edges,
-          conditionalExecutionGroup,
-          loopExecutionGroup,
-          returnNodeId,
-        } = executionStack.pop();
+        const { nodes, edges, conditionalExecutionGroup, loopExecutionGroup, returnNodeId } =
+          executionStack.pop();
 
-        localStorage.setItem(
-          "flowExecutionStack",
-          JSON.stringify(executionStack),
-        );
+        localStorage.setItem("flowExecutionStack", JSON.stringify(executionStack));
         localStorage.setItem("nodes", JSON.stringify(nodes));
         localStorage.setItem("edges", JSON.stringify(edges));
         localStorage.setItem(
           "conditionalExecutionGroup",
           JSON.stringify(conditionalExecutionGroup),
         );
-        localStorage.setItem(
-          "loopExecutionGroup",
-          JSON.stringify(loopExecutionGroup),
-        );
+        localStorage.setItem("loopExecutionGroup", JSON.stringify(loopExecutionGroup));
 
         sendNodeToProcess(returnNodeId, sendCommand);
       } else {
@@ -619,14 +543,8 @@ const sendNodeToProcess = async (
       return;
     }
     default: // If unknown node type, show an error message
-      toast.error(
-        `Unknown node type: ${nodeToProcess.type}. Please check the flow.`,
-      );
-      sendExecutionComplete(
-        "error",
-        sendCommand,
-        `Unknown node type: ${nodeToProcess.type}`,
-      );
+      toast.error(`Unknown node type: ${nodeToProcess.type}. Please check the flow.`);
+      sendExecutionComplete("error", sendCommand, `Unknown node type: ${nodeToProcess.type}`);
       return;
   }
 };

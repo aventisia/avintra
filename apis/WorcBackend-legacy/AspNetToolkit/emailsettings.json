@@ -1,12 +1,12 @@
 {
-    "EmailConfig": {
-        "MS365EmailService": {
-            "TenantId": "158a6cef-fcae-481f-9c1d-f52f6626f688",
-            "AppId": "b81bd38c-6a31-43e1-9157-51baed6ce88a",
-            "Secret": "***REMOVED***",
-            "FromEmailAddress": "contact@aventisia.com"
-        },
-        "SendGridEmailService": {},
-        "MailGunEmailService": {}
-    }
+  "EmailConfig": {
+    "MS365EmailService": {
+      "TenantId": "158a6cef-fcae-481f-9c1d-f52f6626f688",
+      "AppId": "b81bd38c-6a31-43e1-9157-51baed6ce88a",
+      "Secret": "***REMOVED***",
+      "FromEmailAddress": "contact@aventisia.com"
+    },
+    "SendGridEmailService": {},
+    "MailGunEmailService": {}
+  }
 }

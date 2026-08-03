@@ -12,15 +12,15 @@ For example:
 
 ## Configuration Options
 
-| Field Name                 | Description                                                                             | Input Type | Required? | Default Value |
-| -------------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance**   | Enter or choose the variable that contains the web browser instance to work with.       | Text       | Yes       | _(empty)_     |
-| **Navigate Action**        | Specifies the type of navigation action to perform.                                     | Select     | No        | ToUrl         |
-| **URL**                    | The URL to navigate to when 'Navigate Action' is 'To URL'.                              | Text       | No        | _(empty)_     |
-| **Wait for Page to Load**  | If true, waits for the page to fully load before continuing.                            | Switch     | No        | _(empty)_     |
-| **Timeout for Page Load**  | Maximum time in seconds to wait for the page to load.                                   | Text       | No        | 60            |
-| **Handle Dialog**          | Specifies what to do if a dialog appears after navigating.                              | Select     | No        | DoNothing     |
-| **Dialog Button to Press** | The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').             | Text       | No        | Ok            |
+| Field Name                 | Description                                                                       | Input Type | Required? | Default Value |
+| -------------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**   | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **Navigate Action**        | Specifies the type of navigation action to perform.                               | Select     | No        | ToUrl         |
+| **URL**                    | The URL to navigate to when 'Navigate Action' is 'To URL'.                        | Text       | No        | _(empty)_     |
+| **Wait for Page to Load**  | If true, waits for the page to fully load before continuing.                      | Switch     | No        | _(empty)_     |
+| **Timeout for Page Load**  | Maximum time in seconds to wait for the page to load.                             | Text       | No        | 60            |
+| **Handle Dialog**          | Specifies what to do if a dialog appears after navigating.                        | Select     | No        | DoNothing     |
+| **Dialog Button to Press** | The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').       | Text       | No        | Ok            |
 
 ## Expected Output Format
 
@@ -40,6 +40,7 @@ In the **Web Browser Instance** field, enter the variable that references your b
 ### Step 3
 
 Select the **Navigate Action** you want to perform:
+
 - **To URL**: Navigates to the specified web page.
 - **Back**: Moves back one step in the browser history.
 - **Forward**: Moves forward in the browser history.
@@ -60,32 +61,36 @@ If you chose **To URL** in Navigate Action, enter the desired web page address i
 </Steps>
 
 <Callout type="info" title="Note">
-Make sure the URL entered is complete and correct to avoid navigation errors. Double-check for any typing mistakes or invalid entries.
+  Make sure the URL entered is complete and correct to avoid navigation errors.
+  Double-check for any typing mistakes or invalid entries.
 </Callout>
 
 ## Input/Output Examples
 
 **To URL**:
+
 - **Input Web Browser Instance**: MyBrowser
 - **Navigate Action**: To URL
 - **URL**: `https://www.example.com`
 - **Expected Action**: Browser navigates to `https://www.example.com`.
 
 **Back**:
+
 - **Navigate Action**: Back
 - **Expected Action**: Browser moves back one page in the history.
 
 **Reload Web Page**:
+
 - **Navigate Action**: Reload
 - **Expected Action**: Current web page is refreshed.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                                             |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid or incomplete URL**                         | Ensure that the URL is correctly spelled and includes `http://` or `https://`.                                                                       |
-| **Dialog handling not functioning**                   | Verify you have appropriately set the **Handle Dialog** and **Dialog Button to Press** options.                                                      |
-| **Page not loading as expected**                      | Check the **Wait for Page to Load** and adjust the **Timeout for Page Load** setting if necessary.                                                   |
+| Problem                             | Solution                                                                                           |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Invalid or incomplete URL**       | Ensure that the URL is correctly spelled and includes `http://` or `https://`.                     |
+| **Dialog handling not functioning** | Verify you have appropriately set the **Handle Dialog** and **Dialog Button to Press** options.    |
+| **Page not loading as expected**    | Check the **Wait for Page to Load** and adjust the **Timeout for Page Load** setting if necessary. |
 
 ## Real-World Use Cases
 

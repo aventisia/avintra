@@ -170,13 +170,7 @@ export interface LLMResponseDto {
   /**
    * Status of the response, like 'completed', 'failed', etc.
    */
-  status?:
-    | "completed"
-    | "failed"
-    | "in_progress"
-    | "cancelled"
-    | "queued"
-    | "incomplete";
+  status?: "completed" | "failed" | "in_progress" | "cancelled" | "queued" | "incomplete";
 
   /**
    * Reason for the model's finish (e.g., stop token or time limit).

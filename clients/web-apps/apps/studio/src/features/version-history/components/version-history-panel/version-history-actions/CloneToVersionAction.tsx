@@ -1,9 +1,10 @@
-import { Copy } from "lucide-react";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
-import { useCloneToVersionMutation } from "@/features/version-history/hooks/useCloneToVersionMutation";
-import { useAppLoaderStore } from "@/stores/app-loader-store";
+import { Copy } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useCloneToVersionMutation } from "@/features/version-history/hooks/useCloneToVersionMutation";
+import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
+import { useAppLoaderStore } from "@/stores/app-loader-store";
 
 export default function CloneToVersionAction({ id }: { id: string }) {
   const detailQuery = useFetchVersionHistoryDetail(id);
@@ -23,11 +24,6 @@ export default function CloneToVersionAction({ id }: { id: string }) {
   };
 
   return (
-    <SimpleDDMenuItem
-      Icon={Copy}
-      size="sm"
-      content="Clone to new version"
-      onClick={handleClone}
-    />
+    <SimpleDDMenuItem Icon={Copy} size="sm" content="Clone to new version" onClick={handleClone} />
   );
 }

@@ -40,7 +40,7 @@ export const useLocalFileStore = create<LocalFileStoreState>((set, get) => ({
     set((state) => ({
       files: [...state.files, ...mappedFiles],
       // Auto-select the first newly added file if nothing is currently active
-      activeFileId:  mappedFiles[0]?.id || state.activeFileId || null,
+      activeFileId: mappedFiles[0]?.id || state.activeFileId || null,
     }));
   },
 
@@ -60,8 +60,7 @@ export const useLocalFileStore = create<LocalFileStoreState>((set, get) => ({
       if (state.activeFileId === id) {
         const deletedIndex = state.files.findIndex((f) => f.id === id);
         const prevIndex = Math.max(0, deletedIndex - 1);
-        nextActiveId =
-          remainingFiles.length > 0 ? remainingFiles[prevIndex].id : null;
+        nextActiveId = remainingFiles.length > 0 ? remainingFiles[prevIndex].id : null;
       }
 
       return {

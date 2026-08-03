@@ -1,7 +1,7 @@
-import { useState } from "react";
-
 import { Button } from "@avplatform/ui/buttons";
 import { TextareaField } from "@avplatform/ui/form";
+import { useState } from "react";
+
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
 
 /**
@@ -21,10 +21,16 @@ export const StepIngestSpec = () => {
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
-        <Button variant={activeTab === "file" ? "default" : "outline"} onClick={() => setActiveTab("file")}>
+        <Button
+          variant={activeTab === "file" ? "default" : "outline"}
+          onClick={() => setActiveTab("file")}
+        >
           Upload file
         </Button>
-        <Button variant={activeTab === "text" ? "default" : "outline"} onClick={() => setActiveTab("text")}>
+        <Button
+          variant={activeTab === "text" ? "default" : "outline"}
+          onClick={() => setActiveTab("text")}
+        >
           Paste spec
         </Button>
       </div>

@@ -6,11 +6,11 @@ The **Open Excel Workbook** node allows you to open or access an existing Excel 
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                                         | Input Type | Required? | Default Value |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Excel Instance**       | The existing Excel application instance you want to use.                                                            | Text       | Yes       | _(empty)_     |
-| **Workbook Name**        | The name of the Excel workbook you wish to open or access (e.g., Report.xlsx).                                      | Text       | Yes       | _(empty)_     |
-| **Open as ReadOnly**     | Set this to true if you want to open the workbook in read-only mode, preventing any changes from being saved.       | Switch     | No        | _(empty)_     |
+| Field Name                   | Description                                                                                                   | Input Type | Required? | Default Value |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Excel Instance**           | The existing Excel application instance you want to use.                                                      | Text       | Yes       | _(empty)_     |
+| **Workbook Name**            | The name of the Excel workbook you wish to open or access (e.g., Report.xlsx).                                | Text       | Yes       | _(empty)_     |
+| **Open as ReadOnly**         | Set this to true if you want to open the workbook in read-only mode, preventing any changes from being saved. | Switch     | No        | _(empty)_     |
 | **Read Protection Password** | If the workbook is read-protected, enter the password required to open it.                                    | Password   | No        | _(empty)_     |
 
 ## Expected Output Format
@@ -47,23 +47,24 @@ The opened workbook will be available as **WorkbookInstance** for further use in
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the workbook names are correctly spelled, including the file extension (e.g., '.xlsx').
+  Ensure that the workbook names are correctly spelled, including the file
+  extension (e.g., '.xlsx').
 </Callout>
 
 ## Input/Output Examples
 
-| Excel Instance | Workbook Name  | Open as ReadOnly | Read Protection Password | Output Value     | Output Type           |
-| -------------- | -------------- | ---------------- | ------------------------ | ---------------- | --------------------- |
-| Instance1      | Budget.xlsx    | false            | _None_                   | WorkbookInstance | Excel Workbook Object |
-| Instance2      | Report.xlsx    | true             | _None_                   | WorkbookInstance | Excel Workbook Object |
+| Excel Instance | Workbook Name | Open as ReadOnly | Read Protection Password | Output Value     | Output Type           |
+| -------------- | ------------- | ---------------- | ------------------------ | ---------------- | --------------------- |
+| Instance1      | Budget.xlsx   | false            | _None_                   | WorkbookInstance | Excel Workbook Object |
+| Instance2      | Report.xlsx   | true             | _None_                   | WorkbookInstance | Excel Workbook Object |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                                                                         |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Workbook does not open**                        | Verify that the **Workbook Name** is correct and the specified file exists in the directory being accessed.                                                       |
-| **Read Protection Password is incorrect**         | Double-check the password and ensure it is accurate. Remember, passwords are case-sensitive.                                                                      |
-| **Workbook opens in edit mode instead of read-only** | Ensure **Open as ReadOnly** is toggled on if you wish to prevent editing.                                                                                        |
+| Problem                                              | Solution                                                                                                    |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Workbook does not open**                           | Verify that the **Workbook Name** is correct and the specified file exists in the directory being accessed. |
+| **Read Protection Password is incorrect**            | Double-check the password and ensure it is accurate. Remember, passwords are case-sensitive.                |
+| **Workbook opens in edit mode instead of read-only** | Ensure **Open as ReadOnly** is toggled on if you wish to prevent editing.                                   |
 
 ## Real-World Use Cases
 

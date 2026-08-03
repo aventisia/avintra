@@ -1,7 +1,7 @@
-import { NodeDataType } from "@/types/node-data-type";
-
 import { Button } from "@avplatform/ui/buttons";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+
+import { NodeDataType } from "@/types/node-data-type";
 
 import { useExecutionStore } from "../stores/execution-log-store";
 import { useNodePopoverStore } from "../stores/node-popover-store";
@@ -41,14 +41,8 @@ export const NodeDetail = ({ nodeData }: { nodeData: NodeDataType }) => {
           </Button>
         </>
       )}
-      <FELInputOutput
-        title="Input"
-        jsonData={JSON.stringify(nodeData.inputs, null, 2) || "{}"}
-      />
-      <FELInputOutput
-        title="Output"
-        jsonData={JSON.stringify(nodeData.outputs, null, 2) || "{}"}
-      />
+      <FELInputOutput title="Input" jsonData={JSON.stringify(nodeData.inputs, null, 2) || "{}"} />
+      <FELInputOutput title="Output" jsonData={JSON.stringify(nodeData.outputs, null, 2) || "{}"} />
     </div>
   );
 };

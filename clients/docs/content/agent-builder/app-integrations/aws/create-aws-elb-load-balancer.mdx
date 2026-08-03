@@ -5,22 +5,23 @@ import { Callout, Steps } from "nextra/components";
 The **Create AWS ELB Load Balancer** node facilitates the creation of a Load Balancer in AWS. This Load Balancer can either be an Application Load Balancer (ALB) or a Network Load Balancer (NLB). It helps distribute incoming application traffic across multiple targets, such as Amazon EC2 instances, thus improving fault tolerance and enhancing application availability.
 
 You might use this node to:
+
 - Manage traffic to your web applications efficiently.
 - Ensure high availability of your application by balancing incoming requests to healthy resources.
 - Automatically scale your load balancing capacity according to traffic demands.
 
 ## Configuration Options
 
-| Field Name                  | Description                                                                                            | Input Type | Required? | Default Value |
-| --------------------------- | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Credential to connect with** | Select the AWS credential to use for authentication.                                                   | Text       | Yes       | _(empty)_     |
-| **IP Address Type**         | Specify the IP address type of the load balancer.                                                      | Select     | Yes       | _(empty)_     |
-| **Name**                    | Enter the name of the load balancer.                                                                   | Text       | Yes       | _(empty)_     |
-| **Schema**                  | Specifies whether the load balancer is internal or internet-facing.                                    | Select     | Yes       | _(empty)_     |
-| **Type**                    | Specify the type of load balancer (Application or Network).                                            | Select     | Yes       | _(empty)_     |
-| **Subnet ID Names or IDs**  | List the subnet IDs where the load balancer will be deployed.                                          | Text       | Yes       | _(empty)_     |
-| **Additional Fields**       | Optional tags to attach to the load balancer (key-value pairs).                                        | Text       | No        | _(empty)_     |
-| **AWS Region**              | The AWS region where the load balancer is located. Default is `us-east-1`.                             | Text       | No        | _(empty)_     |
+| Field Name                     | Description                                                                | Input Type | Required? | Default Value |
+| ------------------------------ | -------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Credential to connect with** | Select the AWS credential to use for authentication.                       | Text       | Yes       | _(empty)_     |
+| **IP Address Type**            | Specify the IP address type of the load balancer.                          | Select     | Yes       | _(empty)_     |
+| **Name**                       | Enter the name of the load balancer.                                       | Text       | Yes       | _(empty)_     |
+| **Schema**                     | Specifies whether the load balancer is internal or internet-facing.        | Select     | Yes       | _(empty)_     |
+| **Type**                       | Specify the type of load balancer (Application or Network).                | Select     | Yes       | _(empty)_     |
+| **Subnet ID Names or IDs**     | List the subnet IDs where the load balancer will be deployed.              | Text       | Yes       | _(empty)_     |
+| **Additional Fields**          | Optional tags to attach to the load balancer (key-value pairs).            | Text       | No        | _(empty)_     |
+| **AWS Region**                 | The AWS region where the load balancer is located. Default is `us-east-1`. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -76,22 +77,23 @@ The system will generate outputs: **Load Balancer ARN**, **DNS Name**, and **API
 </Steps>
 
 <Callout type="info" title="Tip">
-  Make sure your AWS credentials have the necessary permissions to create and manage load balancers.
+  Make sure your AWS credentials have the necessary permissions to create and
+  manage load balancers.
 </Callout>
 
 ## Input/Output Examples
 
-| AWS Region | IP Address Type | Schema          | Name  | Type       | Output: Load Balancer ARN | Output: DNS Name               |
-| ---------- | --------------- | --------------- | ----- | ---------- | ------------------------- | ------------------------------ |
+| AWS Region | IP Address Type | Schema          | Name  | Type        | Output: Load Balancer ARN          | Output: DNS Name                             |
+| ---------- | --------------- | --------------- | ----- | ----------- | ---------------------------------- | -------------------------------------------- |
 | us-east-1  | Ipv4            | Internet-facing | myELB | Application | arn:aws:elasticloadbalancing:12345 | myELB-1234567890.us-east-1.elb.amazonaws.com |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                   |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| **Invalid AWS credentials**                           | Ensure the credentials entered are valid and have permissions to create a load balancer.   |
-| **Missing required information**                      | Check that all required fields are completed, such as Name, Subnet IDs, and Type.          |
-| **Incorrect AWS region specified**                    | Ensure the AWS region specified matches available regions for your AWS account.            |
+| Problem                            | Solution                                                                                 |
+| ---------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Invalid AWS credentials**        | Ensure the credentials entered are valid and have permissions to create a load balancer. |
+| **Missing required information**   | Check that all required fields are completed, such as Name, Subnet IDs, and Type.        |
+| **Incorrect AWS region specified** | Ensure the AWS region specified matches available regions for your AWS account.          |
 
 ## Real-World Use Cases
 

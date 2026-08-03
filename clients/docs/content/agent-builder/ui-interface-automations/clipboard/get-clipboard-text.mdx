@@ -12,9 +12,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name                | Description                                   | Input Type          | Required? | Default Value          |
-| ------------------------- | --------------------------------------------- | ------------------- | --------- | ---------------------- |
-| **Clipboard Text Output** | The text retrieved from the clipboard.        | Config Panel Output | No        | ClipboardTextOutput    |
+| Field Name                | Description                            | Input Type          | Required? | Default Value       |
+| ------------------------- | -------------------------------------- | ------------------- | --------- | ------------------- |
+| **Clipboard Text Output** | The text retrieved from the clipboard. | Config Panel Output | No        | ClipboardTextOutput |
 
 ## Expected Output Format
 
@@ -45,24 +45,25 @@ Connect other nodes that need to use the clipboard text in their processes.
 </Steps>
 
 <Callout type="info" title="Tip">
-  Always verify the clipboard has the expected text content before initiating this node in your flow to ensure the text retrieved is accurate.
+  Always verify the clipboard has the expected text content before initiating
+  this node in your flow to ensure the text retrieved is accurate.
 </Callout>
 
 ## Input/Output Examples
 
-| Example Scenario          | Clipboard Content | Output Value        | Output Type  |
-| ------------------------- | ----------------- | ------------------- | ------------ |
-| Copy from a document      | "Hello, World!"   | "Hello, World!"     | String (Text) |
-| Empty clipboard           | _(empty)_         | _(empty string)_    | String (Text) |
-| Non-text clipboard data   | Image copied      | _(empty string)_    | String (Text) |
+| Example Scenario        | Clipboard Content | Output Value     | Output Type   |
+| ----------------------- | ----------------- | ---------------- | ------------- |
+| Copy from a document    | "Hello, World!"   | "Hello, World!"  | String (Text) |
+| Empty clipboard         | _(empty)_         | _(empty string)_ | String (Text) |
+| Non-text clipboard data | Image copied      | _(empty string)_ | String (Text) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                         |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| **Clipboard is empty**                       | Ensure you've copied the desired text to the clipboard before activating the node.                |
-| **Output is not text**                       | Verify the clipboard contains text data, not images or other non-text content.                    |
-| **Unexpected text output**                   | Double-check the clipboard contents before running the node to ensure it holds the correct text.  |
+| Problem                    | Solution                                                                                         |
+| -------------------------- | ------------------------------------------------------------------------------------------------ |
+| **Clipboard is empty**     | Ensure you've copied the desired text to the clipboard before activating the node.               |
+| **Output is not text**     | Verify the clipboard contains text data, not images or other non-text content.                   |
+| **Unexpected text output** | Double-check the clipboard contents before running the node to ensure it holds the correct text. |
 
 ## Real-World Use Cases
 

@@ -6,12 +6,12 @@ The **Download from Web** node enables you to fetch content from the internet us
 
 ## Configuration Options
 
-| Field Name      | Description                                                                                     | Input Type | Required? | Default Value |
-| --------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **URL**         | The URL of the resource you want to download (e.g., text, HTML, JSON, PDF).                     | Text       | Yes       | _(empty)_     |
-| **Save To File**| If selected, downloads the content to a local file instead of returning it as string.           | Switch     | No        | _(empty)_     |
-| **File Path**   | The full path where the downloaded file should be saved. Required if 'Save To File' is enabled. | Text       | No        | _(empty)_     |
-| **Timeout Seconds** | Maximum time in seconds to wait before stopping the download due to a timeout.              | Text       | No        | 60            |
+| Field Name          | Description                                                                                     | Input Type | Required? | Default Value |
+| ------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **URL**             | The URL of the resource you want to download (e.g., text, HTML, JSON, PDF).                     | Text       | Yes       | _(empty)_     |
+| **Save To File**    | If selected, downloads the content to a local file instead of returning it as string.           | Switch     | No        | _(empty)_     |
+| **File Path**       | The full path where the downloaded file should be saved. Required if 'Save To File' is enabled. | Text       | No        | _(empty)_     |
+| **Timeout Seconds** | Maximum time in seconds to wait before stopping the download due to a timeout.                  | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -49,26 +49,28 @@ If you selected **Save To File**, enter the complete path for where you want the
 ### Step 6
 
 Use the output (found as **Result**) in subsequent nodes or within your workflow as needed.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you do not enable "Save To File," the "File Path" field will not be displayed.
+  If you do not enable "Save To File," the "File Path" field will not be
+  displayed.
 </Callout>
 
 ## Input/Output Examples
 
-| URL                                 | Save To File | File Path            | Timeout Seconds | Output Value                     | Output Type    |
-| ----------------------------------- | ------------ | -------------------- | --------------- | -------------------------------- | -------------- |
-| https://example.com/data.json       | No           | _(n/a)_              | 60              | JSON content as string           | String         |
-| https://example.com/document.pdf    | Yes          | /local/path/file.pdf | 60              | /local/path/file.pdf             | File Path      |
+| URL                              | Save To File | File Path            | Timeout Seconds | Output Value           | Output Type |
+| -------------------------------- | ------------ | -------------------- | --------------- | ---------------------- | ----------- |
+| https://example.com/data.json    | No           | _(n/a)_              | 60              | JSON content as string | String      |
+| https://example.com/document.pdf | Yes          | /local/path/file.pdf | 60              | /local/path/file.pdf   | File Path   |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                 | Solution                                                                                                                                   |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **File Path not saving**                | Ensure **Save To File** is enabled and you've provided a valid file path.                                                                  |
-| **Download timing out**                 | Increase the **Timeout Seconds** value if your connection is slow or the server takes time to respond.                                      |
-| **URL not entered**                     | Double-check that the **URL** field is filled. It's critical for fetching content.                                                         |
+| Problem                  | Solution                                                                                               |
+| ------------------------ | ------------------------------------------------------------------------------------------------------ |
+| **File Path not saving** | Ensure **Save To File** is enabled and you've provided a valid file path.                              |
+| **Download timing out**  | Increase the **Timeout Seconds** value if your connection is slow or the server takes time to respond. |
+| **URL not entered**      | Double-check that the **URL** field is filled. It's critical for fetching content.                     |
 
 ## Real-World Use Cases
 

@@ -1,14 +1,11 @@
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NoContentMessage } from "@avplatform/ui";
-import {
-  Command,
-  CommandEmpty,
-  CommandInput,
-  CommandList,
-} from "@avplatform/ui/command";
+import { Command, CommandEmpty, CommandInput, CommandList } from "@avplatform/ui/command";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { VariableIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
+
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+
 import { VariableItem } from "./VariableItem";
 
 export const VariableSelectorContent = () => {
@@ -29,11 +26,7 @@ export const VariableSelectorContent = () => {
     <Command>
       {/* Search Box */}
       <div className="mx-3 rounded-lg bg-slate-100">
-        <CommandInput
-          className="h-9 text-xs"
-          placeholder="Search variables..."
-          autoFocus
-        />
+        <CommandInput className="h-9 text-xs" placeholder="Search variables..." autoFocus />
       </div>
 
       {/* No content message */}

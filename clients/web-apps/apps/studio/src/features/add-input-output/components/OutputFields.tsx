@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button } from "@avplatform/ui/buttons";
-import { OutputFieldFormValues } from "../constants/inputs-outputs-zod-schema";
-import { Control, Controller, UseFieldArrayRemove } from "react-hook-form";
-import { Trash2 } from "lucide-react";
 import { InputField } from "@avplatform/ui/form";
+import { Trash2 } from "lucide-react";
+import { Control, Controller, UseFieldArrayRemove } from "react-hook-form";
+
+import { OutputFieldFormValues } from "../constants/inputs-outputs-zod-schema";
 
 interface OutputFieldsProps extends OutputFieldFormValues {
   id: string;

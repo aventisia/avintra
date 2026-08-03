@@ -8,20 +8,14 @@ export const mapLogsToFlow = (
   flowEdges: Edge[],
 ) => {
   const executionMap: Record<string, Record<string, NodeExecutionLogType>> = {};
-  const executionHistoryMap: Record<
-    string,
-    Record<string, NodeExecutionLogType[]>
-  > = {};
+  const executionHistoryMap: Record<string, Record<string, NodeExecutionLogType[]>> = {};
   const branchStats: Record<string, number> = {};
   const loopRegistry: Record<string, { total: number }> = {};
   const nodeToParentStack: Record<string, string[]> = {};
 
   const branchToRouterMap: Record<string, string> = {};
   const nodeToBranchMap: Record<string, string> = {}; // Required for invisible edge tracing
-  const routerConfig: Record<
-    string,
-    { defaultId: string; conditionals: string[] }
-  > = {};
+  const routerConfig: Record<string, { defaultId: string; conditionals: string[] }> = {};
   const routerVisits: Record<string, Set<string>> = {};
   const routerTruePaths: Record<string, Set<string>> = {};
 
@@ -31,9 +25,7 @@ export const mapLogsToFlow = (
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const d = n.data as any;
       const defaultId = d.defaultBranchNodeId;
-      const conditionals = (d.branches || []).filter(
-        (id: string) => id !== defaultId,
-      );
+      const conditionals = (d.branches || []).filter((id: string) => id !== defaultId);
 
       routerConfig[n.id] = { defaultId, conditionals };
       routerVisits[n.id] = new Set();
@@ -46,10 +38,7 @@ export const mapLogsToFlow = (
   });
 
   // Safe mapping for structural nodes (resolves edges during aborts/fails)
-  const findOwnerBranch = (
-    targetId: string,
-    visited = new Set<string>(),
-  ): string | null => {
+  const findOwnerBranch = (targetId: string, visited = new Set<string>()): string | null => {
     if (visited.has(targetId) || visited.size > 50) return null;
     visited.add(targetId);
     const edge = flowEdges.find((e) => e.target === targetId);
@@ -76,8 +65,7 @@ export const mapLogsToFlow = (
       // Loop exits purely determined by Output Engine Status, unaffected by UI node renames
       const isExiting =
         outputs?.ConditionsResult === "False" ||
-        (typeof outputs?.Status === "string" &&
-          outputs.Status.includes("No more items"));
+        (typeof outputs?.Status === "string" && outputs.Status.includes("No more items"));
 
       if (isExiting) {
         stack.pop();
@@ -95,19 +83,13 @@ export const mapLogsToFlow = (
     }
 
     const parentLoops =
-      stack.length > 0 && stack[stack.length - 1].id === nodeId
-        ? stack.slice(0, -1)
-        : stack;
+      stack.length > 0 && stack[stack.length - 1].id === nodeId ? stack.slice(0, -1) : stack;
 
-    const pathKey =
-      parentLoops.length > 0
-        ? parentLoops.map((s) => s.idx).join("-")
-        : "global";
+    const pathKey = parentLoops.length > 0 ? parentLoops.map((s) => s.idx).join("-") : "global";
 
     if (!executionMap[nodeId]) executionMap[nodeId] = {};
     if (!executionHistoryMap[nodeId]) executionHistoryMap[nodeId] = {};
-    if (!executionHistoryMap[nodeId][pathKey])
-      executionHistoryMap[nodeId][pathKey] = [];
+    if (!executionHistoryMap[nodeId][pathKey]) executionHistoryMap[nodeId][pathKey] = [];
 
     executionHistoryMap[nodeId][pathKey].push(entry);
     executionMap[nodeId][pathKey] = entry;

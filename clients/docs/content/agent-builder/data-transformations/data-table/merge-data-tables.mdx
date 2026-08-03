@@ -6,12 +6,12 @@ The **Merge Data Tables** node allows you to effortlessly combine two data table
 
 ## Configuration Options
 
-| Field Name          | Description                                                                                     | Input Type | Required? | Default Value    |
-| ------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **First Data Table**| The primary data table to be merged.                                                            | Text       | Yes       | _(empty)_        |
-| **Second Data Table**| The secondary data table to be merged.                                                         | Text       | Yes       | _(empty)_        |
-| **Merge Mode**      | Choose how to handle columns in the second table that do not exist in the first table.          | Select     | Yes       | AddExtraColumns  |
-| **Merged Data Table**| The resulting combined data table.                                                             | Output     | No        | MergedDataTable  |
+| Field Name            | Description                                                                            | Input Type | Required? | Default Value   |
+| --------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **First Data Table**  | The primary data table to be merged.                                                   | Text       | Yes       | _(empty)_       |
+| **Second Data Table** | The secondary data table to be merged.                                                 | Text       | Yes       | _(empty)_       |
+| **Merge Mode**        | Choose how to handle columns in the second table that do not exist in the first table. | Select     | Yes       | AddExtraColumns |
+| **Merged Data Table** | The resulting combined data table.                                                     | Output     | No        | MergedDataTable |
 
 ## Expected Output Format
 
@@ -51,24 +51,25 @@ The merged data will be available in the **Merged Data Table** for subsequent op
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you're unsure about the structure of your data tables, start with **Add Extra Columns** to understand the full breadth of available data points.
+  If you're unsure about the structure of your data tables, start with **Add
+  Extra Columns** to understand the full breadth of available data points.
 </Callout>
 
 ## Input/Output Examples
 
-| First Data Table    | Second Data Table   | Merge Mode           | Output                      |
-| ------------------- | ------------------- | -------------------- | --------------------------- |
-| table1              | table2              | Add Extra Columns    | All columns from both tables|
-| table1              | table2              | Ignore Extra Columns | Only columns from table1    |
-| table1              | table2              | Error On Extra Columns | Error: Column Mismatch    |
+| First Data Table | Second Data Table | Merge Mode             | Output                       |
+| ---------------- | ----------------- | ---------------------- | ---------------------------- |
+| table1           | table2            | Add Extra Columns      | All columns from both tables |
+| table1           | table2            | Ignore Extra Columns   | Only columns from table1     |
+| table1           | table2            | Error On Extra Columns | Error: Column Mismatch       |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                 |
-| ------------------------------------------- | ------------------------------------------------------------------------ |
-| **Error on merge due to column mismatch**   | Switch to **Add Extra Columns** or correct column differences manually.  |
-| **Unexpected columns in the merged table**  | Review your **Merge Mode** selection; consider using **Ignore Extra Columns**. |
-| **Empty or incorrect data tables**          | Ensure table names/identifiers are correctly specified in the input fields. |
+| Problem                                    | Solution                                                                       |
+| ------------------------------------------ | ------------------------------------------------------------------------------ |
+| **Error on merge due to column mismatch**  | Switch to **Add Extra Columns** or correct column differences manually.        |
+| **Unexpected columns in the merged table** | Review your **Merge Mode** selection; consider using **Ignore Extra Columns**. |
+| **Empty or incorrect data tables**         | Ensure table names/identifiers are correctly specified in the input fields.    |
 
 ## Real-World Use Cases
 

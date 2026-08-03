@@ -12,13 +12,13 @@ Possible scenarios include:
 
 ## Configuration Options
 
-| Field Name                | Description                                                                                         | Input Type | Required? | Default Value |
-| ------------------------- | --------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Encrypted File Path**   | The path to the file containing the encrypted data.                                                 | Text       | Yes       | _(empty)_     |
-| **Decryption Key**        | Secret key used for decryption. Short keys will be hashed to 32 bytes (AES-256).                    | Text       | Yes       | _(empty)_     |
-| **Encoding Format**       | Encoding used for the encrypted content: Base64, Hex, or UTF8.                                     | Select     | Yes       | _(empty)_     |
-| **Initialization Vector** | 16-character IV used during encryption. Must match the one used during encryption.                 | Text       | Yes       | _(empty)_     |
-| **Output File Path**      | The path where the decrypted file should be saved.                                                 | Text       | Yes       | _(empty)_     |
+| Field Name                | Description                                                                        | Input Type | Required? | Default Value |
+| ------------------------- | ---------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Encrypted File Path**   | The path to the file containing the encrypted data.                                | Text       | Yes       | _(empty)_     |
+| **Decryption Key**        | Secret key used for decryption. Short keys will be hashed to 32 bytes (AES-256).   | Text       | Yes       | _(empty)_     |
+| **Encoding Format**       | Encoding used for the encrypted content: Base64, Hex, or UTF8.                     | Select     | Yes       | _(empty)_     |
+| **Initialization Vector** | 16-character IV used during encryption. Must match the one used during encryption. | Text       | Yes       | _(empty)_     |
+| **Output File Path**      | The path where the decrypted file should be saved.                                 | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -58,22 +58,23 @@ The file located at the specified output path will now contain the decrypted dat
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the **Initialization Vector (IV)** matches exactly with the one used during encryption to avoid decryption failures.
+  Ensure the **Initialization Vector (IV)** matches exactly with the one used
+  during encryption to avoid decryption failures.
 </Callout>
 
 ## Input/Output Examples
 
-| Encrypted File Path | Decryption Key | Encoding Format | IV             | Output File Path | Output Description                  |
-| ------------------- | -------------- | --------------- | -------------- | --------------- | ----------------------------------- |
-| /path/to/encrypted  | mySecretKey    | Base64          | 1234567890123456 | /path/to/output | Outputs the original file contents. |
+| Encrypted File Path | Decryption Key | Encoding Format | IV               | Output File Path | Output Description                  |
+| ------------------- | -------------- | --------------- | ---------------- | ---------------- | ----------------------------------- |
+| /path/to/encrypted  | mySecretKey    | Base64          | 1234567890123456 | /path/to/output  | Outputs the original file contents. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                     |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| **File not decrypting properly**             | Double-check the decryption key and ensure the correct encoding format and IV are used.                      |
-| **Incorrect path entries**                   | Ensure the file paths entered are accessible and correctly formatted, using absolute paths where necessary.  |
-| **Encoding format mismatch**                 | Ensure the encoding format selected matches the format used during encryption.                               |
+| Problem                          | Solution                                                                                                    |
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **File not decrypting properly** | Double-check the decryption key and ensure the correct encoding format and IV are used.                     |
+| **Incorrect path entries**       | Ensure the file paths entered are accessible and correctly formatted, using absolute paths where necessary. |
+| **Encoding format mismatch**     | Ensure the encoding format selected matches the format used during encryption.                              |
 
 ## Real-World Use Cases
 

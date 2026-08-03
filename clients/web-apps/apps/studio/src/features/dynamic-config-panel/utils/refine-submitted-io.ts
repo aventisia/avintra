@@ -1,8 +1,5 @@
-import {
-  NodeInputType,
-  NodeOutputType,
-  NodeOutputValueType,
-} from "@/types/node-data-type";
+import { NodeInputType, NodeOutputType, NodeOutputValueType } from "@/types/node-data-type";
+
 import { stringifyIfValidJson } from "./valid-json-utils";
 
 export function refineSubmittedIO(
@@ -27,7 +24,7 @@ export function refineSubmittedIO(
   if (nodeUniqueName === "SetVariableActivity") {
     // Clear the outputs
     outputs.length = 0;
-    
+
     // Add input VariableName as output
     outputs.push({
       key: "OutVariableValue",
@@ -37,6 +34,6 @@ export function refineSubmittedIO(
       },
     });
   }
-  
+
   return { inputs, outputs };
 }

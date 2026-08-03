@@ -1,7 +1,9 @@
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 import { useReactFlow } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
+
 import { useDynamicConfigPanelStore } from "../stores/dcp-store";
 
 /**
@@ -49,8 +51,7 @@ export const useUpdateNodeDataIO = () => {
       setNodeData({ ...nodeData, inputs: newInputs, outputs: newOutputs });
     }
     // Set valid node label
-    const validNodeLabel =
-      typeof nodeLabel === "string" && nodeLabel.length > 0 && nodeLabel;
+    const validNodeLabel = typeof nodeLabel === "string" && nodeLabel.length > 0 && nodeLabel;
 
     updateNodeData(nodeId, {
       inputs: newInputs,
@@ -66,10 +67,7 @@ export const useUpdateNodeDataIO = () => {
    * Update the flowVariablesObject in the store.
    * @param newVariables The new flow variables array.
    */
-  const updateFlowVariablesObject = (
-    nodeId: string,
-    newOutputs: NodeOutputType[],
-  ) => {
+  const updateFlowVariablesObject = (nodeId: string, newOutputs: NodeOutputType[]) => {
     // Extract only the values from each output, ignoring the keys
     const filteredValues = newOutputs
       .filter((output: NodeOutputType) => output.value.enabled)

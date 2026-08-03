@@ -46,8 +46,6 @@ export type FieldItemFormValues = z.infer<typeof fieldItemSchema>;
 
 export type OutputFieldFormValues = z.infer<typeof outputFieldItemSchema>;
 
-export type InputsOutputsFieldsFormType = z.infer<
-  typeof inputsOutputsFieldsSchema
->;
+export type InputsOutputsFieldsFormType = z.infer<typeof inputsOutputsFieldsSchema>;
 
 export { fieldItemSchema, inputsOutputsFieldsSchema, createBlockFormSchema };

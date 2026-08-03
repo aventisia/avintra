@@ -1,11 +1,11 @@
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 // import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
 
 import { savePromptTemplateSchema } from "../constants/save-prompt-template-zod-schema";
 import { TemplateAccessTypesEnum } from "../enums/template-access-type-enum";
@@ -82,9 +82,7 @@ export const useDefineSATForm = () => {
    * Decides between "create" and "update" depending on whether template data exists.
    */
   const onSubmit = (formData: z.infer<typeof savePromptTemplateSchema>) => {
-    const templateSchema = promptData
-      ? buildPromptTemplateSchema(promptData)
-      : {};
+    const templateSchema = promptData ? buildPromptTemplateSchema(promptData) : {};
     let icons: string[] = [];
     if (templateSchema) {
       icons = [`/brand-img/${templateSchema.modelConfig?.provider}.svg`];

@@ -5,24 +5,25 @@ import { Callout, Steps } from "nextra/components";
 The **Filter Cells in Excel Worksheet** node enables you to selectively view specific data in an Excel worksheet by applying filters based on your criteria. This node is particularly useful for managing large datasets where you need to isolate information relevant for reporting, analysis, or presentation without altering the actual data.
 
 For example:
+
 - Filtering a dataset to show only rows where the sales value exceeds a certain threshold.
 - Displaying only specific categories of items, like a particular product type or status.
 - Quickly finding and working with only the relevant information within a large Excel sheet.
 
 ## Configuration Options
 
-| Field Name         | Description                                                             | Input Type | Required? | Default Value |
-| ------------------ | ----------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance** | The Excel Worksheet object to apply the filter on.                       | Text       | Yes       | _(empty)_     |
-| **Filter Mode**    | Specifies how to filter cells: active sheet, specific range, named cells, or table. | Select     | Yes       | ActiveSheet  |
-| **Start Column**   | The starting column of the range to filter (required if 'Specific Range' is selected). | Text       | No        | _(empty)_     |
-| **End Column**     | The ending column of the specified range (required if 'Specific Range' is selected). | Text       | No        | _(empty)_     |
-| **Start Row**      | The starting row of the range to filter (required if 'Specific Range' is selected). | Text       | No        | _(empty)_     |
-| **End Row**        | The ending row of the range (required if 'Specific Range' is selected). | Text       | No        | _(empty)_     |
-| **Named Cells**    | The name of the named range (required if 'NamedCells' is selected).     | Text       | No        | _(empty)_     |
-| **Table Name**     | The name of the table (required if 'Table' is selected).                | Text       | No        | _(empty)_     |
-| **Column To Filter** | The column letter (e.g., 'A') or number (e.g., 1) to apply the filter on. | Text       | Yes       | _(empty)_     |
-| **Filter Criteria**| The condition to apply as a filter (e.g., '=Apple', '≥10').             | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                                            | Input Type | Required? | Default Value |
+| ---------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object to apply the filter on.                                     | Text       | Yes       | _(empty)_     |
+| **Filter Mode**        | Specifies how to filter cells: active sheet, specific range, named cells, or table.    | Select     | Yes       | ActiveSheet   |
+| **Start Column**       | The starting column of the range to filter (required if 'Specific Range' is selected). | Text       | No        | _(empty)_     |
+| **End Column**         | The ending column of the specified range (required if 'Specific Range' is selected).   | Text       | No        | _(empty)_     |
+| **Start Row**          | The starting row of the range to filter (required if 'Specific Range' is selected).    | Text       | No        | _(empty)_     |
+| **End Row**            | The ending row of the range (required if 'Specific Range' is selected).                | Text       | No        | _(empty)_     |
+| **Named Cells**        | The name of the named range (required if 'NamedCells' is selected).                    | Text       | No        | _(empty)_     |
+| **Table Name**         | The name of the table (required if 'Table' is selected).                               | Text       | No        | _(empty)_     |
+| **Column To Filter**   | The column letter (e.g., 'A') or number (e.g., 1) to apply the filter on.              | Text       | Yes       | _(empty)_     |
+| **Filter Criteria**    | The condition to apply as a filter (e.g., '=Apple', '≥10').                            | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -66,7 +67,9 @@ In the **Filter Criteria** field, specify the condition for filtering, such as `
 </Steps>
 
 <Callout type="warning" title="Important!">
-Ensure you have access to the Excel file and the worksheet is not locked for editing. Double-check that you have entered correct filter criteria to avoid empty or incorrect results.
+  Ensure you have access to the Excel file and the worksheet is not locked for
+  editing. Double-check that you have entered correct filter criteria to avoid
+  empty or incorrect results.
 </Callout>
 
 ## Input/Output Examples
@@ -75,12 +78,12 @@ There are no numeric or text outputs to showcase for this node. The output is a 
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                            | Solution                                                                                             |
-| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **No rows visible after filtering**                | Check if the filter criteria are set correctly and ensure the data actually meet those criteria.     |
-| **Fields for Specific Range not showing**          | Make sure that "Specific Range" is selected in the Filter Mode dropdown.                             |
-| **Incorrect range results**                        | Verify the columns and rows specified for the range. Ensure they are within the actual data bounds.  |
-| **Invalid named range or table name**              | Validate that the named range or table exists in the worksheet and that the spelling is correct.     |
+| Problem                                   | Solution                                                                                            |
+| ----------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **No rows visible after filtering**       | Check if the filter criteria are set correctly and ensure the data actually meet those criteria.    |
+| **Fields for Specific Range not showing** | Make sure that "Specific Range" is selected in the Filter Mode dropdown.                            |
+| **Incorrect range results**               | Verify the columns and rows specified for the range. Ensure they are within the actual data bounds. |
+| **Invalid named range or table name**     | Validate that the named range or table exists in the worksheet and that the spelling is correct.    |
 
 ## Real-World Use Cases
 

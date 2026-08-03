@@ -1,18 +1,20 @@
 import { Button } from "@avplatform/ui/buttons";
-import { SparklesIcon } from "lucide-react";
-import { useGenerateInstructionMutation } from "../hooks/useGenerateInstructionMutation";
-import { getPromptDataFromNodes } from "../utils/getPromtDataFormNodes";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { useShallow } from "zustand/react/shallow";
+import { FlowTypesEnum } from "@avplatform/ui/enums";
+import { cn } from "@avplatform/ui/lib";
 import { Node } from "@xyflow/react";
-import { NodeDataType } from "@/types/node-data-type";
+import { SparklesIcon } from "lucide-react";
+import { useEffect } from "react";
 import { UseFormSetValue } from "react-hook-form";
 import { z } from "zod";
-import { saveAsTemplateSchema } from "../constants/save-as-template-zod-schema";
-import { cn } from "@avplatform/ui/lib";
-import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { FlowTypesEnum } from "@avplatform/ui/enums";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeDataType } from "@/types/node-data-type";
+
+import { saveAsTemplateSchema } from "../constants/save-as-template-zod-schema";
+import { useGenerateInstructionMutation } from "../hooks/useGenerateInstructionMutation";
+import { getPromptDataFromNodes } from "../utils/getPromtDataFormNodes";
 
 const GenerateButton = ({
   setVal,
@@ -20,9 +22,7 @@ const GenerateButton = ({
   setVal: UseFormSetValue<z.infer<typeof saveAsTemplateSchema>>;
 }) => {
   // Get nodes from the react flow store
-  const { nodes } = useReactFlowExtStore(
-    useShallow((state) => ({ nodes: state.nodes })),
-  );
+  const { nodes } = useReactFlowExtStore(useShallow((state) => ({ nodes: state.nodes })));
 
   const { currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
@@ -31,8 +31,7 @@ const GenerateButton = ({
   );
 
   // Mutation hook to generate the template instruction
-  const { mutate, data, isPending, isSuccess } =
-    useGenerateInstructionMutation();
+  const { mutate, data, isPending, isSuccess } = useGenerateInstructionMutation();
 
   // Update the form value 'instruction' whenever new data is returned from the mutation
   useEffect(() => {
@@ -57,9 +56,7 @@ const GenerateButton = ({
           refType: FlowTypesEnum.Agent, // Agent, ChatAgent, Block all comes under Agent umbrella
           refId: currentFlow.versionId,
           refName: currentFlow.name,
-          payload: JSON.stringify(
-            getPromptDataFromNodes(nodes as Node<NodeDataType>[]),
-          ),
+          payload: JSON.stringify(getPromptDataFromNodes(nodes as Node<NodeDataType>[])),
         });
       }}
     >

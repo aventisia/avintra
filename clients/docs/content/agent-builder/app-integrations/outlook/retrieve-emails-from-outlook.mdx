@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                                 | Input Type  | Required? | Default Value |
-| ------------------ | ------------------------------------------------------------------------------------------- | ----------- | --------- | ------------- |
-| **Outlook Application** | This is the link to the Outlook application that will be used to fetch the emails.          | Text        | Yes       | _(empty)_     |
-| **Folder Name**    | The name of the Outlook folder from which you want to retrieve emails (e.g., 'Inbox').       | Text        | Yes       | Inbox         |
-| **Filter Subject** | Optional field to retrieve emails containing specific text in the subject line.              | Text        | No        | _(empty)_     |
-| **Only Unread**    | Toggle this option to true if you want to retrieve only unread emails.                       | Switch      | No        | False         |
+| Field Name              | Description                                                                            | Input Type | Required? | Default Value |
+| ----------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Outlook Application** | This is the link to the Outlook application that will be used to fetch the emails.     | Text       | Yes       | _(empty)_     |
+| **Folder Name**         | The name of the Outlook folder from which you want to retrieve emails (e.g., 'Inbox'). | Text       | Yes       | Inbox         |
+| **Filter Subject**      | Optional field to retrieve emails containing specific text in the subject line.        | Text       | No        | _(empty)_     |
+| **Only Unread**         | Toggle this option to true if you want to retrieve only unread emails.                 | Switch     | No        | False         |
 
 ## Expected Output Format
 
@@ -55,23 +55,24 @@ The retrieved emails will be available as **EmailMessages** for use in subsequen
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use specific folder names and subject filters to narrow down the email retrieval list effectively.
+  Use specific folder names and subject filters to narrow down the email
+  retrieval list effectively.
 </Callout>
 
 ## Input/Output Examples
 
-| Folder Name | Filter Subject | Only Unread | Output Value | Output Type      |
-| ----------- | -------------- | ----------- | ------------ | ---------------- |
-| Inbox       | Meeting        | True        | EmailMessages| List of MailItems|
-| Sent        | _None_         | False       | EmailMessages| List of MailItems|
+| Folder Name | Filter Subject | Only Unread | Output Value  | Output Type       |
+| ----------- | -------------- | ----------- | ------------- | ----------------- |
+| Inbox       | Meeting        | True        | EmailMessages | List of MailItems |
+| Sent        | _None_         | False       | EmailMessages | List of MailItems |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                                                          |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Incorrect Folder Name**                     | Ensure that the folder name is correct and exists in your Outlook account. "Inbox", "Sent", etc., are commonly used names.                         |
-| **No Emails Retrieved**                       | Check that the folder contains emails, and adjust any strict filters like unread status or subject keywords.                                       |
-| **Format or Access Issues**                   | Verify that the Outlook Application is correctly specified and accessible from your desktop environment.                                           |
+| Problem                     | Solution                                                                                                                   |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Folder Name**   | Ensure that the folder name is correct and exists in your Outlook account. "Inbox", "Sent", etc., are commonly used names. |
+| **No Emails Retrieved**     | Check that the folder contains emails, and adjust any strict filters like unread status or subject keywords.               |
+| **Format or Access Issues** | Verify that the Outlook Application is correctly specified and accessible from your desktop environment.                   |
 
 ## Real-World Use Cases
 

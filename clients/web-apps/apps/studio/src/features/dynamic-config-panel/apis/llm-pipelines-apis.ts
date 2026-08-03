@@ -1,6 +1,5 @@
-import { axiosInstance } from "@avplatform/ui/lib";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 import { ISelectOption } from "@avplatform/ui/types";
 
 import { LLMRequestDto, LLMResponseDto } from "../dtos/llm-providers-dto";
@@ -35,9 +34,4 @@ const generateTTSResponse = (obj: TTSRequestDto) => {
     .then((res) => res.data);
 };
 
-export {
-  generateLLMResponse,
-  getProviderModels,
-  generateSTTResponse,
-  generateTTSResponse,
-};
+export { generateLLMResponse, getProviderModels, generateSTTResponse, generateTTSResponse };

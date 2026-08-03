@@ -6,10 +6,10 @@ The **Parse Fragmented JSON List** node helps you convert a list of fragmented J
 
 ## Configuration Options
 
-| Field Name          | Description                                                               | Input Type | Required? | Default Value    |
-| ------------------- | ------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **Fragmented List** | The list that contains JSON fragments. Example format: `"{"prop":"value"}"`. | Text       | Yes       | _(empty)_        |
-| **Parsed List**     | The output, a list of complete JSON objects ready for use or sorting.     | Output     | No        | ParsedList       |
+| Field Name          | Description                                                                  | Input Type | Required? | Default Value |
+| ------------------- | ---------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Fragmented List** | The list that contains JSON fragments. Example format: `"{"prop":"value"}"`. | Text       | Yes       | _(empty)_     |
+| **Parsed List**     | The output, a list of complete JSON objects ready for use or sorting.        | Output     | No        | ParsedList    |
 
 ## Expected Output Format
 
@@ -37,22 +37,24 @@ The finalized list of JSON objects will become available as **ParsedList**. You 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that each JSON fragment in the **Fragmented List** is correctly formatted with proper opening and closing braces as they align into complete objects.
+  Ensure that each JSON fragment in the **Fragmented List** is correctly
+  formatted with proper opening and closing braces as they align into complete
+  objects.
 </Callout>
 
 ## Input/Output Examples
 
-| Fragmented List Input                                   | Parsed List Output                                    |
-| --------------------------------------------------------| ------------------------------------------------------ |
-| `["{\"name\":\"John\"}", "{\"age\":30}"]`              | `[{"name": "John"}, {"age": 30}]`                      |
-| `["{\"product\":\"book\"}", "{\"price\":15.99}"]`    | `[{"product": "book"}, {"price": 15.99}]`           |
+| Fragmented List Input                             | Parsed List Output                        |
+| ------------------------------------------------- | ----------------------------------------- |
+| `["{\"name\":\"John\"}", "{\"age\":30}"]`         | `[{"name": "John"}, {"age": 30}]`         |
+| `["{\"product\":\"book\"}", "{\"price\":15.99}"]` | `[{"product": "book"}, {"price": 15.99}]` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                                                                                               |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Empty or Invalid Fragmented List**             | The input must include correctly formatted JSON fragments. Ensure there is no missing `}` or misplaced characters in each fragment.                                      |
-| **Unexpected Output Format**                     | Check the input fragments for consistency and correct JSON syntax. All fragments should be appropriately formed to ensure accurate parsing into a list of JSON objects. |
+| Problem                              | Solution                                                                                                                                                                |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Empty or Invalid Fragmented List** | The input must include correctly formatted JSON fragments. Ensure there is no missing `}` or misplaced characters in each fragment.                                     |
+| **Unexpected Output Format**         | Check the input fragments for consistency and correct JSON syntax. All fragments should be appropriately formed to ensure accurate parsing into a list of JSON objects. |
 
 ## Real-World Use Cases
 

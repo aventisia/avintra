@@ -6,15 +6,15 @@ The **Select Radio Button on Web Page** node is designed to automate the task of
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                       | Input Type | Required? | Default Value |
-| ----------------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance**| Enter or choose the variable that contains the web browser instance to work with.                 | Text       | Yes       | _(empty)_     |
-| **Find Type**           | Specifies how to find the element (e.g., ID, XPath, CssSelector).                                 | Select     | Yes       | XPath         |
-| **Value To Find**       | The value used to locate the element (e.g., 'username', '//input[@id='email']').                  | Text       | Yes       | _(empty)_     |
-| **Wait for Page Load**  | If true, waits for the page to fully load after selection.                                        | Switch     | No        | True          |
-| **Timeout for Page Load** | Maximum time in seconds to wait for the page to load.                                           | Text       | No        | 60            |
-| **Handle Dialog**       | Specifies what to do if a dialog appears after selecting the radio button.                        | Select     | No        | DoNothing     |
-| **Dialog Button to Press** | The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').                    | Text       | No        | Ok            |
+| Field Name                 | Description                                                                       | Input Type | Required? | Default Value |
+| -------------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**   | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **Find Type**              | Specifies how to find the element (e.g., ID, XPath, CssSelector).                 | Select     | Yes       | XPath         |
+| **Value To Find**          | The value used to locate the element (e.g., 'username', '//input[@id='email']').  | Text       | Yes       | _(empty)_     |
+| **Wait for Page Load**     | If true, waits for the page to fully load after selection.                        | Switch     | No        | True          |
+| **Timeout for Page Load**  | Maximum time in seconds to wait for the page to load.                             | Text       | No        | 60            |
+| **Handle Dialog**          | Specifies what to do if a dialog appears after selecting the radio button.        | Select     | No        | DoNothing     |
+| **Dialog Button to Press** | The name of the button to press if a dialog appears (e.g., 'Ok', 'Cancel').       | Text       | No        | Ok            |
 
 ## Expected Output Format
 
@@ -58,7 +58,8 @@ In the **Value To Find** field, specify the exact value or expression (such as a
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use precise and accurate XPath or CSS selectors to ensure the proper radio button is selected without errors.
+  Use precise and accurate XPath or CSS selectors to ensure the proper radio
+  button is selected without errors.
 </Callout>
 
 ## Input/Output Examples
@@ -67,11 +68,11 @@ Not applicable.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                                      |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| **Element not found error**                            | Double-check the **Find Type** and **Value To Find** fields for accuracy and correctness.                     |
-| **Dialog not handled correctly**                       | Ensure you have selected an appropriate option in **Handle Dialog** and specified relevant settings correctly. |
-| **Page not loading in time**                           | Consider increasing the **Timeout for Page Load** value to accommodate for slower internet speed or page load. |
+| Problem                          | Solution                                                                                                       |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Element not found error**      | Double-check the **Find Type** and **Value To Find** fields for accuracy and correctness.                      |
+| **Dialog not handled correctly** | Ensure you have selected an appropriate option in **Handle Dialog** and specified relevant settings correctly. |
+| **Page not loading in time**     | Consider increasing the **Timeout for Page Load** value to accommodate for slower internet speed or page load. |
 
 ## Real-World Use Cases
 

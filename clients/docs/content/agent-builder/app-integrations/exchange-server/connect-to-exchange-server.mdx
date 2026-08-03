@@ -9,17 +9,17 @@ The **Connect to Exchange Server** node is used to establish a connection with a
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                          | Input Type | Required? | Default Value |
-| ----------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Exchange Server Version** | Select the Exchange server version you are connecting to (e.g., Exchange 2013 SP1).              | Select     | Yes       | _(none)_      |
-| **Connection Type**     | Choose how to connect to the Exchange server, either using Auto discovery or a server address.       | Select     | Yes       | _(none)_      |
-| **Email Address**       | The email address for auto-discovery (appears if Connection Type is Auto discovery).                  | Text       | No        | _(none)_      |
-| **Server Address**      | The URL or IP address of the server (appears if Connection Type is Exchange server address).          | Text       | No        | _(none)_      |
-| **Credentials**         | Select the authentication method: default Exchange credentials or user-defined credentials.           | Select     | No        | _(none)_      |
-| **Domain**              | Domain for user-defined credentials (appears if Credentials is User defined).                         | Text       | No        | _(none)_      |
-| **Username**            | Username for user-defined credentials (appears if Credentials is User defined).                       | Text       | No        | _(none)_      |
-| **Password**            | Password for user-defined credentials (appears if Credentials is User defined).                       | Password   | No        | _(none)_      |
-| **Timeout**             | Set the connection attempt timeout in seconds.                                                        | Text       | No        | 30            |
+| Field Name                  | Description                                                                                    | Input Type | Required? | Default Value |
+| --------------------------- | ---------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Exchange Server Version** | Select the Exchange server version you are connecting to (e.g., Exchange 2013 SP1).            | Select     | Yes       | _(none)_      |
+| **Connection Type**         | Choose how to connect to the Exchange server, either using Auto discovery or a server address. | Select     | Yes       | _(none)_      |
+| **Email Address**           | The email address for auto-discovery (appears if Connection Type is Auto discovery).           | Text       | No        | _(none)_      |
+| **Server Address**          | The URL or IP address of the server (appears if Connection Type is Exchange server address).   | Text       | No        | _(none)_      |
+| **Credentials**             | Select the authentication method: default Exchange credentials or user-defined credentials.    | Select     | No        | _(none)_      |
+| **Domain**                  | Domain for user-defined credentials (appears if Credentials is User defined).                  | Text       | No        | _(none)_      |
+| **Username**                | Username for user-defined credentials (appears if Credentials is User defined).                | Text       | No        | _(none)_      |
+| **Password**                | Password for user-defined credentials (appears if Credentials is User defined).                | Password   | No        | _(none)_      |
+| **Timeout**                 | Set the connection attempt timeout in seconds.                                                 | Text       | No        | 30            |
 
 ## Expected Output Format
 
@@ -77,17 +77,18 @@ After configuring, the node will output an **Exchange Connection** object for us
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure that all required fields are filled out correctly to establish a stable connection to the Exchange server.
+  Ensure that all required fields are filled out correctly to establish a stable
+  connection to the Exchange server.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                  |
-| ----------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **Connection not established**                        | Double-check server details, version, and credentials. Ensure you have internet access.   |
-| **Incorrect Email Address or Server Address**         | Verify the correct email or server address is entered. Adjust in respective fields.       |
-| **Credentials not accepted**                          | Make sure your username, domain, and password are correct. Select the correct auth type.  |
-| **Timeout errors**                                    | Increase the timeout value if connections take longer to establish.                       |
+| Problem                                       | Solution                                                                                 |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Connection not established**                | Double-check server details, version, and credentials. Ensure you have internet access.  |
+| **Incorrect Email Address or Server Address** | Verify the correct email or server address is entered. Adjust in respective fields.      |
+| **Credentials not accepted**                  | Make sure your username, domain, and password are correct. Select the correct auth type. |
+| **Timeout errors**                            | Increase the timeout value if connections take longer to establish.                      |
 
 ## Real-World Use Cases
 

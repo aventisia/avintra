@@ -1,16 +1,16 @@
-import { iconMapper } from "@/components/icon-mapper";
-import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
-import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
-import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
-import { useReplaceNode } from "@/hooks/useReplaceNode";
-import { NodeDataType } from "@/types/node-data-type";
-
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { ArrowLeftIcon } from "lucide-react";
 import { KeyboardEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { iconMapper } from "@/components/icon-mapper";
+import { useAddFirstNodeToBranch } from "@/hooks/useAddFirstNodeToBranch";
+import { useAddFirstNodeToFlow } from "@/hooks/useAddFirstNodeToFlow";
+import { useAddNodeFromEdge } from "@/hooks/useAddNodeFromEdge";
+import { useReplaceNode } from "@/hooks/useReplaceNode";
+import { NodeDataType } from "@/types/node-data-type";
 
 import { triggersList } from "../constants/trigger-data";
 import { useNodeSelectorStore } from "../stores/action-selector-store";
@@ -23,10 +23,7 @@ interface ActionCategoryListProps {
   firstItemRef: React.MutableRefObject<HTMLButtonElement | null>;
 }
 
-export const ActionCategoryList = ({
-  inputRef,
-  firstItemRef,
-}: ActionCategoryListProps) => {
+export const ActionCategoryList = ({ inputRef, firstItemRef }: ActionCategoryListProps) => {
   const {
     origin,
     originId,
@@ -71,8 +68,7 @@ export const ActionCategoryList = ({
       return Array.from(map.values());
     }
     return (
-      actionSelectorData.find((item) => item.label === primaryCategoryLabel)
-        ?.actionCategories || []
+      actionSelectorData.find((item) => item.label === primaryCategoryLabel)?.actionCategories || []
     );
   }, [query, actionSelectorData, primaryCategoryLabel]);
 
@@ -162,14 +158,8 @@ export const ActionCategoryList = ({
     }
   };
 
-  const handleRightPaneKeyDown = (
-    e: KeyboardEvent,
-    index: number,
-    action: NodeDataType,
-  ) => {
-    const listLength = isOriginReplaceTrigger
-      ? triggersList.length
-      : activeActions.length;
+  const handleRightPaneKeyDown = (e: KeyboardEvent, index: number, action: NodeDataType) => {
+    const listLength = isOriginReplaceTrigger ? triggersList.length : activeActions.length;
 
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -210,11 +200,7 @@ export const ActionCategoryList = ({
   }
 
   if (actionCategories.length === 0) {
-    return (
-      <div className="p-4 text-center text-sm text-muted-foreground">
-        No actions found.
-      </div>
-    );
+    return <div className="p-4 text-center text-sm text-muted-foreground">No actions found.</div>;
   }
 
   return (
@@ -240,18 +226,12 @@ export const ActionCategoryList = ({
             >
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
-            <h2 className="truncate text-sm font-medium">
-              {primaryCategoryLabel}
-            </h2>
+            <h2 className="truncate text-sm font-medium">{primaryCategoryLabel}</h2>
           </div>
         )}
 
         <ScrollArea className="min-h-0 flex-1">
-          <div
-            className="space-y-1 p-2"
-            role="tablist"
-            aria-orientation="vertical"
-          >
+          <div className="space-y-1 p-2" role="tablist" aria-orientation="vertical">
             {actionCategories.map((item, idx) => {
               const isActiveRow = leftIndex === idx;
               return (
@@ -277,9 +257,7 @@ export const ActionCategoryList = ({
                 >
                   {item.icon
                     ? iconMapper[item.icon]
-                    : item.img && (
-                        <FallbackImageIcon className="h-5 w-5" src={item.img} />
-                      )}
+                    : item.img && <FallbackImageIcon className="h-5 w-5" src={item.img} />}
                   {item.label}
                 </button>
               );
@@ -288,11 +266,7 @@ export const ActionCategoryList = ({
         </ScrollArea>
       </div>
 
-      <ScrollArea
-        className="min-h-0 bg-background"
-        id="actions-panel"
-        role="tabpanel"
-      >
+      <ScrollArea className="min-h-0 bg-background" id="actions-panel" role="tabpanel">
         <div className="p-2" role="listbox">
           <ActionsList
             items={activeActions}

@@ -11,12 +11,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name                        | Description                                                       | Input Type | Required? | Default Value |
-| --------------------------------- | ----------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Window**                        | Select the window you want to move.                               | Text       | Yes       | _(empty)_     |
-| **X Position**                    | Enter the new X position (in pixels) for the window.              | Text       | Yes       | _(empty)_     |
-| **Y Position**                    | Enter the new Y position (in pixels) for the window.              | Text       | Yes       | _(empty)_     |
-| **Is Window Moved Successfully**  | Indicates whether the window was moved successfully.              | Output     | No        | IsWindowMoved |
+| Field Name                       | Description                                          | Input Type | Required? | Default Value |
+| -------------------------------- | ---------------------------------------------------- | ---------- | --------- | ------------- |
+| **Window**                       | Select the window you want to move.                  | Text       | Yes       | _(empty)_     |
+| **X Position**                   | Enter the new X position (in pixels) for the window. | Text       | Yes       | _(empty)_     |
+| **Y Position**                   | Enter the new Y position (in pixels) for the window. | Text       | Yes       | _(empty)_     |
+| **Is Window Moved Successfully** | Indicates whether the window was moved successfully. | Output     | No        | IsWindowMoved |
 
 ## Expected Output Format
 
@@ -47,27 +47,29 @@ In the **Y Position** field, input the vertical pixel position where you want th
 ### Step 5
 
 Confirm the setup by checking if the **Is Window Moved Successfully** output indicates a successful action.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure the window name or title is correctly specified to avoid unsuccessful move operations.
+  Ensure the window name or title is correctly specified to avoid unsuccessful
+  move operations.
 </Callout>
 
 ## Input/Output Examples
 
-| Window Title       | X Position | Y Position | Is Window Moved Successfully | Output Type |
-| ------------------ | ---------- | ---------- | -----------------------------| ----------- |
-| "Chat App"         | 300        | 100        | true                         | Boolean     |
-| "Spreadsheet"      | 0          | 0          | true                         | Boolean     |
-| "Browser"          | -100       | 200        | false                        | Boolean     |
+| Window Title  | X Position | Y Position | Is Window Moved Successfully | Output Type |
+| ------------- | ---------- | ---------- | ---------------------------- | ----------- |
+| "Chat App"    | 300        | 100        | true                         | Boolean     |
+| "Spreadsheet" | 0          | 0          | true                         | Boolean     |
+| "Browser"     | -100       | 200        | false                        | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                 |
-| -------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Incorrect window name entered**            | Verify and enter the exact name or title of the window you intend to move.               |
-| **Invalid X or Y positions**                 | Enter valid numerical values for the X and Y positions to ensure the window is moved correctly.    |
-| **Window not moving**                        | Double-check that the window is not minimized or closed before trying to move it.        |
+| Problem                           | Solution                                                                                        |
+| --------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Incorrect window name entered** | Verify and enter the exact name or title of the window you intend to move.                      |
+| **Invalid X or Y positions**      | Enter valid numerical values for the X and Y positions to ensure the window is moved correctly. |
+| **Window not moving**             | Double-check that the window is not minimized or closed before trying to move it.               |
 
 ## Real-World Use Cases
 

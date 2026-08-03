@@ -6,9 +6,9 @@ The **Focus Window** node is designed to bring a specific window on your desktop
 
 ## Configuration Options
 
-| Field Name                         | Description                                         | Input Type | Required? | Default Value |
-| ---------------------------------- | --------------------------------------------------- | ---------- | --------- | ------------- |
-| **Window**                         | Select the window you want to focus.                | Text       | Yes       | _(empty)_     |
+| Field Name                         | Description                                            | Input Type | Required? | Default Value   |
+| ---------------------------------- | ------------------------------------------------------ | ---------- | --------- | --------------- |
+| **Window**                         | Select the window you want to focus.                   | Text       | Yes       | _(empty)_       |
 | **Is Window Focused Successfully** | Indicates whether the window was focused successfully. | Output     | No        | IsWindowFocused |
 
 ## Expected Output Format
@@ -40,24 +40,26 @@ Check the **Is Window Focused Successfully** output. A return value of `true` me
 </Steps>
 
 <Callout type="info" title="Note">
-  If the specified window does not exist or is not found, the operation will return `false`. Ensure the window name is accurate and that the application is running.
+  If the specified window does not exist or is not found, the operation will
+  return `false`. Ensure the window name is accurate and that the application is
+  running.
 </Callout>
 
 ## Input/Output Examples
 
-| Window Name            | Is Window Focused Successfully | Output Type |
-| ---------------------- | ----------------------------- | ----------- |
-| "MyDocument - Word"    | true                          | Boolean     |
-| "Calculator"           | true                          | Boolean     |
-| "NonExistentWindow"    | false                         | Boolean     |
+| Window Name         | Is Window Focused Successfully | Output Type |
+| ------------------- | ------------------------------ | ----------- |
+| "MyDocument - Word" | true                           | Boolean     |
+| "Calculator"        | true                           | Boolean     |
+| "NonExistentWindow" | false                          | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                  | Solution                                                                                                                                                   |
-| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Window not found**                                     | Ensure the window is open and the name specified is correct and visible in your system's task switcher or taskbar.                                         |
-| **Window not focused despite input being correct**       | Verify that there's no system restriction preventing window focus, such as settings that prevent applications from being focused without direct user input. |
-| **Automated actions not working post focus**             | Verify that the window was focused correctly (check the output status) and ensure your automation task allows for interactive focus changes.               |
+| Problem                                            | Solution                                                                                                                                                    |
+| -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Window not found**                               | Ensure the window is open and the name specified is correct and visible in your system's task switcher or taskbar.                                          |
+| **Window not focused despite input being correct** | Verify that there's no system restriction preventing window focus, such as settings that prevent applications from being focused without direct user input. |
+| **Automated actions not working post focus**       | Verify that the window was focused correctly (check the output status) and ensure your automation task allows for interactive focus changes.                |
 
 ## Real-World Use Cases
 

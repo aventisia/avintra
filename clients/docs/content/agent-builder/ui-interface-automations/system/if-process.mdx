@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name      | Description                                                                                               | Input Type | Required? | Default Value |
-| --------------- | --------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Condition**   | Choose what condition to check (e.g., if the process is running or not).                                  | Select     | Yes       | _(empty)_     |
-| **Process Name**| Select the name of the process you want to check.                                                         | Select     | Yes       | _(empty)_     |
-| **From User**   | Check this if you want to verify the process under a specific user account.                               | Switch     | No        | _(empty)_     |
-| **User Name**   | Enter the user name to check the process. _Appears only if "From User" is enabled._                      | Text       | No        | _(empty)_     |
+| Field Name       | Description                                                                         | Input Type | Required? | Default Value |
+| ---------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Condition**    | Choose what condition to check (e.g., if the process is running or not).            | Select     | Yes       | _(empty)_     |
+| **Process Name** | Select the name of the process you want to check.                                   | Select     | Yes       | _(empty)_     |
+| **From User**    | Check this if you want to verify the process under a specific user account.         | Switch     | No        | _(empty)_     |
+| **User Name**    | Enter the user name to check the process. _Appears only if "From User" is enabled._ | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -52,26 +52,28 @@ If **From User** is enabled, enter the target user's name in the **User Name** f
 ### Step 6
 
 The flow will execute further actions based on whether the process meets the specified condition.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  The "User Name" field will only be active when "From User" is enabled. Ensure you want to specify a user before enabling it.
+  The "User Name" field will only be active when "From User" is enabled. Ensure
+  you want to specify a user before enabling it.
 </Callout>
 
 ## Input/Output Examples
 
-| Condition      | Process Name                       | From User | User Name | Execution Outcome             |
-| -------------- | ---------------------------------- | --------- | --------- | ------------------------------|
-| Is Running     | Google Chrome Browser              | Yes       | johndoe   | Continues if Chrome is running under johndoe. |
-| Is Not Running | Visual Studio Development Environment | No      | _(n/a)_   | Continues if Visual Studio is not running.    |
+| Condition      | Process Name                          | From User | User Name | Execution Outcome                             |
+| -------------- | ------------------------------------- | --------- | --------- | --------------------------------------------- |
+| Is Running     | Google Chrome Browser                 | Yes       | johndoe   | Continues if Chrome is running under johndoe. |
+| Is Not Running | Visual Studio Development Environment | No        | _(n/a)_   | Continues if Visual Studio is not running.    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                                                                               |
-| ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Process not found**                     | Ensure the correct process name is selected from the list. Check if the process is currently available.              |
-| **User-specific check not working**       | Verify that "From User" is enabled and the correct user name is entered. Ensure that the username is spelled correctly.| 
-| **Unexpected behavior in flow execution** | Double-check the selected condition and if it matches your intended logic (Is Running vs. Is Not Running).            |
+| Problem                                   | Solution                                                                                                                |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Process not found**                     | Ensure the correct process name is selected from the list. Check if the process is currently available.                 |
+| **User-specific check not working**       | Verify that "From User" is enabled and the correct user name is entered. Ensure that the username is spelled correctly. |
+| **Unexpected behavior in flow execution** | Double-check the selected condition and if it matches your intended logic (Is Running vs. Is Not Running).              |
 
 ## Real-World Use Cases
 

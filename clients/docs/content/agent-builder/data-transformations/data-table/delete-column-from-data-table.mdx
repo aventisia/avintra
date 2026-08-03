@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name             | Description                                                                         | Input Type | Required? | Default Value |
-| ---------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Data Table**         | The data table you wish to modify by removing a column.                             | Text       | No        | _(empty)_     |
-| **Specify Column With**| Select whether to identify the column to delete by its name or index.              | Select     | No        | Name          |
-| **Column Name**        | The name of the column to delete. Required if "Specify Column With" is set to name. | Text       | No        | _(empty)_     |
-| **Column Index**       | The position of the column to delete, starting at 0. Required if "Specify Column With" is set to index. | Text  | No        | _(empty)_     |
+| Field Name              | Description                                                                                             | Input Type | Required? | Default Value |
+| ----------------------- | ------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**          | The data table you wish to modify by removing a column.                                                 | Text       | No        | _(empty)_     |
+| **Specify Column With** | Select whether to identify the column to delete by its name or index.                                   | Select     | No        | Name          |
+| **Column Name**         | The name of the column to delete. Required if "Specify Column With" is set to name.                     | Text       | No        | _(empty)_     |
+| **Column Index**        | The position of the column to delete, starting at 0. Required if "Specify Column With" is set to index. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -55,23 +55,24 @@ Once configured, the node will output the **Modified Data Table**, now without t
 </Steps>
 
 <Callout type="info" title="Note">
-  Remember: If you don't specify "Name" or "Index" appropriately in the **Specify Column With** dropdown, the corresponding fields won't appear.
+  Remember: If you don't specify "Name" or "Index" appropriately in the
+  **Specify Column With** dropdown, the corresponding fields won't appear.
 </Callout>
 
 ## Input/Output Examples
 
-| Specify Column With | Column Name | Column Index | Original Data Table                   | Modified Data Table                 |
-| ------------------- | ----------- | ------------ | ------------------------------------ | ----------------------------------- |
-| Name                | "Age"       | _(n/a)_      | Name, Age, Salary <br/> John, 28, 6000 | Name, Salary <br/> John, 6000       |
-| Index               | _(n/a)_     | 1            | Product, Price, Stock <br/> Widget, 15, 300 | Product, Stock <br/> Widget, 300     |
+| Specify Column With | Column Name | Column Index | Original Data Table                         | Modified Data Table              |
+| ------------------- | ----------- | ------------ | ------------------------------------------- | -------------------------------- |
+| Name                | "Age"       | _(n/a)_      | Name, Age, Salary <br/> John, 28, 6000      | Name, Salary <br/> John, 6000    |
+| Index               | _(n/a)_     | 1            | Product, Price, Stock <br/> Widget, 15, 300 | Product, Stock <br/> Widget, 300 |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                 |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Field not appearing**                             | Ensure "Specify Column With" is set correctly to "Name" or "Index" to display respective input fields.   |
-| **Incorrect Column Index**                          | Remember column index begins at 0. Ensure accuracy to avoid the wrong column being deleted.             |
-| **Column name case sensitivity issues**             | Confirm the exact spelling and casing of the column name as it appears in the data table.               |
+| Problem                                 | Solution                                                                                               |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Field not appearing**                 | Ensure "Specify Column With" is set correctly to "Name" or "Index" to display respective input fields. |
+| **Incorrect Column Index**              | Remember column index begins at 0. Ensure accuracy to avoid the wrong column being deleted.            |
+| **Column name case sensitivity issues** | Confirm the exact spelling and casing of the column name as it appears in the data table.              |
 
 ## Real-World Use Cases
 

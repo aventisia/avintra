@@ -1,8 +1,4 @@
-import {
-  HubConnection,
-  HubConnectionBuilder,
-  LogLevel,
-} from "@microsoft/signalr";
+import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { useEffect, useRef, useState } from "react";
 
 interface JobNotification {
@@ -30,8 +26,7 @@ export const useJobNotifications = (
   const [isConnected, setIsConnected] = useState(false);
 
   // State to hold the last received notification
-  const [lastNotification, setLastNotification] =
-    useState<JobNotification | null>(null);
+  const [lastNotification, setLastNotification] = useState<JobNotification | null>(null);
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const connectionRef = useRef<HubConnection | null>(null);
 
@@ -106,9 +101,7 @@ export const useJobNotifications = (
         }
       } catch (error) {
         if (isMounted && !(error instanceof Error && error.name === "AbortError")) {
-          setConnectionError(
-            error instanceof Error ? error.message : "Failed to connect",
-          );
+          setConnectionError(error instanceof Error ? error.message : "Failed to connect");
           setIsConnected(false);
         }
       }

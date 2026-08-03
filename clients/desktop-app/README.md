@@ -24,13 +24,13 @@ Build artifacts (including the NSIS installer) are placed in `src-tauri/target/r
 
 ## Project Scripts
 
-| Script          | Description                                    |
-| --------------- | ---------------------------------------------- |
-| `dev`           | Start the Vite dev server (port 2999)          |
-| `build`         | Type-check and build the web assets            |
-| `lint`          | Run ESLint                                     |
-| `preview`       | Preview the production build                   |
-| `tauri`         | Tauri CLI wrapper (`npm run tauri dev`, etc.)  |
+| Script    | Description                                   |
+| --------- | --------------------------------------------- |
+| `dev`     | Start the Vite dev server (port 2999)         |
+| `build`   | Type-check and build the web assets           |
+| `lint`    | Run ESLint                                    |
+| `preview` | Preview the production build                  |
+| `tauri`   | Tauri CLI wrapper (`npm run tauri dev`, etc.) |
 
 ## Notes
 

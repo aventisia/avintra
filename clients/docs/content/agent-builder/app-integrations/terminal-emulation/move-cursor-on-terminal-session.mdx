@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name  | Description                                       | Input Type | Required? | Default Value |
-| ----------- | ------------------------------------------------- | ---------- | --------- | ------------- |
-| **SessionId** | The session ID of the terminal session.          | Text       | Yes       | _(empty)_     |
-| **X**        | The X-coordinate of the target position.          | Text       | Yes       | _(empty)_     |
-| **Y**        | The Y-coordinate of the target position.          | Text       | Yes       | _(empty)_     |
+| Field Name    | Description                              | Input Type | Required? | Default Value |
+| ------------- | ---------------------------------------- | ---------- | --------- | ------------- |
+| **SessionId** | The session ID of the terminal session.  | Text       | Yes       | _(empty)_     |
+| **X**         | The X-coordinate of the target position. | Text       | Yes       | _(empty)_     |
+| **Y**         | The Y-coordinate of the target position. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -44,10 +44,12 @@ Enter the **Y** coordinate to specify the vertical position for the cursor.
 ### Step 5
 
 Execute your automation, and the cursor will move to the specified position in the terminal session.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the terminal session specified by **SessionId** is currently active. If the session is closed or inactive, the cursor movement will not occur.
+  Ensure the terminal session specified by **SessionId** is currently active. If
+  the session is closed or inactive, the cursor movement will not occur.
 </Callout>
 
 ## Input/Output Examples
@@ -56,11 +58,11 @@ No standard input/output examples are applicable as this node directly manipulat
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                                                                                                 |
-|-------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| **Invalid SessionId entered**             | Verify that the SessionId corresponds to a valid, active terminal session.                                                                |
-| **Cursor does not move as expected**      | Check that both **X** and **Y** coordinates are within the boundaries of the terminal.                                                    |
-| **Empty Coordinates**                     | Ensure that both **X** and **Y** fields have been filled with numeric values representing the target coordinates in the terminal session. |
+| Problem                              | Solution                                                                                                                                  |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid SessionId entered**        | Verify that the SessionId corresponds to a valid, active terminal session.                                                                |
+| **Cursor does not move as expected** | Check that both **X** and **Y** coordinates are within the boundaries of the terminal.                                                    |
+| **Empty Coordinates**                | Ensure that both **X** and **Y** fields have been filled with numeric values representing the target coordinates in the terminal session. |
 
 ## Real-World Use Cases
 

@@ -1,11 +1,11 @@
-import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
-import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
-
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ArrowLeftIcon } from "lucide-react";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
+import { useLocalFileStore } from "@/features/file-viewer/stores/file-list-store";
 
 export default function ViewerButton() {
   // Get state and actions from the DynamicConfigPanel store
@@ -27,10 +27,9 @@ export default function ViewerButton() {
     };
   }, []);
 
-  const isAllowedModel = [
-    "CreateInferencingAIAgent",
-    "CreateConversationAIAgent",
-  ].includes(nodeData?.name ?? "");
+  const isAllowedModel = ["CreateInferencingAIAgent", "CreateConversationAIAgent"].includes(
+    nodeData?.name ?? "",
+  );
 
   // Open viewer upon file upload
   useEffect(() => {
@@ -59,9 +58,7 @@ export default function ViewerButton() {
         Viewer
       </Button>
       {files.length > 0 && (
-        <p className="text-sm text-muted-foreground">
-          {files?.length} file(s) uploaded
-        </p>
+        <p className="text-sm text-muted-foreground">{files?.length} file(s) uploaded</p>
       )}
     </div>
   );

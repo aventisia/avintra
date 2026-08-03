@@ -1,8 +1,9 @@
 import { USER_PREFERENCES_LS_KEY } from "@avplatform/ui/constants";
 import { UserPreferencesType } from "@avplatform/ui/types";
-import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 
 export const useSetStudioPreferences = () => {
   // Get user preferences from browser local storage

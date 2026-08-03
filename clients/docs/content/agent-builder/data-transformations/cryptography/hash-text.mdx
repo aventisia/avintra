@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                    | Input Type | Required? | Default Value |
-| ----------------------- | ------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Text to Hash**        | The original text you want to secure using hashing.                            | Text       | Yes       | _(empty)_     |
-| **Hashing Algorithm**   | Choose the algorithm to execute the hashing: SHA256, SHA512, or MD5.          | Select     | Yes       | _(empty)_     |
+| Field Name            | Description                                                          | Input Type | Required? | Default Value |
+| --------------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text to Hash**      | The original text you want to secure using hashing.                  | Text       | Yes       | _(empty)_     |
+| **Hashing Algorithm** | Choose the algorithm to execute the hashing: SHA256, SHA512, or MD5. | Select     | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -51,23 +51,24 @@ The hashed result will be output as **HashedText** for further use in other node
 </Steps>
 
 <Callout type="info" title="Tip">
-  Always choose a hashing algorithm according to your security needs: SHA algorithms are generally preferred for higher security than MD5.
+  Always choose a hashing algorithm according to your security needs: SHA
+  algorithms are generally preferred for higher security than MD5.
 </Callout>
 
 ## Input/Output Examples
 
-| Algorithm | Input Text           | Output Pattern (Hashed Text)                                         |
-| --------- | -------------------- | -------------------------------------------------------------------- |
-| SHA256    | "hello world"        | e.g., `b94d27b9934d3e08a52e52d7da7dabfadef6965d43c7a0c91f5175c3787975b` |
-| SHA512    | "example text"       | e.g., `06c7c25c2f7c2b649aa01c0eceda3e9ef819ab4e34356a7c7b27154bedb4247b5d8a0ef9b2e9e8ffb9a03a130254dd46235d171b1451aad9bf98946a983de69` |
-| MD5       | "test data"          | e.g., `098f6bcd4621d373cade4e832627b4f6`                              |
+| Algorithm | Input Text     | Output Pattern (Hashed Text)                                                                                                            |
+| --------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| SHA256    | "hello world"  | e.g., `b94d27b9934d3e08a52e52d7da7dabfadef6965d43c7a0c91f5175c3787975b`                                                                 |
+| SHA512    | "example text" | e.g., `06c7c25c2f7c2b649aa01c0eceda3e9ef819ab4e34356a7c7b27154bedb4247b5d8a0ef9b2e9e8ffb9a03a130254dd46235d171b1451aad9bf98946a983de69` |
+| MD5       | "test data"    | e.g., `098f6bcd4621d373cade4e832627b4f6`                                                                                                |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                               |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Invalid Input**                            | Ensure that the "Text to Hash" field contains text, not numbers or special characters alone.           |
-| **No Algorithm Selected**                    | Confirm that you have selected one of the provided hashing algorithms from the dropdown.                |
+| Problem                   | Solution                                                                                     |
+| ------------------------- | -------------------------------------------------------------------------------------------- |
+| **Invalid Input**         | Ensure that the "Text to Hash" field contains text, not numbers or special characters alone. |
+| **No Algorithm Selected** | Confirm that you have selected one of the provided hashing algorithms from the dropdown.     |
 
 ## Real-World Use Cases
 

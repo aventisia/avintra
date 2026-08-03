@@ -9,11 +9,10 @@ import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 import { Slider } from "./Slider";
 
 // Omit the native Radix values so they don't clash with React Hook Form
-interface SliderFieldProps
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>,
-    "value" | "defaultValue" | "onValueChange"
-  > {
+interface SliderFieldProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>,
+  "value" | "defaultValue" | "onValueChange"
+> {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
 
@@ -51,11 +50,7 @@ const SliderField = ({
         <FormItem>
           <div>
             {label && (
-              <FormLabelExt
-                label={label}
-                description={description}
-                isRequired={isRequired}
-              />
+              <FormLabelExt label={label} description={description} isRequired={isRequired} />
             )}
             <div className="mt-1 grid grid-cols-[auto_1fr_auto_auto] items-center gap-2 rounded-lg border p-2.5">
               <span className="text-xs">{min}</span>

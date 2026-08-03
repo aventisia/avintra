@@ -25,9 +25,7 @@ const getGroupContents = ({
   // Get only internal edges (no temporary ones)
   const groupEdges = edges.filter(
     (edge) =>
-      groupNodeIds.has(edge.source) &&
-      groupNodeIds.has(edge.target) &&
-      !edge.data?.isTemporary,
+      groupNodeIds.has(edge.source) && groupNodeIds.has(edge.target) && !edge.data?.isTemporary,
   );
 
   return {

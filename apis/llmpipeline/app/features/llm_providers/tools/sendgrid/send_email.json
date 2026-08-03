@@ -1,61 +1,55 @@
 {
-    "type": "function",
-    "function": {
-        "name": "sendgrid_send_email",
-        "description": "Send an email using SendGrid",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "to": {
-                    "type": "string",
-                    "description": "Recipient email address"
-                },
-                "from": {
-                    "type": "string",
-                    "description": "Sender email address"
-                },
-                "fromName": {
-                    "type": "string",
-                    "description": "Name of the sender"
-                },
-                "cc": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Optional CC recipients",
-                    "default": []
-                },
-                "bcc": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Optional BCC recipients",
-                    "default": []
-                },
-                "subject": {
-                    "type": "string",
-                    "description": "Email subject"
-                },
-                "body": {
-                    "type": "string",
-                    "description": "Email body content"
-                },
-                "is_html": {
-                    "type": "boolean",
-                    "description": "Set to true if the email body contains HTML",
-                    "default": false
-                }
-            },
-            "required": [
-                "to",
-                "from",
-                "fromName",
-                "subject",
-                "body"
-            ],
-            "additionalProperties": false
+  "type": "function",
+  "function": {
+    "name": "sendgrid_send_email",
+    "description": "Send an email using SendGrid",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "description": "Recipient email address"
+        },
+        "from": {
+          "type": "string",
+          "description": "Sender email address"
+        },
+        "fromName": {
+          "type": "string",
+          "description": "Name of the sender"
+        },
+        "cc": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional CC recipients",
+          "default": []
+        },
+        "bcc": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional BCC recipients",
+          "default": []
+        },
+        "subject": {
+          "type": "string",
+          "description": "Email subject"
+        },
+        "body": {
+          "type": "string",
+          "description": "Email body content"
+        },
+        "is_html": {
+          "type": "boolean",
+          "description": "Set to true if the email body contains HTML",
+          "default": false
         }
+      },
+      "required": ["to", "from", "fromName", "subject", "body"],
+      "additionalProperties": false
     }
+  }
 }

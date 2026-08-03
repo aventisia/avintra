@@ -2,7 +2,7 @@ import { Callout, Steps } from "nextra/components";
 
 # Hash from File
 
-The **Hash from File** node provides a way to create a unique fingerprint or hash for the contents of a file using common algorithms. This is useful for verifying file integrity, as hashes can confirm that files have not been altered. 
+The **Hash from File** node provides a way to create a unique fingerprint or hash for the contents of a file using common algorithms. This is useful for verifying file integrity, as hashes can confirm that files have not been altered.
 
 Example usages include:
 
@@ -12,10 +12,10 @@ Example usages include:
 
 ## Configuration Options
 
-| Field Name            | Description                                                            | Input Type | Required? | Default Value |
-| --------------------- | ---------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **File Path to Hash** | The path to the file you want to hash.                                 | Text       | Yes       | _(empty)_     |
-| **Hashing Algorithm** | The algorithm to use for hashing (SHA256, SHA512, or MD5).             | Select     | Yes       | _(empty)_     |
+| Field Name            | Description                                                | Input Type | Required? | Default Value |
+| --------------------- | ---------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File Path to Hash** | The path to the file you want to hash.                     | Text       | Yes       | _(empty)_     |
+| **Hashing Algorithm** | The algorithm to use for hashing (SHA256, SHA512, or MD5). | Select     | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -25,7 +25,7 @@ The output of this node is a **string representing the hashed content** of the f
   - **SHA256** produces a 64-character hash.
   - **SHA512** produces a 128-character hash.
   - **MD5** produces a 32-character hash.
-  
+
 ## Step-by-Step Guide
 
 <Steps>
@@ -44,10 +44,12 @@ Select a hashing method from the **Hashing Algorithm** dropdown menu. Options in
 ### Step 4
 
 Once configured, the node will output the hash of the file as **HashedContent** for use in subsequent nodes.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the file path is correct and accessible. If the file is moved or deleted, the node may not function as expected.
+  Ensure the file path is correct and accessible. If the file is moved or
+  deleted, the node may not function as expected.
 </Callout>
 
 ## Input/Output Examples
@@ -56,15 +58,15 @@ Once configured, the node will output the hash of the file as **HashedContent** 
 | ----------------- | --------- | ------------------------------------------------- | ----------- |
 | /path/to/myfile   | SHA256    | 3a7bd3d77c8567cd1a233b06cfc62bf7b493e4c1...58bf2d | String      |
 | /path/to/myfile   | SHA512    | 1f40fc92da241694750979ee6cf582f2d5d7d28e...492377 | String      |
-| /path/to/myfile   | MD5       | 9e107d9d372bb6826bd81d3542a419d6                 | String      |
+| /path/to/myfile   | MD5       | 9e107d9d372bb6826bd81d3542a419d6                  | String      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                           |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Invalid File Path**                           | Double-check the file path. Ensure it's correct and the file is accessible on your computer.       |
-| **Empty Hash Result**                           | Confirm that the file contains data to hash. An empty file will result in a hash without content.  |
-| **Different Hashes for Same File**              | Ensure the same algorithm is used each time to maintain consistency across hash validations.       |
+| Problem                            | Solution                                                                                          |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Invalid File Path**              | Double-check the file path. Ensure it's correct and the file is accessible on your computer.      |
+| **Empty Hash Result**              | Confirm that the file contains data to hash. An empty file will result in a hash without content. |
+| **Different Hashes for Same File** | Ensure the same algorithm is used each time to maintain consistency across hash validations.      |
 
 ## Real-World Use Cases
 

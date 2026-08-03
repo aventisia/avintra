@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Run Excel Macro** node allows you to execute a specific VBA macro within an Excel workbook. This can be extremely useful when you need to automate tasks directly in Excel without manually opening the workbook or running the script. Use this node when you want to harness Excel's macro functionality as part of a larger automation process.
 
 For example:
+
 - Automating report generation
 - Running complex calculations or data manipulations
 - Formatting sheets based on specific criteria
 
 ## Configuration Options
 
-| Field Name          | Description                                                        | Input Type | Required? | Default Value |
-| ------------------- | ------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Workbook Instance** | The Excel Workbook object containing the target macro.             | Text       | Yes       | _(empty)_     |
-| **Macro Name**        | The name of the VBA macro to execute. Eg: `Module1.MyMacro`.       | Text       | Yes       | _(empty)_     |
+| Field Name            | Description                                                  | Input Type | Required? | Default Value |
+| --------------------- | ------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Workbook Instance** | The Excel Workbook object containing the target macro.       | Text       | Yes       | _(empty)_     |
+| **Macro Name**        | The name of the VBA macro to execute. Eg: `Module1.MyMacro`. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -42,7 +43,8 @@ Execute the node to run the macro in your Excel workbook. The result will be sav
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure that the macro you intend to run is enabled in your Excel settings and that any security settings allow for macro executions.
+  Ensure that the macro you intend to run is enabled in your Excel settings and
+  that any security settings allow for macro executions.
 </Callout>
 
 <Callout type="note" title="Note">
@@ -51,17 +53,17 @@ Execute the node to run the macro in your Excel workbook. The result will be sav
 
 ## Input/Output Examples
 
-| Workbook Instance | Macro Name          | Output Value  | Output Type      |
-| ----------------- | ------------------- | ------------- | ---------------- |
-| `Workbook1.xlsx`  | `Module1.MyMacro`   | Result of Macro| As specified by macro |
+| Workbook Instance | Macro Name        | Output Value    | Output Type           |
+| ----------------- | ----------------- | --------------- | --------------------- |
+| `Workbook1.xlsx`  | `Module1.MyMacro` | Result of Macro | As specified by macro |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                       |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **Macro does not run**                                | Check the macro name spelling and include the module name. Also, ensure macros are enabled.   |
-| **Empty `MacroReturnValue`**                          | Verify that the macro includes logic to return a value.                                       |
-| **Invalid Workbook Instance**                         | Ensure the workbook object is correctly specified and accessible.                             |
+| Problem                       | Solution                                                                                    |
+| ----------------------------- | ------------------------------------------------------------------------------------------- |
+| **Macro does not run**        | Check the macro name spelling and include the module name. Also, ensure macros are enabled. |
+| **Empty `MacroReturnValue`**  | Verify that the macro includes logic to return a value.                                     |
+| **Invalid Workbook Instance** | Ensure the workbook object is correctly specified and accessible.                           |
 
 ## Real-World Use Cases
 

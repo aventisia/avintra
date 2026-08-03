@@ -1,3 +1,9 @@
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { ZodTypeAny, z } from "zod";
+import { useShallow } from "zustand/react/shallow";
+
 import {
   DCPFieldSchemaType,
   generateZodSchema,
@@ -5,12 +11,6 @@ import {
   useDynamicConfigPanelStore,
 } from "@/features/dynamic-config-panel";
 import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { ZodTypeAny, z } from "zod";
-import { useShallow } from "zustand/react/shallow";
 
 import { useGetSelectedAgentData } from "./useGetSelectedAgentData";
 
@@ -27,15 +27,14 @@ export const useCallAgentForm = () => {
   >(() => z.object({}));
 
   // Get node unique name state (required to get config panel data)
-  const { nodeId, nodeData, nodeLabel, setShowDialog } =
-    useDynamicConfigPanelStore(
-      useShallow((state) => ({
-        nodeId: state.nodeId,
-        nodeData: state.nodeData,
-        nodeLabel: state.nodeLabel,
-        setShowDialog: state.setShowDialog,
-      })),
-    );
+  const { nodeId, nodeData, nodeLabel, setShowDialog } = useDynamicConfigPanelStore(
+    useShallow((state) => ({
+      nodeId: state.nodeId,
+      nodeData: state.nodeData,
+      nodeLabel: state.nodeLabel,
+      setShowDialog: state.setShowDialog,
+    })),
+  );
 
   const { getSelectedAgentData } = useGetSelectedAgentData();
 
@@ -112,19 +111,12 @@ export const useCallAgentForm = () => {
   }, [selectedAgentId, selectedAgentFlowId]); // ✅ Only primitive deps
 
   // Get input and output keys (required at the time of form submission)
-  const inputKeys: string[] = nodeConfig
-    .filter((f) => f.direction === "Input")
-    .map((f) => f.name);
-  const outputKeys = nodeConfig
-    .filter((f) => f.direction === "Output")
-    .map((f) => f.name);
+  const inputKeys: string[] = nodeConfig.filter((f) => f.direction === "Input").map((f) => f.name);
+  const outputKeys = nodeConfig.filter((f) => f.direction === "Output").map((f) => f.name);
 
   // Reset form values when nodeConfig or inputs/outputs change
   useEffect(() => {
-    if (
-      nodeConfig.length > 0 &&
-      Object.keys(nodeConfigZodSchema.shape).length > 0
-    ) {
+    if (nodeConfig.length > 0 && Object.keys(nodeConfigZodSchema.shape).length > 0) {
       const currentSelectedAgent = form.getValues("selectAgent") ?? null;
 
       form.reset({

@@ -3,19 +3,12 @@ import { FormFieldSizeType } from "@avplatform/ui/types";
 import * as React from "react";
 import { useEffect, useRef, useState } from "react";
 
-interface ConfigPanelAutosizeInputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+interface ConfigPanelAutosizeInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   fieldSize?: FormFieldSizeType;
 }
 
-const ConfigPanelAutosizeInput = React.forwardRef<
-  HTMLInputElement,
-  ConfigPanelAutosizeInputProps
->(
-  (
-    { className, type, value, placeholder, fieldSize = "base", ...props },
-    ref,
-  ) => {
+const ConfigPanelAutosizeInput = React.forwardRef<HTMLInputElement, ConfigPanelAutosizeInputProps>(
+  ({ className, type, value, placeholder, fieldSize = "base", ...props }, ref) => {
     // State to manage the width of the input
     const [inputWidth, setInputWidth] = useState(100);
     const spanRef = useRef<HTMLSpanElement>(null);
@@ -66,4 +59,3 @@ const ConfigPanelAutosizeInput = React.forwardRef<
 ConfigPanelAutosizeInput.displayName = "ConfigPanelAutosizeInput";
 
 export { ConfigPanelAutosizeInput, type ConfigPanelAutosizeInputProps };
-

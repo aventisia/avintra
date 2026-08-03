@@ -6,16 +6,16 @@ The **Process Exchange Email Messages** node allows you to efficiently manage yo
 
 ## Configuration Options
 
-| Field Name                  | Description                                                                                | Input Type | Required? | Default Value |
-| --------------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Exchange Connection**     | The Exchange service object representing the connection to the Exchange server.             | Text       | Yes       | _(empty)_     |
-| **Operation**               | The action to perform (e.g., Move, Delete, MarkAsUnread).                                  | Select     | Yes       | _(empty)_     |
+| Field Name                      | Description                                                                              | Input Type | Required? | Default Value |
+| ------------------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Exchange Connection**         | The Exchange service object representing the connection to the Exchange server.          | Text       | Yes       | _(empty)_     |
+| **Operation**                   | The action to perform (e.g., Move, Delete, MarkAsUnread).                                | Select     | Yes       | _(empty)_     |
 | **Email Message(s) to Process** | The IDs of the email messages to process.                                                | Text       | Yes       | _(empty)_     |
-| **Mailbox Type**            | Specifies whether the mailbox is personal or shared.                                       | Select     | No        | _(empty)_     |
-| **Shared Mailbox Address**  | The email address of the shared mailbox (required if 'Mailbox Type' is 'Shared').          | Text       | No        | _(empty)_     |
-| **Move to Custom Folder**   | If true, moves emails to a custom folder instead of predefined folders.                    | Switch     | No        | _(empty)_     |
-| **Exchange Folder**         | The folder to move emails to (if not using a custom folder).                               | Select     | No        | _(empty)_     |
-| **Custom Folder Name**      | The name of the custom folder to move emails to (if 'Move to Custom Folder' is enabled).   | Text       | No        | _(empty)_     |
+| **Mailbox Type**                | Specifies whether the mailbox is personal or shared.                                     | Select     | No        | _(empty)_     |
+| **Shared Mailbox Address**      | The email address of the shared mailbox (required if 'Mailbox Type' is 'Shared').        | Text       | No        | _(empty)_     |
+| **Move to Custom Folder**       | If true, moves emails to a custom folder instead of predefined folders.                  | Switch     | No        | _(empty)_     |
+| **Exchange Folder**             | The folder to move emails to (if not using a custom folder).                             | Select     | No        | _(empty)_     |
+| **Custom Folder Name**          | The name of the custom folder to move emails to (if 'Move to Custom Folder' is enabled). | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -55,25 +55,26 @@ To move emails to a custom folder, toggle **Move to Custom Folder** to 'true' an
 </Steps>
 
 <Callout type="info" title="Note">
-  If you choose to move messages to a custom folder, ensure that **Exchange Folder** is left empty and focus on setting **Custom Folder Name** instead.
+  If you choose to move messages to a custom folder, ensure that **Exchange
+  Folder** is left empty and focus on setting **Custom Folder Name** instead.
 </Callout>
 
 ## Input/Output Examples
 
-| Operation             | Email Message IDs | Mailbox Type | Shared Mailbox Address | Move to Custom Folder | Custom Folder Name | Output              |
-| --------------------- | ----------------- | ------------ | ---------------------- | --------------------- | ------------------ | ------------------- |
-| Delete                | `["msgid1", "msgid2"]` | Personal     | _(n/a)_                | False                | _(n/a)_            | Messages Deleted    |
-| Mark as Unread        | `["msgid3"]`      | Shared       | `shared@example.com`   | False                | _(n/a)_            | Messages Unread     |
-| Move to Mail Folder   | `["msgid4"]`      | Personal     | _(n/a)_                | True                 | "Projects"         | Messages Moved      |
+| Operation           | Email Message IDs      | Mailbox Type | Shared Mailbox Address | Move to Custom Folder | Custom Folder Name | Output           |
+| ------------------- | ---------------------- | ------------ | ---------------------- | --------------------- | ------------------ | ---------------- |
+| Delete              | `["msgid1", "msgid2"]` | Personal     | _(n/a)_                | False                 | _(n/a)_            | Messages Deleted |
+| Mark as Unread      | `["msgid3"]`           | Shared       | `shared@example.com`   | False                 | _(n/a)_            | Messages Unread  |
+| Move to Mail Folder | `["msgid4"]`           | Personal     | _(n/a)_                | True                  | "Projects"         | Messages Moved   |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                                                                                        |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Exchange Connection not working**                    | Double-check the connection settings and ensure the server is reachable and the credentials are correct.                                                        |
-| **Unable to find Shared Mailbox Address**              | Confirm that the email entered is correct and that you have access privileges to this shared mailbox.                                                           |
-| **Fields not appearing according to selections**       | Ensure the dependencies, such as activating **Move to Custom Folder** to display **Custom Folder Name**, are met before expecting other fields to appear.        |
-| **Emails not moving to the right folder**              | Check both folder names (custom or selected) for typos or ensure the folder exists in the Exchange server.                                                        |
+| Problem                                          | Solution                                                                                                                                                  |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Exchange Connection not working**              | Double-check the connection settings and ensure the server is reachable and the credentials are correct.                                                  |
+| **Unable to find Shared Mailbox Address**        | Confirm that the email entered is correct and that you have access privileges to this shared mailbox.                                                     |
+| **Fields not appearing according to selections** | Ensure the dependencies, such as activating **Move to Custom Folder** to display **Custom Folder Name**, are met before expecting other fields to appear. |
+| **Emails not moving to the right folder**        | Check both folder names (custom or selected) for typos or ensure the folder exists in the Exchange server.                                                |
 
 ## Real-World Use Cases
 

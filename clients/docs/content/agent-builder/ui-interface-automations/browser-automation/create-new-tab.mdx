@@ -11,14 +11,14 @@ For example:
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                | Input Type | Required? | Default Value |
-| ------------------------ | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.          | Text       | Yes       | _(empty)_     |
-| **URL to Navigate To**   | The URL to navigate to after creating the new tab.                                         | Text       | No        | _(empty)_     |
-| **Wait for Page to Load**| If true, waits for the page to fully load before continuing.                               | Switch     | No        | true          |
-| **Timeout for Page Load**| Maximum time (in seconds) to wait for the page to load.                                    | Text       | No        | 60            |
-| **Handle Dialog**        | Specifies what to do if a dialog appears after navigating.                                 | Select     | No        | DoNothing     |
-| **Dialog Button to Press**| The button to press if a dialog appears (e.g., 'OK', 'Cancel').                           | Text       | No        | OK            |
+| Field Name                 | Description                                                                       | Input Type | Required? | Default Value |
+| -------------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**   | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **URL to Navigate To**     | The URL to navigate to after creating the new tab.                                | Text       | No        | _(empty)_     |
+| **Wait for Page to Load**  | If true, waits for the page to fully load before continuing.                      | Switch     | No        | true          |
+| **Timeout for Page Load**  | Maximum time (in seconds) to wait for the page to load.                           | Text       | No        | 60            |
+| **Handle Dialog**          | Specifies what to do if a dialog appears after navigating.                        | Select     | No        | DoNothing     |
+| **Dialog Button to Press** | The button to press if a dialog appears (e.g., 'OK', 'Cancel').                   | Text       | No        | OK            |
 
 ## Expected Output Format
 
@@ -41,7 +41,7 @@ To automatically navigate to a website after creating a new tab, enter the URL i
 
 ### Step 4
 
-If you need the new page to fully load before proceeding, turn on the **Wait for Page to Load** switch. You can also set a **Timeout for Page Load** to define how long to wait in seconds. 
+If you need the new page to fully load before proceeding, turn on the **Wait for Page to Load** switch. You can also set a **Timeout for Page Load** to define how long to wait in seconds.
 
 ### Step 5
 
@@ -58,24 +58,25 @@ The new web browser instance will be available as **NewBrowserInstance** for use
 </Steps>
 
 <Callout type="info" title="Note">
-  The "Dialog Button to Press" field becomes relevant only if "Handle Dialog" is set to "Press a Button".
+  The "Dialog Button to Press" field becomes relevant only if "Handle Dialog" is
+  set to "Press a Button".
 </Callout>
 
 ## Input/Output Examples
 
-| Action                 | URL (Input)                     | Dialog Action  | Output Value       | Output Type           |
-| ---------------------- | ------------------------------- | -------------- | ------------------ | --------------------- |
-| New Tab with Website   | `https://example.com`           | Do Nothing     | NewBrowserInstance | IWebDriver Object     |
-| New Tab with Dialog    | `https://login.example.com`     | Press 'Cancel' | NewBrowserInstance | IWebDriver Object     |
+| Action               | URL (Input)                 | Dialog Action  | Output Value       | Output Type       |
+| -------------------- | --------------------------- | -------------- | ------------------ | ----------------- |
+| New Tab with Website | `https://example.com`       | Do Nothing     | NewBrowserInstance | IWebDriver Object |
+| New Tab with Dialog  | `https://login.example.com` | Press 'Cancel' | NewBrowserInstance | IWebDriver Object |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                               | Solution                                                                                                                                          |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Web Browser Instance not specified**| Ensure you have selected or entered the correct variable that holds the web browser instance that should open the new tab.                        |
-| **URL not loading or incorrect**      | Double-check the URL entered. Ensure it is valid and properly formatted.                                                                            |
-| **Page not loading fully**            | Consider increasing the timeout in **Timeout for Page Load** or double-check that **Wait for Page to Load** is enabled if the page requires it.    |
-| **Pop-up dialog not handled**         | Make sure you specify the correct button in **Dialog Button to Press** if handling dialogs by pressing a button.                                   |
+| Problem                                | Solution                                                                                                                                        |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Web Browser Instance not specified** | Ensure you have selected or entered the correct variable that holds the web browser instance that should open the new tab.                      |
+| **URL not loading or incorrect**       | Double-check the URL entered. Ensure it is valid and properly formatted.                                                                        |
+| **Page not loading fully**             | Consider increasing the timeout in **Timeout for Page Load** or double-check that **Wait for Page to Load** is enabled if the page requires it. |
+| **Pop-up dialog not handled**          | Make sure you specify the correct button in **Dialog Button to Press** if handling dialogs by pressing a button.                                |
 
 ## Real-World Use Cases
 

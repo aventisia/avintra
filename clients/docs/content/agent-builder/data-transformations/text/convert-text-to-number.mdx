@@ -12,10 +12,10 @@ For instance:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                     | Input Type | Required? | Default Value |
-| ------------------ | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Text to Convert**| The text value that you want to convert to a numeric type.                       | Text       | Yes       | _(empty)_     |
-| **Output Type**    | Choose the numeric type for the conversion: Integer, Double, or Decimal.         | Select     | Yes       | _(empty)_     |
+| Field Name          | Description                                                              | Input Type | Required? | Default Value |
+| ------------------- | ------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Text to Convert** | The text value that you want to convert to a numeric type.               | Text       | Yes       | _(empty)_     |
+| **Output Type**     | Choose the numeric type for the conversion: Integer, Double, or Decimal. | Select     | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -51,23 +51,24 @@ Once configured, the converted numeric value is available as **ConvertedValue** 
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the input text should be a valid numeric string. Invalid texts, such as "abc" or "12a4", cannot be converted and might cause errors.
+  Ensure that the input text should be a valid numeric string. Invalid texts,
+  such as "abc" or "12a4", cannot be converted and might cause errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Text  | Output Type | Output Value | Output Type       |
-| ----------- | ----------- | ------------ | ----------------- |
-| `"123"`     | Integer     | 123          | Number (Integer)  |
-| `"45.67"`   | Double      | 45.67        | Number (Double)   |
-| `"100.50"`  | Decimal     | 100.50       | Number (Decimal)  |
+| Input Text | Output Type | Output Value | Output Type      |
+| ---------- | ----------- | ------------ | ---------------- |
+| `"123"`    | Integer     | 123          | Number (Integer) |
+| `"45.67"`  | Double      | 45.67        | Number (Double)  |
+| `"100.50"` | Decimal     | 100.50       | Number (Decimal) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                 |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Conversion fails**                                | Check that the input text is actually in a numeric format (e.g., no letters or special characters).       |
-| **Unexpected output type**                          | Verify that the correct output type (Integer, Double, Decimal) is selected according to your requirements.|
+| Problem                    | Solution                                                                                                   |
+| -------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Conversion fails**       | Check that the input text is actually in a numeric format (e.g., no letters or special characters).        |
+| **Unexpected output type** | Verify that the correct output type (Integer, Double, Decimal) is selected according to your requirements. |
 
 ## Real-World Use Cases
 

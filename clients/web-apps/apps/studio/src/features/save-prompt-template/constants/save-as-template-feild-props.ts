@@ -1,7 +1,4 @@
-import {
-  AutosizeTextareaFieldProps,
-  InputFieldProps,
-} from "@avplatform/ui/form";
+import { AutosizeTextareaFieldProps, InputFieldProps } from "@avplatform/ui/form";
 import { SelectFieldProps } from "@avplatform/ui/form";
 import { enumToArray } from "@avplatform/ui/utils";
 

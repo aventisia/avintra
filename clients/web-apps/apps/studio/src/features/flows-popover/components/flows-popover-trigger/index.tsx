@@ -1,8 +1,10 @@
-import { cn } from "@avplatform/ui/lib";
 import { buttonVariants } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+
 import { useFlowsPopoverStore } from "../../stores/flows-popover-store";
 import { FPTChevronDownIcon } from "./FPTChevronDownIcon";
 import { FPTLoadingFlow } from "./FPTLoadingFlow";

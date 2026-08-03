@@ -5,22 +5,24 @@ import { Callout, Steps } from "nextra/components";
 The **Get Active Excel Worksheet** node is designed to help you access the currently active worksheet in an Excel workbook. This is especially useful when working with dynamic Excel files where the active worksheet might change based on user interaction or automated processes.
 
 For example, you can use it to:
+
 - Identify the worksheet that a user last interacted with.
 - Perform operations on the active worksheet without specifying its name manually.
 - Retrieve details about the active worksheet such as its name and position within the workbook.
 
 ## Configuration Options
 
-| Field Name            | Description                                                                 | Input Type | Required? | Default Value  |
-| --------------------- | --------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Workbook Instance** | The Excel Workbook object from which to retrieve the active worksheet.      | Text       | Yes       | _(empty)_      |
-| **Sheet Name**        | Returns the name of the currently active worksheet.                         | Output     | No        | SheetName      |
-| **Sheet Index**       | Returns the index of the currently active worksheet.                        | Output     | No        | SheetIndex     |
-| **Active Worksheet Instance** | Returns the active worksheet instance.                                      | Output     | No        | ActiveWorksheet |
+| Field Name                    | Description                                                            | Input Type | Required? | Default Value   |
+| ----------------------------- | ---------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **Workbook Instance**         | The Excel Workbook object from which to retrieve the active worksheet. | Text       | Yes       | _(empty)_       |
+| **Sheet Name**                | Returns the name of the currently active worksheet.                    | Output     | No        | SheetName       |
+| **Sheet Index**               | Returns the index of the currently active worksheet.                   | Output     | No        | SheetIndex      |
+| **Active Worksheet Instance** | Returns the active worksheet instance.                                 | Output     | No        | ActiveWorksheet |
 
 ## Expected Output Format
 
 The output includes three main pieces of data:
+
 - **Sheet Name**: A string representing the name of the active worksheet (e.g., `"SalesData"`).
 - **Sheet Index**: A numeric value representing the position of the worksheet in the workbook (e.g., `3`).
 - **Active Worksheet Instance**: An object reference to the active worksheet for advanced operations.
@@ -39,6 +41,7 @@ In the **Workbook Instance** field, specify the Excel workbook you want to work 
 ### Step 3
 
 Once the node is added to your flow, it will automatically output the following:
+
 - **Sheet Name**: The name of the currently active worksheet.
 - **Sheet Index**: The index of the active worksheet relative to other sheets.
 - **Active Worksheet Instance**: The instance of the active worksheet as an object for further automation tasks.
@@ -46,23 +49,24 @@ Once the node is added to your flow, it will automatically output the following:
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure your workbook is open and accessible in your automation environment to retrieve accurate data from the active worksheet.
+  Ensure your workbook is open and accessible in your automation environment to
+  retrieve accurate data from the active worksheet.
 </Callout>
 
 ## Input/Output Examples
 
 | Workbook Instance | Output Sheet Name | Output Sheet Index | Output Active Worksheet Instance |
-| ----------------- | ----------------- | ------------------ | ------------------------------- |
-| Workbook1         | SalesData         | 3                  | ActiveWorksheet                 |
-| Workbook2         | Summary           | 1                  | ActiveWorksheet                 |
+| ----------------- | ----------------- | ------------------ | -------------------------------- |
+| Workbook1         | SalesData         | 3                  | ActiveWorksheet                  |
+| Workbook2         | Summary           | 1                  | ActiveWorksheet                  |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                     |
-| ----------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Workbook Instance not provided**              | Make sure to enter a valid Workbook Instance in the input field.                             |
-| **Incorrect worksheet information retrieved**   | Verify that the workbook is active and open, and the worksheet you intend to access is active. |
-| **Field outputs not showing**                   | Double-check that the node has run and that the Excel workbook is correctly referenced.       |
+| Problem                                       | Solution                                                                                       |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Workbook Instance not provided**            | Make sure to enter a valid Workbook Instance in the input field.                               |
+| **Incorrect worksheet information retrieved** | Verify that the workbook is active and open, and the worksheet you intend to access is active. |
+| **Field outputs not showing**                 | Double-check that the node has run and that the Excel workbook is correctly referenced.        |
 
 ## Real-World Use Cases
 

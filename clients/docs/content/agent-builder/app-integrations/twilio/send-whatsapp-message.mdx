@@ -6,13 +6,13 @@ The **Send WhatsApp Message** node allows you to send WhatsApp messages using th
 
 ## Configuration Options
 
-| Field Name                                       | Description                                                                                                          | Input Type        | Required? | Default Value |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- | ----------------- | --------- | ------------- |
-| **Twilio Credential**                            | Select your Twilio credential, which contains the necessary authentication token and account ID for API requests.    | Credential Select | Yes       | _(empty)_     |
-| **Recipient Identification Method**              | Choose whether to identify the recipient by their phone number or Messaging Service SID.                             | Select            | Yes       | PhoneNumber   |
-| **Sender Phone Number / Messaging Service SID**  | Enter the Twilio phone number or service identifier from which the WhatsApp message will be sent.                   | Text              | Yes       | _(empty)_     |
-| **Recipient Phone Number**                       | Enter the recipient's phone number (this must be a valid Twilio-supported number).                                   | Text              | Yes       | _(empty)_     |
-| **Message Body**                                 | The content you want to send in the WhatsApp message.                                                                | Text              | Yes       | _(empty)_     |
+| Field Name                                      | Description                                                                                                       | Input Type        | Required? | Default Value |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ----------------- | --------- | ------------- |
+| **Twilio Credential**                           | Select your Twilio credential, which contains the necessary authentication token and account ID for API requests. | Credential Select | Yes       | _(empty)_     |
+| **Recipient Identification Method**             | Choose whether to identify the recipient by their phone number or Messaging Service SID.                          | Select            | Yes       | PhoneNumber   |
+| **Sender Phone Number / Messaging Service SID** | Enter the Twilio phone number or service identifier from which the WhatsApp message will be sent.                 | Text              | Yes       | _(empty)_     |
+| **Recipient Phone Number**                      | Enter the recipient's phone number (this must be a valid Twilio-supported number).                                | Text              | Yes       | _(empty)_     |
+| **Message Body**                                | The content you want to send in the WhatsApp message.                                                             | Text              | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -55,24 +55,25 @@ Once all fields are completed and verified, save your configuration. The `Result
 </Steps>
 
 <Callout type="warning" title="Important Note">
-  Ensure that the recipient's phone number is supported by Twilio and WhatsApp. Double-check all numbers for accuracy to avoid delivery failures.
+  Ensure that the recipient's phone number is supported by Twilio and WhatsApp.
+  Double-check all numbers for accuracy to avoid delivery failures.
 </Callout>
 
 ## Input/Output Examples
 
-| Identification Method | Sender Details   | Recipient Phone | Message Body            | Output               |
-| --------------------- | ---------------- | ----------------| ----------------------- | ---------------------|
-| Phone Number          | +12345678901     | +19876543210    | "Hello, this is a test."| Twilio Response Data |
+| Identification Method | Sender Details   | Recipient Phone | Message Body               | Output               |
+| --------------------- | ---------------- | --------------- | -------------------------- | -------------------- |
+| Phone Number          | +12345678901     | +19876543210    | "Hello, this is a test."   | Twilio Response Data |
 | Messaging Service SID | MGxxxxxxxxxxxxxx | +19876543210    | "Your appointment is set." | Twilio Response Data |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                                    |
-| ---------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Credential Error**                   | Make sure the correct Twilio credential is selected and configured properly.                                                                                |
-| **Unsupported Phone Number Format**            | Ensure recipient's phone number is in the correct international format and supported by Twilio.                                                             |
-| **Empty Message Body**                         | Verify the message body is not empty before sending, as this will fail to send a message.                                                                   |
-| **Unexpected Error Message from Twilio**       | Check Twilio's documentation for error codes and ensure all API permissions and settings are properly configured.                                           |
+| Problem                                  | Solution                                                                                                          |
+| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Invalid Credential Error**             | Make sure the correct Twilio credential is selected and configured properly.                                      |
+| **Unsupported Phone Number Format**      | Ensure recipient's phone number is in the correct international format and supported by Twilio.                   |
+| **Empty Message Body**                   | Verify the message body is not empty before sending, as this will fail to send a message.                         |
+| **Unexpected Error Message from Twilio** | Check Twilio's documentation for error codes and ensure all API permissions and settings are properly configured. |
 
 ## Real-World Use Cases
 

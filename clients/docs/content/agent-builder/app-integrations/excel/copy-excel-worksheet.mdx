@@ -11,14 +11,14 @@ For example:
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                     | Input Type | Required? | Default Value    |
-| ----------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **Source Workbook**     | The Excel Workbook object containing the worksheet to copy.                                     | Text       | Yes       | _(empty)_        |
-| **Copy Mode**           | Specifies how to identify the worksheet to copy (by Name or Index).                             | Select     | Yes       | Name             |
-| **Worksheet Name**      | The name of the worksheet to copy. _Required if Copy Mode is "Name"._                           | Text       | No        | _(empty)_        |
-| **Worksheet Index**     | The index of the worksheet to copy. _Required if Copy Mode is "Index"._                         | Text       | No        | _(empty)_        |
-| **Target Workbook**     | The Excel Workbook where the worksheet will be copied. If not provided, copy occurs in the same workbook. | Text       | No        | _(empty)_        |
-| **Paste Position**      | Specifies where to paste the copied worksheet in the target workbook.                           | Select     | No        | LastWorksheet    |
+| Field Name          | Description                                                                                               | Input Type | Required? | Default Value |
+| ------------------- | --------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Source Workbook** | The Excel Workbook object containing the worksheet to copy.                                               | Text       | Yes       | _(empty)_     |
+| **Copy Mode**       | Specifies how to identify the worksheet to copy (by Name or Index).                                       | Select     | Yes       | Name          |
+| **Worksheet Name**  | The name of the worksheet to copy. _Required if Copy Mode is "Name"._                                     | Text       | No        | _(empty)_     |
+| **Worksheet Index** | The index of the worksheet to copy. _Required if Copy Mode is "Index"._                                   | Text       | No        | _(empty)_     |
+| **Target Workbook** | The Excel Workbook where the worksheet will be copied. If not provided, copy occurs in the same workbook. | Text       | No        | _(empty)_     |
+| **Paste Position**  | Specifies where to paste the copied worksheet in the target workbook.                                     | Select     | No        | LastWorksheet |
 
 ## Expected Output Format
 
@@ -68,23 +68,24 @@ The copied worksheet will be available as **CopiedWorksheet** for further manipu
 </Steps>
 
 <Callout type="info" title="Note">
-  If you do not provide a "Target Workbook," the worksheet will be copied within the same workbook.
+  If you do not provide a "Target Workbook," the worksheet will be copied within
+  the same workbook.
 </Callout>
 
 ## Input/Output Examples
 
-| Copy Mode | Worksheet Identifier | Target Workbook   | Paste Position | Output        |
-| --------- | -------------------- | ----------------- | -------------- | ------------- |
+| Copy Mode | Worksheet Identifier | Target Workbook     | Paste Position | Output           |
+| --------- | -------------------- | ------------------- | -------------- | ---------------- |
 | Name      | "Finance Report"     | ReportWorkbook.xlsx | FirstWorksheet | Worksheet object |
-| Index     | 2                    |                   | LastWorksheet  | Worksheet object |
+| Index     | 2                    |                     | LastWorksheet  | Worksheet object |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                                                                                          |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **"Worksheet Name" or "Index" not found**           | Ensure that the worksheet name or index is correct and exists in the source workbook.                                                                                             |
-| **Target Workbook not updated**                     | Confirm that the target workbook is correctly specified, and its file path is accessible.                                                                                         |
-| **Worksheet not appearing in the desired position** | Check the Paste Position setting. If incorrect, adjust to either "First worksheet" or "Last worksheet" as needed.                                                                 |
+| Problem                                             | Solution                                                                                                          |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **"Worksheet Name" or "Index" not found**           | Ensure that the worksheet name or index is correct and exists in the source workbook.                             |
+| **Target Workbook not updated**                     | Confirm that the target workbook is correctly specified, and its file path is accessible.                         |
+| **Worksheet not appearing in the desired position** | Check the Paste Position setting. If incorrect, adjust to either "First worksheet" or "Last worksheet" as needed. |
 
 ## Real-World Use Cases
 

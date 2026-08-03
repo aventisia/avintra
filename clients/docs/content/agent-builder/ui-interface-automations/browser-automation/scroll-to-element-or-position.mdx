@@ -12,17 +12,17 @@ For example:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                                                                                          | Input Type | Required? | Default Value |
-| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                                                                       | Text       | Yes       | _(empty)_     |
-| **Scroll Mode**       | Specifies how to scroll: by element or by coordinates.                                                                                                              | Select     | No        | ByElement    |
-| **Find Type**         | Specifies how to find the element (e.g., ID, XPath, CssSelector). Only appears when Scroll Mode is "By Element".                                                   | Select     | Yes       | XPath        |
-| **Value To Find**     | The value used to locate the element (e.g., 'username', '//input[@id="email"]'). Only appears when Scroll Mode is "By Element".                                   | Text       | No        | _(empty)_    |
-| **X Coordinate**      | Horizontal scroll position. Only used in 'By Coordinates' mode.                                                                                                    | Text       | No        | _(empty)_    |
-| **Y Coordinate**      | Vertical scroll position. Only used in 'By Coordinates' mode.                                                                                                      | Text       | No        | _(empty)_    |
-| **Wait For Element**  | If true, waits for the element to be present before scrolling.                                                                                                      | Switch     | No        | _(empty)_    |
-| **Timeout Seconds**   | Maximum time in seconds to wait for the element before failing.                                                                                                     | Text       | No        | 60           |
-| **Smooth Scroll**     | If true, scrolls smoothly instead of jumping to the target.                                                                                                        | Switch     | No        | _(empty)_    |
+| Field Name               | Description                                                                                                                     | Input Type | Required? | Default Value |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                               | Text       | Yes       | _(empty)_     |
+| **Scroll Mode**          | Specifies how to scroll: by element or by coordinates.                                                                          | Select     | No        | ByElement     |
+| **Find Type**            | Specifies how to find the element (e.g., ID, XPath, CssSelector). Only appears when Scroll Mode is "By Element".                | Select     | Yes       | XPath         |
+| **Value To Find**        | The value used to locate the element (e.g., 'username', '//input[@id="email"]'). Only appears when Scroll Mode is "By Element". | Text       | No        | _(empty)_     |
+| **X Coordinate**         | Horizontal scroll position. Only used in 'By Coordinates' mode.                                                                 | Text       | No        | _(empty)_     |
+| **Y Coordinate**         | Vertical scroll position. Only used in 'By Coordinates' mode.                                                                   | Text       | No        | _(empty)_     |
+| **Wait For Element**     | If true, waits for the element to be present before scrolling.                                                                  | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for the element before failing.                                                                 | Text       | No        | 60            |
+| **Smooth Scroll**        | If true, scrolls smoothly instead of jumping to the target.                                                                     | Switch     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -75,24 +75,25 @@ Execute the node to scroll the webpage to the desired element or position.
 </Steps>
 
 <Callout type="info" title="Note">
-  Use **Smooth Scroll** if you prefer a more visually pleasant scrolling motion. It does not affect the outcome of the operation.
+  Use **Smooth Scroll** if you prefer a more visually pleasant scrolling motion.
+  It does not affect the outcome of the operation.
 </Callout>
 
 ## Input/Output Examples
 
-| Scenario                 | Scroll Mode | Find Type | Value To Find         | X Coordinate | Y Coordinate | Output                            |
-| ------------------------ | ----------- | --------- | --------------------- | ------------ | ------------ | --------------------------------- |
-| Scroll to Form           | By Element  | CssSelector | '#login-form'          | _(n/a)_      | _(n/a)_      | Browser scrolls to the form area. |
-| Scroll to Banner         | By Coordinates | _(n/a)_   | _(n/a)_               | 0            | 250          | Page scrolls down to Y=250 pixels.|
-| Scroll to Submit Button  | By Element  | XPath     | '//button[@type="submit"]' | _(n/a)_    | _(n/a)_      | Button brought into view.         |
+| Scenario                | Scroll Mode    | Find Type   | Value To Find              | X Coordinate | Y Coordinate | Output                             |
+| ----------------------- | -------------- | ----------- | -------------------------- | ------------ | ------------ | ---------------------------------- |
+| Scroll to Form          | By Element     | CssSelector | '#login-form'              | _(n/a)_      | _(n/a)_      | Browser scrolls to the form area.  |
+| Scroll to Banner        | By Coordinates | _(n/a)_     | _(n/a)_                    | 0            | 250          | Page scrolls down to Y=250 pixels. |
+| Scroll to Submit Button | By Element     | XPath       | '//button[@type="submit"]' | _(n/a)_      | _(n/a)_      | Button brought into view.          |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                                       |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| **No scrolling occurring**                      | Ensure the **Web Browser Instance** is correctly set up and active. Also verify that all required fields are filled correctly in the configuration.       |
-| **ScrollMode mismatch with fields**             | Make sure to adjust the fields according to the selected **Scroll Mode**. E.g., for **By Element**, ensure **Find Type** and **Value To Find** are used. |
-| **Element not found using Find Type**           | Check the accuracy and syntax of **Value To Find**. Cross-check with the webpage's HTML to confirm identifiers are correct.                             |
+| Problem                               | Solution                                                                                                                                                 |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No scrolling occurring**            | Ensure the **Web Browser Instance** is correctly set up and active. Also verify that all required fields are filled correctly in the configuration.      |
+| **ScrollMode mismatch with fields**   | Make sure to adjust the fields according to the selected **Scroll Mode**. E.g., for **By Element**, ensure **Find Type** and **Value To Find** are used. |
+| **Element not found using Find Type** | Check the accuracy and syntax of **Value To Find**. Cross-check with the webpage's HTML to confirm identifiers are correct.                              |
 
 ## Real-World Use Cases
 

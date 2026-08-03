@@ -12,11 +12,11 @@ The **Serialize JSON Token** node is designed to convert an object or JToken int
 
 ## Configuration Options
 
-| Field Name       | Description                                                         | Input Type | Required? | Default Value   |
-| ---------------- | ------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Input Token**  | The JToken or object you wish to convert into JSON text and JToken. | Text       | Yes       | _(empty)_       |
-| **Serialized JSON** | The resulting JSON string from serialization. Returns null if serialization failed. | Automatic (Output) | No | SerializedJson  |
-| **Serialized Token** | The resulting JToken from serialization. Returns null if serialization failed. | Automatic (Output) | No | SerializedToken |
+| Field Name           | Description                                                                         | Input Type         | Required? | Default Value   |
+| -------------------- | ----------------------------------------------------------------------------------- | ------------------ | --------- | --------------- |
+| **Input Token**      | The JToken or object you wish to convert into JSON text and JToken.                 | Text               | Yes       | _(empty)_       |
+| **Serialized JSON**  | The resulting JSON string from serialization. Returns null if serialization failed. | Automatic (Output) | No        | SerializedJson  |
+| **Serialized Token** | The resulting JToken from serialization. Returns null if serialization failed.      | Automatic (Output) | No        | SerializedToken |
 
 ## Expected Output Format
 
@@ -48,23 +48,24 @@ You can now use these outputs in subsequent nodes as needed in your workflow.
 </Steps>
 
 <Callout type="info" title="Tip">
-  Double-check your input for any unsupported formats. Ensure your input data is properly structured to avoid serialization failures.
+  Double-check your input for any unsupported formats. Ensure your input data is
+  properly structured to avoid serialization failures.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Token          | Serialized JSON                             | Serialized Token                          |
-| -------------------- | ------------------------------------------- | ----------------------------------------- |
-| `{"name":"John"}`    | `{"name":"John"}`                           | JToken object (`{name: "John"}` structure)|
-| `["apple", "banana"]`| `["apple", "banana"]`                       | JToken array containing "apple" and "banana"|
+| Input Token           | Serialized JSON       | Serialized Token                             |
+| --------------------- | --------------------- | -------------------------------------------- |
+| `{"name":"John"}`     | `{"name":"John"}`     | JToken object (`{name: "John"}` structure)   |
+| `["apple", "banana"]` | `["apple", "banana"]` | JToken array containing "apple" and "banana" |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                      | Solution                                                                                                 |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Serialization failure**                    | Ensure the input data is a valid structure or object. Double-check for any syntax issues in the input.   |
-| **Missing output values**                    | Check that the input token is correctly entered. Serialized outputs will be null if the input is invalid. |
-| **Unexpected result**                        | Verify the input value and its format to ensure it's serialized as expected.                             |
+| Problem                   | Solution                                                                                                  |
+| ------------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Serialization failure** | Ensure the input data is a valid structure or object. Double-check for any syntax issues in the input.    |
+| **Missing output values** | Check that the input token is correctly entered. Serialized outputs will be null if the input is invalid. |
+| **Unexpected result**     | Verify the input value and its format to ensure it's serialized as expected.                              |
 
 ## Real-World Use Cases
 

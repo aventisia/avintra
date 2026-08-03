@@ -1,44 +1,32 @@
-import { InputHandle } from "@/components/handles/InputHandle";
-import { OutputHandle } from "@/components/handles/OutputHandle";
-import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
-import { LoopNodeDataType } from "@/types/loop-node-data-type";
-
 import { Badge } from "@avplatform/ui/badge";
 import { Button } from "@avplatform/ui/buttons";
 import { Node, NodeProps, Position } from "@xyflow/react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 
+import { InputHandle } from "@/components/handles/InputHandle";
+import { OutputHandle } from "@/components/handles/OutputHandle";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
+import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
+import { LoopNodeDataType } from "@/types/loop-node-data-type";
+
 import BaseNode from "./BaseNode";
 
 type ForLoopNode = Node<LoopNodeDataType, "forLoopNode">;
 
 export const ForLoopNode = memo(
-  ({
-    id,
-    data,
-    selected,
-    sourcePosition,
-    targetPosition,
-  }: NodeProps<ForLoopNode>) => {
+  ({ id, data, selected, sourcePosition, targetPosition }: NodeProps<ForLoopNode>) => {
     const isExecutionLog = useIsExecutionLogsRoute();
     // 1. Destructure executionMap and nodeToParentStack from the store
-    const {
-      loopRegistry,
-      activeIteration,
-      setIteration,
-      executionMap,
-      nodeToParentStack,
-    } = useExecutionStore();
+    const { loopRegistry, activeIteration, setIteration, executionMap, nodeToParentStack } =
+      useExecutionStore();
 
     const total = loopRegistry[id]?.total || 0;
     const current = activeIteration[id] || 0;
 
     // 2. Resolve the path coordinate for this loop's context
     const parents = nodeToParentStack[id] || [];
-    const pathKey =
-      parents.map((pid) => activeIteration[pid] ?? 0).join("-") || "global";
+    const pathKey = parents.map((pid) => activeIteration[pid] ?? 0).join("-") || "global";
 
     // 3. Determine if this loop was actually reached in the current parent iteration
     const isActiveInCurrentPath = !!executionMap[id]?.[pathKey];
@@ -132,11 +120,7 @@ export const ForLoopNode = memo(
         )}
 
         <InputHandle position={targetPosition} connectionCount={1} />
-        <InputHandle
-          id="for-loop-repeat"
-          position={Position.Top}
-          connectionCount={1}
-        />
+        <InputHandle id="for-loop-repeat" position={Position.Top} connectionCount={1} />
         <OutputHandle position={sourcePosition} connectionCount={2} />
       </BaseNode>
     );

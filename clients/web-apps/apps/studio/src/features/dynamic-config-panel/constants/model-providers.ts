@@ -12,16 +12,7 @@ export type Model = {
   voices?: { label: string; value: string }[];
 
   /* Specialty of the model*/
-  specialty: (
-    | "text"
-    | "vision"
-    | "image"
-    | "tts"
-    | "stt"
-    | "video"
-    | "realtime"
-    | "deep-search"
-  )[];
+  specialty: ("text" | "vision" | "image" | "tts" | "stt" | "video" | "realtime" | "deep-search")[];
 };
 
 export type Provider = {

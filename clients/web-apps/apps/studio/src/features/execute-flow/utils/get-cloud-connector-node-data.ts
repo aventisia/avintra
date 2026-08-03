@@ -1,9 +1,7 @@
-import {
-  NodeDataType,
-  NodeInputType,
-  NodeOutputType,
-} from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
+
+import { NodeDataType, NodeInputType, NodeOutputType } from "@/types/node-data-type";
+
 import { CloudConnectorNodeData } from "..";
 
 export function getCloudConnectorNodeData(

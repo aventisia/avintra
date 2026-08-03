@@ -1,9 +1,9 @@
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { NodeDataType } from "@/types/node-data-type";
-
 import { cn } from "@avplatform/ui/lib";
 import { KeyboardEvent } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { NodeDataType } from "@/types/node-data-type";
 
 import { useNodeSelectorStore } from "../stores/action-selector-store";
 import { ActionToSelect } from "./ActionToSelect";
@@ -14,11 +14,7 @@ interface ActionsListProps {
   rightRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>;
   firstItemRef?: React.MutableRefObject<HTMLButtonElement | null>;
   rightIndex: number;
-  handleRightPaneKeyDown: (
-    e: KeyboardEvent,
-    index: number,
-    action: NodeDataType,
-  ) => void;
+  handleRightPaneKeyDown: (e: KeyboardEvent, index: number, action: NodeDataType) => void;
   isFocusedPane: boolean;
 }
 
@@ -45,9 +41,7 @@ const ActionsList = ({
 
   if (!items || items.length === 0) {
     return (
-      <div className="p-4 text-center text-sm text-muted-foreground">
-        No actions available.
-      </div>
+      <div className="p-4 text-center text-sm text-muted-foreground">No actions available.</div>
     );
   }
 
@@ -86,8 +80,7 @@ const ActionsList = ({
               isFocused
                 ? "bg-accent text-accent-foreground"
                 : "hover:bg-accent hover:text-accent-foreground",
-              (isDisabled || (isChatAiNode && !isChatAgent)) &&
-                "cursor-not-allowed opacity-50",
+              (isDisabled || (isChatAiNode && !isChatAgent)) && "cursor-not-allowed opacity-50",
             )}
           >
             <ActionToSelect data={action} />

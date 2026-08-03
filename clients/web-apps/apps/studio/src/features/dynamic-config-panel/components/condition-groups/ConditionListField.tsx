@@ -3,12 +3,13 @@ import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
+
 import {
   ConditionLabel,
   DCPFieldSchemaType,
-  defaultConditionObj,
   FieldsLabelHeader,
   RenderField,
+  defaultConditionObj,
   shouldRenderField,
 } from "../..";
 
@@ -43,10 +44,7 @@ export const ConditionListField = ({
     <div className="mt-2 rounded-lg border bg-slate-50 px-5 pb-5 pt-2.5">
       <div className="mb-2 flex w-full items-center justify-between">
         <div className="flex items-center">
-          <ConditionLabel
-            label={`Group ${groupIndex + 1}`}
-            className="text-[0.9rem]"
-          />
+          <ConditionLabel label={`Group ${groupIndex + 1}`} className="text-[0.9rem]" />
           {groupsCount > 1 ? (
             <>
               <Separator orientation="vertical" className="ml-4 h-5" />
@@ -84,17 +82,11 @@ export const ConditionListField = ({
       {fields.map((item, index) => (
         <div
           key={item.id}
-          className={cn(
-            "grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-3 space-y-1.5",
-          )}
+          className={cn("grid grid-cols-[1fr_1fr_1fr_auto] items-end gap-3 space-y-1.5")}
         >
           {conditionSchema?.map((subField) => {
             // Check if the second value is reuqired based on the renderIf conditions
-            subField.disabled = !shouldRenderField(
-              "Input",
-              subField,
-              rowValues[index],
-            );
+            subField.disabled = !shouldRenderField("Input", subField, rowValues[index]);
 
             // Render the sub-field
             return (

@@ -52,9 +52,7 @@ const CodeEditorField = ({
   const possibleLanguage = nameString.split("_").pop();
 
   // 3. Validate against your supported types, fallback to javascript if not found
-  const derivedLanguage = SUPPORTED_LANGUAGES.includes(
-    possibleLanguage as SupportedLanguage,
-  )
+  const derivedLanguage = SUPPORTED_LANGUAGES.includes(possibleLanguage as SupportedLanguage)
     ? (possibleLanguage as SupportedLanguage)
     : "javascript";
 

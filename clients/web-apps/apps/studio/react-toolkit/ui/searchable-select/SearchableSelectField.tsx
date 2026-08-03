@@ -1,9 +1,4 @@
 import {
-  ISearchableSelectOption,
-  SearchableSelect,
-} from "@/react-toolkit/ui/searchable-select/SearchableSelect";
-
-import {
   BaseFieldProps,
   FormControl,
   FormField,
@@ -13,6 +8,11 @@ import {
 } from "@avplatform/ui/form";
 import { FormFieldSizeType } from "@avplatform/ui/types";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
+
+import {
+  ISearchableSelectOption,
+  SearchableSelect,
+} from "@/react-toolkit/ui/searchable-select/SearchableSelect";
 
 interface SearchableSelectFieldProps extends BaseFieldProps {
   name: FieldPath<FieldValues>;
@@ -47,11 +47,7 @@ const SearchableSelectField = ({
       control={control}
       render={({ field }) => (
         <FormItem size={size}>
-          {label && (
-            <FormLabelExt
-              {...{ size, label, disabled, isRequired, description }}
-            />
-          )}
+          {label && <FormLabelExt {...{ size, label, disabled, isRequired, description }} />}
 
           <FormControl>
             <SearchableSelect

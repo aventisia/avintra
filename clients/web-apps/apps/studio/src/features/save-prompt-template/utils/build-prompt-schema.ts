@@ -1,26 +1,15 @@
-import {
-  PromptTemplateSchema,
-  ToolConfig,
-} from "../types/prompt-template-schema-type";
+import { PromptTemplateSchema, ToolConfig } from "../types/prompt-template-schema-type";
 
 type Payload = {
   [key: string]: unknown;
 };
 
-export function buildPromptTemplateSchema(
-  payload: Payload,
-): PromptTemplateSchema {
-  const promptKey = Object.keys(payload).find((key) =>
-    key.startsWith("__Prompt__"),
-  );
+export function buildPromptTemplateSchema(payload: Payload): PromptTemplateSchema {
+  const promptKey = Object.keys(payload).find((key) => key.startsWith("__Prompt__"));
 
-  const modelConfigKey = Object.keys(payload).find((key) =>
-    key.startsWith("__ModelConfig__"),
-  );
+  const modelConfigKey = Object.keys(payload).find((key) => key.startsWith("__ModelConfig__"));
 
-  const toolsConfigKey = Object.keys(payload).find((key) =>
-    key.startsWith("__ToolsConfig__"),
-  );
+  const toolsConfigKey = Object.keys(payload).find((key) => key.startsWith("__ToolsConfig__"));
 
   const modelConfig = modelConfigKey
     ? (payload[modelConfigKey] as Record<string, unknown>)
@@ -43,15 +32,11 @@ export function buildPromptTemplateSchema(
         }
       : undefined,
 
-    toolsConfig: normalizeToolsConfig(
-      toolsConfigKey ? payload[toolsConfigKey] : undefined,
-    ),
+    toolsConfig: normalizeToolsConfig(toolsConfigKey ? payload[toolsConfigKey] : undefined),
   };
 }
 
-function normalizeToolsConfig(
-  toolsConfig: unknown,
-): PromptTemplateSchema["toolsConfig"] {
+function normalizeToolsConfig(toolsConfig: unknown): PromptTemplateSchema["toolsConfig"] {
   // We get empty string when tools are not configured
   if (!toolsConfig || toolsConfig === "") {
     return "";

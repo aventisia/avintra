@@ -12,21 +12,21 @@ For example:
 
 ## Configuration Options
 
-| Field Name                   | Description                                                                 | Input Type | Required? | Default Value |
-| ---------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance**       | The Excel Worksheet object where the lookup will be performed. If left blank, the active sheet of the workbook will be used. | Text       | No        | _(empty)_     |
-| **Lookup Value**             | The value to search for in the lookup range.                                 | Text       | Yes       | _(empty)_     |
-| **Ranges Format**            | Choose how the ranges are defined: Named Cells or Specific Ranges.           | Select     | Yes       | NamedCells    |
-| **Cells Name**               | The name of the named range to use for lookup (only if `Ranges Format` is `Named Cells`). | Text       | No        | _(empty)_     |
-| **Start Column**             | The starting column of the lookup range (only if `Ranges Format` is `Specific Ranges`). | Text       | No        | _(empty)_     |
-| **Start Row**                | The starting row of the lookup range (only if `Ranges Format` is `Specific Ranges`). | Text       | No        | _(empty)_     |
-| **End Column**               | The ending column of the lookup range (only if `Ranges Format` is `Specific Ranges`). | Text       | No        | _(empty)_     |
-| **End Row**                  | The ending row of the lookup range (only if `Ranges Format` is `Specific Ranges`). | Text       | No        | _(empty)_     |
-| **Array Form**               | If true, performs array-based lookup; otherwise, performs scalar lookup.     | Switch     | No        | _(empty)_     |
-| **Start Column of Results Source** | The starting column of the result range (only if `Array Form` is false).         | Text       | No        | _(empty)_     |
-| **Start Row of Results Source** | The starting row of the result range (only if `Array Form` is false).             | Text       | No        | _(empty)_     |
-| **End Column of Results Source** | The ending column of the result range (only if `Array Form` is false).            | Text       | No        | _(empty)_     |
-| **End Row of Results Source** | The ending row of the result range (only if `Array Form` is false).               | Text       | No        | _(empty)_     |
+| Field Name                         | Description                                                                                                                  | Input Type | Required? | Default Value |
+| ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**             | The Excel Worksheet object where the lookup will be performed. If left blank, the active sheet of the workbook will be used. | Text       | No        | _(empty)_     |
+| **Lookup Value**                   | The value to search for in the lookup range.                                                                                 | Text       | Yes       | _(empty)_     |
+| **Ranges Format**                  | Choose how the ranges are defined: Named Cells or Specific Ranges.                                                           | Select     | Yes       | NamedCells    |
+| **Cells Name**                     | The name of the named range to use for lookup (only if `Ranges Format` is `Named Cells`).                                    | Text       | No        | _(empty)_     |
+| **Start Column**                   | The starting column of the lookup range (only if `Ranges Format` is `Specific Ranges`).                                      | Text       | No        | _(empty)_     |
+| **Start Row**                      | The starting row of the lookup range (only if `Ranges Format` is `Specific Ranges`).                                         | Text       | No        | _(empty)_     |
+| **End Column**                     | The ending column of the lookup range (only if `Ranges Format` is `Specific Ranges`).                                        | Text       | No        | _(empty)_     |
+| **End Row**                        | The ending row of the lookup range (only if `Ranges Format` is `Specific Ranges`).                                           | Text       | No        | _(empty)_     |
+| **Array Form**                     | If true, performs array-based lookup; otherwise, performs scalar lookup.                                                     | Switch     | No        | _(empty)_     |
+| **Start Column of Results Source** | The starting column of the result range (only if `Array Form` is false).                                                     | Text       | No        | _(empty)_     |
+| **Start Row of Results Source**    | The starting row of the result range (only if `Array Form` is false).                                                        | Text       | No        | _(empty)_     |
+| **End Column of Results Source**   | The ending column of the result range (only if `Array Form` is false).                                                       | Text       | No        | _(empty)_     |
+| **End Row of Results Source**      | The ending row of the result range (only if `Array Form` is false).                                                          | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -50,6 +50,7 @@ Enter the **Lookup Value** you wish to find in the Excel sheet.
 ### Step 4
 
 Choose the **Ranges Format**:
+
 - **Named Cells**: Specified using a predefined name.
 - **Specific Ranges**: Enter the columns/rows manually.
 
@@ -64,6 +65,7 @@ If you selected **Specific Ranges**, fill in the fields for **Start Column**, **
 ### Step 7
 
 Decide the **Array Form** setting:
+
 - Set to `true` to perform an array-based lookup.
 - Set to `false` for a scalar lookup, and provide details for result source range.
 
@@ -74,17 +76,18 @@ For scalar lookups, enter the ranges for the results source by specifying **Star
 </Steps>
 
 <Callout type="info" title="Pro Tip">
-Use **Named Cells** for quicker setup if your Excel workbook already includes named ranges.
+  Use **Named Cells** for quicker setup if your Excel workbook already includes
+  named ranges.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                 |
-| ---------------------------------------------------- | ------------------------------------------------------------------------ |
-| **Lookup Value not found**                           | Ensure the value exists in the defined range and matches the case.        |
-| **Ranges Format is incorrect**                       | Verify that you have selected the correct range format setting either `Named Cells` or `Specific Ranges`. |
-| **Fields for Specific Range not appearing/accessible** | Make sure the `Ranges Format` is set to `Specific Ranges` if those fields are needed.                |
-| **Unexpected Output**                                | Confirm that the defined result range matches the lookup range format.     |
+| Problem                                                | Solution                                                                                                  |
+| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| **Lookup Value not found**                             | Ensure the value exists in the defined range and matches the case.                                        |
+| **Ranges Format is incorrect**                         | Verify that you have selected the correct range format setting either `Named Cells` or `Specific Ranges`. |
+| **Fields for Specific Range not appearing/accessible** | Make sure the `Ranges Format` is set to `Specific Ranges` if those fields are needed.                     |
+| **Unexpected Output**                                  | Confirm that the defined result range matches the lookup range format.                                    |
 
 ## Real-World Use Cases
 

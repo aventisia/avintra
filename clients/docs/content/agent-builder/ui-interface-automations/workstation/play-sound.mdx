@@ -12,13 +12,13 @@ For example:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                 | Input Type  | Required? | Default Value |
-| -------------------- | --------------------------------------------------------------------------- | ----------- | --------- | ------------- |
-| **Play Sound From**  | Choose between a system sound and a custom WAV file.                         | Select      | Yes       | _(empty)_     |
-| **System Sound**     | The specific system sound to play (only if playing from system sounds).      | Select      | No        | _(empty)_     |
-| **WAV File Path**    | The complete file path to the WAV file, if using a custom sound.             | Text        | No        | _(empty)_     |
-| **Play Mode**        | Decide if you want to play sound synchronously (blocking) or asynchronously. | Select      | No        | Sync          |
-| **Volume**           | The audio playback level (0-100) - applies only to system sounds.            | Text        | No        | 100           |
+| Field Name          | Description                                                                  | Input Type | Required? | Default Value |
+| ------------------- | ---------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Play Sound From** | Choose between a system sound and a custom WAV file.                         | Select     | Yes       | _(empty)_     |
+| **System Sound**    | The specific system sound to play (only if playing from system sounds).      | Select     | No        | _(empty)_     |
+| **WAV File Path**   | The complete file path to the WAV file, if using a custom sound.             | Text       | No        | _(empty)_     |
+| **Play Mode**       | Decide if you want to play sound synchronously (blocking) or asynchronously. | Select     | No        | Sync          |
+| **Volume**          | The audio playback level (0-100) - applies only to system sounds.            | Text       | No        | 100           |
 
 ## Expected Output Format
 
@@ -73,18 +73,18 @@ Execute your flow. The indicators **Played** and **Duration** (if available) wil
 
 ## Input/Output Examples
 
-| Sound Source | System Sound  | WAV File Path    | Play Mode     | Volume | Output Played | Output Duration |
-| ------------ | ------------- | ---------------- | ------------- | ------ | ------------- | ----------------|
-| System       | Beep          | _(n/a)_          | Sync          | 75     | Played        | 1000 ms         |
-| WAV file     | _(n/a)_       | C:\sounds\alert.wav | Async     | _(n/a)_| Played        | 2000 ms         |
+| Sound Source | System Sound | WAV File Path       | Play Mode | Volume  | Output Played | Output Duration |
+| ------------ | ------------ | ------------------- | --------- | ------- | ------------- | --------------- |
+| System       | Beep         | _(n/a)_             | Sync      | 75      | Played        | 1000 ms         |
+| WAV file     | _(n/a)_      | C:\sounds\alert.wav | Async     | _(n/a)_ | Played        | 2000 ms         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                  | Solution                                                                                                            |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **No sound playback**                    | Ensure the correct sound source and path are selected. Confirm volume is set appropriately, especially for system sounds.   |
-| **Missing Duration output**              | Not all sounds provide a duration output; ensure the sound file supports duration metadata.                         |
-| **Incorrect system sound selection**     | Verify the sound name is chosen correctly from the list in the **System Sound** field.                             |
+| Problem                              | Solution                                                                                                                  |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------- |
+| **No sound playback**                | Ensure the correct sound source and path are selected. Confirm volume is set appropriately, especially for system sounds. |
+| **Missing Duration output**          | Not all sounds provide a duration output; ensure the sound file supports duration metadata.                               |
+| **Incorrect system sound selection** | Verify the sound name is chosen correctly from the list in the **System Sound** field.                                    |
 
 ## Real-World Use Cases
 

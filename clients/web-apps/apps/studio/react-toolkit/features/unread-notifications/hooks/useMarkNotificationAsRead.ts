@@ -25,16 +25,15 @@ export const useMarkNotificationAsRead = (id: string) => {
   const unreadNotifications = useQueryData<UnreadNotificationDto>(UN_QUERY_KEY);
 
   // Filter out the notification that is being marked as read
-  const updatedQueryData = unreadNotifications?.filter(
-    (item) => item.id !== id,
-  );
+  const updatedQueryData = unreadNotifications?.filter((item) => item.id !== id);
 
   // Use optimistic mutation to mark notification as read
-  const { mutate } = useOptimisticMutation<
-    string,
-    boolean,
-    UnreadNotificationDto
-  >(markNotificationAsRead, UN_QUERY_KEY, updatedQueryData, false);
+  const { mutate } = useOptimisticMutation<string, boolean, UnreadNotificationDto>(
+    markNotificationAsRead,
+    UN_QUERY_KEY,
+    updatedQueryData,
+    false,
+  );
 
   // Handle mark as read mutate
   const handleMutateMarkAsRead = () => {

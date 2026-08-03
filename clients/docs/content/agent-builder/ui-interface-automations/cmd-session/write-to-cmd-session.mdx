@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name      | Description                                           | Input Type | Required? | Default Value |
-|-----------------|-------------------------------------------------------|------------|-----------|---------------|
-| **CMD Session** | The open CMD session where the command will be run.   | Text       | Yes       | _(empty)_     |
-| **Command**     | The specific command you wish to execute (e.g., `dir`).| Text      | Yes       | _(empty)_     |
+| Field Name      | Description                                             | Input Type | Required? | Default Value |
+| --------------- | ------------------------------------------------------- | ---------- | --------- | ------------- |
+| **CMD Session** | The open CMD session where the command will be run.     | Text       | Yes       | _(empty)_     |
+| **Command**     | The specific command you wish to execute (e.g., `dir`). | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -43,24 +43,25 @@ Execute the flow to run your command. The response from the CMD will be processe
 </Steps>
 
 <Callout type="info" title="Tip">
-  Make sure the CMD session specified is open and actively running; otherwise, the command may not be executed properly.
+  Make sure the CMD session specified is open and actively running; otherwise,
+  the command may not be executed properly.
 </Callout>
 
 ## Input/Output Examples
 
-| CMD Session           | Command    | Output                     |
-|-----------------------|------------|----------------------------|
-| Active CMD Process    | `dir`      | List of directory contents |
-| Active CMD Process    | `echo Hi`  | `Hi`                       |
-| Active CMD Process    | `cd..`     | Navigated up one directory |
+| CMD Session        | Command   | Output                     |
+| ------------------ | --------- | -------------------------- |
+| Active CMD Process | `dir`     | List of directory contents |
+| Active CMD Process | `echo Hi` | `Hi`                       |
+| Active CMD Process | `cd..`    | Navigated up one directory |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                           |
-|--------------------------------------------------|----------------------------------------------------------------------------------------------------|
-| **Invalid CMD Session**                          | Ensure that a valid process representing an open CMD session is entered in the CMD Session field.   |
-| **Unknown Command**                              | Check that the command is spelled correctly and is a valid CMD command.                             |
-| **No Output or Unexpected Result**               | Double-check that the CMD session is active and the command syntax is correct and complete.         |
+| Problem                            | Solution                                                                                          |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Invalid CMD Session**            | Ensure that a valid process representing an open CMD session is entered in the CMD Session field. |
+| **Unknown Command**                | Check that the command is spelled correctly and is a valid CMD command.                           |
+| **No Output or Unexpected Result** | Double-check that the CMD session is active and the command syntax is correct and complete.       |
 
 ## Real-World Use Cases
 

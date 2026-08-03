@@ -6,12 +6,12 @@ The **Get Emails** node is designed to retrieve the top 10 emails from a user's 
 
 ## Configuration Options
 
-| Field Name      | Description                                            | Input Type | Required? | Default Value |
-| --------------- | ------------------------------------------------------ | ---------- | --------- | ------------- |
-| **User Email**  | The email address of the mailbox owner.                | Text       | Yes       | _(empty)_     |
-| **Tenant ID**   | Azure Active Directory tenant (directory) ID.          | Text       | Yes       | _(empty)_     |
-| **Client ID**   | Azure AD application (client) ID.                      | Text       | Yes       | _(empty)_     |
-| **Client Secret** | Azure AD application client secret.                 | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                   | Input Type | Required? | Default Value |
+| ----------------- | --------------------------------------------- | ---------- | --------- | ------------- |
+| **User Email**    | The email address of the mailbox owner.       | Text       | Yes       | _(empty)_     |
+| **Tenant ID**     | Azure Active Directory tenant (directory) ID. | Text       | Yes       | _(empty)_     |
+| **Client ID**     | Azure AD application (client) ID.             | Text       | Yes       | _(empty)_     |
+| **Client Secret** | Azure AD application client secret.           | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -47,19 +47,21 @@ Once all fields are filled, the node will fetch and display emails in the JSON f
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that your Azure AD credentials (Tenant ID, Client ID, and Client Secret) are valid and have necessary permissions to access email data via Microsoft Graph API.
+  Ensure that your Azure AD credentials (Tenant ID, Client ID, and Client
+  Secret) are valid and have necessary permissions to access email data via
+  Microsoft Graph API.
 </Callout>
 
 ## Input/Output Examples
 
-- **Input**: 
+- **Input**:
   - User Email: `user@example.com`
   - Tenant ID: `12345678-1234-1234-1234-123456789abc`
   - Client ID: `abcd1234-5678-abcd-1234-56789abcdef`
   - Client Secret: `XyZ12345SecretComb!`
 
 - **Output**:
-  - JSON Object containing email data e.g., 
+  - JSON Object containing email data e.g.,
     ```json
     {
       "Emails": [
@@ -67,7 +69,7 @@ Once all fields are filled, the node will fetch and display emails in the JSON f
           "subject": "Meeting Reminder",
           "sender": "boss@example.com",
           "receivedDateTime": "2023-10-05T12:30:00Z"
-        },
+        }
         // more emails...
       ]
     }
@@ -75,11 +77,11 @@ Once all fields are filled, the node will fetch and display emails in the JSON f
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                |
-| ------------------------------------------------- | ------------------------------------------------------- |
-| **Authentication Failed**                         | Re-check your Tenant ID, Client ID, and Client Secret.  |
-| **No Emails Retrieved**                           | Ensure the user mailbox has emails and permissions are correct. |
-| **Invalid Email Address**                         | Verify the format and existence of the User Email.      |
+| Problem                   | Solution                                                        |
+| ------------------------- | --------------------------------------------------------------- |
+| **Authentication Failed** | Re-check your Tenant ID, Client ID, and Client Secret.          |
+| **No Emails Retrieved**   | Ensure the user mailbox has emails and permissions are correct. |
+| **Invalid Email Address** | Verify the format and existence of the User Email.              |
 
 ## Real-World Use Cases
 

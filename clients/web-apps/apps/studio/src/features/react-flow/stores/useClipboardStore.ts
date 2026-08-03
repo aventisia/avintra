@@ -1,5 +1,5 @@
+import { Edge, Node } from "@xyflow/react";
 import { create } from "zustand";
-import { Node, Edge } from "@xyflow/react";
 
 export interface FlowClipboard {
   nodes: Node[];

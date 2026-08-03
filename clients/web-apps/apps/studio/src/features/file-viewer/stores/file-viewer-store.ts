@@ -32,40 +32,38 @@ const DEFAULT_STATE: ViewerState = {
   rotate: 0,
 };
 
-export const useViewerStore = create<ViewerState & ViewerActions>(
-  (set, get) => ({
-    ...DEFAULT_STATE,
+export const useViewerStore = create<ViewerState & ViewerActions>((set, get) => ({
+  ...DEFAULT_STATE,
 
-    setScale: (scale) =>
-      set({
-        scale: Math.min(SCALE_MAX, Math.max(SCALE_MIN, +scale.toFixed(2))),
-      }),
+  setScale: (scale) =>
+    set({
+      scale: Math.min(SCALE_MAX, Math.max(SCALE_MIN, +scale.toFixed(2))),
+    }),
 
-    setRotate: (rotate) => set({ rotate: ((rotate % 360) + 360) % 360 }),
+  setRotate: (rotate) => set({ rotate: ((rotate % 360) + 360) % 360 }),
 
-    zoomIn: () => {
-      const { scale, setScale } = get();
-      setScale(scale + SCALE_STEP);
-    },
+  zoomIn: () => {
+    const { scale, setScale } = get();
+    setScale(scale + SCALE_STEP);
+  },
 
-    zoomOut: () => {
-      const { scale, setScale } = get();
-      setScale(scale - SCALE_STEP);
-    },
+  zoomOut: () => {
+    const { scale, setScale } = get();
+    setScale(scale - SCALE_STEP);
+  },
 
-    rotateLeft: () => {
-      const { rotate, setRotate } = get();
-      setRotate(rotate - 90);
-    },
+  rotateLeft: () => {
+    const { rotate, setRotate } = get();
+    setRotate(rotate - 90);
+  },
 
-    rotateRight: () => {
-      const { rotate, setRotate } = get();
-      setRotate(rotate + 90);
-    },
+  rotateRight: () => {
+    const { rotate, setRotate } = get();
+    setRotate(rotate + 90);
+  },
 
-    reset: () => set(DEFAULT_STATE),
-  }),
-);
+  reset: () => set(DEFAULT_STATE),
+}));
 
 //  Selectors
 

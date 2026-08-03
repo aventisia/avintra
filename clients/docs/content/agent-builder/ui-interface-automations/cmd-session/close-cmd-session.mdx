@@ -11,8 +11,8 @@ Common scenarios for using this node include:
 
 ## Configuration Options
 
-| Field Name    | Description                                            | Input Type | Required? | Default Value |
-| ------------- | ------------------------------------------------------ | ---------- | --------- | ------------- |
+| Field Name      | Description                                             | Input Type | Required? | Default Value |
+| --------------- | ------------------------------------------------------- | ---------- | --------- | ------------- |
 | **CMD Session** | The process representing the open CMD session to close. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -33,16 +33,19 @@ In the **CMD Session** field, input the process identifier for the open CMD sess
 ### Step 3
 
 After configuration, execute the flow to close the CMD session as needed.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Make sure the **CMD Session** input is correct and corresponds to an active CMD process. Incorrect or invalid entries can result in the node failing to close any session.
+  Make sure the **CMD Session** input is correct and corresponds to an active
+  CMD process. Incorrect or invalid entries can result in the node failing to
+  close any session.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                       | Solution                                                                                                                                                                  |
-| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Problem                      | Solution                                                                                                                                                                        |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Incorrect CMD Session ID** | Double-check that the CMD Session field contains the correct identifier for the open session you wish to close. An incorrect ID will prevent the node from performing its task. |
 
 ## Real-World Use Cases

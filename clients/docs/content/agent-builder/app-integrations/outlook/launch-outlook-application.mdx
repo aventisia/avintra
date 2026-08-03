@@ -11,10 +11,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                 | Input Type | Required? | Default Value |
-|-----------------------|-----------------------------------------------------------------------------|------------|-----------|---------------|
-| **Profile Name**      | The name of the Outlook profile to use for launching. This is optional.     | Text       | No        | _(empty)_     |
-| **Create New Instance** | Choose whether to open a new Outlook instance or use an existing one.      | Switch     | No        | True          |
+| Field Name              | Description                                                             | Input Type | Required? | Default Value |
+| ----------------------- | ----------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Profile Name**        | The name of the Outlook profile to use for launching. This is optional. | Text       | No        | _(empty)_     |
+| **Create New Instance** | Choose whether to open a new Outlook instance or use an existing one.   | Switch     | No        | True          |
 
 ## Expected Output Format
 
@@ -45,23 +45,24 @@ Proceed with your automation tasks, using the **Outlook Application** object as 
 </Steps>
 
 <Callout type="info" title="Tip">
-  If unsure about which profile name to use, you can leave the **Profile Name** field empty to launch with the default profile.
+  If unsure about which profile name to use, you can leave the **Profile Name**
+  field empty to launch with the default profile.
 </Callout>
 
 ## Input/Output Examples
 
-| Profile Name | Create New Instance | Output Value         | Output Type            |
-|--------------|----------------------|----------------------|------------------------|
-| Personal     | True                 | OutlookApplication   | Outlook Application    |
-| Work         | False                | OutlookApplication   | Outlook Application    |
+| Profile Name | Create New Instance | Output Value       | Output Type         |
+| ------------ | ------------------- | ------------------ | ------------------- |
+| Personal     | True                | OutlookApplication | Outlook Application |
+| Work         | False               | OutlookApplication | Outlook Application |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                                                        |
-|-------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Outlook not launching**                             | Ensure Outlook is installed on your desktop and the profile name provided (if any) is correct.                                                                 |
-| **Multiple instances opening unintentionally**        | Check the **Create New Instance** switch. Set it to **Off** if you prefer to use an existing session of Outlook.                                               |
-| **Profile name errors**                               | If you're experiencing issues with the profile name, ensure the name matches one of the profiles set up in Outlook or leave it blank for the default profile. |
+| Problem                                        | Solution                                                                                                                                                      |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Outlook not launching**                      | Ensure Outlook is installed on your desktop and the profile name provided (if any) is correct.                                                                |
+| **Multiple instances opening unintentionally** | Check the **Create New Instance** switch. Set it to **Off** if you prefer to use an existing session of Outlook.                                              |
+| **Profile name errors**                        | If you're experiencing issues with the profile name, ensure the name matches one of the profiles set up in Outlook or leave it blank for the default profile. |
 
 ## Real-World Use Cases
 

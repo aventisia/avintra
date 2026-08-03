@@ -11,10 +11,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name       | Description                                            | Input Type | Required? | Default Value |
-| ---------------- | ------------------------------------------------------ | ---------- | --------- | ------------- |
-| **SessionId**    | The session ID of the terminal session you want to monitor. | Text       | Yes       | _(empty)_     |
-| **TextToWaitFor**| The specific text string to pause and wait for in the terminal session. | Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                                             | Input Type | Required? | Default Value |
+| ----------------- | ----------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **SessionId**     | The session ID of the terminal session you want to monitor.             | Text       | Yes       | _(empty)_     |
+| **TextToWaitFor** | The specific text string to pause and wait for in the terminal session. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,23 +45,24 @@ Once the specified text appears, the node will output `true`. This can be used t
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the specified **SessionId** accurately matches the active session you intend to monitor, as discrepancies can lead to missed detections.
+  Ensure the specified **SessionId** accurately matches the active session you
+  intend to monitor, as discrepancies can lead to missed detections.
 </Callout>
 
 ## Input/Output Examples
 
 | Input SessionId | Input TextToWaitFor | Output Value |
-| --------------- | -------------------- | ------------ |
+| --------------- | ------------------- | ------------ |
 | 12345           | "Process Complete"  | true         |
 | 67890           | "Ready"             | false        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                                 |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **SessionId does not match any active session**     | Verify that the correct session ID is provided and that the session is currently active and accessible.                   |
-| **TextToWaitFor is not specific enough**            | Be sure to use exact text string as they appear in the terminal. Check for typographical errors and verify the text case. |
-| **False returns unexpectedly**                      | Double-check both the session and the text configuration. Ensure terminal session output is not being cleared or changed.  |
+| Problem                                         | Solution                                                                                                                  |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **SessionId does not match any active session** | Verify that the correct session ID is provided and that the session is currently active and accessible.                   |
+| **TextToWaitFor is not specific enough**        | Be sure to use exact text string as they appear in the terminal. Check for typographical errors and verify the text case. |
+| **False returns unexpectedly**                  | Double-check both the session and the text configuration. Ensure terminal session output is not being cleared or changed. |
 
 ## Real-World Use Cases
 

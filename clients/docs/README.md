@@ -32,16 +32,16 @@ The `postbuild` step runs [Pagefind](https://pagefind.app/) to generate a static
 
 ## Available Scripts
 
-| Script                 | Description                                           |
-| ---------------------- | ----------------------------------------------------- |
-| `dev`                  | Start the Next.js dev server (port 3004)            |
-| `build`                | Build for production                                  |
-| `build:testing`        | Build using `.env.testing`                            |
-| `build:staging`        | Build using `.env.staging`                            |
-| `build:production`     | Build for production environment                      |
-| `postbuild`            | Generate Pagefind search index                        |
-| `start`                | Start the production server (port 3004)               |
-| `lint`                 | Run Next.js lint                                      |
+| Script             | Description                              |
+| ------------------ | ---------------------------------------- |
+| `dev`              | Start the Next.js dev server (port 3004) |
+| `build`            | Build for production                     |
+| `build:testing`    | Build using `.env.testing`               |
+| `build:staging`    | Build using `.env.staging`               |
+| `build:production` | Build for production environment         |
+| `postbuild`        | Generate Pagefind search index           |
+| `start`            | Start the production server (port 3004)  |
+| `lint`             | Run Next.js lint                         |
 
 ## Notes
 

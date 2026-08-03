@@ -12,15 +12,15 @@ For example:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                                     | Input Type | Required? | Default Value |
-| -------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Text to Split**    | The full text block you wish to divide into parts.                                              | Text       | Yes       | _(empty)_     |
-| **Delimiter Type**   | Choose the method for splitting the text: standard, fixed number of characters, or custom.     | Select     | Yes       | _(empty)_     |
-| **Standard Delimiter** | Select the standard delimiter to use if "Standard" is chosen for Delimiter Type.               | Select     | No        | _(empty)_     |
-| **Times**            | Number of times to apply the standard delimiter for splitting (only for Standard type).        | Text       | No        | _(empty)_     |
-| **Split Width**      | Set the character width for each part if "Number of Characters" is chosen.                     | Text       | No        | _(empty)_     |
-| **Custom Delimiter** | Provide a custom delimiter or pattern if "Custom" type is selected for splitting.              | Text       | No        | _(empty)_     |
-| **Is Regular Expression** | Define whether the custom delimiter involves a regex for complex patterns.                     | Switch     | No        | _(empty)_     |
+| Field Name                | Description                                                                                | Input Type | Required? | Default Value |
+| ------------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Text to Split**         | The full text block you wish to divide into parts.                                         | Text       | Yes       | _(empty)_     |
+| **Delimiter Type**        | Choose the method for splitting the text: standard, fixed number of characters, or custom. | Select     | Yes       | _(empty)_     |
+| **Standard Delimiter**    | Select the standard delimiter to use if "Standard" is chosen for Delimiter Type.           | Select     | No        | _(empty)_     |
+| **Times**                 | Number of times to apply the standard delimiter for splitting (only for Standard type).    | Text       | No        | _(empty)_     |
+| **Split Width**           | Set the character width for each part if "Number of Characters" is chosen.                 | Text       | No        | _(empty)_     |
+| **Custom Delimiter**      | Provide a custom delimiter or pattern if "Custom" type is selected for splitting.          | Text       | No        | _(empty)_     |
+| **Is Regular Expression** | Define whether the custom delimiter involves a regex for complex patterns.                 | Switch     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -60,25 +60,27 @@ The split results will be available as a **Text List** for successive nodes or p
 </Steps>
 
 <Callout type="info" title="Notice">
-  The "Standard Delimiter", "Times", "Split Width", "Custom Delimiter", and "Is Regular Expression" fields only appear when relevant to your Delimiter Type selection.
+  The "Standard Delimiter", "Times", "Split Width", "Custom Delimiter", and "Is
+  Regular Expression" fields only appear when relevant to your Delimiter Type
+  selection.
 </Callout>
 
 ## Input/Output Examples
 
-| Delimiter Type        | Input Text        | Additional Setting          | Output Value                      | Output Type  |
-| --------------------- | ----------------- | --------------------------- | --------------------------------- | ------------ |
-| Standard (Tab)        | "Apple\tBanana\tCherry" | _(n/a)_                         | ["Apple", "Banana", "Cherry"]    | Text List    |
-| Number of Characters  | "ABCDEFGHIJ"      | 3 (Split Width)             | ["ABC", "DEF", "GHI", "J"]       | Text List    |
-| Custom (Comma)        | "one,two,three"   | Custom Delimiter: ","       | ["one", "two", "three"]          | Text List    |
+| Delimiter Type       | Input Text              | Additional Setting    | Output Value                  | Output Type |
+| -------------------- | ----------------------- | --------------------- | ----------------------------- | ----------- |
+| Standard (Tab)       | "Apple\tBanana\tCherry" | _(n/a)_               | ["Apple", "Banana", "Cherry"] | Text List   |
+| Number of Characters | "ABCDEFGHIJ"            | 3 (Split Width)       | ["ABC", "DEF", "GHI", "J"]    | Text List   |
+| Custom (Comma)       | "one,two,three"         | Custom Delimiter: "," | ["one", "two", "three"]       | Text List   |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                                   |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Text isn't splitting as expected**           | Ensure the correct **Delimiter Type** and settings are chosen. Double-check the delimiter or pattern.                                                      |
-| **Regex patterns not working**                 | Verify **Is Regular Expression** is toggled on and pattern is valid and properly formatted.                                                                |
-| **Number of Characters option not splitting**  | Confirm **Split Width** is set to a valid number that divides the text evenly or acceptably.                                                               |
-| **Unexpected results with Standard delimiter** | Check that the delimiter matches exactly with input text. For example, if using "New Line", ensure text contains actual newline characters.                |
+| Problem                                        | Solution                                                                                                                                    |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Text isn't splitting as expected**           | Ensure the correct **Delimiter Type** and settings are chosen. Double-check the delimiter or pattern.                                       |
+| **Regex patterns not working**                 | Verify **Is Regular Expression** is toggled on and pattern is valid and properly formatted.                                                 |
+| **Number of Characters option not splitting**  | Confirm **Split Width** is set to a valid number that divides the text evenly or acceptably.                                                |
+| **Unexpected results with Standard delimiter** | Check that the delimiter matches exactly with input text. For example, if using "New Line", ensure text contains actual newline characters. |
 
 ## Real-World Use Cases
 

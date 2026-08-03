@@ -1,6 +1,7 @@
-import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { EyeIcon } from "@heroicons/react/24/outline";
+
+import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
 
 interface FVIViewActionProps {
   flowId: string;

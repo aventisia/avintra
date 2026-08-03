@@ -1,10 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
-
 import { refreshSession } from "@avplatform/ui/apis";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { setUserSessionLocally } from "@avplatform/ui/utils";
+import { useMutation } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 /**
  * Custom hook to validate user session and handle session refresh.

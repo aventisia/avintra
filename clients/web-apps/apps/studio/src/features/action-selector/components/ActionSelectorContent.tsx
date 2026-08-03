@@ -1,30 +1,25 @@
-import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
-
 import { Input } from "@avplatform/ui";
 import { Search } from "lucide-react";
 import { KeyboardEvent, useEffect, useRef } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useShallow } from "zustand/react/shallow";
 
+import { useNodeSelectorStore } from "@/features/action-selector/stores/action-selector-store";
+
 import { ActionCategoryList } from "./ActionCategoryList";
 import { PrimaryCategoryList } from "./PrimaryCategoryList";
 
 export const ActionSelectorContent = () => {
-  const {
-    origin,
-    primaryCategoryLabel,
-    setQuery,
-    query,
-    setPrimaryCategoryLabel,
-  } = useNodeSelectorStore(
-    useShallow((state) => ({
-      origin: state.origin,
-      primaryCategoryLabel: state.primaryCategoryLabel,
-      query: state.query,
-      setQuery: state.setQuery,
-      setPrimaryCategoryLabel: state.setPrimaryCategoryLabel,
-    })),
-  );
+  const { origin, primaryCategoryLabel, setQuery, query, setPrimaryCategoryLabel } =
+    useNodeSelectorStore(
+      useShallow((state) => ({
+        origin: state.origin,
+        primaryCategoryLabel: state.primaryCategoryLabel,
+        query: state.query,
+        setQuery: state.setQuery,
+        setPrimaryCategoryLabel: state.setPrimaryCategoryLabel,
+      })),
+    );
 
   const inputRef = useRef<HTMLInputElement>(null);
   const firstItemRef = useRef<HTMLButtonElement | null>(null);
@@ -75,10 +70,7 @@ export const ActionSelectorContent = () => {
         {isOriginReplaceTrigger || query || primaryCategoryLabel ? (
           <ActionCategoryList inputRef={inputRef} firstItemRef={firstItemRef} />
         ) : (
-          <PrimaryCategoryList
-            inputRef={inputRef}
-            firstItemRef={firstItemRef}
-          />
+          <PrimaryCategoryList inputRef={inputRef} firstItemRef={firstItemRef} />
         )}
       </div>
     </div>

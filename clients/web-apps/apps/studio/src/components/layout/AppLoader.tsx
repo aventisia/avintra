@@ -1,8 +1,10 @@
-import { useAppLoaderStore } from "@/stores/app-loader-store";
-import { LoadingSpinner } from "@avplatform/ui";
 import { LogoImage, LogoLink } from "@avplatform/layout";
+import { LoadingSpinner } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
 import { useShallow } from "zustand/react/shallow";
+
+import { useAppLoaderStore } from "@/stores/app-loader-store";
+
 import { AppMinimalFooter } from "./AppMinimalFooter";
 
 interface AppLoaderProps {
@@ -10,9 +12,7 @@ interface AppLoaderProps {
 }
 
 const AppLoader = ({ className }: AppLoaderProps) => {
-  const { message } = useAppLoaderStore(
-    useShallow((state) => ({ message: state.message })),
-  );
+  const { message } = useAppLoaderStore(useShallow((state) => ({ message: state.message })));
   return (
     <div
       className={cn(

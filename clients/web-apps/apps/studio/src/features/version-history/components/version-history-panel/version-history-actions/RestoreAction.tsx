@@ -1,5 +1,6 @@
-import { RotateCcw } from "lucide-react";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
+import { RotateCcw } from "lucide-react";
+
 import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
 import { useRestoreAgentVersion } from "@/features/version-history/hooks/useRestoreAgentVersion";
 

@@ -6,13 +6,13 @@ The **Send Text SMS** node allows you to send SMS messages using the Twilio serv
 
 ## Configuration Options
 
-| Field Name                                       | Description                                                                                                                                              | Input Type           | Required? | Default Value |
-| ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | --------- | ------------- |
-| **Twilio Credential**                            | The Twilio credential containing a valid auth token and account ID needed to authenticate API requests.                                                  | Credentials Select   | Yes       | _(empty)_     |
-| **Recipient Identification Method**              | Specify how you want to identify the recipient of the SMS: by their phone number or by using a Twilio Messaging Service SID.                             | Select               | Yes       | PhoneNumber   |
-| **Sender Phone Number / Messaging Service SID**  | Enter the Twilio phone number or service identifier that will send the message.                                                                          | Text                 | Yes       | _(empty)_     |
-| **To Number**                                    | The phone number of the recipient (Twilio number) to which the message will be sent.                                                                     | Text                 | Yes       | _(empty)_     |
-| **Message Body**                                 | The actual content of the SMS message.                                                                                                                   | Text                 | Yes       | _(empty)_     |
+| Field Name                                      | Description                                                                                                                  | Input Type         | Required? | Default Value |
+| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------ | --------- | ------------- |
+| **Twilio Credential**                           | The Twilio credential containing a valid auth token and account ID needed to authenticate API requests.                      | Credentials Select | Yes       | _(empty)_     |
+| **Recipient Identification Method**             | Specify how you want to identify the recipient of the SMS: by their phone number or by using a Twilio Messaging Service SID. | Select             | Yes       | PhoneNumber   |
+| **Sender Phone Number / Messaging Service SID** | Enter the Twilio phone number or service identifier that will send the message.                                              | Text               | Yes       | _(empty)_     |
+| **To Number**                                   | The phone number of the recipient (Twilio number) to which the message will be sent.                                         | Text               | Yes       | _(empty)_     |
+| **Message Body**                                | The actual content of the SMS message.                                                                                       | Text               | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -55,23 +55,24 @@ Once configured, connect this node to the next step in your flow. The node will 
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure that all phone numbers are in international format for Twilio to process them correctly.
+  Ensure that all phone numbers are in international format for Twilio to
+  process them correctly.
 </Callout>
 
 ## Input/Output Examples
 
-| Recipient Type | Sender Identification           | To Number    | Message Body                  | Output Value   | Output Type    |
-| -------------- | ------------------------------- | ------------ | ----------------------------- | -------------- | -------------- |
-| Phone Number   | +123456789                      | +987654321   | "Hello, this is a test SMS!"  | Result         | Response Data  |
-| Messaging SID  | 'MGXXXXXXXXXXXXXXXXXXXXXXXXXXXX'| +987654321   | "Your appointment is confirmed"| Result        | Response Data  |
+| Recipient Type | Sender Identification            | To Number  | Message Body                    | Output Value | Output Type   |
+| -------------- | -------------------------------- | ---------- | ------------------------------- | ------------ | ------------- |
+| Phone Number   | +123456789                       | +987654321 | "Hello, this is a test SMS!"    | Result       | Response Data |
+| Messaging SID  | 'MGXXXXXXXXXXXXXXXXXXXXXXXXXXXX' | +987654321 | "Your appointment is confirmed" | Result       | Response Data |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                  | Solution                                                                                                                                                          |
-| ---------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Credentials**                  | Ensure that the Twilio credentials selected are valid and contain the correct authentication tokens and account IDs.                                                |
-| **Phone Number Not Recognized**          | Verify that all numbers are in the correct international format (e.g., "+123456789").                                                                              |
-| **Message Not Sending**                  | Check that the SMS service is active and properly set up in your Twilio account. Also, verify that the sender number is correctly authorized on Twilio.             |
+| Problem                         | Solution                                                                                                                                                |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Credentials**         | Ensure that the Twilio credentials selected are valid and contain the correct authentication tokens and account IDs.                                    |
+| **Phone Number Not Recognized** | Verify that all numbers are in the correct international format (e.g., "+123456789").                                                                   |
+| **Message Not Sending**         | Check that the SMS service is active and properly set up in your Twilio account. Also, verify that the sender number is correctly authorized on Twilio. |
 
 ## Real-World Use Cases
 

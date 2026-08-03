@@ -1,48 +1,44 @@
 {
-    "type": "function",
-    "function": {
-        "name": "github_create_issue",
-        "description": "Create a GitHub issue in a repository",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "owner": {
-                    "type": "string",
-                    "description": "GitHub repository owner or organization"
-                },
-                "repo": {
-                    "type": "string",
-                    "description": "GitHub repository name"
-                },
-                "title": {
-                    "type": "string",
-                    "description": "Issue title"
-                },
-                "body": {
-                    "type": "string",
-                    "description": "Issue description/body"
-                },
-                "labels": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Optional issue labels"
-                },
-                "assignees": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    },
-                    "description": "Optional assignees"
-                }
-            },
-            "required": [
-                "owner",
-                "repo",
-                "title"
-            ],
-            "additionalProperties": false
+  "type": "function",
+  "function": {
+    "name": "github_create_issue",
+    "description": "Create a GitHub issue in a repository",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "owner": {
+          "type": "string",
+          "description": "GitHub repository owner or organization"
+        },
+        "repo": {
+          "type": "string",
+          "description": "GitHub repository name"
+        },
+        "title": {
+          "type": "string",
+          "description": "Issue title"
+        },
+        "body": {
+          "type": "string",
+          "description": "Issue description/body"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional issue labels"
+        },
+        "assignees": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Optional assignees"
         }
+      },
+      "required": ["owner", "repo", "title"],
+      "additionalProperties": false
     }
+  }
 }

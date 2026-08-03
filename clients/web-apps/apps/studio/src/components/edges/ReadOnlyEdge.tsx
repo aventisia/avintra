@@ -1,14 +1,9 @@
+import { cn } from "@avplatform/ui/lib";
+import { BaseEdge, EdgeProps, getBezierPath, useReactFlow } from "@xyflow/react";
+import { memo } from "react";
+
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
-
-import { cn } from "@avplatform/ui/lib";
-import {
-  BaseEdge,
-  EdgeProps,
-  getBezierPath,
-  useReactFlow,
-} from "@xyflow/react";
-import { memo } from "react";
 
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
 import "./override-edge-style.css";
@@ -51,8 +46,7 @@ export const ReadOnlyEdge = memo(
     } = useExecutionStore();
 
     const parents = nodeToParentStack[target] || [];
-    const pathKey =
-      parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";
+    const pathKey = parents.map((id) => activeIteration[id] ?? 0).join("-") || "global";
 
     let isActive = false;
     const isTargetRouterBranch = routerConfig[source];
@@ -65,8 +59,7 @@ export const ReadOnlyEdge = memo(
         isActive = !!visited && !conditionalsTrue;
       } else {
         // --- Conditional Branch Edge ---
-        isActive =
-          executionMap[target]?.[pathKey]?.outputs?.ConditionsResult === "True";
+        isActive = executionMap[target]?.[pathKey]?.outputs?.ConditionsResult === "True";
       }
     } else {
       // --- Standard Edge ---

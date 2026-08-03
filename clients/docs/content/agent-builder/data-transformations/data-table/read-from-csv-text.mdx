@@ -12,15 +12,15 @@ For example:
 
 ## Configuration Options
 
-| Field Name                       | Description                                                                            | Input Type | Required? | Default Value |
-| -------------------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **CSV Text**                     | The CSV text to parse into a structured data table.                                    | Text       | Yes       | _(empty)_     |
-| **Trim Fields**                  | Trims whitespace from the fields if set to true.                                       | Switch     | No        | _(empty)_     |
+| Field Name                           | Description                                                                              | Input Type | Required? | Default Value |
+| ------------------------------------ | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **CSV Text**                         | The CSV text to parse into a structured data table.                                      | Text       | Yes       | _(empty)_     |
+| **Trim Fields**                      | Trims whitespace from the fields if set to true.                                         | Switch     | No        | _(empty)_     |
 | **First Line Contains Column Names** | Treats the first line as column headers if set to true.                                  | Switch     | No        | _(empty)_     |
-| **Get CSV Fields as Text**       | Converts all fields to text if enabled.                                                | Switch     | No        | _(empty)_     |
-| **Columns Separator**            | Specifies the method for column separation.                                             | Select     | No        | Predefined    |
-| **Custom Separator**             | The custom separator to be used when the 'Columns Separator' is set to 'Custom'.        | Text       | No        | _(empty)_     |
-| **Fixed Column Widths**          | The specific widths to be used when 'Columns Separator' is set to 'Fixed Column Widths'.| Text       | No        | _(empty)_     |
+| **Get CSV Fields as Text**           | Converts all fields to text if enabled.                                                  | Switch     | No        | _(empty)_     |
+| **Columns Separator**                | Specifies the method for column separation.                                              | Select     | No        | Predefined    |
+| **Custom Separator**                 | The custom separator to be used when the 'Columns Separator' is set to 'Custom'.         | Text       | No        | _(empty)_     |
+| **Fixed Column Widths**              | The specific widths to be used when 'Columns Separator' is set to 'Fixed Column Widths'. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -67,18 +67,19 @@ Use the output data table **ResultDataTable** in connecting nodes for further op
 </Steps>
 
 <Callout type="info" title="Tip">
-  The "Custom Separator" and "Fixed Column Widths" fields will only appear based on your selection in the "Columns Separator".
+  The "Custom Separator" and "Fixed Column Widths" fields will only appear based
+  on your selection in the "Columns Separator".
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                            | Solution                                                                                                                                                   |
-| -------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **CSV text is not parsed correctly**               | Ensure the **Columns Separator** matches the separator used in your CSV file.                                                                              |
-| **Fields are not trimmed**                         | Check that the **Trim Fields** option is enabled if you want whitespace removed.                                                                           |
-| **Column names not recognized**                    | Verify that **First Line Contains Column Names** is enabled when your CSV's first row contains headers.                                                    |
-| **Custom Separator field not displayed**           | Make sure to choose "Custom" in the **Columns Separator** dropdown to reveal the **Custom Separator** field.                                               |
-| **Fixed Column Widths input not available**        | Choose "Fixed Column Widths" in **Columns Separator** to make the **Fixed Column Widths** field accessible.                                                |
+| Problem                                     | Solution                                                                                                     |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **CSV text is not parsed correctly**        | Ensure the **Columns Separator** matches the separator used in your CSV file.                                |
+| **Fields are not trimmed**                  | Check that the **Trim Fields** option is enabled if you want whitespace removed.                             |
+| **Column names not recognized**             | Verify that **First Line Contains Column Names** is enabled when your CSV's first row contains headers.      |
+| **Custom Separator field not displayed**    | Make sure to choose "Custom" in the **Columns Separator** dropdown to reveal the **Custom Separator** field. |
+| **Fixed Column Widths input not available** | Choose "Fixed Column Widths" in **Columns Separator** to make the **Fixed Column Widths** field accessible.  |
 
 ## Real-World Use Cases
 

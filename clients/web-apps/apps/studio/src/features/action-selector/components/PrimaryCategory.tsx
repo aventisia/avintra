@@ -1,8 +1,8 @@
-import { iconMapper } from "@/components/icon-mapper";
-
 import { Badge } from "@avplatform/ui/badge";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { useMemo } from "react";
+
+import { iconMapper } from "@/components/icon-mapper";
 
 import { PrimaryCategoryType } from "../types/primary-category-type";
 import { FallbackImageIcon } from "./FallbackImageIcon";
@@ -43,9 +43,7 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
 
         <ArrowRightIcon className="stroke-1.5 h-5 w-5 text-foreground transition-colors group-hover:text-primary group-focus-visible:text-primary" />
       </div>
-      <p className="text-sm leading-relaxed text-muted-foreground">
-        {data.description}
-      </p>
+      <p className="text-sm leading-relaxed text-muted-foreground">{data.description}</p>
       <div className="flex items-center gap-2">
         {/* <Badge
             variant={"outline"}
@@ -53,10 +51,7 @@ export const PrimaryCategory = ({ data }: PrimaryCategoryProps) => {
           >
             {actionCategoryCount} Categories
           </Badge> */}
-        <Badge
-          variant={"outline"}
-          className="bg-muted font-normal text-muted-foreground"
-        >
+        <Badge variant={"outline"} className="bg-muted font-normal text-muted-foreground">
           {totalActions} nodes
         </Badge>
       </div>

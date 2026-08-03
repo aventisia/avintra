@@ -6,15 +6,15 @@ The **Smart PDF Page Splitter** node allows you to divide a PDF file into separa
 
 ## Configuration Options
 
-| Field Name          | Description                                                                                   | Input Type | Required? | Default Value |
-| ------------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **PDF File Path**   | Full path to the source PDF file that you wish to split (e.g., C:\docs\input.pdf).            | Text       | Yes       | _(empty)_     |
-| **Output Directory**| Directory where the split pages will be saved (e.g., C:\output).                              | Text       | Yes       | _(empty)_     |
-| **Selection Mode**  | Method for page selection: All, Odd, Even, Range, Specific Pages, or By Specified Page Size.  | Select     | Yes       | All           |
-| **Page Range**      | Specific pages if using 'Custom Range' mode (e.g., '1-3,5,7-9'). Ignored for other modes.     | Text       | No        | _(empty)_     |
-| **Specific Pages**  | Pages to include in 'Specific Pages' mode (e.g., '10,20,30'). Ignored for other modes.        | Text       | No        | _(empty)_     |
-| **Pages Per File**  | Number of pages per output file for 'By Pages Per File' or 'Specific Pages' mode.             | Text       | No        | _(empty)_     |
-| **Page Prefix**     | Prefix to use for output filenames (e.g., 'page_').                                           | Text       | No        | page_         |
+| Field Name           | Description                                                                                  | Input Type | Required? | Default Value |
+| -------------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **PDF File Path**    | Full path to the source PDF file that you wish to split (e.g., C:\docs\input.pdf).           | Text       | Yes       | _(empty)_     |
+| **Output Directory** | Directory where the split pages will be saved (e.g., C:\output).                             | Text       | Yes       | _(empty)_     |
+| **Selection Mode**   | Method for page selection: All, Odd, Even, Range, Specific Pages, or By Specified Page Size. | Select     | Yes       | All           |
+| **Page Range**       | Specific pages if using 'Custom Range' mode (e.g., '1-3,5,7-9'). Ignored for other modes.    | Text       | No        | _(empty)_     |
+| **Specific Pages**   | Pages to include in 'Specific Pages' mode (e.g., '10,20,30'). Ignored for other modes.       | Text       | No        | _(empty)_     |
+| **Pages Per File**   | Number of pages per output file for 'By Pages Per File' or 'Specific Pages' mode.            | Text       | No        | _(empty)_     |
+| **Page Prefix**      | Prefix to use for output filenames (e.g., 'page\_').                                         | Text       | No        | page\_        |
 
 ## Expected Output Format
 
@@ -68,26 +68,27 @@ The processed split PDFs will be saved in the specified output directory, and yo
 </Steps>
 
 <Callout type="warning" title="Note">
-  Make sure the PDF file path and output directory provided are accessible and have the necessary file permissions.
+  Make sure the PDF file path and output directory provided are accessible and
+  have the necessary file permissions.
 </Callout>
 
 ## Input/Output Examples
 
-| Selection Mode       | Input PDF Path      | Output Directory | Page Range | Specific Pages | Pages Per File | Output Path   | Total Pages |
-| -------------------- | ------------------- | ---------------- | ---------- | -------------- | -------------- | ------------- | ----------- |
-| All Pages            | C:\docs\input.pdf   | C:\output        | _(n/a)_    | _(n/a)_        | _(n/a)_        | C:\output     | 100         |
-| Odd Pages            | C:\docs\inputA.pdf  | C:\output\odd    | _(n/a)_    | _(n/a)_        | _(n/a)_        | C:\output\odd | 50          |
-| Custom Range         | C:\docs\inputB.pdf  | C:\output\ranges | 1-3,5,7-9  | _(n/a)_        | _(n/a)_        | C:\output\ranges | 8       |
-| Split Pages Per File | C:\docs\inputC.pdf  | C:\output\chunk  | _(n/a)_    | _(n/a)_        | 10             | C:\output\chunk | 200       |
+| Selection Mode       | Input PDF Path     | Output Directory | Page Range | Specific Pages | Pages Per File | Output Path      | Total Pages |
+| -------------------- | ------------------ | ---------------- | ---------- | -------------- | -------------- | ---------------- | ----------- |
+| All Pages            | C:\docs\input.pdf  | C:\output        | _(n/a)_    | _(n/a)_        | _(n/a)_        | C:\output        | 100         |
+| Odd Pages            | C:\docs\inputA.pdf | C:\output\odd    | _(n/a)_    | _(n/a)_        | _(n/a)_        | C:\output\odd    | 50          |
+| Custom Range         | C:\docs\inputB.pdf | C:\output\ranges | 1-3,5,7-9  | _(n/a)_        | _(n/a)_        | C:\output\ranges | 8           |
+| Split Pages Per File | C:\docs\inputC.pdf | C:\output\chunk  | _(n/a)_    | _(n/a)_        | 10             | C:\output\chunk  | 200         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                     | Solution                                                                                                                                   |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Invalid PDF File Path**                   | Double-check the file path for typos, and ensure the file exists and is accessible.                                                        |
-| **Output Directory Not Writable**           | Ensure you have write permissions to the output directory or choose a different directory.                                                 |
-| **Mode-Specific Fields Not Appearing**      | Verify that you've selected a mode that requires additional parameters; appropriate fields will only show when needed.                      |
-| **Unexpected Page Counts**                  | Confirm the **Selection Mode** and any additional settings are correct (e.g., Page Range format in 'Custom Range' mode).                   |
+| Problem                                | Solution                                                                                                                 |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Invalid PDF File Path**              | Double-check the file path for typos, and ensure the file exists and is accessible.                                      |
+| **Output Directory Not Writable**      | Ensure you have write permissions to the output directory or choose a different directory.                               |
+| **Mode-Specific Fields Not Appearing** | Verify that you've selected a mode that requires additional parameters; appropriate fields will only show when needed.   |
+| **Unexpected Page Counts**             | Confirm the **Selection Mode** and any additional settings are correct (e.g., Page Range format in 'Custom Range' mode). |
 
 ## Real-World Use Cases
 

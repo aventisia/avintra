@@ -6,20 +6,20 @@ The **Read from Excel Worksheet** node is designed to extract data from specifie
 
 ## Configuration Options
 
-| Field Name                                | Description                                                                                                                                         | Input Type | Required? | Default Value       |
-|-------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|------------|-----------|---------------------|
-| **Worksheet Instance**                    | The Excel Worksheet object to read from. If left blank, defaults to the active worksheet.                                                           | Text       | Yes       | _(empty)_           |
-| **Retrieve Mode**                         | Select how data should be extracted: single cell, range of cells, selection, all values, or named cells.                                            | Select     | Yes       | SingleCell          |
-| **Start Column**                          | Starting column letter of the range to read, required if "Range of Cells" is chosen.                                                                | Text       | No        | _(empty)_           |
-| **Start Column Index**                    | Starting column index (1-based) for the range; takes precedence over Start Column if specified.                                                     | Text       | No        | _(empty)_           |
-| **Start Row**                             | Starting row number of the range to read, required if "Range of Cells" is chosen.                                                                   | Text       | No        | _(empty)_           |
-| **End Column**                            | Ending column letter of the range to read, required if "Range of Cells" is chosen.                                                                  | Text       | No        | _(empty)_           |
-| **End Column Index**                      | Ending column index (1-based) for the range; takes precedence over End Column if specified.                                                         | Text       | No        | _(empty)_           |
-| **End Row**                               | Ending row number of the range to read, required if "Range of Cells" is chosen.                                                                     | Text       | No        | _(empty)_           |
-| **Name**                                  | The name of the named range to read, required if "Values of Named Cells" is chosen.                                                                 | Text       | No        | _(empty)_           |
-| **Get Cell Contents as Text**             | Retrieve cell contents as text or raw values.                                                                                                       | Switch     | No        | _(empty)_           |
-| **First Line of Range Contains Column Names** | Treat the first row as column headers if true.                                                                                                    | Switch     | No        | _(empty)_           |
-| **Omit Empty Columns and Rows**           | Omit empty columns/rows at the ends, used only when reading named cells.                                                                            | Switch     | No        | _(empty)_           |
+| Field Name                                    | Description                                                                                              | Input Type | Required? | Default Value |
+| --------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**                        | The Excel Worksheet object to read from. If left blank, defaults to the active worksheet.                | Text       | Yes       | _(empty)_     |
+| **Retrieve Mode**                             | Select how data should be extracted: single cell, range of cells, selection, all values, or named cells. | Select     | Yes       | SingleCell    |
+| **Start Column**                              | Starting column letter of the range to read, required if "Range of Cells" is chosen.                     | Text       | No        | _(empty)_     |
+| **Start Column Index**                        | Starting column index (1-based) for the range; takes precedence over Start Column if specified.          | Text       | No        | _(empty)_     |
+| **Start Row**                                 | Starting row number of the range to read, required if "Range of Cells" is chosen.                        | Text       | No        | _(empty)_     |
+| **End Column**                                | Ending column letter of the range to read, required if "Range of Cells" is chosen.                       | Text       | No        | _(empty)_     |
+| **End Column Index**                          | Ending column index (1-based) for the range; takes precedence over End Column if specified.              | Text       | No        | _(empty)_     |
+| **End Row**                                   | Ending row number of the range to read, required if "Range of Cells" is chosen.                          | Text       | No        | _(empty)_     |
+| **Name**                                      | The name of the named range to read, required if "Values of Named Cells" is chosen.                      | Text       | No        | _(empty)_     |
+| **Get Cell Contents as Text**                 | Retrieve cell contents as text or raw values.                                                            | Switch     | No        | _(empty)_     |
+| **First Line of Range Contains Column Names** | Treat the first row as column headers if true.                                                           | Switch     | No        | _(empty)_     |
+| **Omit Empty Columns and Rows**               | Omit empty columns/rows at the ends, used only when reading named cells.                                 | Switch     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -70,26 +70,28 @@ Once configured, the data will be available as **ExcelData** for further process
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the specified range is valid for the worksheet to avoid errors. Only use settings relevant to your chosen Retrieve Mode to streamline your configuration process.
+  Ensure that the specified range is valid for the worksheet to avoid errors.
+  Only use settings relevant to your chosen Retrieve Mode to streamline your
+  configuration process.
 </Callout>
 
 ## Input/Output Examples
 
-| Retrieve Mode        | Example Input           | Output                               | Output Type         |
-|----------------------|-------------------------|--------------------------------------|---------------------|
-| SingleCell           | `B2`                    | `Sales Data` (if cell B2 contains it)| DataTable (Single)  |
-| RangeOfCells         | `A1:C3`                 | Table of values from A1 to C3        | DataTable (Multiple)|
-| Selection            | `Active Selection`      | Values from actively selected cells  | DataTable           |
-| AllAvailableValues   | `Entire Used Range`     | All data from used cells             | DataTable           |
-| ValuesOfNamedCells   | `NamedRange1`           | Data from the named range            | DataTable           |
+| Retrieve Mode      | Example Input       | Output                                | Output Type          |
+| ------------------ | ------------------- | ------------------------------------- | -------------------- |
+| SingleCell         | `B2`                | `Sales Data` (if cell B2 contains it) | DataTable (Single)   |
+| RangeOfCells       | `A1:C3`             | Table of values from A1 to C3         | DataTable (Multiple) |
+| Selection          | `Active Selection`  | Values from actively selected cells   | DataTable            |
+| AllAvailableValues | `Entire Used Range` | All data from used cells              | DataTable            |
+| ValuesOfNamedCells | `NamedRange1`       | Data from the named range             | DataTable            |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                        | Solution                                                                                                                                           |
-|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Worksheet not specified**                    | Ensure you provide a Worksheet Instance or leave it blank to use the active sheet.                                                                 |
-| **Invalid range for selected mode**            | Double-check the starting and ending rows and columns for accuracy.                                                                                |
-| **Switches not toggling expected behavior**    | Verify that options like "First Line of Range Contains Column Names" or "Get Cell Contents as Text" are configured according to your data needs.   |
+| Problem                                     | Solution                                                                                                                                         |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Worksheet not specified**                 | Ensure you provide a Worksheet Instance or leave it blank to use the active sheet.                                                               |
+| **Invalid range for selected mode**         | Double-check the starting and ending rows and columns for accuracy.                                                                              |
+| **Switches not toggling expected behavior** | Verify that options like "First Line of Range Contains Column Names" or "Get Cell Contents as Text" are configured according to your data needs. |
 
 ## Real-World Use Cases
 

@@ -9,11 +9,7 @@ import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
  * Intercepts OS-level window close requests in the Tauri app to prevent
  * data loss during active executions or when changes are unsaved.
  */
-export const usePreventClose = ({
-  isProcessing,
-}: {
-  isProcessing?: boolean;
-}) => {
+export const usePreventClose = ({ isProcessing }: { isProcessing?: boolean }) => {
   // Get ReactFlowExt store state & actions
   const { isSavePending } = useReactFlowExtStore(
     useShallow((state) => ({ isSavePending: state.isSavePending })),
@@ -77,9 +73,7 @@ export const usePreventClose = ({
           // Defer dialog to free up the thread
           setTimeout(async () => {
             // window.confirm acts synchronously here
-            const userWantsToExit = window.confirm(
-              "Changes you made may not be saved.",
-            );
+            const userWantsToExit = window.confirm("Changes you made may not be saved.");
 
             isPromptingRef.current = false;
 

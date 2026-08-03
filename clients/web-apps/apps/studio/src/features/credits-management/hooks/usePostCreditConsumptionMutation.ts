@@ -1,10 +1,12 @@
-import { toast } from "@avplatform/ui/sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { axiosInstance } from "@avplatform/ui/lib";
-import { CreditConsumptionDto } from "../dtos/credit-consumption-dto";
-import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+import { toast } from "@avplatform/ui/sonner";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
+
+import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+
+import { CreditConsumptionDto } from "../dtos/credit-consumption-dto";
 
 export const usePostCreditConsumptionMutation = () => {
   // Get user session state and actions

@@ -6,19 +6,21 @@ The **Copy Cells from Excel Worksheet** node enables you to effortlessly copy a 
 
 ## Configuration Options
 
-| Field Name            | Description                                                                 | Input Type | Required? | Default Value |
-| --------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance**| The Excel Worksheet object from which to copy data.                         | Text       | Yes       | _(empty)_     |
-| **Copy Mode**         | Specifies how to copy cells: Single Cell, Named Cells, Selection, or Range. | Select     | Yes       | SingleCell    |
-| **Source Range Address** | The range address (e.g., 'A1:B10') in the source worksheet to copy.      | Text       | No        | _(empty)_     |
-| **Start Column**      | The starting column of the range to copy.                                   | Text       | No        | _(empty)_     |
-| **Start Row**         | The starting row of the range to copy.                                      | Text       | No        | _(empty)_     |
-| **End Column**        | The ending column of the range to copy.                                     | Text       | No        | _(empty)_     |
-| **End Row**           | The ending row of the range to copy.                                        | Text       | No        | _(empty)_     |
-| **Name**              | The name of the named range to copy.                                        | Text       | No        | _(empty)_     |
+| Field Name               | Description                                                                 | Input Type | Required? | Default Value |
+| ------------------------ | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**   | The Excel Worksheet object from which to copy data.                         | Text       | Yes       | _(empty)_     |
+| **Copy Mode**            | Specifies how to copy cells: Single Cell, Named Cells, Selection, or Range. | Select     | Yes       | SingleCell    |
+| **Source Range Address** | The range address (e.g., 'A1:B10') in the source worksheet to copy.         | Text       | No        | _(empty)_     |
+| **Start Column**         | The starting column of the range to copy.                                   | Text       | No        | _(empty)_     |
+| **Start Row**            | The starting row of the range to copy.                                      | Text       | No        | _(empty)_     |
+| **End Column**           | The ending column of the range to copy.                                     | Text       | No        | _(empty)_     |
+| **End Row**              | The ending row of the range to copy.                                        | Text       | No        | _(empty)_     |
+| **Name**                 | The name of the named range to copy.                                        | Text       | No        | _(empty)_     |
 
 <Callout type="info" title="Note">
-  Fields like **Source Range Address**, **Start Column**, **Start Row**, **End Column**, **End Row**, and **Name** are conditionally displayed based on the selected **Copy Mode**.
+  Fields like **Source Range Address**, **Start Column**, **Start Row**, **End
+  Column**, **End Row**, and **Name** are conditionally displayed based on the
+  selected **Copy Mode**.
 </Callout>
 
 ## Expected Output Format
@@ -61,11 +63,11 @@ The copied data will be available for pasting into another worksheet or for furt
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                        |
-| --------------------------------------------------------- | --------------------------------------------------------------- |
-| **Missing Worksheet Instance**                            | Ensure that the worksheet instance is specified in the field.   |
-| **Fields not displaying for Range of Cells**              | Ensure you select **Range of Cells** in the **Copy Mode** field. |
-| **Incorrect Range Address**                               | Double-check the range address format to ensure it is correct.  |
+| Problem                                      | Solution                                                         |
+| -------------------------------------------- | ---------------------------------------------------------------- |
+| **Missing Worksheet Instance**               | Ensure that the worksheet instance is specified in the field.    |
+| **Fields not displaying for Range of Cells** | Ensure you select **Range of Cells** in the **Copy Mode** field. |
+| **Incorrect Range Address**                  | Double-check the range address format to ensure it is correct.   |
 
 ## Real-World Use Cases
 

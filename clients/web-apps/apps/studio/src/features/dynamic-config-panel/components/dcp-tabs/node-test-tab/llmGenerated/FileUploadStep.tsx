@@ -14,18 +14,14 @@ const FileUploadStep = () => {
     "application/pdf": [".pdf"],
 
     // Word / Rich Text
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
-      ".docx",
-    ],
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
     "application/rtf": [".rtf"],
     "application/vnd.oasis.opendocument.text": [".odt"],
     "text/markdown": [".md"],
     "text/plain": [".txt"],
 
     // Excel / CSV
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
-      ".xlsx",
-    ],
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
     "text/csv": [".csv"],
 
     // Images
@@ -82,9 +78,7 @@ const FileUploadStep = () => {
               <span className="text-muted-foreground text-2xs">
                 Supported formats: {SUPPORTED_FORMAT_LABEL}
               </span> */}
-              <span className="text-muted-foreground text-sm">
-                Attach Files
-              </span>
+              <span className="text-muted-foreground text-sm">Attach Files</span>
             </>
           )}
         </div>

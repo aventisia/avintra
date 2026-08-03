@@ -82,11 +82,7 @@ export const SearchableSelect = ({
           role="combobox"
           disabled={disabled}
           aria-expanded={open}
-          className={cn(
-            "w-full justify-between hover:bg-background",
-            sizeClasses[size],
-            className,
-          )}
+          className={cn("w-full justify-between hover:bg-background", sizeClasses[size], className)}
         >
           {/* 2. Render the icon in the trigger if it exists */}
           <span className="flex items-center gap-2 truncate">
@@ -100,9 +96,7 @@ export const SearchableSelect = ({
                 }
               />
             )}
-            <span className="line-clamp-1">
-              {selectedOption?.label ?? placeholder}
-            </span>
+            <span className="line-clamp-1">{selectedOption?.label ?? placeholder}</span>
           </span>
           <ChevronDown className={cn("ml-2 h-4 w-4 shrink-0 opacity-50")} />
         </Button>
@@ -110,19 +104,11 @@ export const SearchableSelect = ({
 
       <PopoverContent
         align="start"
-        className={cn(
-          className,
-          "w-[--radix-popover-trigger-width] p-2",
-          "shadow-sm",
-        )}
+        className={cn(className, "w-[--radix-popover-trigger-width] p-2", "shadow-sm")}
       >
         <Command>
           <div className="mb-1.5 rounded-lg bg-slate-100">
-            <CommandInput
-              className="h-9 text-xs"
-              placeholder={searchPlaceholder}
-              autoFocus
-            />
+            <CommandInput className="h-9 text-xs" placeholder={searchPlaceholder} autoFocus />
           </div>
           <CommandList>
             <CommandEmpty>{"No results found."}</CommandEmpty>
@@ -154,9 +140,7 @@ export const SearchableSelect = ({
                           <img
                             className="flex h-4 w-4 shrink-0 items-center justify-center"
                             src={
-                              option.icon.includes("http")
-                                ? option.icon
-                                : basePath + option.icon
+                              option.icon.includes("http") ? option.icon : basePath + option.icon
                             }
                           />
                         )}

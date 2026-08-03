@@ -10,8 +10,8 @@ The **Wait** node allows you to pause or delay the workflow execution for a spec
 
 ## Configuration Options
 
-| Field Name           | Description                                       | Input Type | Required? | Default Value |
-| -------------------- | ------------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name             | Description                                        | Input Type | Required? | Default Value |
+| ---------------------- | -------------------------------------------------- | ---------- | --------- | ------------- |
 | **Duration (Seconds)** | The number of seconds to pause workflow execution. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -36,7 +36,8 @@ After the specified duration elapses, the workflow will automatically continue t
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure the number in **Duration (Seconds)** is a positive integer to avoid errors in the workflow.
+  Ensure the number in **Duration (Seconds)** is a positive integer to avoid
+  errors in the workflow.
 </Callout>
 
 ## Input/Output Examples
@@ -48,11 +49,11 @@ While the **Wait** node does not have direct input/output examples, consider:
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                    | Solution                                                                                                                                          |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Negative or zero duration**              | Enter a positive number in the **Duration (Seconds)** field. The system does not accept zero or negative values for the delay.                     |
-| **Unintended long pauses**                  | Double-check the value entered in the **Duration (Seconds)** field to ensure it matches your intended wait time.                                   |
-| **Non-numeric value entered as duration**  | Enter only numeric values for the duration. Avoid using letters or symbols, which result in system errors.                                         |
+| Problem                                   | Solution                                                                                                                       |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Negative or zero duration**             | Enter a positive number in the **Duration (Seconds)** field. The system does not accept zero or negative values for the delay. |
+| **Unintended long pauses**                | Double-check the value entered in the **Duration (Seconds)** field to ensure it matches your intended wait time.               |
+| **Non-numeric value entered as duration** | Enter only numeric values for the duration. Avoid using letters or symbols, which result in system errors.                     |
 
 ## Real-World Use Cases
 

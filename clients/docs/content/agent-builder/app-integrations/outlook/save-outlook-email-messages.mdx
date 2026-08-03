@@ -6,15 +6,15 @@ The **Save Outlook Email Messages** node enables users to save selected Outlook 
 
 ## Configuration Options
 
-| Field Name            | Description                                                                    | Input Type | Required? | Default Value |
-| --------------------- | ------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Outlook Application** | The Outlook application object used to access and manage email messages.       | Text       | Yes       | _(empty)_     |
-| **Email Messages**    | A list of email items that you want to save as `.msg` files.                    | Text       | Yes       | _(empty)_     |
-| **Save Location**     | The file path where you want the `.msg` files to be saved on your computer.     | Text       | Yes       | _(empty)_     |
+| Field Name              | Description                                                                 | Input Type | Required? | Default Value |
+| ----------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Outlook Application** | The Outlook application object used to access and manage email messages.    | Text       | Yes       | _(empty)_     |
+| **Email Messages**      | A list of email items that you want to save as `.msg` files.                | Text       | Yes       | _(empty)_     |
+| **Save Location**       | The file path where you want the `.msg` files to be saved on your computer. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
-The node outputs no additional data directly in terms of values or messages. The primary action is the creation of `.msg` files at the specified location, which reflects successful operation. 
+The node outputs no additional data directly in terms of values or messages. The primary action is the creation of `.msg` files at the specified location, which reflects successful operation.
 
 ## Step-by-Step Guide
 
@@ -42,24 +42,25 @@ Execute the flow to save the specified emails to the desired location. Confirm t
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the specified Save Location folder exists and is accessible. Create the folder beforehand if necessary to avoid errors.
+  Ensure the specified Save Location folder exists and is accessible. Create the
+  folder beforehand if necessary to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Field              | Example Input                                |
-| ------------------ | -------------------------------------------- |
-| Outlook Application| `Outlook.Application` object                 |
-| Email Messages     | A list of selected email items               |
-| Save Location      | `C:\Users\YourName\Documents\SavedEmails`    |
+| Field               | Example Input                             |
+| ------------------- | ----------------------------------------- |
+| Outlook Application | `Outlook.Application` object              |
+| Email Messages      | A list of selected email items            |
+| Save Location       | `C:\Users\YourName\Documents\SavedEmails` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                                   | Solution                                                                                                 |
-| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| **Save Location does not exist**                                          | Verify the folder path and ensure the destination directory exists prior to running the automation.      |
-| **Invalid Outlook Application input**                                     | Ensure a valid Outlook Application object is pointed at your Outlook instance.                           |
-| **Emails not saving or missing**                                          | Double-check the list of emails specified are reachable and correctly selected for saving.               |
+| Problem                               | Solution                                                                                            |
+| ------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Save Location does not exist**      | Verify the folder path and ensure the destination directory exists prior to running the automation. |
+| **Invalid Outlook Application input** | Ensure a valid Outlook Application object is pointed at your Outlook instance.                      |
+| **Emails not saving or missing**      | Double-check the list of emails specified are reachable and correctly selected for saving.          |
 
 ## Real-World Use Cases
 

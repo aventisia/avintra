@@ -31,11 +31,7 @@ export const FlowVersionItemActions = ({
     <DropdownMenu>
       <FVIActionsTrigger />
       <DropdownMenuContent align="end" className="w-[8rem] min-w-[6rem]">
-        <FVIViewAction
-          flowId={flowId}
-          versionId={versionId}
-          versionNumber={versionNumber}
-        />
+        <FVIViewAction flowId={flowId} versionId={versionId} versionNumber={versionNumber} />
         <FVIDraftAction flowId={flowId} versionId={versionId} />
         {currVersionId == versionId
           ? null

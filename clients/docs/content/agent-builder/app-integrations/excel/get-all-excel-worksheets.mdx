@@ -11,9 +11,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name           | Description                                                            | Input Type | Required? | Default Value  |
-| -------------------- | ---------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Workbook Instance** | The Excel Workbook object containing the worksheets to retrieve.       | Text       | Yes       | _(empty)_      |
+| Field Name            | Description                                                      | Input Type | Required? | Default Value |
+| --------------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Workbook Instance** | The Excel Workbook object containing the worksheets to retrieve. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -39,22 +39,23 @@ Once configured, the node will return a list of worksheet names available in the
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the input provided in **Workbook Instance** is an appropriate Excel workbook object to avoid errors.
+  Ensure that the input provided in **Workbook Instance** is an appropriate
+  Excel workbook object to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Workbook Instance | Output Value                             | Output Type  |
-| ----------------- | ---------------------------------------- | ------------ |
-| MyWorkbook        | ["Sheet1", "Sheet2", "Annual Report"]    | List of Text |
+| Workbook Instance | Output Value                          | Output Type  |
+| ----------------- | ------------------------------------- | ------------ |
+| MyWorkbook        | ["Sheet1", "Sheet2", "Annual Report"] | List of Text |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                  | Solution                                                                                                                                                     |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **No worksheet names returned**                          | Ensure the workbook instance provided is valid and contains worksheets.                                                                                      |
-| **Incorrect object type in Workbook Instance**           | Verify that the input is an Excel workbook object and not another type such as a plain text file.                                                            |
-| **Worksheet names not as expected**                      | Double-check the workbook to ensure it contains the worksheets you expect.                                                                                   |
+| Problem                                        | Solution                                                                                          |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **No worksheet names returned**                | Ensure the workbook instance provided is valid and contains worksheets.                           |
+| **Incorrect object type in Workbook Instance** | Verify that the input is an Excel workbook object and not another type such as a plain text file. |
+| **Worksheet names not as expected**            | Double-check the workbook to ensure it contains the worksheets you expect.                        |
 
 ## Real-World Use Cases
 

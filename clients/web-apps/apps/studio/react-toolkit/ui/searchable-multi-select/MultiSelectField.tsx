@@ -10,11 +10,7 @@ import { cn } from "@avplatform/ui/lib";
 import { FormFieldSizeType } from "@avplatform/ui/types";
 import { FieldPath, FieldValues, useFormContext } from "react-hook-form";
 
-import {
-  ActionSelectProps,
-  MultiSelectCombobox,
-  Option,
-} from "./MultiSelectCombobox";
+import { ActionSelectProps, MultiSelectCombobox, Option } from "./MultiSelectCombobox";
 
 interface MultiSelectFieldProps extends BaseFieldProps {
   /** The name of the form field. */
@@ -58,10 +54,7 @@ const MultiSelectField = ({
       render={({ field }) => (
         <FormItem size={fieldSize}>
           {label && (
-            <FormLabelExt
-              size={fieldSize}
-              {...{ label, disabled, isRequired, description }}
-            />
+            <FormLabelExt size={fieldSize} {...{ label, disabled, isRequired, description }} />
           )}
           <FormControl>
             <MultiSelectCombobox

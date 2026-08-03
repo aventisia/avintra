@@ -1,6 +1,5 @@
-import { axiosInstance } from "@avplatform/ui/lib";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import { FlowUserDto } from "../dtos/flow-user-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
@@ -13,9 +12,7 @@ const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/
  */
 const getSearchUser = (value?: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<WorkspaceUserDto[]>
-    >(`${workspaceUserApiUrl}/search/${value}`)
+    .get<IHttpResponse<WorkspaceUserDto[]>>(`${workspaceUserApiUrl}/search/${value}`)
     .then((res) => res.data);
 };
 
@@ -55,10 +52,4 @@ const deleteFlowUser = (id: string) => {
     .then((res) => res.data);
 };
 
-export {
-  getSearchUser,
-  getFlowUser,
-  insertFlowUser,
-  deleteFlowUser,
-  updateFlowUser,
-};
+export { getSearchUser, getFlowUser, insertFlowUser, deleteFlowUser, updateFlowUser };

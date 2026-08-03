@@ -6,8 +6,8 @@ The **Shuffle List** node is designed to randomly reorder the items in a list. T
 
 ## Configuration Options
 
-| Field Name         | Description                                     | Input Type | Required? | Default Value |
-| ------------------ | ----------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name          | Description                                          | Input Type | Required? | Default Value |
+| ------------------- | ---------------------------------------------------- | ---------- | --------- | ------------- |
 | **List to Shuffle** | The list of items that you want to reorder randomly. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -33,23 +33,25 @@ Once you have configured your list, the node will process it and produce a reord
 </Steps>
 
 <Callout type="note" title="Note">
-  Ensure that your input in the **List to Shuffle** field is properly formatted as a list. Items should be separated by commas or another recognizable delimiter as per your specific project requirements.
+  Ensure that your input in the **List to Shuffle** field is properly formatted
+  as a list. Items should be separated by commas or another recognizable
+  delimiter as per your specific project requirements.
 </Callout>
 
 ## Input/Output Examples
 
-| Input List          | Output List Example   | Output Format  |
-| ------------------- | --------------------- | -------------- |
-| `1, 2, 3, 4, 5`     | `3, 5, 1, 4, 2`       | List (Randomly Ordered) |
+| Input List              | Output List Example     | Output Format           |
+| ----------------------- | ----------------------- | ----------------------- |
+| `1, 2, 3, 4, 5`         | `3, 5, 1, 4, 2`         | List (Randomly Ordered) |
 | `apple, banana, cherry` | `banana, cherry, apple` | List (Randomly Ordered) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                    |
-| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| **List does not reorder**                     | Check your input is correctly formatted as a list. Spaces and separators matter.                            |
-| **Output is the same as input**               | Run the operation again to ensure randomness. Each shuffle should ideally provide a new order.              |
-| **Output format issues**                      | Ensure the output is being captured correctly in a part of your workflow that expects a list format.         |
+| Problem                         | Solution                                                                                             |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **List does not reorder**       | Check your input is correctly formatted as a list. Spaces and separators matter.                     |
+| **Output is the same as input** | Run the operation again to ensure randomness. Each shuffle should ideally provide a new order.       |
+| **Output format issues**        | Ensure the output is being captured correctly in a part of your workflow that expects a list format. |
 
 ## Real-World Use Cases
 

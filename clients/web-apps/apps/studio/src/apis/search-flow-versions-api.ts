@@ -1,6 +1,5 @@
-import { axiosInstance } from "@avplatform/ui/lib";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import { SearchFlowVersionResDto } from "../dtos/search-flow-version-res-dto";
 
@@ -21,9 +20,9 @@ const searchFlowVersions = (
   includePublishedOnly: boolean = true,
 ) => {
   return axiosInstance
-    .get<
-      IHttpResponse<SearchFlowVersionResDto[]>
-    >(`${baseAPIURL}/flow-version/search?query=${query}&type=${type}&includePublishedOnly=${includePublishedOnly}`)
+    .get<IHttpResponse<SearchFlowVersionResDto[]>>(
+      `${baseAPIURL}/flow-version/search?query=${query}&type=${type}&includePublishedOnly=${includePublishedOnly}`,
+    )
     .then((res) => res.data);
 };
 

@@ -13,10 +13,7 @@ const AppLogo = (
 
   return (
     <LogoLink>
-      <LogoImage
-        className="h-[1.3rem]"
-        src={logoSrcWithBaseUrl}
-      />
+      <LogoImage className="h-[1.3rem]" src={logoSrcWithBaseUrl} />
     </LogoLink>
   );
 };

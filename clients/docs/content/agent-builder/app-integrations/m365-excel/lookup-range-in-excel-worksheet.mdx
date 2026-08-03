@@ -6,12 +6,12 @@ The **Lookup Range In Excel Worksheet** node allows you to access and retrieve s
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                                                                   | Input Type            | Required? | Default Value |
-| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | --------- | ------------- |
-| **M365 Excel Credential**| The credential that contains necessary authentication details (tenant ID, client ID, client secret) for accessing Microsoft 365 Excel services. | Credentials Select    | Yes       | _(empty)_     |
-| **Drive and Item ID**    | The unique combination of Drive ID and Item ID that identifies your Excel file on OneDrive or SharePoint. Use the format: driveId/items/itemId. | Text                  | Yes       | _(empty)_     |
-| **Worksheet Name**       | The name of the worksheet in which you want to perform the range lookup.                                                                     | Text                  | Yes       | Sheet1        |
-| **Range Address**        | The specific cell range (such as A1:B10) in the Excel worksheet you wish to retrieve data from.                                               | Text                  | Yes       | A1            |
+| Field Name                | Description                                                                                                                                     | Input Type         | Required? | Default Value |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | --------- | ------------- |
+| **M365 Excel Credential** | The credential that contains necessary authentication details (tenant ID, client ID, client secret) for accessing Microsoft 365 Excel services. | Credentials Select | Yes       | _(empty)_     |
+| **Drive and Item ID**     | The unique combination of Drive ID and Item ID that identifies your Excel file on OneDrive or SharePoint. Use the format: driveId/items/itemId. | Text               | Yes       | _(empty)_     |
+| **Worksheet Name**        | The name of the worksheet in which you want to perform the range lookup.                                                                        | Text               | Yes       | Sheet1        |
+| **Range Address**         | The specific cell range (such as A1:B10) in the Excel worksheet you wish to retrieve data from.                                                 | Text               | Yes       | A1            |
 
 ## Expected Output Format
 
@@ -47,23 +47,24 @@ Once configured, the node will retrieve and display the data from the specified 
 </Steps>
 
 <Callout type="info" title="Note">
-  Make sure your credentials have the necessary permissions to read the Excel file in OneDrive or SharePoint.
+  Make sure your credentials have the necessary permissions to read the Excel
+  file in OneDrive or SharePoint.
 </Callout>
 
 ## Input/Output Examples
 
-| Sample Worksheet Name | Sample Range Address | Result Output                | Output Description                               |
-| --------------------- | --------------------- | ----------------------------| ------------------------------------------------|
-| **DataSheet**         | A1:A5                | `{"A1": "Value1", "A2": "Value2", etc.}` | Displays data for cells A1 through A5.           |
-| **Summary**           | B2:D4                | `{"B2": "Sum", "C2": "Mean", "D2": "Count"}` | Provides analysis data from specified range.   |
+| Sample Worksheet Name | Sample Range Address | Result Output                                | Output Description                           |
+| --------------------- | -------------------- | -------------------------------------------- | -------------------------------------------- |
+| **DataSheet**         | A1:A5                | `{"A1": "Value1", "A2": "Value2", etc.}`     | Displays data for cells A1 through A5.       |
+| **Summary**           | B2:D4                | `{"B2": "Sum", "C2": "Mean", "D2": "Count"}` | Provides analysis data from specified range. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                 |
-| --------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Invalid Credentials Error**                             | Double-check the tenant ID, client ID, and client secret in your M365 Excel Credential.  |
-| **File Not Found**                                        | Verify and correct the Drive and Item ID to ensure they match your Excel file's location. |
-| **Range Out of Bounds**                                   | Check that the Range Address corresponds to a valid region within the specified worksheet.|
+| Problem                       | Solution                                                                                   |
+| ----------------------------- | ------------------------------------------------------------------------------------------ |
+| **Invalid Credentials Error** | Double-check the tenant ID, client ID, and client secret in your M365 Excel Credential.    |
+| **File Not Found**            | Verify and correct the Drive and Item ID to ensure they match your Excel file's location.  |
+| **Range Out of Bounds**       | Check that the Range Address corresponds to a valid region within the specified worksheet. |
 
 ## Real-World Use Cases
 

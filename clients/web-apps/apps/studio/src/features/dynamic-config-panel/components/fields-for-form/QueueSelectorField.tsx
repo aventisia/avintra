@@ -1,26 +1,18 @@
 import { BaseFieldProps } from "@avplatform/ui/form";
-import {
-  FieldPath,
-  FieldValues,
-  useController,
-  useFormContext,
-} from "react-hook-form";
+import { ISelectOption } from "@avplatform/ui/types";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
+
 import {
   SearchableSelectField,
   SearchableSelectFieldProps,
 } from "@/react-toolkit/ui/searchable-select/SearchableSelectField.tsx";
-import { ISelectOption } from "@avplatform/ui/types";
-import { useQuery } from "@tanstack/react-query";
-import { getQueues } from "../../apis/queues-apis.ts";
-import {
-  InputSchemaField,
-  QueuesTableDto,
-} from "../../dtos/queues-table-dto.ts";
-import { useEffect } from "react";
 
-interface QueueSelectorFieldProps
-  extends SearchableSelectFieldProps,
-    BaseFieldProps {
+import { getQueues } from "../../apis/queues-apis.ts";
+import { InputSchemaField, QueuesTableDto } from "../../dtos/queues-table-dto.ts";
+
+interface QueueSelectorFieldProps extends SearchableSelectFieldProps, BaseFieldProps {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
 
@@ -28,14 +20,8 @@ interface QueueSelectorFieldProps
   placeholder?: string;
 }
 
-const QueueSelectorField = ({
-  name,
-  selectOptions,
-  ...props
-}: QueueSelectorFieldProps) => {
-  const mapQueuesToSelectOptions = (
-    queues: QueuesTableDto[],
-  ): ISelectOption[] => {
+const QueueSelectorField = ({ name, selectOptions, ...props }: QueueSelectorFieldProps) => {
+  const mapQueuesToSelectOptions = (queues: QueuesTableDto[]): ISelectOption[] => {
     return queues.map((queue) => ({
       value: queue.name,
       label: queue.name,
@@ -79,9 +65,7 @@ const QueueSelectorField = ({
     const values = getValues();
     const fieldExists = "WorkItemData" in values;
     if (queueSelectField.value && fieldExists) {
-      const queueSchema = data?.find(
-        (item) => item.id == queueSelectField.value,
-      )?.inputSchema;
+      const queueSchema = data?.find((item) => item.id == queueSelectField.value)?.inputSchema;
 
       if (queueSchema) {
         const sampleWorkItem = createExampleValueObjectFromSchema(queueSchema);

@@ -1,7 +1,8 @@
+import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { toast } from "@avplatform/ui/sonner";
 import { useShallow } from "zustand/react/shallow";
+
 import { getFlows } from "../apis/flows-table-apis";
 import { FLOWS_QUERY_KEY } from "../constants/constants";
 import { useFlowsPopoverStore } from "../stores/flows-popover-store";

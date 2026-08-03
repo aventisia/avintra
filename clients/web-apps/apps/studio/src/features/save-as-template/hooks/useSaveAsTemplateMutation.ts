@@ -1,13 +1,11 @@
 import { toast } from "@avplatform/ui/sonner";
-
 import { useMutation } from "@tanstack/react-query";
+import { useShallow } from "zustand/react/shallow";
+
+import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
 
 import { postSaveAsTemplate } from "../apis/save-as-template-apis";
-
 import { useSaveAsTemplateStore } from "../stores/save-as-template-store";
-
-import { useShallow } from "zustand/react/shallow";
-import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
 
 /**
  * useSaveAsTemplateMutation

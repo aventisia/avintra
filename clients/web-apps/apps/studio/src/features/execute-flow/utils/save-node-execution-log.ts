@@ -18,16 +18,13 @@ export async function saveNodeExecutionLog(nodeLog: string): Promise<void> {
     return;
   }
 
-  const versionId =
-    localStorage.getItem(CURRENT_VERSION_ID_KEY) || "versionId-unknown";
+  const versionId = localStorage.getItem(CURRENT_VERSION_ID_KEY) || "versionId-unknown";
 
   const jobId = localStorage.getItem(CURRENT_JOB_ID_KEY) || "jobId-unknown";
 
   // Use update to avoid lost writes when multiple node logs arrive close together.
   await update(EXECUTION_LOG_KEY, (value) => {
-    const logs = Array.isArray(value)
-      ? [...(value as AgentExecutionLogType[])]
-      : [];
+    const logs = Array.isArray(value) ? [...(value as AgentExecutionLogType[])] : [];
     const index = logs.findIndex((log) => log.versionId === versionId);
 
     if (index >= 0) {
@@ -50,8 +47,7 @@ export async function saveNodeExecutionLog(nodeLog: string): Promise<void> {
 
 export async function clearNodeExecutionLog(): Promise<void> {
   // Get current versionId from localStorage
-  const currentVersionId =
-    localStorage.getItem(CURRENT_VERSION_ID_KEY) || "versionId-unknown";
+  const currentVersionId = localStorage.getItem(CURRENT_VERSION_ID_KEY) || "versionId-unknown";
 
   // Retrieve existing logs from IndexedDB
   const logs = (await get<AgentExecutionLogType[]>(EXECUTION_LOG_KEY)) || [];

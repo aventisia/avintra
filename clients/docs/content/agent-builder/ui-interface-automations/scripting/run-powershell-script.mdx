@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Run PowerShell Script** node executes a custom PowerShell script and captures its output for further use in your automation workflow. This node is especially useful when you need to perform custom actions, system tasks, or data processing that require the flexibility of a script.
 
 By using this node, you can:
+
 - Execute system-level commands or queries.
 - Automate repetitive tasks that are specific to your business needs.
 - Retrieve output data from PowerShell scripts for integration with other nodes.
 
 ## Configuration Options
 
-| Field Name               | Description                                      | Input Type | Required? | Default Value      |
-| ------------------------ | ------------------------------------------------ | ---------- | --------- | ------------------ |
-| **PowerShell Script Code** | The PowerShell script code to execute.           | Text       | Yes       | _(empty)_          |
-| **Script Output**        | This is where the output of the script is stored. | Text       | No        | ScriptOutput       |
+| Field Name                 | Description                                       | Input Type | Required? | Default Value |
+| -------------------------- | ------------------------------------------------- | ---------- | --------- | ------------- |
+| **PowerShell Script Code** | The PowerShell script code to execute.            | Text       | Yes       | _(empty)_     |
+| **Script Output**          | This is where the output of the script is stored. | Text       | No        | ScriptOutput  |
 
 ## Expected Output Format
 
@@ -36,26 +37,28 @@ In the **PowerShell Script Code** field, enter the PowerShell commands you want 
 ### Step 3
 
 Once executed, the output will be accessible in the **Script Output** field, which can be used as input in other nodes.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the PowerShell script entered is safe to execute and has no harmful commands, as it will run with system-level permissions.
+  Ensure that the PowerShell script entered is safe to execute and has no
+  harmful commands, as it will run with system-level permissions.
 </Callout>
 
 ## Input/Output Examples
 
-| PowerShell Script Code                          | Script Output                 |
-| ----------------------------------------------- | ----------------------------- |
-| `Get-Process | Select-Object Name,Id`           | List of processes with IDs    |
-| `Get-Content C:\Example\path\file.txt`          | File content as string output |
+| PowerShell Script Code                 | Script Output                 |
+| -------------------------------------- | ----------------------------- | -------------------------- |
+| `Get-Process                           | Select-Object Name,Id`        | List of processes with IDs |
+| `Get-Content C:\Example\path\file.txt` | File content as string output |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                                                                                                  |
-| ------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Script Code is empty**                                     | Make sure to enter a valid PowerShell script command in the **Script Code** field; this cannot be left blank.                                             |
-| **Script doesn't execute as expected**                       | Check the script syntax and permissions. Ensure you have proper access to files or system resources referenced in the script.                             |
-| **Script produces no output**                                | Verify if the script includes commands that generate output. Sometimes scripts execute operations without a visible output; consider adding `Write-Output`. |
+| Problem                                | Solution                                                                                                                                                    |
+| -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Script Code is empty**               | Make sure to enter a valid PowerShell script command in the **Script Code** field; this cannot be left blank.                                               |
+| **Script doesn't execute as expected** | Check the script syntax and permissions. Ensure you have proper access to files or system resources referenced in the script.                               |
+| **Script produces no output**          | Verify if the script includes commands that generate output. Sometimes scripts execute operations without a visible output; consider adding `Write-Output`. |
 
 ## Real-World Use Cases
 

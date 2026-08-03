@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Remove XML Element** node is designed to help you manage and manipulate XML documents by allowing you to remove specific elements. This can be particularly useful for data processing tasks where you need to sanitize, extract, or clean up XML content by removing unnecessary or obsolete data.
 
 For example, use this node to:
+
 - Clean unnecessary elements out of configuration files.
 - Remove obsolete data from XML documents before processing.
 - Customize XML data before sending it to another system.
 
 ## Configuration Options
 
-| Field Name           | Description                                                           | Input Type | Required? | Default Value  |
-| -------------------- | --------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **XML Content**      | The XML content you want to modify, provided as a string.             | Text       | Yes       | _(empty)_      |
-| **XPath Expression** | The XPath expression that identifies the XML elements to remove.      | Text       | Yes       | _(empty)_      |
+| Field Name           | Description                                                      | Input Type | Required? | Default Value |
+| -------------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **XML Content**      | The XML content you want to modify, provided as a string.        | Text       | Yes       | _(empty)_     |
+| **XPath Expression** | The XPath expression that identifies the XML elements to remove. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -44,22 +45,23 @@ Run your workflow. The node will process the XML and return the updated version 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Make sure your XPath expression is accurate to avoid removing unintended elements.
+  Make sure your XPath expression is accurate to avoid removing unintended
+  elements.
 </Callout>
 
 ## Input/Output Examples
 
-| XML Content                    | XPath Expression              | Updated XML Content             |
-| ------------------------------ | ----------------------------- | ------------------------------- |
-| `<root><element>1</element></root>` | `/root/element`    | `<root></root>`                  |
-| `<config><item>Value</item></config>` | `/config/item` | `<config></config>`              |
+| XML Content                           | XPath Expression | Updated XML Content |
+| ------------------------------------- | ---------------- | ------------------- |
+| `<root><element>1</element></root>`   | `/root/element`  | `<root></root>`     |
+| `<config><item>Value</item></config>` | `/config/item`   | `<config></config>` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                                                                                                         |
-| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Invalid XML Content**                   | Ensure that your XML is well-formed and valid before applying the node.                                                                          |
-| **XPath Expression not removing element** | Verify that the XPath accurately points to the elements you wish to remove. Ensure there's no typo in the expression.                            |
+| Problem                                   | Solution                                                                                                                                          |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid XML Content**                   | Ensure that your XML is well-formed and valid before applying the node.                                                                           |
+| **XPath Expression not removing element** | Verify that the XPath accurately points to the elements you wish to remove. Ensure there's no typo in the expression.                             |
 | **Unexpected output**                     | Recheck both the **XML Content** and **XPath Expression** for errors. Consider stepping through simple cases to troubleshoot complex expressions. |
 
 ## Real-World Use Cases

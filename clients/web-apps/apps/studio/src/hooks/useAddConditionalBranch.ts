@@ -1,10 +1,10 @@
+import { useReactFlow } from "@xyflow/react";
+import { useCallback } from "react";
+
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 import { createConditionalBranchNodeObj } from "@/utils/create-nodes/conditional/create-conditional-branch-node-obj";
 import { createNewConditionalBranch } from "@/utils/create-nodes/create-new-conditional-branch";
-
-import { useReactFlow } from "@xyflow/react";
-import { useCallback } from "react";
 
 import { useDagreAutoLayout } from "./useDagreAutoLayout";
 
@@ -17,8 +17,7 @@ export const useAddConditionalBranch = () => {
   const addConditionalBranch = useCallback(
     (nodeData: ConditionalNodeDataType, switchNodeId: string) => {
       // JIT State Fetching: Get latest state instantly without subscribing
-      const { nodes, edges, setNodes, setEdges } =
-        useReactFlowExtStore.getState();
+      const { nodes, edges, setNodes, setEdges } = useReactFlowExtStore.getState();
 
       const sourceNode = nodes.find((node) => node.id === switchNodeId);
       if (!sourceNode) return;
@@ -39,9 +38,7 @@ export const useAddConditionalBranch = () => {
         nodeData.mergeBranchesNodeId,
       );
 
-      const sourceNodeIndex = nodes.findIndex(
-        (node) => node.id === nodeData.defaultBranchNodeId,
-      );
+      const sourceNodeIndex = nodes.findIndex((node) => node.id === nodeData.defaultBranchNodeId);
 
       let updatedNodes = [
         ...nodes.slice(0, sourceNodeIndex + 1),

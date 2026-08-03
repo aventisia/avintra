@@ -6,15 +6,15 @@ import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
 
-import { toolOptimisticMutationFn } from "../../apis/tools.apis";
-import { toolZodSchema } from "../../constants/tools-zod-schema";
-import { useTableTab } from "../../hooks/useTableTab.hook";
-import { useFetchCustomApiCredentials } from "../../hooks/useFetchCustomApiCredentials.hook";
-import { useToolForm } from "../../hooks/useToolForm.hook";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
+import { toolOptimisticMutationFn } from "../../apis/tools.apis";
+import { toolZodSchema } from "../../constants/tools-zod-schema";
 import { ToolDto } from "../../dtos/index";
 import { ToolAuthenticationTypeEnum } from "../../enums/tool-authentication-type-enum";
+import { useFetchCustomApiCredentials } from "../../hooks/useFetchCustomApiCredentials.hook";
+import { useTableTab } from "../../hooks/useTableTab.hook";
+import { useToolForm } from "../../hooks/useToolForm.hook";
 
 export const ToolCrudForm = ({
   rowId,
@@ -25,12 +25,10 @@ export const ToolCrudForm = ({
 }) => {
   const { onCloseConfirmed } = useCrudDialogDirty();
   const { queryKey } = useTableTab();
-  const {
-    form,
-    availabilityMessage,
-    setAvailabilityMessage,
-    handleInputChange,
-  } = useToolForm({ rowId, crudAction });
+  const { form, availabilityMessage, setAvailabilityMessage, handleInputChange } = useToolForm({
+    rowId,
+    crudAction,
+  });
 
   const {
     mutate: mutateTool,
@@ -42,7 +40,8 @@ export const ToolCrudForm = ({
     queryKey,
   );
 
-  const { data: customApiCredentials, isLoading: isCredentialsLoading } = useFetchCustomApiCredentials();
+  const { data: customApiCredentials, isLoading: isCredentialsLoading } =
+    useFetchCustomApiCredentials();
 
   const onSubmit = (formData: z.infer<typeof toolZodSchema>) => {
     const payload: ToolDto = {
@@ -80,7 +79,11 @@ export const ToolCrudForm = ({
         disabled={crudAction !== "create"}
       />
 
-      <TextareaField name="description" label="Description" placeholder="Describe what this tool does" />
+      <TextareaField
+        name="description"
+        label="Description"
+        placeholder="Describe what this tool does"
+      />
 
       <InputField
         name="baseUrl"
@@ -120,20 +123,12 @@ export const ToolCrudForm = ({
       />
 
       {crudAction !== "create" && (
-        <SwitchField
-          name="isDisabled"
-          label="Disabled"
-          description="Disable this tool"
-        />
+        <SwitchField name="isDisabled" label="Disabled" description="Disable this tool" />
       )}
 
       {!isReadMode && (
         <div className="!mt-5 flex w-full justify-end">
-          <Button
-            type="submit"
-            disabled={isMutating}
-            className="min-w-[5rem]"
-          >
+          <Button type="submit" disabled={isMutating} className="min-w-[5rem]">
             {isMutating
               ? crudAction === "create"
                 ? "Creating..."

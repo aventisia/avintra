@@ -12,9 +12,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name         | Description                      | Input Type | Required? | Default Value |
-| ------------------ | -------------------------------- | ---------- | --------- | ------------- |
-| **SQL Connection** | The SQL connection to close.     | Text       | Yes       | _(empty)_     |
+| Field Name         | Description                  | Input Type | Required? | Default Value |
+| ------------------ | ---------------------------- | ---------- | --------- | ------------- |
+| **SQL Connection** | The SQL connection to close. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -34,18 +34,21 @@ In the **SQL Connection** field, input the identifier or connection string of th
 ### Step 3
 
 Once configured, the node will close the specified SQL connection when the workflow reaches this step.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the connection you intend to close is no longer needed in your workflow, as closing it will terminate any active database interaction through that connection.
+  Ensure that the connection you intend to close is no longer needed in your
+  workflow, as closing it will terminate any active database interaction through
+  that connection.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                | Solution                                                                                     |
-| -------------------------------------- | ------------------------------------------------------------------------------------------- |
-| **SQL Connection field left empty**    | Make sure to specify the connection string or identifier of the open SQL connection to close. |
-| **Trying to close an already closed connection** | Review your flow to ensure this node follows after an open connection that is still active.  |
+| Problem                                          | Solution                                                                                      |
+| ------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| **SQL Connection field left empty**              | Make sure to specify the connection string or identifier of the open SQL connection to close. |
+| **Trying to close an already closed connection** | Review your flow to ensure this node follows after an open connection that is still active.   |
 
 ## Real-World Use Cases
 

@@ -6,11 +6,11 @@ The **Set Focus on UI Element** node allows you to concentrate user interaction 
 
 ## Configuration Options
 
-| Field Name                     | Description                                                                           | Input Type | Required? | Default Value |
-| ------------------------------ | ------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **UI Element**                 | The UI element to bring into focus.                                                   | Text       | Yes       | _(empty)_     |
-| **Max Wait Time (seconds)**    | Maximum time to wait to find the UI element (in seconds).                             | Text       | No        | 5             |
-| **Is Focus Set Successfully**  | True if the focus was set successfully, otherwise false.                              | Output     | No        | IsFocued      |
+| Field Name                    | Description                                               | Input Type | Required? | Default Value |
+| ----------------------------- | --------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**                | The UI element to bring into focus.                       | Text       | Yes       | _(empty)_     |
+| **Max Wait Time (seconds)**   | Maximum time to wait to find the UI element (in seconds). | Text       | No        | 5             |
+| **Is Focus Set Successfully** | True if the focus was set successfully, otherwise false.  | Output     | No        | IsFocued      |
 
 ## Expected Output Format
 
@@ -41,23 +41,25 @@ The result, indicating whether the focus was set successfully, will be available
 </Steps>
 
 <Callout type="tip" title="Time Management">
-  To ensure efficient workflow, adjust the **Max Wait Time** according to the typical response times of your application. A shorter wait time can prevent unnecessary delays if the element is readily available.
+  To ensure efficient workflow, adjust the **Max Wait Time** according to the
+  typical response times of your application. A shorter wait time can prevent
+  unnecessary delays if the element is readily available.
 </Callout>
 
 ## Input/Output Examples
 
 | UI Element Path | Max Wait Time (seconds) | Is Focus Set Successfully | Output Type |
-| --------------- | ------------------------ | ------------------------- | ----------- |
-| button.submit   | 5                        | True                      | Boolean     |
-| input.username  | 3                        | False                     | Boolean     |
+| --------------- | ----------------------- | ------------------------- | ----------- |
+| button.submit   | 5                       | True                      | Boolean     |
+| input.username  | 3                       | False                     | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                       |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| **UI Element not found**                         | Verify that the UI element's identification path is correct and corresponds to an existing element.  |
-| **Focus not set within Max Wait Time**           | Increase the **Max Wait Time** if the application takes longer to make UI elements available.          |
-| **Unexpected boolean output**                    | Double-check the logic of your flow to handle the boolean output correctly.                      |
+| Problem                                | Solution                                                                                            |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **UI Element not found**               | Verify that the UI element's identification path is correct and corresponds to an existing element. |
+| **Focus not set within Max Wait Time** | Increase the **Max Wait Time** if the application takes longer to make UI elements available.       |
+| **Unexpected boolean output**          | Double-check the logic of your flow to handle the boolean output correctly.                         |
 
 ## Real-World Use Cases
 

@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                                                  | Input Type | Required? | Default Value |
-| --------------------- | ------------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **File(s) to copy**   | The path(s) of the file(s) you want to copy. Supports using wildcards like `*.txt` to copy multiple files.   | Text       | Yes       | _(empty)_     |
-| **Destination folder**| The folder where the files will be copied to.                                                                | Text       | Yes       | _(empty)_     |
-| **If file exists**    | Choose what actions should be taken if files with the same name already exist in the destination folder.     | Select     | Yes       | DoNothing     |
+| Field Name             | Description                                                                                                | Input Type | Required? | Default Value |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File(s) to copy**    | The path(s) of the file(s) you want to copy. Supports using wildcards like `*.txt` to copy multiple files. | Text       | Yes       | _(empty)_     |
+| **Destination folder** | The folder where the files will be copied to.                                                              | Text       | Yes       | _(empty)_     |
+| **If file exists**     | Choose what actions should be taken if files with the same name already exist in the destination folder.   | Select     | Yes       | DoNothing     |
 
 ## Expected Output Format
 
@@ -51,23 +51,24 @@ Run the node to copy your files. The list of successfully copied files will appe
 </Steps>
 
 <Callout type="info" title="Tip">
-  Remember to ensure that both the source and destination paths are correctly formatted and accessible to avoid errors during the copy process.
+  Remember to ensure that both the source and destination paths are correctly
+  formatted and accessible to avoid errors during the copy process.
 </Callout>
 
 ## Input/Output Examples
 
-| File(s) to copy       | Destination folder | If file exists | Copied Files                               |
-| --------------------- | ------------------ | -------------- | ------------------------------------------ |
-| `/user/docs/*.docx`   | `/backups/docs`    | Overwrite      | [`file1.docx`, `file2.docx`]               |
-| `/images/pic*.png`    | `/archive/images`  | DoNothing      | [`pic1.png`, `pic2.png`]                   |
+| File(s) to copy     | Destination folder | If file exists | Copied Files                 |
+| ------------------- | ------------------ | -------------- | ---------------------------- |
+| `/user/docs/*.docx` | `/backups/docs`    | Overwrite      | [`file1.docx`, `file2.docx`] |
+| `/images/pic*.png`  | `/archive/images`  | DoNothing      | [`pic1.png`, `pic2.png`]     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                            | Solution                                                                                                                                         |
-| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **File not found error**                           | Check the source file path for typos or incorrect syntax. Ensure the file exists at the specified location.                                       |
-| **Destination path incorrect**                     | Verify that the destination folder path is correct and accessible. Check for permission issues or path typos.                                      |
-| **Files not overwriting despite selection**        | Ensure that "Overwrite" is selected in the **If file exists** dropdown if you want files to be replaced.                                          |
+| Problem                                     | Solution                                                                                                      |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **File not found error**                    | Check the source file path for typos or incorrect syntax. Ensure the file exists at the specified location.   |
+| **Destination path incorrect**              | Verify that the destination folder path is correct and accessible. Check for permission issues or path typos. |
+| **Files not overwriting despite selection** | Ensure that "Overwrite" is selected in the **If file exists** dropdown if you want files to be replaced.      |
 
 ## Real-World Use Cases
 

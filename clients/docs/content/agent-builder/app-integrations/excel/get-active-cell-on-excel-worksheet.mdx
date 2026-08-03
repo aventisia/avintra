@@ -11,9 +11,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name                 | Description                                                                     | Input Type | Required? | Default Value |
-| -------------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance**     | The Excel Worksheet instance from which to get the active cell.                 | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                     | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet instance from which to get the active cell. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -45,23 +45,24 @@ Use the outputs (`Active Cell Address`, `Active Cell Column Index`, and `Active 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the worksheet instance is correctly referenced; an incorrect reference will prevent the node from fetching the active cell data.
+  Ensure the worksheet instance is correctly referenced; an incorrect reference
+  will prevent the node from fetching the active cell data.
 </Callout>
 
 ## Input/Output Examples
 
 | Worksheet Instance | Active Cell Address | Active Cell Column Index | Active Cell Row Index |
-| ------------------ | -------------------- | ------------------------ | --------------------- |
+| ------------------ | ------------------- | ------------------------ | --------------------- |
 | ExampleWorksheet   | A1                  | 1                        | 1                     |
 | ExampleWorksheet   | B3                  | 2                        | 3                     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                           |
-| --------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Incorrect Worksheet Instance Reference**    | Double-check the name and instance of the worksheet to ensure it is entered correctly.             |
-| **No Output Values**                          | Confirm that the worksheet is open and active on your desktop and that you've correctly added it.  |
-| **Unexpected Active Cell Detected**           | Make sure no other script or function is changing the active cell when running the automation.     |
+| Problem                                    | Solution                                                                                          |
+| ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| **Incorrect Worksheet Instance Reference** | Double-check the name and instance of the worksheet to ensure it is entered correctly.            |
+| **No Output Values**                       | Confirm that the worksheet is open and active on your desktop and that you've correctly added it. |
+| **Unexpected Active Cell Detected**        | Make sure no other script or function is changing the active cell when running the automation.    |
 
 ## Real-World Use Cases
 

@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Get Details of Web Page** node enables you to retrieve specific information from a web page, such as the title, description, URL, source code, and more. This can be particularly useful for tasks like data extraction, web scraping, or simply obtaining web page metadata for further analysis.
 
 For example:
+
 - Extracting a page's title and description for SEO analysis.
 - Retrieving visible text content for content analysis.
 - Getting the current URL to verify navigation.
 
 ## Configuration Options
 
-| Field Name              | Description                                                                          | Input Type | Required? | Default Value   |
-| ----------------------- | ------------------------------------------------------------------------------------ | ---------- | --------- | --------------- |
-| **Web Browser Instance**| Enter or choose the variable that contains the web browser instance to work with.    | Text       | Yes       | _(empty)_       |
-| **Detail Type**         | Specifies which detail to retrieve from the web page.                                | Select     | Yes       | WebPageTitle    |
+| Field Name               | Description                                                                       | Input Type | Required? | Default Value |
+| ------------------------ | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **Detail Type**          | Specifies which detail to retrieve from the web page.                             | Select     | Yes       | WebPageTitle  |
 
 ## Expected Output Format
 
@@ -53,27 +54,28 @@ The retrieved detail will be available as **OWebPagePropertyOutput** which can b
 </Steps>
 
 <Callout type="info" title="Tip">
-  Always make sure your web browser instance is active and correctly referenced when using this node to avoid errors.
+  Always make sure your web browser instance is active and correctly referenced
+  when using this node to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Detail Type             | Example Output                            | Output Type    |
-| ----------------------- | ----------------------------------------- | -------------- |
-| Web Page Description    | "Tech Blog - Articles, News & Reviews"    | Text           |
-| Web Page Meta Keywords  | "tech, blog, news, reviews"               | Text           |
-| Web Page Title          | "Welcome to My Site"                      | Text           |
-| Web Page Text           | "Welcome! This blog covers the latest..." | Text (long)    |
-| Web Page Source         | `<html><head>...</head><body>...</body>`  | Text (HTML)    |
-| Current URL Address     | "https://www.example.com"                 | URL (Text)     |
+| Detail Type            | Example Output                            | Output Type |
+| ---------------------- | ----------------------------------------- | ----------- |
+| Web Page Description   | "Tech Blog - Articles, News & Reviews"    | Text        |
+| Web Page Meta Keywords | "tech, blog, news, reviews"               | Text        |
+| Web Page Title         | "Welcome to My Site"                      | Text        |
+| Web Page Text          | "Welcome! This blog covers the latest..." | Text (long) |
+| Web Page Source        | `<html><head>...</head><body>...</body>`  | Text (HTML) |
+| Current URL Address    | "https://www.example.com"                 | URL (Text)  |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                          |
-| ----------------------------------------- | ----------------------------------------------------------------- |
-| **Web Browser Instance not recognized**   | Ensure that the instance variable is correctly set and active.    |
-| **No Detail Returned**                    | Check if the correct "Detail Type" is selected.                   |
-| **Fetching Data Results in Error**        | Verify the web page is accessible and the browser instance is valid for use. |
+| Problem                                 | Solution                                                                     |
+| --------------------------------------- | ---------------------------------------------------------------------------- |
+| **Web Browser Instance not recognized** | Ensure that the instance variable is correctly set and active.               |
+| **No Detail Returned**                  | Check if the correct "Detail Type" is selected.                              |
+| **Fetching Data Results in Error**      | Verify the web page is accessible and the browser instance is valid for use. |
 
 ## Real-World Use Cases
 

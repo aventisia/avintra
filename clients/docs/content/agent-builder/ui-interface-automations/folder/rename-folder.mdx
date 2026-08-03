@@ -6,10 +6,10 @@ The **Rename Folder** node allows you to change the name of an existing folder b
 
 ## Configuration Options
 
-| Field Name             | Description                                                      | Input Type | Required? | Default Value |
-| ---------------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Original Folder Path** | The current path of the folder you want to rename.               | Text       | No        | _(empty)_     |
-| **New Folder Name**    | The new name you want to assign to the folder.                   | Text       | No        | _(empty)_     |
+| Field Name               | Description                                        | Input Type | Required? | Default Value |
+| ------------------------ | -------------------------------------------------- | ---------- | --------- | ------------- |
+| **Original Folder Path** | The current path of the folder you want to rename. | Text       | No        | _(empty)_     |
+| **New Folder Name**      | The new name you want to assign to the folder.     | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -39,23 +39,24 @@ Once complete, the renamed folder path will be available as **RenamedFolderPath*
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the path you enter in **Original Folder Path** exists and is accessible.
+  Ensure that the path you enter in **Original Folder Path** exists and is
+  accessible.
 </Callout>
 
 ## Input/Output Examples
 
-| Original Folder Path         | New Folder Name | Output Value                                  | Output Type     |
-| ---------------------------- | --------------- | ---------------------------------------------- | --------------- |
-| C:\Users\Documents\Projects  | FinalProject    | C:\Users\Documents\FinalProject                | String (Path)   |
-| D:\Archives\2022\QuarterOne  | Q1Review        | D:\Archives\2022\Q1Review                      | String (Path)   |
+| Original Folder Path        | New Folder Name | Output Value                    | Output Type   |
+| --------------------------- | --------------- | ------------------------------- | ------------- |
+| C:\Users\Documents\Projects | FinalProject    | C:\Users\Documents\FinalProject | String (Path) |
+| D:\Archives\2022\QuarterOne | Q1Review        | D:\Archives\2022\Q1Review       | String (Path) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                                                                  |
-| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Incorrect Original Folder Path**                      | Verify that the folder path is correct and the folder exists before trying to rename.                                                     |
-| **Permission Denied Error**                             | Ensure you have the necessary permissions to access and rename folders in the specified directory.                                        |
-| **New Folder Name Already Exists in Destination**       | If a folder with the new name already exists, choose a different name or delete/rename the existing folder if appropriate.                 |
+| Problem                                           | Solution                                                                                                                   |
+| ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Original Folder Path**                | Verify that the folder path is correct and the folder exists before trying to rename.                                      |
+| **Permission Denied Error**                       | Ensure you have the necessary permissions to access and rename folders in the specified directory.                         |
+| **New Folder Name Already Exists in Destination** | If a folder with the new name already exists, choose a different name or delete/rename the existing folder if appropriate. |
 
 ## Real-World Use Cases
 

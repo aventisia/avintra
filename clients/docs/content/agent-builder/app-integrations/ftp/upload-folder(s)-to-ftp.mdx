@@ -6,14 +6,14 @@ The **Upload Folder(s) to FTP** node enables you to transfer local folders to a 
 
 ## Configuration Options
 
-| Field Name              | Description                                                                 | Input Type | Required? | Default Value  |
-| ----------------------- | --------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **FTP Connection**      | The FTP connection details to access your server. It should be an open connection. | Text       | Yes       | _(empty)_      |
-| **Local Folders**       | List the paths of the local folders you want to upload.                     | Text       | Yes       | _(empty)_      |
-| **Remote Directory**    | Directory path on the FTP server where folders will be uploaded.            | Text       | Yes       | _(empty)_      |
-| **Overwrite Files**     | Enable to overwrite existing files on the server.                           | Switch     | No        | True           |
-| **Include Subdirectories** | Enable to also upload all subdirectories within each listed folder.            | Switch     | No        | True           |
-| **Timeout Seconds**     | Set the maximum wait time before timeout if upload is delayed.              | Text       | No        | 60             |
+| Field Name                 | Description                                                                        | Input Type | Required? | Default Value |
+| -------------------------- | ---------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **FTP Connection**         | The FTP connection details to access your server. It should be an open connection. | Text       | Yes       | _(empty)_     |
+| **Local Folders**          | List the paths of the local folders you want to upload.                            | Text       | Yes       | _(empty)_     |
+| **Remote Directory**       | Directory path on the FTP server where folders will be uploaded.                   | Text       | Yes       | _(empty)_     |
+| **Overwrite Files**        | Enable to overwrite existing files on the server.                                  | Switch     | No        | True          |
+| **Include Subdirectories** | Enable to also upload all subdirectories within each listed folder.                | Switch     | No        | True          |
+| **Timeout Seconds**        | Set the maximum wait time before timeout if upload is delayed.                     | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -61,27 +61,29 @@ After configuration, execute the node to start the upload process.
 </Steps>
 
 <Callout type="info" title="Note">
-  The default setting for “Overwrite Files” and “Include Subdirectories” is enabled. Adjust these according to your needs.
+  The default setting for “Overwrite Files” and “Include Subdirectories” is
+  enabled. Adjust these according to your needs.
 </Callout>
 
 <Callout type="warning" title="Warning">
-  Make sure your FTP connection is secure and valid to avoid potential data exposure or loss.
+  Make sure your FTP connection is secure and valid to avoid potential data
+  exposure or loss.
 </Callout>
 
 ## Input/Output Examples
 
-| Local Folders      | Remote Directory | Overwrite Files | Include Subdirectories | Files Uploaded Count | Folders Uploaded Count | Skipped Files | Skipped Folders |
-| ------------------ | ---------------- | --------------- | ----------------------- | -------------------- | ---------------------- | ------------- | --------------- |
-| `/local/path1, /local/path2` | `/remote/path`   | True            | False                   | 25                    | 2                      | file1.txt     | folder1         |
+| Local Folders                | Remote Directory | Overwrite Files | Include Subdirectories | Files Uploaded Count | Folders Uploaded Count | Skipped Files | Skipped Folders |
+| ---------------------------- | ---------------- | --------------- | ---------------------- | -------------------- | ---------------------- | ------------- | --------------- |
+| `/local/path1, /local/path2` | `/remote/path`   | True            | False                  | 25                   | 2                      | file1.txt     | folder1         |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                                   |
-| ------------------------------------------------| ------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Invalid FTP Connection error**                | Verify connection details and ensure the server is reachable and your credentials are correct.                                             |
-| **Timeout reached before upload completes**     | Increase the **Timeout Seconds** value or ensure the server is responsive.                                                                 |
-| **Files/Folders not uploaded as expected**      | Check that paths are correct and permissions are set correctly on the FTP server for uploads.                                              |
-| **Skipped Files/Folders still in result**       | Confirm these files or folders are not restricted, and the names do not contain unsupported characters.                                    |
+| Problem                                     | Solution                                                                                                |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Invalid FTP Connection error**            | Verify connection details and ensure the server is reachable and your credentials are correct.          |
+| **Timeout reached before upload completes** | Increase the **Timeout Seconds** value or ensure the server is responsive.                              |
+| **Files/Folders not uploaded as expected**  | Check that paths are correct and permissions are set correctly on the FTP server for uploads.           |
+| **Skipped Files/Folders still in result**   | Confirm these files or folders are not restricted, and the names do not contain unsupported characters. |
 
 ## Real-World Use Cases
 

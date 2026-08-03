@@ -1,80 +1,63 @@
 {
-    "type": "function",
-    "function": {
-        "name": "outlook_send_email",
-        "description": "Send an email using Outlook",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "to": {
-                    "type": "string",
-                    "description": "Recipient email address"
-                },
-                "from": {
-                    "type": "string",
-                    "description": "Sender mailbox address"
-                },
-                "subject": {
-                    "type": "string",
-                    "description": "Email subject"
-                },
-                "cc": {
-                    "type": "string",
-                    "description": "Optional CC recipients separated by commas",
-                    "default": ""
-                },
-                "bcc": {
-                    "type": "string",
-                    "description": "Optional BCC recipients separated by commas",
-                    "default": ""
-                },
-                "contentType": {
-                    "type": "string",
-                    "description": "Email content type",
-                    "enum": [
-                        "Text",
-                        "HTML"
-                    ],
-                    "default": "Text"
-                },
-                "content": {
-                    "type": "string",
-                    "description": "Email body content"
-                },
-                "importance": {
-                    "type": "string",
-                    "description": "Email importance level",
-                    "enum": [
-                        "Low",
-                        "Normal",
-                        "High"
-                    ],
-                    "default": "Normal"
-                },
-                "sensitivity": {
-                    "type": "string",
-                    "description": "Email sensitivity level",
-                    "enum": [
-                        "Normal",
-                        "Personal",
-                        "Private",
-                        "Confidential"
-                    ],
-                    "default": "Normal"
-                },
-                "saveToSentItems": {
-                    "type": "boolean",
-                    "description": "Whether to save the email in Sent Items",
-                    "default": false
-                }
-            },
-            "required": [
-                "to",
-                "from",
-                "subject",
-                "content"
-            ],
-            "additionalProperties": false
+  "type": "function",
+  "function": {
+    "name": "outlook_send_email",
+    "description": "Send an email using Outlook",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": "string",
+          "description": "Recipient email address"
+        },
+        "from": {
+          "type": "string",
+          "description": "Sender mailbox address"
+        },
+        "subject": {
+          "type": "string",
+          "description": "Email subject"
+        },
+        "cc": {
+          "type": "string",
+          "description": "Optional CC recipients separated by commas",
+          "default": ""
+        },
+        "bcc": {
+          "type": "string",
+          "description": "Optional BCC recipients separated by commas",
+          "default": ""
+        },
+        "contentType": {
+          "type": "string",
+          "description": "Email content type",
+          "enum": ["Text", "HTML"],
+          "default": "Text"
+        },
+        "content": {
+          "type": "string",
+          "description": "Email body content"
+        },
+        "importance": {
+          "type": "string",
+          "description": "Email importance level",
+          "enum": ["Low", "Normal", "High"],
+          "default": "Normal"
+        },
+        "sensitivity": {
+          "type": "string",
+          "description": "Email sensitivity level",
+          "enum": ["Normal", "Personal", "Private", "Confidential"],
+          "default": "Normal"
+        },
+        "saveToSentItems": {
+          "type": "boolean",
+          "description": "Whether to save the email in Sent Items",
+          "default": false
         }
+      },
+      "required": ["to", "from", "subject", "content"],
+      "additionalProperties": false
     }
+  }
 }

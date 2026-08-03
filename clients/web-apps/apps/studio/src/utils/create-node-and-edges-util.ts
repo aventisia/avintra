@@ -1,10 +1,10 @@
+import { Node, XYPosition } from "@xyflow/react";
+
 import { NODE_HEIGHT, NODE_WIDTH } from "@/constants";
 import { nodeDimensionLookup } from "@/constants/node-dimension-lookup";
 import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { CustomNodeType } from "@/types/custom-node-type";
 import { NodeDataType } from "@/types/node-data-type";
-
-import { Node, XYPosition } from "@xyflow/react";
 
 import { createActivityNode } from "./create-nodes/create-activity-node";
 import { createAgentNode } from "./create-nodes/create-agent-node";
@@ -92,13 +92,9 @@ const createNodesAndEdgesUtil = (
   return nodesAndEdgesObj;
 };
 
-const getNewNodeXY = (
-  sourceNode: Node,
-  newNodeType: CustomNodeType,
-): XYPosition => {
+const getNewNodeXY = (sourceNode: Node, newNodeType: CustomNodeType): XYPosition => {
   // Get source node dimensions
-  const sourceNodeDimension =
-    nodeDimensionLookup[sourceNode.type as CustomNodeType];
+  const sourceNodeDimension = nodeDimensionLookup[sourceNode.type as CustomNodeType];
 
   // Get new node dimensions
   const newNodeDimension = nodeDimensionLookup[newNodeType];

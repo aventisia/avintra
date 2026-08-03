@@ -1,9 +1,6 @@
-import {
-  MARKER_ARROW_PREFIX,
-  STROKE_DASHARRAY,
-  STROKE_WIDTH,
-} from "@/constants";
 import { Edge } from "@xyflow/react";
+
+import { MARKER_ARROW_PREFIX, STROKE_DASHARRAY, STROKE_WIDTH } from "@/constants";
 
 /**
  * Creates a custom edge object. Default options will create a non-deleteable, solid edge with a marker end arrow.
@@ -30,7 +27,7 @@ export const createCustomEdgeObj = (
   // Return the edge object
   return {
     id: id,
-    type:"customStepEdge",
+    type: "customStepEdge",
     source: sourceNodeId,
     target: targetNodeId,
     deletable: isDeleteable,

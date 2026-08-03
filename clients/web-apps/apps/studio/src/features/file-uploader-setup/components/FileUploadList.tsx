@@ -1,8 +1,8 @@
-import { Progress } from "@/react-toolkit/ui/progress";
-
 import { Button } from "@avplatform/ui/buttons";
 import { TrashIcon, XCircleIcon } from "@heroicons/react/24/outline";
 import { useShallow } from "zustand/react/shallow";
+
+import { Progress } from "@/react-toolkit/ui/progress";
 
 import { FileState, useFileStore } from "../stores/file-uploader-store";
 import { formatFileSize } from "../utils";
@@ -57,9 +57,7 @@ const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
   return (
     <div className="h-full rounded-lg border">
       <div className="flex items-center justify-between p-2">
-        <h2 className="text-xs font-medium">
-          Upload Files ({filesToUpload.length})
-        </h2>
+        <h2 className="text-xs font-medium">Upload Files ({filesToUpload.length})</h2>
         <div className="flex gap-2">
           <FileDropzone
             addFile={addFile}
@@ -84,10 +82,7 @@ const FileUploadList = ({ isPublic }: { isPublic?: boolean }) => {
             const progress = fileState?.progress ?? 100;
 
             return (
-              <div
-                key={`${file.name}-${idx}`}
-                className="rounded-lg border p-2"
-              >
+              <div key={`${file.name}-${idx}`} className="rounded-lg border p-2">
                 <div className="flex items-center justify-between pb-2">
                   <div className="flex flex-col">
                     <p className="text-2xs font-medium">{file.name}</p>

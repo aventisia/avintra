@@ -7,7 +7,7 @@ The **Set Key State** node allows you to change the state of specific keyboard k
 ## Configuration Options
 
 | Field Name | Description                                                         | Input Type | Required? | Default Value |
-|------------|---------------------------------------------------------------------|------------|-----------|---------------|
+| ---------- | ------------------------------------------------------------------- | ---------- | --------- | ------------- |
 | **Key**    | Select which key you want to modify, e.g., 'Caps Lock', 'Num Lock'. | Select     | Yes       | _(empty)_     |
 | **State**  | Choose whether to turn the key 'On' or 'Off'.                       | Select     | Yes       | _(empty)_     |
 
@@ -44,15 +44,16 @@ Once configured, the node will automatically adjust the key states as specified 
 </Steps>
 
 <Callout type="info" title="Note">
-  This node does not visually change anything on the interface but modifies the hardware state of the keyboard keys.
+  This node does not visually change anything on the interface but modifies the
+  hardware state of the keyboard keys.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                                                                     |
-|-------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| **Key or State not selected**             | Ensure that both **Key** and **State** fields are selected before executing the node.                        |
-| **No change observed on the keyboard**    | Confirm the system supports controlling these keys programmatically; some systems may have locked key states.|
+| Problem                                | Solution                                                                                                      |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Key or State not selected**          | Ensure that both **Key** and **State** fields are selected before executing the node.                         |
+| **No change observed on the keyboard** | Confirm the system supports controlling these keys programmatically; some systems may have locked key states. |
 
 ## Real-World Use Cases
 

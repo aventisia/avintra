@@ -1,5 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { SelectField } from "@avplatform/ui/form";
+
 import { ToolAuthenticationTypeEnum } from "../../enums/tool-authentication-type-enum";
 
 /**
@@ -27,7 +28,9 @@ export const StepAuthenticate = () => {
         placeholder="Select an AppSecret credential..."
       />
 
-      <Button variant="outline" className="w-full">Create new credential</Button>
+      <Button variant="outline" className="w-full">
+        Create new credential
+      </Button>
     </div>
   );
 };

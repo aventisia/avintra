@@ -1,24 +1,13 @@
 "use client";
 
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@avplatform/ui/collapsible";
-
-import {
   type ToolCallMessagePartComponent,
   type ToolCallMessagePartStatus,
   useScrollLock,
 } from "@assistant-ui/react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@avplatform/ui/collapsible";
 import { cn } from "@avplatform/ui/lib";
-import {
-  AlertCircleIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  LoaderIcon,
-  XCircleIcon,
-} from "lucide-react";
+import { AlertCircleIcon, CheckIcon, ChevronDownIcon, LoaderIcon, XCircleIcon } from "lucide-react";
 import { memo, useCallback, useRef, useState } from "react";
 
 const ANIMATION_DURATION = 200;
@@ -102,8 +91,7 @@ function ToolFallbackTrigger({
 }) {
   const statusType = status?.type ?? "complete";
   const isRunning = statusType === "running";
-  const isCancelled =
-    status?.type === "incomplete" && status.reason === "cancelled";
+  const isCancelled = status?.type === "incomplete" && status.reason === "cancelled";
   const isError = status?.type === "incomplete" && status.reason === "error";
   const isComplete = status?.type === "complete";
   const isRequiresAction = status?.type === "requires-action";
@@ -228,8 +216,7 @@ function ToolFallbackResult({
 }) {
   if (result === undefined) return null;
 
-  const resultText =
-    typeof result === "string" ? result : JSON.stringify(result, null, 2);
+  const resultText = typeof result === "string" ? result : JSON.stringify(result, null, 2);
 
   return (
     <div
@@ -240,9 +227,7 @@ function ToolFallbackResult({
       )}
       {...props}
     >
-      <p className="aui-tool-fallback-result-header mb-2 font-medium text-foreground">
-        Result:
-      </p>
+      <p className="aui-tool-fallback-result-header mb-2 font-medium text-foreground">Result:</p>
       <pre className="aui-tool-fallback-result-content whitespace-pre-wrap font-mono text-xs text-muted-foreground bg-muted/30 p-2 rounded-md border border-border/50">
         {resultText}
       </pre>
@@ -260,11 +245,7 @@ function ToolFallbackError({
   if (status?.type !== "incomplete") return null;
 
   const error = status.error;
-  const errorText = error
-    ? typeof error === "string"
-      ? error
-      : JSON.stringify(error)
-    : null;
+  const errorText = error ? (typeof error === "string" ? error : JSON.stringify(error)) : null;
 
   if (!errorText) return null;
 
@@ -277,45 +258,28 @@ function ToolFallbackError({
       className={cn("aui-tool-fallback-error px-4", className)}
       {...props}
     >
-      <p className="aui-tool-fallback-error-header text-destructive font-medium">
-        {headerText}
-      </p>
-      <p className="aui-tool-fallback-error-reason text-destructive">
-        {errorText}
-      </p>
+      <p className="aui-tool-fallback-error-header text-destructive font-medium">{headerText}</p>
+      <p className="aui-tool-fallback-error-reason text-destructive">{errorText}</p>
     </div>
   );
 }
 
-const ToolFallbackImpl: ToolCallMessagePartComponent = ({
-  toolName,
-  argsText,
-  result,
-  status,
-}) => {
-  const isCancelled =
-    status?.type === "incomplete" && status.reason === "cancelled";
+const ToolFallbackImpl: ToolCallMessagePartComponent = ({ toolName, argsText, result, status }) => {
+  const isCancelled = status?.type === "incomplete" && status.reason === "cancelled";
 
   return (
-    <ToolFallbackRoot
-      className={cn(isCancelled && "border-muted-foreground/30 bg-muted/30")}
-    >
+    <ToolFallbackRoot className={cn(isCancelled && "border-muted-foreground/30 bg-muted/30")}>
       <ToolFallbackTrigger toolName={toolName} status={status} />
       <ToolFallbackContent>
         <ToolFallbackError status={status} />
-        <ToolFallbackArgs
-          argsText={argsText}
-          className={cn(isCancelled && "opacity-60")}
-        />
+        <ToolFallbackArgs argsText={argsText} className={cn(isCancelled && "opacity-60")} />
         {!isCancelled && <ToolFallbackResult result={result} />}
       </ToolFallbackContent>
     </ToolFallbackRoot>
   );
 };
 
-const ToolFallback = memo(
-  ToolFallbackImpl,
-) as unknown as ToolCallMessagePartComponent & {
+const ToolFallback = memo(ToolFallbackImpl) as unknown as ToolCallMessagePartComponent & {
   Root: typeof ToolFallbackRoot;
   Trigger: typeof ToolFallbackTrigger;
   Content: typeof ToolFallbackContent;

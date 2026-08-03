@@ -6,13 +6,13 @@ The **Close Web Browser Tab** node allows you to automatically close a web brows
 
 ## Configuration Options
 
-| Field Name         | Description                                                                                                | Input Type | Required? | Default Value |
-| ------------------ | ---------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Reference the WebDriver instance for the browser session you want to manipulate.                          | Text       | Yes       | _(empty)_     |
-| **Close Mode**     | Decide how you want to close the tab(s): Current, By Title/URL, All Except Main, or After Timeout.          | Select     | No        | Current       |
-| **Match Type**     | Specify if you are matching tabs by their URL or Title when choosing to close by Title/URL.                  | Text       | No        | _(empty)_     |
-| **Match Criteria** | Provide the specific URL or Title used to identify tabs to close, applicable when using the By Title/URL mode. | Text       | No        | _(empty)_     |
-| **Timeout Seconds**| Enter the number of seconds to wait before automatically closing the tab, applicable when using After Timeout mode. | Text       | No        | 60            |
+| Field Name               | Description                                                                                                         | Input Type | Required? | Default Value |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Reference the WebDriver instance for the browser session you want to manipulate.                                    | Text       | Yes       | _(empty)_     |
+| **Close Mode**           | Decide how you want to close the tab(s): Current, By Title/URL, All Except Main, or After Timeout.                  | Select     | No        | Current       |
+| **Match Type**           | Specify if you are matching tabs by their URL or Title when choosing to close by Title/URL.                         | Text       | No        | _(empty)_     |
+| **Match Criteria**       | Provide the specific URL or Title used to identify tabs to close, applicable when using the By Title/URL mode.      | Text       | No        | _(empty)_     |
+| **Timeout Seconds**      | Enter the number of seconds to wait before automatically closing the tab, applicable when using After Timeout mode. | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -56,14 +56,15 @@ The web browser tab(s) will be closed according to your selected criteria.
 </Steps>
 
 <Callout type="info" title="Note">
-  The "Match Type" and "Match Criteria" fields are only available when "Close Mode" is set to "By Title or URL". The "Timeout Seconds" field is only displayed when "Close Mode" is set to "After Timeout".
+  The "Match Type" and "Match Criteria" fields are only available when "Close
+  Mode" is set to "By Title or URL". The "Timeout Seconds" field is only
+  displayed when "Close Mode" is set to "After Timeout".
 </Callout>
 
 ## Input/Output Examples
 
 - **Close Mode**: Current
   - Closes the currently active tab immediately.
-  
 - **Close Mode**: By Title or URL
   - **Match Type**: Title
   - **Match Criteria**: Contains "Reports"
@@ -75,11 +76,11 @@ The web browser tab(s) will be closed according to your selected criteria.
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                                                       |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Web Browser Instance**                      | Ensure the WebDriver instance is correctly referenced and active.                                                                                              |
-| **Tabs not closing by Title/URL**                     | Double-check Match Type and Match Criteria for typos or incorrect information.                                                                                 |
-| **Timeout not functioning**                           | Verify the Timeout Seconds field has a numerical value set and 'After Timeout' is correctly selected as the Close Mode.                                        |
+| Problem                           | Solution                                                                                                                |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Invalid Web Browser Instance**  | Ensure the WebDriver instance is correctly referenced and active.                                                       |
+| **Tabs not closing by Title/URL** | Double-check Match Type and Match Criteria for typos or incorrect information.                                          |
+| **Timeout not functioning**       | Verify the Timeout Seconds field has a numerical value set and 'After Timeout' is correctly selected as the Close Mode. |
 
 ## Real-World Use Cases
 

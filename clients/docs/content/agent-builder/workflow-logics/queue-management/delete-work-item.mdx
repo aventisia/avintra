@@ -6,10 +6,10 @@ The **Delete Work Item** node is used to permanently remove a specific work item
 
 ## Configuration Options
 
-| Field Name    | Description                                                                                  | Input Type | Required? | Default Value |
-| ------------- | -------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **WorkItem ID** | Enter the unique identifier of the work item you want to permanently delete.                 | Text       | Yes       | _(empty)_     |
-| **WorkItemDeleted** | Returns true if the work item was successfully deleted.                                    | Output     | No        | WorkItemDeleted |
+| Field Name          | Description                                                                  | Input Type | Required? | Default Value   |
+| ------------------- | ---------------------------------------------------------------------------- | ---------- | --------- | --------------- |
+| **WorkItem ID**     | Enter the unique identifier of the work item you want to permanently delete. | Text       | Yes       | _(empty)_       |
+| **WorkItemDeleted** | Returns true if the work item was successfully deleted.                      | Output     | No        | WorkItemDeleted |
 
 ## Expected Output Format
 
@@ -31,7 +31,7 @@ In the **WorkItem ID** field, enter the ID of the work item you wish to delete. 
 
 ### Step 3
 
-Execute the flow to perform the deletion. 
+Execute the flow to perform the deletion.
 
 ### Step 4
 
@@ -40,23 +40,24 @@ Check the output value of **WorkItemDeleted** to confirm the deletion was succes
 </Steps>
 
 <Callout type="warning" title="Caution">
-  Deleting a work item is permanent and cannot be undone. Make sure you have backup or confirmation before proceeding.
+  Deleting a work item is permanent and cannot be undone. Make sure you have
+  backup or confirmation before proceeding.
 </Callout>
 
 ## Input/Output Examples
 
-| WorkItem ID | Output Value     | Output Type  |
-| ----------- | ---------------- | ------------ |
-| `12345`     | true             | Boolean      |
-| `nonexistent` | false           | Boolean      |
+| WorkItem ID   | Output Value | Output Type |
+| ------------- | ------------ | ----------- |
+| `12345`       | true         | Boolean     |
+| `nonexistent` | false        | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                             |
-| ------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
-| **Incorrect WorkItem ID entered**                | Double-check the ID for typos. Ensure the ID corresponds to an existing item in the queue.           |
-| **Deletion not reflected in output**             | Verify connection to the queue and ensure the node is correctly set up in the flow.                  |
-| **Unexpected errors during flow execution**      | Review error logs for details and ensure system permissions and connections are suitable for deletion. |
+| Problem                                     | Solution                                                                                               |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Incorrect WorkItem ID entered**           | Double-check the ID for typos. Ensure the ID corresponds to an existing item in the queue.             |
+| **Deletion not reflected in output**        | Verify connection to the queue and ensure the node is correctly set up in the flow.                    |
+| **Unexpected errors during flow execution** | Review error logs for details and ensure system permissions and connections are suitable for deletion. |
 
 ## Real-World Use Cases
 

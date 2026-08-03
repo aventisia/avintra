@@ -11,10 +11,7 @@ type State = {
 
 type Actions = {
   setGroupId: (groupId: string) => void;
-  setFlowBlockObject: (flowBlockObject: {
-    nodes: Node[];
-    edges: Edge[];
-  }) => void;
+  setFlowBlockObject: (flowBlockObject: { nodes: Node[]; edges: Edge[] }) => void;
 };
 
 const useFlowBlockStore = create<State & Actions>((set) => ({

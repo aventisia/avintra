@@ -1,12 +1,12 @@
-import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { ChevronDownIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 import { useFlowsVersionsStore } from "../stores/flow-versions-store";
 
@@ -31,9 +31,7 @@ export const FlowVersionsTrigger = () => {
         )}
       >
         <span>v{versionNumber} </span>
-        <ChevronDownIcon
-          className={cn("h-3 w-3 min-w-3 transition-all group-hover:mt-0.5")}
-        />
+        <ChevronDownIcon className={cn("h-3 w-3 min-w-3 transition-all group-hover:mt-0.5")} />
       </PopoverTrigger>
     </Tooltip>
   );

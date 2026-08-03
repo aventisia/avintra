@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                                | Input Type | Required? | Default Value |
-| --------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **File(s) to move**   | The path(s) of the file(s) to move. Supports wildcards like `*.txt` to select multiple files. | Text       | Yes       | _(empty)_     |
-| **Destination folder**| The path to the folder where the files should be moved.                                    | Text       | Yes       | _(empty)_     |
-| **If file exists**    | Choose what to do if a file with the same name exists in the destination folder.            | Select     | Yes       | DoNothing     |
+| Field Name             | Description                                                                                   | Input Type | Required? | Default Value |
+| ---------------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **File(s) to move**    | The path(s) of the file(s) to move. Supports wildcards like `*.txt` to select multiple files. | Text       | Yes       | _(empty)_     |
+| **Destination folder** | The path to the folder where the files should be moved.                                       | Text       | Yes       | _(empty)_     |
+| **If file exists**     | Choose what to do if a file with the same name exists in the destination folder.              | Select     | Yes       | DoNothing     |
 
 ## Expected Output Format
 
@@ -51,22 +51,23 @@ Check for the output `MovedFile` to confirm the path of the moved file after exe
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure that the destination folder exists. The move operation will fail if the folder does not exist, as new folders are not automatically created.
+  Ensure that the destination folder exists. The move operation will fail if the
+  folder does not exist, as new folders are not automatically created.
 </Callout>
 
 ## Input/Output Examples
 
-| File(s) to move  | Destination folder       | If file exists | Output Value | Output Type   |
-| ---------------- | ------------------------ | -------------- | ------------ | ------------- |
-| C:/Reports/*.csv | D:/Backup/Reports/2023/  | Overwrite      | MovedFile    | File Path     |
+| File(s) to move   | Destination folder      | If file exists | Output Value | Output Type |
+| ----------------- | ----------------------- | -------------- | ------------ | ----------- |
+| C:/Reports/\*.csv | D:/Backup/Reports/2023/ | Overwrite      | MovedFile    | File Path   |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                                                                               |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Destination folder not found**                     | Ensure the path is correct and that the destination folder exists on your system.                                                                      |
-| **No files moved with wildcard**                     | Double-check the file path and wildcard format to ensure they correctly match file names (`*.txt`, `fileName?.*`, etc.).                               |
-| **File already exists and not moved**                | Review the **If file exists** setting. If set to "Do nothing", files will not be moved if a file with the same name already exists in the destination.  |
+| Problem                               | Solution                                                                                                                                               |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Destination folder not found**      | Ensure the path is correct and that the destination folder exists on your system.                                                                      |
+| **No files moved with wildcard**      | Double-check the file path and wildcard format to ensure they correctly match file names (`*.txt`, `fileName?.*`, etc.).                               |
+| **File already exists and not moved** | Review the **If file exists** setting. If set to "Do nothing", files will not be moved if a file with the same name already exists in the destination. |
 
 ## Real-World Use Cases
 

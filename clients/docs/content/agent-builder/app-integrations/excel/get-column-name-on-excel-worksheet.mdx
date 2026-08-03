@@ -8,10 +8,10 @@ This node reads the first non-empty cell in the specified column and returns its
 
 ## Configuration Options
 
-| Field Name           | Description                                                 | Input Type | Required? | Default Value  |
-| -------------------- | ----------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Worksheet Instance** | The Excel Worksheet object from which to retrieve the column name. | Text       | Yes       | _(empty)_      |
-| **Column Index**     | The 1-based index of the column to retrieve the name from (e.g., 1 → first column). | Text       | Yes       | _(empty)_      |
+| Field Name             | Description                                                                         | Input Type | Required? | Default Value |
+| ---------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object from which to retrieve the column name.                  | Text       | Yes       | _(empty)_     |
+| **Column Index**       | The 1-based index of the column to retrieve the name from (e.g., 1 → first column). | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -41,22 +41,23 @@ The node will output the column name found in the first non-empty cell of the sp
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure the Excel worksheet is accessible and the column is not entirely empty, or the node may not be able to return a meaningful column name.
+  Ensure the Excel worksheet is accessible and the column is not entirely empty,
+  or the node may not be able to return a meaningful column name.
 </Callout>
 
 ## Input/Output Examples
 
-| Worksheet Instance | Column Index | Output Value   | Output Type   |
-| ------------------ | ------------ | -------------- | ------------- |
-| "Sheet1"           | 1            | "First Name"   | Text (String) |
+| Worksheet Instance | Column Index | Output Value    | Output Type   |
+| ------------------ | ------------ | --------------- | ------------- |
+| "Sheet1"           | 1            | "First Name"    | Text (String) |
 | "Sheet1"           | 2            | "Monthly Sales" | Text (String) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                            |
-| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| **Empty or incorrect column index**                     | Double-check to ensure that you are entering a valid column index that corresponds to your worksheet. |
-| **Wrong worksheet input**                               | Verify the worksheet instance is correctly referenced and accessible at runtime.                    |
+| Problem                             | Solution                                                                                              |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| **Empty or incorrect column index** | Double-check to ensure that you are entering a valid column index that corresponds to your worksheet. |
+| **Wrong worksheet input**           | Verify the worksheet instance is correctly referenced and accessible at runtime.                      |
 
 ## Real-World Use Cases
 

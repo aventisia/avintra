@@ -63,11 +63,4 @@ const deleteApiKeys = (ids: string[]) => {
     .then((res) => res.data);
 };
 
-export {
-  createApiKey,
-  deleteApiKey,
-  deleteApiKeys,
-  getApiKey,
-  getApiKeys,
-  updateApiKey,
-};
+export { createApiKey, deleteApiKey, deleteApiKeys, getApiKey, getApiKeys, updateApiKey };

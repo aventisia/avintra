@@ -12,12 +12,12 @@ You may want to use this node when:
 
 ## Configuration Options
 
-| Field Name                     | Description                                                                                 | Input Type | Required? | Default Value |
-| ------------------------------ | ------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **AWS Credential (Vault ID)**  | Select the AWS credential used for authentication.                                           | Text       | Yes       | _(empty)_     |
-| **Return All**                 | Enable this to retrieve all certificates. If disabled, results are limited by 'Limit'.      | Switch     | No        | _(empty)_     |
-| **Limit**                      | Maximum number of certificates to retrieve. Set this if **Return All** is disabled.         | Text       | No        | 50            |
-| **AWS Region**                 | The AWS region where the certificates are located.                                          | Text       | No        | us-east-1     |
+| Field Name                    | Description                                                                            | Input Type | Required? | Default Value |
+| ----------------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **AWS Credential (Vault ID)** | Select the AWS credential used for authentication.                                     | Text       | Yes       | _(empty)_     |
+| **Return All**                | Enable this to retrieve all certificates. If disabled, results are limited by 'Limit'. | Switch     | No        | _(empty)_     |
+| **Limit**                     | Maximum number of certificates to retrieve. Set this if **Return All** is disabled.    | Text       | No        | 50            |
+| **AWS Region**                | The AWS region where the certificates are located.                                     | Text       | No        | us-east-1     |
 
 ## Expected Output Format
 
@@ -55,26 +55,28 @@ In the **AWS Region** field, input the region where the certificates are located
 ### Step 6
 
 The output will be available as **Certificates** for details and **API Response** for the raw JSON data from ACM.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Remember to configure your AWS credentials in a secure manner and verify they have permission to access Certificate Manager resources.
+  Remember to configure your AWS credentials in a secure manner and verify they
+  have permission to access Certificate Manager resources.
 </Callout>
 
 ## Input/Output Examples
 
-| AWS Credential | Return All | Limit | AWS Region | Output Type              | Output Example                                         |
-| -------------- | ---------- | ----- | ---------- | ------------------------ | ------------------------------------------------------ |
-| my-aws-vault   | true       | _(n/a)_ | us-east-1 | Certificates             | List of certificate details including status and domain |
-| my-aws-vault   | false      | 10    | us-west-2 | API Response             | Full JSON response from ACM                             |
+| AWS Credential | Return All | Limit   | AWS Region | Output Type  | Output Example                                          |
+| -------------- | ---------- | ------- | ---------- | ------------ | ------------------------------------------------------- |
+| my-aws-vault   | true       | _(n/a)_ | us-east-1  | Certificates | List of certificate details including status and domain |
+| my-aws-vault   | false      | 10      | us-west-2  | API Response | Full JSON response from ACM                             |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                                                                               |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **No Certificates Returned**                      | Ensure that the **AWS Credential** is correct and has the required permissions. Check if you have specified the correct **AWS Region** where certificates are available.|
-| **Too Few Certificates Returned**                 | Verify the **Limit** value is set according to your needs if **Return All** is off.                                                                                    |
-| **Authentication Errors**                         | Double-check your AWS credentials. They must be valid and have access rights to list certificates in ACM.                                                              |
+| Problem                           | Solution                                                                                                                                                                 |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **No Certificates Returned**      | Ensure that the **AWS Credential** is correct and has the required permissions. Check if you have specified the correct **AWS Region** where certificates are available. |
+| **Too Few Certificates Returned** | Verify the **Limit** value is set according to your needs if **Return All** is off.                                                                                      |
+| **Authentication Errors**         | Double-check your AWS credentials. They must be valid and have access rights to list certificates in ACM.                                                                |
 
 ## Real-World Use Cases
 

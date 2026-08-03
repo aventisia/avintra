@@ -15,6 +15,7 @@ The Router evaluates one or more **branch conditions** and decides which part(s)
 Each **branch** contains logic that is executed **only when its condition(s) evaluate to true**.
 
 You configure this logic via:
+
 - **Conditional Mode**
 - **Branch Conditions** (values, operators, and logic groups)
 
@@ -69,64 +70,64 @@ Each branch has a **set of conditions** that determine whether it should execute
 
 ### Basic Comparisons
 
-| Operator                | Description                         |
-|-------------------------|-------------------------------------|
-| Is Equal To             | Checks if values are equal          |
-| Exactly Matches         | Case-sensitive match                |
-| Does Not Exactly Match  | Case-sensitive mismatch             |
-| Is Greater Than         | First > Second                      |
-| Is Less Than            | First < Second                      |
+| Operator               | Description                |
+| ---------------------- | -------------------------- |
+| Is Equal To            | Checks if values are equal |
+| Exactly Matches        | Case-sensitive match       |
+| Does Not Exactly Match | Case-sensitive mismatch    |
+| Is Greater Than        | First > Second             |
+| Is Less Than           | First < Second             |
 
 ### Boolean Checks
 
-| Operator    | Description           |
-|-------------|-----------------------|
-| Is True     | Checks if value is true |
-| Is False    | Checks if value is false |
+| Operator | Description              |
+| -------- | ------------------------ |
+| Is True  | Checks if value is true  |
+| Is False | Checks if value is false |
 
 ### Text & String Logic
 
-| Operator                     | Description                             |
-|------------------------------|-----------------------------------------|
-| Contains (Text)              | Substring match                         |
-| Does Not Contain (Text)      | Excludes substring                      |
-| Starts With / Ends With      | Matches start/end of string             |
-| Does Not Start/End With      | Inverse checks                          |
+| Operator                | Description                 |
+| ----------------------- | --------------------------- |
+| Contains (Text)         | Substring match             |
+| Does Not Contain (Text) | Excludes substring          |
+| Starts With / Ends With | Matches start/end of string |
+| Does Not Start/End With | Inverse checks              |
 
 ### Existence Checks
 
-| Operator         | Description                        |
-|------------------|------------------------------------|
-| Exists           | Checks if field exists             |
-| Does Not Exist   | Field is undefined or null         |
-| Is Empty         | Field/list is empty                |
-| Is Not Empty     | Field/list contains data           |
+| Operator       | Description                |
+| -------------- | -------------------------- |
+| Exists         | Checks if field exists     |
+| Does Not Exist | Field is undefined or null |
+| Is Empty       | Field/list is empty        |
+| Is Not Empty   | Field/list contains data   |
 
 ### List-Based Operators
 
-| Operator                  | Description                        |
-|---------------------------|------------------------------------|
-| Contains (List)           | List includes specific item        |
-| Does Not Contain (List)   | List excludes specific item        |
+| Operator                | Description                 |
+| ----------------------- | --------------------------- |
+| Contains (List)         | List includes specific item |
+| Does Not Contain (List) | List excludes specific item |
 
 ### Date & Time Operators
 
-| Operator           | Description                        |
-|--------------------|------------------------------------|
-| After              | Value is after given date/time     |
-| Before             | Value is before given date/time    |
-| Equals (DateTime)  | Exact match of date/time           |
+| Operator          | Description                     |
+| ----------------- | ------------------------------- |
+| After             | Value is after given date/time  |
+| Before            | Value is before given date/time |
+| Equals (DateTime) | Exact match of date/time        |
 
 ---
 
 ## Example Use Cases
 
-| Use Case                              | Conditions Used                                           |
-|---------------------------------------|------------------------------------------------------------|
-| Route Premium Customers               | `CustomerType Is Equal To Premium` and `Balance > 10000`  |
-| Segregate Overdue Payments by Days    | `DueDate Before Today - 30 Days` (30, 60, 90 logic)        |
-| Filter Tickets with Specific Tags     | `AssignedTags Contains (List) urgent`                     |
-| Ensure Email Field is Provided        | `CustomerEmail Is Not Empty`                              |
+| Use Case                           | Conditions Used                                          |
+| ---------------------------------- | -------------------------------------------------------- |
+| Route Premium Customers            | `CustomerType Is Equal To Premium` and `Balance > 10000` |
+| Segregate Overdue Payments by Days | `DueDate Before Today - 30 Days` (30, 60, 90 logic)      |
+| Filter Tickets with Specific Tags  | `AssignedTags Contains (List) urgent`                    |
+| Ensure Email Field is Provided     | `CustomerEmail Is Not Empty`                             |
 
 ---
 

@@ -1,7 +1,3 @@
-import { SliderField } from "@/components/Slider/SliderField";
-// Import your static voice mappings here
-import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
-
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { SelectField } from "@avplatform/ui/form";
 import { cn } from "@avplatform/ui/lib";
@@ -9,6 +5,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover"
 import { Settings2Icon } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 import { Controller, useController, useFormContext } from "react-hook-form";
+
+import { SliderField } from "@/components/Slider/SliderField";
+// Import your static voice mappings here
+import { SearchableSelectField } from "@/react-toolkit/ui/searchable-select/SearchableSelectField";
 
 import { voiceProviderData } from "../../constants/voice-providers";
 
@@ -67,9 +67,7 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
     const allProviderVoices = providerVoiceData.voices;
     if (!languageValue) return allProviderVoices;
 
-    return allProviderVoices.filter(
-      (v) => v.languageId === languageValue || !v.languageId,
-    );
+    return allProviderVoices.filter((v) => v.languageId === languageValue || !v.languageId);
   }, [providerVoiceData, languageValue]);
 
   // 5. Handle Field Resets (Reset state when provider or language changes)
@@ -91,10 +89,7 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
 
   // If no provider data is found (e.g. Inferencing node), render nothing or a disabled state.
   // Returning null completely hides this component if the provider doesn't support voices.
-  if (
-    providerVoiceData.languages.length === 0 &&
-    providerVoiceData.voices.length === 0
-  ) {
+  if (providerVoiceData.languages.length === 0 && providerVoiceData.voices.length === 0) {
     return null;
   }
 
@@ -121,11 +116,7 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
         </div>
 
         <Popover>
-          <PopoverTrigger
-            className={cn(
-              buttonVariants({ size: "icon8", variant: "outline" }),
-            )}
-          >
+          <PopoverTrigger className={cn(buttonVariants({ size: "icon8", variant: "outline" }))}>
             <Settings2Icon className="h-3 w-3" />
           </PopoverTrigger>
 
@@ -133,13 +124,7 @@ const VoiceConfigField = ({ name }: VoiceConfigFieldProps) => {
             <Controller
               {...speedField}
               render={({ field }) => (
-                <SliderField
-                  label="Speed"
-                  name={field.name}
-                  min={0.7}
-                  max={1.2}
-                  step={0.1}
-                />
+                <SliderField label="Speed" name={field.name} min={0.7} max={1.2} step={0.1} />
               )}
             />
 

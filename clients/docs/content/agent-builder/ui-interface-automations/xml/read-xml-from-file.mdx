@@ -6,10 +6,10 @@ The **Read XML from File** node is designed to load the contents of an XML file 
 
 ## Configuration Options
 
-| Field Name         | Description                                               | Input Type | Required? | Default Value    |
-| ------------------ | --------------------------------------------------------- | ---------- | --------- | ---------------- |
-| **File Path**      | The location of the XML file you wish to read.            | Text       | Yes       | _(empty)_        |
-| **Encoding Type**  | The character encoding standard to use for reading the file. | Select     | No        | System Default   |
+| Field Name        | Description                                                  | Input Type | Required? | Default Value  |
+| ----------------- | ------------------------------------------------------------ | ---------- | --------- | -------------- |
+| **File Path**     | The location of the XML file you wish to read.               | Text       | Yes       | _(empty)_      |
+| **Encoding Type** | The character encoding standard to use for reading the file. | Select     | No        | System Default |
 
 ## Expected Output Format
 
@@ -40,26 +40,28 @@ If necessary, choose the **Encoding Type** from the dropdown menu according to t
 ### Step 4
 
 After setting the fields, the XML document will be read and loaded into the **XmlDocument** variable available for further processing.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  If unsure, try using "System Default" for **Encoding Type** first. This option will automatically handle the typical scenarios for file reading.
+  If unsure, try using "System Default" for **Encoding Type** first. This option
+  will automatically handle the typical scenarios for file reading.
 </Callout>
 
 ## Input/Output Examples
 
-| File Path          | Encoding Type | Output Variable    | Output Type        |
-| ------------------ | ------------- | ------------------ | ------------------ |
-| `/path/to/file.xml` | UTF-8         | XmlDocument        | XmlDocument Object |
+| File Path           | Encoding Type | Output Variable | Output Type        |
+| ------------------- | ------------- | --------------- | ------------------ |
+| `/path/to/file.xml` | UTF-8         | XmlDocument     | XmlDocument Object |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                              | Solution                                                                                   |
-| ------------------------------------ | ------------------------------------------------------------------------------------------ |
-| **File Not Found Error**             | Ensure the **File Path** is correct and the file is accessible.                             |
-| **Incorrect Encoding**               | Double-check the **Encoding Type** if you face issues with character display errors.        |
-| **Failed to Load XML Document**      | Ensure the XML file is not corrupted and is a valid XML format.                             |
-| **Encoding Type Field Missing**      | The field is optional. It will not appear if you do not select an alternate encoding type. |
+| Problem                         | Solution                                                                                   |
+| ------------------------------- | ------------------------------------------------------------------------------------------ |
+| **File Not Found Error**        | Ensure the **File Path** is correct and the file is accessible.                            |
+| **Incorrect Encoding**          | Double-check the **Encoding Type** if you face issues with character display errors.       |
+| **Failed to Load XML Document** | Ensure the XML file is not corrupted and is a valid XML format.                            |
+| **Encoding Type Field Missing** | The field is optional. It will not appear if you do not select an alternate encoding type. |
 
 ## Real-World Use Cases
 

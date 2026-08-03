@@ -5,16 +5,17 @@ import { Callout, Steps } from "nextra/components";
 The **Stop Service** node allows you to halt a specific Windows service that is currently running on your desktop. This can be particularly useful for managing system resources, stopping non-essential services, or troubleshooting issues related to running services on your Windows system.
 
 For example:
+
 - Stopping a non-critical service to free system resources.
 - Halting services before performing system maintenance.
 - Managing services for network or server management purposes.
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                     | Input Type | Required? | Default Value |
-| ------------------------ | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Service to Stop**      | Select the service you want to stop from a predefined list of known Windows services.           | Select     | Yes       | _(empty)_     |
-| **Custom Service Name**  | Enter a custom service name if the desired service is not listed in the Service to Stop field. | Text       | No        | _(empty)_     |
+| Field Name              | Description                                                                                    | Input Type | Required? | Default Value |
+| ----------------------- | ---------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Service to Stop**     | Select the service you want to stop from a predefined list of known Windows services.          | Select     | Yes       | _(empty)_     |
+| **Custom Service Name** | Enter a custom service name if the desired service is not listed in the Service to Stop field. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -42,16 +43,17 @@ Verify your selections and proceed with executing the flow that contains this no
 </Steps>
 
 <Callout type="info" title="Tip">
-  Use the **Custom Service Name** field only when the desired service is not found in the dropdown options to ensure accuracy.
+  Use the **Custom Service Name** field only when the desired service is not
+  found in the dropdown options to ensure accuracy.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                      | Solution                                                                                          |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| **Service not stopping**                                     | Ensure the service name is spelled correctly. Also, check if you have proper permissions to stop it. |
-| **Custom Service Name entered but service still running**    | Double-check the exact service name if entered manually. Only valid service names will work.      |
-| **Selected service does not appear to have stopped**         | Confirm that the service is not dependent on another running service or required by the system.   |
+| Problem                                                   | Solution                                                                                             |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Service not stopping**                                  | Ensure the service name is spelled correctly. Also, check if you have proper permissions to stop it. |
+| **Custom Service Name entered but service still running** | Double-check the exact service name if entered manually. Only valid service names will work.         |
+| **Selected service does not appear to have stopped**      | Confirm that the service is not dependent on another running service or required by the system.      |
 
 ## Real-World Use Cases
 

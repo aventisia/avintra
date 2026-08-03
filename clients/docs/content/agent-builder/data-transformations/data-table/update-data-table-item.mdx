@@ -5,18 +5,19 @@ import { Callout, Steps } from "nextra/components";
 The **Update Data Table Item** node allows you to change the content of a specific cell in a data table. By providing the column name, row identifier, and a new value, you can directly update information in your table. This node is useful when you need to modify existing data without manually editing each entry.
 
 For example, you might use this to:
+
 - Correct errors in your data set.
 - Update pricing or stock information in a product inventory.
 - Change user details in a list of contacts.
 
 ## Configuration Options
 
-| Field Name    | Description                                                                         | Input Type | Required? | Default Value |
-| ------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Data Table**| The DataTable containing the data to be updated.                                    | Text       | Yes       | _(empty)_     |
-| **Column**    | The name of the column where the update should occur.                               | Text       | Yes       | _(empty)_     |
-| **Row**       | The row index or primary key value of the row to update.                            | Text       | Yes       | _(empty)_     |
-| **New Value** | The new value to set for the specified cell.                                        | Text       | Yes       | _(empty)_     |
+| Field Name     | Description                                              | Input Type | Required? | Default Value |
+| -------------- | -------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table** | The DataTable containing the data to be updated.         | Text       | Yes       | _(empty)_     |
+| **Column**     | The name of the column where the update should occur.    | Text       | Yes       | _(empty)_     |
+| **Row**        | The row index or primary key value of the row to update. | Text       | Yes       | _(empty)_     |
+| **New Value**  | The new value to set for the specified cell.             | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -55,23 +56,24 @@ Once all fields are filled out, the system will update the Data Table, providing
 </Steps>
 
 <Callout type="info" title="Important">
-  Ensure that the column name and row identifier you enter match exactly with those in your Data Table to avoid errors.
+  Ensure that the column name and row identifier you enter match exactly with
+  those in your Data Table to avoid errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Data Table Name | Column     | Row | New Value | Resulting Data Table |
-|-----------------|------------|-----|-----------|----------------------|
-| EmployeeData    | Last Name  | 105 | Smith     | ModifiedDataTable    |
-| ProductCatalog  | Price      | SKU123 | 19.99  | ModifiedDataTable    |
+| Data Table Name | Column    | Row    | New Value | Resulting Data Table |
+| --------------- | --------- | ------ | --------- | -------------------- |
+| EmployeeData    | Last Name | 105    | Smith     | ModifiedDataTable    |
+| ProductCatalog  | Price     | SKU123 | 19.99     | ModifiedDataTable    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                                                                           |
-|--------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Incorrect Column/Row Name**                          | Double-check the spelling and case of your column and row names. They must match exactly with those in your Data Table.                                                                  |
-| **Empty New Value Field**                              | Ensure a new value is entered for the update. The field cannot be left blank.                                                                      |
-| **Data Table Not Found**                               | Verify that the Data Table specified exists in your current session and is correctly spelled.                                                      |
+| Problem                       | Solution                                                                                                                |
+| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| **Incorrect Column/Row Name** | Double-check the spelling and case of your column and row names. They must match exactly with those in your Data Table. |
+| **Empty New Value Field**     | Ensure a new value is entered for the update. The field cannot be left blank.                                           |
+| **Data Table Not Found**      | Verify that the Data Table specified exists in your current session and is correctly spelled.                           |
 
 ## Real-World Use Cases
 

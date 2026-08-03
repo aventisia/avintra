@@ -11,9 +11,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name  | Description                                          | Input Type | Required? | Default Value |
-| ----------- | ---------------------------------------------------- | ---------- | --------- | ------------- |
-| **SessionId** | The session ID of the terminal session you want to close. | Text       | Yes       | _(empty)_      |
+| Field Name    | Description                                               | Input Type | Required? | Default Value |
+| ------------- | --------------------------------------------------------- | ---------- | --------- | ------------- |
+| **SessionId** | The session ID of the terminal session you want to close. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -37,15 +37,16 @@ Complete the flow by connecting the **Close Terminal Session** node with other n
 </Steps>
 
 <Callout type="info" title="Tip">
-  Make sure you have the correct session ID to avoid accidentally closing the wrong terminal session, which could interrupt active processes.
+  Make sure you have the correct session ID to avoid accidentally closing the
+  wrong terminal session, which could interrupt active processes.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                   | Solution                                                                                        |
-| ----------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **Invalid Session ID**                    | Verify that the session ID entered in the **SessionId** field is correct. Re-check any potential typos. |
-| **Session Not Closing**                   | Ensure that the session is actually active and that the session ID corresponds to an open terminal. |
+| Problem                 | Solution                                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Invalid Session ID**  | Verify that the session ID entered in the **SessionId** field is correct. Re-check any potential typos. |
+| **Session Not Closing** | Ensure that the session is actually active and that the session ID corresponds to an open terminal.     |
 
 ## Real-World Use Cases
 

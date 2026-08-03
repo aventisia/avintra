@@ -1,10 +1,11 @@
-import { ZOOM_ANIMATION_DURATION } from "@/constants";
-import { cn } from "@avplatform/ui/lib";
-import { IconProps } from "@avplatform/ui/types";
 import { Button } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
+import { IconProps } from "@avplatform/ui/types";
 import { useReactFlow } from "@xyflow/react";
 import { useCallback } from "react";
+
+import { ZOOM_ANIMATION_DURATION } from "@/constants";
 
 interface VCActionButtonProps {
   action: "fitView" | "zoomIn" | "zoomOut";
@@ -42,12 +43,7 @@ export const VCActionButton = ({ action, Icon }: VCActionButtonProps) => {
   // Render action button
   return (
     <Tooltip content={tooltips[action]} side="right">
-      <Button
-        size="icon6"
-        className={cn("rounded-md")}
-        variant={"ghost"}
-        onClick={actionHandler}
-      >
+      <Button size="icon6" className={cn("rounded-md")} variant={"ghost"} onClick={actionHandler}>
         <Icon className="h-4 w-4 text-[--icon-color]" />
       </Button>
     </Tooltip>

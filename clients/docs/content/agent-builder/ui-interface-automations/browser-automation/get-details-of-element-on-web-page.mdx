@@ -6,14 +6,14 @@ The **Get Details of Element on Web Page** node allows you to retrieve the value
 
 ## Configuration Options
 
-| Field Name            | Description                                                                                                                                  | Input Type | Required? | Default Value  |
-|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------|------------|-----------|----------------|
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                                           | Text       | Yes       | _(empty)_      |
-| **Find Type**         | Specifies how to find the element (e.g., XPath, ID, CSS Selector).                                                                           | Select     | Yes       | XPath          |
-| **Value To Find**     | The value used to locate the element (such as `username`, or XPath expression `//input[@id='email']`).                                        | Text       | Yes       | _(empty)_      |
-| **Attribute Name**    | The name of the attribute whose value should be retrieved. Use 'Text' to get the inner text.                                                  | Text       | Yes       | Text           |
-| **Wait for Element**  | If true, waits for the element to appear before getting the attribute value.                                                                  | Switch     | No        | _(empty)_      |
-| **Timeout Seconds**   | Maximum time in seconds to wait for the element before the operation fails.                                                                   | Text       | No        | 60             |
+| Field Name               | Description                                                                                            | Input Type | Required? | Default Value |
+| ------------------------ | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                      | Text       | Yes       | _(empty)_     |
+| **Find Type**            | Specifies how to find the element (e.g., XPath, ID, CSS Selector).                                     | Select     | Yes       | XPath         |
+| **Value To Find**        | The value used to locate the element (such as `username`, or XPath expression `//input[@id='email']`). | Text       | Yes       | _(empty)_     |
+| **Attribute Name**       | The name of the attribute whose value should be retrieved. Use 'Text' to get the inner text.           | Text       | Yes       | Text          |
+| **Wait for Element**     | If true, waits for the element to appear before getting the attribute value.                           | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for the element before the operation fails.                            | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -55,27 +55,29 @@ Input the **Attribute Name** you wish to extract from the element, like 'Text' f
 ### Step 8
 
 Retrieve the attribute value as **AttributeValueOutput** in your subsequent nodes.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure your browser instance is active and pointing to the correct webpage where the element exists before using this node.
+  Ensure your browser instance is active and pointing to the correct webpage
+  where the element exists before using this node.
 </Callout>
 
 ## Input/Output Examples
 
-| Find Type | Value To Find           | Attribute Name | Input Example         | Output Value               | Output Type |
-|-----------|-------------------------|----------------|-----------------------|----------------------------|-------------|
-| XPath     | `//input[@id='username']` | Text           | `Username field XPath` | "JohnDoe"                  | String      |
-| CssSelector | `#submit-button`       | Title          | `Button color`        | "Submit your application"  | String      |
+| Find Type   | Value To Find             | Attribute Name | Input Example          | Output Value              | Output Type |
+| ----------- | ------------------------- | -------------- | ---------------------- | ------------------------- | ----------- |
+| XPath       | `//input[@id='username']` | Text           | `Username field XPath` | "JohnDoe"                 | String      |
+| CssSelector | `#submit-button`          | Title          | `Button color`         | "Submit your application" | String      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                            | Solution                                                                                                                                              |
-|------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Element not found error**        | Verify the page is fully loaded and the Find Type and Value To Find are correct.                                                                      |
-| **Attribute value is empty**       | Ensure the Attribute Name is correctly entered and exists on the element.                                                                             |
-| **Timeout not effective**          | Check that the Wait for Element switch is enabled and the Timeout Seconds is appropriately set for the webpage load time.                             |
-| **Browser instance error**         | Confirm the correct browser instance is open and corresponds to the Web Browser Instance variable used in the node configuration.                      |
+| Problem                      | Solution                                                                                                                          |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Element not found error**  | Verify the page is fully loaded and the Find Type and Value To Find are correct.                                                  |
+| **Attribute value is empty** | Ensure the Attribute Name is correctly entered and exists on the element.                                                         |
+| **Timeout not effective**    | Check that the Wait for Element switch is enabled and the Timeout Seconds is appropriately set for the webpage load time.         |
+| **Browser instance error**   | Confirm the correct browser instance is open and corresponds to the Web Browser Instance variable used in the node configuration. |
 
 ## Real-World Use Cases
 

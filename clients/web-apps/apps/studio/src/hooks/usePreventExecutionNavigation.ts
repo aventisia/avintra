@@ -6,8 +6,7 @@ import { useBlocker } from "react-router-dom";
 const EXECUTION_WARNING_MSG =
   "Agent execution is in progress. Please stop the execution or wait for it to complete.";
 
-const UNSAVED_WARNING_MSG =
-  "Changes you made may not be saved. Are you sure you want to leave?";
+const UNSAVED_WARNING_MSG = "Changes you made may not be saved. Are you sure you want to leave?";
 
 interface UseNavigationGuardProps {
   /** True if the React Flow canvas has unsaved changes */
@@ -118,10 +117,7 @@ export const usePreventNavigation = ({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (IS_TAURI && isExecutingRef.current) {
-        if (
-          e.key === "F5" ||
-          (e.key.toLowerCase() === "r" && (e.ctrlKey || e.metaKey))
-        ) {
+        if (e.key === "F5" || (e.key.toLowerCase() === "r" && (e.ctrlKey || e.metaKey))) {
           e.preventDefault();
           triggerSafeAlert();
         }

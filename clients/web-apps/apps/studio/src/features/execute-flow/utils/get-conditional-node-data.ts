@@ -1,6 +1,8 @@
+import { Node } from "@xyflow/react";
+
 import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
 import { NodeInputType } from "@/types/node-data-type";
-import { Node } from "@xyflow/react";
+
 import { ConditionalNodeData } from "..";
 
 export function getConditionNodeData(
@@ -14,8 +16,7 @@ export function getConditionNodeData(
   return {
     id: nodeObj?.id ?? "",
     conditionalMode:
-      conditionalModeInput?.value === "SwitchCase" ||
-      conditionalModeInput?.value === "NestedIfElse"
+      conditionalModeInput?.value === "SwitchCase" || conditionalModeInput?.value === "NestedIfElse"
         ? conditionalModeInput.value
         : "SwitchCase",
     branches: nodeObj?.data?.branches ?? [],

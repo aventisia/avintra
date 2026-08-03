@@ -19,11 +19,7 @@ interface PromptConfigFieldProps {
   disabled?: boolean;
 }
 
-const PromptConfigField = ({
-  name,
-  rows,
-  disabled,
-}: PromptConfigFieldProps) => {
+const PromptConfigField = ({ name, rows, disabled }: PromptConfigFieldProps) => {
   const { control, setValue, getValues } = useFormContext();
 
   const { field: promptField } = useController({
@@ -52,17 +48,11 @@ const PromptConfigField = ({
   const applyTemplate = (schema: PromptTemplateSchema) => {
     const formValues = getValues();
 
-    const promptKey = Object.keys(formValues).find((key) =>
-      key.startsWith("__Prompt__"),
-    );
+    const promptKey = Object.keys(formValues).find((key) => key.startsWith("__Prompt__"));
 
-    const modelConfigKey = Object.keys(formValues).find((key) =>
-      key.startsWith("__ModelConfig__"),
-    );
+    const modelConfigKey = Object.keys(formValues).find((key) => key.startsWith("__ModelConfig__"));
 
-    const toolsConfigKey = Object.keys(formValues).find((key) =>
-      key.startsWith("__ToolsConfig__"),
-    );
+    const toolsConfigKey = Object.keys(formValues).find((key) => key.startsWith("__ToolsConfig__"));
 
     if (promptKey && schema.prompt !== undefined) {
       setValue(promptKey, schema.prompt, {
@@ -77,9 +67,7 @@ const PromptConfigField = ({
           ...formValues[modelConfigKey],
           ...schema.modelConfig,
           is_json_output:
-            name === "__Prompt__Conversation"
-              ? false
-              : schema.modelConfig.is_json_output,
+            name === "__Prompt__Conversation" ? false : schema.modelConfig.is_json_output,
         },
         {
           shouldDirty: true,
@@ -106,9 +94,7 @@ const PromptConfigField = ({
     let parsedSchema: PromptTemplateSchema;
 
     try {
-      parsedSchema = JSON.parse(
-        selectedTemplateData.schema,
-      ) as PromptTemplateSchema;
+      parsedSchema = JSON.parse(selectedTemplateData.schema) as PromptTemplateSchema;
     } catch {
       return;
     }
@@ -123,8 +109,7 @@ const PromptConfigField = ({
     if (promptField.value) {
       showCustomAlertDialog({
         title: "Use Prompt Template",
-        description:
-          "This will replace the existing prompt content and model configurations.",
+        description: "This will replace the existing prompt content and model configurations.",
         confirmBtnText: "Continue",
         isDestructive: false,
         confirmActionFn: executeApply,
@@ -135,14 +120,13 @@ const PromptConfigField = ({
 
     executeApply();
   };
-  const { setShowDialog, setFormData, setTemplateId } =
-    useSavePromptTemplateStore(
-      useShallow((state) => ({
-        setShowDialog: state.setShowDialog,
-        setFormData: state.setFormData,
-        setTemplateId: state.setTemplateId,
-      })),
-    );
+  const { setShowDialog, setFormData, setTemplateId } = useSavePromptTemplateStore(
+    useShallow((state) => ({
+      setShowDialog: state.setShowDialog,
+      setFormData: state.setFormData,
+      setTemplateId: state.setTemplateId,
+    })),
+  );
 
   return (
     <div className="w-full">

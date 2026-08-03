@@ -1,10 +1,3 @@
-import { InputHandle } from "@/components/handles/InputHandle";
-import { OutputHandle } from "@/components/handles/OutputHandle";
-import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
-import { useAddConditionalBranch } from "@/hooks/useAddConditionalBranch";
-import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
-
 import { Button } from "@avplatform/ui/buttons";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
@@ -12,18 +5,19 @@ import { PlusIcon } from "@heroicons/react/24/outline";
 import { Node, NodeProps, NodeToolbar, Position } from "@xyflow/react";
 import { memo } from "react";
 
+import { InputHandle } from "@/components/handles/InputHandle";
+import { OutputHandle } from "@/components/handles/OutputHandle";
+import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
+import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
+import { useAddConditionalBranch } from "@/hooks/useAddConditionalBranch";
+import { ConditionalNodeDataType } from "@/types/conditional-node-data-type";
+
 import BaseNode from "./BaseNode";
 
 type ConditionalNode = Node<ConditionalNodeDataType, "conditionalNode">;
 
 export const ConditionalNode = memo(
-  ({
-    id,
-    data,
-    selected,
-    sourcePosition,
-    targetPosition,
-  }: NodeProps<ConditionalNode>) => {
+  ({ id, data, selected, sourcePosition, targetPosition }: NodeProps<ConditionalNode>) => {
     // Get add switch case branch hook
     const addConditionalBranch = useAddConditionalBranch();
 

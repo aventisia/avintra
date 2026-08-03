@@ -1,6 +1,5 @@
-import { axiosInstance } from "@avplatform/ui/lib";
-
 import { IHttpResponse } from "@avplatform/ui/dtos";
+import { axiosInstance } from "@avplatform/ui/lib";
 
 import { JobExecutionLogDetailDto } from "../dtos/job-execution-log-details-dto";
 import { JobExecutionLogDto } from "../dtos/job-execution-log-dto";
@@ -12,9 +11,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/job-execu
  */
 const getAgentsExecutionLogs = (flowVersionId: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<JobExecutionLogDto[]>
-    >(`${baseAPIURL}/list/${flowVersionId}`)
+    .get<IHttpResponse<JobExecutionLogDto[]>>(`${baseAPIURL}/list/${flowVersionId}`)
     .then((res) => res.data);
 };
 
@@ -23,9 +20,7 @@ const getAgentsExecutionLogs = (flowVersionId: string) => {
  */
 const getAgentsExecutionLogsById = (jobId: string) => {
   return axiosInstance
-    .get<
-      IHttpResponse<JobExecutionLogDetailDto>
-    >(`${baseAPIURL}/detail/${jobId}`)
+    .get<IHttpResponse<JobExecutionLogDetailDto>>(`${baseAPIURL}/detail/${jobId}`)
     .then((res) => res.data);
 };
 

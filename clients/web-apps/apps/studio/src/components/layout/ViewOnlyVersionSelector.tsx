@@ -19,9 +19,7 @@ function ViewOnlyVersionSelector() {
       disabled
     >
       <span>v{versionNumber} </span>
-      <ChevronDownIcon
-        className={"h-3 w-3 min-w-3 transition-all group-hover:mt-0.5"}
-      />
+      <ChevronDownIcon className={"h-3 w-3 min-w-3 transition-all group-hover:mt-0.5"} />
     </Button>
   );
 }

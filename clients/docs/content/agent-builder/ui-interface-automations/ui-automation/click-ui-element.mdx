@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name                  | Description                                                                       | Input Type | Required? | Default Value       |
-| --------------------------- | --------------------------------------------------------------------------------- | ---------- | --------- | ------------------- |
-| **UI Element**              | The UI element which you would like to click.                                     | Text       | Yes       | _(empty)_           |
-| **Click Type**              | Type of click: UIAutomationClick or MouseClick.                                   | Select     | No        | UIAutomationClick   |
-| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds).                         | Text       | No        | 5                   |
+| Field Name                  | Description                                               | Input Type | Required? | Default Value     |
+| --------------------------- | --------------------------------------------------------- | ---------- | --------- | ----------------- |
+| **UI Element**              | The UI element which you would like to click.             | Text       | Yes       | _(empty)_         |
+| **Click Type**              | Type of click: UIAutomationClick or MouseClick.           | Select     | No        | UIAutomationClick |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element (in seconds). | Text       | No        | 5                 |
 
 ## Expected Output Format
 
@@ -54,23 +54,24 @@ The node will provide an output labeled **Button Clicked Successfully**. Use thi
 </Steps>
 
 <Callout type="info" title="Tip">
-  Always try to use **UI Automation Click** for more reliable element interaction, especially when dealing with complex UI structures.
+  Always try to use **UI Automation Click** for more reliable element
+  interaction, especially when dealing with complex UI structures.
 </Callout>
 
 ## Input/Output Examples
 
-| UI Element   | Click Type             | Max Wait Time | Output Value | Output Explanation                               |
-| ------------ | ---------------------- | ------------- | ------------ | ----------------------------------------------- |
-| loginButton  | UIAutomationClick      | 5             | true         | The "loginButton" element was clicked successfully. |
-| submitButton | MouseClick             | 10            | false        | The "submitButton" element could not be clicked in the given time. |
+| UI Element   | Click Type        | Max Wait Time | Output Value | Output Explanation                                                 |
+| ------------ | ----------------- | ------------- | ------------ | ------------------------------------------------------------------ |
+| loginButton  | UIAutomationClick | 5             | true         | The "loginButton" element was clicked successfully.                |
+| submitButton | MouseClick        | 10            | false        | The "submitButton" element could not be clicked in the given time. |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                                                                  |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **UI Element not found within wait time**       | Increase the **Max Wait Time** or ensure the UI element's identification path is correct.                                                                                 |
-| **Click operation has no effect on UI**         | Check if the element is visible and enabled. If not, ensure conditions meet those pre-requisites before trying the click operation.                                        |
-| **UI Automation Click fails on complex UI**     | Try switching to **Mouse Click**, especially in scenarios where UI elements are embedded deeply or require a more direct click interaction.                                |
+| Problem                                     | Solution                                                                                                                                    |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| **UI Element not found within wait time**   | Increase the **Max Wait Time** or ensure the UI element's identification path is correct.                                                   |
+| **Click operation has no effect on UI**     | Check if the element is visible and enabled. If not, ensure conditions meet those pre-requisites before trying the click operation.         |
+| **UI Automation Click fails on complex UI** | Try switching to **Mouse Click**, especially in scenarios where UI elements are embedded deeply or require a more direct click interaction. |
 
 ## Real-World Use Cases
 

@@ -16,24 +16,18 @@ import { NodeConfigSchemaType } from "../types/node-config-schema-type";
 
 export const useDefineDCPForm = () => {
   // Get node unique name state (required to get config panel data)
-  const {
-    nodeId,
-    nodeData,
-    nodeLabel,
-    setShowDialog,
-    selectedTab,
-    setSelectedTab,
-  } = useDynamicConfigPanelStore(
-    useShallow((state) => ({
-      nodeId: state.nodeId,
-      nodeData: state.nodeData,
-      nodeLabel: state.nodeLabel,
-      setShowDialog: state.setShowDialog,
+  const { nodeId, nodeData, nodeLabel, setShowDialog, selectedTab, setSelectedTab } =
+    useDynamicConfigPanelStore(
+      useShallow((state) => ({
+        nodeId: state.nodeId,
+        nodeData: state.nodeData,
+        nodeLabel: state.nodeLabel,
+        setShowDialog: state.setShowDialog,
 
-      selectedTab: state.selectedTab,
-      setSelectedTab: state.setSelectedTab,
-    })),
-  );
+        selectedTab: state.selectedTab,
+        setSelectedTab: state.setSelectedTab,
+      })),
+    );
 
   // Get name (activityName), inputs and outputs from nodeData
   const nodeUniqueName = nodeData?.name ?? "activityName";
@@ -61,9 +55,7 @@ export const useDefineDCPForm = () => {
 
     setIsLoading(true);
 
-    const getErrorFieldJson = (
-      errorHandling?: string,
-    ): DCPFieldSchemaType[] => {
+    const getErrorFieldJson = (errorHandling?: string): DCPFieldSchemaType[] => {
       if (errorHandling == "standard") return onErrorFieldsJson;
       //TODO: Add other errorFieldsJson if more
       else return [];
@@ -75,10 +67,7 @@ export const useDefineDCPForm = () => {
         if (config) {
           const updatedConfig = {
             ...config,
-            fields: [
-              ...config.fields,
-              ...getErrorFieldJson(config?.errorHandling),
-            ],
+            fields: [...config.fields, ...getErrorFieldJson(config?.errorHandling)],
           };
 
           setNodeConfig(updatedConfig);
@@ -106,21 +95,14 @@ export const useDefineDCPForm = () => {
 
   // Reset form values when nodeConfig or inputs/outputs change
   useEffect(() => {
-    if (
-      nodeConfig.fields.length > 0 &&
-      Object.keys(nodeConfigZodSchema.shape).length > 0
-    ) {
+    if (nodeConfig.fields.length > 0 && Object.keys(nodeConfigZodSchema.shape).length > 0) {
       form.reset(getDefaultValuesForForm(nodeConfig.fields, inputs, outputs));
       setIsFormReady(true); // Set form ready to true after resetting the form
     }
 
     // generate tabs list form fields category
     const uniqueTabKeys = [
-      ...new Set(
-        nodeConfig.fields?.map(
-          (item) => (item?.category ?? "Inputs") as string,
-        ),
-      ),
+      ...new Set(nodeConfig.fields?.map((item) => (item?.category ?? "Inputs") as string)),
     ].filter(Boolean);
 
     // Move "Inputs" to the front if it exists

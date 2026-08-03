@@ -21,8 +21,7 @@ import { getCredSelectOptions } from "../../apis/app-secret-apis.ts";
 import { CredSelectDto } from "../../dtos/cred-select-dto.ts.ts";
 
 interface CredentialsSelectFieldProps
-  extends React.ComponentPropsWithoutRef<typeof SelectTrigger>,
-    BaseFieldProps {
+  extends React.ComponentPropsWithoutRef<typeof SelectTrigger>, BaseFieldProps {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
 
@@ -59,9 +58,7 @@ const CredentialsSelectField = ({
 
     // Fetch credential_id list. Note: Every credential-field should have name ending with 'Credential'
     getCredSelectOptions(
-      name.includes("credential_id")
-        ? modelProvider
-        : name.replace("__CredentialId__", ""),
+      name.includes("credential_id") ? modelProvider : name.replace("__CredentialId__", ""),
     )
       .then((data) => {
         setSelectOptions(data?.data);
@@ -80,9 +77,7 @@ const CredentialsSelectField = ({
         render={({ field }) => (
           <FormItem {...{ size }}>
             {label && (
-              <FormLabelExt
-                {...{ size, label, disabled, isRequired, description }}
-              ></FormLabelExt>
+              <FormLabelExt {...{ size, label, disabled, isRequired, description }}></FormLabelExt>
             )}
             <FormControl>
               <div className="flex flex-col gap-2">
@@ -92,12 +87,7 @@ const CredentialsSelectField = ({
                   defaultValue={field.value}
                   value={field.value}
                 >
-                  <SelectTrigger
-                    size={size}
-                    {...field}
-                    ref={field.ref}
-                    {...props}
-                  >
+                  <SelectTrigger size={size} {...field} ref={field.ref} {...props}>
                     <SelectValue
                       className="placeholder:text-muted-foreground"
                       placeholder={placeholder ?? "Select credential"}
@@ -118,11 +108,7 @@ const CredentialsSelectField = ({
                       </div>
                     ) : (
                       selectOptions.map((item) => (
-                        <SelectItem
-                          size={size}
-                          key={item.value}
-                          value={item.value}
-                        >
+                        <SelectItem size={size} key={item.value} value={item.value}>
                           {item.label}
                         </SelectItem>
                       ))

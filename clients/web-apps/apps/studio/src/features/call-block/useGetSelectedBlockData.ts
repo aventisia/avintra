@@ -1,6 +1,6 @@
-import { SearchFlowVersionResDto } from "@/dtos/search-flow-version-res-dto";
-
 import { useReactFlow } from "@xyflow/react";
+
+import { SearchFlowVersionResDto } from "@/dtos/search-flow-version-res-dto";
 
 export type SelectedCallBlock = Pick<
   SearchFlowVersionResDto,
@@ -18,9 +18,7 @@ export const useGetSelectedBlockData = () => {
    */
   const getSelectedBlockData = (nodeId: string): SelectedCallBlock | null => {
     const node = getNode(nodeId);
-    const selectedBlock = node?.data?.selectedBlock as
-      | Partial<SelectedCallBlock>
-      | undefined;
+    const selectedBlock = node?.data?.selectedBlock as Partial<SelectedCallBlock> | undefined;
 
     if (
       selectedBlock &&

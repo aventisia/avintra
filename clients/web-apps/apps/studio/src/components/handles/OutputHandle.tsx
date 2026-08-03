@@ -1,5 +1,4 @@
 import { cn } from "@avplatform/ui/lib";
-
 import { Handle, Position, useNodeConnections } from "@xyflow/react";
 
 interface OutputHandleProps {

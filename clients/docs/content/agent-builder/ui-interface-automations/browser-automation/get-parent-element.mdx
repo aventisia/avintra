@@ -5,19 +5,20 @@ import { Callout, Steps } from "nextra/components";
 The **Get Parent Element** node helps you find and retrieve the parent element of a specified web element within a web browser. This is particularly useful when you need to navigate upwards in the DOM (Document Object Model) hierarchy to manipulate or examine parent elements for tasks like web scraping, form analysis, or dynamic web page interaction.
 
 For example:
+
 - Locating a parent form element from an input field.
 - Identifying the container element of a button.
 - Navigating the web page structure without knowing the exact parent structure in advance.
 
 ## Configuration Options
 
-| Field Name            | Description                                                                                                                    | Input Type | Required? | Default Value |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with.                                           | Text       | Yes       | _(empty)_     |
-| **Find Type**           | Specifies how to find the element (e.g., ID, XPath, CssSelector).                                                           | Select     | Yes       | XPath        |
-| **Value To Find**       | The value used to locate the element (e.g., `username`, `//input[@id='email']`).                                            | Text       | Yes       | _(empty)_    |
-| **Wait For Element**    | If true, waits for the element to appear before retrieving its parent.                                                       | Switch     | No        | _(empty)_    |
-| **Timeout Seconds**     | Maximum time in seconds to wait for the element before failing.                                                              | Text       | No        | 60           |
+| Field Name               | Description                                                                       | Input Type | Required? | Default Value |
+| ------------------------ | --------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance** | Enter or choose the variable that contains the web browser instance to work with. | Text       | Yes       | _(empty)_     |
+| **Find Type**            | Specifies how to find the element (e.g., ID, XPath, CssSelector).                 | Select     | Yes       | XPath         |
+| **Value To Find**        | The value used to locate the element (e.g., `username`, `//input[@id='email']`).  | Text       | Yes       | _(empty)_     |
+| **Wait For Element**     | If true, waits for the element to appear before retrieving its parent.            | Switch     | No        | _(empty)_     |
+| **Timeout Seconds**      | Maximum time in seconds to wait for the element before failing.                   | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -61,24 +62,25 @@ The parent element will be accessible as **ParentElement**, which can be used in
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the web page and element are fully loaded in your browser before attempting to retrieve the parent element to avoid any identification issues.
+  Ensure that the web page and element are fully loaded in your browser before
+  attempting to retrieve the parent element to avoid any identification issues.
 </Callout>
 
 ## Input/Output Examples
 
-| Find Type          | Value To Find                         | Wait For Element | Timeout Seconds | Output Type    |
-| ------------------ | ------------------------------------- | ---------------- | --------------- | -------------- |
-| XPath              | //input[@id='email']                  | true             | 30              | IWebElement    |
-| ID                 | usernameField                         | false            | _(default 60)_  | IWebElement    |
-| Css Selector       | div.container                         | true             | 45              | IWebElement    |
+| Find Type    | Value To Find        | Wait For Element | Timeout Seconds | Output Type |
+| ------------ | -------------------- | ---------------- | --------------- | ----------- |
+| XPath        | //input[@id='email'] | true             | 30              | IWebElement |
+| ID           | usernameField        | false            | _(default 60)_  | IWebElement |
+| Css Selector | div.container        | true             | 45              | IWebElement |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                                             |
-| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| **Element not found**                                     | Double-check the **Find Type** and **Value To Find** for accuracy and ensure that the element is visible on the page. |
-| **Timeout occurred**                                      | Increase the **Timeout Seconds** field if the web page or element takes longer to load.                               |
-| **Incorrect browser instance**                            | Make sure the correct browser instance variable is selected in **Web Browser Instance**.                              |
+| Problem                        | Solution                                                                                                              |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| **Element not found**          | Double-check the **Find Type** and **Value To Find** for accuracy and ensure that the element is visible on the page. |
+| **Timeout occurred**           | Increase the **Timeout Seconds** field if the web page or element takes longer to load.                               |
+| **Incorrect browser instance** | Make sure the correct browser instance variable is selected in **Web Browser Instance**.                              |
 
 ## Real-World Use Cases
 

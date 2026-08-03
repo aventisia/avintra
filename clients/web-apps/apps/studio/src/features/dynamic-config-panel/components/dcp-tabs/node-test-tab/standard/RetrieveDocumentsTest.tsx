@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+
 import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 import JsonViewerSkeleton from "@/components/json-viewer/JsonViewerSkeleton";
 import { VectorStoreQueryRequestDto } from "@/features/dynamic-config-panel/apis/vector-store-apis";
@@ -6,9 +9,6 @@ import { useRetrieveChunksMutation } from "@/features/dynamic-config-panel/hooks
 import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { ModelConfigType } from "@/types/model-config-type";
-
-import { useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
 
 interface Props {
   formData: Record<string, unknown>;
@@ -25,9 +25,7 @@ const RetrieveDocumentsTest = ({ formData }: Props) => {
   );
 
   /* Helper to parse comma separated values */
-  function parseCommaSeparatedValues(
-    value?: string | null,
-  ): string[] | undefined {
+  function parseCommaSeparatedValues(value?: string | null): string[] | undefined {
     // Stop if empty
     if (!value?.trim()) return undefined;
 
@@ -87,10 +85,7 @@ const RetrieveDocumentsTest = ({ formData }: Props) => {
       /*Search filter type         */
 
       const searchFilterType = formData.searchFilterType as
-        | "none"
-        | "documentNames"
-        | "knowledgeBaseNames"
-        | "both";
+        "none" | "documentNames" | "knowledgeBaseNames" | "both";
 
       /*   Base payload            */
 
@@ -131,21 +126,14 @@ const RetrieveDocumentsTest = ({ formData }: Props) => {
 
       /* Knowledge base filters */
 
-      if (
-        searchFilterType === "knowledgeBaseNames" ||
-        searchFilterType === "both"
-      ) {
-        payload.kb_names = parseCommaSeparatedValues(
-          formData.knowledgeBaseNames as string,
-        );
+      if (searchFilterType === "knowledgeBaseNames" || searchFilterType === "both") {
+        payload.kb_names = parseCommaSeparatedValues(formData.knowledgeBaseNames as string);
       }
 
       /* Document filters */
 
       if (searchFilterType === "documentNames" || searchFilterType === "both") {
-        payload.doc_names = parseCommaSeparatedValues(
-          formData.documentNames as string,
-        );
+        payload.doc_names = parseCommaSeparatedValues(formData.documentNames as string);
       }
 
       /*  Final payload ready  */
@@ -191,10 +179,7 @@ const RetrieveDocumentsTest = ({ formData }: Props) => {
         ) : (
           /* API response viewer */
 
-          <JsonViewer
-            jsonData={JSON.stringify(data ?? {}, null, 2)}
-            className="h-[70vh]"
-          />
+          <JsonViewer jsonData={JSON.stringify(data ?? {}, null, 2)} className="h-[70vh]" />
         )}
       </div>
     </DCPTabsContent>

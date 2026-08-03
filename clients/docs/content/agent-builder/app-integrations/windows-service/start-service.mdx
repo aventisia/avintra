@@ -6,10 +6,10 @@ The **Start Service** node allows you to conveniently start a Windows service th
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                      | Input Type | Required? | Default Value |
-| ----------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Service to Start**    | Choose the service you wish to start from the predefined list.                                   | Select     | Yes       | _(empty)_     |
-| **Custom Service Name** | Optionally specify a custom service name not listed in the **Service to Start** options.         | Text       | No        | _(empty)_     |
+| Field Name              | Description                                                                              | Input Type | Required? | Default Value |
+| ----------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Service to Start**    | Choose the service you wish to start from the predefined list.                           | Select     | Yes       | _(empty)_     |
+| **Custom Service Name** | Optionally specify a custom service name not listed in the **Service to Start** options. | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -24,7 +24,7 @@ Add the **Start Service** node to your workflow.
 
 ### Step 2
 
-In the **Service to Start** dropdown, select the service you wish to start. 
+In the **Service to Start** dropdown, select the service you wish to start.
 
 - For example, choose **"SQL Server (MSSQLSERVER)"** if you want to start the SQL Server service.
 
@@ -39,7 +39,8 @@ Confirm your selection and save your workflow to activate the process.
 </Steps>
 
 <Callout type="info" title="Note">
-  You can only use the **Custom Service Name** if the service is not available in the dropdown list.
+  You can only use the **Custom Service Name** if the service is not available
+  in the dropdown list.
 </Callout>
 
 ## Input/Output Examples
@@ -53,11 +54,11 @@ After executing, the specified service will start running if it was previously s
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                             |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| **Service does not start**                      | Verify that the service name is correctly spelled, especially if entered manually in **Custom Service Name**.        |
-| **Selecting the wrong service**                 | Double-check your selection in the **Service to Start** dropdown to ensure the correct service is chosen.           |
-| **Custom Service Name entered but service not listed** | Ensure that the service is not under **Service to Start** if using **Custom Service Name** field.        |
+| Problem                                                | Solution                                                                                                      |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- |
+| **Service does not start**                             | Verify that the service name is correctly spelled, especially if entered manually in **Custom Service Name**. |
+| **Selecting the wrong service**                        | Double-check your selection in the **Service to Start** dropdown to ensure the correct service is chosen.     |
+| **Custom Service Name entered but service not listed** | Ensure that the service is not under **Service to Start** if using **Custom Service Name** field.             |
 
 ## Real-World Use Cases
 

@@ -12,21 +12,22 @@ Common scenarios include:
 
 ## Configuration Options
 
-| Field Name                      | Description                                                                                           | Input Type | Required? | Default Value                  |
-| ------------------------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------------------------ |
-| **FTP Connection**              | The connection details to the FTP server you are syncing with.                                        | Text       | Yes       | _(empty)_                      |
-| **Local Directory**             | The path to the folder on your computer you wish to sync.                                             | Text       | Yes       | _(empty)_                      |
-| **Remote Directory**            | The path to the folder on the FTP server you want to sync with.                                       | Text       | Yes       | _(empty)_                      |
-| **Sync Mode**                   | The direction of synchronization: upload, download, or both.                                          | Select     | No        | Upload                         |
-| **File Comparison Method**      | How to determine if a file should be synchronized: by size, name, or date.                            | Select     | No        | By Name and Size               |
-| **Delete Files Not Present Locally** | Remove files from target that are not in the source during sync.                                   | Switch     | No        | _(empty)_                      |
-| **Include Subdirectories**      | Whether to include folders within the specified directory during sync.                                | Switch     | No        | _(empty)_                      |
-| **Overwrite Mode**              | Conditions under which existing files should be overwritten.                                          | Select     | No        | IfNewerOrSizeDifferent         |
-| **Timeout Seconds**             | How long to wait before a timeout error if the sync is taking too long.                               | Text       | No        | 30                             |
+| Field Name                           | Description                                                                | Input Type | Required? | Default Value          |
+| ------------------------------------ | -------------------------------------------------------------------------- | ---------- | --------- | ---------------------- |
+| **FTP Connection**                   | The connection details to the FTP server you are syncing with.             | Text       | Yes       | _(empty)_              |
+| **Local Directory**                  | The path to the folder on your computer you wish to sync.                  | Text       | Yes       | _(empty)_              |
+| **Remote Directory**                 | The path to the folder on the FTP server you want to sync with.            | Text       | Yes       | _(empty)_              |
+| **Sync Mode**                        | The direction of synchronization: upload, download, or both.               | Select     | No        | Upload                 |
+| **File Comparison Method**           | How to determine if a file should be synchronized: by size, name, or date. | Select     | No        | By Name and Size       |
+| **Delete Files Not Present Locally** | Remove files from target that are not in the source during sync.           | Switch     | No        | _(empty)_              |
+| **Include Subdirectories**           | Whether to include folders within the specified directory during sync.     | Switch     | No        | _(empty)_              |
+| **Overwrite Mode**                   | Conditions under which existing files should be overwritten.               | Select     | No        | IfNewerOrSizeDifferent |
+| **Timeout Seconds**                  | How long to wait before a timeout error if the sync is taking too long.    | Text       | No        | 30                     |
 
 ## Expected Output Format
 
 The node outputs the results of the synchronization process:
+
 - **Files Transferred**: Number of files that have been successfully synchronized.
 - **Directories Created**: Number of directories created as part of the synchronization.
 
@@ -54,6 +55,7 @@ Enter the **Remote Directory** path on the FTP server.
 ### Step 5
 
 Select your desired **Sync Mode** from the dropdown:
+
 - **Upload**: Sync files from local to remote directory.
 - **Download**: Sync files from remote directory to local.
 - **Bidirectional**: Sync files in both directions.
@@ -90,20 +92,20 @@ Run your workflow. Check the **Files Transferred** and **Directories Created** o
 
 ## Input/Output Examples
 
-| Sync Mode    | Local Directory | Remote Directory | Files Transferred | Directories Created | 
-| ------------ | --------------- | ---------------- | ----------------- | ------------------- |
-| Upload       | C:\Projects     | /ftp/backup      | 12                | 5                   |
-| Download     | C:\Data         | /ftp/files       | 8                 | 2                   |
-| Bidirectional| C:\SyncFolder   | /ftp/sync        | 20                | 10                  |
+| Sync Mode     | Local Directory | Remote Directory | Files Transferred | Directories Created |
+| ------------- | --------------- | ---------------- | ----------------- | ------------------- |
+| Upload        | C:\Projects     | /ftp/backup      | 12                | 5                   |
+| Download      | C:\Data         | /ftp/files       | 8                 | 2                   |
+| Bidirectional | C:\SyncFolder   | /ftp/sync        | 20                | 10                  |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                         |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| **Incorrect FTP Credentials**                    | Double-check FTP connection information and re-enter if necessary.                               |
-| **Failure to transfer files or directories**     | Ensure that both local and remote directories exist and are accessible.                          |
-| **Timeouts preventing successful sync**          | Increase **Timeout Seconds** if network speeds are slower or syncing large directories.          |
-| **Unexpected deletions with 'Delete Files...**   | Use with caution, ensure the right source directory is always specified to avoid accidental loss. |
+| Problem                                        | Solution                                                                                          |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **Incorrect FTP Credentials**                  | Double-check FTP connection information and re-enter if necessary.                                |
+| **Failure to transfer files or directories**   | Ensure that both local and remote directories exist and are accessible.                           |
+| **Timeouts preventing successful sync**        | Increase **Timeout Seconds** if network speeds are slower or syncing large directories.           |
+| **Unexpected deletions with 'Delete Files...** | Use with caution, ensure the right source directory is always specified to avoid accidental loss. |
 
 ## Real-World Use Cases
 

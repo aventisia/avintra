@@ -1,3 +1,4 @@
+import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useQuery } from "@tanstack/react-query";
 import { Edge, Node, Viewport, useReactFlow } from "@xyflow/react";
 import { useEffect, useRef } from "react";
@@ -8,7 +9,6 @@ import { ZOOM_ANIMATION_DURATION } from "@/constants";
 import { useSettingsStore } from "@/features/flow-settings/stores/settings-store";
 import { useImportStore } from "@/features/import-flow/stores/import-flow-store";
 import { useDagreAutoLayout } from "@/hooks/useDagreAutoLayout";
-import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";

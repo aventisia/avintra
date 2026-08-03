@@ -1,5 +1,6 @@
 import { CreateNodesAndEdgesType } from "@/types/create-nodes-and-edges-type";
 import { NodeDataType } from "@/types/node-data-type";
+
 import { createCustomEdgeObj } from "../create-edges/create-custom-edge-obj";
 import { createDottedEdgeObj } from "../create-edges/create-dotted-edge-obj";
 import { createPlusEdgeObj } from "../create-edges/create-plus-edge-obj";
@@ -20,16 +21,9 @@ export const createConditionalNode = (
   const mergeBranchesNode = createSupportNodeObj("mergeBranchesNode");
 
   // Case branch nodes
-  const caseBranchStartNode = createConditionalBranchNodeObj(
-    "Branch",
-    false,
-    mergeBranchesNode.id,
-  );
+  const caseBranchStartNode = createConditionalBranchNodeObj("Branch", false, mergeBranchesNode.id);
   const casePlusNode = createSupportNodeObj("plusNode");
-  const caseBranchEndNode = createBranchEndNodeObj(
-    "CondtionalBranch",
-    conditionalNode.id,
-  );
+  const caseBranchEndNode = createBranchEndNodeObj("CondtionalBranch", conditionalNode.id);
 
   // Default branch nodes
   const defaultBranchStartNode = createConditionalBranchNodeObj(
@@ -38,16 +32,10 @@ export const createConditionalNode = (
     mergeBranchesNode.id,
   );
   const defaultPlusNode = createSupportNodeObj("plusNode");
-  const defaultBranchEndNode = createBranchEndNodeObj(
-    "CondtionalBranch",
-    conditionalNode.id,
-  );
+  const defaultBranchEndNode = createBranchEndNodeObj("CondtionalBranch", conditionalNode.id);
 
   // Source node -> conditional node
-  const source2ConditionalEdge = createPlusEdgeObj(
-    sourceNodeId,
-    conditionalNode.id,
-  );
+  const source2ConditionalEdge = createPlusEdgeObj(sourceNodeId, conditionalNode.id);
 
   // conditional node -> Case branch-start node
   const conditional2CaseBranchStartEdge = createSimpleEdgeObj(
@@ -57,16 +45,10 @@ export const createConditionalNode = (
   );
 
   // Case branch-start node -> Case plus node
-  const caseBranchStart2PlusEdge = createDottedEdgeObj(
-    caseBranchStartNode.id,
-    casePlusNode.id,
-  );
+  const caseBranchStart2PlusEdge = createDottedEdgeObj(caseBranchStartNode.id, casePlusNode.id);
 
   // Case plus node -> Case branch-end node
-  const casePlus2CaseBranchEndEdge = createDottedEdgeObj(
-    casePlusNode.id,
-    caseBranchEndNode.id,
-  );
+  const casePlus2CaseBranchEndEdge = createDottedEdgeObj(casePlusNode.id, caseBranchEndNode.id);
 
   // Case branch-end node -> Merge branches node
   const caseBranchEndToMergeBranchesEdge = createCustomEdgeObj(

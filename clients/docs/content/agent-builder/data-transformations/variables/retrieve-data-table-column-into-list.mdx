@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name                 | Description                                                                                | Input Type | Required? | Default Value |
-| -------------------------- | ------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **Data Table**             | The data table containing the column to convert into a list.                               | Text       | Yes       | _(empty)_     |
-| **Column Name or Index**   | Specifies which column to extract by name (if defined) or index (zero-based).              | Text       | Yes       | _(empty)_     |
+| Field Name               | Description                                                                   | Input Type | Required? | Default Value |
+| ------------------------ | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**           | The data table containing the column to convert into a list.                  | Text       | Yes       | _(empty)_     |
+| **Column Name or Index** | Specifies which column to extract by name (if defined) or index (zero-based). | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -46,23 +46,24 @@ Upon configuration, the column data will be converted and available as **ColumnA
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the specified column exists in the data table. Otherwise, you may not get the expected output.
+  Ensure that the specified column exists in the data table. Otherwise, you may
+  not get the expected output.
 </Callout>
 
 ## Input/Output Examples
 
-| Data Table         | Column Name or Index | Output List                   | Output Type        |
-| ------------------ | ---------------------| ----------------------------- | ------------------ |
-| `[["Name", "Age"], ["Alice", "30"], ["Bob", "25"]]` | Name                       | `["Alice", "Bob"]` | List of Strings    |
-| Same as above      | 1                    | `["30", "25"]`               | List of Strings    |
+| Data Table                                          | Column Name or Index | Output List        | Output Type     |
+| --------------------------------------------------- | -------------------- | ------------------ | --------------- |
+| `[["Name", "Age"], ["Alice", "30"], ["Bob", "25"]]` | Name                 | `["Alice", "Bob"]` | List of Strings |
+| Same as above                                       | 1                    | `["30", "25"]`     | List of Strings |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                                                                  |
-| --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid Column Name or Index**                          | Ensure the column exists in the data table and recheck the spelling or index used.                                                      |
-| **Entering Non-Table Data**                               | Verify that the input contains a valid table structure and not just isolated values or unrelated data.                                    |
-| **Empty Output**                                          | Double-check both the table input and column specifications. Make sure the specified column has data.                                    |
+| Problem                          | Solution                                                                                               |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **Invalid Column Name or Index** | Ensure the column exists in the data table and recheck the spelling or index used.                     |
+| **Entering Non-Table Data**      | Verify that the input contains a valid table structure and not just isolated values or unrelated data. |
+| **Empty Output**                 | Double-check both the table input and column specifications. Make sure the specified column has data.  |
 
 ## Real-World Use Cases
 

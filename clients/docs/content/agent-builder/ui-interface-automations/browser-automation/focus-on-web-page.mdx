@@ -12,15 +12,15 @@ For example:
 
 ## Configuration Options
 
-| Field Name               | Description                                                                 | Input Type | Required? | Default Value |
-| ------------------------ | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Web Browser Instance** | Enter or choose the variable that holds the web browser instance.           | Text       | Yes       | _(empty)_     |
-| **Find Type**            | Specify the method to locate the text field (e.g., XPath, ID, CSS Selector).| Select     | Yes       | XPath         |
-| **Value to Find**        | The identifier used to locate the element (like XPath, ID value).           | Text       | Yes       | _(empty)_     |
-| **Wait for Page to Load**| Decides if the process should wait for the web page to fully load.          | Switch     | No        | True          |
-| **Timeout for Page Load**| Maximum wait time (in seconds) for the page to load.                        | Text       | No        | 60            |
-| **Handle Dialog**        | Action to perform if a dialog appears after focusing.                       | Select     | No        | DoNothing     |
-| **Dialog Button to Press**| If handling dialogs with a button, sets the specific button to press.     | Text       | No        | Ok            |
+| Field Name                 | Description                                                                  | Input Type | Required? | Default Value |
+| -------------------------- | ---------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Web Browser Instance**   | Enter or choose the variable that holds the web browser instance.            | Text       | Yes       | _(empty)_     |
+| **Find Type**              | Specify the method to locate the text field (e.g., XPath, ID, CSS Selector). | Select     | Yes       | XPath         |
+| **Value to Find**          | The identifier used to locate the element (like XPath, ID value).            | Text       | Yes       | _(empty)_     |
+| **Wait for Page to Load**  | Decides if the process should wait for the web page to fully load.           | Switch     | No        | True          |
+| **Timeout for Page Load**  | Maximum wait time (in seconds) for the page to load.                         | Text       | No        | 60            |
+| **Handle Dialog**          | Action to perform if a dialog appears after focusing.                        | Select     | No        | DoNothing     |
+| **Dialog Button to Press** | If handling dialogs with a button, sets the specific button to press.        | Text       | No        | Ok            |
 
 ## Expected Output Format
 
@@ -64,16 +64,17 @@ Choose behavior for potential pop-ups under **Handle Dialog** (such as close or 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that the locator values (such as XPath or ID) are accurate and unique to prevent focus errors.
+  Ensure that the locator values (such as XPath or ID) are accurate and unique
+  to prevent focus errors.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                                                                          |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Element not found error**                            | Verify that the **Find Type** and **Value to Find** accurately refer to the desired element on the page.                                          |
-| **Page load timeout exceeded**                         | Increase the **Timeout for Page Load** value or ensure the page is accessible and optimized for loading within expected times.                    |
-| **Dialogs not handled**                                | Confirm that **Handle Dialog** is set appropriately, and **Dialog Button to Press** correctly identifies the target button.                        |
+| Problem                        | Solution                                                                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Element not found error**    | Verify that the **Find Type** and **Value to Find** accurately refer to the desired element on the page.                       |
+| **Page load timeout exceeded** | Increase the **Timeout for Page Load** value or ensure the page is accessible and optimized for loading within expected times. |
+| **Dialogs not handled**        | Confirm that **Handle Dialog** is set appropriately, and **Dialog Button to Press** correctly identifies the target button.    |
 
 ## Real-World Use Cases
 

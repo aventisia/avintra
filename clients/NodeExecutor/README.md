@@ -8,14 +8,14 @@ Windows desktop workflow executor for the Aventisia WORC Platform.
 
 ## Projects
 
-| Project                  | Description                                           |
-| ------------------------ | ----------------------------------------------------- |
-| `NodeExecutor`           | Main WPF application that executes flows              |
-| `CodeActivitiesLibrary`  | Reusable activity library (.NET Framework 4.8)      |
-| `ExecutorLibrary`        | Legacy cross-platform executor library (kept here)    |
-| `NodeLibrary`            | Legacy node library (kept here)                       |
-| `UIInspector`            | WPF tool for inspecting Windows UI elements             |
-| `CodeActivityToJSON`     | Utility to serialize code activities to JSON            |
+| Project                 | Description                                        |
+| ----------------------- | -------------------------------------------------- |
+| `NodeExecutor`          | Main WPF application that executes flows           |
+| `CodeActivitiesLibrary` | Reusable activity library (.NET Framework 4.8)     |
+| `ExecutorLibrary`       | Legacy cross-platform executor library (kept here) |
+| `NodeLibrary`           | Legacy node library (kept here)                    |
+| `UIInspector`           | WPF tool for inspecting Windows UI elements        |
+| `CodeActivityToJSON`    | Utility to serialize code activities to JSON       |
 
 ## Getting Started
 

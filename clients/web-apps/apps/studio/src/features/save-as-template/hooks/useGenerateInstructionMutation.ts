@@ -1,8 +1,9 @@
 import { toast } from "@avplatform/ui/sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { generateTemplateInstruction } from "../apis/save-as-template-apis";
 import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
+
+import { generateTemplateInstruction } from "../apis/save-as-template-apis";
 
 /**
  * Hook to handle template instruction generation mutation.

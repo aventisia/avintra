@@ -5,18 +5,19 @@ import { Callout, Steps } from "nextra/components";
 The **Create Data Table** node allows you to generate a new data table or clone an existing one, providing a flexible solution for managing tabular data. This can be particularly useful for organizing data that needs to be structured into tables before further processing or analysis.
 
 For example:
+
 - Cloning an existing data table to maintain its structure and content.
 - Creating a new table with specified initial columns and empty rows for future data entry.
 
 ## Configuration Options
 
-| Field Name              | Description                                                                                          | Input Type | Required? | Default Value |
-| ----------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Data Table**          | An existing data table to clone. Leave empty to create a new table from scratch.                     | Text       | No        | _(empty)_     |
-| **Initial Columns**     | Toggle to add initial columns to the new table.                                                      | Switch     | No        | _(off)_      |
-| **Columns**             | Specify columns for the new table (comma-separated if more than one). Appears when Initial Columns is ON. | Text       | No        | _(empty)_     |
-| **Empty Rows**          | Toggle to add empty rows to the new table for future data entry.                                     | Switch     | No        | _(off)_      |
-| **Data Table Rows**     | Enter the number of empty rows to be added. Appears when Empty Rows is ON.                           | Text       | No        | _(empty)_     |
+| Field Name          | Description                                                                                               | Input Type | Required? | Default Value |
+| ------------------- | --------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**      | An existing data table to clone. Leave empty to create a new table from scratch.                          | Text       | No        | _(empty)_     |
+| **Initial Columns** | Toggle to add initial columns to the new table.                                                           | Switch     | No        | _(off)_       |
+| **Columns**         | Specify columns for the new table (comma-separated if more than one). Appears when Initial Columns is ON. | Text       | No        | _(empty)_     |
+| **Empty Rows**      | Toggle to add empty rows to the new table for future data entry.                                          | Switch     | No        | _(off)_       |
+| **Data Table Rows** | Enter the number of empty rows to be added. Appears when Empty Rows is ON.                                | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -51,23 +52,24 @@ The new or cloned table will be available as **NewDataTable** for use in downstr
 </Steps>
 
 <Callout type="info" title="Note">
-  The fields **Columns** and **Data Table Rows** will only be visible and active if you've set **Initial Columns** and **Empty Rows** to ON, respectively.
+  The fields **Columns** and **Data Table Rows** will only be visible and active
+  if you've set **Initial Columns** and **Empty Rows** to ON, respectively.
 </Callout>
 
 ## Input/Output Examples
 
-| Action              | Initial Columns | Columns              | Empty Rows | Data Table Rows | Output Type        |
-| ------------------- | --------------- | -------------------- | ---------- | --------------- | ------------------ |
-| Create New Table    | ON              | Name, Age, City      | ON         | 5               | NewDataTable       |
-| Clone Existing Table | OFF             | _(n/a)_              | OFF        | _(n/a)_         | ClonedDataTable    |
+| Action               | Initial Columns | Columns         | Empty Rows | Data Table Rows | Output Type     |
+| -------------------- | --------------- | --------------- | ---------- | --------------- | --------------- |
+| Create New Table     | ON              | Name, Age, City | ON         | 5               | NewDataTable    |
+| Clone Existing Table | OFF             | _(n/a)_         | OFF        | _(n/a)_         | ClonedDataTable |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                     | Solution                                                                                                                                                    |
-| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Columns or Data Table Rows not appearing**                | Ensure that **Initial Columns** or **Empty Rows** are switched ON to reveal these fields.                                                                    |
-| **Incorrect Comma-Separated Values**                        | Verify that column names in **Columns** are separated by commas without spaces unless part of the column name.                                               |
-| **Empty Table Generated**                                   | Check that you have either specified columns or rows or provided a data table to clone. Avoid leaving all options unselected or empty when creating a new table. |
+| Problem                                      | Solution                                                                                                                                                         |
+| -------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Columns or Data Table Rows not appearing** | Ensure that **Initial Columns** or **Empty Rows** are switched ON to reveal these fields.                                                                        |
+| **Incorrect Comma-Separated Values**         | Verify that column names in **Columns** are separated by commas without spaces unless part of the column name.                                                   |
+| **Empty Table Generated**                    | Check that you have either specified columns or rows or provided a data table to clone. Avoid leaving all options unselected or empty when creating a new table. |
 
 ## Real-World Use Cases
 

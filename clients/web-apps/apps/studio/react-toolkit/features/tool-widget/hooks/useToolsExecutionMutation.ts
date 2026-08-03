@@ -1,5 +1,4 @@
 import { axiosInstance } from "@avplatform/ui/lib";
-
 import { useMutation } from "@tanstack/react-query";
 import { useRef } from "react";
 
@@ -27,13 +26,9 @@ export function useToolExecutionMutation({ provider }: Props) {
     mutationFn: async (data: ExecuteToolPayload) => {
       abortControllerRef.current = new AbortController();
 
-      const response = await axiosInstance.post(
-        `${baseAPIURL}/${provider}/invoke`,
-        data,
-        {
-          signal: abortControllerRef.current.signal,
-        },
-      );
+      const response = await axiosInstance.post(`${baseAPIURL}/${provider}/invoke`, data, {
+        signal: abortControllerRef.current.signal,
+      });
 
       return response.data;
     },

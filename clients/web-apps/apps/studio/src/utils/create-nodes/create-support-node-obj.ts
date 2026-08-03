@@ -1,7 +1,7 @@
+import { Node } from "@xyflow/react";
+
 import { NODE_HEIGHT, NODE_WIDTH } from "@/constants";
 import { SupportNodeType } from "@/types/support-node-type";
-
-import { Node } from "@xyflow/react";
 
 /**
  * Creates a support node object.
@@ -17,10 +17,13 @@ export const createSupportNodeObj = (
   return {
     id: window.crypto.randomUUID(),
     type: nodeType,
-    position:nodeType == "modelNode" ? {
-              x: NODE_WIDTH,
-              y: 1.75 * NODE_HEIGHT,
-            }: { x: 0, y: 0 },
+    position:
+      nodeType == "modelNode"
+        ? {
+            x: NODE_WIDTH,
+            y: 1.75 * NODE_HEIGHT,
+          }
+        : { x: 0, y: 0 },
     deletable: false,
     draggable: true,
     className: nodeType == "modelNode" ? "nodrag" : "",

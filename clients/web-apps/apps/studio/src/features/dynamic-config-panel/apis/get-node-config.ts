@@ -1,6 +1,6 @@
 import { IS_TAURI } from "@avplatform/ui/constants";
-
 import { axiosInstance } from "@avplatform/ui/lib";
+
 import { loadJsonFromTauriResources } from "@/utils/tauri-resource-loader";
 
 import { DCPFieldSchemaType } from "..";
@@ -18,19 +18,14 @@ const nodeConfigCache: Record<string, DCPFieldSchemaType[] | undefined> = {};
  * For now, loads the JSON statically from the constants/config-json folder.
  * @param nodeUniqueName The node Unique name/activity name (e.g., "WriteTextToFileActivity")
  */
-export const getNodeConfig = async (
-  nodeUniqueName: string,
-  nodeType?: string,
-) => {
+export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) => {
   // Check cache first
   if (nodeConfigCache[nodeUniqueName]) {
     return nodeConfigCache[nodeUniqueName];
   }
 
   if (nodeType == "blockNode") {
-    const blockConfig = JSON.parse(
-      sessionStorage.getItem("block-config") || "{}",
-    );
+    const blockConfig = JSON.parse(sessionStorage.getItem("block-config") || "{}");
     return blockConfig[nodeUniqueName];
   }
 
@@ -42,10 +37,7 @@ export const getNodeConfig = async (
           `cloud-connectors/${nodeUniqueName}.json`,
         );
       } catch (error) {
-        console.error(
-          `Cloud Connector ${nodeUniqueName} load error from Tauri resources:`,
-          error,
-        );
+        console.error(`Cloud Connector ${nodeUniqueName} load error from Tauri resources:`, error);
       }
     }
 
@@ -86,10 +78,7 @@ export const getNodeConfig = async (
         `desktop-nodes/${nodeUniqueName}.json`,
       );
     } catch (error) {
-      console.error(
-        `Config load error for ${nodeUniqueName} from Tauri resources:`,
-        error,
-      );
+      console.error(`Config load error for ${nodeUniqueName} from Tauri resources:`, error);
     }
   }
 

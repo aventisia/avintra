@@ -12,11 +12,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name          | Description                                                                      | Input Type | Required? | Default Value      |
-| ------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------------ |
-| **Data Table**      | The data table you wish to filter.                                               | Text       | Yes       | _(empty)_          |
-| **Filter Expression** | The conditions for filtering the data table (e.g., "Age > 30").                 | Text       | Yes       | _(empty)_          |
-| **Match Case**      | Toggle for case-sensitive filtering (e.g., differentiates 'apple' from 'Apple'). | Switch     | No        | false              |
+| Field Name            | Description                                                                      | Input Type | Required? | Default Value |
+| --------------------- | -------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**        | The data table you wish to filter.                                               | Text       | Yes       | _(empty)_     |
+| **Filter Expression** | The conditions for filtering the data table (e.g., "Age > 30").                  | Text       | Yes       | _(empty)_     |
+| **Match Case**        | Toggle for case-sensitive filtering (e.g., differentiates 'apple' from 'Apple'). | Switch     | No        | false         |
 
 ## Expected Output Format
 
@@ -50,23 +50,25 @@ The processed output, named **FilteredDataTable**, will contain only the rows th
 </Steps>
 
 <Callout type="info" title="Tip">
-  Carefully construct your filter expressions to avoid incorrect filtering results. Use the "Match Case" option if your conditions rely on case-sensitive data.
+  Carefully construct your filter expressions to avoid incorrect filtering
+  results. Use the "Match Case" option if your conditions rely on case-sensitive
+  data.
 </Callout>
 
 ## Input/Output Examples
 
-| Filter Expression | Data Table Sample             | Match Case | Output Table Sample                        |
-| ----------------- | ----------------------------- | ---------- | ------------------------------------------ |
-| Age > 30          | `[{ "Name": "John", "Age": 45}, { "Name": "Jane", "Age": 28 }]` | false      | `[{ "Name": "John", "Age": 45 }]`            |
-| Price &lt;= 100      | `[{ "Product": "A", "Price": 150}, { "Product": "B", "Price": 95 }]` | false | `[{ "Product": "B", "Price": 95 }]`         |
+| Filter Expression | Data Table Sample                                                    | Match Case | Output Table Sample                 |
+| ----------------- | -------------------------------------------------------------------- | ---------- | ----------------------------------- |
+| Age > 30          | `[{ "Name": "John", "Age": 45}, { "Name": "Jane", "Age": 28 }]`      | false      | `[{ "Name": "John", "Age": 45 }]`   |
+| Price &lt;= 100   | `[{ "Product": "A", "Price": 150}, { "Product": "B", "Price": 95 }]` | false      | `[{ "Product": "B", "Price": 95 }]` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                    | Solution                                                                                                       |
-| ------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| **Non-numeric value in numeric expression**| Ensure numeric-only fields in expressions are numbers (e.g., `"50"` instead of `50` for a text input).         |
-| **Empty output**                           | Check if your filter expression is too restrictive or if the data table input does not match the conditions.    |
-| **Case-sensitive issues**                  | Use "Match Case" toggle if the filter should differentiate based on letter casing.                             |
+| Problem                                     | Solution                                                                                                     |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Non-numeric value in numeric expression** | Ensure numeric-only fields in expressions are numbers (e.g., `"50"` instead of `50` for a text input).       |
+| **Empty output**                            | Check if your filter expression is too restrictive or if the data table input does not match the conditions. |
+| **Case-sensitive issues**                   | Use "Match Case" toggle if the filter should differentiate based on letter casing.                           |
 
 ## Real-World Use Cases
 

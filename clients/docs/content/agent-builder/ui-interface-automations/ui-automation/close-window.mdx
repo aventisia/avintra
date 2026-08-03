@@ -2,7 +2,7 @@ import { Callout, Steps } from "nextra/components";
 
 # Close Window
 
-The **Close Window** node is designed to help you automatically close specific application windows on your desktop. This can be particularly useful when you want to automate tasks and manage multiple applications by closing unnecessary windows without manually doing so. 
+The **Close Window** node is designed to help you automatically close specific application windows on your desktop. This can be particularly useful when you want to automate tasks and manage multiple applications by closing unnecessary windows without manually doing so.
 
 For example, you can use this node to:
 
@@ -12,14 +12,14 @@ For example, you can use this node to:
 
 ## Configuration Options
 
-| Field Name                        | Description                                                      | Input Type | Required? | Default Value |
-|---------------------------------- |------------------------------------------------------------------|------------|-----------|---------------|
-| **Window**                        | Select the window you want to close.                             | Text       | Yes       | _(empty)_     |
-| **Is Window Closed Successfully** | Indicates whether the window was closed successfully.            | Output     | No        | IsWindowClosed|
+| Field Name                        | Description                                           | Input Type | Required? | Default Value  |
+| --------------------------------- | ----------------------------------------------------- | ---------- | --------- | -------------- |
+| **Window**                        | Select the window you want to close.                  | Text       | Yes       | _(empty)_      |
+| **Is Window Closed Successfully** | Indicates whether the window was closed successfully. | Output     | No        | IsWindowClosed |
 
 ## Expected Output Format
 
-The output of this node is a **Boolean** value indicating the success of the window closing operation. 
+The output of this node is a **Boolean** value indicating the success of the window closing operation.
 
 - `true`: The window was closed successfully.
 - `false`: The window could not be closed.
@@ -41,29 +41,30 @@ Execute your flow. The node will attempt to close the specified window.
 
 ### Step 4
 
-Check the **Is Window Closed Successfully** output value to verify if the window was closed as intended. 
+Check the **Is Window Closed Successfully** output value to verify if the window was closed as intended.
 This will return `true` if successful, otherwise `false`.
 
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the window name is entered correctly. The node will not be able to close a window if the name does not match an open window on your desktop.
+  Ensure the window name is entered correctly. The node will not be able to
+  close a window if the name does not match an open window on your desktop.
 </Callout>
 
 ## Input/Output Examples
 
-| Window Name   | Output Value | Output Type |
-|---------------|--------------|-------------|
-| "Calculator"  | true         | Boolean     |
-| "Browser"     | false        | Boolean     |
+| Window Name  | Output Value | Output Type |
+| ------------ | ------------ | ----------- |
+| "Calculator" | true         | Boolean     |
+| "Browser"    | false        | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                      |
-|-------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| **Incorrect window name**                             | Double-check the spelling and capitalization of the window name as it appears on your desktop.|
-| **Window does not close**                             | Verify that the window is currently open. Some applications may not close if unsaved changes exist.|
-| **Output not returning expected values**              | Make sure the node is set up correctly in the flow and is executed as expected.                |
+| Problem                                  | Solution                                                                                            |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Incorrect window name**                | Double-check the spelling and capitalization of the window name as it appears on your desktop.      |
+| **Window does not close**                | Verify that the window is currently open. Some applications may not close if unsaved changes exist. |
+| **Output not returning expected values** | Make sure the node is set up correctly in the flow and is executed as expected.                     |
 
 ## Real-World Use Cases
 

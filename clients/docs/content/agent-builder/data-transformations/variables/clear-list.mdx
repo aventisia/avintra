@@ -8,8 +8,8 @@ For example, this node is handy when you are preparing for a new batch of data p
 
 ## Configuration Options
 
-| Field Name        | Description                                     | Input Type | Required? | Default Value |
-| ----------------- | ----------------------------------------------- | ---------- | --------- | ------------- |
+| Field Name        | Description                                       | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------- | ---------- | --------- | ------------- |
 | **List to Clear** | The list variable whose elements will be removed. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -34,15 +34,16 @@ Once the node runs, the specified list will be cleared, removing all current ele
 </Steps>
 
 <Callout type="warning" title="Note">
-  Once a list is cleared, the removed elements cannot be recovered from the node. Ensure you do not need the current data before clearing.
+  Once a list is cleared, the removed elements cannot be recovered from the
+  node. Ensure you do not need the current data before clearing.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                            | Solution                                                                                      |
-| -------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Non-existent list entered**                      | Ensure the list variable entered in **List to Clear** exists; check for typos in the name.    |
-| **List not getting cleared**                       | Verify that the node correctly receives the list variable name and that there's no subsequent operation re-populating it. |
+| Problem                       | Solution                                                                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| **Non-existent list entered** | Ensure the list variable entered in **List to Clear** exists; check for typos in the name.                                |
+| **List not getting cleared**  | Verify that the node correctly receives the list variable name and that there's no subsequent operation re-populating it. |
 
 ## Real-World Use Cases
 

@@ -1,5 +1,6 @@
-import { NodeDataType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
+
+import { NodeDataType } from "@/types/node-data-type";
 
 /**
  * Creates a node object based on the provided node data.
@@ -7,10 +8,7 @@ import { Node } from "@xyflow/react";
  * @param nodeData - The data for the node.
  * @returns The created node object.
  */
-export const createNodeObj = (
-  nodeData: NodeDataType,
-  parentId?: string,
-): Node => {
+export const createNodeObj = (nodeData: NodeDataType, parentId?: string): Node => {
   return {
     id: window.crypto.randomUUID(),
     type: nodeData.type,

@@ -12,9 +12,9 @@ For example, you can:
 
 ## Configuration Options
 
-| Field Name  | Description                                   | Input Type | Required? | Default Value |
-| ----------- | --------------------------------------------- | ---------- | --------- | ------------- |
-| **SessionId** | The session ID of the terminal session where you want to retrieve text. | Text       | Yes       | _(empty)_    |
+| Field Name    | Description                                                             | Input Type | Required? | Default Value |
+| ------------- | ----------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **SessionId** | The session ID of the terminal session where you want to retrieve text. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -39,22 +39,23 @@ Once the session ID is correctly entered, the node will retrieve and output the 
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that the session ID corresponds to an active terminal session from which you are allowed to retrieve text.
+  Ensure that the session ID corresponds to an active terminal session from
+  which you are allowed to retrieve text.
 </Callout>
 
 ## Input/Output Examples
 
-| SessionId    | Output (Result)                                                      | Output Type |
-| ------------ | -------------------------------------------------------------------- | ----------- |
-| `session123` | "Login successful. System update in progress..."                    | Text        |
+| SessionId    | Output (Result)                                  | Output Type |
+| ------------ | ------------------------------------------------ | ----------- |
+| `session123` | "Login successful. System update in progress..." | Text        |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                     |
-| ------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| **Invalid SessionId**                             | Double-check that the session ID is correct and refers to an existing, active terminal session. |
-| **Empty Output**                                  | Ensure that the terminal session is active and producing text output at the time of retrieval. |
-| **Access Denied**                                 | Confirm that you have the necessary permissions to access the session output.                  |
+| Problem               | Solution                                                                                        |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| **Invalid SessionId** | Double-check that the session ID is correct and refers to an existing, active terminal session. |
+| **Empty Output**      | Ensure that the terminal session is active and producing text output at the time of retrieval.  |
+| **Access Denied**     | Confirm that you have the necessary permissions to access the session output.                   |
 
 ## Real-World Use Cases
 

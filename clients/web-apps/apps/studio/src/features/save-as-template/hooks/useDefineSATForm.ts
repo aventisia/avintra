@@ -1,16 +1,16 @@
-import { useFileDelete } from "@/features/file-uploader-setup/hooks/useFileDelete";
-import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
 import { useUserSessionStore } from "@avplatform/ui/stores";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { NodeDataType } from "@/types/node-data-type";
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Node } from "@xyflow/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
+
+import { useFileDelete } from "@/features/file-uploader-setup/hooks/useFileDelete";
+import { useFileStore } from "@/features/file-uploader-setup/stores/file-uploader-store";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { NodeDataType } from "@/types/node-data-type";
 
 import { saveAsTemplateSchema } from "../constants/save-as-template-zod-schema";
 import { ValidateTemplateDto } from "../dto/validate-template-dto";
@@ -60,15 +60,14 @@ export const useDefineSATForm = () => {
   );
 
   // File upload state
-  const { filesToUpload, filesToDelete, removeFile, initializeFilesToUpload } =
-    useFileStore(
-      useShallow((state) => ({
-        filesToUpload: state.filesToUpload,
-        filesToDelete: state.filesToDelete,
-        removeFile: state.removeFile,
-        initializeFilesToUpload: state.initializeFilesToUpload,
-      })),
-    );
+  const { filesToUpload, filesToDelete, removeFile, initializeFilesToUpload } = useFileStore(
+    useShallow((state) => ({
+      filesToUpload: state.filesToUpload,
+      filesToDelete: state.filesToDelete,
+      removeFile: state.removeFile,
+      initializeFilesToUpload: state.initializeFilesToUpload,
+    })),
+  );
 
   // Fetch template details
   const { data } = useFetchTemplateDetails();
@@ -76,9 +75,7 @@ export const useDefineSATForm = () => {
   const { mutate: validateTemplate } = useValidateTemplateMutation();
 
   useEffect(() => {
-    const childIds = getSelectedEntitiesFromNodes(
-      nodes as Node<NodeDataType>[],
-    );
+    const childIds = getSelectedEntitiesFromNodes(nodes as Node<NodeDataType>[]);
     const obj = childIds?.map((i) => {
       return { refId: i?.id, name: i?.name };
     });
@@ -92,8 +89,7 @@ export const useDefineSATForm = () => {
   const { mutate, isPending } = useSaveAsTemplateMutation();
 
   // Mutation for updating an existing template
-  const { mutate: updateTemplate, isPending: isUpdatePending } =
-    useUpdateTemplateMutation();
+  const { mutate: updateTemplate, isPending: isUpdatePending } = useUpdateTemplateMutation();
 
   const form = useForm<z.infer<typeof saveAsTemplateSchema>>({
     resolver: zodResolver(saveAsTemplateSchema), // Zod schema validation

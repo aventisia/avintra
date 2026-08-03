@@ -7,9 +7,7 @@ import { NodeInputType } from "../types/node-input-type";
  * @param inputOutputObject - JSON string containing array of input/output definitions
  * @returns Array of NodeInputType with name as key and defaultValue as value
  */
-export function extractInputsFromInputOutputObject(
-  inputOutputObject: string,
-): NodeInputType[] {
+export function extractInputsFromInputOutputObject(inputOutputObject: string): NodeInputType[] {
   try {
     const items: DCPFieldSchemaType[] = JSON.parse(inputOutputObject);
 

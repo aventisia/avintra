@@ -12,11 +12,11 @@ Typical use cases include:
 
 ## Configuration Options
 
-| Field Name         | Description                                                                                 | Input Type | Required? | Default Value |
-| ------------------ | ------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **WorksheetInstance** | The Excel Worksheet object from which the data will be copied.                              | Text       | Yes       | _(empty)_     |
-| **Range to Copy**  | The specific range of cells in the worksheet you want to copy (e.g., 'A1:B10').             | Text       | Yes       | _(empty)_     |
-| **Has Headers**    | Indicates if the first row in the range includes column headers.                             | Switch     | No        | true          |
+| Field Name            | Description                                                                     | Input Type | Required? | Default Value |
+| --------------------- | ------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **WorksheetInstance** | The Excel Worksheet object from which the data will be copied.                  | Text       | Yes       | _(empty)_     |
+| **Range to Copy**     | The specific range of cells in the worksheet you want to copy (e.g., 'A1:B10'). | Text       | Yes       | _(empty)_     |
+| **Has Headers**       | Indicates if the first row in the range includes column headers.                | Switch     | No        | true          |
 
 ## Expected Output Format
 
@@ -50,23 +50,24 @@ The data from the specified range will be available as **CopiedData** for furthe
 </Steps>
 
 <Callout type="info" title="Tip">
-  Keep the **Has Headers** option checked if your data range includes column titles. This ensures that the DataTable's columns are named correctly.
+  Keep the **Has Headers** option checked if your data range includes column
+  titles. This ensures that the DataTable's columns are named correctly.
 </Callout>
 
 ## Input/Output Examples
 
-| Range to Copy | Has Headers | Sample Input Value | Output DataTable          |
-| ------------- | ----------- | ------------------ | ------------------------- |
+| Range to Copy | Has Headers | Sample Input Value | Output DataTable                        |
+| ------------- | ----------- | ------------------ | --------------------------------------- |
 | 'A1:B10'      | Yes         | Name, Age in A1:B1 | DataTable with columns "Name" and "Age" |
-| 'A2:B10'      | No          | Starting from A2   | DataTable without header metadata |
+| 'A2:B10'      | No          | Starting from A2   | DataTable without header metadata       |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                        | Solution                                                                                 |
-| -------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Invalid Worksheet Instance**                                 | Ensure the worksheet reference is correct and currently accessible.                      |
-| **Incorrect Range Format**                                     | Verify that the range is entered using standard Excel range notation (e.g., 'A1:D20').   |
-| **Unintended DataTable Structure**                             | Double-check your **Has Headers** setting if DataTable columns do not align as expected. |
+| Problem                            | Solution                                                                                 |
+| ---------------------------------- | ---------------------------------------------------------------------------------------- |
+| **Invalid Worksheet Instance**     | Ensure the worksheet reference is correct and currently accessible.                      |
+| **Incorrect Range Format**         | Verify that the range is entered using standard Excel range notation (e.g., 'A1:D20').   |
+| **Unintended DataTable Structure** | Double-check your **Has Headers** setting if DataTable columns do not align as expected. |
 
 ## Real-World Use Cases
 

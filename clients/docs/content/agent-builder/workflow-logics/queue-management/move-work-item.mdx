@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name          | Description                                                                 | Input Type      | Required? | Default Value |
-| ------------------- | --------------------------------------------------------------------------- | --------------- | --------- | ------------- |
-| **WorkItem ID**     | Enter the unique identifier of the work item you want to move.              | Text            | Yes       | _(empty)_     |
-| **Select Queue**    | Choose the destination queue where the work item will be moved.             | Queue Select    | Yes       | _(empty)_     |
-| **Work Item Data**  | Provide the data payload for the work item in JSON format.                  | JSON Editor     | Yes       | _(empty)_     |
-| **Remark**          | Enter a remark for the work item, optional.                                 | Text            | No        | _(empty)_     |
+| Field Name         | Description                                                     | Input Type   | Required? | Default Value |
+| ------------------ | --------------------------------------------------------------- | ------------ | --------- | ------------- |
+| **WorkItem ID**    | Enter the unique identifier of the work item you want to move.  | Text         | Yes       | _(empty)_     |
+| **Select Queue**   | Choose the destination queue where the work item will be moved. | Queue Select | Yes       | _(empty)_     |
+| **Work Item Data** | Provide the data payload for the work item in JSON format.      | JSON Editor  | Yes       | _(empty)_     |
+| **Remark**         | Enter a remark for the work item, optional.                     | Text         | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -52,26 +52,28 @@ In the **Work Item Data** section, provide additional data for the work item in 
 ### Step 6
 
 The operation outputs the result as **MovedWorkItem**, indicating success (`true`) or failure.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure all required fields like **WorkItem ID** and **Select Queue** are populated correctly before executing the node to prevent errors.
+  Ensure all required fields like **WorkItem ID** and **Select Queue** are
+  populated correctly before executing the node to prevent errors.
 </Callout>
 
 ## Input/Output Examples
 
-| WorkItem ID   | Select Queue         | Work Item Data                                              | Remark                      | Output Value | Output Type   |
-| ------------- | -------------------- | ----------------------------------------------------------- | --------------------------- | ------------ | ------------- |
-| `A123`        | `FinanceQueue`       | `{"dueDate": "2023-12-01", "priority": "high"}`             | "Urgent processing needed." | true         | Boolean       |
-| `B456`        | `HRQueue`            | `{"applicantStatus": "pending approval"}`                   |                             | true         | Boolean       |
+| WorkItem ID | Select Queue   | Work Item Data                                  | Remark                      | Output Value | Output Type |
+| ----------- | -------------- | ----------------------------------------------- | --------------------------- | ------------ | ----------- |
+| `A123`      | `FinanceQueue` | `{"dueDate": "2023-12-01", "priority": "high"}` | "Urgent processing needed." | true         | Boolean     |
+| `B456`      | `HRQueue`      | `{"applicantStatus": "pending approval"}`       |                             | true         | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                                  | Solution                                                                                                                                                          |
-| ------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Input fields not filled correctly**                                    | Ensure that all mandatory fields like **WorkItem ID** and **Select Queue** are correctly filled in to avoid errors.                                                |
-| **Incorrect queue selected**                                             | Double-check the destination queue to ensure it matches the requirement for the work item's next step in processing.                                               |
-| **JSON format errors in Work Item Data**                                 | Verify the JSON data for errors such as missing brackets or quotation marks to ensure it is correctly formatted.                                                   |
+| Problem                                  | Solution                                                                                                             |
+| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| **Input fields not filled correctly**    | Ensure that all mandatory fields like **WorkItem ID** and **Select Queue** are correctly filled in to avoid errors.  |
+| **Incorrect queue selected**             | Double-check the destination queue to ensure it matches the requirement for the work item's next step in processing. |
+| **JSON format errors in Work Item Data** | Verify the JSON data for errors such as missing brackets or quotation marks to ensure it is correctly formatted.     |
 
 ## Real-World Use Cases
 

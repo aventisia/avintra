@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@avplatform/ui/avatar";
+
 import { Participant } from "../../constants/types";
 
 interface Props {

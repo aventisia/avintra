@@ -1,9 +1,7 @@
 import { cn } from "@avplatform/ui/lib";
 import { PlusIcon } from "@heroicons/react/24/outline";
 
-export const PlusNodeTrigger = (
-  props: React.ComponentPropsWithoutRef<"div">,
-) => {
+export const PlusNodeTrigger = (props: React.ComponentPropsWithoutRef<"div">) => {
   return (
     <div className="group" {...props}>
       <div

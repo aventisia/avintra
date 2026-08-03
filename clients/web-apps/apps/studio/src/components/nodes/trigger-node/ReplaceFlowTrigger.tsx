@@ -1,12 +1,10 @@
-import { cn } from "@avplatform/ui/lib";
 import { buttonVariants } from "@avplatform/ui/buttons";
+import { DialogTrigger } from "@avplatform/ui/dialog";
+import { cn } from "@avplatform/ui/lib";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import { NodeToolbar, Position } from "@xyflow/react";
-import { DialogTrigger } from "@avplatform/ui/dialog";
 
-export const ReplaceFlowTrigger = (
-  props: React.ComponentPropsWithoutRef<typeof DialogTrigger>,
-) => {
+export const ReplaceFlowTrigger = (props: React.ComponentPropsWithoutRef<typeof DialogTrigger>) => {
   return (
     <NodeToolbar offset={5} position={Position.Top}>
       <DialogTrigger

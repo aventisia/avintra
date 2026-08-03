@@ -1,9 +1,10 @@
-import { CopyPlus } from "lucide-react";
 import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
-import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
-import { useCloneToAgentMutation } from "@/features/version-history/hooks/useCloneToAgentMutation";
-import { useAppLoaderStore } from "@/stores/app-loader-store";
+import { CopyPlus } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useCloneToAgentMutation } from "@/features/version-history/hooks/useCloneToAgentMutation";
+import { useFetchVersionHistoryDetail } from "@/features/version-history/hooks/useFetchVersionHistoryDetail";
+import { useAppLoaderStore } from "@/stores/app-loader-store";
 
 export default function CloneToAgentAction({ id }: { id: string }) {
   const detailQuery = useFetchVersionHistoryDetail(id);

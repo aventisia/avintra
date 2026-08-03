@@ -27,19 +27,16 @@ export const SettingsForm = () => {
   const { updateFlowSettings, isPending } = useUpdateFlowVersionSetting();
 
   // Define submit handler
-  const onSubmit = useCallback(
-    (formData: z.infer<typeof settingsZodSchema>) => {
-      // Set the settings in store
-      updateFlowSettings({
-        versionId: currentFlow.versionId,
-        payload: formData,
-      });
+  const onSubmit = useCallback((formData: z.infer<typeof settingsZodSchema>) => {
+    // Set the settings in store
+    updateFlowSettings({
+      versionId: currentFlow.versionId,
+      payload: formData,
+    });
 
-      setSettings(formData);
-      // closePanel(PANEL_ID);
-    },
-    [],
-  );
+    setSettings(formData);
+    // closePanel(PANEL_ID);
+  }, []);
 
   // Return the form
   return (

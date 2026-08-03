@@ -11,11 +11,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name          | Description                                                                   | Input Type | Required? | Default Value |
-| ------------------- | ----------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **PDF File Path**   | The full file path of the PDF document you want to validate.                   | Text       | Yes       | _(empty)_     |
-| **PDF Content Type**| Choose whether to validate the PDF for text or image content.                 | Select     | Yes       | _(empty)_     |
-| **Does Pdf Contain**| Indicates whether the requested content type exists in the PDF (True/False output).| Output     | No        | Result        |
+| Field Name           | Description                                                                         | Input Type | Required? | Default Value |
+| -------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **PDF File Path**    | The full file path of the PDF document you want to validate.                        | Text       | Yes       | _(empty)_     |
+| **PDF Content Type** | Choose whether to validate the PDF for text or image content.                       | Select     | Yes       | _(empty)_     |
+| **Does Pdf Contain** | Indicates whether the requested content type exists in the PDF (True/False output). | Output     | No        | Result        |
 
 ## Expected Output Format
 
@@ -49,23 +49,24 @@ The result indicating whether the PDF contains the specified content type will b
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the file path is correct and accessible by the system to avoid input errors.
+  Ensure the file path is correct and accessible by the system to avoid input
+  errors.
 </Callout>
 
 ## Input/Output Examples
 
-| PDF File Path | PDF Content Type | Result (Output) | Output Type |
-| ------------- | ---------------- | --------------- | ----------- |
-| /files/sample.pdf | Text            | true            | Boolean     |
-| /documents/image-only.pdf | Text     | false           | Boolean     |
+| PDF File Path             | PDF Content Type | Result (Output) | Output Type |
+| ------------------------- | ---------------- | --------------- | ----------- |
+| /files/sample.pdf         | Text             | true            | Boolean     |
+| /documents/image-only.pdf | Text             | false           | Boolean     |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                          |
-| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **Incorrect PDF File Path**                         | Double-check the file path. Ensure it is accurate and that the PDF can be accessed by the platform.               |
-| **Content Type not recognized**                     | Verify that the correct content type is selected. Text and Images should be confirmed in the dropdown selection.  |
-| **False output for Text content**                   | Ensure the PDF has digitally readable text rather than scanned images of text.                                     |
+| Problem                           | Solution                                                                                                         |
+| --------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Incorrect PDF File Path**       | Double-check the file path. Ensure it is accurate and that the PDF can be accessed by the platform.              |
+| **Content Type not recognized**   | Verify that the correct content type is selected. Text and Images should be confirmed in the dropdown selection. |
+| **False output for Text content** | Ensure the PDF has digitally readable text rather than scanned images of text.                                   |
 
 ## Real-World Use Cases
 

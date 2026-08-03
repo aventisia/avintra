@@ -1,8 +1,10 @@
-import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
 import { cn } from "@avplatform/ui/lib";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { FlowCommentDto } from "@/features/flow-comments/dtos/flow-comment-dto";
+
 import { FlowCommentItemActions } from "../flow-comment-item-actions";
 import { FCIAvatar } from "./FCIAvatar";
 import { FCIHeader } from "./FCIHeader";
@@ -40,9 +42,7 @@ export const FlowCommentItem = memo(({ index, data }: FlowCommentItemProps) => {
       )}
     >
       {/* Show flow comment action buttons if comment belong to user */}
-      {userSession?.email === data.userName && (
-        <FlowCommentItemActions flowCommentId={data.id} />
-      )}
+      {userSession?.email === data.userName && <FlowCommentItemActions flowCommentId={data.id} />}
 
       {/* TODO: User avatar who created the flow comment */}
       <FCIAvatar />

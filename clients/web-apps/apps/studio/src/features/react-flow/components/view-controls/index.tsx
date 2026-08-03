@@ -1,11 +1,11 @@
-import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
-
 import { Separator } from "@avplatform/ui";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Panel } from "@xyflow/react";
 import { Scan } from "lucide-react";
 import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
@@ -44,10 +44,7 @@ export const ViewControls = memo(() => {
 
             {import.meta.env.MODE !== "production" && (
               <>
-                <Separator
-                  orientation="horizontal"
-                  className="my-1 h-[0.5px]"
-                />
+                <Separator orientation="horizontal" className="my-1 h-[0.5px]" />
                 <VCBZoomTo />
               </>
             )}

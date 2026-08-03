@@ -6,10 +6,10 @@ The **Get Blob Container Client Instance** node is designed to facilitate intera
 
 ## Configuration Options
 
-| Field Name              | Description                                                    | Input Type | Required? | Default Value      |
-| ----------------------- | -------------------------------------------------------------- | ---------- | --------- | ------------------ |
-| **Connection String**   | The connection string for the Azure Blob Storage account.      | Text       | Yes       | _(empty)_          |
-| **Container Name**      | The name of the container in the storage account.              | Text       | Yes       | _(empty)_          |
+| Field Name                | Description                                                                         | Input Type | Required? | Default Value       |
+| ------------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------------- |
+| **Connection String**     | The connection string for the Azure Blob Storage account.                           | Text       | Yes       | _(empty)_           |
+| **Container Name**        | The name of the container in the storage account.                                   | Text       | Yes       | _(empty)_           |
 | **Blob Container Client** | The BlobContainerClient instance for the specified container and connection string. | Output     | No        | BlobContainerClient |
 
 ## Expected Output Format
@@ -34,19 +34,22 @@ Enter the **Container Name** of the blob storage container you wish to connect t
 ### Step 4
 
 The **Blob Container Client** instance is generated as the output, ready to be linked to other nodes in your process where blob operations are needed.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure that your connection string is correctly configured to access the Azure account, and that the container name you enter exists within that account to prevent connection errors.
+  Ensure that your connection string is correctly configured to access the Azure
+  account, and that the container name you enter exists within that account to
+  prevent connection errors.
 </Callout>
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                 | Solution                                                                                                   |
-| ------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| **Invalid Connection String**                           | Verify that the correct connection string is used, including any necessary account key or access token.    |
-| **Non-existing Container Name**                         | Double-check the spelling of the container name and ensure it exists in your designated Azure account.     |
-| **Output Not Generated**                                | Make sure all required fields are correctly filled out; the node won't output the client instance otherwise.|
+| Problem                         | Solution                                                                                                     |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Invalid Connection String**   | Verify that the correct connection string is used, including any necessary account key or access token.      |
+| **Non-existing Container Name** | Double-check the spelling of the container name and ensure it exists in your designated Azure account.       |
+| **Output Not Generated**        | Make sure all required fields are correctly filled out; the node won't output the client instance otherwise. |
 
 ## Real-World Use Cases
 

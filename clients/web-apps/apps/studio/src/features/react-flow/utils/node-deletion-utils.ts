@@ -1,6 +1,6 @@
-import { MARKER_ARROW_PREFIX } from "@/constants";
-
 import { Edge, Node } from "@xyflow/react";
+
+import { MARKER_ARROW_PREFIX } from "@/constants";
 
 import { getBranchSubgraphNodeIds } from "./getBranchSubNodeIds";
 import { getIntermediateNodeIds } from "./getIntermediateNodes";
@@ -33,8 +33,7 @@ export const rebuildBypassEdges = (nodes: Node[], edges: Edge[]): Edge[] => {
   const finalEdges: Edge[] = [...cleanEdges];
 
   const collapsedGroupHeads = nodes.filter(
-    (n) =>
-      n.data?.groupId && n.data?.isGroupHead && n.data?.isExpanded === false,
+    (n) => n.data?.groupId && n.data?.isGroupHead && n.data?.isExpanded === false,
   );
 
   collapsedGroupHeads.forEach((head) => {
@@ -117,8 +116,8 @@ export const getComprehensiveSelection = (
         // Rule 2: Subgraph Bounds (Loops/Conditions)
         if (node.data?.mergeBranchesNodeId) {
           if (node.type === "conditionalNode" || node.type === "forLoopNode") {
-            getIntermediateNodeIds(currentNodes, currentEdges, node.id).forEach(
-              (id) => selectedSet.add(id),
+            getIntermediateNodeIds(currentNodes, currentEdges, node.id).forEach((id) =>
+              selectedSet.add(id),
             );
           } else if (node.type === "branchNode1") {
             getBranchSubgraphNodeIds(

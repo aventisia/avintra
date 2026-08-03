@@ -74,9 +74,9 @@ export const AvPlatformAssistantUI = ({
   }, [archived, readOnly, setConfig]);
 
   // Track active DB conversation internally.
-  const [activeConversationId, setActiveConversationId] = useState<
-    string | undefined
-  >(conversationId);
+  const [activeConversationId, setActiveConversationId] = useState<string | undefined>(
+    conversationId,
+  );
 
   // 1. Append a unique key to ensure the initial empty session is uniquely keyed
   const [sessionKey, setSessionKey] = useState<string>(
@@ -88,9 +88,7 @@ export const AvPlatformAssistantUI = ({
     if (conversationId !== activeConversationId) {
       setActiveConversationId(conversationId);
       // 2. Generate a fresh key whenever navigating to an empty conversation state
-      setSessionKey(
-        conversationId || `new-session-${window.crypto.randomUUID()}`,
-      );
+      setSessionKey(conversationId || `new-session-${window.crypto.randomUUID()}`);
     }
   }, [conversationId, activeConversationId]);
 
@@ -166,8 +164,7 @@ const RuntimeWrapper = ({
       // 1. Return immediately if we already have it
       if (conversationIdRef.current) return conversationIdRef.current;
       // 2. Bail if we shouldn't allocate
-      if (!allocateIfMissing || mode === "temporary" || readOnly)
-        return undefined;
+      if (!allocateIfMissing || mode === "temporary" || readOnly) return undefined;
       // 3. Return the ongoing allocation promise if one is already in flight (Concurrency Lock)
       if (allocatingPromiseRef.current) return allocatingPromiseRef.current;
 
@@ -237,12 +234,7 @@ const RuntimeWrapper = ({
           onRequestComplete,
           onSuggestionsUpdate: handleSuggestionsUpdate,
         }),
-      [
-        flowVersionId,
-        getConversationId,
-        onRequestComplete,
-        handleSuggestionsUpdate,
-      ],
+      [flowVersionId, getConversationId, onRequestComplete, handleSuggestionsUpdate],
     ),
     {
       initialMessages,

@@ -1,13 +1,14 @@
 // components/MultiSelector.tsx
-import { useState, useRef, useEffect } from "react";
-import { X, ChevronDown, ChevronUp } from "lucide-react";
-import { WorkspaceUserDto } from "../../dtos/workspace-user-dto";
-import { Badge } from "@avplatform/ui/badge";
-import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
-import { Button } from "@avplatform/ui/buttons";
 import { Input, LoadingSpinner } from "@avplatform/ui";
+import { Avatar, AvatarFallback } from "@avplatform/ui/avatar";
+import { Badge } from "@avplatform/ui/badge";
+import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
+import { WorkspaceUserDto } from "../../dtos/workspace-user-dto";
 
 interface MultiSelectorProps {
   searchResults: WorkspaceUserDto[];
@@ -41,10 +42,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
@@ -81,9 +79,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
     return selectedItems.some((item) => item.id === id);
   };
 
-  const filteredResults = searchResults.filter(
-    (result) => !isItemSelected(result.id),
-  );
+  const filteredResults = searchResults.filter((result) => !isItemSelected(result.id));
 
   return (
     <div ref={containerRef} className="relative w-full">
@@ -93,16 +89,12 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
           onClick={() => {
             inputRef.current?.focus();
           }}
-          className={cn("grow", selectedItems.length > 2 && "h-16" )}
+          className={cn("grow", selectedItems.length > 2 && "h-16")}
         >
           <div className="flex flex-wrap items-center gap-1">
             {/* Selected Items */}
             {selectedItems.map((item) => (
-              <Badge
-                key={item.id}
-                variant="outline"
-                className="flex items-center pl-2.5 pr-0"
-              >
+              <Badge key={item.id} variant="outline" className="flex items-center pl-2.5 pr-0">
                 {/* <Avatar className={cn("flex h-5 w-5")}>
                 <AvatarFallback className="bg-primary text-3xs font-bold capitalize tracking-wider text-secondary text-white">
                   {`${item.firstName?.charAt(0)}${item.lastName?.charAt(0)}`}
@@ -154,11 +146,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
           className="ml-1 h-6 w-6 p-0"
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
-          )}
+          {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </Button>
       </div>
 
@@ -173,18 +161,13 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
               </div>
             )}
             {isError && (
-              <div className="p-4 text-center text-sm text-red-600">
-                Error loading results
+              <div className="p-4 text-center text-sm text-red-600">Error loading results</div>
+            )}
+            {!isLoading && !isError && inputValue && filteredResults.length === 0 && (
+              <div className="p-4 text-center text-sm text-muted-foreground">
+                No results found for "{inputValue}"
               </div>
             )}
-            {!isLoading &&
-              !isError &&
-              inputValue &&
-              filteredResults.length === 0 && (
-                <div className="p-4 text-center text-sm text-muted-foreground">
-                  No results found for "{inputValue}"
-                </div>
-              )}
             {!isLoading && !isError && !inputValue && (
               <div className="p-4 text-center text-sm text-muted-foreground">
                 Start typing to search...
@@ -197,12 +180,9 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                     key={result.id}
                     className={cn(
                       "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent",
-                      isItemSelected(result.id) &&
-                        "cursor-not-allowed opacity-50",
+                      isItemSelected(result.id) && "cursor-not-allowed opacity-50",
                     )}
-                    onClick={() =>
-                      !isItemSelected(result.id) && handleItemSelect(result)
-                    }
+                    onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}
                   >
                     <Avatar className={cn("flex h-7 w-7")}>
                       <AvatarFallback className="bg-primary text-xs font-bold capitalize tracking-wider text-secondary text-white">
@@ -214,9 +194,7 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
                       <p className="truncate text-sm font-medium">
                         {`${result.firstName} ${result.lastName}`}
                       </p>
-                      <span className="text-2xs text-muted-foreground">
-                        {result.userName}
-                      </span>
+                      <span className="text-2xs text-muted-foreground">{result.userName}</span>
                     </div>
                   </div>
                 ))}

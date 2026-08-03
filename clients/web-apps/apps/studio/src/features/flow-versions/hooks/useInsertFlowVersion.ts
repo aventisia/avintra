@@ -2,10 +2,7 @@ import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { useOpenFlow } from "@/features/flows-popover/hooks/useOpenFlow";
-import {
-  getFlowToLoad,
-  updateFlowSilently,
-} from "@/features/react-flow/apis/react-flow-apis";
+import { getFlowToLoad, updateFlowSilently } from "@/features/react-flow/apis/react-flow-apis";
 
 import { insertFlowVersion } from "../apis/flow-version-apis";
 import { DATA_QUERY_KEY } from "../constants";
@@ -36,8 +33,7 @@ export const useInsertFlowVersionMutation = ({
           versionId: httpResponse.data.id,
           reactFlowObject: flowData?.data.reactFlowObject || "",
           inputOutputObject: flowData?.data.inputOutputObject,
-          flowVariablesObject:
-            flowData?.data.flowVariablesObject ?? JSON.stringify([]),
+          flowVariablesObject: flowData?.data.flowVariablesObject ?? JSON.stringify([]),
         }).then(() => {
           handleOpenFlowAction(httpResponse.data.flowId, httpResponse.data.id);
         });

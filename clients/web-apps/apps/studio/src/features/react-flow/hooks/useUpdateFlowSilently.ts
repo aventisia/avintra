@@ -1,12 +1,12 @@
-import { DEBOUNCE_SAVE_DELAY } from "@/constants";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation } from "@tanstack/react-query";
 import { useViewport } from "@xyflow/react";
 import { useCallback, useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { DEBOUNCE_SAVE_DELAY } from "@/constants";
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import { updateFlowSilently } from "../apis/react-flow-apis";
 import { FlowSilentUpdateDto } from "../dtos/flow-silent-update-dto";
@@ -89,8 +89,7 @@ export const useUpdateFlowSilently = () => {
         return;
       }
 
-      if (isPublished && isSavePending)
-        toast.info("Changes will not be saved for published agent");
+      if (isPublished && isSavePending) toast.info("Changes will not be saved for published agent");
 
       // Check if save is pending
       if (!isSavePending || isPublished) return;

@@ -11,11 +11,11 @@ For example:
 
 ## Configuration Options
 
-| Field Name               | Description                                                                             | Input Type | Required? | Default Value |
-| ------------------------ | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **UI Element**           | The UI element which you would like to expand or collapse.                              | Text       | Yes       | _(empty)_     |
-| **Action Type**          | Choose whether to expand or collapse the element.                                       | Select     | No        | Expand        |
-| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element, in seconds.                               | Text       | No        | 5             |
+| Field Name                  | Description                                                | Input Type | Required? | Default Value |
+| --------------------------- | ---------------------------------------------------------- | ---------- | --------- | ------------- |
+| **UI Element**              | The UI element which you would like to expand or collapse. | Text       | Yes       | _(empty)_     |
+| **Action Type**             | Choose whether to expand or collapse the element.          | Select     | No        | Expand        |
+| **Max Wait Time (seconds)** | Maximum time to wait to find the UI element, in seconds.   | Text       | No        | 5             |
 
 ## Expected Output Format
 
@@ -48,10 +48,12 @@ Set the **Max Wait Time (seconds)** if needed, to define how long the system sho
 ### Step 5
 
 The result of the action will be available as **WasSuccessful** for further decision-making steps or logging.
+
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the UI element identification path is correct to avoid operation failure.
+  Ensure the UI element identification path is correct to avoid operation
+  failure.
 </Callout>
 
 ## Input/Output Examples
@@ -64,11 +66,11 @@ The result of the action will be available as **WasSuccessful** for further deci
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                  | Solution                                                                                                                             |
-| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| **UI Element not found error**                           | Ensure that the **UI Element** path is correct and the element is present on the screen.                                              |
-| **Action did not execute within Max Wait Time**          | Increase the **Max Wait Time (seconds)** if your application is slow to respond or the UI element is nested deeply.                   |
-| **Incorrect action (expand/collapse) performed**         | Double-check the **Action Type** selected in the configuration.                                                                      |
+| Problem                                          | Solution                                                                                                            |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| **UI Element not found error**                   | Ensure that the **UI Element** path is correct and the element is present on the screen.                            |
+| **Action did not execute within Max Wait Time**  | Increase the **Max Wait Time (seconds)** if your application is slow to respond or the UI element is nested deeply. |
+| **Incorrect action (expand/collapse) performed** | Double-check the **Action Type** selected in the configuration.                                                     |
 
 ## Real-World Use Cases
 

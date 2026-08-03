@@ -1,5 +1,6 @@
-import { NodeDataType } from "@/types/node-data-type";
 import { Node } from "@xyflow/react";
+
+import { NodeDataType } from "@/types/node-data-type";
 
 /**
  * Extracts selected entities (agent, model, or block) from specific node types in a React Flow graph.

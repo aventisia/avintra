@@ -7,11 +7,11 @@ import {
 } from "@avplatform/ui/command";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useReactFlow } from "@xyflow/react";
-import { useHotkeys } from "react-hotkeys-hook";
 import { useCallback, useMemo } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useSearchStore } from "@/features/search/stores/serach-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 export const SearchCommandDialog = () => {
   const open = useSearchStore((state) => state.showDialog);
@@ -25,8 +25,7 @@ export const SearchCommandDialog = () => {
       nodes
         .filter(
           (n) =>
-            ((n.data?.label as string) || (n.data?.name as string)) &&
-            n.type !== "triggerNode",
+            ((n.data?.label as string) || (n.data?.name as string)) && n.type !== "triggerNode",
         )
         .map((n) => ({
           id: n.id,

@@ -11,12 +11,12 @@ You might use this node if:
 
 ## Configuration Options
 
-| Field Name           | Description                                                                 | Input Type | Required? | Default Value |
-| -------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Workbook Instance**| The Excel Workbook instance containing the target worksheet.                | Text       | Yes       | _(empty)_     |
-| **Worksheet Instance** | The target Excel worksheet instance to analyze.                           | Text       | Yes       | _(empty)_     |
-| **Column Index**     | The 1-based index of the column to check for the first free row.            | Text       | Yes       | _(empty)_     |
-| **First Free Row**   | Returns the first free row number in the specified column.                  | Output     | No        | FirstFreeRow  |
+| Field Name             | Description                                                      | Input Type | Required? | Default Value |
+| ---------------------- | ---------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Workbook Instance**  | The Excel Workbook instance containing the target worksheet.     | Text       | Yes       | _(empty)_     |
+| **Worksheet Instance** | The target Excel worksheet instance to analyze.                  | Text       | Yes       | _(empty)_     |
+| **Column Index**       | The 1-based index of the column to check for the first free row. | Text       | Yes       | _(empty)_     |
+| **First Free Row**     | Returns the first free row number in the specified column.       | Output     | No        | FirstFreeRow  |
 
 ## Expected Output Format
 
@@ -48,22 +48,24 @@ The node will output the available row number as **First Free Row**, which can b
 </Steps>
 
 <Callout type="info" title="Note">
-  Make sure the column index you enter correctly corresponds to the column you're targeting, as incorrect indices will lead to errors or inaccurate outputs.
+  Make sure the column index you enter correctly corresponds to the column
+  you're targeting, as incorrect indices will lead to errors or inaccurate
+  outputs.
 </Callout>
 
 ## Input/Output Examples
 
-| Workbook Instance | Worksheet Instance | Column Index | Output Value  | Output Type       |
-| ----------------- | ------------------ | ------------ | ------------- | ----------------- |
-| OrdersDataSheet   | 2023Sales          | 3            | 5             | Row Number (Integer) |
+| Workbook Instance | Worksheet Instance | Column Index | Output Value | Output Type          |
+| ----------------- | ------------------ | ------------ | ------------ | -------------------- |
+| OrdersDataSheet   | 2023Sales          | 3            | 5            | Row Number (Integer) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                          | Solution                                                                                              |
-| ------------------------------------------------ | ----------------------------------------------------------------------------------------------------- |
-| **Incorrect Workbook or Worksheet entered**      | Ensure that the workbook and worksheet instances exist and are correctly named in your Excel file.     |
-| **Column Index out of range**                    | Verify that the column index isn't beyond the actual number of columns available in your worksheet.   |
-| **No Free Row Found**                            | Confirm there are truly empty rows in the column to avoid errors in automated processes.               |
+| Problem                                     | Solution                                                                                            |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Incorrect Workbook or Worksheet entered** | Ensure that the workbook and worksheet instances exist and are correctly named in your Excel file.  |
+| **Column Index out of range**               | Verify that the column index isn't beyond the actual number of columns available in your worksheet. |
+| **No Free Row Found**                       | Confirm there are truly empty rows in the column to avoid errors in automated processes.            |
 
 ## Real-World Use Cases
 

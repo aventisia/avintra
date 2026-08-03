@@ -6,11 +6,11 @@ The **Set Active Excel Worksheet** node enables you to specify and activate a pa
 
 ## Configuration Options
 
-| Field Name          | Description                                                                                                                                   | Input Type | Required? | Default Value  |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Workbook Instance** | Specify the Excel Workbook object containing the worksheets you want to access.                                                            | Text       | Yes       | _(empty)_      |
-| **Selection Type**  | Choose how to locate the worksheet: by **Name** (name of the worksheet) or **Index** (the worksheet's position number, starting from 1).     | Select     | No        | Name           |
-| **Search Value**    | Enter the worksheet name (if using **Name**) or the worksheet index number (if using **Index**) for identifying the desired worksheet.       | Text       | No        | _(empty)_      |
+| Field Name            | Description                                                                                                                              | Input Type | Required? | Default Value |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Workbook Instance** | Specify the Excel Workbook object containing the worksheets you want to access.                                                          | Text       | Yes       | _(empty)_     |
+| **Selection Type**    | Choose how to locate the worksheet: by **Name** (name of the worksheet) or **Index** (the worksheet's position number, starting from 1). | Select     | No        | Name          |
+| **Search Value**      | Enter the worksheet name (if using **Name**) or the worksheet index number (if using **Index**) for identifying the desired worksheet.   | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -47,23 +47,24 @@ Use the **Worksheet Instance** output to perform further operations on the activ
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure your workbook contains the worksheet you're trying to activate by name or index to avoid errors. Index values start from 1.
+  Ensure your workbook contains the worksheet you're trying to activate by name
+  or index to avoid errors. Index values start from 1.
 </Callout>
 
 ## Input/Output Examples
 
-| Selection Type | Search Value | Output Value      | Output Type |
-| -------------- | ------------ | ----------------- | ----------- |
+| Selection Type | Search Value | Output Value      | Output Type              |
+| -------------- | ------------ | ----------------- | ------------------------ |
 | Name           | Sheet1       | WorksheetInstance | Excel Worksheet Instance |
 | Index          | 2            | WorksheetInstance | Excel Worksheet Instance |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                                           |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Worksheet not found by Name**                       | Double-check the spelling of the worksheet name and ensure it exists in the workbook. Names are case-sensitive.                                     |
-| **Invalid Index Value**                               | Ensure the index is a positive integer starting from 1, representing the worksheet's position in the workbook.                                      |
-| **No Workbook Instance provided**                     | Make sure the field is filled with a valid Excel Workbook object before proceeding with worksheet activation.                                       |
+| Problem                           | Solution                                                                                                        |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **Worksheet not found by Name**   | Double-check the spelling of the worksheet name and ensure it exists in the workbook. Names are case-sensitive. |
+| **Invalid Index Value**           | Ensure the index is a positive integer starting from 1, representing the worksheet's position in the workbook.  |
+| **No Workbook Instance provided** | Make sure the field is filled with a valid Excel Workbook object before proceeding with worksheet activation.   |
 
 ## Real-World Use Cases
 

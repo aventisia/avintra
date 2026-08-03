@@ -6,13 +6,13 @@ The **Unzip Files** node enables you to easily extract files from a ZIP archive 
 
 ## Configuration Options
 
-| Field Name          | Description                                                                 | Input Type | Required? | Default Value |
-| ------------------- | --------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Archive Path**    | The full path of the ZIP file you want to extract.                          | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                                                    | Input Type | Required? | Default Value |
+| ---------------------- | ---------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Archive Path**       | The full path of the ZIP file you want to extract.                                             | Text       | Yes       | _(empty)_     |
 | **Destination Folder** | The folder path where the extracted files should be placed. Existing files may be overwritten. | Text       | Yes       | _(empty)_     |
-| **Password**        | The password required to open this archive, if necessary.                    | Password   | No        | _(empty)_     |
-| **Include Mask**    | Only extracts files matching this format. Use wildcards (e.g., `*.txt`).    | Text       | No        | _(empty)_     |
-| **Exclude Mask**    | Files matching this format will not be extracted. Use wildcards (e.g., `*.log`). | Text       | No        | _(empty)_     |
+| **Password**           | The password required to open this archive, if necessary.                                      | Password   | No        | _(empty)_     |
+| **Include Mask**       | Only extracts files matching this format. Use wildcards (e.g., `*.txt`).                       | Text       | No        | _(empty)_     |
+| **Exclude Mask**       | Files matching this format will not be extracted. Use wildcards (e.g., `*.log`).               | Text       | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -48,27 +48,29 @@ Enter the path to the **Destination Folder** where you want the extracted files 
 ### Step 7
 
 The files will be extracted to your specified **Destination Folder**.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure that the **Destination Folder** you select has enough space and appropriate permissions for the files being extracted.
+  Ensure that the **Destination Folder** you select has enough space and
+  appropriate permissions for the files being extracted.
 </Callout>
 
 ## Input/Output Examples
 
-| Archive Path                  | Destination Folder      | Password | Include Mask | Exclude Mask  | Result                                                   |
-| ---------------------------- | ----------------------- | -------- | ------------ | ------------- | --------------------------------------------------------- |
-| `C:\Files\archive.zip`       | `C:\Unzipped\`          | `secret` | `*.txt`      | `*.log`       | Only `.txt` files extracted to `C:\Unzipped\`, logs excluded. |
-| `D:\Data\reports.zip`        | `D:\Processed\`         | _(none)_ | `*.pdf`      | _(none)_      | All `.pdf` files extracted to `D:\Processed\`.             |
+| Archive Path           | Destination Folder | Password | Include Mask | Exclude Mask | Result                                                        |
+| ---------------------- | ------------------ | -------- | ------------ | ------------ | ------------------------------------------------------------- |
+| `C:\Files\archive.zip` | `C:\Unzipped\`     | `secret` | `*.txt`      | `*.log`      | Only `.txt` files extracted to `C:\Unzipped\`, logs excluded. |
+| `D:\Data\reports.zip`  | `D:\Processed\`    | _(none)_ | `*.pdf`      | _(none)_     | All `.pdf` files extracted to `D:\Processed\`.                |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                                                        |
-| ------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------|
-| **Archive Path incorrect**                              | Double-check the path to ensure it's correct and points to an actual zip file.                                                   |
-| **Destination Folder not writable**                     | Verify you have permissions and space to write files to the specified folder.                                                    |
-| **Password not entered for encrypted archive**          | Ensure you provide the correct password for protected archives, or no files will be extracted.                                   |
-| **No files extracted with Include Mask/Exclude Mask set** | Review your mask settings. Ensure they are not excluding all files unintentionally.                                             |
+| Problem                                                   | Solution                                                                                       |
+| --------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **Archive Path incorrect**                                | Double-check the path to ensure it's correct and points to an actual zip file.                 |
+| **Destination Folder not writable**                       | Verify you have permissions and space to write files to the specified folder.                  |
+| **Password not entered for encrypted archive**            | Ensure you provide the correct password for protected archives, or no files will be extracted. |
+| **No files extracted with Include Mask/Exclude Mask set** | Review your mask settings. Ensure they are not excluding all files unintentionally.            |
 
 ## Real-World Use Cases
 

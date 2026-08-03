@@ -12,12 +12,12 @@ For example:
 
 ## Configuration Options
 
-| Field Name       | Description                                                                                   | Input Type | Required? | Default Value  |
-| ---------------- | --------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Word Instance**| The specific Word instance to save. You must input the identifier of the Word document.       | Text       | Yes       | _(empty)_      |
-| **Save Mode**    | Indicates how you want to save the document: either as the same file or with a new name/location. | Select     | No        | SaveDocument   |
-| **Save Path**    | The location to save the document if "Save Document As" is selected.                           | Text       | No        | _(empty)_      |
-| **Save Format**  | Choose the format to save the document (.docx or .pdf), available when saving as a new file.  | Select     | No        | .docx          |
+| Field Name        | Description                                                                                       | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Word Instance** | The specific Word instance to save. You must input the identifier of the Word document.           | Text       | Yes       | _(empty)_     |
+| **Save Mode**     | Indicates how you want to save the document: either as the same file or with a new name/location. | Select     | No        | SaveDocument  |
+| **Save Path**     | The location to save the document if "Save Document As" is selected.                              | Text       | No        | _(empty)_     |
+| **Save Format**   | Choose the format to save the document (.docx or .pdf), available when saving as a new file.      | Select     | No        | .docx         |
 
 ## Expected Output Format
 
@@ -55,24 +55,25 @@ Execute your workflow to save the document as configured.
 </Steps>
 
 <Callout type="info" title="Tip">
-  If you select "Save Document" mode, the "Save Path" and "Save Format" fields will not appear.
+  If you select "Save Document" mode, the "Save Path" and "Save Format" fields
+  will not appear.
 </Callout>
 
 ## Input/Output Examples
 
-| Save Mode         | Save Path              | Save Format | Output        |
-| ----------------- | ---------------------- | ----------- | ------------- |
-| Save Document     | _(n/a)_                | _(n/a)_     | Document is saved in its current state and location. |
-| Save Document As  | C:\Documents\NewFile   | .docx       | New file created at the specified path as a Word document. |
-| Save Document As  | C:\Documents\NewFile   | .pdf        | New file created at the specified path as a PDF document.  |
+| Save Mode        | Save Path            | Save Format | Output                                                     |
+| ---------------- | -------------------- | ----------- | ---------------------------------------------------------- |
+| Save Document    | _(n/a)_              | _(n/a)_     | Document is saved in its current state and location.       |
+| Save Document As | C:\Documents\NewFile | .docx       | New file created at the specified path as a Word document. |
+| Save Document As | C:\Documents\NewFile | .pdf        | New file created at the specified path as a PDF document.  |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                | Solution                                                                                                                       |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| **Word Instance not specified**                        | Ensure you have entered the correct identifier for the Word document to be saved.                                               |
-| **Save Path and Format not appearing**                 | Confirm that you selected **"Save Document As"** in the Save Mode dropdown. These additional fields are only available in this mode. |
-| **Unable to save file at a specified path**            | Verify the file path is correct and the location is accessible and writable.                                                    |
+| Problem                                     | Solution                                                                                                                             |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| **Word Instance not specified**             | Ensure you have entered the correct identifier for the Word document to be saved.                                                    |
+| **Save Path and Format not appearing**      | Confirm that you selected **"Save Document As"** in the Save Mode dropdown. These additional fields are only available in this mode. |
+| **Unable to save file at a specified path** | Verify the file path is correct and the location is accessible and writable.                                                         |
 
 ## Real-World Use Cases
 

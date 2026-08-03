@@ -1,12 +1,14 @@
-import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { Separator } from "@avplatform/ui";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Panel } from "@xyflow/react";
 import { Scan } from "lucide-react";
+import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
+
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
-import { memo } from "react";
 
 export const ViewControls = memo(() => {
   // Get Studio Preferences store state

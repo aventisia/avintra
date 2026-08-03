@@ -12,11 +12,7 @@ interface Props {
   onClick: (id: string) => void;
 }
 
-export default function ExecutionLogAccordionItem({
-  entry,
-  isSelected,
-  onClick,
-}: Props) {
+export default function ExecutionLogAccordionItem({ entry, isSelected, onClick }: Props) {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -49,11 +45,7 @@ export default function ExecutionLogAccordionItem({
   };
 
   return (
-    <div
-      ref={ref}
-      className="relative pb-1 last:pb-0.5"
-      onClick={() => onClick(entry.id)}
-    >
+    <div ref={ref} className="relative pb-1 last:pb-0.5" onClick={() => onClick(entry.id)}>
       {isSelected && (
         <div className="pointer-events-none absolute -left-0.5 top-1 h-[calc(100%-0.5rem)] w-1 rounded-full bg-primary" />
       )}
@@ -78,14 +70,10 @@ export default function ExecutionLogAccordionItem({
             {entry.status == JobStatusEnum["Completed"] && (
               <CheckCircle2 className="h-3.5 w-3.5 text-green-500" />
             )}
-            <span className="text-xs font-medium ">
-              #{entry.id.slice(0, 4)}
-            </span>
+            <span className="text-xs font-medium ">#{entry.id.slice(0, 4)}</span>
           </div>
           <DotSeparator className="mx-1 h-[1.1rem]" />
-          <span className=" text-xs font-medium text-muted-foreground">
-            {entry.time}
-          </span>
+          <span className=" text-xs font-medium text-muted-foreground">{entry.time}</span>
         </div>
         <span className="text-2xs font-medium text-muted-foreground h-[1.1rem]">
           {formatSecondsToCompactDuration(entry.duration)}

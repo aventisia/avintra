@@ -12,13 +12,13 @@ For example:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                                     | Input Type | Required? | Default Value |
-| --------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Data Table**        | The DataTable containing the data to be sorted.                                                 | Text       | Yes       | _(empty)_     |
-| **Specify Column With** | Choose whether to specify the column by name or index.                                               | Select     | Yes       | Name          |
-| **Column Name**       | The name of the column to sort by (used when 'Specify Column With' is set to 'Name').            | Text       | No        | _(empty)_     |
-| **Column Index**      | The index of the column to sort by (used when 'Specify Column With' is set to 'Index').          | Text       | No        | _(empty)_     |
-| **Order**             | Specifies whether to sort in ascending or descending order.                                     | Select     | Yes       | Ascending     |
+| Field Name              | Description                                                                             | Input Type | Required? | Default Value |
+| ----------------------- | --------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Data Table**          | The DataTable containing the data to be sorted.                                         | Text       | Yes       | _(empty)_     |
+| **Specify Column With** | Choose whether to specify the column by name or index.                                  | Select     | Yes       | Name          |
+| **Column Name**         | The name of the column to sort by (used when 'Specify Column With' is set to 'Name').   | Text       | No        | _(empty)_     |
+| **Column Index**        | The index of the column to sort by (used when 'Specify Column With' is set to 'Index'). | Text       | No        | _(empty)_     |
+| **Order**               | Specifies whether to sort in ascending or descending order.                             | Select     | Yes       | Ascending     |
 
 ## Expected Output Format
 
@@ -64,23 +64,24 @@ The sorted table will be available as **SortedDataTable** for use in subsequent 
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that all values in the specified column are of the same data type (e.g., all numbers or all text) to avoid sorting issues.
+  Ensure that all values in the specified column are of the same data type
+  (e.g., all numbers or all text) to avoid sorting issues.
 </Callout>
 
 ## Input/Output Examples
 
-| Specify Column With | Column Name | Column Index | Order      | Output Value Type   |
-| ------------------- | ----------- | ------------ | ---------- | ------------------- |
-| Name                | Price       | _(n/a)_      | Ascending  | Sorted Data Table   |
-| Index               | _(n/a)_     | 2            | Descending | Sorted Data Table   |
+| Specify Column With | Column Name | Column Index | Order      | Output Value Type |
+| ------------------- | ----------- | ------------ | ---------- | ----------------- |
+| Name                | Price       | _(n/a)_      | Ascending  | Sorted Data Table |
+| Index               | _(n/a)_     | 2            | Descending | Sorted Data Table |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                       | Solution                                                                                                            |
-| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| **No column specified for sorting**           | Ensure you've chosen either **Name** or **Index** in the Specify Column With dropdown, and then filled the associated field. |
-| **Mismatched data types in column**           | Verify that all values in the column used for sorting are of a similar type and format (e.g., all numbers or all strings).  |
-| **Unexpected sorting results**                | Double-check your selected **Order** (Ascending or Descending) to ensure it aligns with your expectations.              |
+| Problem                             | Solution                                                                                                                     |
+| ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| **No column specified for sorting** | Ensure you've chosen either **Name** or **Index** in the Specify Column With dropdown, and then filled the associated field. |
+| **Mismatched data types in column** | Verify that all values in the column used for sorting are of a similar type and format (e.g., all numbers or all strings).   |
+| **Unexpected sorting results**      | Double-check your selected **Order** (Ascending or Descending) to ensure it aligns with your expectations.                   |
 
 ## Real-World Use Cases
 

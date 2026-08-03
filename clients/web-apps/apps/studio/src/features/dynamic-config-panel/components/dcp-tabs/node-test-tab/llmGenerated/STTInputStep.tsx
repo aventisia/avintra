@@ -1,9 +1,9 @@
-import { STTInputMode } from "@/features/dynamic-config-panel/dtos/stt-model-dto";
-
 import { Button } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
 import { FileMusicIcon } from "lucide-react";
 import { useDropzone } from "react-dropzone";
+
+import { STTInputMode } from "@/features/dynamic-config-panel/dtos/stt-model-dto";
 
 import AudioPlayer from "./AudioPlayer";
 

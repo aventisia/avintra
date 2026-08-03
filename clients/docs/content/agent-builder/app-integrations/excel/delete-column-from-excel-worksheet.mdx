@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                         | Input Type | Required? | Default Value |
-| --------------------- | ----------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance**| The Excel Worksheet object from which the column will be deleted.                   | Text       | Yes       | _(empty)_     |
-| **Column Index**      | The index (1-based) or letter (e.g., 'A', 'B') of the column to delete.             | Text       | Yes       | _(empty)_     |
+| Field Name             | Description                                                             | Input Type | Required? | Default Value |
+| ---------------------- | ----------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance** | The Excel Worksheet object from which the column will be deleted.       | Text       | Yes       | _(empty)_     |
+| **Column Index**       | The index (1-based) or letter (e.g., 'A', 'B') of the column to delete. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -39,26 +39,28 @@ In the **Column Index** field, enter the column index (e.g., '3') or letter (e.g
 ### Step 4
 
 Verify that the column has been removed from the worksheet through subsequent actions or by inspecting the worksheet object within the platform.
+
 </Steps>
 
 <Callout type="warning" title="Warning">
-  Double-check the column index or letter specified; once a column is deleted, it cannot be recovered through this action.
+  Double-check the column index or letter specified; once a column is deleted,
+  it cannot be recovered through this action.
 </Callout>
 
 ## Input/Output Examples
 
-| Worksheet Instance | Column Index | Modification Action  |
-| ------------------ | ------------ | -------------------  |
+| Worksheet Instance | Column Index | Modification Action                 |
+| ------------------ | ------------ | ----------------------------------- |
 | SalesData2023      | C            | Deletes the 3rd column (Column 'C') |
 | InventorySheet     | 2            | Deletes the 2nd column (Column 'B') |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                                                                        |
-| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| **Column not deleted**                              | Ensure the correct worksheet instance is specified and has the column index that matches the provided input.                     |
-| **Incorrect Column Index**                          | Remember that column indices can be 1-based numbers or letters. Double-check for typos or miscounts.                             |
-| **Worksheet Instance not found**                    | Verify that the correct name or variable reference of the worksheet is used, and that it is active and accessible in your flow.  |
+| Problem                          | Solution                                                                                                                        |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| **Column not deleted**           | Ensure the correct worksheet instance is specified and has the column index that matches the provided input.                    |
+| **Incorrect Column Index**       | Remember that column indices can be 1-based numbers or letters. Double-check for typos or miscounts.                            |
+| **Worksheet Instance not found** | Verify that the correct name or variable reference of the worksheet is used, and that it is active and accessible in your flow. |
 
 ## Real-World Use Cases
 

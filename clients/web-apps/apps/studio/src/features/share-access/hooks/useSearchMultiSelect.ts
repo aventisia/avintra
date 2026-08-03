@@ -1,12 +1,14 @@
-import { useState } from "react";
-import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
-import { useDebounce } from "./useDebounce";
-import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useShareStore } from "../stores/share-store";
-import { useSearchUserList } from "./useSearchUserList";
-import { useInsertUserMutation } from "./useInsertUserMutation";
-import { UserType } from "../dtos/flow-user-dto";
 import { toast } from "@avplatform/ui/sonner";
+import { useState } from "react";
+
+import { useCurrentFlowStore } from "@/stores/current-flow-store";
+
+import { UserType } from "../dtos/flow-user-dto";
+import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
+import { useShareStore } from "../stores/share-store";
+import { useDebounce } from "./useDebounce";
+import { useInsertUserMutation } from "./useInsertUserMutation";
+import { useSearchUserList } from "./useSearchUserList";
 
 export const useSearchMultiSelect = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -21,11 +23,7 @@ export const useSearchMultiSelect = () => {
   }));
   const { setView } = useShareStore((state) => ({ setView: state.setView }));
 
-  const {
-    data: searchData,
-    isLoading,
-    isError,
-  } = useSearchUserList(debouncedSearchTerm);
+  const { data: searchData, isLoading, isError } = useSearchUserList(debouncedSearchTerm);
 
   const { mutateAsync } = useInsertUserMutation();
 

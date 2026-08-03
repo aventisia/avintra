@@ -6,13 +6,13 @@ The **Display Input Dialog** node presents a dialog box to users, prompting them
 
 ## Configuration Options
 
-| Field Name                        | Description                                                                               | Input Type | Required? | Default Value |
-| --------------------------------- | ----------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Input Dialog Title**            | The title text displayed at the top of the input dialog.                                  | Text       | No        | _(empty)_     |
-| **Input Dialog Message**          | The main text content of the input dialog providing context or instructions to the user.  | Text       | No        | _(empty)_     |
-| **Default Value**                 | The default text pre-filled in the input field.                                           | Text       | No        | _(empty)_     |
-| **Input Type**                    | The type of input field: choose between Text or Password (masked input).                  | Select     | No        | _(empty)_     |
-| **Keep Input Dialog Always on Top** | Determines if the input dialog will remain on top of other windows.                        | Switch     | No        | _(empty)_     |
+| Field Name                          | Description                                                                              | Input Type | Required? | Default Value |
+| ----------------------------------- | ---------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Input Dialog Title**              | The title text displayed at the top of the input dialog.                                 | Text       | No        | _(empty)_     |
+| **Input Dialog Message**            | The main text content of the input dialog providing context or instructions to the user. | Text       | No        | _(empty)_     |
+| **Default Value**                   | The default text pre-filled in the input field.                                          | Text       | No        | _(empty)_     |
+| **Input Type**                      | The type of input field: choose between Text or Password (masked input).                 | Select     | No        | _(empty)_     |
+| **Keep Input Dialog Always on Top** | Determines if the input dialog will remain on top of other windows.                      | Switch     | No        | _(empty)_     |
 
 ## Expected Output Format
 
@@ -55,28 +55,30 @@ Once configured, the node will collect user input and button-press information f
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the **Input Dialog Title** and **Input Dialog Message** are clear and concise for better user understanding. Ensure input type matches the data you expect to collect.
+  Ensure the **Input Dialog Title** and **Input Dialog Message** are clear and
+  concise for better user understanding. Ensure input type matches the data you
+  expect to collect.
 </Callout>
 
 ## Input/Output Examples
 
-| Field Name          | Example Input       | Example Output            | Output Type |
-| ------------------- | ------------------- | ------------------------- | ----------- |
-| Input Dialog Title  | Enter Your Name     | _(n/a)_                   | _(n/a)_     |
-| Input Dialog Message| Please type below   | _(n/a)_                   | _(n/a)_     |
-| Default Value       | John Doe            | _(n/a)_                   | _(n/a)_     |
-| Input Type          | Text                | _(n/a)_                   | _(n/a)_     |
-| Keep On Top         | True                | _(n/a)_                   | _(n/a)_     |
-| User Input          | _(via user)_        | john.doe@example.com      | String      |
-| Button Pressed      | _(via user)_        | OK                        | String      |
+| Field Name           | Example Input     | Example Output       | Output Type |
+| -------------------- | ----------------- | -------------------- | ----------- |
+| Input Dialog Title   | Enter Your Name   | _(n/a)_              | _(n/a)_     |
+| Input Dialog Message | Please type below | _(n/a)_              | _(n/a)_     |
+| Default Value        | John Doe          | _(n/a)_              | _(n/a)_     |
+| Input Type           | Text              | _(n/a)_              | _(n/a)_     |
+| Keep On Top          | True              | _(n/a)_              | _(n/a)_     |
+| User Input           | _(via user)_      | john.doe@example.com | String      |
+| Button Pressed       | _(via user)_      | OK                   | String      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                 |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Dialog not appearing on top**                   | Ensure **Keep Input Dialog Always on Top** is enabled if the dialog is obscured by other windows. |
-| **Input not captured**                            | Double-check the **Input Type** and make sure it aligns with the data you are asking from the user. |
-| **Unexpected button result**                      | Ensure the dialog setup properly defines button options and captures the intended result.  |
+| Problem                         | Solution                                                                                            |
+| ------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Dialog not appearing on top** | Ensure **Keep Input Dialog Always on Top** is enabled if the dialog is obscured by other windows.   |
+| **Input not captured**          | Double-check the **Input Type** and make sure it aligns with the data you are asking from the user. |
+| **Unexpected button result**    | Ensure the dialog setup properly defines button options and captures the intended result.           |
 
 ## Real-World Use Cases
 

@@ -1,5 +1,4 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
-
 import { axiosInstance } from "@avplatform/ui/lib";
 
 import { ConfigKeyValueDto } from "../dtos/config-key-value-dto";

@@ -1,3 +1,5 @@
+import { type FieldPath, type FieldValues, useFormContext } from "react-hook-form";
+
 import {
   type BaseFieldProps,
   FormControl,
@@ -8,7 +10,6 @@ import {
 } from "@/ui/components/form";
 import { cn } from "@/ui/lib";
 import { type FormFieldSizeType } from "@/ui/types";
-import { type FieldPath, type FieldValues, useFormContext } from "react-hook-form";
 
 import { DateTimePicker, type DateTimePickerProps } from "../../date-picker";
 
@@ -46,7 +47,13 @@ export const DateTimePickerField = ({
       render={({ field }) => (
         <FormItem size={fieldSize}>
           {label && (
-            <FormLabelExt size={fieldSize} label={label} disabled={disabled} isRequired={isRequired} description={description} />
+            <FormLabelExt
+              size={fieldSize}
+              label={label}
+              disabled={disabled}
+              isRequired={isRequired}
+              description={description}
+            />
           )}
           <FormControl>
             <DateTimePicker

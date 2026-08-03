@@ -11,12 +11,12 @@ Use this node when:
 
 ## Configuration Options
 
-| Field Name            | Description                                                                                          | Input Type | Required? | Default Value |
-| --------------------- | ---------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Browser Instance**  | The active browser session you are working with.                                                     | Text       | Yes       | _(empty)_     |
-| **Iframe Locator Type**| The method used to locate the target iframe (choose from ID, Name, XPath, CSS Selector, or Index). | Select     | Yes       | _(empty)_     |
-| **Iframe Locator Value**| The specific value to identify the iframe, depending on the selected locator type.                 | Text       | Yes       | _(empty)_     |
-| **Timeout (Seconds)** | Maximum time to wait for the iframe to load before timing out.                                        | Text       | No        | 60            |
+| Field Name               | Description                                                                                        | Input Type | Required? | Default Value |
+| ------------------------ | -------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Browser Instance**     | The active browser session you are working with.                                                   | Text       | Yes       | _(empty)_     |
+| **Iframe Locator Type**  | The method used to locate the target iframe (choose from ID, Name, XPath, CSS Selector, or Index). | Select     | Yes       | _(empty)_     |
+| **Iframe Locator Value** | The specific value to identify the iframe, depending on the selected locator type.                 | Text       | Yes       | _(empty)_     |
+| **Timeout (Seconds)**    | Maximum time to wait for the iframe to load before timing out.                                     | Text       | No        | 60            |
 
 ## Expected Output Format
 
@@ -61,24 +61,26 @@ The status of the switch operation will be available as **Switched** (true or fa
 </Steps>
 
 <Callout type="warning" title="Note">
-  Selecting the correct **Iframe Locator Type** and specifying accurate **Iframe Locator Value** are crucial for successful switching, as incorrect values could lead to failures.
+  Selecting the correct **Iframe Locator Type** and specifying accurate **Iframe
+  Locator Value** are crucial for successful switching, as incorrect values
+  could lead to failures.
 </Callout>
 
 ## Input/Output Examples
 
-| Iframe Locator Type | Iframe Locator Value | Timeout Seconds | Switch Successful |
-| ------------------- | -------------------- | --------------- | ----------------- |
-| ID                  | "myIframe"           | 30              | true              |
-| XPath               | "//iframe[@name='contentFrame']" | 60          | true              |
-| Index               | 0                    | 10              | true              |
+| Iframe Locator Type | Iframe Locator Value             | Timeout Seconds | Switch Successful |
+| ------------------- | -------------------------------- | --------------- | ----------------- |
+| ID                  | "myIframe"                       | 30              | true              |
+| XPath               | "//iframe[@name='contentFrame']" | 60              | true              |
+| Index               | 0                                | 10              | true              |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                           |
-| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
-| **Incorrect Locator Type/Value**                     | Ensure you choose the correct locator type and provide the value that accurately identifies the iframe. |
-| **Timeout Expired**                                  | If the iframe takes too long to load, consider increasing the **Timeout (Seconds)** value.            |
-| **Index Out of Bounds**                              | If using Index, ensure the specified index is within the range of available iframes on the webpage.   |
+| Problem                          | Solution                                                                                                |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Incorrect Locator Type/Value** | Ensure you choose the correct locator type and provide the value that accurately identifies the iframe. |
+| **Timeout Expired**              | If the iframe takes too long to load, consider increasing the **Timeout (Seconds)** value.              |
+| **Index Out of Bounds**          | If using Index, ensure the specified index is within the range of available iframes on the webpage.     |
 
 ## Real-World Use Cases
 

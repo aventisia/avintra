@@ -1,5 +1,3 @@
-import { VariableSelectorWrapper } from "@/components/variable-selector/VariableSelectorWrapper";
-import { useVariableSelectorStore } from "@/stores/variable-selector-store";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import {
   BaseFieldProps,
@@ -13,18 +11,16 @@ import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
 import { VariableIcon } from "@heroicons/react/24/outline";
 import * as React from "react";
-import {
-  FieldPath,
-  FieldValues,
-  useController,
-  useFormContext,
-} from "react-hook-form";
+import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
+
+import { VariableSelectorWrapper } from "@/components/variable-selector/VariableSelectorWrapper";
+import { useVariableSelectorStore } from "@/stores/variable-selector-store";
+
 import { ConfigPanelAutosizeTextarea } from "../..";
 
 interface ConfigPanelAutosizeTextareaFieldProps
-  extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeTextarea>,
-    BaseFieldProps {
+  extends React.ComponentPropsWithoutRef<typeof ConfigPanelAutosizeTextarea>, BaseFieldProps {
   /** The name of the form field. */
   name: FieldPath<FieldValues>;
 }
@@ -46,21 +42,16 @@ const ConfigPanelAutosizeTextareaField = ({
   const caretRef = React.useRef<number>(0);
 
   // Get variable selector store state and actions
-  const {
-    inputName,
-    selectedValue,
-    setSelectedValue,
-    setOpenState,
-    setInputName,
-  } = useVariableSelectorStore(
-    useShallow((state) => ({
-      inputName: state.inputName,
-      selectedValue: state.selectedValue,
-      setSelectedValue: state.setSelectedValue,
-      setOpenState: state.setOpenState,
-      setInputName: state.setInputName,
-    })),
-  );
+  const { inputName, selectedValue, setSelectedValue, setOpenState, setInputName } =
+    useVariableSelectorStore(
+      useShallow((state) => ({
+        inputName: state.inputName,
+        selectedValue: state.selectedValue,
+        setSelectedValue: state.setSelectedValue,
+        setOpenState: state.setOpenState,
+        setInputName: state.setInputName,
+      })),
+    );
 
   // Get the form context
   const { control } = useFormContext<FieldValues>();
@@ -124,11 +115,7 @@ const ConfigPanelAutosizeTextareaField = ({
           {...{ name, textareaField }}
           render={({ field }) => (
             <FormItem>
-              {label && (
-                <FormLabelExt
-                  {...{ label, disabled, isRequired, description }}
-                />
-              )}
+              {label && <FormLabelExt {...{ label, disabled, isRequired, description }} />}
 
               <FormControl>
                 <ConfigPanelAutosizeTextarea
@@ -156,10 +143,6 @@ const ConfigPanelAutosizeTextareaField = ({
   );
 };
 
-ConfigPanelAutosizeTextareaField.displayName =
-  "ConfigPanelAutosizeTextareaField";
+ConfigPanelAutosizeTextareaField.displayName = "ConfigPanelAutosizeTextareaField";
 
-export {
-  ConfigPanelAutosizeTextareaField,
-  type ConfigPanelAutosizeTextareaFieldProps,
-};
+export { ConfigPanelAutosizeTextareaField, type ConfigPanelAutosizeTextareaFieldProps };

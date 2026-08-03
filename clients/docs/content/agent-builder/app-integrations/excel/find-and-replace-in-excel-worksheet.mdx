@@ -5,26 +5,28 @@ import { Callout, Steps } from "nextra/components";
 The **Find and Replace in Excel Worksheet** node is designed to help you search for a specific piece of text within an Excel worksheet and replace it with different text if needed. This is particularly useful when updating data entries or correcting information across large datasets quickly and efficiently.
 
 For example:
+
 - Quickly correct spelling errors throughout an Excel worksheet.
 - Update outdated terminology efficiently in all cells.
 - Locate specific entries and replace them with updated values.
 
 ## Configuration Options
 
-| Field Name                      | Description                                                                            | Input Type | Required? | Default Value |
-| ------------------------------- | -------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Worksheet Instance**          | The Excel Worksheet object where find and replace will be performed.                   | Text       | Yes       | _(empty)_     |
-| **Search Mode**                 | Choose between finding text only or finding and replacing text.                        | Select     | Yes       | Find          |
-| **Text To Find**                | The text or value to find in the worksheet.                                            | Text       | No        | _(empty)_     |
-| **Text To Replace With**        | The text or value to replace the found text with.                                      | Text       | No        | _(empty)_     |
-| **All Matches**                 | If true, replaces all occurrences, not just the first one.                             | Switch     | No        | _(empty)_     |
-| **Match Case**                  | Enable this to perform a case-sensitive search.                                        | Switch     | No        | _(empty)_     |
-| **Match Entire Cell Contents**  | Matches only cells that contain exactly the specified text.                            | Switch     | No        | _(empty)_     |
-| **Search By**                   | Choose whether to search by rows or by columns.                                        | Select     | No        | Rows          |
+| Field Name                     | Description                                                          | Input Type | Required? | Default Value |
+| ------------------------------ | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Worksheet Instance**         | The Excel Worksheet object where find and replace will be performed. | Text       | Yes       | _(empty)_     |
+| **Search Mode**                | Choose between finding text only or finding and replacing text.      | Select     | Yes       | Find          |
+| **Text To Find**               | The text or value to find in the worksheet.                          | Text       | No        | _(empty)_     |
+| **Text To Replace With**       | The text or value to replace the found text with.                    | Text       | No        | _(empty)_     |
+| **All Matches**                | If true, replaces all occurrences, not just the first one.           | Switch     | No        | _(empty)_     |
+| **Match Case**                 | Enable this to perform a case-sensitive search.                      | Switch     | No        | _(empty)_     |
+| **Match Entire Cell Contents** | Matches only cells that contain exactly the specified text.          | Switch     | No        | _(empty)_     |
+| **Search By**                  | Choose whether to search by rows or by columns.                      | Select     | No        | Rows          |
 
 ## Expected Output Format
 
 When this node runs, it generates:
+
 - **Found Cells**: A list of all matched cell locations (if "All Matches" is enabled).
 - **Found Column Index**: The column index of the matched cell (if "All Matches" is not enabled).
 - **Found Row Index**: The row index of the matched cell (if "All Matches" is not enabled).
@@ -44,7 +46,8 @@ In the **Worksheet Instance** field, input the Excel worksheet object that will 
 
 ### Step 3
 
-Select a **Search Mode**: 
+Select a **Search Mode**:
+
 - **Find**: Locate text in the worksheet.
 - **Find and Replace**: Find and replace specified text in the worksheet.
 
@@ -59,6 +62,7 @@ If you selected **Find and Replace**, enter the text you wish to use as a replac
 ### Step 6
 
 Use switches to customize your search:
+
 - **All Matches**: Check if you wish to replace all instances of the found text.
 - **Match Case**: Toggle for a case-sensitive search.
 - **Match Entire Cell Contents**: Toggle to match cells that contain exactly the specified text.
@@ -74,25 +78,26 @@ Run the node. Outputs will include the found cell information, depending on your
 </Steps>
 
 <Callout type="info" title="Note">
-  The "Text To Replace With" field is required only when "Find and Replace" is selected in the **Search Mode**.
+  The "Text To Replace With" field is required only when "Find and Replace" is
+  selected in the **Search Mode**.
 </Callout>
 
 ## Input/Output Examples
 
-| Search Mode         | Text To Find | Text To Replace With | All Matches | Found Cells | Found Column Index | Found Row Index |
-| ------------------- | ------------ | -------------------- | ----------- | ----------- | ------------------ | --------------- |
-| Find                | "error"      | _(n/a)_              |             | A list of cells containing "error" | _(n/a)_        | _(n/a)_         |
-| Find and Replace    | "old"        | "new"                | true        | A list of cells where "old" was replaced by "new" | _(n/a)_        | _(n/a)_         |
-| Find and Replace    | "Q1"         | "Q2"                 | false       | _(same cell location)_ | 3                | 5               |
+| Search Mode      | Text To Find | Text To Replace With | All Matches | Found Cells                                       | Found Column Index | Found Row Index |
+| ---------------- | ------------ | -------------------- | ----------- | ------------------------------------------------- | ------------------ | --------------- |
+| Find             | "error"      | _(n/a)_              |             | A list of cells containing "error"                | _(n/a)_            | _(n/a)_         |
+| Find and Replace | "old"        | "new"                | true        | A list of cells where "old" was replaced by "new" | _(n/a)_            | _(n/a)_         |
+| Find and Replace | "Q1"         | "Q2"                 | false       | _(same cell location)_                            | 3                  | 5               |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                                                                                                     |
-| ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Replacement text not appearing**                | Ensure "Find and Replace" is selected in **Search Mode**, and "Text To Replace With" is filled out.                                                                           |
-| **No results found**                              | Double-check your **Search By** settings and input for spelling or case sensitivity (if enabled).                                                                             |
-| **Case-sensitive mismatch**                       | Check if **Match Case** is toggled according to your search requirement.                                                                                                      |
-| **Unexpected cell matches**                       | Verify if **Match Entire Cell Contents** is toggled to get a precise match for entire cells.                                                                                  |
+| Problem                            | Solution                                                                                            |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Replacement text not appearing** | Ensure "Find and Replace" is selected in **Search Mode**, and "Text To Replace With" is filled out. |
+| **No results found**               | Double-check your **Search By** settings and input for spelling or case sensitivity (if enabled).   |
+| **Case-sensitive mismatch**        | Check if **Match Case** is toggled according to your search requirement.                            |
+| **Unexpected cell matches**        | Verify if **Match Entire Cell Contents** is toggled to get a precise match for entire cells.        |
 
 ## Real-World Use Cases
 

@@ -6,12 +6,12 @@ The **Rename Worksheet** allows you to rename an existing worksheet within a spe
 
 ## Configuration Options
 
-| Field Name             | Description                                                                                              | Input Type        | Required? | Default Value |
-| ---------------------- | -------------------------------------------------------------------------------------------------------- | ----------------- | --------- | ------------- |
-| **M365 Excel Credential** | Credentials needed for authenticating requests to Microsoft 365 APIs.                                  | Credential Select | Yes       | _(empty)_     |
-| **Drive and Item ID**  | The combination of IDs (driveId/items/itemId) that uniquely identify your Excel file in OneDrive/SharePoint. | Text              | Yes       | _(empty)_     |
-| **Worksheet Name**     | The current name of the worksheet you want to rename.                                                    | Text              | Yes       | Sheet1        |
-| **New Worksheet Name** | The new desired name for the worksheet.                                                                  | Text              | Yes       | NewSheet1     |
+| Field Name                | Description                                                                                                  | Input Type        | Required? | Default Value |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------ | ----------------- | --------- | ------------- |
+| **M365 Excel Credential** | Credentials needed for authenticating requests to Microsoft 365 APIs.                                        | Credential Select | Yes       | _(empty)_     |
+| **Drive and Item ID**     | The combination of IDs (driveId/items/itemId) that uniquely identify your Excel file in OneDrive/SharePoint. | Text              | Yes       | _(empty)_     |
+| **Worksheet Name**        | The current name of the worksheet you want to rename.                                                        | Text              | Yes       | Sheet1        |
+| **New Worksheet Name**    | The new desired name for the worksheet.                                                                      | Text              | Yes       | NewSheet1     |
 
 ## Expected Output Format
 
@@ -45,25 +45,27 @@ Specify the **New Worksheet Name** you desire for the worksheet.
 ### Step 6
 
 Once configured, the node will process the renaming and return the **Result** containing details of the renamed worksheet.
+
 </Steps>
 
 <Callout type="warning" title="Important">
-  Ensure that your M365 credentials are correctly set up and have the necessary permissions to access and modify the Excel file.
+  Ensure that your M365 credentials are correctly set up and have the necessary
+  permissions to access and modify the Excel file.
 </Callout>
 
 ## Input/Output Examples
 
-| Worksheet Name | New Worksheet Name | Result     | Output Type |
-| -------------- | ------------------ | ---------- | ----------- |
-| Sheet1         | Reports2023        | Result     | Object      |
+| Worksheet Name | New Worksheet Name | Result | Output Type |
+| -------------- | ------------------ | ------ | ----------- |
+| Sheet1         | Reports2023        | Result | Object      |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                              | Solution                                                                                               |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| **Invalid credentials error**                        | Verify that your M365 Excel credentials are correctly set up and valid.                                |
-| **Incorrect Drive/Item ID format**                   | Make sure the Drive and Item ID is in the correct format: `driveId/items/itemId`.                      |
-| **Worksheet exists with the new name**               | Rename cannot occur if another worksheet with the new name already exists. Choose a unique new name.   |
+| Problem                                | Solution                                                                                             |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| **Invalid credentials error**          | Verify that your M365 Excel credentials are correctly set up and valid.                              |
+| **Incorrect Drive/Item ID format**     | Make sure the Drive and Item ID is in the correct format: `driveId/items/itemId`.                    |
+| **Worksheet exists with the new name** | Rename cannot occur if another worksheet with the new name already exists. Choose a unique new name. |
 
 ## Real-World Use Cases
 

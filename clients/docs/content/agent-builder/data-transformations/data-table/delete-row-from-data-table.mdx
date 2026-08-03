@@ -12,9 +12,9 @@ For example:
 
 ## Configuration Options
 
-| Field Name     | Description                                                          | Input Type | Required? | Default Value |
-| -------------- | -------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Data Table** | The data table from which you want to delete a row.                  | Text       | Yes       | _(empty)_     |
+| Field Name     | Description                                                              | Input Type | Required? | Default Value |
+| -------------- | ------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Data Table** | The data table from which you want to delete a row.                      | Text       | Yes       | _(empty)_     |
 | **Row Index**  | The position (starting at 0) of the row you want to delete in the table. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
@@ -43,24 +43,25 @@ Once the node is configured, the system will process and provide the **Modified 
 </Steps>
 
 <Callout type="info" title="Note">
-  The row index is zero-based. This means the first row has an index of 0, the second row has an index of 1, and so on.
+  The row index is zero-based. This means the first row has an index of 0, the
+  second row has an index of 1, and so on.
 </Callout>
 
 ## Input/Output Examples
 
-| Data Table            | Row Index | Output (Modified Data Table)       |
-| --------------------- | --------- | ---------------------------------- |
-| Customers Table       | 0         | Table without the first customer   |
-| Transaction Records   | 2         | Table with the third transaction removed |
-| Inventory List        | 4         | Table without the fifth inventory item |
+| Data Table          | Row Index | Output (Modified Data Table)             |
+| ------------------- | --------- | ---------------------------------------- |
+| Customers Table     | 0         | Table without the first customer         |
+| Transaction Records | 2         | Table with the third transaction removed |
+| Inventory List      | 4         | Table without the fifth inventory item   |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                                   | Solution                                                                                  |
-| --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
-| **Index Out of Range Error**                              | Ensure that the Row Index is within the range of available rows in the table.              |
-| **Incorrect Data Table**                                  | Double-check that the correct data table is selected in the **Data Table** field.          |
-| **Non-numeric Row Index Entered**                         | Make sure that the Row Index is a numeric value, starting at 0 for the first row.          |
+| Problem                           | Solution                                                                          |
+| --------------------------------- | --------------------------------------------------------------------------------- |
+| **Index Out of Range Error**      | Ensure that the Row Index is within the range of available rows in the table.     |
+| **Incorrect Data Table**          | Double-check that the correct data table is selected in the **Data Table** field. |
+| **Non-numeric Row Index Entered** | Make sure that the Row Index is a numeric value, starting at 0 for the first row. |
 
 ## Real-World Use Cases
 

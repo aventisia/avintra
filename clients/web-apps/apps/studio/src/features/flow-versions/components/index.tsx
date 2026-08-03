@@ -1,24 +1,18 @@
-import {
-  PopoverWrapper,
-  PopoverContent,
-  PopoverDefaultHeader,
-} from "@avplatform/ui/popover";
-import { FlowVersionsTrigger } from "./FlowVersionsTrigger";
-import { FVPopoverContent } from "./flow-version-popover-content";
-import { useFetchFlowVersions } from "../hooks/useFetchFlowVersions";
-import { useFlowsVersionsStore } from "../stores/flow-versions-store";
-import { useShallow } from "zustand/react/shallow";
+import { PopoverContent, PopoverDefaultHeader, PopoverWrapper } from "@avplatform/ui/popover";
 import { useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
+import { useFetchFlowVersions } from "../hooks/useFetchFlowVersions";
 import { useFlowVersionPopoverStore } from "../stores/flow-version-popover-store";
+import { useFlowsVersionsStore } from "../stores/flow-versions-store";
+import { FlowVersionsTrigger } from "./FlowVersionsTrigger";
+import { FVPopoverContent } from "./flow-version-popover-content";
 
 export const FlowVersions = () => {
   const location = useLocation();
 
-  const queryParams = useMemo(
-    () => new URLSearchParams(location.search),
-    [location.search],
-  );
+  const queryParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
 
   const flowId = queryParams.get("f");
 
@@ -53,29 +47,17 @@ export const FlowVersions = () => {
         }
       }
       try {
-        setVersion(
-          selectedVersion.id || "",
-          selectedVersion.versionNumber || null,
-        );
-      } catch  {
-        throw new Error(
-          "You don't have access to this agent. Please contact the admin.",
-        );
+        setVersion(selectedVersion.id || "", selectedVersion.versionNumber || null);
+      } catch {
+        throw new Error("You don't have access to this agent. Please contact the admin.");
       }
     }
   }, [data?.data, versionId, setVersion]);
 
   return (
-    <PopoverWrapper
-      open={isPopoverOpen}
-      onOpenChangeFn={() => togglePopoverOpen(!isPopoverOpen)}
-    >
+    <PopoverWrapper open={isPopoverOpen} onOpenChangeFn={() => togglePopoverOpen(!isPopoverOpen)}>
       <FlowVersionsTrigger />
-      <PopoverContent
-        align="end"
-        variant={"responsive"}
-        className="ml-1 mt-1.5"
-      >
+      <PopoverContent align="end" variant={"responsive"} className="ml-1 mt-1.5">
         <PopoverDefaultHeader heading={"Versions"} />
         <FVPopoverContent flowVersionsList={data?.data} isLoading={isLoading} />
       </PopoverContent>

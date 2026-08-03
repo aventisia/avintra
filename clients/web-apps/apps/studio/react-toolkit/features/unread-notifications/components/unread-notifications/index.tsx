@@ -1,8 +1,4 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogDefaultHeader,
-} from "@avplatform/ui/dialog";
+import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { useShallow } from "zustand/react/shallow";
 

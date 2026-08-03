@@ -12,14 +12,14 @@ For example:
 
 ## Configuration Options
 
-| Field Name                                             | Description                                                                                                             | Input Type         | Required? | Default Value   |
-| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- | ------------------ | --------- | --------------- |
-| **Twilio Credential**                                  | The Twilio credential containing valid auth token and accountsId for API authentication.                                | Credentials Select | Yes       | _(none)_        |
-| **Recipient Identification Method**                    | Specify how to identify the recipient of the WhatsApp message: by phone number or by Messaging Service SID.             | Select             | Yes       | PhoneNumber     |
-| **Sender Phone Number / Messaging Service SID**        | Enter the Twilio phone number or service identifier from which the message will be sent.                                | Text               | Yes       | _(none)_        |
-| **Recipient Phone Number**                             | Enter the recipient's phone number (must be a valid Twilio-supported number).                                           | Text               | Yes       | _(none)_        |
-| **WhatsApp Template Identifier**                       | Specify the unique identifier for the WhatsApp template that will be used to send the message.                          | Text               | Yes       | _(none)_        |
-| **Template Parameters**                                | Provide dynamic values to replace placeholders in the template (e.g., names, dates).                                    | Text               | No        | _(none)_        |
+| Field Name                                      | Description                                                                                                 | Input Type         | Required? | Default Value |
+| ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ------------------ | --------- | ------------- |
+| **Twilio Credential**                           | The Twilio credential containing valid auth token and accountsId for API authentication.                    | Credentials Select | Yes       | _(none)_      |
+| **Recipient Identification Method**             | Specify how to identify the recipient of the WhatsApp message: by phone number or by Messaging Service SID. | Select             | Yes       | PhoneNumber   |
+| **Sender Phone Number / Messaging Service SID** | Enter the Twilio phone number or service identifier from which the message will be sent.                    | Text               | Yes       | _(none)_      |
+| **Recipient Phone Number**                      | Enter the recipient's phone number (must be a valid Twilio-supported number).                               | Text               | Yes       | _(none)_      |
+| **WhatsApp Template Identifier**                | Specify the unique identifier for the WhatsApp template that will be used to send the message.              | Text               | Yes       | _(none)_      |
+| **Template Parameters**                         | Provide dynamic values to replace placeholders in the template (e.g., names, dates).                        | Text               | No        | _(none)_      |
 
 ## Expected Output Format
 
@@ -64,28 +64,30 @@ Provide the **WhatsApp Template Identifier** to specify which template to use.
 ### Step 8
 
 The result of the message operation will be shown as **Result** for use in further processing.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Ensure that all phone numbers are in E.164 format (e.g., +14155552671) to avoid sending errors.
+  Ensure that all phone numbers are in E.164 format (e.g., +14155552671) to
+  avoid sending errors.
 </Callout>
 
 ## Input/Output Examples
 
-| Input Field                   | Input Value                                   | Output                                   |
-| ----------------------------- | --------------------------------------------- | ---------------------------------------- |
-| **Recipient Phone Number**    | +14155552671                                  | Success message with Twilio response data|
-| **WhatsApp Template Identifier** | template_123                             | Response with message delivery status   |
-| **Template Parameters**       | `{ "name": "John", "date": "Nov 5" }`          | Template rendered with provided values  |
+| Input Field                      | Input Value                           | Output                                    |
+| -------------------------------- | ------------------------------------- | ----------------------------------------- |
+| **Recipient Phone Number**       | +14155552671                          | Success message with Twilio response data |
+| **WhatsApp Template Identifier** | template_123                          | Response with message delivery status     |
+| **Template Parameters**          | `{ "name": "John", "date": "Nov 5" }` | Template rendered with provided values    |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                         | Solution                                                                                                                                 |
-| ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| **Invalid phone number format**                 | Ensure the phone number is in E.164 format.                                                                                              |
-| **Authentication error**                        | Check that your Twilio credentials are correctly entered and valid.                                                                      |
-| **Missing template parameters**                 | Ensure all necessary template placeholders are filled with corresponding parameters.                                                     |
-| **Message delivery failure**                    | Verify that the recipient number is a registered WhatsApp number and that the template is approved in your Twilio account configuration. |
+| Problem                         | Solution                                                                                                                                 |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Invalid phone number format** | Ensure the phone number is in E.164 format.                                                                                              |
+| **Authentication error**        | Check that your Twilio credentials are correctly entered and valid.                                                                      |
+| **Missing template parameters** | Ensure all necessary template placeholders are filled with corresponding parameters.                                                     |
+| **Message delivery failure**    | Verify that the recipient number is a registered WhatsApp number and that the template is approved in your Twilio account configuration. |
 
 ## Real-World Use Cases
 

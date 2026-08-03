@@ -1,9 +1,9 @@
-import { useEffect, useRef, useCallback } from "react";
+import { logOffFromCurrentSession } from "@avplatform/ui/apis";
+import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ACTIVITY_EVENTS, IDLE_TIMEOUT_MINUTES } from "@/constants/auto-logout";
-import { logOffFromCurrentSession } from "@avplatform/ui/apis";
-import { useUserSessionStore } from "@avplatform/ui/stores";
 
 // TODO: Save timer in localstorage or some better place where all browser tabs can access the same value. if agent is in execution state then auto logout should not trigger
 export function useAutoLogout() {
@@ -31,10 +31,7 @@ export function useAutoLogout() {
       await logOffFromCurrentSession();
       localStorage.setItem("logout", "true");
       setUserSession(null);
-      navigate(
-        "/redirect?msg=Logging out...&url=" +
-          import.meta.env.VITE_ACCOUNTS_PATH,
-      );
+      navigate("/redirect?msg=Logging out...&url=" + import.meta.env.VITE_ACCOUNTS_PATH);
     } catch (err) {
       console.error("Error during logout:", err);
     }
@@ -42,9 +39,7 @@ export function useAutoLogout() {
 
   useEffect(() => {
     // Attach debounced resetTimer to each event
-    ACTIVITY_EVENTS.forEach((event) =>
-      window.addEventListener(event, debouncedResetTimer),
-    );
+    ACTIVITY_EVENTS.forEach((event) => window.addEventListener(event, debouncedResetTimer));
 
     // Start the timer initially
     debouncedResetTimer();
@@ -52,9 +47,7 @@ export function useAutoLogout() {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
       if (debounceTimeoutRef.current) clearTimeout(debounceTimeoutRef.current);
-      ACTIVITY_EVENTS.forEach((event) =>
-        window.removeEventListener(event, debouncedResetTimer),
-      );
+      ACTIVITY_EVENTS.forEach((event) => window.removeEventListener(event, debouncedResetTimer));
     };
   }, [debouncedResetTimer]);
 

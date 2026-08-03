@@ -1,21 +1,13 @@
 import { Button } from "@avplatform/ui/buttons";
 import { MinusIcon, PlusIcon } from "lucide-react";
 
-import {
-  SCALE_MAX,
-  SCALE_MIN,
-  useZoomControls,
-} from "../../stores/file-viewer-store";
+import { SCALE_MAX, SCALE_MIN, useZoomControls } from "../../stores/file-viewer-store";
 
 const ZoomControl = () => {
   const { zoomIn, zoomOut, canZoomIn, canZoomOut } = useZoomControls();
 
   return (
-    <div
-      className="flex items-center gap-0.5"
-      role="group"
-      aria-label="Zoom controls"
-    >
+    <div className="flex items-center gap-0.5" role="group" aria-label="Zoom controls">
       <Button
         variant="ghost"
         size="icon7"

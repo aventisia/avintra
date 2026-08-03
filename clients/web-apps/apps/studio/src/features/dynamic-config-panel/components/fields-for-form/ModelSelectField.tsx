@@ -45,9 +45,7 @@ const ModelSelectField = ({
         render={({ field }) => (
           <FormItem {...{ size }}>
             {label && (
-              <FormLabelExt
-                {...{ size, label, disabled, isRequired, description }}
-              ></FormLabelExt>
+              <FormLabelExt {...{ size, label, disabled, isRequired, description }}></FormLabelExt>
             )}
             <FormControl>
               <div className="flex flex-col gap-2">
@@ -57,12 +55,7 @@ const ModelSelectField = ({
                   defaultValue={field.value}
                   value={field.value}
                 >
-                  <SelectTrigger
-                    size={size}
-                    {...field}
-                    ref={field.ref}
-                    {...props}
-                  >
+                  <SelectTrigger size={size} {...field} ref={field.ref} {...props}>
                     <SelectValue
                       className="placeholder:text-muted-foreground"
                       placeholder={"Select model"}
@@ -83,11 +76,7 @@ const ModelSelectField = ({
                       </div>
                     ) : (
                       selectOptions.map((item) => (
-                        <SelectItem
-                          size={size}
-                          key={item.value}
-                          value={item.value}
-                        >
+                        <SelectItem size={size} key={item.value} value={item.value}>
                           {item.label}
                         </SelectItem>
                       ))

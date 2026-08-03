@@ -1,12 +1,14 @@
-import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
 import { Separator } from "@avplatform/ui";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { Panel } from "@xyflow/react";
 import { Scan } from "lucide-react";
+import { memo } from "react";
 import { useShallow } from "zustand/react/shallow";
+
+import { useStudioPreferencesStore } from "@/stores/studio-preferences-store";
+
 import { VCActionButton } from "./VCActionButton";
 import { VCBContainer } from "./VCBContainer";
-import { memo } from "react";
 import { VCBranchStatsButton } from "./VCBranchStatsButton";
 
 export const ViewControls = memo(() => {
@@ -23,8 +25,8 @@ export const ViewControls = memo(() => {
       <div className="flex flex-col items-end space-y-4">
         {zoomControls && (
           <VCBContainer>
-            <VCBranchStatsButton/>
-                {/* Separate from zoom in-out */}
+            <VCBranchStatsButton />
+            {/* Separate from zoom in-out */}
             <Separator orientation="horizontal" className="my-1 h-[0.5px]" />
 
             {/* Fit view button */}

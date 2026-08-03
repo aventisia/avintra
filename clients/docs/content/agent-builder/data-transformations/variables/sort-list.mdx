@@ -8,16 +8,16 @@ This node is particularly useful when you need to systematically arrange data li
 
 ## Configuration Options
 
-| Field Name                 | Description                                                                                      | Input Type | Required? | Default Value |
-| -------------------------- | ------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
-| **List to Sort**           | The variable that holds the list to sort.                                                        | Text       | Yes       | _(empty)_     |
-| **Sort By Properties**     | Enable this if sorting based on object properties (e.g., files, folders).                        | Switch     | No        | False         |
-| **First Property to Sort By** | The name of the first property to define the sort. _Appears only if "Sort By Properties" is enabled._ | Text       | No        | _(empty)_     |
-| **First Sort Direction**   | Determines whether to sort the first property in ascending or descending order.                   | Select     | No        | Ascending     |
+| Field Name                     | Description                                                                                            | Input Type | Required? | Default Value |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **List to Sort**               | The variable that holds the list to sort.                                                              | Text       | Yes       | _(empty)_     |
+| **Sort By Properties**         | Enable this if sorting based on object properties (e.g., files, folders).                              | Switch     | No        | False         |
+| **First Property to Sort By**  | The name of the first property to define the sort. _Appears only if "Sort By Properties" is enabled._  | Text       | No        | _(empty)_     |
+| **First Sort Direction**       | Determines whether to sort the first property in ascending or descending order.                        | Select     | No        | Ascending     |
 | **Second Property to Sort By** | The name of the second property to define the sort. _Appears only if "Sort By Properties" is enabled._ | Text       | No        | _(empty)_     |
-| **Second Sort Direction**  | Determines whether to sort the second property in ascending or descending order.                  | Select     | No        | Ascending     |
+| **Second Sort Direction**      | Determines whether to sort the second property in ascending or descending order.                       | Select     | No        | Ascending     |
 | **Third Property to Sort By**  | The name of the third property to define the sort. _Appears only if "Sort By Properties" is enabled._  | Text       | No        | _(empty)_     |
-| **Third Sort Direction**   | Determines whether to sort the third property in ascending or descending order.                   | Select     | No        | Ascending     |
+| **Third Sort Direction**       | Determines whether to sort the third property in ascending or descending order.                        | Select     | No        | Ascending     |
 
 ## Expected Output Format
 
@@ -59,24 +59,25 @@ The sorted list will be available as **SortedList** for further use in subsequen
 </Steps>
 
 <Callout type="info" title="Note">
-  Enabling "Sort By Properties" and setting properties correctly is crucial if you are sorting complex data objects like files or records.
+  Enabling "Sort By Properties" and setting properties correctly is crucial if
+  you are sorting complex data objects like files or records.
 </Callout>
 
 ## Input/Output Examples
 
-| List Type | Input Example                            | Output Example                |
-| --------- | ---------------------------------------- | ----------------------------- |
-| Simple    | `[3, 1, 2]`                               | `[1, 2, 3]`                   |
-| By Name   | `[{name: 'b'}, {name: 'a'}, {name: 'c'}]` | `[{name: 'a'}, {name: 'b'}, {name: 'c'}]` |
+| List Type | Input Example                                  | Output Example                                 |
+| --------- | ---------------------------------------------- | ---------------------------------------------- |
+| Simple    | `[3, 1, 2]`                                    | `[1, 2, 3]`                                    |
+| By Name   | `[{name: 'b'}, {name: 'a'}, {name: 'c'}]`      | `[{name: 'a'}, {name: 'b'}, {name: 'c'}]`      |
 | By Date   | `[{date: '2023-10-10'}, {date: '2023-01-01'}]` | `[{date: '2023-01-01'}, {date: '2023-10-10'}]` |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                             | Solution                                                                 |
-| --------------------------------------------------- | ------------------------------------------------------------------------ |
-| **Properties not appearing for input**              | Ensure **Sort By Properties** is enabled and input is structured correctly. |
-| **Unexpected sort order**                           | Check if you have correctly set the sort direction to Ascending or Descending. |
-| **Empty output list**                               | Verify that the input list is populated and the variable name is correct. |
+| Problem                                | Solution                                                                       |
+| -------------------------------------- | ------------------------------------------------------------------------------ |
+| **Properties not appearing for input** | Ensure **Sort By Properties** is enabled and input is structured correctly.    |
+| **Unexpected sort order**              | Check if you have correctly set the sort direction to Ascending or Descending. |
+| **Empty output list**                  | Verify that the input list is populated and the variable name is correct.      |
 
 ## Real-World Use Cases
 

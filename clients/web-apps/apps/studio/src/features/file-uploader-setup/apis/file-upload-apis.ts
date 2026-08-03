@@ -17,23 +17,19 @@ export const uploadFile = async (
   formData.append("file", file);
   const controller = new AbortController();
 
-  const response = await axiosInstance.post(
-    `${baseAPIURL}/upload/single`,
-    formData,
-    {
-      signal: controller.signal,
-      headers: {
-        "Content-Type": "multipart/form-data",
-        ...(isPublic && { "X-Tenant-Scope": "Scope1" }),
-      },
-      onUploadProgress: (e) => {
-        if (e.total && onProgress) {
-          const progress = Math.round((e.loaded * 100) / e.total);
-          onProgress(file.name, progress);
-        }
-      },
+  const response = await axiosInstance.post(`${baseAPIURL}/upload/single`, formData, {
+    signal: controller.signal,
+    headers: {
+      "Content-Type": "multipart/form-data",
+      ...(isPublic && { "X-Tenant-Scope": "Scope1" }),
     },
-  );
+    onUploadProgress: (e) => {
+      if (e.total && onProgress) {
+        const progress = Math.round((e.loaded * 100) / e.total);
+        onProgress(file.name, progress);
+      }
+    },
+  });
 
   // Get only the actual file data
   const fileData = response.data.data;
@@ -41,10 +37,7 @@ export const uploadFile = async (
   return { data: fileData, controller };
 };
 
-export const deleteFile = async (
-  file: FileUploadDto,
-  isPublic?: boolean,
-): Promise<boolean> => {
+export const deleteFile = async (file: FileUploadDto, isPublic?: boolean): Promise<boolean> => {
   const { data } = await axiosInstance.delete<{ data: boolean }>(
     `${baseAPIURL}/delete?fileUrl=${file.path}`,
     {

@@ -12,10 +12,10 @@ For example:
 
 ## Configuration Options
 
-| Field Name        | Description                                                                                           | Input Type | Required? | Default Value |
-| ----------------- | ----------------------------------------------------------------------------------------------------- | ---------- | --------- | ------------- |
-| **Variable Name** | The name of the variable you want to set. This uniquely identifies the variable within the workflow.  | Text       | Yes       | _(empty)_     |
-| **Value To Set**  | The value you wish to store in the variable, which can be a text, number, list, object, or expression.| Text       | Yes       | _(empty)_     |
+| Field Name        | Description                                                                                            | Input Type | Required? | Default Value |
+| ----------------- | ------------------------------------------------------------------------------------------------------ | ---------- | --------- | ------------- |
+| **Variable Name** | The name of the variable you want to set. This uniquely identifies the variable within the workflow.   | Text       | Yes       | _(empty)_     |
+| **Value To Set**  | The value you wish to store in the variable, which can be a text, number, list, object, or expression. | Text       | Yes       | _(empty)_     |
 
 ## Expected Output Format
 
@@ -44,25 +44,26 @@ The assigned value will automatically be available under the name specified in *
 </Steps>
 
 <Callout type="info" title="Note">
-  Ensure the variable name is unique within your workflow to avoid any unexpected overwrites.
+  Ensure the variable name is unique within your workflow to avoid any
+  unexpected overwrites.
 </Callout>
 
 ## Input/Output Examples
 
-| Variable Name | Value To Set       | Output Variable Name | Output Value     | Output Type         |
-| ------------- | ------------------ | -------------------- | ---------------- | ------------------- |
-| "count"       | 10                 | "OutVariableValue"   | 10               | Number              |
-| "name"        | "Alice"            | "OutVariableValue"   | "Alice"          | Text                |
-| "list"        | "[1, 2, 3]"        | "OutVariableValue"   | [1, 2, 3]        | List                |
-| "expression"  | "5 + 2"            | "OutVariableValue"   | 7                | Number (Expression) |
+| Variable Name | Value To Set | Output Variable Name | Output Value | Output Type         |
+| ------------- | ------------ | -------------------- | ------------ | ------------------- |
+| "count"       | 10           | "OutVariableValue"   | 10           | Number              |
+| "name"        | "Alice"      | "OutVariableValue"   | "Alice"      | Text                |
+| "list"        | "[1, 2, 3]"  | "OutVariableValue"   | [1, 2, 3]    | List                |
+| "expression"  | "5 + 2"      | "OutVariableValue"   | 7            | Number (Expression) |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                           | Solution                                                                                         |
-| ------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| **Non-unique variable names**                     | Ensure each variable name is unique to prevent conflicts and unintended overwriting of values.   |
-| **Invalid arithmetic expressions**                | Double-check the expression for syntax errors. Only valid arithmetic expressions are supported.  |
-| **Empty variable name or value**                  | Both **Variable Name** and **Value To Set** fields are required. Ensure they are filled out.     |
+| Problem                            | Solution                                                                                        |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------- |
+| **Non-unique variable names**      | Ensure each variable name is unique to prevent conflicts and unintended overwriting of values.  |
+| **Invalid arithmetic expressions** | Double-check the expression for syntax errors. Only valid arithmetic expressions are supported. |
+| **Empty variable name or value**   | Both **Variable Name** and **Value To Set** fields are required. Ensure they are filled out.    |
 
 ## Real-World Use Cases
 

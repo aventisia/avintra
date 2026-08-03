@@ -10,9 +10,7 @@ type State = {
 type Actions = {
   setInputName: (inputName: string) => void;
   setSelectedValue: (value: string) => void;
-  setFocusedInput: (
-    input: HTMLInputElement | HTMLTextAreaElement | null,
-  ) => void;
+  setFocusedInput: (input: HTMLInputElement | HTMLTextAreaElement | null) => void;
   /** To toggle popover open/close state */
   setOpenState: (isOpen: boolean) => void;
 };

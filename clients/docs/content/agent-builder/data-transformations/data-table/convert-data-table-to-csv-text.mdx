@@ -5,23 +5,25 @@ import { Callout, Steps } from "nextra/components";
 The **Convert Data Table to CSV Text** node transforms a data table into its CSV (Comma-Separated Values) text format. This is useful when you need to share, export, or process data in a tabular structure via text format that is easily readable by spreadsheet applications or other tools.
 
 There are several scenarios in which this conversion is beneficial:
+
 - Preparing data for export to spreadsheet programs like Microsoft Excel.
 - Sharing structured data in a text-based format for interoperability across platforms.
 - Storing table data efficiently in logs or for auditing purposes.
 
 ## Configuration Options
 
-| Field Name               | Description                                                                                 | Input Type | Required? | Default Value   |
-| ------------------------ | ------------------------------------------------------------------------------------------- | ---------- | --------- | --------------- |
-| **Data Table**           | The data table variable you wish to convert to CSV text.                                    | Text       | Yes       | _(empty)_       |
-| **Include Column Names** | Specify whether to include column names as the first row in the CSV (defaults to 'Yes').    | Switch     | No        | Yes             |
-| **Use Custom Columns Separator** | Choose whether to use a custom separator instead of a predefined one (defaults to 'No'). | Switch     | No        | No              |
-| **Separator**            | Select the column separator for the CSV text (only if you don't use a custom separator).    | Select     | No        | System Default  |
-| **Custom Columns Separator** | A custom string for separating columns in the CSV format (appears if custom separator is used). | Text       | No        | _(empty)_       |
+| Field Name                       | Description                                                                                     | Input Type | Required? | Default Value  |
+| -------------------------------- | ----------------------------------------------------------------------------------------------- | ---------- | --------- | -------------- |
+| **Data Table**                   | The data table variable you wish to convert to CSV text.                                        | Text       | Yes       | _(empty)_      |
+| **Include Column Names**         | Specify whether to include column names as the first row in the CSV (defaults to 'Yes').        | Switch     | No        | Yes            |
+| **Use Custom Columns Separator** | Choose whether to use a custom separator instead of a predefined one (defaults to 'No').        | Switch     | No        | No             |
+| **Separator**                    | Select the column separator for the CSV text (only if you don't use a custom separator).        | Select     | No        | System Default |
+| **Custom Columns Separator**     | A custom string for separating columns in the CSV format (appears if custom separator is used). | Text       | No        | _(empty)_      |
 
 ## Expected Output Format
 
 The expected result from this node is a **CSV text string**, where:
+
 - Columns in the data table are separated by the defined separator.
 - Rows in the table are represented as separate lines.
 - The CSV format allows for an optional header row when column names are included.
@@ -60,24 +62,25 @@ Your CSV formatted text will be available in **CSV Text Output** for easy access
 </Steps>
 
 <Callout type="info" title="Tip">
-  The "Custom Columns Separator" field is only visible when the "Use Custom Columns Separator" option is enabled.
+  The "Custom Columns Separator" field is only visible when the "Use Custom
+  Columns Separator" option is enabled.
 </Callout>
 
 ## Input/Output Examples
 
-| Data Table Example       | Include Column Names | Separator         | Custom Separator | CSV Text Output                      |
-| ------------------------ | -------------------- | ----------------- | ---------------- | ------------------------------------ |
-| Name, Age<br/>, Alice, 30<br/>, Bob, 25  | Yes                | Comma            | _(n/a)_          | Name,Age \nAlice,30 \nBob,25         |
-| Product,Price<br/>, Pen,1.5<br/>, Pencil,0.5 | No                 | Tab              | _(n/a)_          | Pen\t1.5 \nPencil\t0.5               |
-| City,Population<br/>, NY,8M<br/>, LA,4M | Yes                | _(n/a)_           | " - "            | City - Population \nNY - 8M \nLA - 4M |
+| Data Table Example                           | Include Column Names | Separator | Custom Separator | CSV Text Output                       |
+| -------------------------------------------- | -------------------- | --------- | ---------------- | ------------------------------------- |
+| Name, Age<br/>, Alice, 30<br/>, Bob, 25      | Yes                  | Comma     | _(n/a)_          | Name,Age \nAlice,30 \nBob,25          |
+| Product,Price<br/>, Pen,1.5<br/>, Pencil,0.5 | No                   | Tab       | _(n/a)_          | Pen\t1.5 \nPencil\t0.5                |
+| City,Population<br/>, NY,8M<br/>, LA,4M      | Yes                  | _(n/a)_   | " - "            | City - Population \nNY - 8M \nLA - 4M |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                               | Solution                                                                                                                                                       |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Not seeing expected column names**                  | Verify that **Include Column Names** is set to 'On' if you wish to include them in the first row.                                                              |
-| **Unintended separators in CSV output**               | Check if **Use Custom Columns Separator** is enabled inadvertently. Specify the desired separator accordingly.                                                 |
-| **Missing separator selections**                      | Ensure that **Use Custom Columns Separator** is not enabled if you want to use predefined separators.                                                           |
+| Problem                                 | Solution                                                                                                       |
+| --------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| **Not seeing expected column names**    | Verify that **Include Column Names** is set to 'On' if you wish to include them in the first row.              |
+| **Unintended separators in CSV output** | Check if **Use Custom Columns Separator** is enabled inadvertently. Specify the desired separator accordingly. |
+| **Missing separator selections**        | Ensure that **Use Custom Columns Separator** is not enabled if you want to use predefined separators.          |
 
 ## Real-World Use Cases
 

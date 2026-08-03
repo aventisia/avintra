@@ -12,14 +12,14 @@ For example:
 
 ## Configuration Options
 
-| Field Name                | Description                                                                 | Input Type | Required? | Default Value  |
-| ------------------------- | --------------------------------------------------------------------------- | ---------- | --------- | -------------- |
-| **Text To Parse**         | The text you want the node to search through.                               | Text       | Yes       | _(empty)_      |
-| **Search Pattern**        | Keywords or regular expression pattern to search for.                       | Text       | Yes       | _(empty)_      |
-| **Is Regular Expression** | Treats the search pattern as a regular expression if true.                  | Switch     | No        | false          |
-| **Start Parsing At Position** | The position within the text to start the search.                           | Text       | No        | 0              |
-| **First Occurrence Only** | Returns only the first match if true.                                       | Switch     | No        | true           |
-| **Ignore Case**           | Ignores whether letters are uppercase or lowercase during the search.       | Switch     | No        | false          |
+| Field Name                    | Description                                                           | Input Type | Required? | Default Value |
+| ----------------------------- | --------------------------------------------------------------------- | ---------- | --------- | ------------- |
+| **Text To Parse**             | The text you want the node to search through.                         | Text       | Yes       | _(empty)_     |
+| **Search Pattern**            | Keywords or regular expression pattern to search for.                 | Text       | Yes       | _(empty)_     |
+| **Is Regular Expression**     | Treats the search pattern as a regular expression if true.            | Switch     | No        | false         |
+| **Start Parsing At Position** | The position within the text to start the search.                     | Text       | No        | 0             |
+| **First Occurrence Only**     | Returns only the first match if true.                                 | Switch     | No        | true          |
+| **Ignore Case**               | Ignores whether letters are uppercase or lowercase during the search. | Switch     | No        | false         |
 
 ## Expected Output Format
 
@@ -59,27 +59,29 @@ Enable **Ignore Case** if you want the search to be case-insensitive.
 ### Step 8
 
 View the results as **Parsed Matches** for use elsewhere in your project.
+
 </Steps>
 
 <Callout type="info" title="Tip">
-  Always test your regular expression pattern and search text on small data sets first to ensure accurate parsing.
+  Always test your regular expression pattern and search text on small data sets
+  first to ensure accurate parsing.
 </Callout>
 
 ## Input/Output Examples
 
-| Search Pattern | Text To Parse                  | Is Regular Expression | Output Value              | Output Type            |
-| -------------- | ------------------------------ | --------------------- | ------------------------- | ---------------------- |
-| email          | "Contact us at info@example.com" | false                  | ["info@example.com"]      | List of Strings        |
-| \d{3}-\d{2}    | "Order ID: 123-45, 678-90"     | true                   | ["123-45", "678-90"]     | List of Strings        |
-| apple          | "An apple a day keeps the doctor away" | false | ["apple"] | List of Strings        |
+| Search Pattern | Text To Parse                          | Is Regular Expression | Output Value         | Output Type     |
+| -------------- | -------------------------------------- | --------------------- | -------------------- | --------------- |
+| email          | "Contact us at info@example.com"       | false                 | ["info@example.com"] | List of Strings |
+| \d{3}-\d{2}    | "Order ID: 123-45, 678-90"             | true                  | ["123-45", "678-90"] | List of Strings |
+| apple          | "An apple a day keeps the doctor away" | false                 | ["apple"]            | List of Strings |
 
 ## Common Mistakes & Troubleshooting
 
-| Problem                                  | Solution                                                                                                                                    |
-| ---------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| **No matches found**                      | Double-check the Search Pattern and ensure the Text To Parse contains the expected text. Ensure Correct case settings if Ignore Case is off. |
-| **Regular expression syntax error**      | Review the regular expression pattern for any syntax errors. Make use of online regex testers to verify your pattern before use.             |
-| **Unexpected output**                    | Verify whether you have opted to ignore case or search from a specific start position as intended.                                          |
+| Problem                             | Solution                                                                                                                                     |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| **No matches found**                | Double-check the Search Pattern and ensure the Text To Parse contains the expected text. Ensure Correct case settings if Ignore Case is off. |
+| **Regular expression syntax error** | Review the regular expression pattern for any syntax errors. Make use of online regex testers to verify your pattern before use.             |
+| **Unexpected output**               | Verify whether you have opted to ignore case or search from a specific start position as intended.                                           |
 
 ## Real-World Use Cases
 
