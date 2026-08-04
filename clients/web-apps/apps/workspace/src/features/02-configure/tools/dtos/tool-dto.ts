@@ -15,6 +15,11 @@ export interface ToolDto {
   name: string;
 
   /**
+   * Optional short code or alias for the tool (max 100 chars).
+   */
+  code?: string;
+
+  /**
    * Description of the tool.
    */
   description?: string;

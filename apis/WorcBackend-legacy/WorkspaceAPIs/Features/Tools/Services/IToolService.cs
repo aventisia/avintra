@@ -67,11 +67,12 @@ public interface IToolService
     Task<ServiceResponse<TestToolResponseDto>> TestToolAsync(Guid toolId, TestToolDto testToolDto);
 
     /// <summary>
-    /// Activates a tool.
+    /// Activates or deactivates a tool.
     /// </summary>
     /// <param name="toolId">The tool identifier.</param>
-    /// <returns>The activated tool.</returns>
-    Task<ServiceResponse<ToolDto>> ActivateToolAsync(Guid toolId);
+    /// <param name="isActive"><c>true</c> to activate; <c>false</c> to deactivate.</param>
+    /// <returns>The updated tool.</returns>
+    Task<ServiceResponse<ToolDto>> SetToolActiveStateAsync(Guid toolId, bool isActive);
 
     /// <summary>
     /// Gets all platform (library) tools available to the current tenant.

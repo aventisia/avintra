@@ -16,4 +16,5 @@ export const appToCredentialNameMapper: Record<VaultAppsEnum, string> = {
   [VaultAppsEnum.ConnectionString]: "connection_string",
   [VaultAppsEnum.Qdrant]: "qdrant_api_key",
   [VaultAppsEnum.Anthropic]: "anthropic_api_key",
+  [VaultAppsEnum.CustomApiTool]: "custom_api_tool",
 };

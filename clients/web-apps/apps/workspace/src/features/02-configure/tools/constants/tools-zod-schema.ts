@@ -20,6 +20,10 @@ export const toolBaseUrlSchema = z
 export const toolZodSchema = z.object({
   id: z.string().optional(),
   name: toolNameSchema,
+  code: z
+    .string()
+    .max(100, { message: maxLenError("Tool code", 100) })
+    .optional(),
   description: z.string().optional(),
   type: z.nativeEnum(ComponentTypeEnum),
   baseUrl: toolBaseUrlSchema,

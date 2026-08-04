@@ -3,6 +3,7 @@ import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type DialogCrudAction } from "@avplatform/ui/types";
+import { JsonEditor } from "@/components/json-editor/JsonEditor";
 import { useEffect } from "react";
 import { z } from "zod";
 
@@ -92,12 +93,15 @@ export const ToolCrudForm = ({
         isRequired
       />
 
-      <TextareaField
-        name="openApiSpec"
-        label="OpenAPI Specification"
-        placeholder="Paste the OpenAPI JSON or YAML spec here"
-        className="min-h-40 font-mono text-xs"
-      />
+      <div className="space-y-1.5">
+        <label className="text-sm font-medium">OpenAPI Specification</label>
+        <JsonEditor
+          value={form.watch("openApiSpec") ?? ""}
+          onChange={(value) => form.setValue("openApiSpec", value, { shouldDirty: true })}
+          placeholder="Paste the OpenAPI JSON or YAML spec here"
+          disabled={isReadMode}
+        />
+      </div>
 
       <SelectField
         name="authenticationType"

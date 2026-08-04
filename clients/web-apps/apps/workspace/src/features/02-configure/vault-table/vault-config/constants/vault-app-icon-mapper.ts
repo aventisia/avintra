@@ -16,4 +16,5 @@ export const vaultAppIconMapper: Record<VaultAppsEnum, string> = {
   [VaultAppsEnum.ConnectionString]: "/assets/Database.svg",
   [VaultAppsEnum.Qdrant]: "/assets/Qdrant.svg",
   [VaultAppsEnum.Anthropic]: "/brand-img/anthropic.svg",
+  [VaultAppsEnum.CustomApiTool]: "/assets/CredentialManager.svg",
 };

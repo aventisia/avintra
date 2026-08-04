@@ -20,7 +20,8 @@ public class ToolMappingProfile : IRegister
             .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? $"{src.LastModifiedByUser.FirstName} {src.LastModifiedByUser.LastName}"
-                    : null);
+                    : null)
+            .Map(dest => dest.IsVerified, src => src.IsVerified);
 
         // Maps ToolDto to Tool.
         config.NewConfig<ToolDto, Tool>()

@@ -3,7 +3,7 @@
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
 from typing import Any
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import time
 from langchain_core.messages import AIMessage, BaseMessage, ToolMessage
@@ -24,6 +24,8 @@ from app.features.langgraph.skills.skill_loader import load_default_skills
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_loader import load_default_tools
 from app.features.langgraph.tools.tool_registry import ToolRegistry
+from app.features.custom_tools.custom_tool_loader import load_tools_for_tenant as load_custom_tools
+from app.core.config import settings
 from app.features.llm_providers.llm_providers_schemas import (
     ChatAgentResponse,
     LLMRequest,
@@ -66,6 +68,11 @@ class ChatService:
 
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
+
+        # Load custom tools from DB before building the graph
+        if db_session is not None:
+            await self._load_custom_tools(request, user, db_session)
+
         graph = self._graph(
             request=request,
             user=user,
@@ -127,6 +134,11 @@ class ChatService:
 
         start_time = time.perf_counter()
         langgraph_response = self._create_initial_response(request)
+
+        # Load custom tools from DB before building the graph
+        if db_session is not None:
+            await self._load_custom_tools(request, user, db_session)
+
         graph = self._graph(
             request=request,
             user=user,
@@ -246,6 +258,38 @@ class ChatService:
             start_time=start_time,
             jwt=user.access_token,
         )
+
+    async def _load_custom_tools(
+        self,
+        request: LLMRequest,
+        user: User,
+        db_session: AsyncSession,
+    ) -> None:
+        """Load custom tools from the DB and register them in the tool registry."""
+        try:
+            custom_tools = await load_custom_tools(
+                session=db_session,
+                tenant_id=user.tenant_id,
+                flow_version_id=(
+                    UUID(request.ref_id) if request.ref_type and request.ref_id else None
+                ),
+                workspace_api="https://{settings.APP_BASE_URL}/workspace",
+                access_token=user.access_token,
+            )
+            for ct in custom_tools:
+                self.tool_registry.register(ct)
+            if custom_tools:
+                logger.info(
+                    "Registered %d custom tools for tenant %s",
+                    len(custom_tools),
+                    user.tenant_id,
+                )
+        except Exception as exc:
+            logger.warning(
+                "Failed to load custom tools for tenant %s: %s",
+                user.tenant_id,
+                exc,
+            )
 
     def _thread_config(
         self,

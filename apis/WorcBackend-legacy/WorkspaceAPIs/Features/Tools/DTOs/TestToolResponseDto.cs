@@ -13,6 +13,7 @@ public class TestToolResponseDto
     /// <summary>
     /// Gets or sets the HTTP status code returned by the tool operation, if applicable.
     /// </summary>
+    [JsonPropertyName("status_code")]
     public int? StatusCode { get; set; }
 
     /// <summary>
@@ -23,5 +24,6 @@ public class TestToolResponseDto
     /// <summary>
     /// Gets or sets the execution duration of the tool operation, in milliseconds.
     /// </summary>
+    [JsonPropertyName("duration_ms")]
     public double? DurationMs { get; set; }
 }

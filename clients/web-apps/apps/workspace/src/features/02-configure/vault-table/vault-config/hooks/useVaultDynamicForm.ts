@@ -22,6 +22,11 @@ import { VaultsTableDto } from "../../dtos/vaults-table-dto";
 import { VaultAppsEnum } from "../../enums/vault-apps-enum";
 import { useTableTab } from "../../hooks/useTableTab";
 import { appToCredentialNameMapper } from "../constants/app-to-credential-name-mapper";
+import {
+  customApiToolVaultSchema,
+  getCustomApiToolDefaultValues,
+  mapCustomApiToolDataToFormValues,
+} from "../constants/custom-api-tool-schema";
 import { vaultAppsSelectOptions } from "../constants/vault-app-select-options";
 
 interface UseVaultDynamicFormOptions {
@@ -59,10 +64,14 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
   // Get vault data by id
   const vaultData = vaultsData?.data.find((item) => item.id === rowId);
 
-  // Define form with zod schema
+  // Define form with zod schema.
   const form = useForm<z.infer<typeof vaultConfigZodSchema>>({
     resolver: zodResolver(vaultConfigZodSchema),
   });
+
+  // CustomApiTool uses a dedicated form schema instead of dynamic config.
+  const selectedTypeValue = vaultData?.type ?? form.watch("selectedType")?.value;
+  const isCustomApiTool = selectedTypeValue === "CustomApiTool";
 
   // Extract stable primitive values for effect dependencies
   const selectedType = vaultData ? vaultData?.type : form.watch("selectedType")?.value;
@@ -70,6 +79,13 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
   // Fetch config on mount or when vaultData changes
   useEffect(() => {
     if (!selectedType) return;
+
+    // CustomApiTool uses a dedicated form schema; skip dynamic config loading.
+    if (isCustomApiTool) {
+      setVaultConfig([]);
+      setVaultConfigZodSchema(customApiToolVaultSchema);
+      return;
+    }
 
     setIsLoading(true);
 
@@ -91,6 +107,7 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
       .finally(() => {
         setIsLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedType]); // ✅ Only primitive deps
 
   // Get input and output keys (required at the time of form submission)
@@ -139,39 +156,65 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
 
   // Reset form values when vaultConfig or inputs/outputs change
   useEffect(() => {
-    if (vaultConfig.length > 0 && Object.keys(vaultConfigZodSchema.shape).length > 0) {
-      //if (vaultData === undefined) return;
+    const schemaKeys = Object.keys(vaultConfigZodSchema.shape);
+    if (schemaKeys.length === 0) return;
 
-      const savedData = vaultData?.data || {};
+    const savedData = vaultData?.data || {};
 
-      const name =
-        vaultData?.name ??
-        appToCredentialNameMapper[
-          VaultAppsEnum[
-            form.watch("selectedType").value as keyof typeof VaultAppsEnum
-          ] as VaultAppsEnum
-        ];
+    const selectedTypeOption = Object.values(vaultAppsSelectOptions).find(
+      (option) =>
+        option.value === (vaultData ? vaultData?.type : form.watch("selectedType")?.value),
+    );
 
-      setCredName(name);
+    const name =
+      vaultData?.name ??
+      appToCredentialNameMapper[
+        VaultAppsEnum[
+          form.watch("selectedType").value as keyof typeof VaultAppsEnum
+        ] as VaultAppsEnum
+      ];
 
-      if (crudAction == "create") checkAvailabilityMutation({ userInput: name });
+    setCredName(name);
+
+    if (crudAction == "create") checkAvailabilityMutation({ userInput: name });
+
+    // CustomApiTool has its own form schema and default values.
+    if (isCustomApiTool) {
+      const mapped = mapCustomApiToolDataToFormValues(vaultData);
+      const isCreate = crudAction === "create";
 
       form.reset({
-        selectedType: Object.values(vaultAppsSelectOptions).find(
-          (option) =>
-            option.value === (vaultData ? vaultData?.type : form.watch("selectedType")?.value),
-        ),
-        name: name,
-        isDisabled: vaultData?.isDisabled,
-        ...getDefaultValuesForForm(
-          vaultConfig,
-          convertFromObject(savedData) as unknown as NodeInputType[],
-        ),
+        ...getCustomApiToolDefaultValues({
+          selectedType: selectedTypeOption,
+          name: isCreate ? name : (mapped.name ?? ""),
+          description: isCreate ? "" : mapped.description,
+          authenticationType: isCreate ? undefined : mapped.authenticationType,
+          bearerToken: isCreate ? "" : (mapped.bearerToken ?? ""),
+          basicUsername: isCreate ? "" : (mapped.basicUsername ?? ""),
+          basicPassword: isCreate ? "" : (mapped.basicPassword ?? ""),
+          apiKeyHeaderName: isCreate ? "" : (mapped.apiKeyHeaderName ?? ""),
+          apiKeyHeaderValue: isCreate ? "" : (mapped.apiKeyHeaderValue ?? ""),
+          apiKeyQueryName: isCreate ? "" : (mapped.apiKeyQueryName ?? ""),
+          apiKeyQueryValue: isCreate ? "" : (mapped.apiKeyQueryValue ?? ""),
+          isDisabled: isCreate ? false : (mapped.isDisabled ?? false),
+        }),
       });
-      setIsFormReady(true); // Set form ready to true after resetting the form
+      setIsFormReady(true);
+      return;
     }
+
+    form.reset({
+      selectedType: selectedTypeOption,
+      name: name,
+      isDisabled: vaultData?.isDisabled,
+      ...getDefaultValuesForForm(
+        vaultConfig,
+        convertFromObject(savedData) as unknown as NodeInputType[],
+      ),
+    });
+    setIsFormReady(true); // Set form ready to true after resetting the form
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vaultConfig]);
+  }, [vaultConfig, vaultConfigZodSchema]);
 
   // Destructor form values and methods
   const {
@@ -203,5 +246,7 @@ export const useVaultDynamicForm = ({ rowId, crudAction }: UseVaultDynamicFormOp
     isCheckPending,
     handleInputChange,
     availabilityMessage,
+    vaultData,
+    isCustomApiTool,
   };
 };

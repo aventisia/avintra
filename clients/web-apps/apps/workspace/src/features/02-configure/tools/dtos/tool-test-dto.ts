@@ -1,7 +1,12 @@
 /**
- * Represents a request to test a tool operation.
+ * Represents a request to test a tool operation via the .NET Workspace API.
  */
 export interface TestToolDto {
+  /**
+   * Base URL of the tool.
+   */
+  baseUrl: string;
+
   /**
    * Identifier of the operation to execute.
    */
@@ -16,6 +21,11 @@ export interface TestToolDto {
    * Optional credential identifier override.
    */
   credentialId?: string;
+
+  /**
+   * OpenAPI specification of the tool.
+   */
+  openApiSpec?: string;
 }
 
 /**

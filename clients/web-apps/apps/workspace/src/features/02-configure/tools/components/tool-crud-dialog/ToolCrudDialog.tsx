@@ -1,5 +1,6 @@
 import { type DialogCrudAction } from "@avplatform/ui/types";
 
+import { ToolWizard } from "../tool-wizard/ToolWizard";
 import { ToolCrudForm } from "./ToolCrudForm";
 
 interface ToolCrudDialogContentProps {
@@ -8,5 +9,8 @@ interface ToolCrudDialogContentProps {
 }
 
 export const ToolCrudDialogContent = ({ crudAction, rowId }: ToolCrudDialogContentProps) => {
-  return <ToolCrudForm rowId={rowId} crudAction={crudAction} />;
+  if (crudAction === "read") {
+    return <ToolCrudForm rowId={rowId} crudAction={crudAction} />;
+  }
+  return <ToolWizard crudAction={crudAction} rowId={rowId} />;
 };
