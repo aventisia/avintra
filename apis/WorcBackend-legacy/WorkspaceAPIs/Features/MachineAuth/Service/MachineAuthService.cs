@@ -178,13 +178,6 @@ public class MachineAuthService : IMachineAuthService
             return headerTenant;
         }
 
-        // Legacy fallback for the tntid header
-        if (_httpContextAccessor.HttpContext?.Request.Headers.TryGetValue("tntid", out var legacyHeaderTenantId) == true &&
-            Guid.TryParse(legacyHeaderTenantId, out var legacyHeaderTenant) && legacyHeaderTenant != Guid.Empty)
-        {
-            return legacyHeaderTenant;
-        }
-
         return Guid.Empty;
     }
 

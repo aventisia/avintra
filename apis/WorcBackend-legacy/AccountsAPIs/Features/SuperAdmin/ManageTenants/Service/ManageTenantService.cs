@@ -161,7 +161,7 @@ public class ManageTenantService : IManageTenantService
                 // Prepare the DELETE request with necessary headers (Authorization & TenantId)
                 using var request = new HttpRequestMessage(HttpMethod.Delete, apiUrl);
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _jwt);
-                request.Headers.Add("tntid", tenantId.ToString());
+                request.Headers.Add("X-TENANT-ID", tenantId.ToString());
 
                 // Log the outgoing request to the external API for transparency
                 _logger.LogInformation("Sending DELETE request to {ApiUrl} for tenant {TenantId}", apiUrl, tenantId);

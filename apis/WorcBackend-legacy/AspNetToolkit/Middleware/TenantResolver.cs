@@ -95,8 +95,7 @@ public class TenantResolver
                     appDefaultConfig.TenantIdInHeaderEndpoints != null &&
                     appDefaultConfig.TenantIdInHeaderEndpoints.Contains(currentEndpoint))
                 {
-                    // Try to get the tenant ID from the request header "X-TENANT-ID" first, then legacy "tntid"
-                    // TODO: Remove legacy "tntid" support once all clients have migrated to "X-TENANT-ID".
+                    // Try to get the tenant ID from the request header "X-TENANT-ID"
                     if (TryGetTenantIdFromHeaders(context.Request.Headers, out var tenantIdRequestFromHeader))
                     {
                         tenantId = tenantIdRequestFromHeader ?? "Unknown"; // Set tenant ID from header
@@ -119,7 +118,6 @@ public class TenantResolver
                 return;
 
             // Get tenantId from custom request header
-            // TODO: Remove legacy "tntid" support once all clients have migrated to "X-TENANT-ID".
             if (TryGetTenantIdFromHeaders(context.Request.Headers, out var tenantIdFromHeader))
             {
                 // Set tenant Id 
@@ -136,7 +134,7 @@ public class TenantResolver
         return;
     }
 
-    // Tries to read the tenant id from "X-TENANT-ID" first, then falls back to the legacy "tntid" header.
+    // Tries to read the tenant id from the "X-TENANT-ID" request header.
     private static bool TryGetTenantIdFromHeaders(IHeaderDictionary headers, out string? tenantId)
     {
         tenantId = null;
@@ -145,13 +143,6 @@ public class TenantResolver
         if (headers.TryGetValue("X-TENANT-ID", out var tenantIdFromHeader) && !string.IsNullOrEmpty(tenantIdFromHeader))
         {
             tenantId = tenantIdFromHeader.ToString();
-            return true;
-        }
-
-        // TODO: Remove legacy "tntid" support once all clients have migrated to "X-TENANT-ID".
-        if (headers.TryGetValue("tntid", out var legacyTenantIdFromHeader) && !string.IsNullOrEmpty(legacyTenantIdFromHeader))
-        {
-            tenantId = legacyTenantIdFromHeader.ToString();
             return true;
         }
 

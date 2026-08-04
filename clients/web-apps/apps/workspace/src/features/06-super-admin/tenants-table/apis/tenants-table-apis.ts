@@ -105,7 +105,7 @@ const switchTenant = (id: string) => {
     .post<IHttpResponse<UserSessionDto>>(
       `${import.meta.env.VITE_ACCOUNTS_API_PATH}/sa/tenants/auth/tokens`,
       {},
-      { headers: { tntid: id } },
+      { headers: { 'X-TENANT-ID': id } },
     )
     .then((res) => res.data);
 };
@@ -116,7 +116,7 @@ const switchTenant = (id: string) => {
 const deleteTenant = (id: string) => {
   return axiosInstance
     .delete<IHttpResponse<boolean>>(`${import.meta.env.VITE_ACCOUNTS_API_PATH}/sa/tenant`, {
-      headers: { tntid: id },
+      headers: { 'X-TENANT-ID': id },
     })
     .then((res) => res.data);
 };
