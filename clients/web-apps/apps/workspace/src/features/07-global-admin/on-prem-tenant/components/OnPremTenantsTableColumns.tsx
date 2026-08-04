@@ -1,6 +1,6 @@
 import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { cn } from "@avplatform/ui/lib";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
@@ -166,11 +166,7 @@ export const onPremTenantsTableColumns: ColumnDef<OnPremTenantDto>[] = [
       <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the tenant row actions component
-      <OnPremTenantRowAction rowId={row.original.id || "rowId"} name={row.original.name} />
-    ),
-  },
+  createDTActionsColumn<OnPremTenantDto>({
+    renderCell: (row) => <OnPremTenantRowAction rowId={row.id || "rowId"} name={row.name} />,
+  }),
 ];

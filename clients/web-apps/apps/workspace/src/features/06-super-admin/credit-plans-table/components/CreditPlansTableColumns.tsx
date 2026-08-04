@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
@@ -79,13 +79,7 @@ export const creditPlansTableColumns: ColumnDef<CreditPlansTableDto>[] = [
       return <div className="w-auto font-medium">{row.getValue("credits") || "N/A"}</div>;
     },
   },
-  // Actiosn
-  {
-    id: "actions",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />,
-    cell: ({ row }) => (
-      // Render the model row actions component
-      <CreditPlansRowActions rowId={row.original.id || "rowId"} />
-    ),
-  },
+  createDTActionsColumn<CreditPlansTableDto>({
+    renderCell: (row) => <CreditPlansRowActions rowId={row.id || "rowId"} />,
+  }),
 ];

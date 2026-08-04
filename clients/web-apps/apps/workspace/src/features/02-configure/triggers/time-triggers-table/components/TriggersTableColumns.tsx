@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -195,16 +195,14 @@ export const triggersTableColumns = (isSharedTab: boolean): ColumnDef<TimeTrigge
       </div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the triggers row actions component
+  createDTActionsColumn<TimeTriggerDto>({
+    renderCell: (row) => (
       <TriggerRowActions
-        rowId={row.original.id ?? "rowId"}
-        name={row.original.name}
-        accessLevel={row.original.accessLevel}
-        isTenantWideAccess={row.original.isTenantWideAccess || false}
+        rowId={row.id ?? "rowId"}
+        name={row.name}
+        accessLevel={row.accessLevel}
+        isTenantWideAccess={row.isTenantWideAccess || false}
       />
     ),
-  },
+  }),
 ];

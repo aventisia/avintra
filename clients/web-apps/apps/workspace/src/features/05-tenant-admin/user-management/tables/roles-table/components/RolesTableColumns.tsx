@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -133,11 +133,7 @@ export const RolesTableColumns: ColumnDef<RoleTableDTO>[] = [
       <div className="w-auto truncate font-medium">{row.getValue("isDefault")}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the users row actions component
-      <RoleRowActions rowId={row.original.id || "rowId"} />
-    ),
-  },
+  createDTActionsColumn<RoleTableDTO>({
+    renderCell: (row) => <RoleRowActions rowId={row.id || "rowId"} />,
+  }),
 ];

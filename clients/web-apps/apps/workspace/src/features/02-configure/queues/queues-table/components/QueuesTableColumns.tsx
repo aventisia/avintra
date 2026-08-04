@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -147,17 +147,15 @@ export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableD
       <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the queues row actions component
+  createDTActionsColumn<QueuesTableDto>({
+    renderCell: (row) => (
       <QueueRowActions
-        rowId={row.original.id ?? "rowId"}
-        queueName={row.original.name ?? ""}
-        type={row.original.type ?? ""}
-        accessLevel={row.original.accessLevel}
-        isTenantWideAccess={row.original.isTenantWideAccess || false}
+        rowId={row.id ?? "rowId"}
+        queueName={row.name ?? ""}
+        type={row.type ?? ""}
+        accessLevel={row.accessLevel}
+        isTenantWideAccess={row.isTenantWideAccess || false}
       />
     ),
-  },
+  }),
 ];

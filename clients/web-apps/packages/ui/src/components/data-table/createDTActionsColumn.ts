@@ -14,6 +14,10 @@ interface CreateDTActionsColumnOptions<TData> {
   renderCell: (row: TData) => ReactNode;
   headerClassName?: string;
   cellClassName?: string;
+  size?: number;
+  minSize?: number;
+  maxSize?: number;
+  enableResizing?: boolean;
 }
 
 export const createDTActionsColumn = <TData>({
@@ -21,9 +25,17 @@ export const createDTActionsColumn = <TData>({
   renderCell,
   headerClassName,
   cellClassName,
+  size,
+  minSize,
+  maxSize,
+  enableResizing,
 }: CreateDTActionsColumnOptions<TData>): ColumnDef<TData> => {
   return {
     id,
+    size,
+    minSize,
+    maxSize,
+    enableResizing,
     header: () => null,
     meta: {
       headerClassName: cn(DT_ACTIONS_COLUMN_HEADER_CLASSNAME, headerClassName),

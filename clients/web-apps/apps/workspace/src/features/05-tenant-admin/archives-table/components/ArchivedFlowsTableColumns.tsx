@@ -1,6 +1,6 @@
 import { Checkbox } from "@avplatform/ui";
 import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -90,11 +90,7 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
       </div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the archived flows row actions component
-      <ArchivedFlowRowActions rowId={row.original.id} refId={row.original.refId} />
-    ),
-  },
+  createDTActionsColumn<ArchivedFlowsTableDto>({
+    renderCell: (row) => <ArchivedFlowRowActions rowId={row.id} refId={row.refId} />,
+  }),
 ];

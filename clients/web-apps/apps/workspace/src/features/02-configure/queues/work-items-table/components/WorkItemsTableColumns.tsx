@@ -1,5 +1,5 @@
 import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -52,11 +52,7 @@ export const workItemsTableColumns: ColumnDef<QueueWorkItemDto>[] = [
       <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the queues row actions component
-      <WorkItemRowActions rowId={row.original.id ?? "rowId"} />
-    ),
-  },
+  createDTActionsColumn<QueueWorkItemDto>({
+    renderCell: (row) => <WorkItemRowActions rowId={row.id ?? "rowId"} />,
+  }),
 ];

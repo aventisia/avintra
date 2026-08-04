@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
@@ -83,13 +83,7 @@ export const onPremLLMsTableColumns: ColumnDef<OnPremModelDto>[] = [
       return <div className="w-auto font-medium">{row.getValue("status") || "N/A"}</div>;
     },
   },
-  // Actions
-  {
-    id: "actions",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />,
-    cell: ({ row }) => (
-      // Render the model row actions component
-      <OnPremLLMRowActions rowId={row.original.id || "rowId"} />
-    ),
-  },
+  createDTActionsColumn<OnPremModelDto>({
+    renderCell: (row) => <OnPremLLMRowActions rowId={row.id || "rowId"} />,
+  }),
 ];

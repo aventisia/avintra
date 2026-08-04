@@ -1,6 +1,6 @@
 import { Checkbox } from "@avplatform/ui";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { CountriesEnum, CurrenciesEnum } from "@avplatform/ui/enums";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
@@ -259,9 +259,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     cell: ({ row }) => formatDate(row.getValue<Date>("lastModifiedOn")),
   },
 
-  // ACTIONS
-  {
-    id: "actions",
-    cell: ({ row }) => <TenantRowActions rowId={row.original.id ?? "rowId"} />,
-  },
+  createDTActionsColumn<TenantsTableDto>({
+    renderCell: (row) => <TenantRowActions rowId={row.id ?? "rowId"} />,
+  }),
 ];

@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -94,16 +94,15 @@ export const SkillTableColumns = (
       <div className="w-auto truncate font-medium">{row.getValue("fileCount") ?? 0}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
+  createDTActionsColumn<SkillTableDto>({
+    renderCell: (row) => (
       <SkillRowActions
-        rowId={row.original.id || "rowId"}
-        name={row.original.name}
-        accessLevel={row.original.accessLevel}
-        isTenantWideAccess={row.original.isTenantWideAccess || false}
+        rowId={row.id || "rowId"}
+        name={row.name}
+        accessLevel={row.accessLevel}
+        isTenantWideAccess={row.isTenantWideAccess || false}
         isLibrary={isLibraryTab}
       />
     ),
-  },
+  }),
 ];

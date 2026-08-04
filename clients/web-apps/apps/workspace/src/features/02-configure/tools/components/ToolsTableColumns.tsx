@@ -1,6 +1,6 @@
 import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { type ColumnDef } from "@tanstack/react-table";
 
@@ -125,16 +125,15 @@ export const toolsTableColumns = (isShared: boolean, isLibrary: boolean): Column
     ),
     cell: ({ row }) => <div>{formatDate(row.getValue("createdOn"))}</div>,
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
+  createDTActionsColumn<ToolDto>({
+    renderCell: (row) => (
       <ToolRowActions
-        rowId={row.original.id ?? ""}
-        name={row.original.name}
-        accessLevel={row.original.accessLevel}
-        isTenantWideAccess={row.original.isTenantWideAccess}
+        rowId={row.id ?? ""}
+        name={row.name}
+        accessLevel={row.accessLevel}
+        isTenantWideAccess={row.isTenantWideAccess}
         isLibrary={isLibrary}
       />
     ),
-  },
+  }),
 ];
