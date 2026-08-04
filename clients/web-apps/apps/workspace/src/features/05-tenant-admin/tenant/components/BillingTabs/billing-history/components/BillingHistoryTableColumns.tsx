@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
 
@@ -98,15 +98,9 @@ export const billingHistoryTableColumns: ColumnDef<BillingHistoryDTO>[] = [
       );
     },
   },
-  // Actions
-  {
-    id: "actions",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title={""} />,
-    cell: ({ row }) => (
-      // Render the model row actions component
-      <BillingHistoryRowActions rowId={row.original.id || "rowId"} />
-    ),
-  },
+  createDTActionsColumn<BillingHistoryDTO>({
+    renderCell: (row) => <BillingHistoryRowActions rowId={row.id || "rowId"} />,
+  }),
 ];
 
 // Map razorpay status  to user-friendly labels

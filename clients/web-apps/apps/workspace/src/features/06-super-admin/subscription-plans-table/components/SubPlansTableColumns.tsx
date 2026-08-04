@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -168,11 +168,7 @@ export const subPlansTableColumns: ColumnDef<SubPlansTableDto>[] = [
       <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the subscription plans row actions component
-      <SubPlansRowActions rowId={row.original.id || "rowId"} />
-    ),
-  },
+  createDTActionsColumn<SubPlansTableDto>({
+    renderCell: (row) => <SubPlansRowActions rowId={row.id || "rowId"} />,
+  }),
 ];

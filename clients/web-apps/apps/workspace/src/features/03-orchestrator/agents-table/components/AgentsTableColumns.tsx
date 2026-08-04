@@ -1,7 +1,7 @@
 import { Checkbox } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { FlowVersionNavLink } from "@avplatform/ui/components/FlowVersionNavLink";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
@@ -160,16 +160,14 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
       <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the agents row actions component
+  createDTActionsColumn<AgentsTableDto>({
+    renderCell: (row) => (
       <TableActions
-        count={row.original.machineCount || 0}
-        rowId={row.original.id}
-        isDisabled={row.original.isDisabled}
-        type={row.original.type}
+        count={row.machineCount || 0}
+        rowId={row.id}
+        isDisabled={row.isDisabled}
+        type={row.type}
       />
     ),
-  },
+  }),
 ];

@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -92,16 +92,14 @@ export const KBTableColumns = (isSharedTab: boolean): ColumnDef<KnowledgeBaseTab
       <div className="w-auto truncate font-medium">{row.getValue("totalChunks") ?? 0}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the configs row actions component
+  createDTActionsColumn<KnowledgeBaseTableDto>({
+    renderCell: (row) => (
       <KBRowActions
-        rowId={row.original.id || "rowId"}
-        name={row.original.name}
-        accessLevel={row.original.accessLevel}
-        isTenantWideAccess={row.original.isTenantWideAccess || false}
+        rowId={row.id || "rowId"}
+        name={row.name}
+        accessLevel={row.accessLevel}
+        isTenantWideAccess={row.isTenantWideAccess || false}
       />
     ),
-  },
+  }),
 ];

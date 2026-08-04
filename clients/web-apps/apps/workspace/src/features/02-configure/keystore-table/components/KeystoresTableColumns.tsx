@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { KeyStoreTypesEnum } from "@avplatform/ui/enums/key-store-types-enum";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
@@ -86,16 +86,14 @@ export const keystoresTableColumns = (isSharedTab: boolean): ColumnDef<Keystores
       <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the keystores row actions component
+  createDTActionsColumn<KeystoresTableDto>({
+    renderCell: (row) => (
       <KeystoreRowActions
-        rowId={row.original.id || "rowId"}
-        accessLevel={row.original.accessLevel}
-        name={row.original.name}
-        isTenantWideAccess={row.original.isTenantWideAccess || false}
+        rowId={row.id || "rowId"}
+        accessLevel={row.accessLevel}
+        name={row.name}
+        isTenantWideAccess={row.isTenantWideAccess || false}
       />
     ),
-  },
+  }),
 ];

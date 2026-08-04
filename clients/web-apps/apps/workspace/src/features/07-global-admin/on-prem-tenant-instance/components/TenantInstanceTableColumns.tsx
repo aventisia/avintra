@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
@@ -116,11 +116,7 @@ export const tenantInstanceTableColumns: ColumnDef<OnPremInstanceDto>[] = [
       <div className="w-auto truncate font-medium">{row.getValue("noOfInvalidCheck")}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the tenant row actions component
-      <TenantInstanceRowAction rowId={row.original.id || "rowId"} name={row.original.name} />
-    ),
-  },
+  createDTActionsColumn<OnPremInstanceDto>({
+    renderCell: (row) => <TenantInstanceRowAction rowId={row.id || "rowId"} name={row.name} />,
+  }),
 ];

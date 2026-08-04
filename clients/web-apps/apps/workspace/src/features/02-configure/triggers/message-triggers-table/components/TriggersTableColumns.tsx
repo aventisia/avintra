@@ -1,6 +1,6 @@
 import { Checkbox } from "@avplatform/ui";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -185,16 +185,14 @@ export const triggersTableColumns = (isSharedTab: boolean): ColumnDef<MessageTri
       </div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Render the triggers row actions component
+  createDTActionsColumn<MessageTriggerDto>({
+    renderCell: (row) => (
       <TriggerRowActions
-        rowId={row.original.id ?? "rowId"}
-        name={row.original.name}
-        accessLevel={row.original.accessLevel}
-        isTenantWideAccess={row.original.isTenantWideAccess || false}
+        rowId={row.id ?? "rowId"}
+        name={row.name}
+        accessLevel={row.accessLevel}
+        isTenantWideAccess={row.isTenantWideAccess || false}
       />
     ),
-  },
+  }),
 ];

@@ -1,5 +1,5 @@
 import { Badge } from "@avplatform/ui/badge";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -96,18 +96,17 @@ export const getKBFilesTableColumns = (
     ),
     cell: ({ row }) => <div className="w-24 font-medium">{formatDate(row.original.createdOn)}</div>,
   },
-  {
-    id: "actions",
+  createDTActionsColumn<KnowledgeBaseFileDto>({
     size: 48,
     minSize: 48,
     maxSize: 48,
     enableResizing: false,
-    cell: ({ row }) => (
+    renderCell: (row) => (
       <KBFilesTableRowAction
-        row={row.original}
+        row={row}
         knowledgeBaseId={knowledgeBaseId}
         knowledgeBase={knowledgeBase}
       />
     ),
-  },
+  }),
 ];

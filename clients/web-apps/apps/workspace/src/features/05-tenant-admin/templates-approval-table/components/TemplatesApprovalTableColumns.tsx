@@ -1,5 +1,5 @@
 import { Checkbox } from "@avplatform/ui";
-import { DTColumnHeader } from "@avplatform/ui/data-table";
+import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -86,15 +86,13 @@ export const templatesApprovalTable: ColumnDef<TemplatesApprovalDto>[] = [
       <div className="w-auto truncate font-medium">{formatDate(row.getValue("createdOn"))}</div>
     ),
   },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      // Actions for the current row
+  createDTActionsColumn<TemplatesApprovalDto>({
+    renderCell: (row) => (
       <PendingTemplatesRowActions
-        rowId={row.original.id}
-        refId={row.original.refId || ""}
-        accessPath={row.original.accessPath || ""}
+        rowId={row.id}
+        refId={row.refId || ""}
+        accessPath={row.accessPath || ""}
       />
     ),
-  },
+  }),
 ];
