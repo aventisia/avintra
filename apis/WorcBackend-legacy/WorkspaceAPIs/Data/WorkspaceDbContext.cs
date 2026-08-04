@@ -163,6 +163,10 @@ public class WorkspaceDbContext : DbContext
             .IsRequired()
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Configure One-to-One relationship between Tool and WorkspaceUser
+        modelBuilder.Entity<Tool>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Tool>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+
         // Configure Many-to-Many relationship between FlowVersion and Tool
         modelBuilder.Entity<FlowVersion_Tool>()
             .HasOne(one => one.FlowVersion)

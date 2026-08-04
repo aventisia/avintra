@@ -76,11 +76,11 @@ public class ToolsController : BaseApiController
         return ResultHelper(await _toolService.TestToolAsync(toolId, testToolDto));
     }
 
-    // Activates a tool.
-    [HttpPost("{toolId}/activate")]
-    public async Task<ActionResult<ServiceResponse<ToolDto>>> ActivateTool(Guid toolId)
+    // Activates or deactivates a tool.
+    [HttpPost("{toolId}/active-state")]
+    public async Task<ActionResult<ServiceResponse<ToolDto>>> SetToolActiveState(Guid toolId, [FromBody] SetToolActiveStateRequest request)
     {
-        return ResultHelper(await _toolService.ActivateToolAsync(toolId));
+        return ResultHelper(await _toolService.SetToolActiveStateAsync(toolId, request.IsActive));
     }
 
     // Retrieves all platform (library) tools.

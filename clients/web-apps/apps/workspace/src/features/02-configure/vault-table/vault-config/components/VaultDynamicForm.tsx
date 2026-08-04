@@ -10,11 +10,17 @@ import { z } from "zod";
 import { RenderField, shouldRenderField } from "@/features/dynamic-config-panel";
 import { refineSubmittedIO } from "@/features/dynamic-config-panel/utils/refine-submitted-io";
 
+import { VaultAppsEnum } from "../../enums/vault-apps-enum";
+import {
+  buildCustomApiToolPayload,
+  customApiToolSchema,
+} from "../constants/custom-api-tool-schema";
 import { vaultAppsSelectOptions } from "../constants/vault-app-select-options";
 import { useAddCredMutation } from "../hooks/useAddCredMutation";
 import { useUpdateCredMutation } from "../hooks/useUpdateCredMutation";
 import { useVaultDynamicForm } from "../hooks/useVaultDynamicForm";
 import { AppSelector } from "./AppSelector";
+import { CustomApiToolForm } from "./CustomApiToolForm";
 
 interface VaultDynamicFormProps {
   rowId: string;
@@ -43,6 +49,7 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
     isAvailable,
     isCheckPending,
     isDirty,
+    vaultData,
   } = useVaultDynamicForm({ rowId, crudAction });
 
   // Watch all form values
@@ -66,9 +73,42 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
   } = useUpdateCredMutation();
 
   const isType = watch("selectedType")?.value;
+  const isCustomApiToolSelected = isType === "CustomApiTool" || vaultData?.type === "CustomApiTool";
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof vaultConfigZodSchema>) => {
+    if (isCustomApiToolSelected) {
+      // Use the live form values instead of the parsed resolver output so that
+      // transient/initial empty schemas do not strip the CustomApiTool fields.
+      const rawValues = form.getValues();
+
+      const parsed = customApiToolSchema.safeParse(rawValues);
+      if (!parsed.success) {
+        parsed.error.issues.forEach((issue) => {
+          form.setError(issue.path.join(".") as string, { message: issue.message });
+        });
+        return;
+      }
+
+      const customValues = parsed.data;
+
+      const payload = {
+        id: crudAction === "update" ? rowId : undefined,
+        type: VaultAppsEnum[VaultAppsEnum.CustomApiTool],
+        name: customValues.name.trim(),
+        description: customValues.description?.trim(),
+        data: buildCustomApiToolPayload(customValues),
+        isDisabled: customValues.isDisabled ?? false,
+      };
+
+      if (action === "create") {
+        mutate(payload);
+      } else {
+        updateMutation(payload);
+      }
+      return;
+    }
+
     // Extract node inputs and outputs from formData
     const { inputs } = refineSubmittedIO("nodeUniqueName", formData, inputKeys, outputKeys);
     if (action == "create") {
@@ -132,7 +172,15 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
             {isType && <Separator />}{" "}
           </>
         )}
-        {isType ? (
+        {isType && isCustomApiToolSelected && (
+          <CustomApiToolForm
+            rowId={rowId}
+            crudAction={crudAction}
+            onNameChange={handleInputChange}
+            availabilityMessage={availabilityMessage}
+          />
+        )}
+        {isType && !isCustomApiToolSelected ? (
           <>
             {" "}
             {isLoading ? (
@@ -204,20 +252,21 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
                 description="Disable this record if it's been outdated, or not required anymore"
               />
             )}
-            {/* Save button */}
-            {!isReadOnly && (
-              <div className="!mt-5 flex w-full justify-end">
-                <SubmitButton
-                  className="min-w-[5rem]"
-                  primaryText={action === "create" ? "Save" : "Save changes"}
-                  secondaryText="Saving..."
-                  isPending={isUpdating}
-                  disabled={!isDirty || !isAvailable || isCheckPending}
-                />
-              </div>
-            )}
           </>
-        ) : null}{" "}
+        ) : null}
+
+        {/* Save button */}
+        {isType && !isReadOnly && (
+          <div className="!mt-5 flex w-full justify-end">
+            <SubmitButton
+              className="min-w-[5rem]"
+              primaryText={action === "create" ? "Save" : "Save changes"}
+              secondaryText="Saving..."
+              isPending={isUpdating}
+              disabled={!isDirty || !isAvailable || isCheckPending}
+            />
+          </div>
+        )}
       </Form>
     </>
   );

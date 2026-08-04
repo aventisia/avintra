@@ -8,17 +8,16 @@ public class ToolService : IToolService
     private readonly ILogger<ToolService> _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IResourceShareService _resourceShareService;
-    private readonly IAppSecretService _appSecretService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _currentUserId;
+    private readonly string _accessToken;
 
     public ToolService(
         IUnitOfWork unitOfWork,
         ILogger<ToolService> logger,
         IHttpContextAccessor httpContextAccessor,
         IResourceShareService resourceShareService,
-        IAppSecretService appSecretService,
         IHttpClientFactory httpClientFactory,
         EnvironmentConfig environmentConfig)
     {
@@ -26,10 +25,10 @@ public class ToolService : IToolService
         _logger = logger;
         _httpContextAccessor = httpContextAccessor;
         _resourceShareService = resourceShareService;
-        _appSecretService = appSecretService;
         _httpClientFactory = httpClientFactory;
         _environmentConfig = environmentConfig;
         _currentUserId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
     }
 
     // Retrieves list of tools based on ownership scope.
@@ -161,6 +160,7 @@ public class ToolService : IToolService
             var tool = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Id == toolId)
                 .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
                 .SingleOrDefaultAsync();
 
             if (tool == null)
@@ -513,9 +513,8 @@ public class ToolService : IToolService
                 return serviceResponse.Update("You do not have permission to test this tool.", 403);
             }
 
-            // Resolve the API key from the credential override or the tool default.
+            // Pass credential identity to the LLM pipeline so it can decrypt and apply auth.
             var credentialId = testToolDto.CredentialId ?? tool.CredentialId;
-            var apiKey = await ResolveApiKeyAsync(credentialId);
 
             // Build the test payload for the LLM pipeline.
             var testPayload = new
@@ -523,27 +522,43 @@ public class ToolService : IToolService
                 baseUrl = tool.BaseUrl,
                 operationId = testToolDto.OperationId,
                 parameters = testToolDto.Parameters,
-                authenticationType = tool.AuthenticationType?.ToString(),
-                apiKey,
+                credentialId,
                 openApiSpec = tool.OpenApiSpec,
             };
 
             var requestJson = System.Text.Json.JsonSerializer.Serialize(testPayload);
-            var requestContent = new StringContent(requestJson, Encoding.UTF8);
+            var requestContent = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
-            // Execute the test request and capture timing.
-            var llmPipelineClient = _httpClientFactory.CreateClient();
+            // Execute the test request with a dedicated HttpClient instance.
+            using var llmPipelineClient = new HttpClient();
+            llmPipelineClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {_accessToken}");
             llmPipelineClient.Timeout = TimeSpan.FromSeconds(30);
 
             var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-            var llmResponse = await llmPipelineClient.PostAsync(
-                $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/custom-tools/test",
-                requestContent);
+
+            var llmResponse = await llmPipelineClient.PostAsync($"{_environmentConfig.LlmPipelineApiBaseUrl}/api/custom-tools/test", requestContent);
             stopwatch.Stop();
 
             var responseBody = await llmResponse.Content.ReadAsStringAsync();
 
-            var testResult = new TestToolResponseDto
+            // Parse the Python response when it returns a successful JSON body.
+            TestToolResponseDto? testResult = null;
+            if (llmResponse.IsSuccessStatusCode)
+            {
+                try
+                {
+                    testResult = System.Text.Json.JsonSerializer.Deserialize<TestToolResponseDto>(responseBody, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+                }
+                catch (Exception parseEx)
+                {
+                    _logger.LogWarning(parseEx, "Failed to parse LLM pipeline test response body as JSON.");
+                }
+            }
+
+            testResult ??= new TestToolResponseDto
             {
                 Success = llmResponse.IsSuccessStatusCode,
                 StatusCode = (int)llmResponse.StatusCode,
@@ -551,10 +566,11 @@ public class ToolService : IToolService
                 DurationMs = stopwatch.Elapsed.TotalMilliseconds,
             };
 
-            // Mark the tool as verified when the test succeeds.
+            // Mark the tool as verified when the test succeeds and persist immediately.
             if (testResult.Success)
             {
                 tool.IsVerified = true;
+                tool.LastModifiedByUserId = _currentUserId;
                 _unitOfWork.ToolRepo.Update(tool);
                 await _unitOfWork.SaveAsync();
             }
@@ -567,32 +583,27 @@ public class ToolService : IToolService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to test tool {ToolId}.", toolId);
-            serviceResponse.Data = new TestToolResponseDto
-            {
-                Success = false,
-                Body = $"Exception: {ex.Message}",
-            };
         }
 
         return serviceResponse;
     }
 
-    // Activates a tool for use in flows.
-    public async Task<ServiceResponse<ToolDto>> ActivateToolAsync(Guid toolId)
+    // Activates or deactivates a tool for use in flows.
+    public async Task<ServiceResponse<ToolDto>> SetToolActiveStateAsync(Guid toolId, bool isActive)
     {
         var serviceResponse = new ServiceResponse<ToolDto>
         {
-            Message = "Failed to activate tool."
+            Message = $"Failed to {(isActive ? "activate" : "deactivate")} tool."
         };
 
         try
         {
-            // Fetch the tool to activate.
-            var toolToActivate = await _unitOfWork.ToolRepo
+            // Fetch the tool to update.
+            var toolToUpdate = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Id == toolId)
                 .SingleOrDefaultAsync();
 
-            if (toolToActivate == null)
+            if (toolToUpdate == null)
             {
                 return serviceResponse.Update("Tool not found.", 404);
             }
@@ -600,9 +611,9 @@ public class ToolService : IToolService
             // Verify the current user can edit the tool.
             var (canEdit, _) = await _resourceShareService.GetResourceAccessAsync(
                 _currentUserId,
-                toolToActivate.Id,
+                toolToUpdate.Id,
                 ResourceTypeEnum.Tool,
-                toolToActivate.CreatedByUserId,
+                toolToUpdate.CreatedByUserId,
                 false,
                 new[]
                 {
@@ -612,34 +623,28 @@ public class ToolService : IToolService
 
             if (!canEdit)
             {
-                return serviceResponse.Update("You do not have access to activate this tool.", 403);
+                return serviceResponse.Update($"You do not have access to {(isActive ? "activate" : "deactivate")} this tool.", 403);
             }
 
-            // Activation requires a prior successful playground test.
-            if (!toolToActivate.IsVerified)
-            {
-                return serviceResponse.Update("Tool must pass the playground test before activation.", 400);
-            }
-
-            // Activate the tool and record the modifier.
-            toolToActivate.IsActive = true;
-            toolToActivate.LastModifiedByUserId = _currentUserId;
-            _unitOfWork.ToolRepo.Update(toolToActivate);
+            // Update the active state and record the modifier.
+            toolToUpdate.IsActive = isActive;
+            toolToUpdate.LastModifiedByUserId = _currentUserId;
+            _unitOfWork.ToolRepo.Update(toolToUpdate);
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError("Failed to activate tool {ToolId}.", toolId);
+                _logger.LogError("Failed to set active state for tool {ToolId}.", toolId);
                 return serviceResponse;
             }
 
             return serviceResponse.Update(
-                "Tool activated successfully.",
+                $"Tool {(isActive ? "activated" : "deactivated")} successfully.",
                 200,
-                toolToActivate.Adapt<ToolDto>());
+                toolToUpdate.Adapt<ToolDto>());
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to activate tool {ToolId}.", toolId);
+            _logger.LogError(ex, "Failed to set active state for tool {ToolId}.", toolId);
         }
 
         return serviceResponse;
@@ -681,30 +686,4 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
-    // Resolves and decrypts the API key from the specified credential.
-    private async Task<string?> ResolveApiKeyAsync(Guid? credentialId)
-    {
-        if (!credentialId.HasValue)
-        {
-            return null;
-        }
-
-        // Fetch and decrypt the credential.
-        var credentialResult = await _appSecretService.GetAppSecretDetailAsync(credentialId.Value);
-        if (credentialResult.StatusCode != 200 || credentialResult.Data is null)
-        {
-            return null;
-        }
-
-        // Extract the API key from decrypted credential data.
-        var credentialJson = System.Text.Json.JsonSerializer.Serialize(credentialResult.Data.Data);
-        using var credentialDocument = JsonDocument.Parse(credentialJson);
-
-        if (credentialDocument.RootElement.TryGetProperty("ApiKey", out var apiKeyElement))
-        {
-            return apiKeyElement.GetString();
-        }
-
-        return null;
-    }
 }

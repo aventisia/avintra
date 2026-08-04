@@ -68,7 +68,7 @@ export const ToolsTable = () => {
               {table.getRowModel().rows.map((row) => (
                 <NavLink
                   key={row.id}
-                  to={`/configure/tools/${row.original.id}?tool=${row.getValue("name")}&${TABLE_TAB_QUERY_PARAM}=${currentTab}`}
+                  to={`/configure/tools/${row.original.id}?tool=${encodeURIComponent(row.getValue("name"))}&${TABLE_TAB_QUERY_PARAM}=${currentTab}`}
                 >
                   <div className="flex flex-col cursor-pointer h-36 justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
                     <div className="flex flex-1 flex-col">

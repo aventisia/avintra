@@ -70,6 +70,7 @@ export const deleteTools = (ids: string[]) => {
 
 /**
  * Tests a tool operation in the playground.
+ * The Workspace API forwards the call to the Python LLM pipeline.
  */
 export const testTool = (id: string, dto: TestToolDto) => {
   return axiosInstance
@@ -78,11 +79,22 @@ export const testTool = (id: string, dto: TestToolDto) => {
 };
 
 /**
- * Activates a verified tool.
+ * Tests a tool operation by calling the LLM pipeline API directly.
+ * Authentication is forwarded via the existing JWT cookie/Authorization header.
  */
-export const activateTool = (id: string) => {
+export const testToolDirectly = (dto: TestToolDto) => {
+  const llmPipelineBaseUrl = import.meta.env.VITE_LLMPIPELINE_API_PATH;
   return axiosInstance
-    .post<IHttpResponse<ToolDto>>(`${baseAPIURL}/${id}/activate`)
+    .post<TestToolResponseDto>(`${llmPipelineBaseUrl}/custom-tools/test`, dto)
+    .then((res) => res.data);
+};
+
+/**
+ * Sets the active state of a tool.
+ */
+export const setToolActiveState = (id: string, isActive: boolean) => {
+  return axiosInstance
+    .post<IHttpResponse<ToolDto>>(`${baseAPIURL}/${id}/active-state`, { isActive })
     .then((res) => res.data);
 };
 

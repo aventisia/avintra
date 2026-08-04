@@ -14,4 +14,5 @@ export enum VaultAppsEnum {
   ConnectionString,
   Qdrant,
   Anthropic,
+  CustomApiTool,
 }

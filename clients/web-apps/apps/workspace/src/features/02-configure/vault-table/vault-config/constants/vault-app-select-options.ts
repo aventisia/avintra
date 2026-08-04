@@ -31,6 +31,7 @@ export const vaultAppsSelectOptions: Record<VaultAppsEnum, { label: string; valu
   },
   [VaultAppsEnum.Qdrant]: { label: "Qdrant", value: "Qdrant" },
   [VaultAppsEnum.Anthropic]: { label: "Anthropic", value: "Anthropic" },
+  [VaultAppsEnum.CustomApiTool]: { label: "Custom API Tool", value: "CustomApiTool" },
 };
 
 // export const appList = [
