@@ -99,6 +99,7 @@ public static class AppServicesExtension
         services.AddScoped<IExecuteFlowStep1Service, ExecuteFlowStep1Service>();
         services.AddScoped<IExecutionNotificationService, ExecutionNotificationService>();
         services.AddScoped<IExecuteFlowStep2Service, ExecuteFlowStep2Service>();
+        services.AddScoped<IExecutionGraphService, ExecutionGraphService>();
 
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();

@@ -6,56 +6,31 @@ import { getJobById, startJob } from "../apis/job-trigger-apis";
 import { ExecutionCommandTypesEnum } from "../enums/execution-command-types-enum";
 import useExecuteFlow from "./useExecuteFlow";
 
-/**
- * useCheckJobTrigger
- *
- * Listens for trigger_agent updates over a WebSocket connection
- * and invoke startExecution to execute agent.
- *
- * @param {HubConnection | null} connection - The SignalR HubConnection instance.
- *
- * @example
- * useCheckJobTrigger(connection);
- */
 export default function useCheckJobTrigger(connection: HubConnection | null) {
   const queryClient = useQueryClient();
 
-  const { startExecution, sendCommand, setExecutionState } = useExecuteFlow();
+  const { startExecution, setExecutionState } = useExecuteFlow();
 
   useEffect(() => {
     if (!connection) return;
 
     const handleExecuteFlow = async (data: { jobId: string; command: number }) => {
-      // Lookup to get the enum value from the index
       const commandValue = ExecutionCommandTypesEnum[data.command];
-
-      // Log the value of commandValue for debugging
-      console.log("trigger_agent received commandValue:", commandValue);
 
       try {
         if (commandValue === "Initiate") {
-          console.log("Initiated exe");
           const jobDataInitiate = await getJobById(data.jobId);
-
           await startJob({ id: jobDataInitiate.data.id });
         } else if (commandValue === "Execute") {
-          console.log("Started exe");
           const jobDataExecute = await getJobById(data.jobId);
-
           startExecution(jobDataExecute.data);
         } else if (commandValue === "Abort") {
-          console.log("Aborted execution");
-          localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
-          localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
           setExecutionState("stopped");
-          sendCommand("abort");
-        } else {
-          console.log("Unknown command received:", commandValue);
         }
       } catch (err) {
         console.error("Error handling job trigger:", err);
       } finally {
-        queryClient.invalidateQueries({ queryKey: ["agents-assist"] }); // Assist Agents list
+        queryClient.invalidateQueries({ queryKey: ["agents-assist"] });
       }
     };
 

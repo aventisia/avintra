@@ -28,3 +28,12 @@ export const updateJobData = (data: JobDetailsDto) => {
     .put<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}`, data)
     .then((res) => res.data);
 };
+
+/**
+ * Aborts a running job, transitioning it to Aborted and notifying the executing machine.
+ */
+export const abortJobExecution = (id: string) => {
+  return axiosInstance
+    .post<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}/abort`, { id })
+    .then((res) => res.data);
+};

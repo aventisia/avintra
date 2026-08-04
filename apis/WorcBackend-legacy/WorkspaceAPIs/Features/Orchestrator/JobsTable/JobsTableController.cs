@@ -71,6 +71,13 @@ public class JobsTableController : BaseApiController
         return ResultHelper(await _jobsTableService.CloseJobAsync(jobCloseDto));
     }
 
+    // Aborts a running job by transitioning it to Aborted and sending an Abort command to the executing machine.
+    [HttpPost("abort")]
+    public async Task<ActionResult<ServiceResponse<bool>>> AbortMachineExecution([FromBody] JobAbortRequestDto jobAbortRequestDto)
+    {
+        return ResultHelper(await _jobsTableService.AbortJobExecutionAsync(jobAbortRequestDto));
+    }
+
     // Exports jobs data into a CSV file
     [HttpPost("export")]
     public async Task<ActionResult<FileStreamResult>> ExportJobs(ExportJobsReqDto exportJobsReqDto)
@@ -104,13 +111,6 @@ public class JobsTableController : BaseApiController
     // public async Task<ActionResult<ServiceResponse<bool>>> CancelJob(Guid jobId)
     // {
     //     return ResultHelper(await _jobsTableService.CancelJobAsync(jobId));
-    // }
-
-    // // Abort the execution of a job on the machine
-    // [HttpPost("abort")]
-    // public async Task<ActionResult<ServiceResponse<bool>>> AbortMachineExecution(JobAbortRequestDto jobAbortRequestDto)
-    // {
-    //     return ResultHelper(await _jobsTableService.AbortJobExecutionAsync(jobAbortRequestDto));
     // }
 
     // // Exports jobs data into a CSV file
