@@ -1,213 +1,141 @@
 import { Button } from "@avplatform/ui/buttons";
-import { IS_TAURI } from "@avplatform/ui/constants";
 import { toast } from "@avplatform/ui/sonner";
-import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { PauseIcon, PlayIcon, StopIcon } from "@heroicons/react/24/solid";
-import { invoke } from "@tauri-apps/api/core";
-import { Edge, Node } from "@xyflow/react";
+import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
+import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import { Loader2 } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
-import { getMySession } from "@/react-toolkit/apis/accounts-me-apis";
-import { NodeDataType } from "@/types/node-data-type";
 
-import { CURRENT_VERSION_ID_KEY, clearNodeExecutionLog } from "..";
-import { fetchParentFlow } from "../apis/flow-builder-apis";
-import { useFetchSubFlows } from "../hooks/useFetchSubFlows";
-import useWebSocket from "../hooks/useWebSocket";
+import { abortJobExecution, startJob } from "../apis/job-trigger-apis";
 import { useCurrentFlowStore } from "../stores/current-flow-store";
-import { deepParse } from "../utils/deepParse";
-import { extractInputsFromInputOutputObject } from "../utils/extract-inputs-from-inputoutputobject";
+import { useJobDataStore } from "../stores/job-data-store";
 
 const ExecuteFlow = ({ versionId }: { versionId: string; agentId: string }) => {
-  // Connect to websocket server and get sendCommand function
-  const { sendCommand } = useWebSocket();
+  const [isStarting, setIsStarting] = useState(false);
+  const connectionRef = useRef<HubConnection | null>(null);
 
-  // Get current flow and execution state from current flow store
-  const { executionState, setExecutionState, setCurrentFlow } = useCurrentFlowStore(
+  const { executionState, setExecutionState, currentFlow } = useCurrentFlowStore(
     useShallow((state) => ({
       executionState: state.executionState,
       setExecutionState: state.setExecutionState,
-      setCurrentFlow: state.setCurrentFlow,
+      currentFlow: state.currentFlow,
     })),
   );
 
-  const { userSession } = useUserSessionStore(
+  const { updateField } = useJobDataStore(
     useShallow((state) => ({
-      userSession: state.userSession,
+      updateField: state.updateField,
     })),
   );
 
-  const isCommercial = userSession?.deploymentType == "Commercial";
-  const { fetchAndStoreSubFlows } = useFetchSubFlows();
+  const isCommercial = false;
 
-  const minCredits = 10;
+  // Connect to SignalR hub for job notifications
+  useEffect(() => {
+    let isMounted = true;
 
-  // Start execution
-  const startExecution = async () => {
-    // Skip this run if an execution is already in progress
+    const connect = async () => {
+      const hubUrl = `${import.meta.env.VITE_WORKSPACE_API_PATH}/hubs/flow-execution`;
+
+      const connection = new HubConnectionBuilder()
+        .withUrl(hubUrl, { withCredentials: true })
+        .withAutomaticReconnect({ nextRetryDelayInMilliseconds: () => 5000 })
+        .configureLogging(LogLevel.Information)
+        .build();
+
+      connectionRef.current = connection;
+
+      connection.on("JobCompleted", (notification: { jobId: string; status: string; message?: string }) => {
+        if (!isMounted) return;
+        if (notification.jobId !== currentFlow.jobId) return;
+
+        if (notification.status === "Completed") {
+          toast.success(notification.message || "Execution completed successfully.");
+          setExecutionState("stopped");
+        } else if (notification.status === "Failed") {
+          toast.error(notification.message || "Execution failed.");
+          setExecutionState("stopped");
+        } else if (notification.status === "Aborted" || notification.status === "Abort") {
+          toast.info(notification.message || "Execution was aborted.");
+          setExecutionState("stopped");
+        }
+      });
+
+      connection.on("JobProgress", (notification: { jobId: string; status: string; message?: string }) => {
+        if (!isMounted) return;
+        if (notification.jobId !== currentFlow.jobId) return;
+        console.log("Job progress:", notification);
+      });
+
+      try {
+        await connection.start();
+      } catch {
+        // SignalR connection failure is non-fatal; execution still works via polling
+      }
+    };
+
+    connect();
+
+    return () => {
+      isMounted = false;
+      connectionRef.current?.stop();
+    };
+  }, [currentFlow.jobId, setExecutionState]);
+
+  const startExecution = useCallback(async () => {
     if (executionState === "executing" || executionState === "launching-executor") {
-      console.log("Skipping new execution run: previous execution still in progress");
       return;
     }
 
     if (isCommercial) {
       const creditsData = await getAvailableCredits();
-
-      if (creditsData?.data && creditsData.data.availableCredits < minCredits) {
-        // Show toast notification for insufficient credits
+      if (creditsData?.data && creditsData.data.availableCredits < 10) {
         toast.error("Insufficient credits. Please top up to continue.");
         return;
       }
     }
 
-    const currFlowData = await fetchParentFlow(versionId);
-    if (!currFlowData?.data) return;
-
-    setCurrentFlow({
-      id: currFlowData?.data.flowId,
-      versionId: currFlowData?.data.versionId,
-      name: currFlowData?.data.flowName,
-      inputOutputObject: currFlowData?.data.inputOutputObject || "",
-      jobId: "",
-      machineId: "",
-    });
-    const { nodes, edges } = deepParse(currFlowData?.data.reactFlowObject ?? "{}") as unknown as {
-      nodes: Node[];
-      edges: Edge[];
-    };
-
-    try {
-      await fetchAndStoreSubFlows(nodes as Node<NodeDataType>[]);
-    } catch {
-      return;
-    }
-
-    // Set the execution state to launching executor
+    setIsStarting(true);
     setExecutionState("launching-executor");
 
-    // Get the jwt by calling the getMySession API
-    const userSession = await getMySession();
-
-    // If session is valid, proceed to open the desktop executor
-    if (userSession) {
-      // Get the access token from the session
-      const accessToken = userSession.data?.accessToken;
-
-      // Open the desktop executor if the app is running in Tauri
-      if (IS_TAURI) {
-        localStorage.removeItem("flowExecutionStack"); //  Clear any previous subflow stack
-        localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
-        localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
-        openDesktopExecutor(
-          accessToken,
-          nodes,
-          edges,
-          currFlowData.data.flowName,
-          currFlowData.data.inputOutputObject,
-        );
-      } else {
-        toast.info("Please use our desktop app. Execution in browser is not supported.");
-        // Reset the execution state to stopped if not in Tauri
-        setExecutionState("stopped");
-      }
-    }
-  };
-
-  // Tauri API to open desktop executor
-  const openDesktopExecutor = async (
-    accessToken: string,
-    nodes: Node[],
-    edges: Edge[],
-    agentName: string,
-    inputOutputObject?: string,
-  ) => {
     try {
-      // Add input variables to triggerNode so they are set in execution context before remaining nodes run.
-      const inputVariables = extractInputsFromInputOutputObject(inputOutputObject || "");
+      const startTime = new Date();
+      updateField("startTime", startTime);
 
-      const updatedNodes = nodes.map((node) =>
-        node.type === "triggerNode"
-          ? {
-              ...node,
-              data: {
-                ...node.data,
-                label: "Setting up execution context...",
-                inputs: inputVariables,
-              },
-            }
-          : node,
-      );
+      await startJob({ id: currentFlow.jobId || versionId });
 
-      // Set versionId, nodes and edges in local storage BEFORE launching executor
-      // to prevent race condition where executor sends "start" before localStorage is ready
-      localStorage.setItem(CURRENT_VERSION_ID_KEY, versionId || "");
-      clearNodeExecutionLog();
-      localStorage.setItem("nodes", JSON.stringify(updatedNodes));
-      localStorage.setItem("edges", JSON.stringify(edges));
-
-      // Get websocket port
-      const wsPort = await invoke("get_websocket_port");
-
-      // Call the Tauri command to launch the desktop executor
-      const res = await invoke("launch_desktop_executor", {
-        appBaseUrl: window.location.origin,
-        wsPort,
-        agentId: versionId,
-        agentName: agentName,
-        inputArgumentsJson: JSON.stringify({}), // For manuall trigger we can send empty input arguments.
-        accessToken,
-      });
-      console.log("Executor launched successfully:", res);
+      setExecutionState("executing");
     } catch (error) {
-      // Inform the user about the failure
-      toast.error(`Failed to launch the executor. Please try again. Error: ${error}`);
-
-      // Reset the executing state on failure
+      toast.error(`Failed to start execution: ${error}`);
       setExecutionState("stopped");
+    } finally {
+      setIsStarting(false);
     }
-  };
+  }, [executionState, isCommercial, currentFlow.jobId, versionId, setExecutionState, updateField]);
+
+  const abortExecution = useCallback(async () => {
+    try {
+      await abortJobExecution(currentFlow.jobId || versionId);
+      setExecutionState("stopped");
+      toast.warning("Execution has been aborted");
+    } catch (error) {
+      console.error("Failed to abort execution:", error);
+    }
+  }, [currentFlow.jobId, versionId, setExecutionState]);
 
   return (
     <div className="flex items-center gap-2">
       {executionState === "executing" || executionState === "paused" ? (
         <div className="group flex h-8 gap-1 rounded-lg bg-white/10">
-          {executionState === "executing" ? (
-            <Tooltip content="Pause">
-              <Button
-                variant="ghost"
-                size="icon8"
-                className="hover:bg-white/10"
-                onClick={() => sendCommand("pause")}
-              >
-                <PauseIcon className="h-[1.1rem] w-[1.1rem] text-slate-500" />
-              </Button>
-            </Tooltip>
-          ) : (
-            <Tooltip content="Resume">
-              <Button
-                variant="ghost"
-                size="icon8"
-                className="hover:bg-white/10"
-                onClick={() => sendCommand("resume")}
-              >
-                <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
-              </Button>
-            </Tooltip>
-          )}
           <Tooltip content="Abort">
             <Button
               variant="ghost"
               size="icon8"
               className="hover:bg-white/10"
-              onClick={() => {
-                localStorage.setItem("conditionalExecutionGroup", JSON.stringify([]));
-                localStorage.setItem("loopExecutionGroup", JSON.stringify([]));
-                setExecutionState("stopped");
-                sendCommand("abort");
-              }}
+              onClick={abortExecution}
             >
               <StopIcon className="h-[1.1rem] w-[1.1rem] text-red-500/80" />
             </Button>
@@ -219,16 +147,12 @@ const ExecuteFlow = ({ versionId }: { versionId: string; agentId: string }) => {
             variant="ghost"
             size="icon8"
             className="hover:bg-white/10"
-            onClick={() => {
-              startExecution();
-            }}
+            onClick={startExecution}
           >
-            {executionState === "launching-executor" ? (
+            {isStarting || executionState === "launching-executor" ? (
               <Loader2 className="h-[1.1rem] w-[1.1rem] animate-spin text-white/80" />
             ) : (
-              <>
-                <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
-              </>
+              <PlayIcon className="h-[1.1rem] w-[1.1rem] text-green-500/80" />
             )}
           </Button>
         </Tooltip>

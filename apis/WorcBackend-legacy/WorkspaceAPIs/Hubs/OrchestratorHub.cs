@@ -8,14 +8,16 @@ public class OrchestratorHub : Hub
     private readonly ILogger<OrchestratorHub> _logger;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly IHubContext<FlowExecutionHub> _flowExecutionHubContext;
 
     // Constructor to initialize dependencies
-    public OrchestratorHub(IClientStatusStore clientStatusStore, ILogger<OrchestratorHub> logger, WorkspaceInternalDbContext workspaceInternalDbContext, EnvironmentConfig environmentConfig)
+    public OrchestratorHub(IClientStatusStore clientStatusStore, ILogger<OrchestratorHub> logger, WorkspaceInternalDbContext workspaceInternalDbContext, EnvironmentConfig environmentConfig, IHubContext<FlowExecutionHub> flowExecutionHubContext)
     {
         _clientStatusStore = clientStatusStore;
         _logger = logger;
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _environmentConfig = environmentConfig;
+        _flowExecutionHubContext = flowExecutionHubContext;
     }
 
     // Invoked when a client successfully connects to the hub.
@@ -403,6 +405,68 @@ public class OrchestratorHub : Hub
             // Log any errors and send an error message to the client
             _logger.LogError(ex, "An error occurred while executing agent {AgentId}.", agentId);
             await Clients.Caller.SendAsync("error", $"An error occurred while executing the agent: {ex.Message}");
+        }
+    }
+
+    // Reports execution progress for a job and relays it to the user who initiated the job.
+    public async Task ReportProgress(Guid jobId, string message)
+    {
+        try
+        {
+            // Look up the user associated with the job to route the notification.
+            var job = await _workspaceInternalDbContext.Jobs
+                .SingleOrDefaultAsync(w => w.Id == jobId);
+
+            if (job == null)
+            {
+                _logger.LogWarning("Progress report received for unknown job {JobId}.", jobId);
+                return;
+            }
+
+            await _flowExecutionHubContext.Clients
+                .Group($"user_{job.RefId}")
+                .SendAsync("JobProgress", new
+                {
+                    JobId = jobId,
+                    Status = JobStatusEnum.Running.ToString(),
+                    Message = message,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to report progress for job {JobId}.", jobId);
+        }
+    }
+
+    // Reports completion for a job and relays it to the user who initiated the job.
+    public async Task ReportCompletion(Guid jobId, string status, string? message = null)
+    {
+        try
+        {
+            // Look up the user associated with the job to route the notification.
+            var job = await _workspaceInternalDbContext.Jobs
+                .SingleOrDefaultAsync(w => w.Id == jobId);
+
+            if (job == null)
+            {
+                _logger.LogWarning("Completion report received for unknown job {JobId}.", jobId);
+                return;
+            }
+
+            await _flowExecutionHubContext.Clients
+                .Group($"user_{job.RefId}")
+                .SendAsync("JobCompleted", new
+                {
+                    JobId = jobId,
+                    Status = status,
+                    Message = message,
+                    Timestamp = DateTimeOffset.UtcNow
+                });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to report completion for job {JobId}.", jobId);
         }
     }
 

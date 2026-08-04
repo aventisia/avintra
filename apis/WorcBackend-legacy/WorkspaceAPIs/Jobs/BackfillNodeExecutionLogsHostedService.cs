@@ -77,12 +77,36 @@ public class BackfillNodeExecutionLogsHostedService : IHostedService
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogWarning(ex, "Failed to parse NodeExecutionLogs for Job {JobId}. Skipping.", job.Id);
+                        _logger.LogWarning(ex, "Failed to parse NodeExecutionLogs for Job {JobId}. Inserting sentinel to skip.", job.Id);
+                        context.JobNodeExecutionLogs.Add(new JobNodeExecutionLog
+                        {
+                            Id = Guid.NewGuid(),
+                            JobId = job.Id,
+                            TenantId = job.TenantId,
+                            NodeExecutionId = string.Empty,
+                            RetryAttempt = 0,
+                            IsSuccess = false,
+                            ExecutedAt = DateTimeOffset.UtcNow
+                        });
+                        processedCount++;
                         continue;
                     }
 
                     if (logs == null || logs.Count == 0)
+                    {
+                        context.JobNodeExecutionLogs.Add(new JobNodeExecutionLog
+                        {
+                            Id = Guid.NewGuid(),
+                            JobId = job.Id,
+                            TenantId = job.TenantId,
+                            NodeExecutionId = string.Empty,
+                            RetryAttempt = 0,
+                            IsSuccess = false,
+                            ExecutedAt = DateTimeOffset.UtcNow
+                        });
+                        processedCount++;
                         continue;
+                    }
 
                     var entities = logs.Select(log => MapSharedLogToEntity(log, job.Id, job.TenantId)).ToList();
                     await context.JobNodeExecutionLogs.AddRangeAsync(entities, cancellationToken);

@@ -283,13 +283,8 @@ public class JobsTableService : IJobsTableService
             jobRecordDto.FlowVersionNumber = $"v{flowVersion.FlowVersionNumber}";
             jobRecordDto.IsFlowVersionPublished = flowVersion.IsFlowVersionPublished;
 
-            // TODO: Need to check this. 
-            // If the flow version is published, trigger the job execution.
-            if (flowVersion.IsFlowVersionPublished)
-            {
-                // Execute the job asynchronously.
-                await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
-            }
+            // Trigger job execution if a machine is available (published or desktop flow)
+            await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
 
             // Return Success response
             return serviceResponse.Update("Job created", 201, jobRecordDto);
@@ -736,6 +731,68 @@ public class JobsTableService : IJobsTableService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while closing the job with ID {JobId}.", job.Id);
+            return serviceResponse;
+        }
+    }
+
+    // Aborts a running job by transitioning it to Aborted, recording the end time, and sending an Abort command to the executing machine.
+    public async Task<ServiceResponse<bool>> AbortJobExecutionAsync(JobAbortRequestDto jobAbortRequestDto)
+    {
+        // Initialize the response with a default error message.
+        var serviceResponse = ServiceResponse<bool>.Create("Failed to abort job execution", 500);
+
+        try
+        {
+            // Validate the job ID to ensure it is not empty.
+            if (jobAbortRequestDto.Id == Guid.Empty)
+            {
+                _logger.LogWarning("Invalid Job ID received: {JobId}. The Job ID must not be empty.", jobAbortRequestDto.Id);
+                return serviceResponse.Update("Job ID cannot be empty.", 400);
+            }
+
+            // Retrieve the job details based on the provided Job ID.
+            var job = await _unitOfWork.JobRepo
+                .GetByConditionAsync(w => w.Id == jobAbortRequestDto.Id)
+                .FirstOrDefaultAsync();
+
+            if (job == null)
+                return serviceResponse.Update("Job not found.", 404);
+
+            // CANNOT ABORT THE JOB: Job is not running.
+            if (job.Status != JobStatusEnum.Running)
+                return serviceResponse.Update("Only running jobs can be aborted.", 400);
+
+            // Set the job status to Aborted and record the end time.
+            job.Status = JobStatusEnum.Aborted;
+            job.EndTime = DateTimeOffset.UtcNow;
+
+            // Update the job in the repository.
+            _unitOfWork.JobRepo.Update(job);
+
+            // Abort-Job failed, log and return.
+            if (!await _unitOfWork.SaveAsync())
+                return serviceResponse.Update("Failed to save changes.", 500);
+
+            // Send an Abort command to the machine executing the job, if any.
+            if (job.MachineId != null && job.MachineId != Guid.Empty)
+            {
+                var executionCommand = new ExecutionCommandDto
+                {
+                    JobId = job.Id,
+                    MachineId = job.MachineId.Value,
+                    AgentId = job.FlowVersionId,
+                    TenantId = job.TenantId,
+                    Command = ExecutionCommandTypesEnum.Abort
+                };
+
+                await _jobsExecutorService.TriggerExecutionAsync(executionCommand);
+            }
+
+            return serviceResponse.Update("Job execution aborted", 200, true);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while aborting the job with ID {JobId}.", jobAbortRequestDto.Id);
             return serviceResponse;
         }
     }

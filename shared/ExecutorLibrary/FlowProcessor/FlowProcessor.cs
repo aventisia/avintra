@@ -1,5 +1,7 @@
+using ExecutorLibrary.FlowProcessor.Helpers;
 using ExecutorLibrary.FlowProcessor.State;
 using ExecutorLibrary.Helpers;
+using NodeLibrary.Models;
 
 namespace ExecutorLibrary.FlowProcessor;
 
@@ -10,6 +12,7 @@ public class FlowProcessor
     private static readonly TimeSpan DefaultExecutionTimeout = TimeSpan.FromMinutes(10);
 
     private readonly INodeProcessor _nodeProcessor;
+    private readonly IFlowGraphProvider? _flowGraphProvider;
     private readonly int _maxExecutedNodeVisits;
     private readonly int _maxLoopIterations;
     private readonly TimeSpan _executionTimeout;
@@ -19,8 +22,19 @@ public class FlowProcessor
         int maxExecutedNodeVisits = DefaultMaxExecutedNodeVisits,
         int maxLoopIterations = DefaultMaxLoopIterations,
         TimeSpan? executionTimeout = null)
+        : this(nodeProcessor, null, maxExecutedNodeVisits, maxLoopIterations, executionTimeout)
+    {
+    }
+
+    public FlowProcessor(
+        INodeProcessor nodeProcessor,
+        IFlowGraphProvider? flowGraphProvider,
+        int maxExecutedNodeVisits = DefaultMaxExecutedNodeVisits,
+        int maxLoopIterations = DefaultMaxLoopIterations,
+        TimeSpan? executionTimeout = null)
     {
         _nodeProcessor = nodeProcessor;
+        _flowGraphProvider = flowGraphProvider;
         _maxExecutedNodeVisits = maxExecutedNodeVisits;
         _maxLoopIterations = maxLoopIterations;
         _executionTimeout = executionTimeout ?? DefaultExecutionTimeout;
@@ -29,12 +43,12 @@ public class FlowProcessor
     public async Task<FlowExecutionResult> ExecuteAsync(
         ReactFlowDataModel flow,
         Dictionary<string, object?>? initialVariables = null,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        Action<string>? onNodeProgress = null)
     {
         var startTime = DateTimeOffset.UtcNow;
         var flowExecutionContext = new FlowExecutionContext();
 
-        // Seed context with initial variables (e.g. UserId, TenantId, AccessToken)
         if (initialVariables is not null)
         {
             foreach (var kvp in initialVariables)
@@ -45,6 +59,7 @@ public class FlowProcessor
         var logs = new List<NodeExecutionLog>();
         var conditionalStates = new Dictionary<string, ConditionalBranchState>(StringComparer.OrdinalIgnoreCase);
         var loopStates = new Dictionary<string, LoopState>(StringComparer.OrdinalIgnoreCase);
+        var executionStack = new Stack<FlowExecutionFrame>();
 
         var validationError = FlowValidationHelper.IsValidFlowGraph(flow);
         if (!string.IsNullOrWhiteSpace(validationError))
@@ -52,7 +67,6 @@ public class FlowProcessor
             return CreateFailedResult(startTime, logs, validationError);
         }
 
-        // Set the start node as the current node
         var currentNodeId = flow.Nodes.FirstOrDefault(n => IsStartNodeType(n.Type))?.Id
             ?? throw new InvalidOperationException("Start node not found in the flow.");
 
@@ -60,10 +74,8 @@ public class FlowProcessor
 
         try
         {
-            // Loop until there are no more nodes to process
             while (!string.IsNullOrWhiteSpace(currentNodeId))
             {
-                // Check for cancellation
                 cancellationToken.ThrowIfCancellationRequested();
 
                 if (DateTimeOffset.UtcNow - startTime > _executionTimeout)
@@ -77,11 +89,11 @@ public class FlowProcessor
                     throw new InvalidOperationException($"Flow execution exceeded maximum node visit limit of {_maxExecutedNodeVisits}.");
                 }
 
-                // Fetch the current node
                 var node = flow.Nodes.FirstOrDefault(n => n.Id == currentNodeId);
                 if (node is null) return CreateFailedResult(startTime, logs, $"Node not found: {currentNodeId}");
 
-                // Process the current node and determine the next node to execute
+                onNodeProgress?.Invoke(node.Id);
+
                 var nextNodeId = await ProcessNodeAndGetNextAsync(
                     node,
                     flow,
@@ -89,11 +101,21 @@ public class FlowProcessor
                     logs,
                     conditionalStates,
                     loopStates,
+                    executionStack,
                     cancellationToken);
 
-                // If no next node is available, execution is complete.
                 if (nextNodeId is null)
                 {
+                    if (executionStack.Count > 0)
+                    {
+                        var frame = executionStack.Pop();
+                        flow = frame.Flow;
+                        conditionalStates = frame.ConditionalStates;
+                        loopStates = frame.LoopStates;
+                        currentNodeId = frame.ReturnNodeId;
+                        continue;
+                    }
+
                     return CreateCompletedResult(startTime, logs, flowExecutionContext);
                 }
 
@@ -119,6 +141,7 @@ public class FlowProcessor
         List<NodeExecutionLog> logs,
         Dictionary<string, ConditionalBranchState> conditionalStates,
         Dictionary<string, LoopState> loopStates,
+        Stack<FlowExecutionFrame> executionStack,
         CancellationToken cancellationToken)
     {
         if (node.Data?.IsDisabled == true)
@@ -132,8 +155,10 @@ public class FlowProcessor
             case "plusNode":
             case "mergeBranchesNode":
             case "branchStartNode":
-            case "branchNode1":
                 return FindNextEdgeTarget(flow, node.Id);
+
+            case "branchNode1":
+                return await ProcessBranchNode1Async(node, flow, flowExecutionContext, cancellationToken);
 
             case "activityNode":
             case "aiNode":
@@ -147,18 +172,115 @@ public class FlowProcessor
                 return ProcessConditionalNode(node, flow, conditionalStates);
 
             case "branchEndNode":
-                return ProcessBranchEndNode(node, flow, conditionalStates, loopStates);
+                return ProcessBranchEndNode(node, flow, flowExecutionContext, conditionalStates, loopStates);
 
             case "forLoopNode":
-                return ProcessForLoopNode(node, flow, loopStates);
+                return ProcessForLoopNode(node, flow, flowExecutionContext, loopStates);
 
             case "callAgentNode":
             case "blockNode":
-                throw new NotSupportedException($"Node type '{node.Type}' is planned and will be added in the next implementation pass.");
+                return await ProcessSubFlowNodeAsync(node, flow, flowExecutionContext, logs, conditionalStates, loopStates, executionStack, cancellationToken);
 
             default:
                 throw new InvalidOperationException($"Unknown node type: {node.Type}");
         }
+    }
+
+    private Task<string?> ProcessBranchNode1Async(
+        ReactFlowNodeModel node,
+        ReactFlowDataModel flow,
+        FlowExecutionContext flowExecutionContext,
+        CancellationToken cancellationToken)
+    {
+        var conditionsInput = node.Data?.Inputs?.FirstOrDefault(i =>
+            string.Equals(i.Key, "Conditions", StringComparison.OrdinalIgnoreCase));
+
+        if (conditionsInput?.Value is null)
+        {
+            return Task.FromResult(FindNextEdgeTarget(flow, node.Id));
+        }
+
+        List<List<ResolvedConditionModel>>? conditionGroups = null;
+
+        if (conditionsInput.Value is JsonElement jsonElement)
+        {
+            conditionGroups = JsonSerializer.Deserialize<List<List<ResolvedConditionModel>>>(jsonElement.GetRawText());
+        }
+        else if (conditionsInput.Value is List<List<ResolvedConditionModel>> typedGroups)
+        {
+            conditionGroups = typedGroups;
+        }
+
+        if (conditionGroups is null || conditionGroups.Count == 0)
+        {
+            return Task.FromResult(FindNextEdgeTarget(flow, node.Id));
+        }
+
+        var isTrue = ConditionEvaluator.Evaluate(conditionGroups);
+
+        if (isTrue)
+        {
+            return Task.FromResult(FindNextEdgeTarget(flow, node.Id));
+        }
+
+        return Task.FromResult<string?>(null);
+    }
+
+    private async Task<string?> ProcessSubFlowNodeAsync(
+        ReactFlowNodeModel node,
+        ReactFlowDataModel flow,
+        FlowExecutionContext flowExecutionContext,
+        List<NodeExecutionLog> logs,
+        Dictionary<string, ConditionalBranchState> conditionalStates,
+        Dictionary<string, LoopState> loopStates,
+        Stack<FlowExecutionFrame> executionStack,
+        CancellationToken cancellationToken)
+    {
+        if (_flowGraphProvider is null)
+        {
+            throw new NotSupportedException($"Sub-flow node type '{node.Type}' requires an IFlowGraphProvider.");
+        }
+
+        var flowVersionIdStr = node.Type switch
+        {
+            "callAgentNode" => node.Data?.SelectedAgent,
+            "blockNode" => node.Data?.SelectedBlock,
+            _ => null
+        };
+
+        if (string.IsNullOrWhiteSpace(flowVersionIdStr))
+        {
+            throw new InvalidOperationException($"Sub-flow node '{node.Id}' is missing flow reference.");
+        }
+
+        var segments = flowVersionIdStr.Split(',');
+        if (segments.Length < 1 || !Guid.TryParse(segments[0].Trim(), out var flowVersionId))
+        {
+            throw new InvalidOperationException($"Sub-flow node '{node.Id}' has invalid flow version id format: '{flowVersionIdStr}'.");
+        }
+
+        var subFlow = await _flowGraphProvider.GetFlowGraphAsync(flowVersionId, cancellationToken);
+        if (subFlow is null)
+        {
+            throw new InvalidOperationException($"Sub-flow graph not found for flow version id '{flowVersionId}'.");
+        }
+
+        var frame = new FlowExecutionFrame
+        {
+            Flow = flow,
+            ReturnNodeId = FindNextEdgeTarget(flow, node.Id) ?? string.Empty,
+            ConditionalStates = conditionalStates,
+            LoopStates = loopStates
+        };
+        executionStack.Push(frame);
+
+        var subFlowTrigger = subFlow.Nodes.FirstOrDefault(n => IsStartNodeType(n.Type));
+        if (subFlowTrigger is null)
+        {
+            throw new InvalidOperationException($"Sub-flow '{flowVersionId}' has no trigger node.");
+        }
+
+        return subFlowTrigger.Id;
     }
 
     private async Task<string?> ProcessExecutableNodeAsync(
@@ -185,12 +307,10 @@ public class FlowProcessor
             flowExecutionContext.Set(output.Key, output.Value);
         }
 
-        // For chat-triggered flows: capture the LLM result from aiNode into a well-known variable
         if (string.Equals(node.Type, "aiNode", StringComparison.OrdinalIgnoreCase) &&
             flowExecutionContext.TryGet<string>("TriggeredBy", out var triggeredBy) &&
             string.Equals(triggeredBy, "chat", StringComparison.OrdinalIgnoreCase))
         {
-            // Look for the "Result" output which contains the LLM response JsonElement
             if (result.OutputValues.Values.FirstOrDefault() is { } firstOutput)
             {
                 flowExecutionContext.Set("_ChatLLMResult", firstOutput);
@@ -246,6 +366,7 @@ public class FlowProcessor
     private string? ProcessBranchEndNode(
         ReactFlowNodeModel node,
         ReactFlowDataModel flow,
+        FlowExecutionContext flowExecutionContext,
         Dictionary<string, ConditionalBranchState> conditionalStates,
         Dictionary<string, LoopState> loopStates)
     {
@@ -282,6 +403,35 @@ public class FlowProcessor
                 throw new InvalidOperationException($"Loop state was not found for node '{parentNodeId}'.");
             }
 
+            if (string.Equals(loopState.LoopType, "ForEachLoop", StringComparison.OrdinalIgnoreCase))
+            {
+                loopState.CurrentIndex++;
+                if (loopState.CurrentIndex < loopState.TotalCount)
+                {
+                    var listVar = loopState.ListVariableName;
+                    if (!string.IsNullOrWhiteSpace(listVar) && flowExecutionContext.TryGet<object?>(listVar, out var listObj) && listObj is System.Collections.IEnumerable enumerable)
+                    {
+                        var index = 0;
+                        foreach (var item in enumerable)
+                        {
+                            if (index == loopState.CurrentIndex)
+                            {
+                                if (!string.IsNullOrWhiteSpace(loopState.ItemVariableName))
+                                    flowExecutionContext.Set(loopState.ItemVariableName, item);
+                                if (!string.IsNullOrWhiteSpace(loopState.ItemIndexVariableName))
+                                    flowExecutionContext.Set(loopState.ItemIndexVariableName, loopState.CurrentIndex);
+                                break;
+                            }
+                            index++;
+                        }
+                    }
+                    return loopState.LoopBodyStartNodeId;
+                }
+
+                loopStates.Remove(parentNodeId);
+                return loopState.MergeBranchesNodeId;
+            }
+
             loopState.CurrentIteration++;
             if (loopState.CurrentIteration > _maxLoopIterations)
             {
@@ -303,6 +453,7 @@ public class FlowProcessor
     private string ProcessForLoopNode(
         ReactFlowNodeModel node,
         ReactFlowDataModel flow,
+        FlowExecutionContext flowExecutionContext,
         Dictionary<string, LoopState> loopStates)
     {
         if (!loopStates.TryGetValue(node.Id, out var loopState))
@@ -314,26 +465,74 @@ public class FlowProcessor
             }
 
             var bodyStartNodeId = ResolveLoopBodyStartNodeId(node, flow, mergeNodeId);
-            var maxIterations = 5; // TODO: Default iteration count for testing, to be replaced with dynamic value
-            if (maxIterations < 0)
-            {
-                throw new InvalidOperationException($"For loop node '{node.Id}' has invalid negative iteration count.");
-            }
 
-            if (maxIterations > _maxLoopIterations)
-            {
-                throw new InvalidOperationException($"For loop node '{node.Id}' exceeds maximum configured loop iteration cap of {_maxLoopIterations}.");
-            }
+            var loopType = node.Data?.Inputs?.FirstOrDefault(i =>
+                string.Equals(i.Key, "LoopType", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "for";
 
-            loopState = new LoopState
+            if (string.Equals(loopType, "ForEachLoop", StringComparison.OrdinalIgnoreCase))
             {
-                Id = node.Id,
-                LoopType = "for",
-                MergeBranchesNodeId = mergeNodeId,
-                LoopBodyStartNodeId = bodyStartNodeId,
-                MaxIterations = maxIterations,
-                CurrentIteration = 0
-            };
+                var listVarName = node.Data?.Inputs?.FirstOrDefault(i =>
+                    string.Equals(i.Key, "ListVariableName", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? string.Empty;
+
+                var itemVarName = node.Data?.Inputs?.FirstOrDefault(i =>
+                    string.Equals(i.Key, "ItemVariableName", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? string.Empty;
+
+                var indexVarName = node.Data?.Inputs?.FirstOrDefault(i =>
+                    string.Equals(i.Key, "ItemIndexVariableName", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? string.Empty;
+
+                var totalCount = 0;
+                if (!string.IsNullOrWhiteSpace(listVarName) && flowExecutionContext.TryGet<object?>(listVarName, out var listObj) && listObj is System.Collections.IEnumerable enumerable)
+                {
+                    var list = enumerable.Cast<object?>().ToList();
+                    totalCount = list.Count;
+
+                    if (totalCount > 0)
+                    {
+                        if (!string.IsNullOrWhiteSpace(itemVarName))
+                            flowExecutionContext.Set(itemVarName, list[0]);
+                        if (!string.IsNullOrWhiteSpace(indexVarName))
+                            flowExecutionContext.Set(indexVarName, 0);
+                    }
+                }
+
+                loopState = new LoopState
+                {
+                    Id = node.Id,
+                    LoopType = "ForEachLoop",
+                    MergeBranchesNodeId = mergeNodeId,
+                    LoopBodyStartNodeId = bodyStartNodeId,
+                    MaxIterations = totalCount,
+                    CurrentIteration = 0,
+                    CurrentIndex = 0,
+                    TotalCount = totalCount,
+                    ListVariableName = listVarName,
+                    ItemVariableName = itemVarName,
+                    ItemIndexVariableName = indexVarName
+                };
+            }
+            else
+            {
+                var maxIterations = 5;
+                if (maxIterations < 0)
+                {
+                    throw new InvalidOperationException($"For loop node '{node.Id}' has invalid negative iteration count.");
+                }
+
+                if (maxIterations > _maxLoopIterations)
+                {
+                    throw new InvalidOperationException($"For loop node '{node.Id}' exceeds maximum configured loop iteration cap of {_maxLoopIterations}.");
+                }
+
+                loopState = new LoopState
+                {
+                    Id = node.Id,
+                    LoopType = "for",
+                    MergeBranchesNodeId = mergeNodeId,
+                    LoopBodyStartNodeId = bodyStartNodeId,
+                    MaxIterations = maxIterations,
+                    CurrentIteration = 0
+                };
+            }
 
             loopStates[node.Id] = loopState;
         }
@@ -393,7 +592,6 @@ public class FlowProcessor
             || string.Equals(nodeType, "triggerNode", StringComparison.OrdinalIgnoreCase);
     }
 
-    // Variables to exclude from output snapshot (sensitive or internal data)
     private static readonly HashSet<string> ExcludedOutputVariables = new(StringComparer.OrdinalIgnoreCase)
     {
         "_agent", "_caller", "_job",

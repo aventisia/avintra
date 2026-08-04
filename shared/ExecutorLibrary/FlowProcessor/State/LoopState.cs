@@ -13,4 +13,14 @@ public class LoopState
     public int CurrentIteration { get; set; }
 
     public int MaxIterations { get; set; }
+
+    public string ListVariableName { get; set; } = string.Empty;
+
+    public string ItemVariableName { get; set; } = string.Empty;
+
+    public string ItemIndexVariableName { get; set; } = string.Empty;
+
+    public int CurrentIndex { get; set; }
+
+    public int TotalCount { get; set; }
 }

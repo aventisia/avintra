@@ -6,18 +6,13 @@ public class MachinesTableService : IMachinesTableService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICurrentTenantService _currentTenantService;
-    private readonly Guid _userId;
 
     public MachinesTableService(
         ILogger<MachinesTableService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor,
         IClientStatusStore clientStatusStore,
         ICurrentTenantService currentTenantService)
     {
-        // Set _userId
-        _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
         _logger = logger;
         _unitOfWork = unitOfWork;
         _clientStatusStore = clientStatusStore;

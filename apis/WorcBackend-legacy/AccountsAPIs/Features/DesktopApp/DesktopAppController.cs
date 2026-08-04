@@ -22,32 +22,14 @@ public class DesktopAppController : BaseApiController
     [HttpGet("download")]
     public IActionResult DownloadVersion()
     {
-        // Get the file path and file name for the latest version
-        var (filePath, fileName, signatureFilePath, message) = GetLatestVersion();
-
-        // If file path is null or empty, return NotFound
-        if (string.IsNullOrEmpty(filePath))
-            return NotFound(message);
-
-        // Read file bytes and return as file result
-        var fileBytes = System.IO.File.ReadAllBytes(filePath);
-        return File(fileBytes, "application/octet-stream", fileName);
+        return DownloadVersionedFile("AvintraDesktopApp", "x64-setup.exe");
     }
 
     // GET: /desktop-app/download/{version}
     [HttpGet("download/{version}")]
     public IActionResult DownloadVersion(string version)
     {
-        // Get the file path and file name for the latest version
-        var (filePath, fileName, signatureFilePath, message) = GetLatestVersion(version);
-
-        // If file path is null or empty, return NotFound
-        if (string.IsNullOrEmpty(filePath))
-            return NotFound(message);
-
-        // Read file bytes and return as file result
-        var fileBytes = System.IO.File.ReadAllBytes(filePath);
-        return File(fileBytes, "application/octet-stream", fileName);
+        return DownloadVersionedFile("AvintraDesktopApp", "x64-setup.exe", version);
     }
 
     // GET: /desktop-app/update/{target}/{arch}/{currentVersion}
@@ -55,14 +37,14 @@ public class DesktopAppController : BaseApiController
     public IActionResult CheckUpdate(string target, string arch, string currentVersion)
     {
         // Get the file path and file name for the latest version
-        var (filePath, fileName, signatureFilePath, message) = GetLatestVersion();
+        var (filePath, fileName, signatureFilePath, message) = GetLatestVersion("AvintraDesktopApp", "x64-setup.exe");
 
         // If file path is null or empty, return NotFound
         if (string.IsNullOrEmpty(filePath))
             return NotFound(message);
 
         // Get the latest verison out. Assuming version is in the format AvintraDesktopApp_{version}_x64-setup.exe
-        string latestVersion = Path.GetFileNameWithoutExtension(fileName).Split('_')[1]; // AvintraDesktopApp_{version}_x64-setup.exe
+        string latestVersion = ParseVersion(fileName, "AvintraDesktopApp", "x64-setup.exe");
 
         var updateNotes = "Bug fixes and improvements.";
         var pubDate = DateTime.UtcNow.ToString("o"); // ISO 8601 format
@@ -92,8 +74,52 @@ public class DesktopAppController : BaseApiController
         return Ok(response);
     }
 
+    // GET: /desktop-app/desktop-executor/latest
+    [HttpGet("desktop-executor/latest")]
+    public IActionResult GetDesktopExecutorLatest()
+    {
+        var (filePath, fileName, _, message) = GetLatestVersion("DesktopExecutor", "win-x64.zip");
+        if (string.IsNullOrEmpty(filePath))
+            return NotFound(message);
+
+        var latestVersion = ParseVersion(fileName, "DesktopExecutor", "win-x64.zip");
+        return Ok(new
+        {
+            version = latestVersion,
+            url = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/desktop-app/desktop-executor/download/{latestVersion}"
+        });
+    }
+
+    // GET: /desktop-app/desktop-executor/download/
+    [HttpGet("desktop-executor/download")]
+    public IActionResult DownloadDesktopExecutor()
+    {
+        return DownloadVersionedFile("DesktopExecutor", "win-x64.zip");
+    }
+
+    // GET: /desktop-app/desktop-executor/download/{version}
+    [HttpGet("desktop-executor/download/{version}")]
+    public IActionResult DownloadDesktopExecutor(string version)
+    {
+        return DownloadVersionedFile("DesktopExecutor", "win-x64.zip", version);
+    }
+
+    // Helper to resolve and stream a versioned binary matching the given prefix and suffix.
+    private IActionResult DownloadVersionedFile(string prefix, string suffix, string? version = null)
+    {
+        var (filePath, fileName, _, message) = GetLatestVersion(prefix, suffix, version);
+
+        // If file path is null or empty, return NotFound
+        if (string.IsNullOrEmpty(filePath))
+            return NotFound(message);
+
+        // Read file bytes and return as file result
+        var fileBytes = System.IO.File.ReadAllBytes(filePath);
+        return File(fileBytes, "application/octet-stream", fileName);
+    }
+
     // Helper to get the latest version from a file or database
-    private (string?, string?, string?, string) GetLatestVersion(string? version = null)
+    private (string?, string?, string?, string) GetLatestVersion(string prefix, string suffix, string? version = null)
     {
         // Get base path
         var basePath = Path.Combine(_appDefaultConfig.FileUploadConfig.UploadDirectory, "binaries");
@@ -107,9 +133,9 @@ public class DesktopAppController : BaseApiController
 
         // Set search pattern based on version
         if (!string.IsNullOrEmpty(version))
-            searchPattern = $"AvintraDesktopApp_{version}_x64-setup.exe";
+            searchPattern = $"{prefix}_{version}_{suffix}";
         else
-            searchPattern = $"AvintraDesktopApp_*_x64-setup.exe";
+            searchPattern = $"{prefix}_*_{suffix}";
 
         // Get files matching the search pattern
         var files = Directory.GetFiles(basePath, searchPattern);
@@ -126,10 +152,20 @@ public class DesktopAppController : BaseApiController
         var signatureFilePath = Path.Combine(basePath, $"{fileName}.sig");
 
         // Check if the signature file exists
-        if (!System.IO.File.Exists(signatureFilePath))
+        if (suffix == "x64-setup.exe" && !System.IO.File.Exists(signatureFilePath))
             return (null, null, null, "Signature file not found for the latest version.");
 
         // Return the latest file path, file name, and success message
         return (latestFilePath, fileName, signatureFilePath, "Latest version found.");
+    }
+
+    // Extracts the version segment from a file name like "{prefix}_{version}_{suffix}".
+    private static string ParseVersion(string fileName, string prefix, string suffix)
+    {
+        var name = Path.GetFileNameWithoutExtension(fileName);
+        var version = name.Substring(prefix.Length + 1);
+        if (version.EndsWith("_" + suffix, StringComparison.OrdinalIgnoreCase))
+            version = version.Substring(0, version.Length - suffix.Length - 1);
+        return version;
     }
 }

@@ -1,6 +1,7 @@
 use tauri::Manager;
 
 mod commands;
+mod executor_management;
 mod updater_commands;
 mod websocket;
 
@@ -28,6 +29,10 @@ pub fn run() {
             commands::launch_desktop_executor,
             commands::launch_ui_inspector,
             commands::get_user_metadata,
+            executor_management::ensure_desktop_executor,
+            executor_management::install_desktop_executor_service,
+            executor_management::uninstall_desktop_executor_service,
+            executor_management::get_desktop_executor_version,
             websocket::get_websocket_port,
             // updater commands
             updater_commands::check_update_for_domain,

@@ -73,6 +73,13 @@ public interface IJobsTableService
     /// <returns>A service response containing the CSV file stream of the filtered job data.</returns>
     Task<ServiceResponse<FileStreamResult>> ExportJobsAsync(ExportJobsReqDto exportJobsReqDto);
 
+    /// <summary>
+    /// Aborts a running job by transitioning it to Aborted, recording the end time, and sending an Abort command to the executing machine.
+    /// </summary>
+    /// <param name="jobAbortRequestDto">The job abort request payload.</param>
+    /// <returns>A service response that indicates whether the job abort was successful or not.</returns>
+    Task<ServiceResponse<bool>> AbortJobExecutionAsync(JobAbortRequestDto jobAbortRequestDto);
+
     // TODO: Need to check this
     // /// <summary>
     // /// Retrieves a list of all job logs between optional start and end date filters.

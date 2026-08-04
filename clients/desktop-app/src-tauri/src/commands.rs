@@ -4,38 +4,36 @@ use std::process::Command;
 #[tauri::command]
 pub fn launch_desktop_executor(
     app_base_url: String,
-    ws_port: u16,
-    agent_id: String,
-    agent_name: String,
-    input_arguments_json: String,
+    job_id: String,
     access_token: String,
+    os_id: String,
+    username: String,
+    app_version: String,
 ) -> Result<(), String> {
-    // Get the directory where tauri_app.exe is running
-    let current_exe = std::env::current_exe().map_err(|e| e.to_string())?;
-    let exe_dir = current_exe
-        .parent()
-        .ok_or("Failed to get parent directory")?;
-
-    // Construct the path to the node executor
-    let desktop_executor_path = exe_dir
-        .join("binaries")
-        .join("node-executor")
-        .join("NodeExecutor.exe");
+    // The executor is installed independently (via ensure_desktop_executor) under the
+    // local app data dir so it can be updated without republishing the whole Tauri app.
+    let desktop_executor_path = crate::executor_management::executor_exe_path()?;
 
     if !desktop_executor_path.exists() {
         return Err(format!(
-            "Executor is not found at: {}",
+            "Executor is not installed at: {}",
             desktop_executor_path.display()
         ));
     }
 
     Command::new(desktop_executor_path)
+        .arg("--appBaseUrl")
         .arg(app_base_url)
-        .arg(ws_port.to_string())
-        .arg(agent_id)
-        .arg(agent_name)
-        .arg(input_arguments_json)
+        .arg("--jobId")
+        .arg(job_id)
+        .arg("--accessToken")
         .arg(access_token)
+        .arg("--osId")
+        .arg(os_id)
+        .arg("--username")
+        .arg(username)
+        .arg("--appVersion")
+        .arg(app_version)
         .spawn()
         .map_err(|e| format!("Failed to start the executor: {}", e))?;
     Ok(())
