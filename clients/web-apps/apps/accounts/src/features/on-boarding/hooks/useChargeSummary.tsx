@@ -17,9 +17,11 @@ const DEFAULT_BILLING = {
 };
 
 export const useChargeSummary = (plan: SubscriptionPlanDTO | undefined) => {
-  const { billingData } = useChoosePlanStore((state) => ({
-    billingData: state.billingData,
-  }));
+  const { billingData } = useChoosePlanStore(
+    useShallow((state) => ({
+      billingData: state.billingData,
+    })),
+  );
 
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({ userSession: state.userSession })),
