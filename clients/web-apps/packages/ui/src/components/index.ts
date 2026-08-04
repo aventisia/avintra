@@ -12,7 +12,6 @@ export * from "./file-dropzone";
 export * from "./floating-label-input";
 export * from "./FlowVersionNavLink";
 export * from "./form";
-export * from "./HorizontalScrollWrapper";
 export * from "./input-group";
 export * from "./Input";
 export * from "./json-viewer";

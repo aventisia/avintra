@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTHeading,
   DTPagination,
@@ -58,11 +57,8 @@ export const ArchivedFlowsTable = ({ isPersonal = false }: { isPersonal?: boolea
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
             </div>
           </div>
-          <HorizontalScrollWrapper>
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={archivedFlowsTableColumns.length} />
-          </HorizontalScrollWrapper>
-
+          {/* Data table to render data */}
+          <DataTable table={table} columnsLength={archivedFlowsTableColumns.length} />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
         </div>

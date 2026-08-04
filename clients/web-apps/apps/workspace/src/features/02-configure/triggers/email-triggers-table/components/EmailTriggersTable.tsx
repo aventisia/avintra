@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTCreateButton,
   DTHeading,
@@ -73,11 +72,8 @@ export const EmailTriggersTable = () => {
               {isPersonal && <DTCreateButton entity="emailTrigger" />}
             </div>
           </div>
-          <HorizontalScrollWrapper>
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={triggersTableColumnsArray.length} />
-          </HorizontalScrollWrapper>
-
+          {/* Data table to render data */}
+          <DataTable table={table} columnsLength={triggersTableColumnsArray.length} />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 

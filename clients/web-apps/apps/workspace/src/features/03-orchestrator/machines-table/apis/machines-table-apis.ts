@@ -5,6 +5,7 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 import type { MachineRecordDto } from "../dtos/machine-record.dto";
 import { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
 import type { UpdateMachineDto } from "../dtos/update-machine.dto";
+
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/machine`;
 
 /**
@@ -52,10 +53,4 @@ const deleteMachines = (ids: string[]) => {
     .then((res) => res.data);
 };
 
-export {
-  getMachines,
-  getMachine,
-  updateMachine,
-  deleteMachine,
-  deleteMachines,
-};
+export { getMachines, getMachine, updateMachine, deleteMachine, deleteMachines };

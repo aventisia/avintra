@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTHeading,
   DTPagination,
@@ -62,9 +61,7 @@ export const ConversationsTable = () => {
           {/* Data table to render data */}
           <div className="flex flex-col gap-2">
             <ConversationsStats data={data?.data} />
-            <HorizontalScrollWrapper>
-              <DataTable table={table} columnsLength={conversationsTableColumns.length} />
-            </HorizontalScrollWrapper>
+            <DataTable table={table} columnsLength={conversationsTableColumns.length} />
           </div>
 
           {/* Data table Pagination component */}

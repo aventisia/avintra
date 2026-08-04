@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTHeading,
   DTPagination,
@@ -61,11 +60,8 @@ export const TemplatesApprovalTable = ({ isSuperAdmin = false }: { isSuperAdmin?
             </div>
           </div>
 
-          <HorizontalScrollWrapper>
-            {/* Main data table */}
-            <DataTable table={table} columnsLength={templatesApprovalTable.length} />
-          </HorizontalScrollWrapper>
-
+          {/* Main data table */}
+          <DataTable table={table} columnsLength={templatesApprovalTable.length} />
           {/* Dialog used when rejecting a template with remarks */}
           <RejectWithRemarkDialog />
 

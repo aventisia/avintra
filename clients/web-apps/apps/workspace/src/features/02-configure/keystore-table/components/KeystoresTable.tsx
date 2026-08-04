@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTCreateButton,
   DTHeading,
@@ -69,10 +68,8 @@ export const KeystoresTable = () => {
               {isPersonal && <DTCreateButton entity="keystore" />}
             </div>
           </div>
-          <HorizontalScrollWrapper>
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={keystoresTableColumnsArray.length} />
-          </HorizontalScrollWrapper>
+          {/* Data table to render data */}
+          <DataTable table={table} columnsLength={keystoresTableColumnsArray.length} />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
           {/* Resource Share Dialog component */}

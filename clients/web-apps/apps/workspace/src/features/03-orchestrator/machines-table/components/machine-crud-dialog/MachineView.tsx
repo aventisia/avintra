@@ -14,13 +14,7 @@ import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
-import {
-  BanIcon,
-  CheckCircleIcon,
-  MonitorCogIcon,
-  MonitorIcon,
-  NetworkIcon,
-} from "lucide-react";
+import { BanIcon, CheckCircleIcon, MonitorCogIcon, MonitorIcon, NetworkIcon } from "lucide-react";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
 
