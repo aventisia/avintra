@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTHeading,
   DTPagination,
@@ -100,9 +99,7 @@ export const MyQueueWokItemTable = () => {
       </div>
 
       <div className="space-y-3">
-        <HorizontalScrollWrapper>
-          <DataTable table={table} columnsLength={columns.length} />
-        </HorizontalScrollWrapper>
+        <DataTable table={table} columnsLength={columns.length} />
         <DTPagination table={table} />
       </div>
     </div>

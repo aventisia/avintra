@@ -11,7 +11,12 @@ import { searchFlowVersions } from "@/features/search-by-query/apis/search-flow-
 
 import { updateMachine } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { idProps, hostnameProps, isDisabledProps, nameProps } from "../../constants/machine-form-field-props";
+import {
+  hostnameProps,
+  idProps,
+  isDisabledProps,
+  nameProps,
+} from "../../constants/machine-form-field-props";
 import { machineZodSchema } from "../../constants/machine-zod-schema";
 import { MachinesTableRowDto } from "../../dtos/machines-table-row-dto";
 import type { UpdateMachineDto } from "../../dtos/update-machine.dto";
@@ -32,11 +37,7 @@ export const MachineCrudForm = ({ rowId }: MachineCrudFormProps) => {
     mutate: mutateMachine,
     isPending,
     isSuccess,
-  } = useTableRowOptimisticMutation<
-    UpdateMachineDto,
-    MachinesTableRowDto,
-    MachinesTableRowDto
-  >(
+  } = useTableRowOptimisticMutation<UpdateMachineDto, MachinesTableRowDto, MachinesTableRowDto>(
     "update",
     [rowId],
     updateMachine,

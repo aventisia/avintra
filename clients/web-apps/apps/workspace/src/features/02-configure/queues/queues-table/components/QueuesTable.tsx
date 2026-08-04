@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTCreateButton,
   DTHeading,
@@ -73,10 +72,8 @@ export const QueuesTable = () => {
               {isPersonal && <DTCreateButton entity="queue" />}
             </div>
           </div>
-          <HorizontalScrollWrapper>
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={queuesTableColumnsArray.length} />
-          </HorizontalScrollWrapper>
+          {/* Data table to render data */}
+          <DataTable table={table} columnsLength={queuesTableColumnsArray.length} />
           <UploadItemsDialog />
           {/* Data table Pagination component */}
           <DTPagination table={table} />

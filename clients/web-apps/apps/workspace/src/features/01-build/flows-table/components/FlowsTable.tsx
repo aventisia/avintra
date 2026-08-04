@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTCreateButton,
   DTHeading,
@@ -71,10 +70,8 @@ export const FlowsTable = () => {
               {isPersonal && <DTCreateButton entity="flow" />}{" "}
             </div>
           </div>
-          <HorizontalScrollWrapper>
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={flowsTableColumnsArray.length} />
-          </HorizontalScrollWrapper>
+          {/* Data table to render data */}
+          <DataTable table={table} columnsLength={flowsTableColumnsArray.length} />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
           {/* Resource Share Dialog */}

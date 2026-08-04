@@ -143,10 +143,17 @@ export const machinesTableColumns: ColumnDef<MachinesTableRowDto>[] = [
   {
     accessorKey: "linkedUserAccount",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("linkedUserAccount")} />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        column={column}
+        title={getColumnName("linkedUserAccount")}
+      />
     ),
     cell: ({ row }) => (
-      <div title={row.getValue("linkedUserAccount")} className="w-auto max-w-40 truncate font-medium">
+      <div
+        title={row.getValue("linkedUserAccount")}
+        className="w-auto max-w-40 truncate font-medium"
+      >
         {row.getValue("linkedUserAccount")}
       </div>
     ),

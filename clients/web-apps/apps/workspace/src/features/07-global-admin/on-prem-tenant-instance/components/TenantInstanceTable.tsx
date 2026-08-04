@@ -6,7 +6,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTCreateButton,
   DTPagination,
@@ -83,12 +82,10 @@ export const TenantInstanceTable = () => {
           <div className="flex flex-col gap-2">
             <TenantStats />
 
-            <HorizontalScrollWrapper>
-              <div className="pr-0.5">
-                {/* Data table to render data */}
-                <DataTable table={table} columnsLength={tenantInstanceTableColumns.length} />
-              </div>
-            </HorizontalScrollWrapper>
+            <div className="pr-0.5">
+              {/* Data table to render data */}
+              <DataTable table={table} columnsLength={tenantInstanceTableColumns.length} />
+            </div>
           </div>
 
           {/* Data table Pagination component */}

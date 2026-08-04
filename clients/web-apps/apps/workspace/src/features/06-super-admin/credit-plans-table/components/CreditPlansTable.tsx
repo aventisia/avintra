@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTCreateButton,
   DTHeading,
@@ -61,11 +60,8 @@ export const CreditPlansTable = () => {
             </div>
           </div>
 
-          <HorizontalScrollWrapper>
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={creditPlansTableColumns.length} />
-          </HorizontalScrollWrapper>
-
+          {/* Data table to render data */}
+          <DataTable table={table} columnsLength={creditPlansTableColumns.length} />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 

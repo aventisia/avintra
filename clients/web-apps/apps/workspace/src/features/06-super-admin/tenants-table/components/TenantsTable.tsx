@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTCreateButton,
   DTHeading,
@@ -65,10 +64,8 @@ export const TenantsTable = () => {
           <div className="flex flex-col gap-2">
             <SATenantStats data={data?.data} />
 
-            <HorizontalScrollWrapper>
-              {/* Data table to render data */}
-              <DataTable table={table} columnsLength={tenantsTableColumns.length} />
-            </HorizontalScrollWrapper>
+            {/* Data table to render data */}
+            <DataTable table={table} columnsLength={tenantsTableColumns.length} />
           </div>
           {/* Data table Pagination component */}
           <DTPagination table={table} />

@@ -1,4 +1,3 @@
-import { HorizontalScrollWrapper } from "@avplatform/ui/components/HorizontalScrollWrapper";
 import {
   DTPagination,
   DTSearchBox,
@@ -73,11 +72,8 @@ export const WorkItemsTable = () => {
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
             </div>
           </div>
-          <HorizontalScrollWrapper>
-            {/* Data table to render data */}
-            <DataTable table={table} columnsLength={filteredColumns.length} />
-          </HorizontalScrollWrapper>
-
+          {/* Data table to render data */}
+          <DataTable table={table} columnsLength={filteredColumns.length} />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
         </div>
