@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import { useCarryParams } from "../../hooks/useForwardQueryParams";
 
 export const VersionHistoryCloseButton = () => {
-  const withQueryParams = useCarryParams(["f", "v"]);
+  const withQueryParams = useCarryParams(["f", "v", "return"]);
 
   return (
     <>

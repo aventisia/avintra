@@ -12,7 +12,7 @@ import { useCarryParams } from "../../hooks/useForwardQueryParams";
  * so the execution log page can load in the correct context.
  */
 export const ExecutionLogsTrigger = () => {
-  const withQueryParams = useCarryParams(["f", "v"]);
+  const withQueryParams = useCarryParams(["f", "v", "return"]);
   const navigate = useNavigate();
 
   const handleClick = (e: React.MouseEvent) => {

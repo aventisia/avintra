@@ -12,7 +12,7 @@ import { useCarryParams } from "../../hooks/useForwardQueryParams";
  */
 export const ExecutionLogCloseButton = () => {
   const navigate = useNavigate();
-  const withQueryParams = useCarryParams(["f", "v"]);
+  const withQueryParams = useCarryParams(["f", "v", "return"]);
 
   const handleClose = () => {
     navigate(withQueryParams("/agent"));
