@@ -136,7 +136,7 @@ const SelectItem = React.forwardRef<
     )}
     {...props}
   >
-    <div className="flex w-full items-center justify-between">
+    <div className="flex w-full items-center gap-1 justify-between">
       <SelectPrimitive.ItemText className="grow">{children}</SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator>
         <Check

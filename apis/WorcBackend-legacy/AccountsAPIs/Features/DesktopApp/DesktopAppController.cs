@@ -94,11 +94,11 @@ public class DesktopAppController : BaseApiController
     [HttpGet("desktop-executor/latest")]
     public IActionResult GetDesktopExecutorLatest()
     {
-        var (filePath, fileName, _, message) = GetLatestVersion("DesktopExecutor", "win-x64.zip");
+        var (filePath, fileName, _, message) = GetLatestVersion("AvintraDesktopRunner", "win-x64.zip");
         if (string.IsNullOrEmpty(filePath))
             return NotFound(message);
 
-        var latestVersion = ParseVersion(fileName, "DesktopExecutor", "win-x64.zip");
+        var latestVersion = ParseVersion(fileName, "AvintraDesktopRunner", "win-x64.zip");
         return Ok(new
         {
             version = latestVersion,
@@ -110,24 +110,37 @@ public class DesktopAppController : BaseApiController
     [HttpGet("desktop-executor/download")]
     public IActionResult DownloadDesktopExecutor()
     {
-        return DownloadVersionedFile("DesktopExecutor", "win-x64.zip");
+        return DownloadVersionedFile("AvintraDesktopRunner", "win-x64.zip");
     }
 
     // GET: /desktop-app/desktop-executor/download/{version}
     [HttpGet("desktop-executor/download/{version}")]
     public IActionResult DownloadDesktopExecutor(string version)
     {
-        return DownloadVersionedFile("DesktopExecutor", "win-x64.zip", version);
+        return DownloadVersionedFile("AvintraDesktopRunner", "win-x64.zip", version);
     }
 
     // GET: /desktop-app/download-manifest
     [HttpGet("download-manifest")]
     public IActionResult GetDownloadManifest()
     {
+        var appVersions = GetAllVersions("AvintraDesktopApp", "x64-setup.exe");
+        var runnerVersions = GetAllVersions("AvintraDesktopRunner", "win-x64.zip");
+
+        // Only expose versions where both the Desktop App and the Desktop Runner are available.
+        var commonVersions = appVersions
+            .Join(
+                runnerVersions,
+                app => app.version,
+                runner => runner.version,
+                (app, runner) => app.version)
+            .Distinct()
+            .ToList();
+
         var manifest = new DownloadManifestDto
         {
-            DesktopApp = GetProductManifest("AvintraDesktopApp", "x64-setup.exe", "nsis"),
-            DesktopExecutor = GetProductManifest("DesktopExecutor", "win-x64.zip", "zip")
+            DesktopApp = GetProductManifest("AvintraDesktopApp", "x64-setup.exe", "nsis", commonVersions),
+            DesktopExecutor = GetProductManifest("AvintraDesktopRunner", "win-x64.zip", "zip", commonVersions)
         };
 
         return Ok(manifest);
@@ -192,10 +205,17 @@ public class DesktopAppController : BaseApiController
     private static string ParseVersion(string fileName, string prefix, string suffix)
     {
         var name = Path.GetFileNameWithoutExtension(fileName);
-        var version = name.Substring(prefix.Length + 1);
-        if (version.EndsWith("_" + suffix, StringComparison.OrdinalIgnoreCase))
-            version = version.Substring(0, version.Length - suffix.Length - 1);
-        return version;
+        var suffixWithoutExtension = Path.GetFileNameWithoutExtension(suffix);
+        var prefixPart = $"{prefix}_";
+        var suffixPart = $"_{suffixWithoutExtension}";
+
+        if (name.StartsWith(prefixPart, StringComparison.OrdinalIgnoreCase))
+            name = name.Substring(prefixPart.Length);
+
+        if (name.EndsWith(suffixPart, StringComparison.OrdinalIgnoreCase))
+            name = name.Substring(0, name.Length - suffixPart.Length);
+
+        return name;
     }
 
     // Returns every discovered version for the given prefix/suffix, sorted newest first by creation time.
@@ -220,11 +240,14 @@ public class DesktopAppController : BaseApiController
         }).ToList();
     }
 
-    private ProductManifestDto GetProductManifest(string prefix, string suffix, string installerType)
+    private ProductManifestDto GetProductManifest(string prefix, string suffix, string installerType, List<string>? allowedVersions = null)
     {
         var isDesktopApp = suffix == "x64-setup.exe";
         var downloadPath = isDesktopApp ? "download" : "desktop-executor/download";
         var versions = GetAllVersions(prefix, suffix);
+
+        if (allowedVersions is not null)
+            versions = versions.Where(v => allowedVersions.Contains(v.version)).ToList();
 
         if (versions.Count == 0)
         {

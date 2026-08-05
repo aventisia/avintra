@@ -25,7 +25,7 @@ import { type Platform, detectPlatform } from "../utils/detect-platform.util";
 
 const RELEASE_NOTES_URL = "https://github.com/aventisia/avintra-platform/releases";
 
-const EXECUTOR_SERVICE_COMMAND = "DesktopExecutor.exe --install";
+const EXECUTOR_SERVICE_COMMAND = "AvintraDesktopRunner.exe --install";
 
 const PLATFORM_LABELS: Record<Platform, string> = {
   windows: "Windows",
@@ -38,6 +38,15 @@ const getAvailableVersions = (product: ProductManifestDto): string[] =>
     .filter((v) => v.artifacts.some((a) => a.available))
     .map((v) => v.version)
     .filter(Boolean);
+
+const getCommonAvailableVersions = (
+  desktopApp: ProductManifestDto,
+  desktopRunner: ProductManifestDto,
+): string[] => {
+  const appVersions = new Set(getAvailableVersions(desktopApp));
+  const runnerVersions = getAvailableVersions(desktopRunner).filter((v) => appVersions.has(v));
+  return runnerVersions;
+};
 
 const getVersionForProduct = (product: ProductManifestDto, version: string) =>
   product.versions.find((v) => v.version === version);
@@ -58,15 +67,14 @@ const formatSizeMB = (size: number | null | undefined): string =>
 
 /**
  * Builds the artifact metadata line for a download row, e.g.
- * "v2.4.1 · 184 MB · 64-bit · Windows 10+". Omits any segment that is unknown.
+ * "184 MB · 64-bit · Windows 10+". Omits any segment that is unknown.
  */
-const buildArtifactMetadata = (artifact: ArtifactDto | undefined, version: string): string => {
+const buildArtifactMetadata = (artifact: ArtifactDto | undefined): string => {
   const arch = artifact?.architecture === "x86_64" ? "64-bit" : artifact?.architecture;
   const items = [
-    version ? `v${version}` : "",
     artifact?.size ? formatSizeMB(artifact.size) : "",
     arch || "",
-    "Windows 10+",
+    "Windows 11",
   ].filter(Boolean);
   return items.join(" · ");
 };
@@ -116,7 +124,6 @@ const TerminalBlock = () => {
 };
 
 interface DownloadRowProps {
-  version: string;
   artifact: ArtifactDto | undefined;
   title: string;
   description: string;
@@ -128,7 +135,6 @@ interface DownloadRowProps {
 }
 
 const DownloadRow = ({
-  version,
   artifact,
   title,
   description,
@@ -151,22 +157,22 @@ const DownloadRow = ({
         hasDownload ? hoverClass : "border-slate-200 bg-slate-50",
       )}
     >
-      <div className="flex min-w-0 flex-1 items-center gap-4">
+      <div className="flex min-w-0 flex-1 gap-4">
         <div
           className={cn(
-            "flex h-10 w-10 min-h-10 min-w-10 items-center justify-center rounded-lg",
+            "flex h-10 w-10 mt-0.5 min-h-10 min-w-10 items-center justify-center rounded-lg",
             iconClass,
           )}
         >
           {icon}
         </div>
-        <div className="min-w-0">
-          <p className="font-bold text-slate-800">{title}</p>
-          <p className="text-sm text-slate-500">{description}</p>
-          {metadata ? <p className="text-xs text-slate-400">{metadata}</p> : null}
+        <div className="min-w-0 flex flex-col gap-1">
+          <p className="font-bold text-foreground">{title}</p>
+          <p className="text-sm leading-4 text-muted-foreground">{description}</p>
+          {metadata ? <p className="text-2xs text-muted-foreground">{metadata}</p> : null}
         </div>
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-0.5 pl-2">
+      <div className="flex shrink-0 items-center pl-2">
         {hasDownload ? (
           <Button type="button" size="sm" onClick={handleClick}>
             Download
@@ -176,7 +182,6 @@ const DownloadRow = ({
             Download
           </Button>
         )}
-        {version ? <span className="text-xs text-slate-400">v{version}</span> : null}
       </div>
     </div>
   );
@@ -229,15 +234,11 @@ const DownloadContent: React.FC<{
   // OS tab — default to the user's detected platform
   const [activePlatform, setActivePlatform] = useState<Platform>(() => detectPlatform());
 
-  // Both products share the same version, so a single selector covers them.
-  // Prefer the desktop app's version, fall back to the executor's.
-  const availableVersions = useMemo(() => {
-    const versions = new Set<string>([
-      ...getAvailableVersions(desktopApp),
-      ...getAvailableVersions(desktopExecutor),
-    ]);
-    return Array.from(versions);
-  }, [desktopApp, desktopExecutor]);
+  // Only show versions where both the Desktop App and Desktop Runner are available.
+  const availableVersions = useMemo(
+    () => getCommonAvailableVersions(desktopApp, desktopExecutor),
+    [desktopApp, desktopExecutor],
+  );
   const [selectedVersion, setSelectedVersion] = useState<string>("");
 
   // Keep selected version in sync when the manifest refreshes
@@ -257,18 +258,18 @@ const DownloadContent: React.FC<{
           <Select value={selectedVersion} onValueChange={setSelectedVersion}>
             <SelectTrigger
               size="xs"
-              className="w-auto gap-1 rounded-full border border-slate-200 bg-slate-100 pl-3 pr-2 font-medium"
+              className="w-auto gap-1 rounded-full border border-slate-200 bg-slate-100 pl-3 pr-2 font-semibold"
             >
               <SelectValue placeholder="No versions" />
             </SelectTrigger>
-            <SelectContent matchTriggerWidth>
+            <SelectContent className="min-w-0 w-auto">
               {availableVersions.length === 0 ? (
                 <SelectItem value="__none" size="xs" disabled>
                   No versions available
                 </SelectItem>
               ) : (
                 availableVersions.map((v) => (
-                  <SelectItem key={v} value={v} size="xs">
+                  <SelectItem key={v} value={v} size="xs" className="gap-1">
                     v{v}
                   </SelectItem>
                 ))
@@ -314,7 +315,7 @@ const DownloadContent: React.FC<{
             Bring the builder to your desktop
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Download the app and executor for your platform.
+            Download the app and runner for your platform.
           </p>
         </div>
 
@@ -322,13 +323,11 @@ const DownloadContent: React.FC<{
           <>
             <div className="space-y-4">
               <DownloadRow
-                version={selectedVersion}
                 artifact={getArtifactForPlatform(desktopApp, "windows", selectedVersion)}
                 title="Desktop App"
-                description="Your main workspace — build, edit, and manage projects locally with a full UI."
+                description="Your primary command center for designing, refining, and orchestrating agents locally."
                 metadata={buildArtifactMetadata(
                   getArtifactForPlatform(desktopApp, "windows", selectedVersion),
-                  selectedVersion,
                 )}
                 icon={<Monitor className="h-5 w-5" />}
                 iconClass="bg-primary-50 text-primary-500"
@@ -336,13 +335,11 @@ const DownloadContent: React.FC<{
               />
 
               <DownloadRow
-                version={selectedVersion}
                 artifact={getArtifactForPlatform(desktopExecutor, "windows", selectedVersion)}
-                title="Desktop Executor"
-                description="A lightweight background agent that runs jobs and syncs with your account."
+                title="Desktop Runner"
+                description="A low-footprint local service handling asynchronous job execution and cloud state sync."
                 metadata={buildArtifactMetadata(
                   getArtifactForPlatform(desktopExecutor, "windows", selectedVersion),
-                  selectedVersion,
                 )}
                 icon={<ServerCog className="h-5 w-5" />}
                 iconClass="bg-primary-50 text-primary-500"
@@ -358,17 +355,17 @@ const DownloadContent: React.FC<{
                 rel="noreferrer"
                 className="text-primary hover:underline"
               >
-                View on Github
+                View on GitHub
               </a>
             </p>
 
             {/* CLI install hint */}
             <div className="mt-6 text-left">
               <h3 className="mb-3 text-sm font-bold text-slate-700">
-                Install Desktop Executor as a Windows service
+                Install Desktop Runner as a Windows service
               </h3>
               <p className="mb-3 text-sm text-slate-500">
-                Run this from an Administrator terminal after downloading the Desktop Executor:
+                Run this from an Administrator terminal after downloading the Desktop Runner:
               </p>
 
               <TerminalBlock />
@@ -384,13 +381,13 @@ const DownloadContent: React.FC<{
               >
                 <FAQItem
                   value="both"
-                  question="Do I need both the Desktop App and the Executor?"
-                  answer="No. Most users only need the Desktop App to build and test flows. Install the Executor if you want headless, background execution."
+                  question="Do I need both the Desktop App and the Runner?"
+                  answer="No. Most users only need the Desktop App to build and test flows. Install the Runner if you want headless, background execution."
                 />
                 <FAQItem
                   value="headless"
                   question="Can I run flows without opening the builder?"
-                  answer="Yes. The Desktop Executor can run published flows from the system tray or as a Windows service."
+                  answer="Yes. The Desktop Runner can run published flows from the system tray or as a Windows service."
                 />
                 <FAQItem
                   value="platforms"

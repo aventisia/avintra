@@ -11,16 +11,16 @@ struct ExecutorLatest {
     url: String,
 }
 
-/// Returns the local install directory for the DesktopExecutor
-/// (e.g. `%LOCALAPPDATA%\AvintraDesktopApp\executor`).
+/// Returns the local install directory for the DesktopRunner
+/// (e.g. `%LOCALAPPDATA%\AvintraDesktopApp\runner`).
 fn executor_dir() -> Result<PathBuf, String> {
     let base = dirs::data_local_dir().ok_or("Cannot resolve local app data directory")?;
     Ok(base.join("AvintraDesktopApp").join("executor"))
 }
 
-/// Returns the path to the locally installed DesktopExecutor executable.
+/// Returns the path to the locally installed DesktopRunner executable.
 pub fn executor_exe_path() -> Result<PathBuf, String> {
-    Ok(executor_dir()?.join("DesktopExecutor.exe"))
+    Ok(executor_dir()?.join("AvintraDesktopRunner.exe"))
 }
 
 /// Reads the installed executor version from its `version.txt` marker.
