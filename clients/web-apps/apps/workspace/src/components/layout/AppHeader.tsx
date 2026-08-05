@@ -1,14 +1,10 @@
 import { Header, HeaderContainer, SearchBox } from "@avplatform/layout";
 import { SidebarOnDialog } from "@avplatform/layout/sidebar";
-import { Button } from "@avplatform/ui/buttons";
-import { IS_TAURI } from "@avplatform/ui/constants";
-import { cn } from "@avplatform/ui/lib";
 import { type IUserSessionStore, useUserSessionStore } from "@avplatform/ui/stores";
-import { Tooltip } from "@avplatform/ui/tooltip";
-import { DownloadIcon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
+import { DownloadDialog } from "@/features/desktop-download";
 import { UnreadNotifications } from "@/react-toolkit/features/unread-notifications/components/unread-notifications";
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 
@@ -42,24 +38,7 @@ const AppHeader: React.FC = () => {
           )}
           {userSession?.deploymentType == "Commercial" ? <AvailableCredits /> : null}
           <div className="flex items-center gap-2.5">
-            {!IS_TAURI ? (
-              <Tooltip content="Download Desktop App">
-                <Button
-                  className={cn("hover:bg-white/10")}
-                  variant={"ghost"}
-                  size={"icon8"}
-                  onClick={() => {
-                    window.open(
-                      `${import.meta.env.VITE_ACCOUNTS_API_PATH}/desktop-app/download/`,
-                      "_blank",
-                    );
-                  }}
-                >
-                  <DownloadIcon className="h-[1.2rem] w-[1.2rem] text-white/80" />
-                </Button>
-              </Tooltip>
-            ) : null}
-
+            <DownloadDialog />
             <UnreadNotifications />
           </div>
           <UserAccountModal />

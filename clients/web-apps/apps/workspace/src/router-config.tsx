@@ -48,7 +48,6 @@ import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
 import { OnPremTenantsPage } from "./pages/07-global-admin/OnPremTenantsPage";
 import { TenantInstanceDataPage } from "./pages/07-global-admin/TenantInstanceDataPage";
 import { TenantInstancePage } from "./pages/07-global-admin/TenantInstancePage";
-import { GetDesktopPage } from "./pages/GetDesktopPage";
 import MyAccountPage from "./pages/MyAccountPage";
 
 const routerConfig: RouteObject[] = [
@@ -369,12 +368,6 @@ const routerConfig: RouteObject[] = [
         element: <Chat mode="popover" />, // existing chat
       },
     ],
-  },
-
-  // TODO: Need to validate whether we still need this or not
-  {
-    path: "/assist",
-    element: <GetDesktopPage />,
   },
 ];
 

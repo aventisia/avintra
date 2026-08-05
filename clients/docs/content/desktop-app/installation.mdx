@@ -1,0 +1,31 @@
+# Install the Desktop App
+
+Download the installer from the **Download** page in the workspace.
+
+## Steps
+
+1. Run the downloaded `AvintraDesktopApp_x64-setup.exe`.
+2. Follow the installation wizard.
+3. If Windows SmartScreen appears, click **More info** and then **Run anyway**.
+4. Launch the app and sign in with your Avintra account.
+
+On its first use, the desktop app automatically downloads and installs the required Desktop
+Executor, so no separate setup is needed for the recommended install.
+
+## Install the standalone Executor
+
+If you only need the executor:
+
+1. Extract `DesktopExecutor_win-x64.zip` to a permanent folder.
+2. To run it manually, launch `DesktopExecutor.exe`.
+3. To install it as a Windows Service, open a Command Prompt **as Administrator** and run:
+
+```sh
+DesktopExecutor.exe --install
+```
+
+4. To remove the service, run as Administrator:
+
+```sh
+DesktopExecutor.exe --uninstall
+```
