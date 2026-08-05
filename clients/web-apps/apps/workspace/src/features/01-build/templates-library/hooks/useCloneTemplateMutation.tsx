@@ -37,7 +37,10 @@ export const useCloneTemplateMutation = () => {
         data?.data?.type == FlowTypesEnum.ChatAgent ||
         data?.data?.type == FlowTypesEnum.Block
       ) {
-        window.location.href = `${import.meta.env.VITE_STUDIO_PATH}${stripLeadingSlash(data.data.accessPath)}`;
+        window.open(
+          `${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}${stripLeadingSlash(data.data.accessPath)}`,
+          "_blank",
+        );
       }
     },
   });

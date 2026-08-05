@@ -10,7 +10,10 @@ interface ArchivedFlowRowActionsProps {
 export const ArchivedFlowRowActions = ({ rowId, refId }: ArchivedFlowRowActionsProps) => {
   // Handle open archived flow action
   const handleOpenArchivedFlowAction = () => {
-    window.open(`${import.meta.env.VITE_STUDIO_PATH}agent?f=${refId}&v=${rowId}`, "_blank");
+    window.open(
+      `${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${refId}&v=${rowId}`,
+      "_blank",
+    );
   };
 
   return (

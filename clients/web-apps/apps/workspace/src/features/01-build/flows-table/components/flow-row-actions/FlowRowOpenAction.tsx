@@ -8,7 +8,7 @@ interface FlowRowOpenActionProps {
 export const FlowRowOpenAction = ({ rowId }: FlowRowOpenActionProps) => {
   // Open flow in studio
   const handleOpenFlowAction = () => {
-    window.location.href = `${import.meta.env.VITE_STUDIO_PATH}agent?f=${rowId}`;
+    window.location.href = `${import.meta.env.VITE_STUDIO_PATH}agent?f=${rowId}&return=1`;
   };
 
   // Return the component

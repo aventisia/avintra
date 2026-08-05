@@ -8,7 +8,7 @@ import { useFetchVersionHistoryList } from "../../hooks/useFetchVersionHistoryLi
 import { useCarryParams } from "../../hooks/useForwardQueryParams";
 
 export const VersionHistoryTrigger = () => {
-  const withQueryParams = useCarryParams(["f", "v"]);
+  const withQueryParams = useCarryParams(["f", "v", "return"]);
   const { data } = useFetchVersionHistoryList();
   return (
     <>
