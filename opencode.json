@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "ollama-cloud/deepseek-v4-flash:0731-cloud",
+  "model": "ollama-cloud/deepseek-v4-flash:0731",
   "provider": {
     "ollama-cloud": {
       "options": {
@@ -19,16 +19,6 @@
         "nemotron-3-nano:30b",
         "nemotron-3-super"
       ],
-      "models": {
-        "deepseek-v4-flash:0731-cloud": {
-          "options": {
-            "reasoningEffort": "high",
-            "textVerbosity": "low",
-            "reasoningSummary": "auto",
-            "include": ["reasoning.encrypted_content"]
-          }
-        }
-      }
     }
   }
 }
