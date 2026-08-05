@@ -11,7 +11,12 @@
 #   --output   ./artifacts
 #
 # Output:
-#   <output>/DesktopExecutor_<version>_win-x64.zip
+#   <output>/AvintraDesktopRunner_<version>_win-x64.zip
+#
+# The published single-file executable is renamed to AvintraDesktopRunner after
+# publish while the project keeps the DesktopExecutor name internally. This avoids
+# an "Ambiguous project name" NuGet error and matches the desktop app convention
+# (AvintraDesktopApp) and the UI label "Desktop Runner".
 #
 # This script is reusable for every new version: bump <Version> in the .csproj and rerun.
 
@@ -76,7 +81,18 @@ dotnet publish "$CSPROJ" \
 
 mkdir -p "$OUTPUT_DIR"
 
-ZIP_NAME="DesktopExecutor_${VERSION}_${RUNTIME}.zip"
+# Rename the published single-file executable to AvintraDesktopRunner.
+# We do this after publish instead of setting AssemblyName to avoid an
+# "Ambiguous project name" conflict during NuGet restore.
+EXENAME="DesktopExecutor"
+NEWEXENAME="AvintraDesktopRunner"
+if [[ "$RUNTIME" == win-* ]]; then
+  EXENAME="${EXENAME}.exe"
+  NEWEXENAME="${NEWEXENAME}.exe"
+fi
+mv "$PUBLISH_DIR/$EXENAME" "$PUBLISH_DIR/$NEWEXENAME" 2>/dev/null || true
+
+ZIP_NAME="AvintraDesktopRunner_${VERSION}_${RUNTIME}.zip"
 ZIP_PATH="$OUTPUT_DIR/$ZIP_NAME"
 
 # Zip the published output (single-file exe). The zip is what gets distributed/downloaded.
@@ -90,3 +106,7 @@ fi
 
 echo "Published to $ZIP_PATH"
 ls -lh "$ZIP_PATH"
+
+# Print the published binary names for quick verification.
+echo "Published binaries:"
+ls -1 "$PUBLISH_DIR" | sed 's/^/  - /'
