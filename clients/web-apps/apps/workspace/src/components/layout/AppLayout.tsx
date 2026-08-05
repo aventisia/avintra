@@ -188,14 +188,6 @@ export const AppLayout = () => {
     } else {
       setConnectWebsocket(!hasSingleTD);
     }
-
-    //If TU role user login through web display message to use Desktop app
-    const hasSingleTU = userSession.userRoles.includes("TU") && userSession.userRoles.length === 1;
-
-    if (!IS_TAURI && hasSingleTU) {
-      navigate("/assist");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPending, osID, userSession]);
 
   if (isAppLoading) return <AppLoader />;

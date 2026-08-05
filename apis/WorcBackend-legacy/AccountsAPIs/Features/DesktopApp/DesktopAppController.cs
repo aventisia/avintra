@@ -9,7 +9,7 @@ public class DesktopAppController : BaseApiController
 {
     private readonly AppDefaultConfig _appDefaultConfig;
     private readonly EnvironmentConfig _environmentConfig;
-    
+
     public DesktopAppController(
         AppDefaultConfig appDefaultConfig,
         EnvironmentConfig environmentConfig)
@@ -30,6 +30,22 @@ public class DesktopAppController : BaseApiController
     public IActionResult DownloadVersion(string version)
     {
         return DownloadVersionedFile("AvintraDesktopApp", "x64-setup.exe", version);
+    }
+
+    // GET: /desktop-app/download/{version}.sig
+    [HttpGet("download/{version}.sig")]
+    public IActionResult DownloadSignature(string version)
+    {
+        var (filePath, fileName, signatureFilePath, message) = GetLatestVersion("AvintraDesktopApp", "x64-setup.exe", version);
+
+        if (string.IsNullOrEmpty(filePath) || string.IsNullOrEmpty(signatureFilePath))
+            return NotFound(message);
+
+        if (!System.IO.File.Exists(signatureFilePath))
+            return NotFound("Signature file not found.");
+
+        var signatureBytes = System.IO.File.ReadAllBytes(signatureFilePath);
+        return File(signatureBytes, "application/octet-stream", $"{fileName}.sig");
     }
 
     // GET: /desktop-app/update/{target}/{arch}/{currentVersion}
@@ -104,6 +120,19 @@ public class DesktopAppController : BaseApiController
         return DownloadVersionedFile("DesktopExecutor", "win-x64.zip", version);
     }
 
+    // GET: /desktop-app/download-manifest
+    [HttpGet("download-manifest")]
+    public IActionResult GetDownloadManifest()
+    {
+        var manifest = new DownloadManifestDto
+        {
+            DesktopApp = GetProductManifest("AvintraDesktopApp", "x64-setup.exe", "nsis"),
+            DesktopExecutor = GetProductManifest("DesktopExecutor", "win-x64.zip", "zip")
+        };
+
+        return Ok(manifest);
+    }
+
     // Helper to resolve and stream a versioned binary matching the given prefix and suffix.
     private IActionResult DownloadVersionedFile(string prefix, string suffix, string? version = null)
     {
@@ -167,5 +196,112 @@ public class DesktopAppController : BaseApiController
         if (version.EndsWith("_" + suffix, StringComparison.OrdinalIgnoreCase))
             version = version.Substring(0, version.Length - suffix.Length - 1);
         return version;
+    }
+
+    // Returns every discovered version for the given prefix/suffix, sorted newest first by creation time.
+    private List<(string filePath, string fileName, string? signatureFilePath, string version)> GetAllVersions(string prefix, string suffix)
+    {
+        var basePath = Path.Combine(_appDefaultConfig.FileUploadConfig.UploadDirectory, "binaries");
+        if (!Directory.Exists(basePath))
+            return new List<(string filePath, string fileName, string? signatureFilePath, string version)>();
+
+        var searchPattern = $"{prefix}_*_{suffix}";
+        var files = Directory.GetFiles(basePath, searchPattern)
+            .OrderByDescending(f => System.IO.File.GetCreationTime(f))
+            .ToList();
+
+        return files.Select(filePath =>
+        {
+            var fileName = Path.GetFileName(filePath);
+            var signatureFilePath = Path.Combine(basePath, $"{fileName}.sig");
+            var hasSignature = System.IO.File.Exists(signatureFilePath);
+            var version = ParseVersion(fileName, prefix, suffix);
+            return (filePath, fileName, hasSignature ? signatureFilePath : null, version);
+        }).ToList();
+    }
+
+    private ProductManifestDto GetProductManifest(string prefix, string suffix, string installerType)
+    {
+        var isDesktopApp = suffix == "x64-setup.exe";
+        var downloadPath = isDesktopApp ? "download" : "desktop-executor/download";
+        var versions = GetAllVersions(prefix, suffix);
+
+        if (versions.Count == 0)
+        {
+            return new ProductManifestDto
+            {
+                Versions =
+                [
+                    new ProductVersionDto
+                    {
+                        Version = string.Empty,
+                        Notes = "No versions available.",
+                        Artifacts = GetPlaceholderArtifacts(installerType)
+                    }
+                ]
+            };
+        }
+
+        var versionDtos = versions
+            .Select(v => BuildProductVersionDto(v, installerType, isDesktopApp, downloadPath))
+            .ToList();
+
+        return new ProductManifestDto { Versions = versionDtos };
+    }
+
+    private ProductVersionDto BuildProductVersionDto(
+        (string filePath, string fileName, string? signatureFilePath, string version) versionInfo,
+        string installerType,
+        bool isDesktopApp,
+        string downloadPath)
+    {
+        var hasFile = !string.IsNullOrEmpty(versionInfo.filePath);
+        var version = versionInfo.version;
+        var baseUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/desktop-app/{downloadPath}/{version}";
+
+        var windowsArtifact = new ArtifactDto
+        {
+            Platform = "windows",
+            Architecture = "x86_64",
+            Available = hasFile,
+            InstallerType = installerType,
+            Size = hasFile ? new FileInfo(versionInfo.filePath).Length : null,
+            Url = hasFile ? baseUrl : string.Empty,
+            SignatureUrl = isDesktopApp && hasFile && !string.IsNullOrEmpty(versionInfo.signatureFilePath)
+                ? $"{baseUrl}.sig"
+                : null
+        };
+
+        return new ProductVersionDto
+        {
+            Version = version,
+            Notes = "Bug fixes and improvements.",
+            Artifacts =
+            [
+                windowsArtifact,
+                new ArtifactDto { Platform = "linux", Architecture = "x86_64", Available = false },
+                new ArtifactDto { Platform = "macos", Architecture = "x86_64", Available = false },
+                new ArtifactDto { Platform = "macos", Architecture = "arm64", Available = false }
+            ]
+        };
+    }
+
+    private static List<ArtifactDto> GetPlaceholderArtifacts(string installerType)
+    {
+        return
+        [
+            new ArtifactDto
+            {
+                Platform = "windows",
+                Architecture = "x86_64",
+                Available = false,
+                InstallerType = installerType,
+                Url = string.Empty,
+                SignatureUrl = null
+            },
+            new ArtifactDto { Platform = "linux", Architecture = "x86_64", Available = false },
+            new ArtifactDto { Platform = "macos", Architecture = "x86_64", Available = false },
+            new ArtifactDto { Platform = "macos", Architecture = "arm64", Available = false }
+        ];
     }
 }

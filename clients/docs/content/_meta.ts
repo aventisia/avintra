@@ -11,6 +11,9 @@ const meta: MetaRecord = {
     title: "Avintra",
     display: "hidden",
   },
+  "desktop-app": {
+    title: "Desktop App",
+  },
   "agent-builder": {
     title: "Agent Builder",
     theme: {
