@@ -39,13 +39,12 @@ export const QueueRowActions = ({
       {/* Edit Queue details */}
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="queue" />}
 
-      {actions?.update ? (
-        type == "User" ? (
-          <AssignUsersRowAction rowId={rowId} queueName={queueName} />
-        ) : (
-          <AssignAgentsRowAction rowId={rowId} queueName={queueName} />
-        )
-      ) : null}
+      {actions?.update && type == "User" && (
+        <AssignUsersRowAction rowId={rowId} queueName={queueName} />
+      )}
+      {actions?.update && (
+        <AssignAgentsRowAction rowId={rowId} queueName={queueName} />
+      )}
 
       {actions?.update && <UploadItemsRowAction rowId={rowId} />}
 
