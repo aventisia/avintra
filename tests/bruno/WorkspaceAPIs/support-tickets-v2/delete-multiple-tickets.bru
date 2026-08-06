@@ -1,0 +1,28 @@
+meta {
+  name: Delete Multiple Tickets
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/support-tickets/delete-multiple
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+body:json {
+  [
+    "{{TICKET_ID}}"
+  ]
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: gte 1
+}

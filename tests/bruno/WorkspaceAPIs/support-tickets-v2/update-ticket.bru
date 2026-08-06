@@ -1,0 +1,31 @@
+meta {
+  name: Update Ticket
+  type: http
+  seq: 8
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/support-tickets/{{TICKET_ID}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+body:json {
+  {
+    "id": "{{TICKET_ID}}",
+    "title": "Test Service Request - Login Issue (Updated)",
+    "description": "Users are unable to log in to the application after the latest update. This is affecting all users in the organization."
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: neq null
+  res.body.data.title: eq "Test Service Request - Login Issue (Updated)"
+}

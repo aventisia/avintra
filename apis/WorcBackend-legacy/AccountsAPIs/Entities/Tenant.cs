@@ -192,4 +192,10 @@ public class Tenant : BaseEntity
     /// Indicates the date for the renewal of the tenant's agreement or settings.
     /// </summary>
     public DateTimeOffset RenewalDate { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether Change Requests are enabled for this tenant.
+    /// When disabled, Tenant Admins cannot create Change Request tickets.
+    /// </summary>
+    public bool IsChangeRequestEnabled { get; set; } = false;
 }

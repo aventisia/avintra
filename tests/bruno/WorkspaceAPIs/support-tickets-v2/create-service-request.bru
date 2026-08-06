@@ -1,0 +1,38 @@
+meta {
+  name: Create Service Request Ticket
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/support-tickets
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+body:json {
+  {
+    "requestType": "ServiceRequest",
+    "title": "Test Service Request - Login Issue",
+    "description": "Users are unable to log in to the application after the latest update. This is affecting all users in the organization.",
+    "requiredBy": "2026-08-10T00:00:00Z"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: neq null
+  res.body.data.ticketNumber: startsWith "SR-"
+  res.body.data.requestType: eq "ServiceRequest"
+  res.body.data.status: eq "New"
+}
+
+script:pre-request {
+  // Requires valid session cookie and tenant ID
+}

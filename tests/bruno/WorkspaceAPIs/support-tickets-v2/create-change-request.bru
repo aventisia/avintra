@@ -1,0 +1,38 @@
+meta {
+  name: Create Change Request Ticket
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/support-tickets
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+body:json {
+  {
+    "requestType": "ChangeRequest",
+    "title": "Test Change Request - Update Dashboard",
+    "description": "Request to update the main dashboard with new analytics widgets and improved data visualization.",
+    "agentRefId": "{{published_agent_id}}",
+    "changeSummary": "Update dashboard with new analytics widgets",
+    "changeReason": "Current dashboard lacks real-time data visibility",
+    "expectedBehavior": "Dashboard should show real-time analytics with interactive charts",
+    "requestedTimeline": "2026-09-01T00:00:00Z"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: neq null
+  res.body.data.ticketNumber: startsWith "CR-"
+  res.body.data.requestType: eq "ChangeRequest"
+  res.body.data.status: eq "New"
+}

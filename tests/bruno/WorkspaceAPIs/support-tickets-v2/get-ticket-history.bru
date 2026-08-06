@@ -1,0 +1,21 @@
+meta {
+  name: Get Ticket History
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/support-tickets/{{ticket_id}}/history
+  body: none
+  auth: none
+}
+
+headers {
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: isArray
+}

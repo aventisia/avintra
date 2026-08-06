@@ -46,6 +46,10 @@ public interface IUnitOfWork
     ISkillFileRepo SkillFileRepo { get; }
     IToolRepo ToolRepo { get; }
     IFlowVersionToolRepo FlowVersionToolRepo { get; }
+    ITicketRepo TicketRepo { get; }
+    ITicketCommentRepo TicketCommentRepo { get; }
+    ITicketAttachmentRepo TicketAttachmentRepo { get; }
+    ITicketHistoryRepo TicketHistoryRepo { get; }
 
     /// <summary>
     /// Saves the changes made in the unit of work asynchronously.

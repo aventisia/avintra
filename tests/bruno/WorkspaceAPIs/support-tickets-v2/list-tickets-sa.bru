@@ -1,0 +1,20 @@
+meta {
+  name: List Tickets (SA)
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/sa/support-tickets/list
+  auth: none
+}
+
+headers {
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: neq null
+}

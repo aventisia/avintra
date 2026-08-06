@@ -1,0 +1,29 @@
+meta {
+  name: Create Change Request - Flag Disabled (403)
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/support-tickets
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id_disabled_cr}}
+}
+
+body:json {
+  {
+    "requestType": "ChangeRequest",
+    "title": "Test CR - Should Fail",
+    "description": "This request should be rejected because Change Requests are disabled for this tenant."
+  }
+}
+
+assert {
+  res.status: eq 403
+}

@@ -40,6 +40,8 @@ type CrudEntityKey =
   | "subscriptionPlan"
   | "tenant"
   | "supportTicket"
+  | "ticket"
+  | "saSupportTicket"
   | "onPremTenant"
   | "tenantInstance"
   | "user"
