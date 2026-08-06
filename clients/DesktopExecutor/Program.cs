@@ -8,11 +8,11 @@ using Microsoft.Extensions.Logging;
 var mode = ParseMode(args);
 if (mode == ExecutorMode.Install)
 {
-    return RunServiceInstaller(install: true);
+    return RunServiceInstaller(args, install: true);
 }
 if (mode == ExecutorMode.Uninstall)
 {
-    return RunServiceInstaller(install: false);
+    return RunServiceInstaller(args, install: false);
 }
 
 // --run (default) mode: run as console app or Windows service
@@ -29,7 +29,7 @@ if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsSe
     var host = Host.CreateDefaultBuilder(args)
         .UseWindowsService(optionsBuilder =>
         {
-            optionsBuilder.ServiceName = "Avintra Desktop Executor";
+            optionsBuilder.ServiceName = "AvintraDesktopRunner";
         })
         .ConfigureServices((_, services) =>
         {
@@ -262,11 +262,69 @@ static ExecutorMode ParseMode(string[] args)
     return ExecutorMode.Run;
 }
 
-static int RunServiceInstaller(bool install)
+static bool IsDotNet8RuntimeInstalled()
 {
     try
     {
-        var serviceName = "Avintra Desktop Executor";
+        // Prefer the registry: .NET host stores installed runtime versions under
+        // HKLM\SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedHost on 64-bit Windows.
+        using var baseKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\dotnet\Setup\InstalledVersions\x64");
+        if (baseKey?.GetValue("sharedHost") is string sharedHostValue && !string.IsNullOrWhiteSpace(sharedHostValue))
+        {
+            return true;
+        }
+
+        // Fallback: run `dotnet --list-runtimes` and look for a .NET 8 runtime line.
+        using var process = new System.Diagnostics.Process();
+        process.StartInfo.FileName = "dotnet";
+        process.StartInfo.Arguments = "--list-runtimes";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.RedirectStandardError = true;
+        process.StartInfo.CreateNoWindow = true;
+        process.Start();
+
+        var output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit(5000);
+
+        foreach (var line in output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (line.StartsWith("Microsoft.NETCore.App 8.", StringComparison.OrdinalIgnoreCase) ||
+                line.StartsWith("Microsoft.WindowsDesktop.App 8.", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+    catch
+    {
+        // If the check itself fails (e.g. registry access denied, dotnet not on PATH),
+        // assume the runtime is present so we don't block a valid install unnecessarily.
+        return true;
+    }
+}
+
+static void PrintDotNet8PrerequisiteError()
+{
+    Console.Error.WriteLine("Error: .NET 8 runtime is not installed on this machine.");
+    Console.Error.WriteLine("Install it before registering the AvintraDesktopRunner service.");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("Option 1 - winget (recommended):");
+    Console.Error.WriteLine("  winget install Microsoft.DotNet.Runtime.8 --source winget");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("Option 2 - Manual:");
+    Console.Error.WriteLine("  https://dotnet.microsoft.com/download/dotnet/8.0/runtime");
+    Console.Error.WriteLine();
+    Console.Error.WriteLine("If you are certain the runtime is installed, re-run with --skip-runtime-check.");
+}
+
+static int RunServiceInstaller(string[] args, bool install)
+{
+    try
+    {
+        var serviceName = "AvintraDesktopRunner";
         var executablePath = Environment.ProcessPath
             ?? throw new InvalidOperationException("Cannot determine executable path.");
 
@@ -280,7 +338,10 @@ static int RunServiceInstaller(bool install)
                 UseShellExecute = true,
                 Verb = "runas"
             };
-            psi.ArgumentList.Add(install ? "--install" : "--uninstall");
+            foreach (var arg in args)
+            {
+                psi.ArgumentList.Add(arg);
+            }
             using var elevated = System.Diagnostics.Process.Start(psi);
             elevated?.WaitForExit();
             return elevated?.ExitCode ?? 1;
@@ -288,13 +349,38 @@ static int RunServiceInstaller(bool install)
 
         if (install)
         {
-            System.Diagnostics.Process.Start("sc", $"create \"{serviceName}\" binPath=\"{executablePath} --service\" start=auto");
+            var skipRuntimeCheck = args.Contains("--skip-runtime-check", StringComparer.OrdinalIgnoreCase);
+            if (!skipRuntimeCheck && !IsDotNet8RuntimeInstalled())
+            {
+                PrintDotNet8PrerequisiteError();
+                return 2;
+            }
+
+            var installOptions = TryParseInstallArguments(args)
+                ?? PromptForInstallParameters();
+
+            if (installOptions is null)
+            {
+                Console.Error.WriteLine("Installation cancelled: required parameters were not provided.");
+                return 1;
+            }
+
+            var binPath = BuildServiceBinPath(executablePath, installOptions);
+            var createProcess = System.Diagnostics.Process.Start("sc", $"create \"{serviceName}\" binPath=\"{binPath}\" start=auto");
+            createProcess?.WaitForExit();
+            if (createProcess?.ExitCode != 0)
+            {
+                Console.Error.WriteLine($"sc create failed with exit code {createProcess?.ExitCode}.");
+                return 1;
+            }
             Console.WriteLine($"Service '{serviceName}' installed successfully.");
         }
         else
         {
-            System.Diagnostics.Process.Start("sc", $"stop \"{serviceName}\"");
-            System.Diagnostics.Process.Start("sc", $"delete \"{serviceName}\"");
+            var stopProcess = System.Diagnostics.Process.Start("sc", $"stop \"{serviceName}\"");
+            stopProcess?.WaitForExit();
+            var deleteProcess = System.Diagnostics.Process.Start("sc", $"delete \"{serviceName}\"");
+            deleteProcess?.WaitForExit();
             Console.WriteLine($"Service '{serviceName}' uninstalled successfully.");
         }
         return 0;
@@ -304,6 +390,120 @@ static int RunServiceInstaller(bool install)
         Console.Error.WriteLine($"Failed to {(install ? "install" : "uninstall")} service: {ex.Message}");
         return 1;
     }
+}
+
+static DesktopExecutorOptions? TryParseInstallArguments(string[] args)
+{
+    string? appBaseUrl = null;
+    string? apiKey = null;
+    string? tenantId = null;
+    string? linkedUsername = null;
+
+    for (int i = 0; i < args.Length; i++)
+    {
+        switch (args[i].ToLowerInvariant())
+        {
+            case "--appbaseurl":
+                if (++i < args.Length) appBaseUrl = args[i];
+                break;
+            case "--apikey":
+                if (++i < args.Length) apiKey = args[i];
+                break;
+            case "--tenantid":
+                if (++i < args.Length) tenantId = args[i];
+                break;
+            case "--linkedusername":
+                if (++i < args.Length) linkedUsername = args[i];
+                break;
+        }
+    }
+
+    if (string.IsNullOrWhiteSpace(appBaseUrl) ||
+        string.IsNullOrWhiteSpace(apiKey) ||
+        string.IsNullOrWhiteSpace(tenantId) ||
+        string.IsNullOrWhiteSpace(linkedUsername))
+    {
+        return null;
+    }
+
+    return new DesktopExecutorOptions
+    {
+        AppBaseUrl = appBaseUrl,
+        ApiKey = apiKey,
+        TenantId = tenantId,
+        LinkedUsername = linkedUsername,
+    };
+}
+
+static DesktopExecutorOptions? PromptForInstallParameters()
+{
+    Console.WriteLine("Install AvintraDesktopRunner as a Windows service.");
+    Console.WriteLine("Press Ctrl+C to cancel.");
+    Console.WriteLine();
+
+    var appBaseUrl = Prompt("Backend API base URL (e.g. https://api.avintra.com): ");
+    if (string.IsNullOrWhiteSpace(appBaseUrl))
+    {
+        Console.Error.WriteLine("Backend API base URL is required.");
+        return null;
+    }
+
+    var apiKey = Prompt("Tenant API key: ");
+    if (string.IsNullOrWhiteSpace(apiKey))
+    {
+        Console.Error.WriteLine("Tenant API key is required.");
+        return null;
+    }
+
+    var tenantId = Prompt("Tenant ID (GUID): ");
+    if (string.IsNullOrWhiteSpace(tenantId) || !Guid.TryParse(tenantId, out _))
+    {
+        Console.Error.WriteLine("A valid Tenant ID GUID is required.");
+        return null;
+    }
+
+    var linkedUsername = Prompt("Linked workspace username: ");
+    if (string.IsNullOrWhiteSpace(linkedUsername))
+    {
+        Console.Error.WriteLine("Linked workspace username is required.");
+        return null;
+    }
+
+    return new DesktopExecutorOptions
+    {
+        AppBaseUrl = appBaseUrl,
+        ApiKey = apiKey,
+        TenantId = tenantId,
+        LinkedUsername = linkedUsername,
+    };
+}
+
+static string Prompt(string message)
+{
+    Console.Write(message);
+    return Console.ReadLine()?.Trim() ?? string.Empty;
+}
+
+static string BuildServiceBinPath(string executablePath, DesktopExecutorOptions options)
+{
+    var arguments = new List<string>
+    {
+        "--service",
+        $"--appBaseUrl {QuoteForSc(options.AppBaseUrl)}",
+        $"--apiKey {QuoteForSc(options.ApiKey)}",
+        $"--tenantId {QuoteForSc(options.TenantId)}",
+        $"--linkedUsername {QuoteForSc(options.LinkedUsername)}",
+    };
+
+    var argsLine = string.Join(" ", arguments);
+    return $"\"{executablePath}\" {argsLine}";
+}
+
+static string QuoteForSc(string value)
+{
+    // sc expects inner quotes to be escaped as \" so that a value like a"b becomes a\"b.
+    var escaped = value.Replace("\\", "\\\\").Replace("\"", "\\\"");
+    return $"\"{escaped}\"";
 }
 
 static bool IsElevated()
@@ -400,10 +600,19 @@ static DesktopExecutorOptions? ParseRunArguments(string[] args)
 static void PrintUsage()
 {
     Console.Error.WriteLine("Usage:");
-    Console.Error.WriteLine("  DesktopExecutor --install                              Install as Windows service");
+    Console.Error.WriteLine("  DesktopExecutor --install                              Install as Windows service (interactive)");
+    Console.Error.WriteLine("  DesktopExecutor --install --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>");
+    Console.Error.WriteLine("                                                         Install as Windows service (silent)");
     Console.Error.WriteLine("  DesktopExecutor --uninstall                            Uninstall Windows service");
     Console.Error.WriteLine("  DesktopExecutor --run --appBaseUrl <url> [options]     Run once (console)");
     Console.Error.WriteLine("  DesktopExecutor --run --service [options]              Run as Windows service");
+    Console.Error.WriteLine("");
+    Console.Error.WriteLine("Install options (for silent install):");
+    Console.Error.WriteLine("  --appBaseUrl <url>       Backend API base URL (required)");
+    Console.Error.WriteLine("  --apiKey <key>           Tenant API key (required)");
+    Console.Error.WriteLine("  --tenantId <guid>        Tenant ID (required)");
+    Console.Error.WriteLine("  --linkedUsername <name>  Linked workspace username (required)");
+    Console.Error.WriteLine("  --skip-runtime-check     Skip the .NET 8 runtime prerequisite check");
     Console.Error.WriteLine("");
     Console.Error.WriteLine("Run options:");
     Console.Error.WriteLine("  --appBaseUrl <url>       Backend API base URL (required)");
@@ -415,7 +624,7 @@ static void PrintUsage()
     Console.Error.WriteLine("  --apiKey <key>           Tenant API key (service mode, long-lived registration)");
     Console.Error.WriteLine("  --tenantId <guid>        Tenant ID (service mode)");
     Console.Error.WriteLine("  --linkedUsername <name>  Linked workspace username (service mode)");
-    Console.Error.WriteLine("  --service                 Run as Windows service (no console)");
+    Console.Error.WriteLine("  --service                Run as Windows service (no console)");
 }
 
 enum ExecutorMode

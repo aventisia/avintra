@@ -1,7 +1,9 @@
+using Microsoft.Extensions.Caching.Memory;
+
 namespace AccountsAPIs.Controllers;
 
-// TODO: Implment IDesktopAppService and inject it
-// TODO: Implment logger
+// TODO: Implement IDesktopAppService and inject it
+// TODO: Implement logger
 
 [Route("desktop-app")]
 [ApiController]
@@ -9,13 +11,16 @@ public class DesktopAppController : BaseApiController
 {
     private readonly AppDefaultConfig _appDefaultConfig;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly IMemoryCache _cache;
 
     public DesktopAppController(
         AppDefaultConfig appDefaultConfig,
-        EnvironmentConfig environmentConfig)
+        EnvironmentConfig environmentConfig,
+        IMemoryCache cache)
     {
         _appDefaultConfig = appDefaultConfig;
         _environmentConfig = environmentConfig;
+        _cache = cache;
     }
 
     // GET: /desktop-app/download/
@@ -59,7 +64,7 @@ public class DesktopAppController : BaseApiController
         if (string.IsNullOrEmpty(filePath))
             return NotFound(message);
 
-        // Get the latest verison out. Assuming version is in the format AvintraDesktopApp_{version}_x64-setup.exe
+        // Get the latest version out. Assuming version is in the format AvintraDesktopApp_{version}_x64-setup.exe
         string latestVersion = ParseVersion(fileName, "AvintraDesktopApp", "x64-setup.exe");
 
         var updateNotes = "Bug fixes and improvements.";
@@ -94,16 +99,23 @@ public class DesktopAppController : BaseApiController
     [HttpGet("desktop-executor/latest")]
     public IActionResult GetDesktopExecutorLatest()
     {
+        const string cacheKey = "desktop-executor-latest";
+        if (_cache.TryGetValue(cacheKey, out object? cached))
+            return Ok(cached);
+
         var (filePath, fileName, _, message) = GetLatestVersion("AvintraDesktopRunner", "win-x64.zip");
         if (string.IsNullOrEmpty(filePath))
             return NotFound(message);
 
         var latestVersion = ParseVersion(fileName, "AvintraDesktopRunner", "win-x64.zip");
-        return Ok(new
+        var result = new
         {
             version = latestVersion,
             url = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/desktop-app/desktop-executor/download/{latestVersion}"
-        });
+        };
+
+        _cache.Set(cacheKey, result, TimeSpan.FromSeconds(60));
+        return Ok(result);
     }
 
     // GET: /desktop-app/desktop-executor/download/
@@ -120,29 +132,37 @@ public class DesktopAppController : BaseApiController
         return DownloadVersionedFile("AvintraDesktopRunner", "win-x64.zip", version);
     }
 
+    // GET: /desktop-app/script/Install-AvintraDesktopRunner.ps1
+    [HttpGet("script/Install-AvintraDesktopRunner.ps1")]
+    public IActionResult GetInstallScript()
+    {
+        var scriptsDir = Path.Combine(_appDefaultConfig.FileUploadConfig.UploadDirectory, "scripts");
+        var scriptPath = Path.Combine(scriptsDir, "Install-AvintraDesktopRunner.ps1");
+
+        if (!System.IO.File.Exists(scriptPath))
+            return NotFound("Installation script not found.");
+
+        var scriptStream = System.IO.File.OpenRead(scriptPath);
+        return File(scriptStream, "application/x-powershell", "Install-AvintraDesktopRunner.ps1");
+    }
+
     // GET: /desktop-app/download-manifest
     [HttpGet("download-manifest")]
     public IActionResult GetDownloadManifest()
     {
-        var appVersions = GetAllVersions("AvintraDesktopApp", "x64-setup.exe");
-        var runnerVersions = GetAllVersions("AvintraDesktopRunner", "win-x64.zip");
+        const string cacheKey = "desktop-app-download-manifest";
+        if (_cache.TryGetValue(cacheKey, out object? cached))
+            return Ok(cached);
 
-        // Only expose versions where both the Desktop App and the Desktop Runner are available.
-        var commonVersions = appVersions
-            .Join(
-                runnerVersions,
-                app => app.version,
-                runner => runner.version,
-                (app, runner) => app.version)
-            .Distinct()
-            .ToList();
-
+        // Each product exposes its own full version list so the Desktop App and the
+        // Desktop Runner can be at different versions independently.
         var manifest = new DownloadManifestDto
         {
-            DesktopApp = GetProductManifest("AvintraDesktopApp", "x64-setup.exe", "nsis", commonVersions),
-            DesktopExecutor = GetProductManifest("AvintraDesktopRunner", "win-x64.zip", "zip", commonVersions)
+            DesktopApp = GetProductManifest("AvintraDesktopApp", "x64-setup.exe", "nsis"),
+            DesktopExecutor = GetProductManifest("AvintraDesktopRunner", "win-x64.zip", "zip")
         };
 
+        _cache.Set(cacheKey, manifest, TimeSpan.FromSeconds(60));
         return Ok(manifest);
     }
 
@@ -155,9 +175,9 @@ public class DesktopAppController : BaseApiController
         if (string.IsNullOrEmpty(filePath))
             return NotFound(message);
 
-        // Read file bytes and return as file result
-        var fileBytes = System.IO.File.ReadAllBytes(filePath);
-        return File(fileBytes, "application/octet-stream", fileName);
+        // Stream the file to the client instead of buffering the whole binary in memory.
+        var fileStream = System.IO.File.OpenRead(filePath);
+        return File(fileStream, "application/octet-stream", fileName);
     }
 
     // Helper to get the latest version from a file or database
@@ -186,8 +206,12 @@ public class DesktopAppController : BaseApiController
         if (files.Length == 0)
             return (null, null, null, "No versions available.");
 
-        // Sort files by creation time and take the latest one
-        var latestFilePath = files.OrderByDescending(f => System.IO.File.GetCreationTime(f)).First();
+        // Sort files by parsed version (newest first) and take the latest one.
+        // Creation time is unreliable on Linux and rsync preserves mtime, so we
+        // sort semantically by the version embedded in the file name.
+        var latestFilePath = files
+            .OrderByDescending(f => ParseVersion(Path.GetFileName(f), prefix, suffix), Comparer<string>.Create(CompareVersions))
+            .First();
         var fileName = Path.GetFileName(latestFilePath);
 
         // Get the signature file path
@@ -218,7 +242,38 @@ public class DesktopAppController : BaseApiController
         return name;
     }
 
-    // Returns every discovered version for the given prefix/suffix, sorted newest first by creation time.
+    // Compares two version strings semantically (e.g. "0.1.9" < "0.1.10").
+    // Falls back to ordinal comparison when a segment is not numeric.
+    private static int CompareVersions(string? x, string? y)
+    {
+        if (string.IsNullOrEmpty(x) && string.IsNullOrEmpty(y)) return 0;
+        if (string.IsNullOrEmpty(x)) return -1;
+        if (string.IsNullOrEmpty(y)) return 1;
+
+        var xParts = x.Split('.');
+        var yParts = y.Split('.');
+        var length = Math.Max(xParts.Length, yParts.Length);
+
+        for (var i = 0; i < length; i++)
+        {
+            var xPart = i < xParts.Length ? xParts[i] : "0";
+            var yPart = i < yParts.Length ? yParts[i] : "0";
+
+            if (int.TryParse(xPart, out var xNum) && int.TryParse(yPart, out var yNum))
+            {
+                if (xNum != yNum) return xNum.CompareTo(yNum);
+            }
+            else
+            {
+                var cmp = string.Compare(xPart, yPart, StringComparison.Ordinal);
+                if (cmp != 0) return cmp;
+            }
+        }
+
+        return 0;
+    }
+
+    // Returns every discovered version for the given prefix/suffix, sorted newest first by version.
     private List<(string filePath, string fileName, string? signatureFilePath, string version)> GetAllVersions(string prefix, string suffix)
     {
         var basePath = Path.Combine(_appDefaultConfig.FileUploadConfig.UploadDirectory, "binaries");
@@ -227,7 +282,7 @@ public class DesktopAppController : BaseApiController
 
         var searchPattern = $"{prefix}_*_{suffix}";
         var files = Directory.GetFiles(basePath, searchPattern)
-            .OrderByDescending(f => System.IO.File.GetCreationTime(f))
+            .OrderByDescending(f => ParseVersion(Path.GetFileName(f), prefix, suffix), Comparer<string>.Create(CompareVersions))
             .ToList();
 
         return files.Select(filePath =>
@@ -240,14 +295,11 @@ public class DesktopAppController : BaseApiController
         }).ToList();
     }
 
-    private ProductManifestDto GetProductManifest(string prefix, string suffix, string installerType, List<string>? allowedVersions = null)
+    private ProductManifestDto GetProductManifest(string prefix, string suffix, string installerType)
     {
         var isDesktopApp = suffix == "x64-setup.exe";
         var downloadPath = isDesktopApp ? "download" : "desktop-executor/download";
         var versions = GetAllVersions(prefix, suffix);
-
-        if (allowedVersions is not null)
-            versions = versions.Where(v => allowedVersions.Contains(v.version)).ToList();
 
         if (versions.Count == 0)
         {

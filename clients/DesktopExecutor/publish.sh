@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Publishes the DesktopExecutor as a self-contained, single-file Windows binary and
+# Publishes the DesktopExecutor as a framework-dependent, single-file Windows binary and
 # packages it into a versioned zip ready for upload/distribution.
 #
 # Usage:
-#   ./scripts/publish-executor.sh [--version <ver>] [--runtime <rid>] [--output <dir>]
+#   ./publish.sh [--version <ver>] [--runtime <rid>] [--output <dir>]
 #
 # Defaults:
 #   --version  reads the <Version> from DesktopExecutor.csproj (e.g. 0.1.0)
@@ -11,12 +11,15 @@
 #   --output   ./artifacts
 #
 # Output:
-#   <output>/AvintraDesktopRunner_<version>_win-x64.zip
+#   <output>/AvintraDesktopRunner_<version>_<runtime>.zip
 #
 # The published single-file executable is renamed to AvintraDesktopRunner after
 # publish while the project keeps the DesktopExecutor name internally. This avoids
-# an "Ambiguous project name" NuGet error and matches the desktop app convention
-# (AvintraDesktopApp) and the UI label "Desktop Runner".
+# an "Ambiguous project name" NuGet error and matches the UI label "Desktop Runner".
+#
+# The .NET 8 runtime is NOT bundled; the target machine must install it first.
+# The AvintraDesktopRunner --install command will fail with a clear message if the
+# runtime is missing (use --skip-runtime-check to override the check).
 #
 # This script is reusable for every new version: bump <Version> in the .csproj and rerun.
 
@@ -67,7 +70,7 @@ if [[ ! -f "$CSPROJ" ]]; then
   exit 1
 fi
 
-echo "Publishing DesktopExecutor ($RUNTIME, self-contained) v$VERSION ..."
+echo "Publishing DesktopExecutor ($RUNTIME, framework-dependent) v$VERSION ..."
 
 PUBLISH_DIR="$(mktemp -d)"
 trap 'rm -rf "$PUBLISH_DIR"' EXIT
@@ -75,7 +78,7 @@ trap 'rm -rf "$PUBLISH_DIR"' EXIT
 dotnet publish "$CSPROJ" \
   -c Release \
   -r "$RUNTIME" \
-  --self-contained true \
+  --self-contained false \
   -p:PublishSingleFile=true \
   -o "$PUBLISH_DIR"
 
@@ -106,6 +109,17 @@ fi
 
 echo "Published to $ZIP_PATH"
 ls -lh "$ZIP_PATH"
+
+# Copy the install provisioning script into the artifacts output so it can be
+# uploaded to the server's scripts/ directory alongside the runner zip. This
+# keeps the served script in sync with the source of truth.
+INSTALL_SCRIPT="$SCRIPT_DIR/Install-AvintraDesktopRunner.ps1"
+if [[ -f "$INSTALL_SCRIPT" ]]; then
+  cp "$INSTALL_SCRIPT" "$OUTPUT_DIR/Install-AvintraDesktopRunner.ps1"
+  echo "Copied install script to $OUTPUT_DIR/Install-AvintraDesktopRunner.ps1"
+else
+  echo "warning: Install-AvintraDesktopRunner.ps1 not found at $INSTALL_SCRIPT" >&2
+fi
 
 # Print the published binary names for quick verification.
 echo "Published binaries:"

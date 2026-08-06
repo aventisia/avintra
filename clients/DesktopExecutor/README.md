@@ -30,6 +30,18 @@ The executor connects to the backend's `OrchestratorHub` (SignalR) to receive co
 dotnet build clients/DesktopExecutor/DesktopExecutor.csproj
 ```
 
+## Publish
+
+`publish.sh` produces a versioned, framework-dependent single-file Windows binary and packages it into `artifacts/AvintraDesktopRunner_<version>_win-x64.zip`. It also copies `Install-AvintraDesktopRunner.ps1` into `artifacts/` so the provisioning script can be uploaded to the server's `scripts/` directory alongside the runner zip.
+
+```sh
+./clients/DesktopExecutor/publish.sh
+# or with an explicit version
+./clients/DesktopExecutor/publish.sh --version 0.1.83
+```
+
+The CI/CD pipeline uploads the zip to `/var/www/aventisia.com/files/binaries/` and the install script to `/var/www/aventisia.com/files/scripts/` on each target server.
+
 ## Run (Console Mode)
 
 ```sh
@@ -55,13 +67,78 @@ dotnet run --project clients/DesktopExecutor/DesktopExecutor.csproj -- \
 
 ## Run as Windows Service
 
-### Install
+### Prerequisites
 
-```sh
-dotnet run --project clients/DesktopExecutor/DesktopExecutor.csproj -- --install
+The Windows Service build is **framework-dependent** and does **not** bundle the .NET 8 runtime. The target machine must have the .NET 8 runtime installed before running `--install`.
+
+### Automated PowerShell install (recommended)
+
+Use the provisioning script to install everything in one step. The script validates the .NET 8 runtime, installs it if necessary, downloads the runner, and registers it as a Windows service.
+
+The script resolves the **latest** runner version automatically from the backend, so you don't need to supply a zip URL. Run it from an elevated PowerShell prompt:
+
+```powershell
+.\Install-AvintraDesktopRunner.ps1 `
+  -AppBaseUrl "https://api.avintra.com" `
+  -ApiKey "<API_KEY>" `
+  -TenantId "<TENANT_ID>" `
+  -LinkedUsername "<LINKED_USERNAME>"
 ```
 
-This registers a service named **"Avintra Desktop Executor"** that starts automatically on boot.
+You can also pipe the script directly from the web (Ollama-style). Set the environment variables first, then run:
+
+```powershell
+$env:AVINTRA_APP_BASE_URL = "https://api.avintra.com"
+$env:AVINTRA_API_KEY = "<API_KEY>"
+$env:AVINTRA_TENANT_ID = "<TENANT_ID>"
+$env:AVINTRA_LINKED_USERNAME = "<LINKED_USERNAME>"
+irm https://<host>/accounts/api/desktop-app/script/Install-AvintraDesktopRunner.ps1 | iex
+```
+
+The script must be run from an elevated PowerShell prompt. It installs the runner to `C:\Program Files\AvintraDesktopRunner` and starts the service automatically.
+
+The script only looks for / installs winget if .NET 8 is missing. If winget is not available and cannot be installed automatically, the script stops and asks you to install .NET 8 manually from <https://dotnet.microsoft.com/en-us/download/dotnet/8.0>, then re-run the script.
+
+Available parameters:
+
+| Parameter          | Default                                 | Description                                                                                                        |
+| ------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `RunnerZipUrl`     | — (resolved automatically)              | URL of the runner zip archive to download. Optional; when omitted the latest version is resolved from the backend. |
+| `AppBaseUrl`       | —                                       | Backend API base URL.                                                                                              |
+| `ApiKey`           | —                                       | Tenant API key.                                                                                                    |
+| `TenantId`         | —                                       | Tenant ID (GUID).                                                                                                  |
+| `LinkedUsername`   | —                                       | Linked workspace username.                                                                                         |
+| `InstallDir`       | `C:\Program Files\AvintraDesktopRunner` | Directory to extract the runner to.                                                                                |
+| `ServiceName`      | `AvintraDesktopRunner`                  | Name of the Windows service.                                                                                       |
+| `DoNotStart`       | `$false`                                | Install the service but do not start it.                                                                           |
+| `SkipRuntimeCheck` | `$false`                                | Skip the .NET 8 runtime check.                                                                                     |
+
+### Manual install
+
+You can install the runner as a Windows service interactively:
+
+```sh
+DesktopExecutor --install
+```
+
+The installer will prompt for:
+
+- `appBaseUrl` — Backend API base URL
+- `apiKey` — Tenant API key
+- `tenantId` — Tenant ID
+- `linkedUsername` — Linked workspace username
+
+Or perform a silent install by passing all required values on the command line:
+
+```sh
+DesktopExecutor --install --appBaseUrl https://api.avintra.com --apiKey <key> --tenantId <guid> --linkedUsername <user>
+```
+
+This registers a service named **"AvintraDesktopRunner"** that starts automatically on boot. The install command must be run from an elevated (Administrator) command prompt; it will request UAC elevation automatically if needed.
+
+The backend connection parameters are embedded into the service `binPath`, so the service can start unattended. `osId`, `username`, and `hostname` are detected at runtime from the local machine.
+
+> **Note:** `--install` does not validate the backend URL or credentials. It only verifies that the .NET 8 runtime is present. To skip the runtime check (for example, in automated provisioning scripts), add `--skip-runtime-check`.
 
 ### Uninstall
 
@@ -72,8 +149,8 @@ dotnet run --project clients/DesktopExecutor/DesktopExecutor.csproj -- --uninsta
 ### Start / Stop (after install)
 
 ```sh
-sc start "Avintra Desktop Executor"
-sc stop "Avintra Desktop Executor"
+sc start "AvintraDesktopRunner"
+sc stop "AvintraDesktopRunner"
 ```
 
 ### Run with service flag (for manual testing)
@@ -138,8 +215,17 @@ clients/DesktopExecutor/
 ## Usage
 
 ```bash
+# Windows service install
 DesktopExecutor --install
+DesktopExecutor --install --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>
 DesktopExecutor --uninstall
+
+# Single job (console)
 DesktopExecutor --run --appBaseUrl <url> --accessToken <token> --jobId <guid> [options]
-DesktopExecutor --run --service --appBaseUrl <url> --accessToken <token> --jobId <guid> [options]
+
+# Windows service
+DesktopExecutor --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> [options]
+
+# Desktop App sidecar (bundled with the builder app)
+DesktopExecutor --run --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> --persist [options]
 ```

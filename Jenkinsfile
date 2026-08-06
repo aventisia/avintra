@@ -370,14 +370,16 @@ pipeline {
                         def targetServers = getTargetServers(env.BRANCH_NAME)
                         echo "Uploading DesktopExecutor to ${targetServers.size()} server(s)..."
                         def targetDir = '/var/www/aventisia.com/files/binaries'
+                        def scriptsDir = '/var/www/aventisia.com/files/scripts'
 
                         targetServers.each { server ->
                             def zipPath = sh(
                                 script: "ls -t ${WORKSPACE}/clients/DesktopExecutor/artifacts/AvintraDesktopRunner_*.zip | head -n1",
                                 returnStdout: true
                             ).trim()
-                            sh "ssh admin@${server} 'mkdir -p ${targetDir}'"
+                            sh "ssh admin@${server} 'mkdir -p ${targetDir} ${scriptsDir}'"
                             sh "rsync -avz ${zipPath} admin@${server}:${targetDir}/"
+                            sh "rsync -avz ${WORKSPACE}/clients/DesktopExecutor/artifacts/Install-AvintraDesktopRunner.ps1 admin@${server}:${scriptsDir}/"
                             echo "Successfully uploaded DesktopExecutor to ${server}"
                         }
                     }

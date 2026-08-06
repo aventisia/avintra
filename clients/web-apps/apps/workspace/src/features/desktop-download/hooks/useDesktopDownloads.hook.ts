@@ -6,5 +6,7 @@ export const useDesktopDownloadManifest = () => {
   return useQuery({
     queryKey: ["desktop-download-manifest"],
     queryFn: () => getDownloadManifest(),
+    // The manifest changes rarely; avoid refetching on every dialog open.
+    staleTime: 60_000,
   });
 };

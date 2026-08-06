@@ -2,7 +2,8 @@ namespace DesktopExecutor;
 
 public class DesktopExecutorOptions
 {
-    public required string AppBaseUrl { get; set; }
+    // Backend API base URL. Required for all modes.
+    public string AppBaseUrl { get; set; } = string.Empty;
 
     // JWT bearer token used for console (single-job) execution.
     public string AccessToken { get; set; } = string.Empty;
