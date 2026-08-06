@@ -6,7 +6,10 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
-import { SupportTicketEditForm } from "./features/05-tenant-admin/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketEditForm";
+import SupportTicketsV2Page from "./pages/05-tenant-admin/SupportTicketsV2Page";
+import SupportTicketV2DetailPage from "./pages/05-tenant-admin/SupportTicketV2DetailPage";
+import SaSupportTicketsPage from "./pages/06-super-admin/SaSupportTicketsPage";
+import SaSupportTicketDetailPage from "./pages/06-super-admin/SaSupportTicketDetailPage";
 import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALayout";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
@@ -36,7 +39,6 @@ import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
 import { AppIntegrationsPage } from "./pages/05-tenant-admin/IntegrationsPage";
 import { PreferencesPage } from "./pages/05-tenant-admin/PreferencesPage";
-import { SupportTicketsPage } from "./pages/05-tenant-admin/SupportTicketsPage";
 import { TenantPage } from "./pages/05-tenant-admin/TenantPage";
 import { TenantTemplatesApprovalPage } from "./pages/05-tenant-admin/TenantTemplatesApprovalPage";
 import { UsersPage } from "./pages/05-tenant-admin/UsersPage";
@@ -279,11 +281,11 @@ const routerConfig: RouteObject[] = [
               },
               {
                 path: "tickets",
-                element: <SupportTicketsPage />,
+                element: <SupportTicketsV2Page />,
               },
               {
-                path: "ticket/details",
-                element: <SupportTicketEditForm />,
+                path: "tickets/:id",
+                element: <SupportTicketV2DetailPage />,
               },
             ],
           },
@@ -308,6 +310,23 @@ const routerConfig: RouteObject[] = [
           {
             path: "approvals",
             element: <PublicTemplatesApprovalPage />,
+          },
+          {
+            path: "support",
+            children: [
+              {
+                index: true,
+                element: <Navigate to="tickets" replace />,
+              },
+              {
+                path: "tickets",
+                element: <SaSupportTicketsPage />,
+              },
+              {
+                path: "tickets/:id",
+                element: <SaSupportTicketDetailPage />,
+              },
+            ],
           },
         ],
       },

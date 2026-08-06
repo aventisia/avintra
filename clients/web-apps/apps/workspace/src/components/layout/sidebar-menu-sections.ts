@@ -333,6 +333,13 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
       //   route: "/sa/tenants-consumption",
       //   type: ["Commercial"],
       // },
+      {
+        permissions: ["SA"],
+        Icon: QuestionMarkCircleIcon,
+        name: "support",
+        route: "/sa/support/tickets",
+        type: ["Commercial"],
+      },
     ],
   },
   {

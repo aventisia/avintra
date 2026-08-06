@@ -1308,6 +1308,9 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<string>("Industry")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsChangeRequestEnabled")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsDefault")
                         .HasColumnType("boolean");
 

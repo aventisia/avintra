@@ -1,0 +1,38 @@
+meta {
+  name: Update Ticket Triage (SA)
+  type: http
+  seq: 7
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/sa/support-tickets/triage
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+body:json {
+  {
+    "ticketId": "{{TICKET_ID}}",
+    "complexity": "Medium",
+    "estimatedEffortHours": 8,
+    "estimatedCompletionDate": "2026-08-15T00:00:00Z",
+    "isBillable": true,
+    "requiresCustomerApproval": false,
+    "riskLevel": "Low",
+    "dependencies": "Database migration must be completed first",
+    "triageRemarks": "Standard triage - assign to frontend team"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: neq null
+  res.body.data.complexity: eq "Medium"
+  res.body.data.estimatedEffortHours: eq 8
+}

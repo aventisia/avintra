@@ -17,6 +17,8 @@ import { getDialogHeadingDescription as getApiKeyDialogHeadingDescription } from
 import { getDialogHeadingDescription as getJobDialogHeadingDescription } from "@/features/03-orchestrator/jobs-table/constants/variables";
 import { getDialogHeadingDescription as getMachineDialogHeadingDescription } from "@/features/03-orchestrator/machines-table/constants";
 import { getDialogHeadingDescription as getSupportTicketDialogHeadingDescription } from "@/features/05-tenant-admin/support-tickets-table/constants/constants";
+import { getDialogHeadingDescription as getTicketDialogHeadingDescription } from "@/features/05-tenant-admin/support-tickets-v2/constants";
+import { getDialogHeadingDescription as getSaTicketDialogHeadingDescription } from "@/features/06-super-admin/support-tickets/constants";
 import { getDialogHeadingDescription as getRoleDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/roles-table/constants";
 import { getDialogHeadingDescription as getUserDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/users-table/constants";
 import { getDialogHeadingDescription as getCreditPlanDialogHeadingDescription } from "@/features/06-super-admin/credit-plans-table/constants";
@@ -114,6 +116,16 @@ const TenantCrudDialogContent = lazy(() =>
 const SupportTicketCrudDialogContent = lazy(() =>
   import("@/features/05-tenant-admin/support-tickets-table/components/support-ticket-crud-dialog/SupportTicketCrudDialogContent").then(
     (m) => ({ default: m.SupportTicketCrudDialogContent }),
+  ),
+);
+const TicketCrudDialogContent = lazy(() =>
+  import("@/features/05-tenant-admin/support-tickets-v2/components/ticket-crud-dialog/TicketCrudDialogContent").then(
+    (m) => ({ default: m.TicketCrudDialogContent }),
+  ),
+);
+const SaTicketCrudDialogContent = lazy(() =>
+  import("@/features/06-super-admin/support-tickets/components/ticket-crud-dialog/SaTicketCrudDialogContent").then(
+    (m) => ({ default: m.SaTicketCrudDialogContent }),
   ),
 );
 const OnPremTenantCrudDialogContent = lazy(() =>
@@ -232,6 +244,16 @@ const crudDialogRegistry: CrudDialogRegistry = {
     maxWidth: "!max-w-[32rem]",
     getHeader: getSupportTicketDialogHeadingDescription,
     Content: SupportTicketCrudDialogContent,
+  },
+  ticket: {
+    maxWidth: "!max-w-[36rem]",
+    getHeader: getTicketDialogHeadingDescription,
+    Content: TicketCrudDialogContent,
+  },
+  saSupportTicket: {
+    maxWidth: "!max-w-[40rem]",
+    getHeader: getSaTicketDialogHeadingDescription,
+    Content: SaTicketCrudDialogContent,
   },
   onPremTenant: {
     maxWidth: "!max-w-[32rem]",

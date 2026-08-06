@@ -61,4 +61,9 @@ public class TenantReadOnly
     /// Gets or sets the container name associated with the tenant.
     /// </summary>
     public string ContainerName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets a value indicating whether Change Requests are enabled for this tenant.
+    /// </summary>
+    public bool IsChangeRequestEnabled { get; set; } = false;
 }

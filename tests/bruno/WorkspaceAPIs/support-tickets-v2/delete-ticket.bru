@@ -1,0 +1,20 @@
+meta {
+  name: Delete Ticket
+  type: http
+  seq: 9
+}
+
+delete {
+  url: {{WORKSPACE_APIS_BASE_URL}}/support-tickets/{{TICKET_ID}}
+  auth: none
+}
+
+headers {
+  Cookie: {{workspace_session_cookie}}
+  tntid: {{tenant_id}}
+}
+
+assert {
+  res.status: eq 200
+  res.body.data: eq true
+}

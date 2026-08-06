@@ -1,0 +1,23 @@
+meta {
+  name: Update Ticket Status (SA)
+  type: http
+  seq: 6
+}
+
+put {
+  url: {{WORKSPACE_APIS_BASE_URL}}/sa/support-tickets/status
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  tntid: {{TENANT_ID}}
+}
+
+body:json {
+  {
+    "ticketId": "{{TICKET_ID}}",
+    "status": "InReview"
+  }
+}

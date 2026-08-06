@@ -321,4 +321,87 @@ public class ManageTenantService : IManageTenantService
 
         return true;
     }
+
+    // Retrieves the support configuration for a tenant.
+    public async Task<ServiceResponse<TenantSupportConfigDto>> GetTenantSupportConfigAsync(Guid tenantId)
+    {
+        var serviceResponse = new ServiceResponse<TenantSupportConfigDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve support configuration."
+        };
+
+        try
+        {
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(w => w.Id == tenantId)
+                .SingleOrDefaultAsync();
+
+            if (tenant == null)
+            {
+                serviceResponse.Message = "Tenant not found";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = new TenantSupportConfigDto
+            {
+                IsChangeRequestEnabled = tenant.IsChangeRequestEnabled
+            };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Support configuration retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving support config for tenant {TenantId}", tenantId);
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Updates the support configuration for a tenant.
+    public async Task<ServiceResponse<TenantSupportConfigDto>> UpdateTenantSupportConfigAsync(Guid tenantId, TenantSupportConfigDto configDto)
+    {
+        var serviceResponse = new ServiceResponse<TenantSupportConfigDto>
+        {
+            Data = null,
+            Message = "Failed to update support configuration."
+        };
+
+        try
+        {
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(w => w.Id == tenantId)
+                .SingleOrDefaultAsync();
+
+            if (tenant == null)
+            {
+                serviceResponse.Message = "Tenant not found";
+                return serviceResponse;
+            }
+
+            tenant.IsChangeRequestEnabled = configDto.IsChangeRequestEnabled;
+            _unitOfWork.TenantRepo.Update(tenant);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogInformation("SaveChanges failed while updating support config for tenant {TenantId}", tenantId);
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = new TenantSupportConfigDto
+            {
+                IsChangeRequestEnabled = tenant.IsChangeRequestEnabled
+            };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Support configuration updated successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating support config for tenant {TenantId}", tenantId);
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
 }

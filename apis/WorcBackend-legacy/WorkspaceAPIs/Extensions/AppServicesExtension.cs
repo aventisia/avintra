@@ -85,6 +85,7 @@ public static class AppServicesExtension
         config.Apply(new ResourceShareMappingProfile());
         config.Apply(new ApiKeyMappingProfile());
         config.Apply(new ToolMappingProfile());
+        config.Apply(new TicketMappingProfile());
 
         services.AddSingleton(config);
     }
@@ -165,6 +166,8 @@ public static class AppServicesExtension
         services.AddScoped<IMachineAuthService, MachineAuthService>();
         services.AddScoped<IToolService, ToolService>();
         services.AddScoped<IFlowVersionToolService, FlowVersionToolService>();
+        services.AddScoped<ITenantTicketService, TenantTicketService>();
+        services.AddScoped<ISuperAdminTicketService, SuperAdminTicketService>();
         services.AddHostedService<BackfillNodeExecutionLogsHostedService>();
 
         // Cloud Connectors feature
