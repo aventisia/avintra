@@ -6,26 +6,50 @@ import {
 } from "@avplatform/ui/accordion";
 import { Button, CopyButton } from "@avplatform/ui/buttons";
 import { cn } from "@avplatform/ui/lib";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@avplatform/ui/select";
+import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
-import { Monitor, ServerCog, Terminal } from "lucide-react";
-import React, { useEffect, useMemo, useState } from "react";
+import { Monitor, Terminal } from "lucide-react";
+import React, { useMemo, useState } from "react";
 import { FaApple, FaWindows } from "react-icons/fa";
 import { SiLinux } from "react-icons/si";
+import { useShallow } from "zustand/react/shallow";
 
 import type { ArtifactDto, ProductManifestDto } from "../dtos/download-manifest.dto";
 import { useDesktopDownloadManifest } from "../hooks/useDesktopDownloads.hook";
 import { type Platform, detectPlatform } from "../utils/detect-platform.util";
 
+// TODO: Replace with the desktop-app release notes URL once the desktop-app
+// repository is published and releases are tagged there.
 const RELEASE_NOTES_URL = "https://github.com/aventisia/avintra-platform/releases";
 
-const EXECUTOR_SERVICE_COMMAND = "AvintraDesktopRunner.exe --install";
+const buildExecutorServiceCommand = (
+  baseUrl: string,
+  tenantId: string | undefined,
+  linkedUsername: string | undefined,
+) => {
+  const appBaseUrl = baseUrl.replace(/\/$/, "");
+  const t = tenantId ?? "<TENANT_ID>";
+  const u = linkedUsername ?? "<LINKED_USERNAME>";
+  return `AvintraDesktopRunner.exe --install --appBaseUrl "${appBaseUrl}" --apiKey "<API_KEY>" --tenantId "${t}" --linkedUsername "${u}"`;
+};
+
+const buildOllamaStylePowerShellCommand = (
+  baseUrl: string,
+  scriptUrl: string,
+  tenantId: string | undefined,
+  linkedUsername: string | undefined,
+) => {
+  const appBaseUrl = baseUrl.replace(/\/$/, "");
+  const t = tenantId ?? "<TENANT_ID>";
+  const u = linkedUsername ?? "<LINKED_USERNAME>";
+  return [
+    `$env:AVINTRA_APP_BASE_URL = "${appBaseUrl}"`,
+    '$env:AVINTRA_API_KEY = "<API_KEY>"',
+    `$env:AVINTRA_TENANT_ID = "${t}"`,
+    `$env:AVINTRA_LINKED_USERNAME = "${u}"`,
+    `irm "${scriptUrl}" | iex`,
+  ].join("\n");
+};
 
 const PLATFORM_LABELS: Record<Platform, string> = {
   windows: "Windows",
@@ -33,58 +57,40 @@ const PLATFORM_LABELS: Record<Platform, string> = {
   linux: "Linux",
 };
 
-const getAvailableVersions = (product: ProductManifestDto): string[] =>
-  product.versions
-    .filter((v) => v.artifacts.some((a) => a.available))
-    .map((v) => v.version)
-    .filter(Boolean);
-
-const getCommonAvailableVersions = (
-  desktopApp: ProductManifestDto,
-  desktopRunner: ProductManifestDto,
-): string[] => {
-  const appVersions = new Set(getAvailableVersions(desktopApp));
-  const runnerVersions = getAvailableVersions(desktopRunner).filter((v) => appVersions.has(v));
-  return runnerVersions;
-};
-
-const getVersionForProduct = (product: ProductManifestDto, version: string) =>
-  product.versions.find((v) => v.version === version);
-
 const getArtifactForPlatform = (
   product: ProductManifestDto,
   platform: Platform,
-  version?: string,
 ): ArtifactDto | undefined => {
-  const targetVersion = version
-    ? getVersionForProduct(product, version)
-    : product.versions.find((v) => v.artifacts.some((a) => a.available));
+  const targetVersion = product.versions.find((v) => v.artifacts.some((a) => a.available));
   return targetVersion?.artifacts.find((a) => a.platform === platform && a.available);
 };
+
+const getLatestVersion = (product: ProductManifestDto): string =>
+  product.versions.find((v) => v.artifacts.some((a) => a.available))?.version ?? "";
 
 const formatSizeMB = (size: number | null | undefined): string =>
   size ? `${(size / (1024 * 1024)).toFixed(1)} MB` : "";
 
 /**
  * Builds the artifact metadata line for a download row, e.g.
- * "184 MB · 64-bit · Windows 10+". Omits any segment that is unknown.
+ * "v0.1.83 · 184 MB · 64-bit". Omits any segment that is unknown.
  */
-const buildArtifactMetadata = (artifact: ArtifactDto | undefined): string => {
+const buildArtifactMetadata = (artifact: ArtifactDto | undefined, version: string): string => {
   const arch = artifact?.architecture === "x86_64" ? "64-bit" : artifact?.architecture;
   const items = [
+    version ? `v${version}` : "",
     artifact?.size ? formatSizeMB(artifact.size) : "",
     arch || "",
-    "Windows 11",
   ].filter(Boolean);
   return items.join(" · ");
 };
 
-const TerminalBlock = () => {
+const OneLinerBlock = ({ command, label = "PowerShell" }: { command: string; label?: string }) => {
   const [isCopied, setIsCopied] = useState(false);
 
   const handleCopy = () => {
     navigator.clipboard
-      ?.writeText(EXECUTOR_SERVICE_COMMAND)
+      ?.writeText(command)
       .then(() => {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 1000);
@@ -96,27 +102,21 @@ const TerminalBlock = () => {
 
   return (
     <div className="overflow-hidden rounded-lg border border-slate-800 bg-slate-950 shadow-sm">
-      {/* Terminal header */}
-      <div className="flex items-center justify-between bg-slate-900 px-4 py-2">
+      <div className="flex items-center justify-between bg-slate-900 pl-3 pr-2 py-1">
         <div className="flex items-center gap-2 text-slate-500">
           <Terminal className="h-3.5 w-3.5" />
-          <span className="text-xs">Terminal</span>
+          <span className="text-xs">{label}</span>
         </div>
-        <span className="text-xs text-slate-500">PowerShell / CMD</span>
+        <CopyButton
+          isCopied={isCopied}
+          onClick={handleCopy}
+          className="border border-slate-700 bg-slate-800 text-white hover:bg-slate-700 hover:text-white"
+        />
       </div>
 
-      {/* Terminal body with copy button */}
-      <div className="group relative px-4 py-3">
-        <div className="absolute right-3 top-3 opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100">
-          <CopyButton
-            showTooltip={false}
-            isCopied={isCopied}
-            onClick={handleCopy}
-            className="border border-slate-700 bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white"
-          />
-        </div>
+      <div className="px-4 py-3">
         <pre className="overflow-x-auto whitespace-pre-wrap break-all font-mono text-sm text-slate-100">
-          <code>{EXECUTOR_SERVICE_COMMAND}</code>
+          <code>{command}</code>
         </pre>
       </div>
     </div>
@@ -174,11 +174,11 @@ const DownloadRow = ({
       </div>
       <div className="flex shrink-0 items-center pl-2">
         {hasDownload ? (
-          <Button type="button" size="sm" onClick={handleClick}>
+          <Button type="button" size="sm" className="w-24" onClick={handleClick}>
             Download
           </Button>
         ) : (
-          <Button type="button" size="sm" disabled>
+          <Button type="button" size="sm" className="w-24" disabled>
             Download
           </Button>
         )}
@@ -194,13 +194,183 @@ const FAQItem = ({
 }: {
   value: string;
   question: string;
-  answer: string;
+  answer: React.ReactNode;
 }) => (
   <AccordionItem value={value}>
     <AccordionTrigger className="text-sm font-semibold text-slate-800">{question}</AccordionTrigger>
     <AccordionContent className="text-sm text-slate-500">{answer}</AccordionContent>
   </AccordionItem>
 );
+
+interface RunnerInstallRowProps {
+  artifact: ArtifactDto | undefined;
+  title: string;
+  description: string;
+  metadata?: string;
+  icon: React.ReactNode;
+  iconClass: string;
+  hoverClass: string;
+  powershellOneLiner: string;
+  installCommand: string;
+}
+
+/**
+ * Renders the Desktop Runner row with an outline, monospace "Install" button that
+ * expands the row into a numbered, step-by-step install guide. The runner is not
+ * downloaded directly — it is provisioned as a Windows service via a script.
+ */
+const RunnerInstallRow = ({
+  artifact,
+  title,
+  description,
+  metadata,
+  icon,
+  iconClass,
+  hoverClass,
+  powershellOneLiner,
+  installCommand,
+}: RunnerInstallRowProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const hasInstall = !!artifact?.url;
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+      <div
+        className={cn(
+          "group flex w-full items-center justify-between gap-6 px-6 py-5 text-left transition-colors",
+          hasInstall ? hoverClass : "border-slate-200 bg-slate-50",
+        )}
+      >
+        <div className="flex min-w-0 flex-1 gap-4">
+          <div
+            className={cn(
+              "flex h-10 w-10 mt-0.5 min-h-10 min-w-10 items-center justify-center rounded-lg",
+              iconClass,
+            )}
+          >
+            {icon}
+          </div>
+          <div className="min-w-0 flex flex-col gap-1">
+            <p className="font-bold text-foreground">{title}</p>
+            <p className="text-sm leading-4 text-muted-foreground">{description}</p>
+            {metadata ? <p className="text-2xs text-muted-foreground">{metadata}</p> : null}
+          </div>
+        </div>
+        <div className="flex shrink-0 items-center pl-2">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            className="w-24 font-mono"
+            disabled={!hasInstall}
+            onClick={() => setIsOpen(true)}
+          >
+            Install
+          </Button>
+        </div>
+      </div>
+
+      {isOpen ? (
+        <div className="border-t border-slate-200 bg-white px-6 py-5">
+          <ol className="space-y-5">
+            <li>
+              <p className="mb-2 text-sm font-semibold text-slate-700">
+                Step 1: Open PowerShell as Administrator
+              </p>
+              <p className="mb-2 text-sm text-slate-500">
+                Press <span className="font-semibold text-slate-600">Windows key</span>, type{" "}
+                <span className="font-semibold text-slate-600">PowerShell</span>, right-click{" "}
+                <span className="font-semibold text-slate-600">Windows PowerShell</span>, and choose{" "}
+                <span className="font-semibold text-slate-600">Run as administrator</span>. This
+                works on Windows 10, 11, and Server.
+              </p>
+            </li>
+            <li>
+              <p className="mb-2 text-sm font-semibold text-slate-700">
+                Step 2: Run the provisioning one-liner
+              </p>
+              <p className="mb-2 text-sm text-slate-500">
+                Paste and run the block below. It sets your environment variables, downloads the
+                provisioning script, and runs it. The script installs winget and the .NET 8 runtime
+                automatically if they're missing, downloads and extracts the runner, registers it as
+                a Windows service, and starts it.
+              </p>
+              <OneLinerBlock command={powershellOneLiner} />
+              <p className="mb-3 mt-1 text-sm text-slate-500">
+                Replace{" "}
+                <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">&lt;API_KEY&gt;</code>{" "}
+                with your tenant API key (see FAQ). If the script can't install winget or .NET 8
+                automatically (locked-down machines), install .NET 8 manually from{" "}
+                <a
+                  href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary hover:underline"
+                >
+                  dotnet.microsoft.com
+                </a>{" "}
+                and re-run the command.
+              </p>
+            </li>
+            <li>
+              <p className="mb-2 text-sm font-semibold text-slate-700">
+                Step 3: Verify the service was created
+              </p>
+              <OneLinerBlock command='sc qc "AvintraDesktopRunner"' />
+            </li>
+            <li>
+              <p className="mb-2 text-sm font-semibold text-slate-700">
+                Step 4: Check service status
+              </p>
+              <OneLinerBlock command='sc query "AvintraDesktopRunner"' />
+            </li>
+            <li>
+              <p className="mb-2 text-sm font-semibold text-slate-700">
+                Step 5: Restart the service
+              </p>
+              <OneLinerBlock
+                command={`sc stop "AvintraDesktopRunner"\nsc start "AvintraDesktopRunner"`}
+              />
+            </li>
+            <li>
+              <p className="mb-2 text-sm font-semibold text-slate-700">Step 6: Stop the service</p>
+              <OneLinerBlock command='sc stop "AvintraDesktopRunner"' />
+            </li>
+            <li>
+              <p className="mb-2 text-sm font-semibold text-slate-700">
+                Step 7: Or install manually from the runner zip
+              </p>
+              <p className="mb-2 text-sm text-slate-500">
+                Download the runner zip and extract it to{" "}
+                <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
+                  C:\Program Files\AvintraDesktopRunner
+                </code>
+                , then run the command below from an Administrator PowerShell in that directory. The
+                script and the exe both call the same registration path, so use one or the other —
+                don't combine them.
+              </p>
+              <OneLinerBlock command={installCommand} />
+            </li>
+            <li>
+              <p className="mb-2 text-sm font-semibold text-slate-700">
+                Step 8: Uninstall the service
+              </p>
+              <p className="mb-2 text-sm text-slate-500">
+                If you ever need to remove the runner from this machine, run this from an
+                Administrator PowerShell in{" "}
+                <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
+                  C:\Program Files\AvintraDesktopRunner
+                </code>
+                . The exe handles both stopping the service and removing its registration:
+              </p>
+              <OneLinerBlock command="AvintraDesktopRunner.exe --uninstall" />
+            </li>
+          </ol>
+        </div>
+      ) : null}
+    </div>
+  );
+};
 
 const ComingSoonPanel: React.FC<{ platform: Platform }> = ({ platform }) => (
   <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 px-6 py-14 text-center">
@@ -226,58 +396,72 @@ const PlatformIcon: React.FC<{ platform: Platform; className?: string }> = ({
   return <FaWindows className={className} />;
 };
 
+const useSessionForRunnerInstall = () => {
+  const { tenantId, email } = useUserSessionStore(
+    useShallow((state) => ({
+      tenantId: state.userSession?.tenantId,
+      email: state.userSession?.email,
+    })),
+  );
+  return { tenantId, linkedUsername: email };
+};
+
 const DownloadContent: React.FC<{
   data: NonNullable<ReturnType<typeof useDesktopDownloadManifest>["data"]>;
 }> = ({ data }) => {
   const { desktopApp, desktopExecutor } = data;
+  const { tenantId, linkedUsername } = useSessionForRunnerInstall();
 
   // OS tab — default to the user's detected platform
   const [activePlatform, setActivePlatform] = useState<Platform>(() => detectPlatform());
 
-  // Only show versions where both the Desktop App and Desktop Runner are available.
-  const availableVersions = useMemo(
-    () => getCommonAvailableVersions(desktopApp, desktopExecutor),
-    [desktopApp, desktopExecutor],
+  // Derive the accounts API origin from VITE_ACCOUNTS_API_PATH so the one-liner
+  // works regardless of the workspace path the user is browsing from (e.g.
+  // /workspace/) and uses the correct backend host (not a localhost dev hostname
+  // the Windows machine can't resolve).
+  const apiBaseUrl = useMemo(() => {
+    const path = import.meta.env.VITE_ACCOUNTS_API_PATH ?? "/accounts/api";
+    const origin = window.location.origin.replace(/\/$/, "");
+    return `${origin}${path.startsWith("/") ? "" : "/"}${path}`;
+  }, []);
+  const installCommand = useMemo(
+    () => buildExecutorServiceCommand(apiBaseUrl, tenantId, linkedUsername),
+    [apiBaseUrl, tenantId, linkedUsername],
   );
-  const [selectedVersion, setSelectedVersion] = useState<string>("");
-
-  // Keep selected version in sync when the manifest refreshes
-  useEffect(() => {
-    if (availableVersions.length && !availableVersions.includes(selectedVersion)) {
-      setSelectedVersion(availableVersions[0]);
-    }
-  }, [availableVersions, selectedVersion]);
+  const powershellOneLiner = useMemo(
+    () =>
+      buildOllamaStylePowerShellCommand(
+        apiBaseUrl,
+        `${apiBaseUrl}/desktop-app/script/Install-AvintraDesktopRunner.ps1`,
+        tenantId,
+        linkedUsername,
+      ),
+    [apiBaseUrl, tenantId, linkedUsername],
+  );
 
   const isWindows = activePlatform === "windows";
 
+  // Resolve the latest available artifact + version for each product once, so the
+  // rows don't re-scan the version list on every render.
+  const desktopAppArtifact = useMemo(
+    () => getArtifactForPlatform(desktopApp, "windows"),
+    [desktopApp],
+  );
+  const desktopAppVersion = useMemo(() => getLatestVersion(desktopApp), [desktopApp]);
+  const desktopExecutorArtifact = useMemo(
+    () => getArtifactForPlatform(desktopExecutor, "windows"),
+    [desktopExecutor],
+  );
+  const desktopExecutorVersion = useMemo(
+    () => getLatestVersion(desktopExecutor),
+    [desktopExecutor],
+  );
+
   return (
     <div className="flex items-center justify-center bg-white p-8 text-slate-800">
-      <main className="w-full max-w-xl text-left">
-        {/* Header row: version selector on the left, OS tabs on the right */}
-        <div className="mb-5 flex items-center justify-between gap-4">
-          <Select value={selectedVersion} onValueChange={setSelectedVersion}>
-            <SelectTrigger
-              size="xs"
-              className="w-auto gap-1 rounded-full border border-slate-200 bg-slate-100 pl-3 pr-2 font-semibold"
-            >
-              <SelectValue placeholder="No versions" />
-            </SelectTrigger>
-            <SelectContent className="min-w-0 w-auto">
-              {availableVersions.length === 0 ? (
-                <SelectItem value="__none" size="xs" disabled>
-                  No versions available
-                </SelectItem>
-              ) : (
-                availableVersions.map((v) => (
-                  <SelectItem key={v} value={v} size="xs" className="gap-1">
-                    v{v}
-                  </SelectItem>
-                ))
-              )}
-            </SelectContent>
-          </Select>
-
-          {/* OS tabs */}
+      <main className="w-full max-w-2xl text-left">
+        {/* OS tabs */}
+        <div className="mb-5 flex items-center justify-start gap-4">
           <Tabs
             value={activePlatform}
             onValueChange={(v) => setActivePlatform(v as Platform)}
@@ -315,7 +499,9 @@ const DownloadContent: React.FC<{
             Bring the builder to your desktop
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            Download the app and runner for your platform.
+            {isWindows
+              ? "Download the app and runner for Windows."
+              : `Download the app for ${PLATFORM_LABELS[activePlatform]}.`}
           </p>
         </div>
 
@@ -323,27 +509,24 @@ const DownloadContent: React.FC<{
           <>
             <div className="space-y-4">
               <DownloadRow
-                artifact={getArtifactForPlatform(desktopApp, "windows", selectedVersion)}
+                artifact={desktopAppArtifact}
                 title="Desktop App"
-                description="Your primary command center for designing, refining, and orchestrating agents locally."
-                metadata={buildArtifactMetadata(
-                  getArtifactForPlatform(desktopApp, "windows", selectedVersion),
-                )}
+                description="The builder app for creating, editing, and testing flows on your local machine."
+                metadata={buildArtifactMetadata(desktopAppArtifact, desktopAppVersion)}
                 icon={<Monitor className="h-5 w-5" />}
                 iconClass="bg-primary-50 text-primary-500"
                 hoverClass="hover:border-primary/40 hover:bg-primary/5"
               />
-
-              <DownloadRow
-                artifact={getArtifactForPlatform(desktopExecutor, "windows", selectedVersion)}
+              <RunnerInstallRow
+                artifact={desktopExecutorArtifact}
                 title="Desktop Runner"
-                description="A low-footprint local service handling asynchronous job execution and cloud state sync."
-                metadata={buildArtifactMetadata(
-                  getArtifactForPlatform(desktopExecutor, "windows", selectedVersion),
-                )}
-                icon={<ServerCog className="h-5 w-5" />}
-                iconClass="bg-primary-50 text-primary-500"
-                hoverClass="hover:border-primary/30 hover:bg-primary/5"
+                description="Headless Windows service that runs published flows in the background on this machine. The install script installs .NET 8 and winget automatically if they're missing."
+                metadata={buildArtifactMetadata(desktopExecutorArtifact, desktopExecutorVersion)}
+                icon={<Terminal className="h-5 w-5" />}
+                iconClass="bg-slate-100 text-slate-600"
+                hoverClass="hover:border-slate-300 hover:bg-slate-100"
+                powershellOneLiner={powershellOneLiner}
+                installCommand={installCommand}
               />
             </div>
 
@@ -359,43 +542,65 @@ const DownloadContent: React.FC<{
               </a>
             </p>
 
-            {/* CLI install hint */}
-            <div className="mt-6 text-left">
-              <h3 className="mb-3 text-sm font-bold text-slate-700">
-                Install Desktop Runner as a Windows service
-              </h3>
-              <p className="mb-3 text-sm text-slate-500">
-                Run this from an Administrator terminal after downloading the Desktop Runner:
-              </p>
+            <h2 className="mt-8 text-sm font-bold text-slate-700">FAQs</h2>
 
-              <TerminalBlock />
-            </div>
-
-            {/* FAQ */}
-            <div className="mt-8 text-left">
-              <h3 className="mb-4 text-sm font-bold text-slate-700">FAQ</h3>
-              <Accordion
-                type="single"
-                collapsible
-                className="divide-y divide-slate-200 border-b border-t border-slate-200"
-              >
-                <FAQItem
-                  value="both"
-                  question="Do I need both the Desktop App and the Runner?"
-                  answer="No. Most users only need the Desktop App to build and test flows. Install the Runner if you want headless, background execution."
-                />
-                <FAQItem
-                  value="headless"
-                  question="Can I run flows without opening the builder?"
-                  answer="Yes. The Desktop Runner can run published flows from the system tray or as a Windows service."
-                />
-                <FAQItem
-                  value="platforms"
-                  question="When will macOS and Linux be supported?"
-                  answer="We are actively testing macOS and Linux builds. Join the waitlist to get notified when they are ready."
-                />
-              </Accordion>
-            </div>
+            <Accordion
+              type="single"
+              collapsible
+              className="mt-3 divide-y divide-slate-200 border-b border-t border-slate-200"
+            >
+              <FAQItem
+                value="what-is-runner"
+                question="What is the Desktop Runner and how is it different from the Desktop App?"
+                answer="The Desktop App is the interactive builder you use to create, edit, and test flows. The Desktop Runner is a lightweight Windows service that runs published flows in the background on this machine, so they keep executing even when the builder is closed."
+              />
+              <FAQItem
+                value="api-key"
+                question="Where do I find my API key?"
+                answer={
+                  <>
+                    Your tenant API key is available in the workspace under your account or tenant
+                    settings. You'll need it when running the install command — replace the{" "}
+                    <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
+                      &lt;API_KEY&gt;
+                    </code>{" "}
+                    placeholder with it.
+                  </>
+                }
+              />
+              <FAQItem
+                value="dotnet"
+                question="Does the Runner require .NET 8?"
+                answer="Yes. The Runner is built on .NET 8. The install script checks for the runtime and installs it via winget if it's missing. If winget can't install it automatically, you can install .NET 8 manually from dotnet.microsoft.com and re-run the command."
+              />
+              <FAQItem
+                value="update"
+                question="How do I update the Desktop Runner?"
+                answer="Re-run the install command from the guide. The script stops the service, replaces the files with the latest version, and restarts the service automatically."
+              />
+              <FAQItem
+                value="uninstall"
+                question="How do I uninstall the Desktop Runner?"
+                answer={
+                  <>
+                    Run{" "}
+                    <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
+                      AvintraDesktopRunner.exe --uninstall
+                    </code>{" "}
+                    from an Administrator PowerShell in the install directory (default:{" "}
+                    <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
+                      C:\Program Files\AvintraDesktopRunner
+                    </code>
+                    ). The exe stops the Windows service and removes its registration in one step.
+                  </>
+                }
+              />
+              <FAQItem
+                value="platforms"
+                question="When will macOS and Linux be supported?"
+                answer="We are actively testing macOS and Linux builds. Join the waitlist to get notified when they are ready."
+              />
+            </Accordion>
           </>
         ) : (
           <ComingSoonPanel platform={activePlatform} />
@@ -427,4 +632,4 @@ const DownloadDialogContent: React.FC = () => {
   return <DownloadContent data={data} />;
 };
 
-export { DownloadContent, DownloadDialogContent };
+export { DownloadDialogContent };

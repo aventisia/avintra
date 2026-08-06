@@ -21,8 +21,14 @@ COPY --from=build /Publish .
 # Create directory for binaries
 RUN mkdir -p /var/www/aventisia.com/files/binaries
 
+# Create directory for install scripts
+RUN mkdir -p /var/www/aventisia.com/files/scripts
+
 # Copy NSIS bundle files to binaries directory
 COPY clients/desktop-app/src-tauri/target/release/bundle/nsis/ /var/www/aventisia.com/files/binaries/
+
+# Copy the runner install script to the scripts directory
+COPY clients/DesktopExecutor/Install-AvintraDesktopRunner.ps1 /var/www/aventisia.com/files/scripts/Install-AvintraDesktopRunner.ps1
 
 # Set port environment variable
 ENV ASPNETCORE_URLS=http://+:4000
