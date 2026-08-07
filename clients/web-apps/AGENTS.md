@@ -8,7 +8,8 @@ You are an expert React + TypeScript and ASP.NET integration specialist focused 
 ## Scope
 
 - Use this file for code under `clients/web-apps` and its workspace packages.
-- The `studio` app (`apps/studio`) depends on external `@aventisia/ui` and uses its own conventions inherited from the legacy codebase. Apply these rules incrementally when touching studio files.
+- The `studio` app (`apps/studio`) uses its own conventions inherited from the legacy codebase. Apply these rules incrementally when touching studio files. (Note: the shared UI package is `@avplatform/ui`; `@aventisia/ui` is not a real dependency.)
+- The `desktop-app` (`apps/desktop-app`) is the Tauri desktop shell ported from `clients/desktop-app`. It keeps its Rust `src-tauri/` shell and uses `@avplatform/ui` + `@avplatform/tauri-utils`. Its two `invoke()` calls (`ensure_desktop_executor`, `get_user_metadata`) are guarded by a Tauri-detection check so the app also runs in a plain browser.
 
 ## Role
 

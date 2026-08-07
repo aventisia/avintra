@@ -1,0 +1,39 @@
+{
+  "name": "desktop-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 2999",
+    "typecheck": "tsc -b",
+    "pregit": "tsc -b && prettier --write .",
+    "build": "tsc -b && vite build",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,md,css,json}\"",
+    "lint": "eslint . --max-warnings 0",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@avplatform/layout": "*",
+    "@avplatform/tauri-utils": "*",
+    "@avplatform/ui": "*",
+    "@tauri-apps/api": "^2.9.1",
+    "@tauri-apps/plugin-fs": "^2.4.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@avplatform/eslint-config": "*",
+    "@avplatform/tailwind-config": "*",
+    "@avplatform/typescript-config": "*",
+    "@avplatform/vite-config": "*",
+    "@rollup/rollup-win32-x64-msvc": "^4.62.4",
+    "@tauri-apps/cli": "^2.9.6",
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react-swc": "^4.0.0",
+    "typescript": "^5.5.3",
+    "vite": "^7.1.2"
+  }
+}

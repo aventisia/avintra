@@ -7,6 +7,9 @@ interface UserMetaData {
   app_version: string;
 }
 
+/** True when running inside the Tauri webview (IPC available). */
+const isTauri = () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+
 /** Component renders a TauriAppFooter */
 const TauriAppFooter = () => {
   const [metadata, setMetadata] = useState<UserMetaData | null>(null);
@@ -15,7 +18,7 @@ const TauriAppFooter = () => {
     let isMounted = true;
 
     const getUserMetadata = async () => {
-      //   if (!IS_TAURI) return;
+      if (!isTauri()) return;
 
       try {
         const data = await invoke<UserMetaData>("get_user_metadata");
@@ -41,20 +44,18 @@ const TauriAppFooter = () => {
   }
 
   return (
-    <div className="tauri-footer">
-      <p className="footer-version">Version {metadata.app_version || "NA"}</p>
+    <div className="fixed bottom-3 left-4 right-4 flex items-center justify-between text-sm">
+      <p className="text-muted-foreground">Version {metadata.app_version || "NA"}</p>
 
-      <div className="footer-meta">
-        <p>
-          <span className="footer-label">User:</span>{" "}
-          <span className="footer-value">{metadata.username || "NA"}</span>
+      <div className="flex items-center gap-2">
+        <p className="text-muted-foreground">
+          <span className="opacity-80">User:</span> <span>{metadata.username || "NA"}</span>
         </p>
 
-        <span className="dot-separator">.</span>
+        <span className="text-muted-foreground">.</span>
 
-        <p>
-          <span className="footer-label">OS ID:</span>{" "}
-          <span className="footer-value">{metadata.os_id || "NA"}</span>
+        <p className="text-muted-foreground">
+          <span className="opacity-80">OS ID:</span> <span>{metadata.os_id || "NA"}</span>
         </p>
       </div>
     </div>

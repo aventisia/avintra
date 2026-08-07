@@ -1,9 +1,9 @@
 import ServiceUrlPage from "./ServiceUrlPage";
-import "./App.css";
 import { TauriAppFooter } from "./TuariAppFooter";
+
 function App() {
   return (
-    <div className="app-page">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-indigo-50 to-violet-50">
       <ServiceUrlPage />
 
       <footer>
