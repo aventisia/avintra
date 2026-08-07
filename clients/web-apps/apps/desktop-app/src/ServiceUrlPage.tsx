@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import { Input } from "@avplatform/ui";
+import { Button } from "@avplatform/ui/buttons";
 import { invoke } from "@tauri-apps/api/core";
+import { useEffect, useState } from "react";
 
 const LS_BASE_URL_KEY = "aventisia:baseUrl";
+
+/** True when running inside the Tauri webview (IPC available). */
+const isTauri = () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
 
 export default function ServiceUrlPage() {
   const [serviceUrl, setServiceUrl] = useState("");
@@ -9,8 +14,7 @@ export default function ServiceUrlPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    const savedUrl =
-      localStorage.getItem(LS_BASE_URL_KEY) || import.meta.env.VITE_BASE_URL;
+    const savedUrl = localStorage.getItem(LS_BASE_URL_KEY) || import.meta.env.VITE_BASE_URL;
     if (savedUrl) setServiceUrl(savedUrl);
   }, []);
 
@@ -18,7 +22,7 @@ export default function ServiceUrlPage() {
   // the versioned desktop-executor folder. The base URL is the origin (e.g.
   // https://avdev.aventisia.com); the backend appends /accounts/api internally.
   useEffect(() => {
-    if (!serviceUrl) return;
+    if (!serviceUrl || !isTauri()) return;
     const origin = new URL(serviceUrl).origin;
     invoke("ensure_desktop_executor", { appBaseUrl: origin }).catch((err) => {
       console.error("Failed to provision DesktopRunner:", err);
@@ -69,53 +73,48 @@ export default function ServiceUrlPage() {
   };
 
   return (
-    <main className="service-url-root">
-      <div className="service-url-card">
-        <div className="service-url-logo">
-          <img src="/logo.svg" alt="Aventisia" />
-        </div>
-        <div className="service-url-title">
-          <h2>Connect to Avintra</h2>
-          <p>Enter the Service URL to continue.</p>
+    <main className="flex flex-1 items-center justify-center bg-gradient-to-br from-indigo-50 to-violet-50 p-6">
+      <div className="z-10 flex w-full max-w-md flex-col gap-8 rounded-[1.25rem] border border-border bg-card p-12 shadow-[0_10px_40px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.04)]">
+        <div className="flex justify-start">
+          <img src="/logo.svg" alt="Aventisia" className="h-8" />
         </div>
 
-        <div className="service-url-form">
-          <div className="service-url-input-wrapper">
-            <input
-              id="service-url-input"
-              type="url"
-              autoFocus
-              className={`ui-input `}
-              value={serviceUrl}
-              disabled={isLoading}
-              placeholder="https://avintra.aventisia.com"
-              onChange={(e) => {
-                setServiceUrl(e.target.value);
-                setError(null);
-              }}
-              onKeyDown={(e) => e.key === "Enter" && handleContinue()}
-            />
-          </div>
+        <div className="mt-4 flex flex-col gap-1.5">
+          <h2 className="text-4xl font-medium text-foreground">Connect to Avintra</h2>
+          <p className="ml-0.5 text-sm font-medium text-muted-foreground">
+            Enter the Service URL to continue.
+          </p>
+        </div>
+
+        <div className="-mt-2 mb-6">
+          <Input
+            id="service-url-input"
+            type="url"
+            autoFocus
+            value={serviceUrl}
+            disabled={isLoading}
+            placeholder="https://avintra.aventisia.com"
+            onChange={(e) => {
+              setServiceUrl(e.target.value);
+              setError(null);
+            }}
+            onKeyDown={(e) => e.key === "Enter" && handleContinue()}
+          />
 
           {error ? (
-            <div className="service-url-error">
+            <div className="mt-2.5 pl-1 text-[0.8125rem] leading-relaxed text-destructive">
               <span>{error}</span>
             </div>
           ) : (
-            <div className="service-url-helper">
-              Use the default Aventisia service, or provide a URL for a
-              self-hosted instance.
+            <div className="mt-2.5 pl-1 text-[0.8125rem] leading-relaxed text-muted-foreground">
+              Use the default Aventisia service, or provide a URL for a self-hosted instance.
             </div>
           )}
 
-          <button
-            className="ui-button service-url-cta"
-            onClick={handleContinue}
-            disabled={isLoading}
-          >
+          <Button className="mt-7 w-full" onClick={handleContinue} disabled={isLoading}>
             {isLoading ? (
               <>
-                <span className="service-url-spinner" />
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-primary-foreground" />
                 Connecting...
               </>
             ) : (
@@ -132,7 +131,7 @@ export default function ServiceUrlPage() {
                 </svg>
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </main>

@@ -291,9 +291,8 @@ const RunnerInstallRow = ({
               </p>
               <p className="mb-2 text-sm text-slate-500">
                 Paste and run the block below. It sets your environment variables, downloads the
-                provisioning script, and runs it. The script downloads and extracts the runner
-                (which bundles the .NET 8 runtime), registers it as a Windows service, and starts
-                it.
+                provisioning script, and runs it. The script downloads the runner, registers it as a
+                Windows service, and starts it. No additional runtime is required.
               </p>
               <OneLinerBlock command={powershellOneLiner} />
               <p className="mb-3 mt-1 text-sm text-slate-500">
