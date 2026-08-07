@@ -1,0 +1,21 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Url",
+    "label": "Url",
+    "description": "Ollama Cloud base URL (static).",
+    "defaultValue": "https://ollama.com/v1",
+    "required": true,
+    "readonly": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "API Key",
+    "description": "The API key for Ollama Cloud.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -13,6 +13,7 @@ import {
   BellIcon,
   BookOpenCheckIcon,
   CheckCheckIcon,
+  Cpu,
   FolderCogIcon,
   KeySquareIcon,
   LibraryIcon,
@@ -237,6 +238,13 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: ServerIcon,
         name: "on-prem models",
         route: "/tenant/on-prem-models",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["TA"],
+        Icon: Cpu,
+        name: "Models",
+        route: "/tenant/model-providers",
         type: ["Commercial", "Enterprise"],
       },
       {

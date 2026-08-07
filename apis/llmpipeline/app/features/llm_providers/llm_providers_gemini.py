@@ -370,9 +370,14 @@ class GeminiProvider(BaseLLMProvider):
             if not credential:
                 raise HTTPException(400, "Invalid BYOK credentials")
 
-            # Override Host and API key
-            self.api_url = credential["data"]["Host"].rstrip("/")
-            self.api_key = credential["data"]["ApiKey"]
+            # Override Host and API key (support both wrapped and flat data shapes)
+            credential_data = credential.get("data") or credential
+            self.api_url = credential_data.get("Host") or credential_data.get("Url")
+            self.api_key = credential_data.get("ApiKey")
+
+            # Guard against malformed credentials so .rstrip() doesn't crash on None
+            if not self.api_url or not self.api_key:
+                raise HTTPException(400, "Invalid BYOK credentials")
 
         else:
             # Enforce credit availability for platform-managed usage
@@ -616,8 +621,14 @@ class GeminiProvider(BaseLLMProvider):
             if not credential:
                 raise HTTPException(400, "Invalid BYOK credentials")
 
-            self.api_url = credential["data"]["Host"].rstrip("/")
-            self.api_key = credential["data"]["ApiKey"]
+            credential_data = credential.get("data") or credential
+            self.api_url = credential_data.get("Host") or credential_data.get("Url")
+            self.api_key = credential_data.get("ApiKey")
+
+            if not self.api_url or not self.api_key:
+                raise HTTPException(400, "Invalid BYOK credentials")
+
+            self.api_url = self.api_url.rstrip("/")
 
         else:
             credit_mgr = CreditManagerService()

@@ -388,7 +388,11 @@ class OpenRouterProvider(BaseLLMProvider):
             if not credential:
                 raise HTTPException(400, "Invalid BYOK credentials")
 
-            self.api_key = credential["data"]["ApiKey"]
+            credential_data = credential.get("data") or credential
+            self.api_key = credential_data.get("ApiKey")
+
+            if not self.api_key:
+                raise HTTPException(400, "Invalid BYOK credentials")
 
         else:
             credit_mgr = CreditManagerService()
@@ -594,7 +598,11 @@ class OpenRouterProvider(BaseLLMProvider):
             if not credential:
                 raise HTTPException(400, "Invalid BYOK credentials")
 
-            self.api_key = credential["data"]["ApiKey"]
+            credential_data = credential.get("data") or credential
+            self.api_key = credential_data.get("ApiKey")
+
+            if not self.api_key:
+                raise HTTPException(400, "Invalid BYOK credentials")
 
         else:
             credit_mgr = CreditManagerService()

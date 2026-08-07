@@ -181,9 +181,13 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                 logger.error("Invalid BYOK credentials")
                 raise HTTPException(400, "Invalid credential_id")
 
-            # Override API config from vault
-            self.api_url = credential.get("data", {}).get("Host")
-            self.api_key = credential.get("data", {}).get("ApiKey")
+            # Override API config from vault (support both wrapped and flat data shapes)
+            credential_data = credential.get("data") or credential
+            self.api_url = credential_data.get("Host") or credential_data.get("Url")
+            self.api_key = credential_data.get("ApiKey")
+
+            if not self.api_url or not self.api_key:
+                raise HTTPException(400, "Invalid credential_id")
 
         else:
             # Credit-based usage check

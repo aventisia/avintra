@@ -32,7 +32,12 @@ class VaultManager:
                 headers["Authorization"] = f"Bearer {jwt}"
 
             # Make the request to fetch vault secret data
-            response = requests.get(f"{self.api_url}/decrypted-data/{vault_secret_id}", headers=headers, timeout=60)
+            response = requests.get(
+                f"{self.api_url}/decrypted-data/{vault_secret_id}",
+                headers=headers,
+                timeout=60,
+                verify=settings.SSL_VERIFY,
+            )
             
             # Handle non-successful response
             if not response.ok:
@@ -42,16 +47,20 @@ class VaultManager:
             # Parse the response JSON
             vault_secret_data = response.json()
 
+            # The backend wraps the secret inside a ServiceResponse -> "data" field
+            data = vault_secret_data.get("data")
+
             # Check if 'data' is present in the response
-            if not vault_secret_data.get("data"):
+            if not data:
                 logger.warning(f"No data found for vaultSecretId: {vault_secret_id}")
                 return None
             
             # Successful retrieval of vault secret data
             logger.info(f"Successfully retrieved vault secret for vaultSecretId: {vault_secret_id}")
-            return vault_secret_data.get("data", {})
+            return data
         
         except Exception as ex:
-            # Log the exception if something goes wrong
+            # Log the exception if something goes wrong and return None so callers
+            # surface a clean "invalid credentials" error instead of crashing.
             logger.error(f"Error retrieving vault secret for vaultSecretId {vault_secret_id}: {ex}")
-            return {"error": f"An error occurred: {str(ex)}"}
+            return None

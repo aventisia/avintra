@@ -26,6 +26,13 @@ public class OnPremModelController : BaseApiController
         return ResultHelper(await _onPremModelService.GetAllOnPremModelsAsync());
     }
 
+    // Fetch available Ollama models from the given provider URL
+    [HttpGet("ollama/models")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<OllamaModelDto>>>> GetOllamaModels([FromQuery] string providerUrl)
+    {
+        return ResultHelper(await _onPremModelService.GetOllamaModelsAsync(providerUrl));
+    }
+
     // Fetch OnPrem model by its ID
     [HttpGet("{onPremModelId}")]
     public async Task<ActionResult<ServiceResponse<OnPremModelDto>>> GetOnPremModel(Guid onPremModelId)

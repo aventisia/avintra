@@ -1073,6 +1073,40 @@ public class AppSecretService : IAppSecretService
                     break;
                 }
 
+            case AppSecretTypesEnum.Ollama:
+                {
+                    // Deserialize JSON into OllamaCredentialsDto
+                    var ollamaCredentials = System.Text.Json.JsonSerializer.Deserialize<OllamaCredentialsDto>(rawJson, jsonOptions);
+                    if (ollamaCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(ollamaCredentials.ApiKey);
+                        ollamaCredentials.ApiKey = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(ollamaCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Ollama credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
+            case AppSecretTypesEnum.OllamaCloud:
+                {
+                    // Deserialize JSON into OllamaCloudCredentialsDto
+                    var ollamaCloudCredentials = System.Text.Json.JsonSerializer.Deserialize<OllamaCloudCredentialsDto>(rawJson, jsonOptions);
+                    if (ollamaCloudCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(ollamaCloudCredentials.ApiKey);
+                        ollamaCloudCredentials.ApiKey = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(ollamaCloudCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Ollama Cloud credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
             case AppSecretTypesEnum.GoogleGemini:
                 {
                     // Deserialize JSON into GoogleGeminiCredentialsDto

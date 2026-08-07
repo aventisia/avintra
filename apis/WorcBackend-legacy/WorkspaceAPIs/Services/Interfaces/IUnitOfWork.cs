@@ -35,6 +35,7 @@ public interface IUnitOfWork
     IEncryptedKeyValueRepo EncryptedKeyValueRepo { get; }
     IPromptTemplateRepo PromptTemplateRepo { get; }
     IOnPremModelRepo OnPremModelRepo { get; }
+    ITenantModelProviderRepo TenantModelProviderRepo { get; }
     IConversationRepo ConversationRepo { get; }
     IConversationMessageRepo ConversationMessageRepo { get; }
     IVectorStoreRepo VectorStoreRepo { get; }

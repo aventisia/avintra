@@ -15,4 +15,6 @@ export enum VaultAppsEnum {
   Qdrant,
   Anthropic,
   CustomApiTool,
+  Ollama,
+  OllamaCloud,
 }

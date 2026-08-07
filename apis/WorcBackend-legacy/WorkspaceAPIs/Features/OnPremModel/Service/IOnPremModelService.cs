@@ -18,7 +18,12 @@ public interface IOnPremModelService
     /// </summary>
     /// <returns>A ServiceResponse containing a collection of OnPremModelDto objects.</returns>
     Task<ServiceResponse<IEnumerable<OnPremModelDto>>> GetAllOnPremModelsAsync();
-
+    /// <summary>
+    /// Retrieves the list of models available from an Ollama provider at the given base URL.
+    /// </summary>
+    /// <param name="providerUrl">The base URL of the Ollama API.</param>
+    /// <returns>A ServiceResponse containing a collection of OllamaModelDto objects.</returns>
+    Task<ServiceResponse<IEnumerable<OllamaModelDto>>> GetOllamaModelsAsync(string providerUrl);
     /// <summary>
     /// Retrieves a specific OnPrem model by its unique identifier.
     /// </summary>

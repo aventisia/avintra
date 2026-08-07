@@ -25,7 +25,7 @@ class CreditManagerService:
                 headers["Authorization"] = f"Bearer {jwt}"
 
             # Get available credits
-            response = requests.get(f"{self.api_url}/available-credits", headers=headers, timeout=60)
+            response = requests.get(f"{self.api_url}/available-credits", headers=headers, timeout=60, verify=settings.SSL_VERIFY)
             
             # Failed to get credits
             if not response.ok:
@@ -69,7 +69,7 @@ class CreditManagerService:
         # Try to post credit usage
         try:
             logger.info(f"Credit usage post list:\n{json.dumps(sanitized_request, indent=2)}")
-            response = requests.post(f"{self.api_url}/bulk", json=sanitized_request, headers=headers, timeout=60)
+            response = requests.post(f"{self.api_url}/bulk", json=sanitized_request, headers=headers, timeout=60, verify=settings.SSL_VERIFY)
             response.raise_for_status()
             logger.info(f"CreditManagerService: Successfully posted credit usage for task {task}")
         except Exception as e:

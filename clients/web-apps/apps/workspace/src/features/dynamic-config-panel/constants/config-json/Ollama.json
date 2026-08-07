@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Url",
+    "label": "Url",
+    "description": "Base URL of the self-hosted Ollama server.",
+    "defaultValue": "http://localhost:11434",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "API Key",
+    "description": "The API key (optional for local Ollama).",
+    "defaultValue": "",
+    "required": false
+  }
+]

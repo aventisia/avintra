@@ -127,6 +127,10 @@ public class ManageTenantService : IManageTenantService
             if (!await DeleteEntitiesAsync(_unitOfWork.OnPremModelRepo, o => o.TenantId == tenantIdToBeDeleted, nameof(OnPremModel), tenantIdToBeDeleted))
                 return serviceResponse;
 
+            // Delete TenantModelProvider
+            if (!await DeleteEntitiesAsync(_unitOfWork.TenantModelProviderRepo, t => t.TenantId == tenantIdToBeDeleted, nameof(TenantModelProvider), tenantIdToBeDeleted))
+                return serviceResponse;
+
             // Delete WorkspaceUser
             if (!await DeleteEntitiesAsync(_unitOfWork.WorkspaceUserRepo, w => w.TenantId == tenantIdToBeDeleted, nameof(WorkspaceUser), tenantIdToBeDeleted))
                 return serviceResponse;
