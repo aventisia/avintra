@@ -4,9 +4,11 @@
     Provisions AvintraDesktopRunner as a Windows service.
 
 .DESCRIPTION
-    This script validates (and installs if needed) the .NET 8 runtime and winget,
-    downloads the Avintra Desktop Runner archive, extracts it to a fixed directory,
+    Downloads the Avintra Desktop Runner archive, extracts it to a fixed directory,
     registers it as a Windows service, and starts the service.
+
+    The runner is published as a self-contained single-file binary, so the .NET 8
+    runtime is bundled and does NOT need to be installed separately.
 
     Run this from an elevated PowerShell prompt. The script aborts if it is not
     running as Administrator.
@@ -45,9 +47,6 @@
 
 .PARAMETER ServiceName
     Name of the Windows service. Default: AvintraDesktopRunner
-
-.PARAMETER SkipRuntimeCheck
-    Skip the .NET 8 runtime prerequisite check (useful for automated recovery).
 
 .PARAMETER DoNotStart
     Install the service but do not start it immediately.
@@ -95,9 +94,6 @@ param (
     [string]$ServiceName = "AvintraDesktopRunner",
 
     [Parameter(Mandatory = $false)]
-    [switch]$SkipRuntimeCheck,
-
-    [Parameter(Mandatory = $false)]
     [switch]$DoNotStart
 )
 
@@ -125,10 +121,13 @@ function Write-Step {
 }
 
 function Resolve-RunnerZipUrl {
-    param ([string]$AppBaseUrl)
+    param (
+        [string]$AppBaseUrl,
+        [string]$ExplicitZipUrl = $RunnerZipUrl
+    )
 
-    if (-not [string]::IsNullOrWhiteSpace($RunnerZipUrl)) {
-        return $RunnerZipUrl
+    if (-not [string]::IsNullOrWhiteSpace($ExplicitZipUrl)) {
+        return $ExplicitZipUrl
     }
 
     Write-Step "Resolving latest runner version from backend..."
@@ -148,128 +147,6 @@ function Test-IsAdministrator {
     $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
     $principal = [System.Security.Principal.WindowsPrincipal]::new($identity)
     return $principal.IsInRole([System.Security.Principal.WindowsBuiltInRole]::Administrator)
-}
-
-function Test-IsDotNet8RuntimeInstalled {
-    $dotnet = Get-Command "dotnet" -ErrorAction SilentlyContinue
-    if (-not $dotnet) {
-        return $false
-    }
-
-    try {
-        $runtimes = & dotnet --list-runtimes 2>$null
-        foreach ($line in $runtimes) {
-            if ($line -like "Microsoft.NETCore.App 8.*" -or
-                $line -like "Microsoft.WindowsDesktop.App 8.*") {
-                return $true
-            }
-        }
-    }
-    catch {
-        return $false
-    }
-
-    return $false
-}
-
-function Test-WingetInstalled {
-    return [bool](Get-Command "winget" -ErrorAction SilentlyContinue)
-}
-
-function Install-Winget {
-    # winget is shipped as part of App Installer (Microsoft.DesktopAppInstaller) from
-    # the Microsoft Store. On client Windows this is usually present. On server SKUs
-    # or locked-down environments the Store may be unavailable, so we also try the
-    # direct msixbundle from GitHub as a fallback.
-
-    Write-Host "Attempting to install winget (Microsoft.DesktopAppInstaller)..." -ForegroundColor Yellow
-
-    $tempDir = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [System.Guid]::NewGuid().ToString("N"))
-    New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
-
-    try {
-        # Prefer installing from the Microsoft Store via Add-AppxPackage if possible.
-        $appInstaller = Get-AppxPackage -Name "Microsoft.DesktopAppInstaller" -ErrorAction SilentlyContinue
-        if ($appInstaller) {
-            Write-Host "App Installer package is already registered; winget should be available." -ForegroundColor Yellow
-            return
-        }
-
-        # Download the latest release of winget from the GitHub repository.
-        $releasesUrl = "https://api.github.com/repos/microsoft/winget-cli/releases/latest"
-        $release = Invoke-RestMethod -Uri $releasesUrl -UseBasicParsing
-        $msixBundleAsset = $release.assets | Where-Object { $_.name -like "*.msixbundle" } | Select-Object -First 1
-
-        if (-not $msixBundleAsset) {
-            throw "Could not find a winget msixbundle asset in the latest GitHub release."
-        }
-
-        $licenseAsset = $release.assets | Where-Object { $_.name -like "*License*.xml" } | Select-Object -First 1
-        $bundlePath = Join-Path $tempDir $msixBundleAsset.name
-
-        Write-Host "Downloading winget installer..." -ForegroundColor DarkGray
-        Invoke-WebRequest -Uri $msixBundleAsset.browser_download_url -OutFile $bundlePath -UseBasicParsing
-
-        if ($licenseAsset) {
-            $licensePath = Join-Path $tempDir $licenseAsset.name
-            Invoke-WebRequest -Uri $licenseAsset.browser_download_url -OutFile $licensePath -UseBasicParsing
-            Add-AppxProvisionedPackage -Online -PackagePath $bundlePath -LicensePath $licensePath -ErrorAction Stop | Out-Null
-        }
-        else {
-            Add-AppxProvisionedPackage -Online -PackagePath $bundlePath -SkipLicense -ErrorAction Stop | Out-Null
-        }
-
-        # Refresh PATH so that the current process can find winget.
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
-                    [System.Environment]::GetEnvironmentVariable("Path", "User")
-
-        if (-not (Test-WingetInstalled)) {
-            throw "winget was installed but is still not available on PATH."
-        }
-    }
-    catch {
-        Write-Warning "Failed to install winget automatically: $_"
-        throw
-    }
-    finally {
-        Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
-    }
-}
-
-function Install-DotNet8Runtime {
-    Write-Step ".NET 8 runtime is missing. Installing via winget..."
-
-    if (-not (Test-WingetInstalled)) {
-        Write-Host "winget is not installed. Attempting to install winget automatically..." -ForegroundColor Yellow
-        try {
-            Install-Winget
-        }
-        catch {
-            Write-Host "" -ForegroundColor Red
-            Write-Host "Failed to install winget automatically." -ForegroundColor Red
-            Write-Host "The Avintra Desktop Runner requires the .NET 8 runtime." -ForegroundColor Red
-            Write-Host "Please install .NET 8 manually from: https://dotnet.microsoft.com/en-us/download/dotnet/8.0" -ForegroundColor Red
-            Write-Host "After .NET 8 is installed, re-run this script." -ForegroundColor Red
-            throw "Cannot continue without .NET 8 runtime."
-        }
-    }
-
-    # --accept-source-agreements and --accept-package-agreements allow unattended install.
-    winget install Microsoft.DotNet.Runtime.8 --source winget --accept-source-agreements --accept-package-agreements --disable-interactivity
-
-    if ($LASTEXITCODE -ne 0) {
-        throw "winget install of Microsoft.DotNet.Runtime.8 failed with exit code $LASTEXITCODE."
-    }
-
-    # Refresh PATH in case dotnet was added.
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
-                [System.Environment]::GetEnvironmentVariable("Path", "User")
-
-    if (-not (Test-IsDotNet8RuntimeInstalled)) {
-        throw ".NET 8 runtime installation reported success but runtime is still not detected."
-    }
-
-    Write-Host ".NET 8 runtime installed successfully." -ForegroundColor Green
 }
 
 function Stop-RunnerServiceIfPresent {
@@ -387,17 +264,7 @@ if (-not (Test-IsAdministrator)) {
     throw "This script must be run as Administrator. Open PowerShell with 'Run as administrator' and try again."
 }
 
-if ($SkipRuntimeCheck) {
-    Write-Warning "Skipping .NET 8 runtime check because -SkipRuntimeCheck was specified."
-}
-elseif (Test-IsDotNet8RuntimeInstalled) {
-    Write-Host ".NET 8 runtime is already installed." -ForegroundColor Green
-}
-else {
-    Install-DotNet8Runtime
-}
-
-$resolvedRunnerZipUrl = Resolve-RunnerZipUrl -AppBaseUrl $AppBaseUrl
+$resolvedRunnerZipUrl = Resolve-RunnerZipUrl -AppBaseUrl $AppBaseUrl -ExplicitZipUrl $RunnerZipUrl
 
 Install-RunnerArchive -Url $resolvedRunnerZipUrl -Destination $InstallDir
 

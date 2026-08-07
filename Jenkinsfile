@@ -361,10 +361,11 @@ pipeline {
             when {
                 expression { env.BUILD_DESKTOP_EXECUTOR == 'true' }
             }
+            agent any
             steps {
                 script {
                     echo 'Publishing DesktopExecutor...'
-                    sh "bash ${WORKSPACE}/clients/DesktopExecutor/publish.sh"
+                    sh "set -e; bash ${WORKSPACE}/clients/DesktopExecutor/publish.sh"
 
                     sshagent(credentials: ['aventisia_vps_ssh']) {
                         def targetServers = getTargetServers(env.BRANCH_NAME)
@@ -378,8 +379,9 @@ pipeline {
                                 returnStdout: true
                             ).trim()
                             sh "ssh admin@${server} 'mkdir -p ${targetDir} ${scriptsDir}'"
-                            sh "rsync -avz ${zipPath} admin@${server}:${targetDir}/"
-                            sh "rsync -avz ${WORKSPACE}/clients/DesktopExecutor/artifacts/Install-AvintraDesktopRunner.ps1 admin@${server}:${scriptsDir}/"
+                            sh "rsync -avz --timeout=300 ${zipPath} admin@${server}:${targetDir}/"
+                            sh "rsync -avz --timeout=300 ${WORKSPACE}/clients/DesktopExecutor/artifacts/Install-AvintraDesktopRunner.ps1 admin@${server}:${scriptsDir}/"
+                            sh "rsync -avz --timeout=300 ${WORKSPACE}/clients/DesktopExecutor/artifacts/Download-AvintraDesktopRunner.ps1 admin@${server}:${scriptsDir}/"
                             echo "Successfully uploaded DesktopExecutor to ${server}"
                         }
                     }

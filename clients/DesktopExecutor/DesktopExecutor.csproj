@@ -8,6 +8,17 @@
     <RootNamespace>DesktopExecutor</RootNamespace>
     <Version>0.1.81</Version>
     <InformationalVersion>0.1.81</InformationalVersion>
+
+    <!--
+      Self-contained single-file Windows publish.
+      The .NET 8 runtime and native dependencies are bundled into one executable,
+      so the target machine does not need .NET 8 installed.
+    -->
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
   </PropertyGroup>
 
   <ItemGroup>

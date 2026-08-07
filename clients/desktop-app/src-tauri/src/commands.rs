@@ -10,8 +10,9 @@ pub fn launch_desktop_executor(
     username: String,
     app_version: String,
 ) -> Result<(), String> {
-    // The executor is installed independently (via ensure_desktop_executor) under the
-    // local app data dir so it can be updated without republishing the whole Tauri app.
+    // The executor is provisioned independently (via ensure_desktop_executor) under
+    // the local app data dir so it can be updated without republishing the whole
+    // Tauri app. The app always launches the runner from the `latest` folder.
     let desktop_executor_path = crate::executor_management::executor_exe_path()?;
 
     if !desktop_executor_path.exists() {

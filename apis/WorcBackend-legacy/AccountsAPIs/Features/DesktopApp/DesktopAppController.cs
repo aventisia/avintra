@@ -146,6 +146,20 @@ public class DesktopAppController : BaseApiController
         return File(scriptStream, "application/x-powershell", "Install-AvintraDesktopRunner.ps1");
     }
 
+    // GET: /desktop-app/script/Download-AvintraDesktopRunner.ps1
+    [HttpGet("script/Download-AvintraDesktopRunner.ps1")]
+    public IActionResult GetDownloadScript()
+    {
+        var scriptsDir = Path.Combine(_appDefaultConfig.FileUploadConfig.UploadDirectory, "scripts");
+        var scriptPath = Path.Combine(scriptsDir, "Download-AvintraDesktopRunner.ps1");
+
+        if (!System.IO.File.Exists(scriptPath))
+            return NotFound("Download script not found.");
+
+        var scriptStream = System.IO.File.OpenRead(scriptPath);
+        return File(scriptStream, "application/x-powershell", "Download-AvintraDesktopRunner.ps1");
+    }
+
     // GET: /desktop-app/download-manifest
     [HttpGet("download-manifest")]
     public IActionResult GetDownloadManifest()

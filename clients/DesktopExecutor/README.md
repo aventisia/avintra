@@ -32,7 +32,7 @@ dotnet build clients/DesktopExecutor/DesktopExecutor.csproj
 
 ## Publish
 
-`publish.sh` produces a versioned, framework-dependent single-file Windows binary and packages it into `artifacts/AvintraDesktopRunner_<version>_win-x64.zip`. It also copies `Install-AvintraDesktopRunner.ps1` into `artifacts/` so the provisioning script can be uploaded to the server's `scripts/` directory alongside the runner zip.
+`publish.sh` produces a versioned, **self-contained** single-file Windows binary (the .NET 8 runtime is embedded, so the target machine does not need it installed) and packages it into `artifacts/AvintraDesktopRunner_<version>_win-x64.zip`. It also copies `Install-AvintraDesktopRunner.ps1` and `Download-AvintraDesktopRunner.ps1` into `artifacts/` so the provisioning scripts can be uploaded to the server's `scripts/` directory alongside the runner zip.
 
 ```sh
 ./clients/DesktopExecutor/publish.sh
@@ -40,7 +40,7 @@ dotnet build clients/DesktopExecutor/DesktopExecutor.csproj
 ./clients/DesktopExecutor/publish.sh --version 0.1.83
 ```
 
-The CI/CD pipeline uploads the zip to `/var/www/aventisia.com/files/binaries/` and the install script to `/var/www/aventisia.com/files/scripts/` on each target server.
+The CI/CD pipeline uploads the zip to `/var/www/aventisia.com/files/binaries/` and the scripts to `/var/www/aventisia.com/files/scripts/` on each target server.
 
 ## Run (Console Mode)
 
@@ -69,11 +69,11 @@ dotnet run --project clients/DesktopExecutor/DesktopExecutor.csproj -- \
 
 ### Prerequisites
 
-The Windows Service build is **framework-dependent** and does **not** bundle the .NET 8 runtime. The target machine must have the .NET 8 runtime installed before running `--install`.
+The Windows Service build is **self-contained** and bundles the .NET 8 runtime, so the target machine does not need .NET 8 installed.
 
 ### Automated PowerShell install (recommended)
 
-Use the provisioning script to install everything in one step. The script validates the .NET 8 runtime, installs it if necessary, downloads the runner, and registers it as a Windows service.
+Use the provisioning script to install everything in one step. The script downloads the runner (which bundles the .NET 8 runtime) and registers it as a Windows service.
 
 The script resolves the **latest** runner version automatically from the backend, so you don't need to supply a zip URL. Run it from an elevated PowerShell prompt:
 
@@ -97,28 +97,27 @@ irm https://<host>/accounts/api/desktop-app/script/Install-AvintraDesktopRunner.
 
 The script must be run from an elevated PowerShell prompt. It installs the runner to `C:\Program Files\AvintraDesktopRunner` and starts the service automatically.
 
-The script only looks for / installs winget if .NET 8 is missing. If winget is not available and cannot be installed automatically, the script stops and asks you to install .NET 8 manually from <https://dotnet.microsoft.com/en-us/download/dotnet/8.0>, then re-run the script.
+The runner is self-contained, so no .NET 8 runtime or winget install is required on the target machine.
 
 Available parameters:
 
-| Parameter          | Default                                 | Description                                                                                                        |
-| ------------------ | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `RunnerZipUrl`     | — (resolved automatically)              | URL of the runner zip archive to download. Optional; when omitted the latest version is resolved from the backend. |
-| `AppBaseUrl`       | —                                       | Backend API base URL.                                                                                              |
-| `ApiKey`           | —                                       | Tenant API key.                                                                                                    |
-| `TenantId`         | —                                       | Tenant ID (GUID).                                                                                                  |
-| `LinkedUsername`   | —                                       | Linked workspace username.                                                                                         |
-| `InstallDir`       | `C:\Program Files\AvintraDesktopRunner` | Directory to extract the runner to.                                                                                |
-| `ServiceName`      | `AvintraDesktopRunner`                  | Name of the Windows service.                                                                                       |
-| `DoNotStart`       | `$false`                                | Install the service but do not start it.                                                                           |
-| `SkipRuntimeCheck` | `$false`                                | Skip the .NET 8 runtime check.                                                                                     |
+| Parameter        | Default                                 | Description                                                                                                        |
+| ---------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `RunnerZipUrl`   | — (resolved automatically)              | URL of the runner zip archive to download. Optional; when omitted the latest version is resolved from the backend. |
+| `AppBaseUrl`     | —                                       | Backend API base URL.                                                                                              |
+| `ApiKey`         | —                                       | Tenant API key.                                                                                                    |
+| `TenantId`       | —                                       | Tenant ID (GUID).                                                                                                  |
+| `LinkedUsername` | —                                       | Linked workspace username.                                                                                         |
+| `InstallDir`     | `C:\Program Files\AvintraDesktopRunner` | Directory to extract the runner to.                                                                                |
+| `ServiceName`    | `AvintraDesktopRunner`                  | Name of the Windows service.                                                                                       |
+| `DoNotStart`     | `$false`                                | Install the service but do not start it.                                                                           |
 
 ### Manual install
 
 You can install the runner as a Windows service interactively:
 
-```sh
-DesktopExecutor --install
+```powershell
+AvintraDesktopRunner.exe --install
 ```
 
 The installer will prompt for:
@@ -130,20 +129,20 @@ The installer will prompt for:
 
 Or perform a silent install by passing all required values on the command line:
 
-```sh
-DesktopExecutor --install --appBaseUrl https://api.avintra.com --apiKey <key> --tenantId <guid> --linkedUsername <user>
+```powershell
+AvintraDesktopRunner.exe --install --appBaseUrl https://api.avintra.com --apiKey <key> --tenantId <guid> --linkedUsername <user>
 ```
 
 This registers a service named **"AvintraDesktopRunner"** that starts automatically on boot. The install command must be run from an elevated (Administrator) command prompt; it will request UAC elevation automatically if needed.
 
 The backend connection parameters are embedded into the service `binPath`, so the service can start unattended. `osId`, `username`, and `hostname` are detected at runtime from the local machine.
 
-> **Note:** `--install` does not validate the backend URL or credentials. It only verifies that the .NET 8 runtime is present. To skip the runtime check (for example, in automated provisioning scripts), add `--skip-runtime-check`.
+> **Note:** `--install` does not validate the backend URL or credentials. It only registers the service. The runner is self-contained, so no .NET 8 runtime check is performed.
 
 ### Uninstall
 
-```sh
-dotnet run --project clients/DesktopExecutor/DesktopExecutor.csproj -- --uninstall
+```powershell
+AvintraDesktopRunner.exe --uninstall
 ```
 
 ### Start / Stop (after install)
@@ -155,12 +154,12 @@ sc stop "AvintraDesktopRunner"
 
 ### Run with service flag (for manual testing)
 
-```sh
-dotnet run --project clients/DesktopExecutor/DesktopExecutor.csproj -- \
-  --service \
+```powershell
+AvintraDesktopRunner.exe --service \
   --appBaseUrl https://your-backend \
-  --accessToken <jwt-token> \
-  --jobId <job-guid>
+  --apiKey <key> \
+  --tenantId <guid> \
+  --linkedUsername <user>
 ```
 
 ## How It Works
@@ -214,11 +213,21 @@ clients/DesktopExecutor/
 
 ## Usage
 
-```bash
+```powershell
 # Windows service install
-DesktopExecutor --install
-DesktopExecutor --install --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>
-DesktopExecutor --uninstall
+AvintraDesktopRunner.exe --install
+AvintraDesktopRunner.exe --install --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>
+AvintraDesktopRunner.exe --uninstall
+
+# Single job (console)
+AvintraDesktopRunner.exe --run --appBaseUrl <url> --accessToken <token> --jobId <guid> [options]
+
+# Windows service
+AvintraDesktopRunner.exe --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> [options]
+
+# Desktop App sidecar (bundled with the builder app)
+AvintraDesktopRunner.exe --run --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> --persist [options]
+```
 
 # Single job (console)
 DesktopExecutor --run --appBaseUrl <url> --accessToken <token> --jobId <guid> [options]

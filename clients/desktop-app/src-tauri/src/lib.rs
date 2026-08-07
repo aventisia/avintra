@@ -30,8 +30,6 @@ pub fn run() {
             commands::launch_ui_inspector,
             commands::get_user_metadata,
             executor_management::ensure_desktop_executor,
-            executor_management::install_desktop_executor_service,
-            executor_management::uninstall_desktop_executor_service,
             executor_management::get_desktop_executor_version,
             websocket::get_websocket_port,
             // updater commands

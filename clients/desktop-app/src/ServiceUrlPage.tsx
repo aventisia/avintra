@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { invoke } from "@tauri-apps/api/core";
 
 const LS_BASE_URL_KEY = "aventisia:baseUrl";
 
@@ -12,6 +13,17 @@ export default function ServiceUrlPage() {
       localStorage.getItem(LS_BASE_URL_KEY) || import.meta.env.VITE_BASE_URL;
     if (savedUrl) setServiceUrl(savedUrl);
   }, []);
+
+  // On first launch, ensure the DesktopRunner is downloaded and extracted into
+  // the versioned desktop-executor folder. The base URL is the origin (e.g.
+  // https://avdev.aventisia.com); the backend appends /accounts/api internally.
+  useEffect(() => {
+    if (!serviceUrl) return;
+    const origin = new URL(serviceUrl).origin;
+    invoke("ensure_desktop_executor", { appBaseUrl: origin }).catch((err) => {
+      console.error("Failed to provision DesktopRunner:", err);
+    });
+  }, [serviceUrl]);
 
   const validateBaseUrl = (value: string): string | null => {
     try {

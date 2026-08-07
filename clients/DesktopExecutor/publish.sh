@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Publishes the DesktopExecutor as a framework-dependent, single-file Windows binary and
+# Publishes the DesktopExecutor as a self-contained, single-file Windows binary and
 # packages it into a versioned zip ready for upload/distribution.
 #
 # Usage:
@@ -17,9 +17,9 @@
 # publish while the project keeps the DesktopExecutor name internally. This avoids
 # an "Ambiguous project name" NuGet error and matches the UI label "Desktop Runner".
 #
-# The .NET 8 runtime is NOT bundled; the target machine must install it first.
-# The AvintraDesktopRunner --install command will fail with a clear message if the
-# runtime is missing (use --skip-runtime-check to override the check).
+# The publish is SELF-CONTAINED: the .NET 8 runtime is embedded in the single-file
+# executable, so the target machine does NOT need .NET 8 installed. This removes the
+# need for winget installs or runtime checks in the provisioning scripts.
 #
 # This script is reusable for every new version: bump <Version> in the .csproj and rerun.
 
@@ -70,7 +70,7 @@ if [[ ! -f "$CSPROJ" ]]; then
   exit 1
 fi
 
-echo "Publishing DesktopExecutor ($RUNTIME, framework-dependent) v$VERSION ..."
+echo "Publishing DesktopExecutor ($RUNTIME, self-contained) v$VERSION ..."
 
 PUBLISH_DIR="$(mktemp -d)"
 trap 'rm -rf "$PUBLISH_DIR"' EXIT
@@ -78,8 +78,10 @@ trap 'rm -rf "$PUBLISH_DIR"' EXIT
 dotnet publish "$CSPROJ" \
   -c Release \
   -r "$RUNTIME" \
-  --self-contained false \
+  --self-contained true \
   -p:PublishSingleFile=true \
+  -p:IncludeNativeLibrariesForSelfExtract=true \
+  -p:EnableCompressionInSingleFile=true \
   -o "$PUBLISH_DIR"
 
 mkdir -p "$OUTPUT_DIR"
@@ -101,10 +103,13 @@ ZIP_PATH="$OUTPUT_DIR/$ZIP_NAME"
 # Zip the published output (single-file exe). The zip is what gets distributed/downloaded.
 if command -v zip >/dev/null 2>&1; then
   (cd "$PUBLISH_DIR" && zip -qr "$ZIP_PATH" .)
+elif command -v python3 >/dev/null 2>&1; then
+  # Fallback for Linux build agents without the `zip` CLI (common in minimal containers).
+  python3 -c "import shutil, sys; shutil.make_archive(sys.argv[1], 'zip', sys.argv[2])" \
+    "${ZIP_PATH%.zip}" "$PUBLISH_DIR" >/dev/null
 else
-  powershell.exe -NoProfile -Command \
-    "Compress-Archive -Path '$PUBLISH_DIR/*' -DestinationPath '$ZIP_PATH' -Force" 2>/dev/null \
-    || { echo "error: neither 'zip' nor PowerShell Compress-Archive is available." >&2; exit 1; }
+  echo "error: neither 'zip' nor 'python3' is available; cannot create the runner archive." >&2
+  exit 1
 fi
 
 echo "Published to $ZIP_PATH"
@@ -119,6 +124,17 @@ if [[ -f "$INSTALL_SCRIPT" ]]; then
   echo "Copied install script to $OUTPUT_DIR/Install-AvintraDesktopRunner.ps1"
 else
   echo "warning: Install-AvintraDesktopRunner.ps1 not found at $INSTALL_SCRIPT" >&2
+fi
+
+# Copy the download-only provisioning script (used by the Tauri desktop app on
+# first launch) into the artifacts output so it can be uploaded alongside the
+# install script.
+DOWNLOAD_SCRIPT="$SCRIPT_DIR/Download-AvintraDesktopRunner.ps1"
+if [[ -f "$DOWNLOAD_SCRIPT" ]]; then
+  cp "$DOWNLOAD_SCRIPT" "$OUTPUT_DIR/Download-AvintraDesktopRunner.ps1"
+  echo "Copied download script to $OUTPUT_DIR/Download-AvintraDesktopRunner.ps1"
+else
+  echo "warning: Download-AvintraDesktopRunner.ps1 not found at $DOWNLOAD_SCRIPT" >&2
 fi
 
 # Print the published binary names for quick verification.
