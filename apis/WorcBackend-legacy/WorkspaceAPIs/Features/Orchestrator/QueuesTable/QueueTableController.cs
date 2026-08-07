@@ -27,6 +27,13 @@ public class QueueTableController : BaseApiController
         return ResultHelper(await _queueTableService.GetAllQueuesAsync(false));
     }
 
+    // Retrieves queues assigned to a specific agent (flow version).
+    [HttpGet("by-agent/{flowVersionId}")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<QueuesTableDto>>>> GetQueuesByAgentAsync(Guid flowVersionId)
+    {
+        return ResultHelper(await _queueTableService.GetQueuesByAgentAsync(flowVersionId));
+    }
+
 
     // Searches for queues by name.
     [HttpGet("search/{queueName}")]

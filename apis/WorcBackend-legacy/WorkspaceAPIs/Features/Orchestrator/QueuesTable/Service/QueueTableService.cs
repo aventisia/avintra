@@ -145,6 +145,50 @@ public class QueueTableService : IQueueTableService
         return serviceResponse;
     }
 
+    // Retrieves all queues assigned to a specific agent (flow version)
+    public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetQueuesByAgentAsync(Guid flowVersionId)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<QueuesTableDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve queues for the agent. Please try again."
+        };
+
+        try
+        {
+            // Retrieve queues that have a QueueFlowVersion entry matching the given flow version
+            var queues = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w =>
+                    w.QueueFlowVersions != null &&
+                    w.QueueFlowVersions.Any(qf => qf.FlowVersionId == flowVersionId))
+                .OrderByDescending(o => o.CreatedOn)
+                .Include(i => i.QueueTransactions)
+                .Include(i => i.CreatedByUser)
+                .ToListAsync();
+
+            // Map to DTOs
+            var queueDtoList = queues.Adapt<List<QueuesTableDto>>();
+
+            // Queues assigned to an agent are owned by the queue creator; mark as Owner.
+            queueDtoList.ForEach(fe =>
+            {
+                fe.AccessLevel = ResourceAccessTypeEnum.Owner;
+            });
+
+            serviceResponse.Data = queueDtoList;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Queues retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Searches for queues by name
     public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> SearchQueuesAsync(string queueName, bool isPersonal)
     {
@@ -905,9 +949,9 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
-            // Retrieve all agents for the current user
+            // Retrieve all agents for the current user (includes both published and in-build agents)
             var agents = await _unitOfWork.FlowVersionRepo
-                                            .GetByConditionAsync(w => w.IsPublished)
+                                            .GetByConditionAsync(w => w.Flow.Type != FlowTypesEnum.Block)
                                             .Include(i => i.Flow)
                                             .ProjectToType<AssignAgentQueueDto>()
                                             .ToListAsync();

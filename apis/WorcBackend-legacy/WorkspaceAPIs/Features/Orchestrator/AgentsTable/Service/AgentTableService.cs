@@ -568,10 +568,10 @@ public class AgentTableService : IAgentTableService
 
         try
         {
-            // Query the repository for published flow versions where the flow name contains the search key (case-insensitive)
+            // Query the repository for flow versions where the flow name contains the search key (case-insensitive)
+            // This includes both published and in-build (unpublished) agents so any agent can be assigned to a queue.
             var publishedFlowVersions = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
-                    w.IsPublished &&
                     !w.IsArchived &&
                     !w.IsDisabled &&
                     w.Flow.Type != FlowTypesEnum.Block &&
@@ -587,7 +587,7 @@ public class AgentTableService : IAgentTableService
             // Map the result to DTOs and update the service response to indicate success
             serviceResponse.Data = publishedFlowVersions.Adapt<IEnumerable<AgentTableDto>>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Published agents retrieved successfully.";
+            serviceResponse.Message = "Agents retrieved successfully.";
         }
         catch (Exception ex)
         {

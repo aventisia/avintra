@@ -20,6 +20,13 @@ public interface IQueueTableService
     Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetAllQueuesAsync(bool isPersonal);
 
     /// <summary>
+    /// Retrieves all queues assigned to a specific agent (flow version).
+    /// </summary>
+    /// <param name="flowVersionId">The ID of the agent's flow version.</param>
+    /// <returns>The task result containing the service response with a list of queues assigned to the agent.</returns>
+    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetQueuesByAgentAsync(Guid flowVersionId);
+
+    /// <summary>
     /// Searches for queues by name.
     /// </summary>
     /// <param name="queueName"> Search keyword. </param>

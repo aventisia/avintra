@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { useDebounce } from "@/features/03-orchestrator/agents-table/hooks/useDebounce";
 
@@ -15,10 +16,12 @@ export const useSearchUserMultiSelect = () => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const { setView, queueId } = useQueueUsersStore((state) => ({
-    setView: state.setView,
-    queueId: state.queueId,
-  }));
+  const { setView, queueId } = useQueueUsersStore(
+    useShallow((state) => ({
+      setView: state.setView,
+      queueId: state.queueId,
+    })),
+  );
 
   const { data: searchData, isLoading, isError } = useSearchUsersList(debouncedSearchTerm);
 
