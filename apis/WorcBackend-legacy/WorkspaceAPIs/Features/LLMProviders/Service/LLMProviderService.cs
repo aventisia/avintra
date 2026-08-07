@@ -93,6 +93,18 @@ public class LLMProviderService : ILLMProviderService
                     serviceResponse = await GetModelsAsync(requestDto, client);
                     break;
 
+                case LLMProviderTypesEnum.ElevenLabs:
+                    client = new RestClient("https://api.elevenlabs.io");
+                    client.AddDefaultHeader("xi-api-key", apiKey);
+                    serviceResponse = await GetModelsAsync(requestDto, client);
+                    break;
+
+                case LLMProviderTypesEnum.OllamaCloud:
+                    client = new RestClient("https://ollama.com/v1");
+                    client.AddDefaultHeader("Authorization", $"Bearer {apiKey}");
+                    serviceResponse = await GetModelsAsync(requestDto, client);
+                    break;
+
                 default:
                     serviceResponse.Message = "Provider type not supported.";
                     _logger.LogWarning("Unsupported provider type: {ProviderType}", requestDto.ProviderType);
@@ -126,6 +138,8 @@ public class LLMProviderService : ILLMProviderService
                         : $"v1/models?output_modalities={lLMProviderModelRequestDto.OutputModalities.ToLower()}",
                 LLMProviderTypesEnum.Gemini => "v1beta/models",
                 LLMProviderTypesEnum.Anthropic => "v1/models",
+                LLMProviderTypesEnum.ElevenLabs => "v1/models",
+                LLMProviderTypesEnum.OllamaCloud => "models",
                 _ => throw new NotImplementedException("Unsupported provider")
             };
 
@@ -145,18 +159,30 @@ public class LLMProviderService : ILLMProviderService
             // Log success
             _logger.LogInformation("Successfully retrieved models from {Provider} API.", lLMProviderModelRequestDto.ProviderType);
 
-            // Parse JSON response body
-            JObject jsonResponse = JObject.Parse(response.Content);
+            // Parse JSON response body.
+            // ElevenLabs returns a top-level JSON array; other providers return a JSON object.
+            IEnumerable<JToken>? dataArray = null;
 
-            // Extract data based on provider type
-            IEnumerable<JToken>? dataArray = lLMProviderModelRequestDto.ProviderType switch
+            if (lLMProviderModelRequestDto.ProviderType == LLMProviderTypesEnum.ElevenLabs)
             {
-                LLMProviderTypesEnum.OpenAI => jsonResponse["data"]?.ToArray(),
-                LLMProviderTypesEnum.Gemini => jsonResponse["models"]?.ToArray(),
-                LLMProviderTypesEnum.OpenRouter => jsonResponse["data"]?.ToArray(),
-                LLMProviderTypesEnum.Anthropic => jsonResponse["data"]?.ToArray(),
-                _ => throw new NotImplementedException($"No data extraction logic defined for {lLMProviderModelRequestDto.ProviderType}")
-            };
+                JArray elevenLabsResponse = JArray.Parse(response.Content);
+                dataArray = elevenLabsResponse.ToArray();
+            }
+            else
+            {
+                JObject jsonResponse = JObject.Parse(response.Content);
+
+                // Extract data based on provider type
+                dataArray = lLMProviderModelRequestDto.ProviderType switch
+                {
+                    LLMProviderTypesEnum.OpenAI => jsonResponse["data"]?.ToArray(),
+                    LLMProviderTypesEnum.Gemini => jsonResponse["models"]?.ToArray(),
+                    LLMProviderTypesEnum.OpenRouter => jsonResponse["data"]?.ToArray(),
+                    LLMProviderTypesEnum.Anthropic => jsonResponse["data"]?.ToArray(),
+                    LLMProviderTypesEnum.OllamaCloud => jsonResponse["data"]?.ToArray(),
+                    _ => throw new NotImplementedException($"No data extraction logic defined for {lLMProviderModelRequestDto.ProviderType}")
+                };
+            }
 
             if (dataArray == null || !dataArray.Any())
             {
@@ -211,6 +237,8 @@ public class LLMProviderService : ILLMProviderService
             LLMProviderTypesEnum.OpenRouter => item["canonical_slug"]?.ToString(),
             LLMProviderTypesEnum.Anthropic =>
                 $"{item["id"]?.ToString()}/{item["max_tokens"]?.ToString()}",
+            LLMProviderTypesEnum.ElevenLabs => item["model_id"]?.ToString() ?? item["name"]?.ToString(),
+            LLMProviderTypesEnum.OllamaCloud => item["id"]?.ToString() ?? item["name"]?.ToString(),
             _ => throw new NotImplementedException($"No value extraction logic defined for {providerType}")
         };
 
@@ -220,6 +248,8 @@ public class LLMProviderService : ILLMProviderService
             LLMProviderTypesEnum.Gemini => item["displayName"]?.ToString(),
             LLMProviderTypesEnum.OpenRouter => item["name"]?.ToString(),
             LLMProviderTypesEnum.Anthropic => item["display_name"]?.ToString(),
+            LLMProviderTypesEnum.ElevenLabs => item["name"]?.ToString() ?? item["model_id"]?.ToString(),
+            LLMProviderTypesEnum.OllamaCloud => item["id"]?.ToString() ?? item["name"]?.ToString(),
             _ => throw new NotImplementedException($"No label extraction logic defined for {providerType}")
         };
 
@@ -229,6 +259,8 @@ public class LLMProviderService : ILLMProviderService
             LLMProviderTypesEnum.Gemini => item["description"]?.ToString(),
             LLMProviderTypesEnum.OpenRouter => item["description"]?.ToString(),
             LLMProviderTypesEnum.Anthropic => item["display_name"]?.ToString(),
+            LLMProviderTypesEnum.ElevenLabs => item["description"]?.ToString(),
+            LLMProviderTypesEnum.OllamaCloud => item["description"]?.ToString(),
             _ => throw new NotImplementedException($"No description extraction logic defined for {providerType}")
         };
 

@@ -50,6 +50,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<TriggerFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<OnPremModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<TenantModelProvider>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Conversation>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ConversationMessage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<VectorStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -120,6 +121,17 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Job>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
         modelBuilder.Entity<OnPremModel>().Property(e => e.ProviderType).HasConversion(new EnumToStringConverter<OnPremModelProviderEnum>());
         modelBuilder.Entity<OnPremModel>().Property(e => e.Status).HasConversion(new EnumToStringConverter<OnPremModelStatusEnum>());
+        modelBuilder.Entity<TenantModelProvider>().Property(e => e.ProviderType).HasConversion(new EnumToStringConverter<LLMProviderTypesEnum>());
+        modelBuilder.Entity<TenantModelProvider>().Property(e => e.EnabledModelIds)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => System.Text.Json.JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>())
+            .Metadata.SetValueComparer(
+                new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<string>>(
+                    (a, b) => a.SequenceEqual(b),
+                    c => c.Aggregate(0, (acc, s) => HashCode.Combine(acc, s.GetHashCode())),
+                    c => c.ToList()));
         modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusEnum>());
         modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageSenderEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());
@@ -308,6 +320,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<EncryptedKeyValue> EncryptedKeyValues { get; set; }
     public DbSet<PromptTemplate> PromptTemplates { get; set; }
     public DbSet<OnPremModel> OnPremModels { get; set; }
+    public DbSet<TenantModelProvider> TenantModelProviders { get; set; }
     public DbSet<VectorStore> VectorStores { get; set; }
     public DbSet<KnowledgeBase> KnowledgeBases { get; set; }
     public DbSet<KnowledgeBaseFile> KnowledgeBaseFiles { get; set; }

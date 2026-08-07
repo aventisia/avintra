@@ -135,6 +135,32 @@ public class OnPremModelService : IOnPremModelService
         return serviceResponse;
     }
 
+    // Retrieves the list of models available from an Ollama provider at the given base URL.
+    public async Task<ServiceResponse<IEnumerable<OllamaModelDto>>> GetOllamaModelsAsync(string providerUrl)
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<OllamaModelDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve Ollama models. Please try again later."
+        };
+
+        try
+        {
+            var ollamaModels = await GetOllamaModelsAsync(providerUrl, CancellationToken.None);
+
+            serviceResponse.Data = ollamaModels;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Ollama models retrieved successfully.";
+            _logger.LogInformation("Retrieved {ModelCount} models from Ollama for user {UserId}.", ollamaModels.Count, _userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while retrieving Ollama models for user {UserId}.", _userId);
+        }
+
+        return serviceResponse;
+    }
+
     // Method to retrieve a specific on-prem model by its ID.
     public async Task<ServiceResponse<OnPremModelDto>> GetOnPremModelAsync(Guid onPremModelId)
     {

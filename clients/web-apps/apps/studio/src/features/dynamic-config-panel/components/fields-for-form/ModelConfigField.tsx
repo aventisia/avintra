@@ -19,6 +19,8 @@ import { getProviderModels } from "../../apis/llm-pipelines-apis";
 import { embeddingModelProviders } from "../../constants/embedding-model-providers";
 import { sttModelProviders } from "../../constants/stt-model-proivder";
 import { ttsModelProviders } from "../../constants/tts-model-proivder";
+import { TenantModelProviderDto } from "../../dtos/tenant-model-provider-dto";
+import { useFetchTenantModelProviders } from "../../hooks/useFetchTenantModelProviders";
 import { uniqueAndNormalizeArray } from "../../utils/uniqueAndNormalizeArray";
 import { CredentialsSelectField } from "./CredentialsSelectField";
 
@@ -32,8 +34,15 @@ const PROVIDER_MAP: Record<string, string> = {
   googlegemini: "Gemini",
   openrouter: "OpenRouter",
   anthropic: "Anthropic",
-  elevenlabs: "Elevenlabs",
+  elevenlabs: "ElevenLabs",
+  ollama: "Ollama",
+  ollamacloud: "OllamaCloud",
 };
+
+// Studio provider values whose models are sourced from the tenant config's
+// "enabledModelIds" (per the Tenant Admin "Model Providers" section) rather than
+// fetched dynamically via a credential (e.g. Ollama On-prem).
+const TENANT_CONFIG_MODEL_PROVIDERS = new Set(["ollama"]);
 
 const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
   const [byokModels, setByokModels] = useState<Model[]>([]);
@@ -42,6 +51,26 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
   const { control, setValue } = useFormContext();
   const nodeKey = name.replace("__ModelConfig__", "");
+
+  // Fetch the tenant's enabled model-provider configurations (Tenant Admin > Model Providers).
+  const { data: tenantProvidersData } = useFetchTenantModelProviders();
+
+  // Configs that are enabled (not disabled) for this tenant.
+  const enabledTenantConfigs = useMemo(
+    () => (tenantProvidersData?.data ?? []).filter((c) => !c.isDisabled),
+    [tenantProvidersData],
+  );
+
+  // Map a studio provider value (e.g. "googlegemini") to the enabled tenant config
+  // for that provider (backend type e.g. "Gemini"). Only includes enabled providers.
+  const enabledConfigByProvider = useMemo(() => {
+    const map: Record<string, TenantModelProviderDto> = {};
+    for (const [studioValue, backendType] of Object.entries(PROVIDER_MAP)) {
+      const config = enabledTenantConfigs.find((c) => c.providerType === backendType);
+      if (config) map[studioValue] = config;
+    }
+    return map;
+  }, [enabledTenantConfigs]);
 
   // 1. Memoize Field Names to prevent effect loops
   const fieldNames = useMemo(
@@ -108,16 +137,24 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     if (nodeKey == "SpeechToText") return sttModelProviders;
     if (nodeKey == "TextToSpeech") return ttsModelProviders;
     if (nodeKey == "Embedding") return embeddingModelProviders;
-    return modelProviders
-      .filter((p) => p.isEnabled !== false)
-      .map((p) => ({
-        ...p,
-        models: p.models.filter((m) => {
-          const specialtyMatch = requiredSpecialties.every((req) => m.specialty.includes(req));
-          return specialtyMatch && m.available;
-        }),
-      }));
-  }, [name]);
+
+    // When BYOK is enabled, only show providers that are enabled for this tenant
+    // (per the Tenant Admin "Model Providers" section).
+    const providers = is_byok_enabled
+      ? modelProviders.filter((p) => {
+          const config = enabledConfigByProvider[p.value];
+          return Boolean(config) && (config?.enabledModelIds?.length ?? 0) > 0;
+        })
+      : modelProviders.filter((p) => p.isEnabled !== false);
+
+    return providers.map((p) => ({
+      ...p,
+      models: p.models.filter((m) => {
+        const specialtyMatch = requiredSpecialties.every((req) => m.specialty.includes(req));
+        return specialtyMatch && m.available;
+      }),
+    }));
+  }, [is_byok_enabled, enabledConfigByProvider, nodeKey]);
 
   // 4. Initial Load Logic
   useEffect(() => {
@@ -226,13 +263,34 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
   // 7. Render Helpers
   const availableModels = useMemo(() => {
+    const enabledConfig = enabledConfigByProvider[providerValue];
+
+    // STT / TTS / tenant-config-based providers (e.g. Ollama On-prem) do not fetch
+    // models dynamically via a credential, so the model dropdown must show the models
+    // that were ENABLED for that provider in the tenant config.
+    if (
+      is_byok_enabled &&
+      (nodeKey == "SpeechToText" ||
+        nodeKey == "TextToSpeech" ||
+        TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue))
+    ) {
+      const enabledIds = enabledConfig?.enabledModelIds ?? [];
+      return uniqueAndNormalizeArray(
+        enabledIds.map((id) => ({ value: id, label: id, available: true } as Model)),
+      );
+    }
+
     const models = is_byok_enabled
-      ? byokModels
+      ? (() => {
+          const enabledIds = new Set(enabledConfig?.enabledModelIds ?? []);
+          // Only show models that were enabled for this provider in the tenant config.
+          return byokModels.filter((m) => enabledIds.has(m.value));
+        })()
       : filteredProviders
           .find((p) => p.value === providerValue)
           ?.models?.filter((m) => m.available) || [];
     return uniqueAndNormalizeArray(models);
-  }, [is_byok_enabled, byokModels, filteredProviders, providerValue]);
+  }, [is_byok_enabled, byokModels, filteredProviders, providerValue, enabledConfigByProvider, nodeKey]);
 
   const currentModel = useMemo(
     () => availableModels.find((m) => m.value === modelField.value),
@@ -275,7 +333,10 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
             label="Model"
             primaryText="Models"
             isLoading={isLoading}
-            disabled={!isInitialized || (is_byok_enabled && !credentialsValue)}
+            disabled={
+              !isInitialized ||
+              (is_byok_enabled && !TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue) && !credentialsValue)
+            }
           />
         </div>
 

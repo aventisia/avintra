@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     # App base url
     APP_BASE_URL: str
 
+    # Whether to verify TLS certificates when calling internal backends (AccountsAPIs / WorkspaceAPIs).
+    # In local/dev environments the backend may use a self-signed cert, so set this to false there.
+    SSL_VERIFY: bool = True
+
     # PostgreSQL settings
     POSTGRESQL_HOST: str
     POSTGRESQL_PORT: str

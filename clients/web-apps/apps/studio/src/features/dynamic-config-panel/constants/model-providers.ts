@@ -701,7 +701,7 @@ export const modelProviders: Provider[] = [
   },
   {
     value: "googlegemini",
-    label: "Google Gemini",
+    label: "Google",
     isEnabled: true,
     models: googleModelList,
   },
@@ -716,6 +716,18 @@ export const modelProviders: Provider[] = [
     label: "OpenRouter",
     isEnabled: true,
     models: openRouterModelList,
+  },
+  {
+    value: "ollama",
+    label: "Ollama On-prem",
+    isEnabled: true,
+    models: [],
+  },
+  {
+    value: "ollamacloud",
+    label: "Ollama Cloud",
+    isEnabled: true,
+    models: [],
   },
 ];
 

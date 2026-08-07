@@ -42,6 +42,7 @@ public class UnitOfWork : IUnitOfWork
     public IEncryptedKeyValueRepo EncryptedKeyValueRepo => new EncryptedKeyValueRepo(_workspaceDbContext);
     public IPromptTemplateRepo PromptTemplateRepo => new PromptTemplateRepo(_workspaceDbContext);
     public IOnPremModelRepo OnPremModelRepo => new OnPremModelRepo(_workspaceDbContext);
+    public ITenantModelProviderRepo TenantModelProviderRepo => new TenantModelProviderRepo(_workspaceDbContext);
     public IConversationRepo ConversationRepo => new ConversationRepo(_workspaceDbContext);
     public IConversationMessageRepo ConversationMessageRepo => new ConversationMessageRepo(_workspaceDbContext);
     public IVectorStoreRepo VectorStoreRepo => new VectorStoreRepo(_workspaceDbContext);

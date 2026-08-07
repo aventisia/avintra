@@ -39,8 +39,8 @@ class OpenAIProvider(BaseLLMProvider):
 
             if credential:
                 # Update the API URL and key from the vault credentials
-                self.api_url = credential.get('data', {}).get('Url')
-                self.api_key = credential.get("data", {}).get("ApiKey")
+                self.api_url = credential.get('data', {}).get('Url') or credential.get('Url')
+                self.api_key = credential.get("data", {}).get("ApiKey") or credential.get("ApiKey")
                 logger.info("BYOK credentials successfully applied.")
             else:
                 logger.error(f"BYOK enabled but no valid credentials found for credential_id: {llm_request.credential_id}")
@@ -171,8 +171,9 @@ class OpenAIProvider(BaseLLMProvider):
 
             if credential:
                 # Update the API URL and key from the vault credentials
-                self.api_url = credential.get("data", {}).get("Url")
-                self.api_key = credential.get("data", {}).get("ApiKey")
+                credential_data = credential.get("data") or credential
+                self.api_url = credential_data.get("Url") or credential_data.get("Host")
+                self.api_key = credential_data.get("ApiKey")
                 logger.info("BYOK credentials successfully applied.")
             else:
                 logger.error(f"BYOK enabled but no valid credentials found for credential_id: {llm_request.credential_id}")
@@ -649,8 +650,9 @@ class OpenAIProvider(BaseLLMProvider):
             )
 
             if credential:
-                self.api_url = credential.get('data', {}).get('Url')
-                self.api_key = credential.get("data", {}).get("ApiKey")
+                credential_data = credential.get("data") or credential
+                self.api_url = credential_data.get("Url") or credential_data.get("Host")
+                self.api_key = credential_data.get("ApiKey")
                 logger.info("BYOK credentials successfully applied.")
             else:
                 logger.error("Invalid BYOK credential_id")

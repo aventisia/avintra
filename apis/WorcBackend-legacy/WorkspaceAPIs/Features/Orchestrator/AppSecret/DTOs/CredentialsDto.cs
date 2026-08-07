@@ -284,6 +284,39 @@ public class AnthropicCredentialsDto
 }
 
 /// <summary>
+/// Represents the credentials required to connect to a self-hosted Ollama server.
+/// </summary>
+public class OllamaCredentialsDto
+{
+    /// <summary>
+    /// Gets or sets the base URL of the Ollama server.
+    /// </summary>
+    public string Url { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the API key used for Ollama authentication (optional).
+    /// </summary>
+    public string ApiKey { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Represents the credentials required to connect to Ollama Cloud.
+/// The base URL is static (https://ollama.com/v1).
+/// </summary>
+public class OllamaCloudCredentialsDto
+{
+    /// <summary>
+    /// Gets or sets the base URL of the Ollama Cloud service.
+    /// </summary>
+    public string Url { get; set; } = "https://ollama.com/v1";
+
+    /// <summary>
+    /// Gets or sets the API key used for Ollama Cloud authentication.
+    /// </summary>
+    public string ApiKey { get; set; } = string.Empty;
+}
+
+/// <summary>
 /// Represents the credentials and configuration required to authenticate requests 
 /// to the Google Gemini API.
 /// </summary>

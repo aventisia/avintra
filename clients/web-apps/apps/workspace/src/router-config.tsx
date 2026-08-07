@@ -38,6 +38,7 @@ import { MyQueuePage } from "./pages/04-assist/MyQueuePage";
 import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
 import { AppIntegrationsPage } from "./pages/05-tenant-admin/IntegrationsPage";
+import { ModelProvidersPage } from "./pages/05-tenant-admin/ModelProvidersPage";
 import { PreferencesPage } from "./pages/05-tenant-admin/PreferencesPage";
 import { TenantPage } from "./pages/05-tenant-admin/TenantPage";
 import { TenantTemplatesApprovalPage } from "./pages/05-tenant-admin/TenantTemplatesApprovalPage";
@@ -259,6 +260,10 @@ const routerConfig: RouteObject[] = [
           {
             path: "on-prem-models",
             element: <OnPremLLMPage />,
+          },
+          {
+            path: "model-providers",
+            element: <ModelProvidersPage />,
           },
           {
             path: "usage",

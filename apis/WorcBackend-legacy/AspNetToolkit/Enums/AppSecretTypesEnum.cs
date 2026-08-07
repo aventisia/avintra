@@ -101,6 +101,18 @@ public enum AppSecretTypesEnum
     [Description("Qdrant Credentials")]
     Qdrant,
 
+    /// <summary>
+    /// Represents the credentials required for connecting to a self-hosted Ollama server.
+    /// </summary>
+    [Description("Ollama On-prem Credentials")]
+    Ollama,
+
+    /// <summary>
+    /// Represents the credentials required for connecting to Ollama Cloud (https://ollama.com/v1).
+    /// </summary>
+    [Description("Ollama Cloud Credentials")]
+    OllamaCloud,
+
     EmailClient,
     AzureBlobStorage,
 

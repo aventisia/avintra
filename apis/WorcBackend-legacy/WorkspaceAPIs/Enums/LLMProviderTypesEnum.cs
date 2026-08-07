@@ -27,7 +27,25 @@ public enum LLMProviderTypesEnum
     /// Represents the Anthropic provider.
     /// </summary>
     [Description("Anthropic provider")]
-    Anthropic
+    Anthropic,
+
+    /// <summary>
+    /// Represents the ElevenLabs provider.
+    /// </summary>
+    [Description("ElevenLabs provider")]
+    ElevenLabs,
+
+    /// <summary>
+    /// Represents the Ollama self-hosted provider.
+    /// </summary>
+    [Description("Ollama provider")]
+    Ollama,
+
+    /// <summary>
+    /// Represents the Ollama Cloud provider (static URL https://ollama.com/v1).
+    /// </summary>
+    [Description("Ollama Cloud provider")]
+    OllamaCloud
 
     /// <summary>
     /// TODO: Add more provider types as they become available.

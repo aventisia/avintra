@@ -145,6 +145,7 @@ public static class AppServicesExtension
         services.AddScoped<IPromptTemplateService, PromptTemplateService>();
         services.AddScoped<IProjectUsageService, ProjectUsageService>();
         services.AddScoped<IOnPremModelService, OnPremModelService>();
+        services.AddScoped<ITenantModelProviderService, TenantModelProviderService>();
         services.AddScoped<ILLMProviderService, LLMProviderService>();
         services.AddScoped<IManageTenantService, ManageTenantService>();
         services.AddScoped<IQueueWorkItemService, QueueWorkItemService>();
