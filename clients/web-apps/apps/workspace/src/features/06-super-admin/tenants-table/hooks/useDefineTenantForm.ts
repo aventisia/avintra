@@ -62,6 +62,7 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
       renewalDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       expiresOn: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       isTwoFAEnabled: false,
+      isChangeRequestEnabled: false,
       isPwdEnabled: true,
       isSSOEnabled: false,
       ssoConfigJson: undefined,
@@ -119,6 +120,7 @@ export const useDefineTenantForm = ({ rowId }: UseDefineTenantFormOptions) => {
         ? new Date(tenantData?.expiresOn)
         : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
       isTwoFAEnabled: tenantData?.isTwoFAEnabled ?? false,
+      isChangeRequestEnabled: tenantData?.isChangeRequestEnabled ?? false,
       // Group
       isPwdEnabled: tenantData?.isPwdEnabled ?? true,
       isSSOEnabled: tenantData?.isSSOEnabled ?? false,

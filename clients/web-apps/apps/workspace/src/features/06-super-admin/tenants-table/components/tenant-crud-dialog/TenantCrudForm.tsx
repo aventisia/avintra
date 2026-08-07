@@ -29,6 +29,7 @@ import {
   effectiveOnProps,
   idProps,
   idleSessionTimeoutMinutesProps,
+  isChangeRequestEnabledProps,
   isDisabledProps,
   isIdleSessionTimeoutEnabledProps,
   isPwdEnabledProps,
@@ -129,6 +130,9 @@ export const TenantCrudForm = ({ rowId, crudAction }: TenantCrudFormProps) => {
 
       {/* Is TwoFA Enabled*/}
       <SwitchField {...isTwoFAEnabledProps} />
+
+      {/* Is Change Request Enabled */}
+      <SwitchField {...isChangeRequestEnabledProps} />
 
       {/* Is Password Enabled */}
       <SwitchField {...isPwdEnabledProps} />

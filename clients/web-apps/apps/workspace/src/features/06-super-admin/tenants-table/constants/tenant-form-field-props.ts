@@ -65,6 +65,14 @@ export const isTwoFAEnabledProps: SwitchFieldProps = {
     "If enabled, all users will need an additional verification step (e.g., one time password via email or code from an authenticator app) to log in, enhancing security",
 };
 
+// Is Change Request Enabled
+export const isChangeRequestEnabledProps: SwitchFieldProps = {
+  name: "isChangeRequestEnabled",
+  label: "Enable Change Requests",
+  description:
+    "If enabled, Tenant Admins can create Change Request tickets",
+};
+
 // Is Password Enabled
 export const isPwdEnabledProps: SwitchFieldProps = {
   name: "isPwdEnabled",
