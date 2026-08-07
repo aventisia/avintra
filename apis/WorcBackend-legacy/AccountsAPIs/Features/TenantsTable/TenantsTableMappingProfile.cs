@@ -14,6 +14,7 @@ public class TenantsTableMappingProfile : IRegister
 
         // Mapping profile to create or update tenant record
         config.NewConfig<TenantsTableDto, Tenant>()
+            .Ignore(dest => dest.ContainerName)
             .Ignore(dest => dest.Id)
             .Ignore(dest => dest.CreatedOn)
             .Ignore(dest => dest.LastModifiedOn)

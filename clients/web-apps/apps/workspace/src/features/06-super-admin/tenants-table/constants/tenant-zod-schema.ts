@@ -46,6 +46,7 @@ export const tenantZodSchema = z
     renewalDate: z.date(),
     expiresOn: z.date().optional(),
     isTwoFAEnabled: z.boolean().optional(),
+    isChangeRequestEnabled: z.boolean().optional(),
     // Group
     isPwdEnabled: z.boolean().optional(),
     isSSOEnabled: z.boolean().optional(),

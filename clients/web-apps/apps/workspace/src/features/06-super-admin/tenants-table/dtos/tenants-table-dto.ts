@@ -32,6 +32,8 @@ export interface TenantsTableDto {
   isIdleSessionTimeoutEnabled?: boolean;
   idleSessionTimeoutMinutes?: number;
 
+  isChangeRequestEnabled?: boolean;
+
   dbOption?: DatabaseOptionsEnum;
   dbNamePrefix?: string;
   dbUserId?: string;

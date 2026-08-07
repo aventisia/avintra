@@ -107,6 +107,12 @@ public class TenantsTableDto
     public bool? IsDisabled { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether Change Requests are enabled for this tenant.
+    /// When disabled, Tenant Admins cannot create Change Request tickets.
+    /// </summary>
+    public bool? IsChangeRequestEnabled { get; set; }
+
+    /// <summary>
     /// Gets or sets the username of the user who created the tenant record. 
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
@@ -163,7 +169,8 @@ public class TenantsTableDto
     /// <summary>
     /// Gets or sets a flag indicating if system default records are allowed to be modified.
     /// </summary>
-    public bool IsEditable { get; set; }
+    public bool IsEditable { get; set; } = true;
+
 
     /// <summary>
     /// Gets or sets the database credentials for the Isolated/DedicatedServer option.
