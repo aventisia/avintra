@@ -44,7 +44,7 @@ import { TenantPage } from "./pages/05-tenant-admin/TenantPage";
 import { TenantTemplatesApprovalPage } from "./pages/05-tenant-admin/TenantTemplatesApprovalPage";
 import { UsersPage } from "./pages/05-tenant-admin/UsersPage";
 import { CreditPlansPage } from "./pages/06-super-admin/CreditPlansPage";
-import { OnPremLLMPage } from "./pages/06-super-admin/OnPremLLMPage";
+
 import { PublicTemplatesApprovalPage } from "./pages/06-super-admin/PublicTemplatesApprovalPage";
 import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
@@ -256,10 +256,6 @@ const routerConfig: RouteObject[] = [
           {
             path: "integrations",
             element: <AppIntegrationsPage />,
-          },
-          {
-            path: "on-prem-models",
-            element: <OnPremLLMPage />,
           },
           {
             path: "model-providers",

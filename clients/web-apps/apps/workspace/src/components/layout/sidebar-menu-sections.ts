@@ -19,7 +19,6 @@ import {
   LibraryIcon,
   MonitorPlayIcon,
   PuzzleIcon,
-  ServerIcon,
   Shield,
   Wallet,
   Workflow,
@@ -233,13 +232,6 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
             },
           ] as SidebarMenuItemType[])
         : []),
-      {
-        permissions: ["TA"],
-        Icon: ServerIcon,
-        name: "on-prem models",
-        route: "/tenant/on-prem-models",
-        type: ["Commercial", "Enterprise"],
-      },
       {
         permissions: ["TA"],
         Icon: Cpu,

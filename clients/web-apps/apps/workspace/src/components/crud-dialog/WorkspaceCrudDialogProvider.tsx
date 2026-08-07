@@ -22,7 +22,7 @@ import { getDialogHeadingDescription as getSaTicketDialogHeadingDescription } fr
 import { getDialogHeadingDescription as getRoleDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/roles-table/constants";
 import { getDialogHeadingDescription as getUserDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/users-table/constants";
 import { getDialogHeadingDescription as getCreditPlanDialogHeadingDescription } from "@/features/06-super-admin/credit-plans-table/constants";
-import { getDialogHeadingDescription as getOnPremLLMDialogHeadingDescription } from "@/features/06-super-admin/on-prem-llm-table/constants";
+
 import { getDialogHeadingDescription as getSubPlansDialogHeadingDescription } from "@/features/06-super-admin/subscription-plans-table/constants";
 import { getDialogHeadingDescription as getTenantDialogHeadingDescription } from "@/features/06-super-admin/tenants-table/constants";
 import { getDialogHeadingDescription as getTenantInstanceDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant-instance/constants";
@@ -96,11 +96,6 @@ const WebhookTriggerCrudDialogContent = lazy(() =>
 const CreditPlanCrudDialogContent = lazy(() =>
   import("@/features/06-super-admin/credit-plans-table/components/credit-plans-crud-dialog/CreditPlanCrudDialogContent").then(
     (m) => ({ default: m.CreditPlanCrudDialogContent }),
-  ),
-);
-const OnPremCrudDialogContent = lazy(() =>
-  import("@/features/06-super-admin/on-prem-llm-table/components/on-prem-crud-dialog/OnPremCrudDialogContent").then(
-    (m) => ({ default: m.OnPremCrudDialogContent }),
   ),
 );
 const SubPlansCrudDialogContent = lazy(() =>
@@ -224,11 +219,6 @@ const crudDialogRegistry: CrudDialogRegistry = {
     maxWidth: "!max-w-[36rem]",
     getHeader: getCreditPlanDialogHeadingDescription,
     Content: CreditPlanCrudDialogContent,
-  },
-  onPremLLM: {
-    maxWidth: "!max-w-[36rem]",
-    getHeader: getOnPremLLMDialogHeadingDescription,
-    Content: OnPremCrudDialogContent,
   },
   subscriptionPlan: {
     maxWidth: "!max-w-[36rem]",

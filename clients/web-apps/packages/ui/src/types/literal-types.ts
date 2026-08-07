@@ -36,7 +36,6 @@ type CrudEntityKey =
   | "timeTrigger"
   | "webhookTrigger"
   | "creditPlan"
-  | "onPremLLM"
   | "subscriptionPlan"
   | "tenant"
   | "supportTicket"
