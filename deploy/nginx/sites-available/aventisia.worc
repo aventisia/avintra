@@ -74,6 +74,18 @@ server
 		try_files $uri $uri.html $uri/ /index.html =404;
 	}
 
+	# ----------------- Static files / downloads -----------------
+	location /files/ {
+		alias /var/www/aventisia.com/files/;
+		# Large self-contained runner zips may take time on slower connections.
+		send_timeout 300s;
+		client_body_timeout 300s;
+		# Disable gzip for binary downloads; the zip is already compressed.
+		gzip off;
+		# Allow byte-range requests for resumable downloads.
+		add_header Accept-Ranges bytes;
+	}
+
 	# ----------------- Default -----------------
 	location = / {
 		return 301 /accounts/;

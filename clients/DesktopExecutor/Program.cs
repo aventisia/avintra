@@ -262,64 +262,6 @@ static ExecutorMode ParseMode(string[] args)
     return ExecutorMode.Run;
 }
 
-static bool IsDotNet8RuntimeInstalled()
-{
-    try
-    {
-        // Prefer the registry: .NET host stores installed runtime versions under
-        // HKLM\SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedHost on 64-bit Windows.
-        using var baseKey = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(@"SOFTWARE\dotnet\Setup\InstalledVersions\x64");
-        if (baseKey?.GetValue("sharedHost") is string sharedHostValue && !string.IsNullOrWhiteSpace(sharedHostValue))
-        {
-            return true;
-        }
-
-        // Fallback: run `dotnet --list-runtimes` and look for a .NET 8 runtime line.
-        using var process = new System.Diagnostics.Process();
-        process.StartInfo.FileName = "dotnet";
-        process.StartInfo.Arguments = "--list-runtimes";
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.RedirectStandardError = true;
-        process.StartInfo.CreateNoWindow = true;
-        process.Start();
-
-        var output = process.StandardOutput.ReadToEnd();
-        process.WaitForExit(5000);
-
-        foreach (var line in output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries))
-        {
-            if (line.StartsWith("Microsoft.NETCore.App 8.", StringComparison.OrdinalIgnoreCase) ||
-                line.StartsWith("Microsoft.WindowsDesktop.App 8.", StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    catch
-    {
-        // If the check itself fails (e.g. registry access denied, dotnet not on PATH),
-        // assume the runtime is present so we don't block a valid install unnecessarily.
-        return true;
-    }
-}
-
-static void PrintDotNet8PrerequisiteError()
-{
-    Console.Error.WriteLine("Error: .NET 8 runtime is not installed on this machine.");
-    Console.Error.WriteLine("Install it before registering the AvintraDesktopRunner service.");
-    Console.Error.WriteLine();
-    Console.Error.WriteLine("Option 1 - winget (recommended):");
-    Console.Error.WriteLine("  winget install Microsoft.DotNet.Runtime.8 --source winget");
-    Console.Error.WriteLine();
-    Console.Error.WriteLine("Option 2 - Manual:");
-    Console.Error.WriteLine("  https://dotnet.microsoft.com/download/dotnet/8.0/runtime");
-    Console.Error.WriteLine();
-    Console.Error.WriteLine("If you are certain the runtime is installed, re-run with --skip-runtime-check.");
-}
-
 static int RunServiceInstaller(string[] args, bool install)
 {
     try
@@ -349,13 +291,6 @@ static int RunServiceInstaller(string[] args, bool install)
 
         if (install)
         {
-            var skipRuntimeCheck = args.Contains("--skip-runtime-check", StringComparer.OrdinalIgnoreCase);
-            if (!skipRuntimeCheck && !IsDotNet8RuntimeInstalled())
-            {
-                PrintDotNet8PrerequisiteError();
-                return 2;
-            }
-
             var installOptions = TryParseInstallArguments(args)
                 ?? PromptForInstallParameters();
 
@@ -612,7 +547,6 @@ static void PrintUsage()
     Console.Error.WriteLine("  --apiKey <key>           Tenant API key (required)");
     Console.Error.WriteLine("  --tenantId <guid>        Tenant ID (required)");
     Console.Error.WriteLine("  --linkedUsername <name>  Linked workspace username (required)");
-    Console.Error.WriteLine("  --skip-runtime-check     Skip the .NET 8 runtime prerequisite check");
     Console.Error.WriteLine("");
     Console.Error.WriteLine("Run options:");
     Console.Error.WriteLine("  --appBaseUrl <url>       Backend API base URL (required)");

@@ -160,7 +160,7 @@ Build modes for Node apps:
 - `uat` → `staging`
 - `main` → `production`
 
-Manual build parameter `REPOS_TO_BUILD` accepts: `accounts_api`, `workspace_api`, `llmpipeline_api`, `docs`, `web_apps`, `studio`, `aspnet_toolkit`.
+Manual build parameter `REPOS_TO_BUILD` accepts: `accounts_api`, `workspace_api`, `llmpipeline_api`, `docs`, `web_apps`, `desktop_executor`.
 
 ## Verified tool versions
 

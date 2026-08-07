@@ -291,25 +291,15 @@ const RunnerInstallRow = ({
               </p>
               <p className="mb-2 text-sm text-slate-500">
                 Paste and run the block below. It sets your environment variables, downloads the
-                provisioning script, and runs it. The script installs winget and the .NET 8 runtime
-                automatically if they're missing, downloads and extracts the runner, registers it as
-                a Windows service, and starts it.
+                provisioning script, and runs it. The script downloads and extracts the runner
+                (which bundles the .NET 8 runtime), registers it as a Windows service, and starts
+                it.
               </p>
               <OneLinerBlock command={powershellOneLiner} />
               <p className="mb-3 mt-1 text-sm text-slate-500">
                 Replace{" "}
                 <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">&lt;API_KEY&gt;</code>{" "}
-                with your tenant API key (see FAQ). If the script can't install winget or .NET 8
-                automatically (locked-down machines), install .NET 8 manually from{" "}
-                <a
-                  href="https://dotnet.microsoft.com/en-us/download/dotnet/8.0"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-primary hover:underline"
-                >
-                  dotnet.microsoft.com
-                </a>{" "}
-                and re-run the command.
+                with your tenant API key (see FAQ).
               </p>
             </li>
             <li>
@@ -520,7 +510,7 @@ const DownloadContent: React.FC<{
               <RunnerInstallRow
                 artifact={desktopExecutorArtifact}
                 title="Desktop Runner"
-                description="Headless Windows service that runs published flows in the background on this machine. The install script installs .NET 8 and winget automatically if they're missing."
+                description="Headless Windows service that runs published flows in the background on this machine."
                 metadata={buildArtifactMetadata(desktopExecutorArtifact, desktopExecutorVersion)}
                 icon={<Terminal className="h-5 w-5" />}
                 iconClass="bg-slate-100 text-slate-600"
@@ -556,22 +546,18 @@ const DownloadContent: React.FC<{
               />
               <FAQItem
                 value="api-key"
-                question="Where do I find my API key?"
+                question="Where do I find API key?"
                 answer={
                   <>
-                    Your tenant API key is available in the workspace under your account or tenant
-                    settings. You'll need it when running the install command — replace the{" "}
+                    User with Orchestrator manager access can create an API key with Machine
+                    Authentication permission. You'll need it when running the install command —
+                    replace the{" "}
                     <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
                       &lt;API_KEY&gt;
                     </code>{" "}
                     placeholder with it.
                   </>
                 }
-              />
-              <FAQItem
-                value="dotnet"
-                question="Does the Runner require .NET 8?"
-                answer="Yes. The Runner is built on .NET 8. The install script checks for the runtime and installs it via winget if it's missing. If winget can't install it automatically, you can install .NET 8 manually from dotnet.microsoft.com and re-run the command."
               />
               <FAQItem
                 value="update"
@@ -598,7 +584,7 @@ const DownloadContent: React.FC<{
               <FAQItem
                 value="platforms"
                 question="When will macOS and Linux be supported?"
-                answer="We are actively testing macOS and Linux builds. Join the waitlist to get notified when they are ready."
+                answer="We are actively testing macOS and Linux builds. Please check back soon for updates."
               />
             </Accordion>
           </>
