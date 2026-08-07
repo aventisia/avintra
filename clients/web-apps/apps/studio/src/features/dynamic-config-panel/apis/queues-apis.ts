@@ -13,3 +13,12 @@ export const getQueues = () => {
     .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
+
+/**
+ * Retrieves list of queues assigned to a specific agent (flow version).
+ */
+export const getQueuesByAgent = (flowVersionId: string) => {
+  return axiosInstance
+    .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/by-agent/${flowVersionId}`)
+    .then((res) => res.data);
+};

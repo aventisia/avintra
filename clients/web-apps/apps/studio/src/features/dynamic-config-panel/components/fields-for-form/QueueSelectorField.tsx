@@ -3,14 +3,16 @@ import { ISelectOption } from "@avplatform/ui/types";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
+import { useShallow } from "zustand/react/shallow";
 
 import {
   SearchableSelectField,
   SearchableSelectFieldProps,
 } from "@/react-toolkit/ui/searchable-select/SearchableSelectField.tsx";
 
-import { getQueues } from "../../apis/queues-apis.ts";
+import { getQueuesByAgent } from "../../apis/queues-apis.ts";
 import { InputSchemaField, QueuesTableDto } from "../../dtos/queues-table-dto.ts";
+import { useCurrentFlowStore } from "@/stores/current-flow-store.ts";
 
 interface QueueSelectorFieldProps extends SearchableSelectFieldProps, BaseFieldProps {
   /** The name of the form field. */
@@ -49,10 +51,17 @@ const QueueSelectorField = ({ name, selectOptions, ...props }: QueueSelectorFiel
     }, {});
   };
 
+  const { currentFlow } = useCurrentFlowStore(
+    useShallow((state) => ({
+      currentFlow: state.currentFlow,
+    })),
+  );
+
   const { data, isLoading } = useQuery({
-    queryKey: ["agent-queues"],
-    queryFn: getQueues,
+    queryKey: ["agent-queues", currentFlow.versionId],
+    queryFn: () => getQueuesByAgent(currentFlow.versionId),
     select: (response) => response?.data,
+    enabled: Boolean(currentFlow.versionId),
   });
 
   // Form context
