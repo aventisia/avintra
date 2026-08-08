@@ -19,6 +19,6 @@ export interface ProductManifestDto {
 }
 
 export interface DownloadManifestDto {
-  desktopApp: ProductManifestDto;
-  desktopExecutor: ProductManifestDto;
+  desktop: ProductManifestDto;
+  runner: ProductManifestDto;
 }

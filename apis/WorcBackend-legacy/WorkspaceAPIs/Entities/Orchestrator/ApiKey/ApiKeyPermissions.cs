@@ -6,7 +6,7 @@ namespace WorkspaceAPIs.Entities;
 public class ApiKeyPermissions
 {
     /// <summary>
-    /// Allow desktop executors to authenticate machines using this key.
+    /// Allow runner apps to authenticate machines using this key.
     /// </summary>
     public bool MachineAuth { get; set; }
 

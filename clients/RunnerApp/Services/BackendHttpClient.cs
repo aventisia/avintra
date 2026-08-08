@@ -2,7 +2,7 @@ using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using ExecutorLibrary.FlowProcessor.Models;
 
-namespace DesktopExecutor.Services;
+namespace RunnerApp.Services;
 
 public class BackendHttpClient : IBackendClient
 {

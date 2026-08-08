@@ -1,6 +1,6 @@
-namespace DesktopExecutor;
+namespace RunnerApp;
 
-public class DesktopExecutorOptions
+public class RunnerAppOptions
 {
     // Backend API base URL. Required for all modes.
     public string AppBaseUrl { get; set; } = string.Empty;

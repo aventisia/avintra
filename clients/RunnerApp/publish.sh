@@ -1,21 +1,24 @@
 #!/usr/bin/env bash
-# Publishes the DesktopExecutor as a self-contained, single-file Windows binary and
+# Publishes the RunnerApp as a self-contained, single-file Windows binary and
 # packages it into a versioned zip ready for upload/distribution.
 #
 # Usage:
 #   ./publish.sh [--version <ver>] [--runtime <rid>] [--output <dir>]
 #
 # Defaults:
-#   --version  reads the <Version> from DesktopExecutor.csproj (e.g. 0.1.0)
+#   --version  reads the <Version> from RunnerApp.csproj (e.g. 0.1.0)
 #   --runtime  win-x64
 #   --output   ./artifacts
 #
 # Output:
-#   <output>/AvintraDesktopRunner_<version>_<runtime>.zip
+#   <output>/AvintraRunnerService_<version>_<runtime>.zip
 #
-# The published single-file executable is renamed to AvintraDesktopRunner after
-# publish while the project keeps the DesktopExecutor name internally. This avoids
-# an "Ambiguous project name" NuGet error and matches the UI label "Desktop Runner".
+# The published single-file executable is renamed to AvintraRunnerService after
+# publish while the project keeps the RunnerApp name internally. This avoids
+# an "Ambiguous project name" NuGet error. The service name and artifact prefix
+# use "AvintraRunnerService" to distinguish the runner service process from the
+# Tauri desktop app (which extracts this same zip and renames the inner exe to
+# AvintraRunnerApp.exe before launching it).
 #
 # The publish is SELF-CONTAINED: the .NET 8 runtime is embedded in the single-file
 # executable, so the target machine does NOT need .NET 8 installed. This removes the
@@ -26,7 +29,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CSPROJ="$SCRIPT_DIR/DesktopExecutor.csproj"
+CSPROJ="$SCRIPT_DIR/RunnerApp.csproj"
 
 VERSION=""
 RUNTIME="win-x64"
@@ -61,16 +64,16 @@ if [[ -z "$VERSION" ]]; then
 fi
 
 if [[ -z "$VERSION" ]]; then
-  echo "error: cannot determine version. Set <Version> in DesktopExecutor.csproj or pass --version." >&2
+  echo "error: cannot determine version. Set <Version> in RunnerApp.csproj or pass --version." >&2
   exit 1
 fi
 
 if [[ ! -f "$CSPROJ" ]]; then
-  echo "error: DesktopExecutor project not found at $CSPROJ" >&2
+  echo "error: RunnerApp project not found at $CSPROJ" >&2
   exit 1
 fi
 
-echo "Publishing DesktopExecutor ($RUNTIME, self-contained) v$VERSION ..."
+echo "Publishing RunnerApp ($RUNTIME, self-contained) v$VERSION ..."
 
 PUBLISH_DIR="$(mktemp -d)"
 trap 'rm -rf "$PUBLISH_DIR"' EXIT
@@ -86,18 +89,18 @@ dotnet publish "$CSPROJ" \
 
 mkdir -p "$OUTPUT_DIR"
 
-# Rename the published single-file executable to AvintraDesktopRunner.
+# Rename the published single-file executable to AvintraRunnerService.
 # We do this after publish instead of setting AssemblyName to avoid an
 # "Ambiguous project name" conflict during NuGet restore.
-EXENAME="DesktopExecutor"
-NEWEXENAME="AvintraDesktopRunner"
+EXENAME="RunnerApp"
+NEWEXENAME="AvintraRunnerService"
 if [[ "$RUNTIME" == win-* ]]; then
   EXENAME="${EXENAME}.exe"
   NEWEXENAME="${NEWEXENAME}.exe"
 fi
 mv "$PUBLISH_DIR/$EXENAME" "$PUBLISH_DIR/$NEWEXENAME" 2>/dev/null || true
 
-ZIP_NAME="AvintraDesktopRunner_${VERSION}_${RUNTIME}.zip"
+ZIP_NAME="AvintraRunnerService_${VERSION}_${RUNTIME}.zip"
 ZIP_PATH="$OUTPUT_DIR/$ZIP_NAME"
 
 # Zip the published output (single-file exe). The zip is what gets distributed/downloaded.
@@ -118,23 +121,12 @@ ls -lh "$ZIP_PATH"
 # Copy the install provisioning script into the artifacts output so it can be
 # uploaded to the server's scripts/ directory alongside the runner zip. This
 # keeps the served script in sync with the source of truth.
-INSTALL_SCRIPT="$SCRIPT_DIR/Install-AvintraDesktopRunner.ps1"
+INSTALL_SCRIPT="$SCRIPT_DIR/Install-AvintraRunnerService.ps1"
 if [[ -f "$INSTALL_SCRIPT" ]]; then
-  cp "$INSTALL_SCRIPT" "$OUTPUT_DIR/Install-AvintraDesktopRunner.ps1"
-  echo "Copied install script to $OUTPUT_DIR/Install-AvintraDesktopRunner.ps1"
+  cp "$INSTALL_SCRIPT" "$OUTPUT_DIR/Install-AvintraRunnerService.ps1"
+  echo "Copied install script to $OUTPUT_DIR/Install-AvintraRunnerService.ps1"
 else
-  echo "warning: Install-AvintraDesktopRunner.ps1 not found at $INSTALL_SCRIPT" >&2
-fi
-
-# Copy the download-only provisioning script (used by the Tauri desktop app on
-# first launch) into the artifacts output so it can be uploaded alongside the
-# install script.
-DOWNLOAD_SCRIPT="$SCRIPT_DIR/Download-AvintraDesktopRunner.ps1"
-if [[ -f "$DOWNLOAD_SCRIPT" ]]; then
-  cp "$DOWNLOAD_SCRIPT" "$OUTPUT_DIR/Download-AvintraDesktopRunner.ps1"
-  echo "Copied download script to $OUTPUT_DIR/Download-AvintraDesktopRunner.ps1"
-else
-  echo "warning: Download-AvintraDesktopRunner.ps1 not found at $DOWNLOAD_SCRIPT" >&2
+  echo "warning: Install-AvintraRunnerService.ps1 not found at $INSTALL_SCRIPT" >&2
 fi
 
 # Print the published binary names for quick verification.

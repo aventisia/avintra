@@ -5,7 +5,7 @@ using ExecutorLibrary.Helpers;
 using ExecutorLibrary.Models;
 using NodeLibrary.Core;
 
-namespace DesktopExecutor.Services;
+namespace RunnerApp.Services;
 
 public class DesktopExecutionEngine : IExecutionEngine
 {

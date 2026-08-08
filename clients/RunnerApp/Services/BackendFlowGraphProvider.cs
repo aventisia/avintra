@@ -2,7 +2,7 @@ using ExecutorLibrary.FlowProcessor.Interfaces;
 using ExecutorLibrary.Helpers;
 using ExecutorLibrary.Models;
 
-namespace DesktopExecutor.Services;
+namespace RunnerApp.Services;
 
 public class BackendFlowGraphProvider : IFlowGraphProvider
 {

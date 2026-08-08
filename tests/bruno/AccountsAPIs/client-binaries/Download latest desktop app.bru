@@ -1,0 +1,11 @@
+meta {
+  name: Download latest desktop app
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/binaries/desktop/download
+  body: none
+  auth: none
+}

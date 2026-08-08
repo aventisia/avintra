@@ -6,7 +6,7 @@
  * fixed object rather than a dynamic JSON document.
  */
 export interface ApiKeyPermissions {
-  /** Allow desktop executors to authenticate machines using this key. */
+  /** Allow runner apps to authenticate machines using this key. */
   machineAuth: boolean;
 
   /** Allow external apps to trigger webhook-based jobs with this key. */

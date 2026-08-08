@@ -42,7 +42,7 @@ def hasChangesInPath(path) {
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,docs,web_apps,desktop_executor). web_apps covers accounts, workspace, and studio apps.')
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, and studio apps.')
     }
     stages {
         stage('Detect Changes') {
@@ -61,7 +61,7 @@ pipeline {
                         env.BUILD_LLMPIPELINE_API = reposToBuild.contains('llmpipeline_api') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace') || reposToBuild.contains('studio')) ? 'true' : 'false'
-                        env.BUILD_DESKTOP_EXECUTOR = reposToBuild.contains('desktop_executor') ? 'true' : 'false'
+                        env.BUILD_RUNNER_APP = reposToBuild.contains('runner_app') ? 'true' : 'false'
                     } else {
                         echo 'Automatic build - detecting changes...'
                         
@@ -74,7 +74,7 @@ pipeline {
                         env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = hasChangesInPath('clients/web-apps') ? 'true' : 'false'
-                        env.BUILD_DESKTOP_EXECUTOR = hasChangesInPath('clients/DesktopExecutor') ? 'true' : 'false'
+                        env.BUILD_RUNNER_APP = hasChangesInPath('clients/RunnerApp') ? 'true' : 'false'
                     }
                     
                     echo """
@@ -84,7 +84,7 @@ pipeline {
                     - LLM Pipeline API: ${env.BUILD_LLMPIPELINE_API}
                     - Docs Client: ${env.BUILD_DOCS_CLIENT}
                     - Web Apps: ${env.BUILD_WEB_APPS}
-                    - Desktop Executor: ${env.BUILD_DESKTOP_EXECUTOR}
+                    - Runner App: ${env.BUILD_RUNNER_APP}
                     """.stripIndent()
                 }
             }
@@ -354,35 +354,34 @@ pipeline {
         }
         
         // ================================
-        // Desktop Executor Build Stage
+        // Runner App Build Stage
         // ================================
         
-        stage('Desktop Executor') {
+        stage('Runner App') {
             when {
-                expression { env.BUILD_DESKTOP_EXECUTOR == 'true' }
+                expression { env.BUILD_RUNNER_APP == 'true' }
             }
             agent any
             steps {
                 script {
-                    echo 'Publishing DesktopExecutor...'
-                    sh "set -e; bash ${WORKSPACE}/clients/DesktopExecutor/publish.sh"
+                    echo 'Publishing RunnerApp...'
+                    sh "set -e; bash ${WORKSPACE}/clients/RunnerApp/publish.sh"
 
                     sshagent(credentials: ['aventisia_vps_ssh']) {
                         def targetServers = getTargetServers(env.BRANCH_NAME)
-                        echo "Uploading DesktopExecutor to ${targetServers.size()} server(s)..."
+                        echo "Uploading RunnerApp to ${targetServers.size()} server(s)..."
                         def targetDir = '/var/www/aventisia.com/files/binaries'
                         def scriptsDir = '/var/www/aventisia.com/files/scripts'
 
                         targetServers.each { server ->
                             def zipPath = sh(
-                                script: "ls -t ${WORKSPACE}/clients/DesktopExecutor/artifacts/AvintraDesktopRunner_*.zip | head -n1",
+                                script: "ls -t ${WORKSPACE}/clients/RunnerApp/artifacts/AvintraRunnerService_*.zip | head -n1",
                                 returnStdout: true
                             ).trim()
                             sh "ssh admin@${server} 'mkdir -p ${targetDir} ${scriptsDir}'"
                             sh "rsync -avz --timeout=300 ${zipPath} admin@${server}:${targetDir}/"
-                            sh "rsync -avz --timeout=300 ${WORKSPACE}/clients/DesktopExecutor/artifacts/Install-AvintraDesktopRunner.ps1 admin@${server}:${scriptsDir}/"
-                            sh "rsync -avz --timeout=300 ${WORKSPACE}/clients/DesktopExecutor/artifacts/Download-AvintraDesktopRunner.ps1 admin@${server}:${scriptsDir}/"
-                            echo "Successfully uploaded DesktopExecutor to ${server}"
+                            sh "rsync -avz --timeout=300 ${WORKSPACE}/clients/RunnerApp/artifacts/Install-AvintraRunnerService.ps1 admin@${server}:${scriptsDir}/"
+                            echo "Successfully uploaded RunnerApp to ${server}"
                         }
                     }
                 }

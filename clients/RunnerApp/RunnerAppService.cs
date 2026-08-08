@@ -1,26 +1,26 @@
-using DesktopExecutor.Services;
+using RunnerApp.Services;
 using ExecutorLibrary.FlowProcessor.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace DesktopExecutor;
+namespace RunnerApp;
 
 /// <summary>
 /// Continuous worker that keeps the machine registered with the backend, stays connected to the
 /// OrchestratorHub, and executes any job it is assigned. Runs for the lifetime of the Windows service.
 /// </summary>
-public class DesktopExecutorService : BackgroundService
+public class RunnerAppService : BackgroundService
 {
-    private readonly DesktopExecutorOptions _options;
-    private readonly ILogger<DesktopExecutorService> _logger;
+    private readonly RunnerAppOptions _options;
+    private readonly ILogger<RunnerAppService> _logger;
     private readonly ILoggerFactory _loggerFactory;
 
     // Cancellation source for the job currently being executed; cancelled when an Abort/Killed command arrives.
     private CancellationTokenSource? _activeJobCts;
 
-    public DesktopExecutorService(
-        DesktopExecutorOptions options,
-        ILogger<DesktopExecutorService> logger,
+    public RunnerAppService(
+        RunnerAppOptions options,
+        ILogger<RunnerAppService> logger,
         ILoggerFactory loggerFactory)
     {
         _options = options;
@@ -30,7 +30,7 @@ public class DesktopExecutorService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("DesktopExecutorService started in {Mode} mode.", _options.IsServiceMode ? "service" : "single-shot");
+        _logger.LogInformation("RunnerAppService started in {Mode} mode.", _options.IsServiceMode ? "service" : "single-shot");
 
         var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
 
@@ -64,7 +64,7 @@ public class DesktopExecutorService : BackgroundService
             cts.Dispose();
         }
 
-        _logger.LogInformation("DesktopExecutorService stopped.");
+        _logger.LogInformation("RunnerAppService stopped.");
     }
 
     // One cycle: register machine, connect to hub, wait for a job command, execute it, report completion.
@@ -346,7 +346,7 @@ public class DesktopExecutorService : BackgroundService
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("DesktopExecutorService stopping...");
+        _logger.LogInformation("RunnerAppService stopping...");
         await base.StopAsync(cancellationToken);
     }
 }

@@ -2,8 +2,8 @@ namespace AccountsAPIs.DTOs;
 
 public class DownloadManifestDto
 {
-    public ProductManifestDto DesktopApp { get; set; } = new();
-    public ProductManifestDto DesktopExecutor { get; set; } = new();
+    public ProductManifestDto Desktop { get; set; } = new();
+    public ProductManifestDto Runner { get; set; } = new();
 }
 
 public class ProductManifestDto

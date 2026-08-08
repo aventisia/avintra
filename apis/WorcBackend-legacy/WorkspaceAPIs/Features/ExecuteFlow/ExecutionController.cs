@@ -34,7 +34,7 @@ public class ExecutionController : BaseApiController
     }
 
     // Starts a job (Created -> Running). This is an executor-only endpoint that is
-    // reachable with a machine JWT (dual auth: API key or JWT) so the desktop executor
+    // reachable with a machine JWT (dual auth: API key or JWT) so the runner app
     // can mark a job as running without requiring the OM role on the user account.
     [HttpPost("job/{jobId}/start")]
     [AllowAnonymous, ApiKeyAuthorize("machineAuth", allowJwtAuth: true)]

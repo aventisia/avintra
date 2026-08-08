@@ -131,6 +131,7 @@ public static class AppServicesExtension
         services.AddScoped<ISubscriptionService, SubscriptionService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IWebhookService, WebhookService>();
+        services.AddScoped<IClientBinariesService, ClientBinariesService>();
 
         // Common Services
         services.AddScoped<IUnitOfWork, UnitOfWork>();

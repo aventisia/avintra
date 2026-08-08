@@ -1,0 +1,11 @@
+meta {
+  name: Get runner install script
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/binaries/runner/script/Install-AvintraRunnerService.ps1
+  body: none
+  auth: none
+}

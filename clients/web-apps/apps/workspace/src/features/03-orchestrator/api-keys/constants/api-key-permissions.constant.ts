@@ -7,7 +7,7 @@ export const API_KEY_PERMISSION_ITEMS: PermissionItem[] = [
   {
     id: "machineAuth",
     label: "Machine Authentication",
-    description: "Allow desktop executors to authenticate machines using this key.",
+    description: "Allow runner apps to authenticate machines using this key.",
   },
   {
     id: "webhookTrigger",

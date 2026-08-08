@@ -91,7 +91,7 @@ public class FlowExecutionContext
     /// <summary>
     /// Resolves template expressions. If the value is a single {{expression}}, evaluates and returns
     /// the raw object (preserving type). If it contains mixed text and expressions, returns a resolved string.
-    /// This mirrors the desktop executor's ResolveTemplate behavior using DynamicExpresso.
+    /// This mirrors the runner app's ResolveTemplate behavior using DynamicExpresso.
     /// </summary>
     public object? ResolveTemplateObject(object? value)
     {

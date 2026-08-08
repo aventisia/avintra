@@ -10,18 +10,18 @@ Compact, repo-specific guidance for OpenCode sessions. If a fact is obvious from
 
 ## Solution / project boundaries
 
-| Area | Path | Entry / build | Notes |
-|------|------|---------------|-------|
-| .NET APIs | `apis/WorcBackend-legacy/` | `AspNetApis.sln` | AccountsAPIs (port 4000) + WorkspaceAPIs (port 4001), both reference `AspNetToolkit` |
-| Shared libs | `shared/NodeLibrary/`, `shared/ExecutorLibrary/`, `shared/NodeToJson/` | .NET 8 class libs / console app | Referenced by WorkspaceAPIs and NodeExecutor tools |
-| Python API | `apis/llmpipeline/` | `app/main.py` | FastAPI on port 4003, root path `/api` |
-| Web apps | `clients/web-apps/` | npm workspaces + Turborepo | `apps/accounts` (3001), `apps/workspace` (3002), shared packages under `packages/` |
-| Studio app | `clients/web-apps/apps/studio/` | Turborepo app (Vite) | port 3006 |
-| Documentation | `clients/docs/` | Next.js, port 3004 | Search index built by `pagefind` in `postbuild` |
-| Desktop app | `clients/desktop-app/` | Vite + Tauri (Rust) | dev port 2999, Tauri config in `src-tauri/` |
-| Node/RPA executor | `clients/NodeExecutor/` | Multiple `.sln` files | Windows-centric tooling (desktop RPA executor) |
-| API tests | `tests/bruno/` | Bruno collection | AccountsAPIs, WorkspaceAPIs, llmpipeline APIs |
-| Reverse proxy | `deploy/nginx/` | Dockerfile | Serves built studio dist; backend upstream via nginx config |
+| Area              | Path                                                                   | Entry / build                   | Notes                                                                                |
+| ----------------- | ---------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------ |
+| .NET APIs         | `apis/WorcBackend-legacy/`                                             | `AspNetApis.sln`                | AccountsAPIs (port 4000) + WorkspaceAPIs (port 4001), both reference `AspNetToolkit` |
+| Shared libs       | `shared/NodeLibrary/`, `shared/ExecutorLibrary/`, `shared/NodeToJson/` | .NET 8 class libs / console app | Referenced by WorkspaceAPIs and NodeExecutor tools                                   |
+| Python API        | `apis/llmpipeline/`                                                    | `app/main.py`                   | FastAPI on port 4003, root path `/api`                                               |
+| Web apps          | `clients/web-apps/`                                                    | npm workspaces + Turborepo      | `apps/accounts` (3001), `apps/workspace` (3002), shared packages under `packages/`   |
+| Studio app        | `clients/web-apps/apps/studio/`                                        | Turborepo app (Vite)            | port 3006                                                                            |
+| Documentation     | `clients/docs/`                                                        | Next.js, port 3004              | Search index built by `pagefind` in `postbuild`                                      |
+| Desktop app       | `clients/desktop-app/`                                                 | Vite + Tauri (Rust)             | dev port 2999, Tauri config in `src-tauri/`                                          |
+| Node/RPA executor | `clients/NodeExecutor/`                                                | Multiple `.sln` files           | Windows-centric tooling (desktop RPA executor)                                       |
+| API tests         | `tests/bruno/`                                                         | Bruno collection                | AccountsAPIs, WorkspaceAPIs, llmpipeline APIs                                        |
+| Reverse proxy     | `deploy/nginx/`                                                        | Dockerfile                      | Serves built studio dist; backend upstream via nginx config                          |
 
 ## Exact developer commands
 
@@ -160,7 +160,7 @@ Build modes for Node apps:
 - `uat` → `staging`
 - `main` → `production`
 
-Manual build parameter `REPOS_TO_BUILD` accepts: `accounts_api`, `workspace_api`, `llmpipeline_api`, `docs`, `web_apps`, `desktop_executor`.
+Manual build parameter `REPOS_TO_BUILD` accepts: `accounts_api`, `workspace_api`, `llmpipeline_api`, `docs`, `web_apps`, `runner_app`.
 
 ## Verified tool versions
 

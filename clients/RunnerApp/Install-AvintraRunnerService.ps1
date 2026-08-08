@@ -1,21 +1,26 @@
 #Requires -RunAsAdministrator
 <#
 .SYNOPSIS
-    Provisions AvintraDesktopRunner as a Windows service.
+    Provisions AvintraRunnerService as a Windows service.
 
 .DESCRIPTION
-    Downloads the Avintra Desktop Runner archive, extracts it to a fixed directory,
+    Downloads the Avintra Runner archive, extracts it to a fixed directory,
     registers it as a Windows service, and starts the service.
 
     The runner is published as a self-contained single-file binary, so the .NET 8
     runtime is bundled and does NOT need to be installed separately.
 
+    The service/artifact name "AvintraRunnerService" distinguishes the headless
+    runner service process from the Tauri desktop app, which extracts this same
+    archive and renames the inner executable to AvintraRunnerApp.exe before
+    launching it.
+
     Run this from an elevated PowerShell prompt. The script aborts if it is not
     running as Administrator.
 
 .PARAMETER RunnerZipUrl
-    URL of the AvintraDesktopRunner zip archive to download.
-    Example: https://cdn.example.com/AvintraDesktopRunner_0.1.81_win-x64.zip
+    URL of the AvintraRunnerService zip archive to download.
+    Example: https://cdn.example.com/AvintraRunnerService_0.1.81_win-x64.zip
 
     Optional. When omitted, the script resolves the latest available version at
     runtime from the backend and downloads that archive.
@@ -43,10 +48,10 @@
     Can also be supplied via the environment variable AVINTRA_LINKED_USERNAME.
 
 .PARAMETER InstallDir
-    Directory where the runner will be extracted. Default: C:\Program Files\AvintraDesktopRunner
+    Directory where the runner will be extracted. Default: C:\Program Files\AvintraRunnerService
 
 .PARAMETER ServiceName
-    Name of the Windows service. Default: AvintraDesktopRunner
+    Name of the Windows service. Default: AvintraRunnerService
 
 .PARAMETER DoNotStart
     Install the service but do not start it immediately.
@@ -59,12 +64,12 @@
         $env:AVINTRA_API_KEY = "my-api-key"
         $env:AVINTRA_TENANT_ID = "00000000-0000-0000-0000-000000000000"
         $env:AVINTRA_LINKED_USERNAME = "jdoe"
-        irm https://example.com/Install-AvintraDesktopRunner.ps1 | iex
+        irm https://example.com/Install-AvintraRunnerService.ps1 | iex
 
 .EXAMPLE
     Run the downloaded script with explicit parameters:
 
-        .\Install-AvintraDesktopRunner.ps1 `
+        .\Install-AvintraRunnerService.ps1 `
             -AppBaseUrl "https://api.avintra.com" `
             -ApiKey "my-api-key" `
             -TenantId "00000000-0000-0000-0000-000000000000" `
@@ -88,10 +93,10 @@ param (
     [string]$LinkedUsername = $env:AVINTRA_LINKED_USERNAME,
 
     [Parameter(Mandatory = $false)]
-    [string]$InstallDir = "C:\Program Files\AvintraDesktopRunner",
+    [string]$InstallDir = "C:\Program Files\AvintraRunnerService",
 
     [Parameter(Mandatory = $false)]
-    [string]$ServiceName = "AvintraDesktopRunner",
+    [string]$ServiceName = "AvintraRunnerService",
 
     [Parameter(Mandatory = $false)]
     [switch]$DoNotStart
@@ -132,7 +137,7 @@ function Resolve-RunnerZipUrl {
 
     Write-Step "Resolving latest runner version from backend..."
     $base = $AppBaseUrl.TrimEnd('/')
-    $latestUrl = "$base/accounts/api/desktop-app/desktop-executor/latest"
+    $latestUrl = "$base/accounts/api/binaries/runner/latest"
     $latest = Invoke-RestMethod -Uri $latestUrl -UseBasicParsing
 
     if ([string]::IsNullOrWhiteSpace($latest.url)) {
@@ -175,7 +180,7 @@ function Install-RunnerArchive {
 
     $tempDir = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), [System.Guid]::NewGuid().ToString("N"))
     New-Item -ItemType Directory -Path $tempDir -Force | Out-Null
-    $zipPath = Join-Path $tempDir "AvintraDesktopRunner.zip"
+    $zipPath = Join-Path $tempDir "AvintraRunnerService.zip"
 
     try {
         Invoke-WebRequest -Uri $Url -OutFile $zipPath -UseBasicParsing
@@ -258,7 +263,7 @@ function Start-ServiceIfRequested {
 
 # --- Main ----------------------------------------------------------------------
 
-Write-Step "Avintra Desktop Runner provisioning started"
+Write-Step "Avintra Runner Service provisioning started"
 
 if (-not (Test-IsAdministrator)) {
     throw "This script must be run as Administrator. Open PowerShell with 'Run as administrator' and try again."
@@ -268,7 +273,7 @@ $resolvedRunnerZipUrl = Resolve-RunnerZipUrl -AppBaseUrl $AppBaseUrl -ExplicitZi
 
 Install-RunnerArchive -Url $resolvedRunnerZipUrl -Destination $InstallDir
 
-$runnerExe = Join-Path $InstallDir "AvintraDesktopRunner.exe"
+$runnerExe = Join-Path $InstallDir "AvintraRunnerService.exe"
 if (-not (Test-Path $runnerExe)) {
     throw "Runner executable not found at $runnerExe. The archive may be invalid."
 }
