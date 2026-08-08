@@ -1,7 +1,7 @@
 use tauri::Manager;
 
 mod commands;
-mod executor_management;
+mod runner_management;
 mod updater_commands;
 mod websocket;
 
@@ -26,11 +26,11 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
-            commands::launch_desktop_executor,
+            commands::launch_runner_app,
             commands::launch_ui_inspector,
             commands::get_user_metadata,
-            executor_management::ensure_desktop_executor,
-            executor_management::get_desktop_executor_version,
+            runner_management::check_runner_app,
+            runner_management::download_runner_app,
             websocket::get_websocket_port,
             // updater commands
             updater_commands::check_update_for_domain,

@@ -13,12 +13,18 @@ const isTauri = () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in 
 /** Component renders a TauriAppFooter */
 const TauriAppFooter = () => {
   const [metadata, setMetadata] = useState<UserMetaData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
 
     const getUserMetadata = async () => {
-      if (!isTauri()) return;
+      if (!isTauri()) {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+        return;
+      }
 
       try {
         const data = await invoke<UserMetaData>("get_user_metadata");
@@ -28,6 +34,10 @@ const TauriAppFooter = () => {
       } catch (err) {
         if (import.meta.env.DEV) {
           console.error("Tauri metadata error:", err);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
         }
       }
     };
@@ -39,26 +49,43 @@ const TauriAppFooter = () => {
     };
   }, []);
 
-  if (!metadata) {
-    return <div className="h-6" />;
+  const renderMetadata = metadata ?? {
+    app_version: "0.0.0-dev",
+    username: "dev-user",
+    os_id: "browser",
+  };
+
+  if (!isTauri() && !import.meta.env.DEV) {
+    return null;
+  }
+
+  if (isLoading) {
+    return (
+      <footer className="fixed bottom-0 left-0 right-0 flex items-center justify-between border-t border-border/50 bg-card/80 px-6 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
+        <span>Loading metadata...</span>
+      </footer>
+    );
   }
 
   return (
-    <div className="fixed bottom-3 left-4 right-4 flex items-center justify-between text-sm">
-      <p className="text-muted-foreground">Version {metadata.app_version || "NA"}</p>
+    <footer className="fixed bottom-0 left-0 right-0 flex items-center justify-between border-t border-border/50 bg-card/80 px-6 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
+      <span>
+        <span className="opacity-70">Version</span>{" "}
+        <span className="font-mono">{renderMetadata.app_version || "NA"}</span>
+      </span>
 
-      <div className="flex items-center gap-2">
-        <p className="text-muted-foreground">
-          <span className="opacity-80">User:</span> <span>{metadata.username || "NA"}</span>
-        </p>
-
-        <span className="text-muted-foreground">.</span>
-
-        <p className="text-muted-foreground">
-          <span className="opacity-80">OS ID:</span> <span>{metadata.os_id || "NA"}</span>
-        </p>
+      <div className="flex items-center gap-3">
+        <span>
+          <span className="opacity-70">User:</span>{" "}
+          <span className="font-mono">{renderMetadata.username || "NA"}</span>
+        </span>
+        <span className="opacity-40">·</span>
+        <span>
+          <span className="opacity-70">OS ID:</span>{" "}
+          <span className="font-mono">{renderMetadata.os_id || "NA"}</span>
+        </span>
       </div>
-    </div>
+    </footer>
   );
 };
 

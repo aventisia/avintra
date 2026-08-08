@@ -2,7 +2,7 @@ use serde::Serialize;
 use std::process::Command;
 
 #[tauri::command]
-pub fn launch_desktop_executor(
+pub fn launch_runner_app(
     app_base_url: String,
     job_id: String,
     access_token: String,
@@ -10,19 +10,19 @@ pub fn launch_desktop_executor(
     username: String,
     app_version: String,
 ) -> Result<(), String> {
-    // The executor is provisioned independently (via ensure_desktop_executor) under
+    // The runner is provisioned independently (via download_runner_app) under
     // the local app data dir so it can be updated without republishing the whole
-    // Tauri app. The app always launches the runner from the `latest` folder.
-    let desktop_executor_path = crate::executor_management::executor_exe_path()?;
+    // Tauri app. The app always launches the runner from the runner-app folder.
+    let runner_app_path = crate::runner_management::runner_exe_path()?;
 
-    if !desktop_executor_path.exists() {
+    if !runner_app_path.exists() {
         return Err(format!(
-            "Executor is not installed at: {}",
-            desktop_executor_path.display()
+            "Runner is not installed at: {}",
+            runner_app_path.display()
         ));
     }
 
-    Command::new(desktop_executor_path)
+    Command::new(runner_app_path)
         .arg("--appBaseUrl")
         .arg(app_base_url)
         .arg("--jobId")
@@ -36,7 +36,7 @@ pub fn launch_desktop_executor(
         .arg("--appVersion")
         .arg(app_version)
         .spawn()
-        .map_err(|e| format!("Failed to start the executor: {}", e))?;
+        .map_err(|e| format!("Failed to start the runner: {}", e))?;
     Ok(())
 }
 
