@@ -32,7 +32,7 @@ public class ClientBinariesService : IClientBinariesService
             return serviceResponse.Update(null, 200, cached);
 
         // Each product exposes its own full version list so the Desktop App and the
-        // Desktop Runner can be at different versions independently.
+        // Runner app can be at different versions independently.
         var manifest = new DownloadManifestDto
         {
             Desktop = ClientBinariesHelper.GetProductManifest(

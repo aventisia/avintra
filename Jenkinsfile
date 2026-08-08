@@ -42,7 +42,7 @@ def hasChangesInPath(path) {
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, and studio apps.')
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, and studio apps (desktop-app excluded).')
     }
     stages {
         stage('Detect Changes') {
@@ -299,7 +299,7 @@ pipeline {
                             steps {
                                 dir('clients/web-apps') {
                                     echo 'Building web-apps...'
-                                    sh "npm run build -- -- --mode=${getBuildMode(env.BRANCH_NAME)}"
+                                    sh "npm run build -- -- --filter=!desktop-app --mode=${getBuildMode(env.BRANCH_NAME)}"
                                 }
                             }
                         }

@@ -1,7 +1,7 @@
 {
   "name": "desktop-app",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.87",
   "type": "module",
   "scripts": {
     "dev": "vite --port 2999",
@@ -27,7 +27,6 @@
     "@avplatform/tailwind-config": "*",
     "@avplatform/typescript-config": "*",
     "@avplatform/vite-config": "*",
-    "@rollup/rollup-win32-x64-msvc": "^4.62.4",
     "@tauri-apps/cli": "^2.9.6",
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",

@@ -10,7 +10,7 @@ interface GetRunnerAppProps {
 }
 
 /**
- * First-run install flow for the Desktop Runner.
+ * First-run install flow for the Runner App.
  *
  * The runner check already happened in App.tsx; this component only needs to
  * download. It shows a minimal progress view and redirects to the service
@@ -31,8 +31,9 @@ export function GetRunnerApp({ appBaseUrl, onComplete }: GetRunnerAppProps) {
       // The Rust command sends DONE before returning, but also complete here so
       // we never get stuck if that channel message is dropped.
       onComplete();
-    } catch {
-      // Error surfaced via the hook.
+    } catch (err) {
+      // Error is surfaced via the hook; log it for dev builds.
+      console.error("Runner download failed:", err);
     }
   }, [appBaseUrl, download, onComplete]);
 
@@ -52,13 +53,15 @@ export function GetRunnerApp({ appBaseUrl, onComplete }: GetRunnerAppProps) {
   };
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6">
-      <RunnerProgress heading="Setting up the Desktop Runner" progress={progress} error={error} />
-      {error && (
-        <Button type="button" onClick={handleRetry} className="h-11 text-md">
-          Retry
-        </Button>
-      )}
+    <div className="flex flex-1 items-center justify-center p-6">
+      <div className="flex w-full flex-col items-center gap-4">
+        <RunnerProgress heading="Setting up the Runner App" progress={progress} error={error} />
+        {error && (
+          <Button type="button" onClick={handleRetry} className="h-11 text-md">
+            Retry
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <AssemblyName>RunnerApp</AssemblyName>
     <RootNamespace>RunnerApp</RootNamespace>
-    <Version>0.1.81</Version>
-    <InformationalVersion>0.1.81</InformationalVersion>
+    <Version>0.1.87</Version>
+    <InformationalVersion>0.1.87</InformationalVersion>
 
     <!--
       Self-contained single-file Windows publish.

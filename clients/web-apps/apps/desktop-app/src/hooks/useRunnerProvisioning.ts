@@ -14,6 +14,8 @@ export interface RunnerProgress {
   total?: number;
   percentage: number;
   status: RunnerStatus;
+  /** Human-readable error when `status` is `ERROR`. */
+  error?: string | null;
 }
 
 /** Result of the `check_runner_app` command. */
@@ -40,7 +42,7 @@ interface UseRunnerProvisioningReturn {
 
 /**
  * Bridges the React UI with the Rust backend commands that provision the
- * Avintra Desktop Runner. Handles: Check -> Download (with progress) -> Extract.
+ * Avintra Runner App. Handles: Check -> Download (with progress) -> Extract.
  */
 export function useRunnerProvisioning(): UseRunnerProvisioningReturn {
   const [checking, setChecking] = useState(false);
@@ -91,7 +93,7 @@ export function useRunnerProvisioning(): UseRunnerProvisioningReturn {
         onProgress.onmessage = (data) => {
           setProgress(data);
           if (data.status === "ERROR") {
-            setError("Runner download failed");
+            setError(data.error ?? "Runner download failed");
           }
         };
 
@@ -101,7 +103,12 @@ export function useRunnerProvisioning(): UseRunnerProvisioningReturn {
         });
         return version;
       } catch (err) {
-        const message = typeof err === "string" ? err : "Failed to download runner";
+        const message =
+          typeof err === "string"
+            ? err
+            : err instanceof Error
+              ? err.message
+              : "Failed to download runner";
         setError(message);
         throw new Error(message);
       } finally {
