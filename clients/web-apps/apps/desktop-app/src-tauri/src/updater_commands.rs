@@ -131,7 +131,7 @@ pub async fn check_update_for_domain(
 
     // {{target}}, {{arch}}, {{current_version}} are replaced internally by Tauri
     let endpoint =
-        format!("https://{}/accounts/api/desktop-app/update/{{{{target}}}}/{{{{arch}}}}/{{{{current_version}}}}", domain);
+        format!("https://{}/accounts/api/binaries/desktop/update/{{{{target}}}}/{{{{arch}}}}/{{{{current_version}}}}", domain);
 
     println!("[updater] checking update at {}", endpoint);
 

@@ -60,5 +60,5 @@ This app imports shared packages from the monorepo:
 ## Notes
 
 - Tauri v2 is used for the application shell.
-- The two `invoke()` calls (`ensure_desktop_executor`, `get_user_metadata`) are guarded by a Tauri-detection check so the app also runs in a plain browser.
-- The bundled `node-executor` and `ui-inspector` binaries are provided by `clients/NodeExecutor` (post-build copy to `src-tauri/binaries/`).
+- The two `invoke()` calls (`ensure_runner_app`, `get_user_metadata`) are guarded by a Tauri-detection check so the app also runs in a plain browser.
+- The bundled `runner` and `ui-inspector` binaries are provided by `clients/NodeExecutor` (post-build copy to `src-tauri/binaries/`).

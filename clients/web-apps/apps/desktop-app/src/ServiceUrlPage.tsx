@@ -1,14 +1,17 @@
-import { Input } from "@avplatform/ui";
+import { Input, LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { invoke } from "@tauri-apps/api/core";
+import Lucide from "@avplatform/ui/components/Lucide";
 import { useEffect, useState } from "react";
+
+import { SetupCard } from "./components/SetupCard";
 
 const LS_BASE_URL_KEY = "aventisia:baseUrl";
 
-/** True when running inside the Tauri webview (IPC available). */
-const isTauri = () => typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+interface ServiceUrlPageProps {
+  onContinue: (appBaseUrl: string) => void;
+}
 
-export default function ServiceUrlPage() {
+export default function ServiceUrlPage({ onContinue }: ServiceUrlPageProps) {
   const [serviceUrl, setServiceUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -17,17 +20,6 @@ export default function ServiceUrlPage() {
     const savedUrl = localStorage.getItem(LS_BASE_URL_KEY) || import.meta.env.VITE_BASE_URL;
     if (savedUrl) setServiceUrl(savedUrl);
   }, []);
-
-  // On first launch, ensure the DesktopRunner is downloaded and extracted into
-  // the versioned desktop-executor folder. The base URL is the origin (e.g.
-  // https://avdev.aventisia.com); the backend appends /accounts/api internally.
-  useEffect(() => {
-    if (!serviceUrl || !isTauri()) return;
-    const origin = new URL(serviceUrl).origin;
-    invoke("ensure_desktop_executor", { appBaseUrl: origin }).catch((err) => {
-      console.error("Failed to provision DesktopRunner:", err);
-    });
-  }, [serviceUrl]);
 
   const validateBaseUrl = (value: string): string | null => {
     try {
@@ -67,32 +59,23 @@ export default function ServiceUrlPage() {
     setIsLoading(true);
     localStorage.setItem(LS_BASE_URL_KEY, originOnly);
 
-    setTimeout(() => {
-      window.location.href = `${originOnly}/accounts/login`;
-    }, 300);
+    onContinue(originOnly);
   };
 
   return (
-    <main className="flex flex-1 items-center justify-center bg-gradient-to-br from-indigo-50 to-violet-50 p-6">
-      <div className="z-10 flex w-full max-w-md flex-col gap-8 rounded-[1.25rem] border border-border bg-card p-12 shadow-[0_10px_40px_rgba(0,0,0,0.08),0_2px_8px_rgba(0,0,0,0.04)]">
-        <div className="flex justify-start">
-          <img src="/logo.svg" alt="Aventisia" className="h-8" />
-        </div>
-
-        <div className="mt-4 flex flex-col gap-1.5">
-          <h2 className="text-4xl font-medium text-foreground">Connect to Avintra</h2>
-          <p className="ml-0.5 text-sm font-medium text-muted-foreground">
-            Enter the Service URL to continue.
-          </p>
-        </div>
-
-        <div className="-mt-2 mb-6">
+    <SetupCard
+      title="Connect to Avintra"
+      subtitle="Use the default Aventisia service, or provide a URL for a self-hosted instance."
+    >
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-1.5">
           <Input
             id="service-url-input"
             type="url"
             autoFocus
             value={serviceUrl}
             disabled={isLoading}
+            className="h-11 text-md"
             placeholder="https://avintra.aventisia.com"
             onChange={(e) => {
               setServiceUrl(e.target.value);
@@ -100,40 +83,23 @@ export default function ServiceUrlPage() {
             }}
             onKeyDown={(e) => e.key === "Enter" && handleContinue()}
           />
-
-          {error ? (
-            <div className="mt-2.5 pl-1 text-[0.8125rem] leading-relaxed text-destructive">
-              <span>{error}</span>
-            </div>
-          ) : (
-            <div className="mt-2.5 pl-1 text-[0.8125rem] leading-relaxed text-muted-foreground">
-              Use the default Aventisia service, or provide a URL for a self-hosted instance.
-            </div>
-          )}
-
-          <Button className="mt-7 w-full" onClick={handleContinue} disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-primary-foreground" />
-                Connecting...
-              </>
-            ) : (
-              <>
-                Continue
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path
-                    d="M6 3L11 8L6 13"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </>
-            )}
-          </Button>
+          {error && <span className="text-xs mt-1 ml-0.5 text-destructive">{error}</span>}
         </div>
+
+        <Button className="w-full h-11 text-md" onClick={handleContinue} disabled={isLoading}>
+          {isLoading ? (
+            <span className="inline-flex items-center gap-2">
+              <LoadingSpinner className="h-4 w-4 text-primary-foreground" />
+              Connecting...
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5">
+              Continue
+              <Lucide icon="ArrowRight" className="h-4 w-4" />
+            </span>
+          )}
+        </Button>
       </div>
-    </main>
+    </SetupCard>
   );
 }
