@@ -1,4 +1,4 @@
-namespace DesktopExecutor;
+namespace RunnerApp;
 
 public class ExecutionGraphDto
 {

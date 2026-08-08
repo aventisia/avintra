@@ -7,12 +7,11 @@ import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useQueryClient } from "@tanstack/react-query";
+import { invoke } from "@tauri-apps/api/core";
 import { Node } from "@xyflow/react";
 import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
-
-import { invoke } from "@tauri-apps/api/core";
 
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
 import { useSaveFlow } from "@/features/react-flow/hooks/useSaveFlow";
@@ -43,21 +42,16 @@ const ExecuteFlow = () => {
     })),
   );
 
-  const {
-    currentFlow,
-    isFlowLoading,
-    executionState,
-    setCurrentFlow,
-    setExecutionState,
-  } = useCurrentFlowStore(
-    useShallow((state) => ({
-      currentFlow: state.currentFlow,
-      isFlowLoading: state.isFlowLoading,
-      executionState: state.executionState,
-      setCurrentFlow: state.setCurrentFlow,
-      setExecutionState: state.setExecutionState,
-    })),
-  );
+  const { currentFlow, isFlowLoading, executionState, setCurrentFlow, setExecutionState } =
+    useCurrentFlowStore(
+      useShallow((state) => ({
+        currentFlow: state.currentFlow,
+        isFlowLoading: state.isFlowLoading,
+        executionState: state.executionState,
+        setCurrentFlow: state.setCurrentFlow,
+        setExecutionState: state.setExecutionState,
+      })),
+    );
 
   const { updateField } = useJobDataStore(
     useShallow((state) => ({
@@ -168,7 +162,9 @@ const ExecuteFlow = () => {
       }
 
       if (isEnterprise && !hasActivePlan) {
-        toast.error("This action is currently unavailable. Please contact your administrator or support.");
+        toast.error(
+          "This action is currently unavailable. Please contact your administrator or support.",
+        );
         return;
       }
 
@@ -191,16 +187,16 @@ const ExecuteFlow = () => {
         setCurrentFlow({ ...currentFlow, jobId: jobRes.data.id });
         updateField("startTime", executionStartTime);
 
-        // Launch the desktop executor as a sidecar to run the flow on this machine
+        // Launch the runner app as a sidecar to run the flow on this machine
         if (IS_TAURI) {
           try {
             // Ensure the executor is installed and up to date (downloaded independently
-            // from the Tauri app via the desktop-executor download endpoints).
-            await invoke("ensure_desktop_executor", {
+            // from the Tauri app via the runner-app download endpoints).
+            await invoke("ensure_runner_app", {
               appBaseUrl: window.location.origin,
             });
 
-            await invoke("launch_desktop_executor", {
+            await invoke("launch_runner_app", {
               appBaseUrl: `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}`,
               jobId: jobRes.data.id,
               accessToken: userSession.data?.accessToken,

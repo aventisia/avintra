@@ -1,0 +1,11 @@
+meta {
+  name: Download latest runner app
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/binaries/runner/download
+  body: none
+  auth: none
+}

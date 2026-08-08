@@ -1,6 +1,6 @@
 using ExecutorLibrary.FlowProcessor.Models;
 
-namespace DesktopExecutor.Services;
+namespace RunnerApp.Services;
 
 public interface IExecutionEngine
 {

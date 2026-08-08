@@ -107,7 +107,7 @@ export const HeaderActionMenu: React.FC = () => {
             content="Download Desktop App"
             onClick={() => {
               window.open(
-                `${import.meta.env.VITE_ACCOUNTS_API_PATH}/desktop-app/download/`,
+                `${import.meta.env.VITE_ACCOUNTS_API_PATH}/binaries/desktop/download/`,
                 "_blank",
               );
             }}

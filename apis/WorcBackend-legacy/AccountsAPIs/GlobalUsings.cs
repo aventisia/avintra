@@ -13,6 +13,7 @@ global using AspNetToolkit.Utils;
 
 global using AccountsAPIs.Data;
 global using AccountsAPIs.Services;
+global using AccountsAPIs.Helpers;
 global using AccountsAPIs.Extensions;
 global using AccountsAPIs.Entities;
 global using AccountsAPIs.Repos;

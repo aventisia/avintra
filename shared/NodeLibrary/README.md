@@ -4,7 +4,7 @@ Cross-platform .NET 8 library containing automation node definitions for the Ave
 
 ## Overview
 
-`NodeLibrary` defines the building blocks of an automation flow: node types, attributes, converters, models, enumerations, helpers, and the core execution strategies. It is consumed by `shared/ExecutorLibrary`, `shared/NodeToJson`, and the desktop executor.
+`NodeLibrary` defines the building blocks of an automation flow: node types, attributes, converters, models, enumerations, helpers, and the core execution strategies. It is consumed by `shared/ExecutorLibrary`, `shared/NodeToJson`, and the runner app.
 
 ## Key Components
 

@@ -47,6 +47,13 @@ You are an expert ASP.NET Core Web API reviewer and generator focused on strict 
 - Use `public static` methods in a `public static class` so the logic is stateless and easy to unit test.
 - Only place helpers in shared/toolkit folders when they are genuinely reused across multiple features or projects.
 
+## Global Usings
+
+- Do **not** add `using` statements to a file for namespaces that are already imported in the project's `GlobalUsings.cs`.
+- Before adding a `using` directive, check `GlobalUsings.cs` (and any other global usings files) to confirm the namespace is not already globally imported.
+- If a namespace is already in `GlobalUsings.cs`, omit the `using` statement entirely from the individual file.
+- Only add a `using` statement when the namespace is not covered by global usings.
+
 ## Entities and DTOs
 
 - Match property sequence in DTOs and Mapping profiles exactly to the source Entity.

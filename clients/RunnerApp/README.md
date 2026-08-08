@@ -1,4 +1,4 @@
-# DesktopExecutor
+# RunnerApp
 
 .NET 8 console-based executor that runs automation flows autonomously. Replaces the legacy .NET Framework WPF `NodeExecutor`.
 
@@ -6,7 +6,7 @@
 
 ```
 ┌─────────────────┐      ┌──────────────────────────────┐      ┌──────────────────────┐
-│   React UI      │      │     WorkspaceAPIs (.NET 8)    │      │   DesktopExecutor    │
+│   React UI      │      │     WorkspaceAPIs (.NET 8)    │      │   RunnerApp        │
 │ (viewer / ctrl) │◄────►│  - job state machine          │◄────►│  (.NET 8 console)    │
 │                 │      │  - execution graph endpoint    │      │                      │
 │                 │      │  - log ingestion endpoint      │      │  - fetches graph     │
@@ -27,17 +27,17 @@ The executor connects to the backend's `OrchestratorHub` (SignalR) to receive co
 ## Build
 
 ```sh
-dotnet build clients/DesktopExecutor/DesktopExecutor.csproj
+dotnet build clients/RunnerApp/RunnerApp.csproj
 ```
 
 ## Publish
 
-`publish.sh` produces a versioned, **self-contained** single-file Windows binary (the .NET 8 runtime is embedded, so the target machine does not need it installed) and packages it into `artifacts/AvintraDesktopRunner_<version>_win-x64.zip`. It also copies `Install-AvintraDesktopRunner.ps1` and `Download-AvintraDesktopRunner.ps1` into `artifacts/` so the provisioning scripts can be uploaded to the server's `scripts/` directory alongside the runner zip.
+`publish.sh` produces a versioned, **self-contained** single-file Windows binary (the .NET 8 runtime is embedded, so the target machine does not need it installed) and packages it into `artifacts/AvintraRunnerService_<version>_win-x64.zip`. It also copies `Install-AvintraRunnerService.ps1` into `artifacts/` so the provisioning script can be uploaded to the server's `scripts/` directory alongside the runner zip.
 
 ```sh
-./clients/DesktopExecutor/publish.sh
+./clients/RunnerApp/publish.sh
 # or with an explicit version
-./clients/DesktopExecutor/publish.sh --version 0.1.83
+./clients/RunnerApp/publish.sh --version 0.1.83
 ```
 
 The CI/CD pipeline uploads the zip to `/var/www/aventisia.com/files/binaries/` and the scripts to `/var/www/aventisia.com/files/scripts/` on each target server.
@@ -45,7 +45,7 @@ The CI/CD pipeline uploads the zip to `/var/www/aventisia.com/files/binaries/` a
 ## Run (Console Mode)
 
 ```sh
-dotnet run --project clients/DesktopExecutor/DesktopExecutor.csproj -- \
+dotnet run --project clients/RunnerApp/RunnerApp.csproj -- \
   --appBaseUrl https://your-backend \
   --accessToken <jwt-token> \
   --jobId <job-guid> \
@@ -78,7 +78,7 @@ Use the provisioning script to install everything in one step. The script downlo
 The script resolves the **latest** runner version automatically from the backend, so you don't need to supply a zip URL. Run it from an elevated PowerShell prompt:
 
 ```powershell
-.\Install-AvintraDesktopRunner.ps1 `
+.\Install-AvintraRunnerService.ps1 `
   -AppBaseUrl "https://api.avintra.com" `
   -ApiKey "<API_KEY>" `
   -TenantId "<TENANT_ID>" `
@@ -92,10 +92,10 @@ $env:AVINTRA_APP_BASE_URL = "https://api.avintra.com"
 $env:AVINTRA_API_KEY = "<API_KEY>"
 $env:AVINTRA_TENANT_ID = "<TENANT_ID>"
 $env:AVINTRA_LINKED_USERNAME = "<LINKED_USERNAME>"
-irm https://<host>/accounts/api/desktop-app/script/Install-AvintraDesktopRunner.ps1 | iex
+irm https://<host>/accounts/api/binaries/runner/script/Install-AvintraRunnerService.ps1 | iex
 ```
 
-The script must be run from an elevated PowerShell prompt. It installs the runner to `C:\Program Files\AvintraDesktopRunner` and starts the service automatically.
+The script must be run from an elevated PowerShell prompt. It installs the runner to `C:\Program Files\AvintraRunnerService` and starts the service automatically.
 
 The runner is self-contained, so no .NET 8 runtime or winget install is required on the target machine.
 
@@ -108,8 +108,8 @@ Available parameters:
 | `ApiKey`         | —                                       | Tenant API key.                                                                                                    |
 | `TenantId`       | —                                       | Tenant ID (GUID).                                                                                                  |
 | `LinkedUsername` | —                                       | Linked workspace username.                                                                                         |
-| `InstallDir`     | `C:\Program Files\AvintraDesktopRunner` | Directory to extract the runner to.                                                                                |
-| `ServiceName`    | `AvintraDesktopRunner`                  | Name of the Windows service.                                                                                       |
+| `InstallDir`     | `C:\Program Files\AvintraRunnerService` | Directory to extract the runner to.                                                                                |
+| `ServiceName`    | `AvintraRunnerService`                  | Name of the Windows service.                                                                                       |
 | `DoNotStart`     | `$false`                                | Install the service but do not start it.                                                                           |
 
 ### Manual install
@@ -117,7 +117,7 @@ Available parameters:
 You can install the runner as a Windows service interactively:
 
 ```powershell
-AvintraDesktopRunner.exe --install
+AvintraRunnerService.exe --install
 ```
 
 The installer will prompt for:
@@ -130,10 +130,10 @@ The installer will prompt for:
 Or perform a silent install by passing all required values on the command line:
 
 ```powershell
-AvintraDesktopRunner.exe --install --appBaseUrl https://api.avintra.com --apiKey <key> --tenantId <guid> --linkedUsername <user>
+AvintraRunnerService.exe --install --appBaseUrl https://api.avintra.com --apiKey <key> --tenantId <guid> --linkedUsername <user>
 ```
 
-This registers a service named **"AvintraDesktopRunner"** that starts automatically on boot. The install command must be run from an elevated (Administrator) command prompt; it will request UAC elevation automatically if needed.
+This registers a service named **"AvintraRunnerService"** that starts automatically on boot. The install command must be run from an elevated (Administrator) command prompt; it will request UAC elevation automatically if needed.
 
 The backend connection parameters are embedded into the service `binPath`, so the service can start unattended. `osId`, `username`, and `hostname` are detected at runtime from the local machine.
 
@@ -142,20 +142,20 @@ The backend connection parameters are embedded into the service `binPath`, so th
 ### Uninstall
 
 ```powershell
-AvintraDesktopRunner.exe --uninstall
+AvintraRunnerService.exe --uninstall
 ```
 
 ### Start / Stop (after install)
 
 ```sh
-sc start "AvintraDesktopRunner"
-sc stop "AvintraDesktopRunner"
+sc start "AvintraRunnerService"
+sc stop "AvintraRunnerService"
 ```
 
 ### Run with service flag (for manual testing)
 
 ```powershell
-AvintraDesktopRunner.exe --service \
+AvintraRunnerService.exe --service \
   --appBaseUrl https://your-backend \
   --apiKey <key> \
   --tenantId <guid> \
@@ -179,10 +179,10 @@ AvintraDesktopRunner.exe --service \
 ## Project Structure
 
 ```
-clients/DesktopExecutor/
-├── DesktopExecutor.csproj          # Project file
-├── DesktopExecutorOptions.cs       # CLI argument model
-├── DesktopExecutorService.cs       # BackgroundService for Windows service mode
+clients/RunnerApp/
+├── RunnerApp.csproj          # Project file
+├── RunnerAppOptions.cs       # CLI argument model
+├── RunnerAppService.cs       # BackgroundService for Windows service mode
 ├── ExecutionGraphDto.cs            # DTO matching backend response
 ├── Program.cs                      # Entry point (console + service modes)
 └── Services/
@@ -207,7 +207,7 @@ clients/DesktopExecutor/
 
 ## Related
 
-- `DESKTOP_EXECUTOR_PLAN.md` — Full migration plan and phase breakdown
+- `RUNNER_APP_PLAN.md` — Full migration plan and phase breakdown
 - `apis/WorcBackend-legacy/WorkspaceAPIs/Features/ExecuteFlow/` — Backend execution APIs
 - `apis/WorcBackend-legacy/WorkspaceAPIs/Hubs/OrchestratorHub.cs` — SignalR hub for machine communication
 
@@ -215,26 +215,32 @@ clients/DesktopExecutor/
 
 ```powershell
 # Windows service install
-AvintraDesktopRunner.exe --install
-AvintraDesktopRunner.exe --install --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>
-AvintraDesktopRunner.exe --uninstall
+AvintraRunnerService.exe --install
+AvintraRunnerService.exe --install --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>
+AvintraRunnerService.exe --uninstall
 
 # Single job (console)
-AvintraDesktopRunner.exe --run --appBaseUrl <url> --accessToken <token> --jobId <guid> [options]
+AvintraRunnerService.exe --run --appBaseUrl <url> --accessToken <token> --jobId <guid> [options]
 
 # Windows service
-AvintraDesktopRunner.exe --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> [options]
+AvintraRunnerService.exe --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> [options]
 
 # Desktop App sidecar (bundled with the builder app)
-AvintraDesktopRunner.exe --run --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> --persist [options]
+AvintraRunnerApp.exe --run --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> --persist [options]
 ```
 
 # Single job (console)
-DesktopExecutor --run --appBaseUrl <url> --accessToken <token> --jobId <guid> [options]
+
+RunnerApp --run --appBaseUrl <url> --accessToken <token> --jobId <guid> [options]
 
 # Windows service
-DesktopExecutor --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> [options]
+
+RunnerApp --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> [options]
 
 # Desktop App sidecar (bundled with the builder app)
-DesktopExecutor --run --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> --persist [options]
+
+RunnerApp --run --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> --persist [options]
+
+```
+
 ```

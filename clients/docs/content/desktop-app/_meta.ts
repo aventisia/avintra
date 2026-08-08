@@ -10,8 +10,8 @@ const meta: MetaRecord = {
   updates: {
     title: "Updates",
   },
-  executor: {
-    title: "Desktop Executor",
+  runner: {
+    title: "Runner App",
   },
 };
 

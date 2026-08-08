@@ -1,0 +1,11 @@
+meta {
+  name: Get download manifest
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/binaries/download-manifest
+  body: none
+  auth: none
+}

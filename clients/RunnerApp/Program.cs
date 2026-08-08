@@ -1,5 +1,5 @@
-using DesktopExecutor;
-using DesktopExecutor.Services;
+using RunnerApp;
+using RunnerApp.Services;
 using ExecutorLibrary.FlowProcessor.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,12 +29,12 @@ if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsSe
     var host = Host.CreateDefaultBuilder(args)
         .UseWindowsService(optionsBuilder =>
         {
-            optionsBuilder.ServiceName = "AvintraDesktopRunner";
+            optionsBuilder.ServiceName = "AvintraRunnerService";
         })
         .ConfigureServices((_, services) =>
         {
             services.AddSingleton(options);
-            services.AddHostedService<DesktopExecutorService>();
+            services.AddHostedService<RunnerAppService>();
         })
         .ConfigureLogging(logging =>
         {
@@ -50,7 +50,7 @@ if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsSe
 // Console mode: run directly
 return await RunConsoleAsync(options);
 
-static async Task<int> RunConsoleAsync(DesktopExecutorOptions options)
+static async Task<int> RunConsoleAsync(RunnerAppOptions options)
 {
     using var httpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
     var registerClient = new BackendHttpClient(httpClient, options.AccessToken);
@@ -266,7 +266,7 @@ static int RunServiceInstaller(string[] args, bool install)
 {
     try
     {
-        var serviceName = "AvintraDesktopRunner";
+        var serviceName = "AvintraRunnerService";
         var executablePath = Environment.ProcessPath
             ?? throw new InvalidOperationException("Cannot determine executable path.");
 
@@ -327,7 +327,7 @@ static int RunServiceInstaller(string[] args, bool install)
     }
 }
 
-static DesktopExecutorOptions? TryParseInstallArguments(string[] args)
+static RunnerAppOptions? TryParseInstallArguments(string[] args)
 {
     string? appBaseUrl = null;
     string? apiKey = null;
@@ -361,7 +361,7 @@ static DesktopExecutorOptions? TryParseInstallArguments(string[] args)
         return null;
     }
 
-    return new DesktopExecutorOptions
+    return new RunnerAppOptions
     {
         AppBaseUrl = appBaseUrl,
         ApiKey = apiKey,
@@ -370,9 +370,9 @@ static DesktopExecutorOptions? TryParseInstallArguments(string[] args)
     };
 }
 
-static DesktopExecutorOptions? PromptForInstallParameters()
+static RunnerAppOptions? PromptForInstallParameters()
 {
-    Console.WriteLine("Install AvintraDesktopRunner as a Windows service.");
+    Console.WriteLine("Install AvintraRunnerService as a Windows service.");
     Console.WriteLine("Press Ctrl+C to cancel.");
     Console.WriteLine();
 
@@ -404,7 +404,7 @@ static DesktopExecutorOptions? PromptForInstallParameters()
         return null;
     }
 
-    return new DesktopExecutorOptions
+    return new RunnerAppOptions
     {
         AppBaseUrl = appBaseUrl,
         ApiKey = apiKey,
@@ -419,7 +419,7 @@ static string Prompt(string message)
     return Console.ReadLine()?.Trim() ?? string.Empty;
 }
 
-static string BuildServiceBinPath(string executablePath, DesktopExecutorOptions options)
+static string BuildServiceBinPath(string executablePath, RunnerAppOptions options)
 {
     var arguments = new List<string>
     {
@@ -456,7 +456,7 @@ static bool IsElevated()
     }
 }
 
-static DesktopExecutorOptions? ParseRunArguments(string[] args)
+static RunnerAppOptions? ParseRunArguments(string[] args)
 {
     string? appBaseUrl = null;
     string? accessToken = null;
@@ -518,7 +518,7 @@ static DesktopExecutorOptions? ParseRunArguments(string[] args)
     if (!isServiceMode && (string.IsNullOrWhiteSpace(accessToken) || jobId is null))
         return null;
 
-    return new DesktopExecutorOptions
+    return new RunnerAppOptions
     {
         AppBaseUrl = appBaseUrl,
         AccessToken = accessToken ?? string.Empty,
@@ -535,12 +535,12 @@ static DesktopExecutorOptions? ParseRunArguments(string[] args)
 static void PrintUsage()
 {
     Console.Error.WriteLine("Usage:");
-    Console.Error.WriteLine("  DesktopExecutor --install                              Install as Windows service (interactive)");
-    Console.Error.WriteLine("  DesktopExecutor --install --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>");
+    Console.Error.WriteLine("  AvintraRunnerService --install                              Install as Windows service (interactive)");
+    Console.Error.WriteLine("  AvintraRunnerService --install --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>");
     Console.Error.WriteLine("                                                         Install as Windows service (silent)");
-    Console.Error.WriteLine("  DesktopExecutor --uninstall                            Uninstall Windows service");
-    Console.Error.WriteLine("  DesktopExecutor --run --appBaseUrl <url> [options]     Run once (console)");
-    Console.Error.WriteLine("  DesktopExecutor --run --service [options]              Run as Windows service");
+    Console.Error.WriteLine("  AvintraRunnerService --uninstall                            Uninstall Windows service");
+    Console.Error.WriteLine("  AvintraRunnerService --run --appBaseUrl <url> [options]     Run once (console)");
+    Console.Error.WriteLine("  AvintraRunnerService --run --service [options]              Run as Windows service");
     Console.Error.WriteLine("");
     Console.Error.WriteLine("Install options (for silent install):");
     Console.Error.WriteLine("  --appBaseUrl <url>       Backend API base URL (required)");

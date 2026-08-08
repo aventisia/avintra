@@ -30,7 +30,7 @@ const buildExecutorServiceCommand = (
   const appBaseUrl = baseUrl.replace(/\/$/, "");
   const t = tenantId ?? "<TENANT_ID>";
   const u = linkedUsername ?? "<LINKED_USERNAME>";
-  return `AvintraDesktopRunner.exe --install --appBaseUrl "${appBaseUrl}" --apiKey "<API_KEY>" --tenantId "${t}" --linkedUsername "${u}"`;
+  return `AvintraRunnerService.exe --install --appBaseUrl "${appBaseUrl}" --apiKey "<API_KEY>" --tenantId "${t}" --linkedUsername "${u}"`;
 };
 
 const buildOllamaStylePowerShellCommand = (
@@ -305,25 +305,25 @@ const RunnerInstallRow = ({
               <p className="mb-2 text-sm font-semibold text-slate-700">
                 Step 3: Verify the service was created
               </p>
-              <OneLinerBlock command='sc qc "AvintraDesktopRunner"' />
+              <OneLinerBlock command='sc qc "AvintraRunnerService"' />
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
                 Step 4: Check service status
               </p>
-              <OneLinerBlock command='sc query "AvintraDesktopRunner"' />
+              <OneLinerBlock command='sc query "AvintraRunnerService"' />
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
                 Step 5: Restart the service
               </p>
               <OneLinerBlock
-                command={`sc stop "AvintraDesktopRunner"\nsc start "AvintraDesktopRunner"`}
+                command={`sc stop "AvintraRunnerService"\nsc start "AvintraRunnerService"`}
               />
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">Step 6: Stop the service</p>
-              <OneLinerBlock command='sc stop "AvintraDesktopRunner"' />
+              <OneLinerBlock command='sc stop "AvintraRunnerService"' />
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
@@ -332,7 +332,7 @@ const RunnerInstallRow = ({
               <p className="mb-2 text-sm text-slate-500">
                 Download the runner zip and extract it to{" "}
                 <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
-                  C:\Program Files\AvintraDesktopRunner
+                  C:\Program Files\AvintraRunnerService
                 </code>
                 , then run the command below from an Administrator PowerShell in that directory. The
                 script and the exe both call the same registration path, so use one or the other —
@@ -348,11 +348,11 @@ const RunnerInstallRow = ({
                 If you ever need to remove the runner from this machine, run this from an
                 Administrator PowerShell in{" "}
                 <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
-                  C:\Program Files\AvintraDesktopRunner
+                  C:\Program Files\AvintraRunnerService
                 </code>
                 . The exe handles both stopping the service and removing its registration:
               </p>
-              <OneLinerBlock command="AvintraDesktopRunner.exe --uninstall" />
+              <OneLinerBlock command="AvintraRunnerService.exe --uninstall" />
             </li>
           </ol>
         </div>
@@ -398,7 +398,7 @@ const useSessionForRunnerInstall = () => {
 const DownloadContent: React.FC<{
   data: NonNullable<ReturnType<typeof useDesktopDownloadManifest>["data"]>;
 }> = ({ data }) => {
-  const { desktopApp, desktopExecutor } = data;
+  const { desktop, runner } = data;
   const { tenantId, linkedUsername } = useSessionForRunnerInstall();
 
   // OS tab — default to the user's detected platform
@@ -421,7 +421,7 @@ const DownloadContent: React.FC<{
     () =>
       buildOllamaStylePowerShellCommand(
         apiBaseUrl,
-        `${apiBaseUrl}/desktop-app/script/Install-AvintraDesktopRunner.ps1`,
+        `${apiBaseUrl}/binaries/runner/script/Install-AvintraRunnerService.ps1`,
         tenantId,
         linkedUsername,
       ),
@@ -432,19 +432,10 @@ const DownloadContent: React.FC<{
 
   // Resolve the latest available artifact + version for each product once, so the
   // rows don't re-scan the version list on every render.
-  const desktopAppArtifact = useMemo(
-    () => getArtifactForPlatform(desktopApp, "windows"),
-    [desktopApp],
-  );
-  const desktopAppVersion = useMemo(() => getLatestVersion(desktopApp), [desktopApp]);
-  const desktopExecutorArtifact = useMemo(
-    () => getArtifactForPlatform(desktopExecutor, "windows"),
-    [desktopExecutor],
-  );
-  const desktopExecutorVersion = useMemo(
-    () => getLatestVersion(desktopExecutor),
-    [desktopExecutor],
-  );
+  const desktopAppArtifact = useMemo(() => getArtifactForPlatform(desktop, "windows"), [desktop]);
+  const desktopAppVersion = useMemo(() => getLatestVersion(desktop), [desktop]);
+  const runnerAppArtifact = useMemo(() => getArtifactForPlatform(runner, "windows"), [runner]);
+  const runnerAppVersion = useMemo(() => getLatestVersion(runner), [runner]);
 
   return (
     <div className="flex items-center justify-center bg-white p-8 text-slate-800">
@@ -507,10 +498,10 @@ const DownloadContent: React.FC<{
                 hoverClass="hover:border-primary/40 hover:bg-primary/5"
               />
               <RunnerInstallRow
-                artifact={desktopExecutorArtifact}
+                artifact={runnerAppArtifact}
                 title="Desktop Runner"
                 description="Headless Windows service that runs published flows in the background on this machine."
-                metadata={buildArtifactMetadata(desktopExecutorArtifact, desktopExecutorVersion)}
+                metadata={buildArtifactMetadata(runnerAppArtifact, runnerAppVersion)}
                 icon={<Terminal className="h-5 w-5" />}
                 iconClass="bg-slate-100 text-slate-600"
                 hoverClass="hover:border-slate-300 hover:bg-slate-100"
@@ -570,11 +561,11 @@ const DownloadContent: React.FC<{
                   <>
                     Run{" "}
                     <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
-                      AvintraDesktopRunner.exe --uninstall
+                      AvintraRunnerService.exe --uninstall
                     </code>{" "}
                     from an Administrator PowerShell in the install directory (default:{" "}
                     <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
-                      C:\Program Files\AvintraDesktopRunner
+                      C:\Program Files\AvintraRunnerService
                     </code>
                     ). The exe stops the Windows service and removes its registration in one step.
                   </>
