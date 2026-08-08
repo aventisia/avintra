@@ -215,7 +215,7 @@ interface RunnerInstallRowProps {
 }
 
 /**
- * Renders the Desktop Runner row with an outline, monospace "Install" button that
+ * Renders the Runner App row with an outline, monospace "Install" button that
  * expands the row into a numbered, step-by-step install guide. The runner is not
  * downloaded directly — it is provisioned as a Windows service via a script.
  */
@@ -398,7 +398,8 @@ const useSessionForRunnerInstall = () => {
 const DownloadContent: React.FC<{
   data: NonNullable<ReturnType<typeof useDesktopDownloadManifest>["data"]>;
 }> = ({ data }) => {
-  const { desktop, runner } = data;
+  const desktop = data.desktop ?? { versions: [] };
+  const runner = data.runner ?? { versions: [] };
   const { tenantId, linkedUsername } = useSessionForRunnerInstall();
 
   // OS tab — default to the user's detected platform
@@ -499,7 +500,7 @@ const DownloadContent: React.FC<{
               />
               <RunnerInstallRow
                 artifact={runnerAppArtifact}
-                title="Desktop Runner"
+                title="Runner App"
                 description="Headless Windows service that runs published flows in the background on this machine."
                 metadata={buildArtifactMetadata(runnerAppArtifact, runnerAppVersion)}
                 icon={<Terminal className="h-5 w-5" />}
@@ -531,8 +532,8 @@ const DownloadContent: React.FC<{
             >
               <FAQItem
                 value="what-is-runner"
-                question="What is the Desktop Runner and how is it different from the Desktop App?"
-                answer="The Desktop App is the interactive builder you use to create, edit, and test flows. The Desktop Runner is a lightweight Windows service that runs published flows in the background on this machine, so they keep executing even when the builder is closed."
+                question="What is the Runner App and how is it different from the Desktop App?"
+                answer="The Desktop App is the interactive builder you use to create, edit, and test flows. The Runner App is a lightweight Windows service that runs published flows in the background on this machine, so they keep executing even when the builder is closed."
               />
               <FAQItem
                 value="api-key"
@@ -551,12 +552,12 @@ const DownloadContent: React.FC<{
               />
               <FAQItem
                 value="update"
-                question="How do I update the Desktop Runner?"
+                question="How do I update the Runner App?"
                 answer="Re-run the install command from the guide. The script stops the service, replaces the files with the latest version, and restarts the service automatically."
               />
               <FAQItem
                 value="uninstall"
-                question="How do I uninstall the Desktop Runner?"
+                question="How do I uninstall the Runner App?"
                 answer={
                   <>
                     Run{" "}

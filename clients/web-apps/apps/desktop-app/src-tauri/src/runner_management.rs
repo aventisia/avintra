@@ -56,10 +56,11 @@ pub enum RunnerStatus {
 /// This object is streamed continuously to React via IPC.
 #[derive(Serialize, Clone, Debug)]
 pub struct RunnerProgress {
-    pub downloaded: u64,       // cumulative bytes downloaded so far
-    pub total: Option<u64>,   // total size if known
-    pub percentage: u8,       // best-effort percentage (0–100)
-    pub status: RunnerStatus, // current phase of the provisioning lifecycle
+    pub downloaded: u64,         // cumulative bytes downloaded so far
+    pub total: Option<u64>,      // total size if known
+    pub percentage: u8,          // best-effort percentage (0–100)
+    pub status: RunnerStatus,    // current phase of the provisioning lifecycle
+    pub error: Option<String>,   // human-readable error when status is Error
 }
 
 /// Result of a runner availability check, returned to the frontend so it can
@@ -103,10 +104,15 @@ pub async fn check_runner_app(app_base_url: String) -> Result<RunnerCheckResult,
     struct RunnerLatest {
         version: String,
     }
-    let latest: RunnerLatest = resp
+    #[derive(serde::Deserialize)]
+    struct ServiceResponse<T> {
+        data: T,
+    }
+    let latest: ServiceResponse<RunnerLatest> = resp
         .json()
         .await
         .map_err(|e| format!("Failed to parse latest runner response: {e}"))?;
+    let latest = latest.data;
 
     let installed = installed_version().ok();
     let installed_version = installed.clone().unwrap_or_default();
@@ -143,17 +149,33 @@ pub async fn download_runner_app(
         total: None,
         percentage: 0,
         status: RunnerStatus::Checking,
+        error: None,
     });
 
     // Resolve the latest version + download URL.
     let resp = reqwest::get(&latest_url)
         .await
-        .map_err(|e| format!("Failed to query latest runner version: {e}"))?;
+        .map_err(|e| {
+            let msg = format!("Failed to query latest runner version: {e}");
+            let _ = on_progress.send(RunnerProgress {
+                downloaded: 0,
+                total: None,
+                percentage: 0,
+                status: RunnerStatus::Error,
+                error: Some(msg.clone()),
+            });
+            msg
+        })?;
     if !resp.status().is_success() {
-        return Err(format!(
-            "Latest runner check returned HTTP {}",
-            resp.status()
-        ));
+        let msg = format!("Latest runner check returned HTTP {}", resp.status());
+        let _ = on_progress.send(RunnerProgress {
+            downloaded: 0,
+            total: None,
+            percentage: 0,
+            status: RunnerStatus::Error,
+            error: Some(msg.clone()),
+        });
+        return Err(msg);
     }
 
     #[derive(serde::Deserialize)]
@@ -161,10 +183,22 @@ pub async fn download_runner_app(
         version: String,
         url: String,
     }
-    let latest: RunnerLatest = resp
-        .json()
-        .await
-        .map_err(|e| format!("Failed to parse latest runner response: {e}"))?;
+    #[derive(serde::Deserialize)]
+    struct ServiceResponse<T> {
+        data: T,
+    }
+    let latest: ServiceResponse<RunnerLatest> = resp.json().await.map_err(|e| {
+        let msg = format!("Failed to parse latest runner response: {e}");
+        let _ = on_progress.send(RunnerProgress {
+            downloaded: 0,
+            total: None,
+            percentage: 0,
+            status: RunnerStatus::Error,
+            error: Some(msg.clone()),
+        });
+        msg
+    })?;
+    let latest = latest.data;
 
     let version = latest.version;
     let download_url = latest.url;
@@ -175,16 +209,32 @@ pub async fn download_runner_app(
         total: None,
         percentage: 0,
         status: RunnerStatus::Downloading,
+        error: None,
     });
 
     let dl_resp = reqwest::get(&download_url)
         .await
-        .map_err(|e| format!("Failed to download runner archive: {e}"))?;
+        .map_err(|e| {
+            let msg = format!("Failed to download runner archive: {e}");
+            let _ = on_progress.send(RunnerProgress {
+                downloaded: 0,
+                total: None,
+                percentage: 0,
+                status: RunnerStatus::Error,
+                error: Some(msg.clone()),
+            });
+            msg
+        })?;
     if !dl_resp.status().is_success() {
-        return Err(format!(
-            "Runner download returned HTTP {}",
-            dl_resp.status()
-        ));
+        let msg = format!("Runner download returned HTTP {}", dl_resp.status());
+        let _ = on_progress.send(RunnerProgress {
+            downloaded: 0,
+            total: None,
+            percentage: 0,
+            status: RunnerStatus::Error,
+            error: Some(msg.clone()),
+        });
+        return Err(msg);
     }
 
     let total = dl_resp.content_length();
@@ -217,6 +267,7 @@ pub async fn download_runner_app(
                 total,
                 percentage,
                 status: RunnerStatus::Downloading,
+                error: None,
             });
         }
     }
@@ -228,6 +279,7 @@ pub async fn download_runner_app(
         total,
         percentage: 100,
         status: RunnerStatus::Extracting,
+        error: None,
     });
 
     let target_dir = runner_dir()?;
@@ -277,6 +329,7 @@ pub async fn download_runner_app(
             total,
             percentage: 0,
             status: RunnerStatus::Error,
+            error: Some(e.clone()),
         });
         e
     })?;
@@ -286,6 +339,7 @@ pub async fn download_runner_app(
         total,
         percentage: 100,
         status: RunnerStatus::Done,
+        error: None,
     });
 
     Ok(version)

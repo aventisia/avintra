@@ -8,7 +8,7 @@ interface SetupCardProps {
 
 /**
  * Shared shell for the desktop-app setup screens (Service URL entry and
- * Desktop Runner provisioning). Keeps the two steps visually consistent.
+ * Runner App provisioning). Keeps the two steps visually consistent.
  */
 export function SetupCard({ title, subtitle, children }: SetupCardProps) {
   return (

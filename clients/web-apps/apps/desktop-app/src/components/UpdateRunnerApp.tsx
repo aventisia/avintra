@@ -15,7 +15,7 @@ interface UpdateRunnerAppProps {
 }
 
 /**
- * Update flow for the Desktop Runner.
+ * Update flow for the Runner App.
  *
  * Starts with a confirmation card showing the current and latest versions.
  * If the user confirms, it switches to a minimal progress view and downloads
@@ -56,13 +56,15 @@ export function UpdateRunnerApp({
 
   if (hasStarted || error) {
     return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-6">
-        <RunnerProgress heading="Updating the Desktop Runner" progress={progress} error={error} />
-        {error && (
-          <Button type="button" onClick={handleRetry} className="h-11 text-md">
-            Retry
-          </Button>
-        )}
+      <div className="flex flex-1 items-center justify-center p-6">
+        <div className="flex w-full flex-col items-center gap-4">
+          <RunnerProgress heading="Updating the Runner App" progress={progress} error={error} />
+          {error && (
+            <Button type="button" onClick={handleRetry} className="h-11 text-md">
+              Retry
+            </Button>
+          )}
+        </div>
       </div>
     );
   }
@@ -70,7 +72,7 @@ export function UpdateRunnerApp({
   return (
     <SetupCard
       title="Update available"
-      subtitle="A newer version of the Desktop Runner is available. Update now to get the latest features and improvements."
+      subtitle="A newer version of the Runner App is available. Update now to get the latest features and improvements."
     >
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-3 rounded-xl border border-border bg-slate-50/60 p-4 text-sm">
