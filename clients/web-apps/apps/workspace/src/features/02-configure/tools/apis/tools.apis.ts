@@ -1,6 +1,7 @@
 import { IHttpResponse, IOptimisticMutation, TrueFalseResultDto } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { TestToolDto, TestToolResponseDto, ToolAvailabilityDto, ToolDto } from "../dtos/index";
 
@@ -12,7 +13,7 @@ export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/to
 export const getTools = ({ isPersonal = true }: { isPersonal: boolean }) => {
   const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/${path}`)
+    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/${path}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -21,7 +22,9 @@ export const getTools = ({ isPersonal = true }: { isPersonal: boolean }) => {
  */
 export const isToolNameAvailable = (postObj: ToolAvailabilityDto) => {
   return axiosInstance
-    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj)
+    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -29,7 +32,9 @@ export const isToolNameAvailable = (postObj: ToolAvailabilityDto) => {
  * Retrieves a single tool by its identifier.
  */
 export const getToolById = (id: string) => {
-  return axiosInstance.get<IHttpResponse<ToolDto>>(`${baseAPIURL}/${id}`).then((res) => res.data);
+  return axiosInstance
+    .get<IHttpResponse<ToolDto>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
+    .then((res) => res.data);
 };
 
 /**
@@ -37,7 +42,7 @@ export const getToolById = (id: string) => {
  */
 export const insertTool = (newTool: ToolDto) => {
   return axiosInstance
-    .post<IHttpResponse<ToolDto>>(`${baseAPIURL}`, newTool)
+    .post<IHttpResponse<ToolDto>>(`${baseAPIURL}`, newTool, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -46,7 +51,7 @@ export const insertTool = (newTool: ToolDto) => {
  */
 export const updateTool = (updatedTool: ToolDto) => {
   return axiosInstance
-    .put<IHttpResponse<ToolDto>>(`${baseAPIURL}`, updatedTool)
+    .put<IHttpResponse<ToolDto>>(`${baseAPIURL}`, updatedTool, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -55,7 +60,7 @@ export const updateTool = (updatedTool: ToolDto) => {
  */
 export const deleteTool = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -64,7 +69,9 @@ export const deleteTool = (id: string) => {
  */
 export const deleteTools = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -74,7 +81,9 @@ export const deleteTools = (ids: string[]) => {
  */
 export const testTool = (id: string, dto: TestToolDto) => {
   return axiosInstance
-    .post<IHttpResponse<TestToolResponseDto>>(`${baseAPIURL}/${id}/test`, dto)
+    .post<IHttpResponse<TestToolResponseDto>>(`${baseAPIURL}/${id}/test`, dto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -85,7 +94,9 @@ export const testTool = (id: string, dto: TestToolDto) => {
 export const testToolDirectly = (dto: TestToolDto) => {
   const llmPipelineBaseUrl = import.meta.env.VITE_LLMPIPELINE_API_PATH;
   return axiosInstance
-    .post<TestToolResponseDto>(`${llmPipelineBaseUrl}/custom-tools/test`, dto)
+    .post<TestToolResponseDto>(`${llmPipelineBaseUrl}/custom-tools/test`, dto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -94,7 +105,13 @@ export const testToolDirectly = (dto: TestToolDto) => {
  */
 export const setToolActiveState = (id: string, isActive: boolean) => {
   return axiosInstance
-    .post<IHttpResponse<ToolDto>>(`${baseAPIURL}/${id}/active-state`, { isActive })
+    .post<IHttpResponse<ToolDto>>(
+      `${baseAPIURL}/${id}/active-state`,
+      { isActive },
+      {
+        headers: getSpaceHeaders(),
+      },
+    )
     .then((res) => res.data);
 };
 
@@ -103,7 +120,7 @@ export const setToolActiveState = (id: string, isActive: boolean) => {
  */
 export const getLibraryTools = () => {
   return axiosInstance
-    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/library`)
+    .get<IHttpResponse<ToolDto[]>>(`${baseAPIURL}/library`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 

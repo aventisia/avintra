@@ -1,8 +1,8 @@
 import { Button } from "@avplatform/ui/buttons";
-import { JsonEditor } from "@/components/json-editor/JsonEditor";
 import * as YAML from "js-yaml";
 import { useEffect, useState } from "react";
 
+import { JsonEditor } from "@/components/json-editor/JsonEditor";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 import { ComponentTypeEnum } from "../../enums/component-type-enum";

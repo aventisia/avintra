@@ -42,9 +42,7 @@ export const QueueRowActions = ({
       {actions?.update && type == "User" && (
         <AssignUsersRowAction rowId={rowId} queueName={queueName} />
       )}
-      {actions?.update && (
-        <AssignAgentsRowAction rowId={rowId} queueName={queueName} />
-      )}
+      {actions?.update && <AssignAgentsRowAction rowId={rowId} queueName={queueName} />}
 
       {actions?.update && <UploadItemsRowAction rowId={rowId} />}
 

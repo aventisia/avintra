@@ -41,7 +41,7 @@ export const MachineFlowVersionRowActions: React.FC<MachineFlowVersionRowActions
   // Handle view flow version in agent builder action (open in new tab)
   const handleViewFlowVersionAction = () => {
     window.open(
-      `${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${flowId}&v=${flowVersionId}`,
+      `${import.meta.env.VITE_STUDIO_PATH}agent?f=${flowId}&v=${flowVersionId}`,
       "_blank",
     );
   };

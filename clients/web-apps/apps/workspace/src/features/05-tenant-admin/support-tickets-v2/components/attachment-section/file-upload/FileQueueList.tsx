@@ -52,7 +52,13 @@ interface FileQueueRowProps {
   onDeleteOrphan: (fileItem: FileQueueItem) => void;
 }
 
-const FileQueueRow = ({ fileItem, isActive, isPending, onRemove, onDeleteOrphan }: FileQueueRowProps) => {
+const FileQueueRow = ({
+  fileItem,
+  isActive,
+  isPending,
+  onRemove,
+  onDeleteOrphan,
+}: FileQueueRowProps) => {
   const isInFlight = fileItem.status === "uploading" || fileItem.status === "registering";
   const isOrphan = fileItem.status === "failed" && !!fileItem.uploadedData;
 

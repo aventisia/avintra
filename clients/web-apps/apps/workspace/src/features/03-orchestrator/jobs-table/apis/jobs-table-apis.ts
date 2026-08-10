@@ -2,6 +2,7 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { IOptimisticMutation } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { JobInsertDto, JobRecordDto, JobUpdateDto, JobsTableRowDto } from "..";
 
@@ -14,6 +15,7 @@ const getJobs = (startDate: string = "", endDate: string = "") => {
   return axiosInstance
     .get<IHttpResponse<JobsTableRowDto[]>>(
       `${baseApiUrl}/list?startDate=${startDate}&endDate=${endDate}`,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
@@ -23,7 +25,7 @@ const getJobs = (startDate: string = "", endDate: string = "") => {
  */
 const getJob = (jobID?: string) => {
   return axiosInstance
-    .get<IHttpResponse<JobRecordDto>>(`${baseApiUrl}/${jobID}`)
+    .get<IHttpResponse<JobRecordDto>>(`${baseApiUrl}/${jobID}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -39,7 +41,9 @@ const getJob = (jobID?: string) => {
  */
 const insertJob = (jobInsertDto: JobInsertDto) => {
   return axiosInstance
-    .post<IHttpResponse<JobsTableRowDto>>(`${baseApiUrl}`, jobInsertDto)
+    .post<IHttpResponse<JobsTableRowDto>>(`${baseApiUrl}`, jobInsertDto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -48,7 +52,9 @@ const insertJob = (jobInsertDto: JobInsertDto) => {
  */
 const updateJob = (jobUpdateDto: JobUpdateDto) => {
   return axiosInstance
-    .put<IHttpResponse<JobsTableRowDto>>(`${baseApiUrl}`, jobUpdateDto)
+    .put<IHttpResponse<JobsTableRowDto>>(`${baseApiUrl}`, jobUpdateDto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -57,7 +63,7 @@ const updateJob = (jobUpdateDto: JobUpdateDto) => {
  */
 const deleteJob = (jobID: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseApiUrl}/${jobID}`)
+    .delete<IHttpResponse<boolean>>(`${baseApiUrl}/${jobID}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -66,7 +72,9 @@ const deleteJob = (jobID: string) => {
  */
 const deleteJobs = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseApiUrl}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseApiUrl}/delete-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

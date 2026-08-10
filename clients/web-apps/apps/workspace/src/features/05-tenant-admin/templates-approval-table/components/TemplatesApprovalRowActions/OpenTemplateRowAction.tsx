@@ -5,9 +5,7 @@ import { stripLeadingSlash } from "@/utils/strip-leading-slash";
 
 const OpenTemplateRowAction = ({ accessPath }: { accessPath: string }) => {
   const handleOpenTemplate = () => {
-    const url =
-      window.location.origin +
-      `${import.meta.env.VITE_STUDIO_PATH}${stripLeadingSlash(accessPath)}`;
+    const url = `${import.meta.env.VITE_STUDIO_PATH}${stripLeadingSlash(accessPath)}`;
     window.open(url, "_blank");
   };
 

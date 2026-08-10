@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { ChatAgentUserDto } from "../dtos/chat-agent-users-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
@@ -15,6 +16,7 @@ const getSearchUser = (value?: string, includeCurrentUser: boolean = true) => {
   return axiosInstance
     .get<IHttpResponse<WorkspaceUserDto[]>>(
       `${workspaceUserApiUrl}/users/search/${value}?includeCurrentUser=${includeCurrentUser}`,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
@@ -24,7 +26,9 @@ const getSearchUser = (value?: string, includeCurrentUser: boolean = true) => {
  */
 const getChatAgentUsers = (flowVersionId?: string) => {
   return axiosInstance
-    .get<IHttpResponse<ChatAgentUserDto[]>>(`${agentUserApiUrl}/${flowVersionId}/list`)
+    .get<IHttpResponse<ChatAgentUserDto[]>>(`${agentUserApiUrl}/${flowVersionId}/list`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -33,7 +37,9 @@ const getChatAgentUsers = (flowVersionId?: string) => {
  */
 const insertChatAgentUser = (newChatAgentUser: ChatAgentUserDto) => {
   return axiosInstance
-    .post<IHttpResponse<ChatAgentUserDto>>(`${agentUserApiUrl}`, newChatAgentUser)
+    .post<IHttpResponse<ChatAgentUserDto>>(`${agentUserApiUrl}`, newChatAgentUser, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 /**
@@ -41,7 +47,9 @@ const insertChatAgentUser = (newChatAgentUser: ChatAgentUserDto) => {
  */
 const updateChatAgentUser = (updatedUser: ChatAgentUserDto) => {
   return axiosInstance
-    .put<IHttpResponse<ChatAgentUserDto>>(`${agentUserApiUrl}`, updatedUser)
+    .put<IHttpResponse<ChatAgentUserDto>>(`${agentUserApiUrl}`, updatedUser, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -50,7 +58,7 @@ const updateChatAgentUser = (updatedUser: ChatAgentUserDto) => {
  */
 const deleteChatAgentUser = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${agentUserApiUrl}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${agentUserApiUrl}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 

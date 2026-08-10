@@ -119,6 +119,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -175,6 +178,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -223,6 +229,9 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<DateTimeOffset>("LastModifiedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -342,6 +351,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -560,6 +572,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<JsonDocument>("Settings")
                         .HasColumnType("jsonb");
 
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("SupportedPlatform")
                         .HasColumnType("text");
 
@@ -757,6 +772,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<int>("RetryCount")
                         .HasColumnType("integer");
 
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTimeOffset?>("StartTime")
                         .HasColumnType("timestamp with time zone");
 
@@ -883,6 +901,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -957,6 +978,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("StoreCredentialId")
                         .HasColumnType("uuid");
@@ -1033,6 +1057,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<long>("SizeInBytes")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1094,6 +1121,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -1531,6 +1561,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<bool>("ShouldRetryFailedItems")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -1788,6 +1821,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -1848,6 +1884,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("SkillId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("SpaceId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
@@ -2436,6 +2475,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("NextTriggerTime")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -2566,6 +2608,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<JsonDocument>("ParsedSchema")
                         .HasColumnType("jsonb");
 
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -2622,6 +2667,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -2735,6 +2783,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");

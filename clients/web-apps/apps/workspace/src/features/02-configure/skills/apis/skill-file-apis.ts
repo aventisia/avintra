@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { SkillFileDto } from "../dtos/skill-file-dto";
 
@@ -17,7 +18,9 @@ interface RegisterSkillFileDto {
  */
 export const getSkillFiles = (skillId: string) => {
   return axiosInstance
-    .get<IHttpResponse<SkillFileDto[]>>(`${baseAPIURL}/${skillId}/files`)
+    .get<IHttpResponse<SkillFileDto[]>>(`${baseAPIURL}/${skillId}/files`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -26,7 +29,9 @@ export const getSkillFiles = (skillId: string) => {
  */
 export const registerSkillFile = (skillId: string, dto: RegisterSkillFileDto) => {
   return axiosInstance
-    .post<IHttpResponse<SkillFileDto>>(`${baseAPIURL}/${skillId}/files`, dto)
+    .post<IHttpResponse<SkillFileDto>>(`${baseAPIURL}/${skillId}/files`, dto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -35,7 +40,9 @@ export const registerSkillFile = (skillId: string, dto: RegisterSkillFileDto) =>
  */
 export const deleteSkillFile = (skillId: string, fileId: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${skillId}/files/${fileId}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${skillId}/files/${fileId}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -46,6 +53,7 @@ export const downloadSkillZip = (skillId: string) => {
   return axiosInstance
     .get(`${baseAPIURL}/${skillId}/files/download`, {
       responseType: "blob",
+      headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
 };

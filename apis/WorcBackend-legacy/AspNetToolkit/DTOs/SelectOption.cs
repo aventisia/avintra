@@ -19,4 +19,9 @@ public class SelectOption
     /// Gets or sets the description for the label if the user needs more information to select.
     /// </summary>
     public string? Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether this option is the system default (e.g. the "Central" space).
+    /// </summary>
+    public bool IsDefault { get; set; }
 }

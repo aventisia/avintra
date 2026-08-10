@@ -11,6 +11,7 @@ interface DTEditRowActionProps {
   size?: "sm" | "md";
   crudAction: "update" | "read";
   entity: CrudEntityKey;
+  disabled?: boolean;
 }
 
 export const DTRowAction: React.FC<DTEditRowActionProps> = ({
@@ -18,6 +19,7 @@ export const DTRowAction: React.FC<DTEditRowActionProps> = ({
   crudAction,
   size = "md",
   entity,
+  disabled,
 }) => {
   const { openCrudDialog } = useCrudDialogUrlState();
 
@@ -26,6 +28,7 @@ export const DTRowAction: React.FC<DTEditRowActionProps> = ({
       size={size}
       content={crudAction === "read" ? "View" : "Edit"}
       Icon={crudAction === "read" ? ArrowUpRightIcon : PencilSquareIcon}
+      disabled={disabled}
       onClick={() => {
         openCrudDialog({
           entity,

@@ -1,17 +1,15 @@
-import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@avplatform/ui";
+import { Badge } from "@avplatform/ui/badge";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
-import { Badge } from "@avplatform/ui/badge";
+import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Key } from "react";
 import { NavLink } from "react-router-dom";
+
+import { TICKET_STATUS_COLOR, TICKET_TABLE_KEY } from "../../constants/constants";
 import { TicketTableDto } from "../../dtos/TicketDto";
-import {
-  TICKET_TABLE_KEY,
-  TICKET_STATUS_COLOR,
-} from "../../constants/constants";
 import { TicketRowActions } from "../ticket-row-actions/TicketRowActions";
 
 export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
@@ -70,7 +68,12 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
   {
     accessorKey: "ticketNumber",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} className="hidden" column={column} title="Ticket Number" />
+      <DTColumnHeader
+        tableKey={TICKET_TABLE_KEY}
+        className="hidden"
+        column={column}
+        title="Ticket Number"
+      />
     ),
     cell: ({ row }) => <div className="hidden">{row.getValue("ticketNumber")}</div>,
   },
@@ -91,11 +94,7 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
     ),
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      return (
-        <Badge className={cn(TICKET_STATUS_COLOR[status])}>
-          {status}
-        </Badge>
-      );
+      return <Badge className={cn(TICKET_STATUS_COLOR[status])}>{status}</Badge>;
     },
   },
   {

@@ -69,8 +69,7 @@ export const isTwoFAEnabledProps: SwitchFieldProps = {
 export const isChangeRequestEnabledProps: SwitchFieldProps = {
   name: "isChangeRequestEnabled",
   label: "Enable Change Requests",
-  description:
-    "If enabled, Tenant Admins can create Change Request tickets",
+  description: "If enabled, Tenant Admins can create Change Request tickets",
 };
 
 // Is Password Enabled

@@ -1,19 +1,33 @@
 namespace AccountsAPIs.Services;
 
+using System.Net.Http.Headers;
+using Newtonsoft.Json;
+
 public class SpaceTableService : ISpaceTableService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<SpaceTableService> _logger;
+    private readonly EnvironmentConfig _environmentConfig;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly Guid _userId;
+    private readonly Guid _tenantId;
 
-    public SpaceTableService(IUnitOfWork unitOfWork, ILogger<SpaceTableService> logger, IHttpContextAccessor httpContextAccessor)
+    public SpaceTableService(
+        IUnitOfWork unitOfWork,
+        ILogger<SpaceTableService> logger,
+        IHttpContextAccessor httpContextAccessor,
+        EnvironmentConfig environmentConfig)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
+        _environmentConfig = environmentConfig;
+        _httpContextAccessor = httpContextAccessor;
 
         // Set _userId from the HTTP context, defaulting to an empty GUID if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
+        // Set _tenantId from the HTTP context, defaulting to an empty GUID if not found
+        _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
     }
 
     // Retrieves all spaces from the database.
@@ -28,14 +42,69 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
-            // Fetch all space records from the repository
+            // Fetch all space records for the current tenant from the repository
             var spaceEntities = await _unitOfWork.SpaceRepo
-                .GetAllAsync()
+                .GetByConditionAsync(s => s.TenantId == _tenantId)
                 .Include(i => i.CreatedByUser)
+                .Include(i => i.SpaceUsers)
                 .ToListAsync();
 
-            // Map the space entities to DTOs
-            serviceResponse.Data = spaceEntities.Adapt<IEnumerable<SpaceTableDto>>();
+            // Map the space entities to DTOs.
+            // Materialize to a List so in-place mutations below persist across the
+            // multiple enumerations (foreach, Select, and the response assignment).
+            var spaceDtos = spaceEntities.Adapt<IEnumerable<SpaceTableDto>>().ToList();
+
+            // Count distinct users per space from the SpaceUser membership table.
+            var spaceUsers = await _unitOfWork.SpaceUserRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId)
+                .ToListAsync();
+
+            var userIdsBySpace = spaceUsers
+                .GroupBy(g => g.SpaceId)
+                .ToDictionary(g => g.Key, g => g.Select(x => x.UserId).Distinct().ToHashSet());
+
+            // A Tenant Administrator (TA) has implicit access to every space in the tenant,
+            // regardless of whether they have explicit SpaceUser assignments. So a TA
+            // must be counted as a user of every space.
+            var tenantAdminUserIds = (await _unitOfWork.AccountUserRepo
+                    .GetByConditionAsync(w => w.TenantId == _tenantId && !w.IsDefault)
+                    .Select(w => new { w.Id, w.UserRoles })
+                    .ToListAsync())
+                .Where(u => u.UserRoles.Any(ur =>
+                    ur.Role != null && (ur.Role.Name == CustomRolesEnum.TA.ToString() || ur.Role.FullName == "Tenant administrator")))
+                .Select(u => u.Id)
+                .Distinct()
+                .ToHashSet();
+
+            // Fetch aggregate usage metrics (published agents, execution time, machines) from WorkspaceAPIs,
+            // keyed by SpaceId. The Central space has a null SpaceId in WorkspaceAPIs.
+            var spaceSummaries = await GetSpaceSummariesAsync();
+
+            // Populate aggregate counts for each space
+            foreach (var spaceDto in spaceDtos)
+            {
+                var spaceEntity = spaceEntities.FirstOrDefault(s => s.Id == spaceDto.Id);
+                if (spaceEntity == null) continue;
+
+                // Total users associated with the space = distinct users from SpaceUser
+                // unioned with the Tenant Administrators who implicitly have access to every space.
+                userIdsBySpace.TryGetValue(spaceDto.Id, out var explicitUserIds);
+                var allUserIds = new HashSet<Guid>(explicitUserIds ?? Enumerable.Empty<Guid>());
+                allUserIds.UnionWith(tenantAdminUserIds);
+                spaceDto.TotalUsers = allUserIds.Count;
+
+                // Aggregate metrics fetched from WorkspaceAPIs.
+                // The Central space (IsDefault) maps to a null SpaceId in WorkspaceAPIs.
+                var summary = spaceDto.IsDefault
+                    ? spaceSummaries.FirstOrDefault(s => s.SpaceId == null)
+                    : spaceSummaries.FirstOrDefault(s => s.SpaceId == spaceDto.Id);
+
+                spaceDto.TotalPublishedAgents = summary?.TotalPublishedAgents ?? 0;
+                spaceDto.TotalExecutionTime = summary?.TotalExecutionTime ?? 0;
+                spaceDto.TotalMachinesAttached = summary?.TotalMachinesAttached ?? 0;
+            }
+
+            serviceResponse.Data = spaceDtos;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Spaces retrieved successfully.";
 
@@ -64,9 +133,9 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
-            // Retrieve all space entities along with the user who created them
+            // Retrieve all space entities for the current tenant along with the user who created them
             var spaceEntities = await _unitOfWork.SpaceRepo
-                .GetAllAsync()
+                .GetByConditionAsync(s => s.TenantId == _tenantId)
                 .ProjectToType<SelectOption>()
                 .ToListAsync();
 
@@ -150,9 +219,9 @@ public class SpaceTableService : ISpaceTableService
             // Log the start of space creation
             _logger.LogInformation("Starting creation of space: {SpaceName}", spaceDto.Name);
 
-            // Check if a space with the same name already exists (case-insensitive)
+            // Check if a space with the same name already exists within the tenant (case-insensitive)
             var existingSpace = await _unitOfWork.SpaceRepo
-                .GetByConditionAsync(s => s.Name.ToLower() == spaceDto.Name.ToLower())
+                .GetByConditionAsync(s => s.TenantId == _tenantId && s.Name.ToLower() == spaceDto.Name.ToLower())
                 .SingleOrDefaultAsync();
 
             if (existingSpace != null)
@@ -168,6 +237,7 @@ public class SpaceTableService : ISpaceTableService
 
             // Map DTO to entity and assign new ID
             var newSpace = spaceDto.Adapt<Space>();
+            newSpace.TenantId = _tenantId;
             newSpace.CreatedByUserId = _userId;
             newSpace.LastModifiedByUserId = _userId;
 
@@ -241,9 +311,18 @@ public class SpaceTableService : ISpaceTableService
                 return serviceResponse;
             }
 
-            // Check for duplicate name (excluding current space)
+            // The default "Central" space cannot be edited
+            if (existingSpace.IsDefault)
+            {
+                _logger.LogWarning("Update failed: The default space cannot be edited. Space ID: {SpaceId}", spaceDto.Id);
+                serviceResponse.Message = "The default space cannot be edited.";
+                serviceResponse.StatusCode = 403;
+                return serviceResponse;
+            }
+
+            // Check for duplicate name within the tenant (excluding current space)
             var duplicateSpace = await _unitOfWork.SpaceRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == spaceDto.Name.ToLower() && w.Id != spaceDto.Id).SingleOrDefaultAsync();
+                .GetByConditionAsync(w => w.TenantId == _tenantId && w.Name.ToLower() == spaceDto.Name.ToLower() && w.Id != spaceDto.Id).SingleOrDefaultAsync();
 
             if (duplicateSpace != null)
             {
@@ -345,6 +424,24 @@ public class SpaceTableService : ISpaceTableService
                 return serviceResponse;
             }
 
+            // The default "Central" space cannot be deleted
+            if (spaceEntity.IsDefault)
+            {
+                _logger.LogWarning("Deletion aborted. The default space cannot be deleted. Space ID: {SpaceId}", spaceId);
+                serviceResponse.Message = "The default space cannot be deleted.";
+                serviceResponse.StatusCode = 403;
+                return serviceResponse;
+            }
+
+            // A space with published agents cannot be deleted.
+            if (await HasPublishedAgentsAsync(spaceId))
+            {
+                _logger.LogWarning("Deletion aborted. Space {SpaceId} has published agents and cannot be deleted.", spaceId);
+                serviceResponse.Message = "This space cannot be deleted because it has published agents. Unpublish or remove the agents first.";
+                serviceResponse.StatusCode = 409;
+                return serviceResponse;
+            }
+
             // Mark the entity for deletion
             _unitOfWork.SpaceRepo.Delete(spaceEntity);
 
@@ -369,6 +466,89 @@ public class SpaceTableService : ISpaceTableService
 
         // Return the final result
         return serviceResponse;
+    }
+
+    // Checks whether the given space has any published agents by querying the WorkspaceAPIs.
+    private async Task<bool> HasPublishedAgentsAsync(Guid spaceId)
+    {
+        try
+        {
+            // Get the JWT of the current request to authenticate the cross-service call.
+            var jwt = GetJwtOfRequestUtil.GetJwtOfRequest(_httpContextAccessor.HttpContext);
+
+            // Call the WorkspaceAPIs "published" endpoint scoped to the given space.
+            // The X-Space-Id header tells the WorkspaceAPIs to filter published agents by that space.
+            var httpClient = new HttpClient(CreateInsecureHttpClientHandler());
+            if (!string.IsNullOrEmpty(jwt) && jwt != "jwt-not-found")
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+            }
+            httpClient.DefaultRequestHeaders.Add("X-Space-Id", spaceId.ToString());
+
+            var response = await httpClient.GetAsync($"{_environmentConfig.WorkspaceApiBaseUrl}/api/agent/published");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Failed to query published agents for space {SpaceId}. Status: {Status}", spaceId, response.StatusCode);
+                return false;
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ServiceResponse<IEnumerable<object>>>(content);
+
+            // If the response contains any published agents, the space cannot be deleted.
+            return result?.Data != null && result.Data.Any();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while checking published agents for space {SpaceId}.", spaceId);
+            return false;
+        }
+    }
+
+    // Retrieves aggregate usage metrics (published agents, execution time, machines) grouped by space
+    // from the WorkspaceAPIs. The Central space is represented by a null SpaceId.
+    private async Task<List<SpaceSummaryDto>> GetSpaceSummariesAsync()
+    {
+        try
+        {
+            // Get the JWT of the current request to authenticate the cross-service call.
+            var jwt = GetJwtOfRequestUtil.GetJwtOfRequest(_httpContextAccessor.HttpContext);
+
+            var httpClient = new HttpClient(CreateInsecureHttpClientHandler());
+            if (!string.IsNullOrEmpty(jwt) && jwt != "jwt-not-found")
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+            }
+
+            var response = await httpClient.GetAsync($"{_environmentConfig.WorkspaceApiBaseUrl}/api/space-summary/list");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning("Failed to query space summaries from WorkspaceAPIs. Status: {Status}", response.StatusCode);
+                return new List<SpaceSummaryDto>();
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<ServiceResponse<IEnumerable<SpaceSummaryDto>>>(content);
+
+            return result?.Data?.ToList() ?? new List<SpaceSummaryDto>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while retrieving space summaries from WorkspaceAPIs.");
+            return new List<SpaceSummaryDto>();
+        }
+    }
+
+    // Creates an HttpClientHandler that bypasses SSL certificate validation.
+    // This is required for local development where the WorkspaceAPIs runs with an
+    // untrusted self-signed development certificate (e.g. WSL).
+    private static HttpClientHandler CreateInsecureHttpClientHandler()
+    {
+        var handler = new HttpClientHandler();
+        handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+        return handler;
     }
 
     // Deletes multiple spaces based on a list of unique identifiers.
@@ -398,8 +578,39 @@ public class SpaceTableService : ISpaceTableService
                 return serviceResponse;
             }
 
+            // Exclude the default "Central" space from bulk deletion
+            var deletableSpaces = spaces.Where(w => !w.IsDefault).ToList();
+
+            // All requested spaces are default spaces
+            if (deletableSpaces.Count == 0)
+            {
+                _logger.LogWarning("Bulk deletion aborted. The default space cannot be deleted.");
+                serviceResponse.Message = "The default space cannot be deleted.";
+                serviceResponse.StatusCode = 403;
+                return serviceResponse;
+            }
+
+            // A space with published agents cannot be deleted.
+            var spacesWithPublishedAgents = new List<Space>();
+            foreach (var space in deletableSpaces)
+            {
+                if (await HasPublishedAgentsAsync(space.Id))
+                {
+                    spacesWithPublishedAgents.Add(space);
+                }
+            }
+
+            if (spacesWithPublishedAgents.Count > 0)
+            {
+                var names = string.Join(", ", spacesWithPublishedAgents.Select(s => s.Name));
+                _logger.LogWarning("Bulk deletion aborted. Spaces with published agents cannot be deleted: {Names}", names);
+                serviceResponse.Message = $"The following spaces cannot be deleted because they have published agents: {names}. Unpublish or remove the agents first.";
+                serviceResponse.StatusCode = 409;
+                return serviceResponse;
+            }
+
             // Mark all matching entities for deletion
-            _unitOfWork.SpaceRepo.Delete(spaces);
+            _unitOfWork.SpaceRepo.Delete(deletableSpaces);
 
             // Commit changes to the database
             if (!await _unitOfWork.SaveAsync())
@@ -413,7 +624,7 @@ public class SpaceTableService : ISpaceTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Spaces deleted successfully.";
 
-            _logger.LogInformation("Successfully deleted {Count} space(s).", spaces.Count);
+            _logger.LogInformation("Successfully deleted {Count} space(s).", deletableSpaces.Count);
         }
         catch (Exception ex)
         {
@@ -462,6 +673,127 @@ public class SpaceTableService : ISpaceTableService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving users for space ID: {SpaceId}.", spaceId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Adds the given users to a space (used by the share flow to sync space membership).
+    public async Task<ServiceResponse<bool>> AddSpaceUsersAsync(Guid spaceId, List<Guid> userIds)
+    {
+        // Initialize a default failure response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to add users to the space. Please try again later."
+        };
+
+        try
+        {
+            if (userIds == null || userIds.Count == 0)
+            {
+                serviceResponse.Message = "No users were provided to add.";
+                return serviceResponse;
+            }
+
+            // Verify the space exists and belongs to the current tenant.
+            var space = await _unitOfWork.SpaceRepo
+                .GetByConditionAsync(w => w.Id == spaceId && w.TenantId == _tenantId)
+                .SingleOrDefaultAsync();
+
+            if (space == null)
+            {
+                serviceResponse.Message = "Space not found.";
+                return serviceResponse;
+            }
+
+            // Get the users already associated with the space to avoid duplicates.
+            var existingUserIds = await _unitOfWork.SpaceUserRepo
+                .GetByConditionAsync(w => w.SpaceId == spaceId && w.TenantId == _tenantId)
+                .Select(s => s.UserId)
+                .ToListAsync();
+
+            var existingSet = existingUserIds.ToHashSet();
+
+            // Build new SpaceUser records for users not already in the space.
+            var toAdd = userIds
+                .Where(id => !existingSet.Contains(id))
+                .Select(id => new SpaceUser
+                {
+                    UserId = id,
+                    SpaceId = spaceId,
+                    TenantId = _tenantId,
+                    IsActive = true,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                })
+                .ToList();
+
+            if (toAdd.Count > 0)
+            {
+                await _unitOfWork.SpaceUserRepo.InsertAsync(toAdd);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("Failed to persist added space users for space {SpaceId}.", spaceId);
+                    return serviceResponse;
+                }
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Users added to the space successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while adding users to space {SpaceId}.", spaceId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Removes the given users from a space (used by the share flow to sync space membership).
+    public async Task<ServiceResponse<bool>> RemoveSpaceUsersAsync(Guid spaceId, List<Guid> userIds)
+    {
+        // Initialize a default failure response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to remove users from the space. Please try again later."
+        };
+
+        try
+        {
+            if (userIds == null || userIds.Count == 0)
+            {
+                serviceResponse.Message = "No users were provided to remove.";
+                return serviceResponse;
+            }
+
+            // Retrieve the SpaceUser records to remove.
+            var toRemove = await _unitOfWork.SpaceUserRepo
+                .GetByConditionAsync(w =>
+                    w.SpaceId == spaceId &&
+                    w.TenantId == _tenantId &&
+                    userIds.Contains(w.UserId))
+                .ToListAsync();
+
+            if (toRemove.Count > 0)
+            {
+                _unitOfWork.SpaceUserRepo.Delete(toRemove);
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogWarning("Failed to persist removed space users for space {SpaceId}.", spaceId);
+                    return serviceResponse;
+                }
+            }
+
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Users removed from the space successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while removing users from space {SpaceId}.", spaceId);
         }
 
         return serviceResponse;

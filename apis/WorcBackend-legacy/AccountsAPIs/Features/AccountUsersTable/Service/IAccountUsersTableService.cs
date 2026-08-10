@@ -45,6 +45,12 @@ public interface IAccountUsersTableService
     Task<ServiceResponse<IEnumerable<SelectOption>>> GetAccountRolesAsync();
 
     /// <summary>
+    /// Retrieves the list of spaces for the current tenant, for use in user space assignment.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous operation. The task result contains the service response with a collection of select option DTOs.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetAccountSpacesAsync();
+
+    /// <summary>
     /// Updates the roles of an account user. Removes unassinged ones and add new ones if there is any requirement
     /// </summary>
     /// <param name="accountUser">The account user to update.</param>

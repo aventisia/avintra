@@ -8,6 +8,12 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the space this flow version belongs to.
+    /// Null indicates the flow version is in the default "Central" space (shared across the tenant).
+    /// </summary>
+    public Guid? SpaceId { get; set; }
+
+    /// <summary>
     /// Gets or sets a value indicating whether the version is in locked state.
     /// </summary>
     public bool IsLocked { get; set; }

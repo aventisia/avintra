@@ -39,7 +39,32 @@ public class TenantResolver
         if (!setTenantResult.Equals("pass"))
             throw new Exception(setTenantResult);
 
+        // Resolve the current space for this request.
+        // Prefer the "X-Space-Id" request header; fall back to the "spid" JWT claim.
+        // Guid.Empty (absent) means the default "Central" space.
+        currentTenantService.CurrentSpaceId = ResolveSpaceId(context);
+
         await _next(context);
+    }
+
+    // Resolves the current space ID from the "X-Space-Id" header, falling back to the "spid" JWT claim.
+    private static Guid ResolveSpaceId(HttpContext context)
+    {
+        // Prefer the "X-Space-Id" request header.
+        if (context.Request.Headers.TryGetValue("X-Space-Id", out var spaceIdHeader) &&
+            Guid.TryParse(spaceIdHeader.ToString(), out var headerSpaceId))
+        {
+            return headerSpaceId;
+        }
+
+        // Fall back to the "spid" JWT claim (used by the templates feature).
+        if (Guid.TryParse(context.User?.FindFirstValue("spid"), out var claimSpaceId))
+        {
+            return claimSpaceId;
+        }
+
+        // No space selected -> Central.
+        return Guid.Empty;
     }
 
     private void GetTenantIdFromJwtOrRequestHeader(

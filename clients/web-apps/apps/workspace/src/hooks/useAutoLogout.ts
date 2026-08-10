@@ -31,7 +31,8 @@ export function useAutoLogout() {
       await logOffFromCurrentSession();
       localStorage.setItem("logout", "true");
       setUserSession(null);
-      navigate("/redirect?msg=Logging out...&url=" + import.meta.env.VITE_ACCOUNTS_PATH);
+      const accountsBase = import.meta.env.VITE_ACCOUNTS_PATH;
+      navigate("/redirect?msg=Logging out...&url=" + accountsBase);
     } catch (err) {
       console.error("Error during logout:", err);
     }

@@ -47,6 +47,13 @@ public class AccountUsersTableController : BaseApiController
         return ResultHelper(await _accountUsersTableService.GetAccountRolesAsync());
     }
 
+    // Retrieves the spaces for the current tenant for user space assignment.
+    [HttpGet("spaces-to-select")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetAccountSpaces()
+    {
+        return ResultHelper(await _accountUsersTableService.GetAccountSpacesAsync());
+    }
+
     // Disable multiple users by their IDs.
     [HttpPost("disable-multiple")]
     public async Task<ActionResult<ServiceResponse<bool>>> DisableUsers([FromBody] List<Guid> ids)

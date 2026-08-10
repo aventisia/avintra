@@ -6,6 +6,7 @@ import {
 } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { VaultsTableDto } from "../dtos/vaults-table-dto";
 
@@ -18,7 +19,7 @@ export const getVaults = ({ isPersonal = true }: { isPersonal: boolean }) => {
   const path = isPersonal ? `list` : `list/shared`;
 
   return axiosInstance
-    .get<IHttpResponse<VaultsTableDto[]>>(`${baseAPIURL}/${path}`)
+    .get<IHttpResponse<VaultsTableDto[]>>(`${baseAPIURL}/${path}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -27,7 +28,7 @@ export const getVaults = ({ isPersonal = true }: { isPersonal: boolean }) => {
  */
 export const getDecryptedVault = (rowId: string) => {
   return axiosInstance
-    .get<IHttpResponse<string>>(`${baseAPIURL}/decrypt/${rowId}`)
+    .get<IHttpResponse<string>>(`${baseAPIURL}/decrypt/${rowId}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -36,7 +37,9 @@ export const getDecryptedVault = (rowId: string) => {
  */
 export const isVaultNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
-    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj)
+    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -45,7 +48,9 @@ export const isVaultNameAvailable = (postObj: CheckAvailabilityDto) => {
  */
 export const insertVault = (newConfig: VaultsTableDto) => {
   return axiosInstance
-    .post<IHttpResponse<VaultsTableDto>>(`${baseAPIURL}`, newConfig)
+    .post<IHttpResponse<VaultsTableDto>>(`${baseAPIURL}`, newConfig, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -54,7 +59,9 @@ export const insertVault = (newConfig: VaultsTableDto) => {
  */
 export const updateVault = (updatedConfig: VaultsTableDto) => {
   return axiosInstance
-    .put<IHttpResponse<VaultsTableDto>>(`${baseAPIURL}`, updatedConfig)
+    .put<IHttpResponse<VaultsTableDto>>(`${baseAPIURL}`, updatedConfig, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -63,7 +70,7 @@ export const updateVault = (updatedConfig: VaultsTableDto) => {
  */
 export const deleteVault = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -72,7 +79,9 @@ export const deleteVault = (id: string) => {
  */
 export const deleteVaults = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

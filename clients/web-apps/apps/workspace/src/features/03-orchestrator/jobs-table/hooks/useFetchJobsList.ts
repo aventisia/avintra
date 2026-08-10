@@ -4,6 +4,8 @@ import { format } from "date-fns";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
+
 import { DATA_QUERY_KEY, getJobs, useDateRangePickerStore } from "..";
 
 /**
@@ -11,6 +13,13 @@ import { DATA_QUERY_KEY, getJobs, useDateRangePickerStore } from "..";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchJobsList = () => {
+  // Get the currently selected space so the query refetches when the space changes
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
+
   const { dateRange } = useDateRangePickerStore(
     useShallow((state) => ({ dateRange: state.dateRange })),
   );
@@ -20,7 +29,7 @@ export const useFetchJobsList = () => {
 
   // Get jobs using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: [...DATA_QUERY_KEY, from, to],
+    queryKey: [...DATA_QUERY_KEY, from, to, currentSpace?.id],
     queryFn: () => getJobs(from, to),
   });
 

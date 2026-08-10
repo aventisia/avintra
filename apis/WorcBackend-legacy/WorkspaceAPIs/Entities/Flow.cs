@@ -11,6 +11,12 @@ public class Flow : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the space this flow belongs to.
+    /// Null indicates the flow is in the default "Central" space (shared across the tenant).
+    /// </summary>
+    public Guid? SpaceId { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of the flow. Max-20 characters.
     /// </summary>
     [MaxLength(20)]

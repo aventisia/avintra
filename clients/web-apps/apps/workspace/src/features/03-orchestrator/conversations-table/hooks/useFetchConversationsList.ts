@@ -4,6 +4,8 @@ import { format } from "date-fns";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
+
 import { getConversations } from "../apis/conversations-table-apis";
 import { DATA_QUERY_KEY } from "../constants";
 import { useDateRangePickerStore } from "../stores/date-range-store";
@@ -13,6 +15,13 @@ import { useDateRangePickerStore } from "../stores/date-range-store";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchConversationsList = () => {
+  // Get the currently selected space so the query refetches when the space changes
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
+
   const { dateRange } = useDateRangePickerStore(
     useShallow((state) => ({ dateRange: state.dateRange })),
   );
@@ -22,7 +31,7 @@ export const useFetchConversationsList = () => {
 
   // Get Conversations using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: [...DATA_QUERY_KEY, from, to],
+    queryKey: [...DATA_QUERY_KEY, from, to, currentSpace?.id],
     queryFn: () => getConversations(from, to),
   });
 

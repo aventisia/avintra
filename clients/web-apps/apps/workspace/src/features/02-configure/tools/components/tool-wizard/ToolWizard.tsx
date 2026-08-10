@@ -2,14 +2,15 @@ import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { type DialogCrudAction } from "@avplatform/ui/types";
 import { useQueryClient } from "@tanstack/react-query";
-import { FormEvent, useEffect, useState } from "react";
 import * as YAML from "js-yaml";
+import { FormEvent, useEffect, useState } from "react";
+
+import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 import { getToolById, insertTool, updateTool } from "../../apis/tools.apis";
 import { DATA_QUERY_KEY, DETAIL_DATA_QUERY_KEY } from "../../constants/tools-table.constants";
 import { ToolDto } from "../../dtos/index";
 import { ComponentTypeEnum } from "../../enums/component-type-enum";
-import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 import { useTableTab } from "../../hooks/useTableTab.hook";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
 import { StepAuthenticate } from "./StepAuthenticate";
@@ -75,18 +76,34 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
       if (!tool) return;
 
       const spec = tool.openApiSpec ?? "";
-      let parsedSchema: { operations: Array<{ operationId: string; method: string; path: string; summary?: string }> } | undefined;
+      let parsedSchema:
+        | {
+            operations: Array<{
+              operationId: string;
+              method: string;
+              path: string;
+              summary?: string;
+            }>;
+          }
+        | undefined;
       if (spec.trim()) {
         try {
           const trimmed = spec.trim();
-          const parsed = trimmed.startsWith("{") || trimmed.startsWith("[")
-            ? JSON.parse(trimmed)
-            : YAML.load(trimmed);
+          const parsed =
+            trimmed.startsWith("{") || trimmed.startsWith("[")
+              ? JSON.parse(trimmed)
+              : YAML.load(trimmed);
           const paths = (parsed?.paths ?? {}) as Record<string, unknown>;
-          const operations: Array<{ operationId: string; method: string; path: string; summary?: string }> = [];
+          const operations: Array<{
+            operationId: string;
+            method: string;
+            path: string;
+            summary?: string;
+          }> = [];
           for (const [path, methods] of Object.entries(paths)) {
             for (const [method, details] of Object.entries(methods as Record<string, unknown>)) {
-              if (!["get", "post", "put", "patch", "delete"].includes(method.toLowerCase())) continue;
+              if (!["get", "post", "put", "patch", "delete"].includes(method.toLowerCase()))
+                continue;
               const op = details as Record<string, unknown>;
               operations.push({
                 operationId: (op.operationId as string) ?? `${method}_${path}`,
@@ -209,27 +226,19 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
             Previous
           </Button>
           <div className="flex gap-2">
-              {currentIndex < steps.length - 1 ? (
-                <Button
-                  disabled={currentIndex === steps.length - 1 || !isIngestValid}
-                  onClick={() => setCurrentStep(steps[currentIndex + 1].key)}
-                  type="button"
-                >
-                  Next
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleFinish}
-                  disabled={!draftTool || isSavePending}
-                  type="button"
-                >
-                  {isSavePending
-                    ? isCreate
-                      ? "Creating..."
-                      : "Updating..."
-                    : "Finish"}
-                </Button>
-              )}
+            {currentIndex < steps.length - 1 ? (
+              <Button
+                disabled={currentIndex === steps.length - 1 || !isIngestValid}
+                onClick={() => setCurrentStep(steps[currentIndex + 1].key)}
+                type="button"
+              >
+                Next
+              </Button>
+            ) : (
+              <Button onClick={handleFinish} disabled={!draftTool || isSavePending} type="button">
+                {isSavePending ? (isCreate ? "Creating..." : "Updating...") : "Finish"}
+              </Button>
+            )}
           </div>
         </div>
       </div>

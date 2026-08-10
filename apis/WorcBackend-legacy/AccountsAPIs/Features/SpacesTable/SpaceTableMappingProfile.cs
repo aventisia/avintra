@@ -31,6 +31,7 @@ public class SpaceTableMappingProfile : IRegister
         config.NewConfig<Space, SelectOption>()
             .Map(dest => dest.Label, src => src.Name)
             .Map(dest => dest.Value, src => src.Id)
-            .Map(dest => dest.Description, src => src.Description);
+            .Map(dest => dest.Description, src => src.Description)
+            .Map(dest => dest.IsDefault, src => src.IsDefault);
     }
 }

@@ -1,22 +1,34 @@
 import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
-import { Form, InputField, SelectField, TextareaField, SwitchField } from "@avplatform/ui/form";
+import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
-import { saTicketOptimisticMutationFn } from "../../apis/sa-ticket-apis";
-import { createTicketZodSchema } from "@/features/05-tenant-admin/support-tickets-v2/constants/ticket-zod-schema";
-import { DATA_QUERY_KEY } from "../../constants";
-import {
-  idProps, requestTypeProps, titleProps, descriptionProps,
-  requiredByProps, agentRefIdProps, changeSummaryProps, changeReasonProps,
-  expectedBehaviorProps, requestedTimelineProps, isDisabledProps,
-} from "@/features/05-tenant-admin/support-tickets-v2/constants/ticket-form-field-props";
-import { TicketDto, TicketTableDto } from "@/features/05-tenant-admin/support-tickets-v2/dtos/TicketDto";
-import { useDefineTicketForm } from "@/features/05-tenant-admin/support-tickets-v2/hooks/useDefineTicketForm";
 import { getPublishedAgents } from "@/features/03-orchestrator/agents-table/apis/agents-table-apis";
+import {
+  agentRefIdProps,
+  changeReasonProps,
+  changeSummaryProps,
+  descriptionProps,
+  expectedBehaviorProps,
+  idProps,
+  isDisabledProps,
+  requestTypeProps,
+  requestedTimelineProps,
+  requiredByProps,
+  titleProps,
+} from "@/features/05-tenant-admin/support-tickets-v2/constants/ticket-form-field-props";
+import { createTicketZodSchema } from "@/features/05-tenant-admin/support-tickets-v2/constants/ticket-zod-schema";
+import {
+  TicketDto,
+  TicketTableDto,
+} from "@/features/05-tenant-admin/support-tickets-v2/dtos/TicketDto";
+import { useDefineTicketForm } from "@/features/05-tenant-admin/support-tickets-v2/hooks/useDefineTicketForm";
+
+import { saTicketOptimisticMutationFn } from "../../apis/sa-ticket-apis";
+import { DATA_QUERY_KEY } from "../../constants";
 
 interface SaTicketCrudFormProps {
   rowId: string;
@@ -26,7 +38,11 @@ interface SaTicketCrudFormProps {
 export const SaTicketCrudForm = ({ rowId, crudAction }: SaTicketCrudFormProps) => {
   const { onCloseConfirmed } = useCrudDialogDirty();
 
-  const { form, isDirty, refineFormData } = useDefineTicketForm({ rowId, crudAction, queryKey: DATA_QUERY_KEY });
+  const { form, isDirty, refineFormData } = useDefineTicketForm({
+    rowId,
+    crudAction,
+    queryKey: DATA_QUERY_KEY,
+  });
 
   const { data: agentsData } = useQuery({
     queryKey: ["published-agents"],

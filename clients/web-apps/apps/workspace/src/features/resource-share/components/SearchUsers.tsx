@@ -2,6 +2,7 @@ import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 
 import { resourceAccessOptions } from "../constant";
+import { ResourceTypeEnum } from "../enums/resource-type-enum";
 import { useSearchUserMultiSelect } from "../hooks/useSearchUserMultiSelect";
 import { MultiSelector } from "./MultiSelector";
 
@@ -35,7 +36,12 @@ export const SearchUsers = ({
     isError,
     accessType,
     setAccessType,
+    resourceType,
   } = useSearchUserMultiSelect();
+
+  // Access levels (View/Edit/Owner) have no relevance when assigning users to a
+  // Space, so hide the access-level selector for Space resources.
+  const isSpaceResource = resourceType === ResourceTypeEnum.Space;
 
   const isDraftDifferent = isTenantAccessDraft !== isTenantAccessSaved;
   const hasSelectedUsers = selectedItems && selectedItems.length > 0;
@@ -87,11 +93,15 @@ export const SearchUsers = ({
         isError={isError}
         disabled={isSelectorDisabled}
         placeholder={dynamicPlaceholder}
-        actionSelect={{
-          onChange: setAccessType,
-          value: accessType,
-          options: resourceAccessOptions,
-        }}
+        actionSelect={
+          isSpaceResource
+            ? undefined
+            : {
+                onChange: setAccessType,
+                value: accessType,
+                options: resourceAccessOptions,
+              }
+        }
       />
 
       <Button onClick={handleActionClick} disabled={isButtonDisabled} className="min-w-28">

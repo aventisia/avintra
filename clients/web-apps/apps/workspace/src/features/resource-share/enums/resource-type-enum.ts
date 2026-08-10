@@ -9,4 +9,5 @@ export enum ResourceTypeEnum {
   Tool = "Tool",
   Flow = "Flow",
   FlowVersion = "FlowVersion",
+  Space = "Space",
 }

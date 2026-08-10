@@ -1,5 +1,6 @@
 import { useDebounce } from "@avplatform/ui/hooks/useDebounce";
 import { useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { ResourceShareRecipientDto } from "../dtos/resource-share-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
@@ -15,11 +16,13 @@ export const useSearchUserMultiSelect = () => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  const { isTenantWideAccess, resourceId, resourceType } = useResourceShareStore((state) => ({
-    resourceId: state.resourceId,
-    resourceType: state.resourceType,
-    isTenantWideAccess: state.isTenantWideAccess,
-  }));
+  const { isTenantWideAccess, resourceId, resourceType } = useResourceShareStore(
+    useShallow((state) => ({
+      resourceId: state.resourceId,
+      resourceType: state.resourceType,
+      isTenantWideAccess: state.isTenantWideAccess,
+    })),
+  );
 
   const { data: searchData, isLoading, isError } = useSearchUsersList(debouncedSearchTerm);
 

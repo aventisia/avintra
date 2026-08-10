@@ -3,9 +3,10 @@ import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
 import { Table } from "@tanstack/react-table";
 
+import { TicketTableDto } from "@/features/05-tenant-admin/support-tickets-v2/dtos/TicketDto";
+
 import { saTicketOptimisticMutationFn } from "../../apis/sa-ticket-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { TicketTableDto } from "@/features/05-tenant-admin/support-tickets-v2/dtos/TicketDto";
 
 interface SaTicketBulkActionsProps {
   table: Table<TicketTableDto>;

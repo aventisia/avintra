@@ -38,6 +38,11 @@ public class AccountUsersTableDto
     public required List<string> UserRoles { get; set; }
 
     /// <summary>
+    /// Gets or sets the list of space names the user belongs to.
+    /// </summary>
+    public List<string> Spaces { get; set; } = new();
+
+    /// <summary>
     /// Gets or sets a flag indicating if two-factor authentication is enabled for the user.
     /// </summary>
     public required bool TwoFactorEnabled { get; set; }

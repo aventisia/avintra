@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { getSaTickets, getSaTicket } from "../apis/sa-ticket-apis";
+
+import { getSaTicket, getSaTickets } from "../apis/sa-ticket-apis";
 
 export const useFetchSaTickets = () =>
   useQuery({

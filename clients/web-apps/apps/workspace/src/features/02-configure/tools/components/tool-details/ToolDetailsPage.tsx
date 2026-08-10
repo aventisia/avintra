@@ -14,11 +14,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { NavLink, useParams, useSearchParams } from "react-router-dom";
 
-import {
-  getToolById,
-  setToolActiveState,
-  testToolDirectly,
-} from "../../apis/tools.apis";
+import { getToolById, setToolActiveState, testToolDirectly } from "../../apis/tools.apis";
 import { DATA_QUERY_KEY } from "../../constants/tools-table.constants";
 import { TestToolDto, TestToolResponseDto } from "../../dtos";
 import { ToolAuthenticationTypeEnum } from "../../enums/tool-authentication-type-enum";

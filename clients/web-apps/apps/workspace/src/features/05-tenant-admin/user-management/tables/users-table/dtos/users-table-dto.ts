@@ -30,6 +30,11 @@ export interface UsersTableDto {
   userRoles: string[];
 
   /**
+   * Gets or sets the list of space IDs the user belongs to.
+   */
+  spaces: string[];
+
+  /**
    * Gets or sets a flag indicating if two-factor authentication is enabled for the user.
    */
   twoFactorEnabled: boolean;

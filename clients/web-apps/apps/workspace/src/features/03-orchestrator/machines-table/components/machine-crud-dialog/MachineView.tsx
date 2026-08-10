@@ -122,7 +122,7 @@ export const MachineView = ({ rowId }: MachineViewProps) => {
                 {index > 0 && <Separator className="h-[0.5px]" />}
                 <div className="flex flex-row items-center gap-1.5 justify-between">
                   <FlowVersionNavLink
-                    to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${flowVersion.flowId}&v=${flowVersion.value}`}
+                    to={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${flowVersion.flowId}&v=${flowVersion.value}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     title={`View ${flowVersion.label} in Agent Builder`}

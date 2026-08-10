@@ -9,6 +9,7 @@ public class WorkspaceDbContext : DbContext
 {
     private readonly ICurrentTenantService _currentTenantService;
     private Guid CurrentTenantId { get; set; }
+    private Guid CurrentSpaceId { get; set; }
 
     public WorkspaceDbContext(
         ICurrentTenantService currentTenantService,
@@ -16,6 +17,7 @@ public class WorkspaceDbContext : DbContext
     {
         _currentTenantService = currentTenantService;
         CurrentTenantId = _currentTenantService.CurrentTenantId;
+        CurrentSpaceId = _currentTenantService.CurrentSpaceId;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -25,7 +27,6 @@ public class WorkspaceDbContext : DbContext
         // Global TenantId filters
         modelBuilder.Entity<Notification>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<NotificationUser>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<Flow>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowComment>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<SupportTicket>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<SupportTicketRemark>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -35,33 +36,42 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<TicketHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Machine_FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowVersionHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<QueueFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<QueueTransaction>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<KeyStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<Vault>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<Machine>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<TimeTrigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TimeTriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<Trigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TriggerFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<OnPremModel>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TenantModelProvider>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<Conversation>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<ConversationMessage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<VectorStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<KnowledgeBase>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<KnowledgeBaseFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<JobNodeExecutionLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<ApiKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<Skill>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<SkillFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
-        modelBuilder.Entity<Tool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowVersion_Tool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+
+        // Global SpaceId + TenantId filters.
+        // Each entity is scoped by BOTH its owning tenant and its space:
+        // - Tenant: only rows belonging to the current tenant.
+        // - Space: Central (Guid.Empty) shows only rows in the Central space (SpaceId == null);
+        //   a specific space shows only rows in that space.
+        // These two conditions MUST be combined in a single HasQueryFilter call, because calling
+        // HasQueryFilter twice on the same entity REPLACES the previous filter rather than ANDing it.
+        modelBuilder.Entity<Flow>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<Queue>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<KeyStore>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<Vault>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<AppSecret>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<KnowledgeBase>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<KnowledgeBaseFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<Skill>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<SkillFile>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<Tool>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<Machine>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<Conversation>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<ApiKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<TimeTrigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        modelBuilder.Entity<Trigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
 
         // TODO: Remove this temporary migration code after all legacy user mapping data
         // (FlowUser, FlowVersionUser, and QueueUser) has been successfully migrated
@@ -268,6 +278,24 @@ public class WorkspaceDbContext : DbContext
                     break;
             }
         }
+
+        // Auto-stamp SpaceId on newly added entities that have a SpaceId property.
+        // When in a specific space (not Central), new records are assigned to that space.
+        if (CurrentSpaceId != Guid.Empty)
+        {
+            foreach (var entry in ChangeTracker.Entries().ToList())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    var spaceIdProp = entry.Entity.GetType().GetProperty("SpaceId");
+                    if (spaceIdProp != null && spaceIdProp.PropertyType == typeof(Guid?))
+                    {
+                        spaceIdProp.SetValue(entry.Entity, CurrentSpaceId);
+                    }
+                }
+            }
+        }
+
         var result = base.SaveChanges();
 
         return result;
@@ -285,6 +313,24 @@ public class WorkspaceDbContext : DbContext
                     break;
             }
         }
+
+        // Auto-stamp SpaceId on newly added entities that have a SpaceId property.
+        // When in a specific space (not Central), new records are assigned to that space.
+        if (CurrentSpaceId != Guid.Empty)
+        {
+            foreach (var entry in ChangeTracker.Entries().ToList())
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    var spaceIdProp = entry.Entity.GetType().GetProperty("SpaceId");
+                    if (spaceIdProp != null && spaceIdProp.PropertyType == typeof(Guid?))
+                    {
+                        spaceIdProp.SetValue(entry.Entity, CurrentSpaceId);
+                    }
+                }
+            }
+        }
+
         var result = await base.SaveChangesAsync(cancellationToken);
         return result;
     }

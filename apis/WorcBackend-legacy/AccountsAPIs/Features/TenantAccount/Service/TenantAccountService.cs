@@ -5,6 +5,7 @@ public class TenantAccountService : ITenantAccountService
     private readonly ILogger<TenantAccountService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
 
@@ -12,7 +13,8 @@ public class TenantAccountService : ITenantAccountService
         ILogger<TenantAccountService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        EnvironmentConfig environmentConfig)
+        EnvironmentConfig environmentConfig,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -23,6 +25,7 @@ public class TenantAccountService : ITenantAccountService
         // Extract tenant ID from JWT token claims
         _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
         _environmentConfig = environmentConfig;
+        _currentTenantService = currentTenantService;
     }
 
     // acccounts-api/tenant/user/
@@ -451,6 +454,11 @@ public class TenantAccountService : ITenantAccountService
             }
 
             // Retrieve users whose first name, last name, or username contains the search term.
+            // When a specific space is selected (CurrentSpaceId != Guid.Empty), only users who
+            // have access to that space (via the SpaceUser table) are returned, so that only
+            // space-authorized users can be assigned in the share flow.
+            var currentSpaceId = _currentTenantService.CurrentSpaceId;
+
             var accountUsers = await _unitOfWork.AccountUserRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _tenantId &&
@@ -464,6 +472,21 @@ public class TenantAccountService : ITenantAccountService
                 )
                 .ProjectToType<AppUserBaseDto>()
                 .ToListAsync();
+
+            // If a specific space is selected, keep only the users who have access to it.
+            if (currentSpaceId != Guid.Empty)
+            {
+                var spaceUserIds = await _unitOfWork.SpaceUserRepo
+                    .GetByConditionAsync(su =>
+                        su.TenantId == _tenantId &&
+                        su.SpaceId == currentSpaceId &&
+                        su.IsActive)
+                    .Select(su => su.UserId)
+                    .Distinct()
+                    .ToListAsync();
+
+                accountUsers = accountUsers.Where(u => spaceUserIds.Contains(u.Id)).ToList();
+            }
 
             // Populate the response with the search results.
             serviceResponse.Data = accountUsers;

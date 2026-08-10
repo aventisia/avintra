@@ -3,6 +3,7 @@ import { FlowTypesEnum } from "@avplatform/ui/enums/flow-types-enum";
 import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { FlowVersionSearchQueryFilters } from "../types/search-filters";
 
@@ -31,6 +32,7 @@ const searchFlowVersions = (
           includePublishedOnly,
           machineId: filters.machineId,
         },
+        headers: getSpaceHeaders(),
       },
     )
     .then((res) => res.data);

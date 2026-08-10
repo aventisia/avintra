@@ -1,6 +1,9 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getLibrarySkills, getSkills } from "../apis/skill-apis";
 import { DATA_QUERY_KEY } from "../constants";
@@ -11,6 +14,13 @@ import { useTableTab } from "./useTableTab";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchSkills = (tab: "current" | "all" = "current") => {
+  // Get the currently selected space so the query refetches when the space changes
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
+
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared/Library tabs list
   const { isPersonal, isShared, isLibrary, queryKey } = useTableTab();
 
@@ -24,19 +34,19 @@ export const useFetchSkills = (tab: "current" | "all" = "current") => {
 
   // Get skills using react query
   const personalQuery = useQuery({
-    queryKey: personalQueryKey,
+    queryKey: [...personalQueryKey, currentSpace?.id],
     queryFn: () => getSkills({ isPersonal: true }),
     enabled: shouldFetchBoth || isPersonal,
   });
 
   const sharedQuery = useQuery({
-    queryKey: sharedQueryKey,
+    queryKey: [...sharedQueryKey, currentSpace?.id],
     queryFn: () => getSkills({ isPersonal: false }),
     enabled: shouldFetchBoth || isShared,
   });
 
   const libraryQuery = useQuery({
-    queryKey: libraryQueryKey,
+    queryKey: [...libraryQueryKey, currentSpace?.id],
     queryFn: () => getLibrarySkills(),
     enabled: isLibrary,
   });

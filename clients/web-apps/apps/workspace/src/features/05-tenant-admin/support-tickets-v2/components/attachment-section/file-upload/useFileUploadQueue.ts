@@ -1,7 +1,8 @@
-import { toast } from "sonner";
 import { useCallback, useState } from "react";
+import { toast } from "sonner";
 
 import type { FileUploadDto } from "@/components/file-uploader/apis/file-upload-apis";
+
 import type { FileQueueItem } from "./types";
 import { deduplicateFiles } from "./utils";
 

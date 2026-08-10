@@ -9,6 +9,7 @@ import { UnreadNotifications } from "@/react-toolkit/features/unread-notificatio
 import { UserAccountModal } from "@/react-toolkit/features/user-account/UserAccountModal";
 
 import { AppLogo } from "./AppLogo";
+import { SpaceSelector } from "./SpaceSelector";
 import { TenantSwitchBadge } from "./TenantSwitchBadge";
 import TrustLocalhostSSLButton from "./TrustLocalhostSSLButton";
 
@@ -28,6 +29,7 @@ const AppHeader: React.FC = () => {
             className="flex md:hidden"
           />
           <AppLogo />
+          <SpaceSelector />
           {(userSession as IUserSessionStore & { access_mode?: string })?.access_mode ==
             "read_only" && <TenantSwitchBadge />}
         </div>

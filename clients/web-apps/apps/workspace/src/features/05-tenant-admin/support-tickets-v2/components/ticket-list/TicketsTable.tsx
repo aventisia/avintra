@@ -38,7 +38,11 @@ export const TicketsTable = () => {
           <div className="flex items-center justify-between">
             <DTHeading heading={TABLE_HEADING} />
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["title", "ticketNumber"]} placeholder="Search tickets..." />
+              <DTSearchBox
+                table={table}
+                searchColumns={["title", "ticketNumber"]}
+                placeholder="Search tickets..."
+              />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               <DTCreateButton entity="ticket" />
             </div>

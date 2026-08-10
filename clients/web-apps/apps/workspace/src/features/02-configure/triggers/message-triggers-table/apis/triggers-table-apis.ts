@@ -6,6 +6,7 @@ import {
 } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { MessageTriggerDto } from "../dtos/message-trigger-dto";
 import { SearchAgentsDto } from "../dtos/search-agent-dto";
@@ -19,7 +20,9 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/message-t
 export const getTriggers = ({ isPersonal = true }: { isPersonal: boolean }) => {
   const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<MessageTriggerDto[]>>(`${baseAPIURL}/${path}`)
+    .get<IHttpResponse<MessageTriggerDto[]>>(`${baseAPIURL}/${path}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -28,7 +31,9 @@ export const getTriggers = ({ isPersonal = true }: { isPersonal: boolean }) => {
  */
 export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
-    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj)
+    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -37,7 +42,9 @@ export const isNameAvailable = (postObj: CheckAvailabilityDto) => {
  */
 export const insertTrigger = (newtrigger: MessageTriggerDto) => {
   return axiosInstance
-    .post<IHttpResponse<MessageTriggerDto>>(`${baseAPIURL}`, newtrigger)
+    .post<IHttpResponse<MessageTriggerDto>>(`${baseAPIURL}`, newtrigger, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -46,7 +53,9 @@ export const insertTrigger = (newtrigger: MessageTriggerDto) => {
  */
 export const updateTrigger = (updatedtrigger: MessageTriggerDto) => {
   return axiosInstance
-    .put<IHttpResponse<MessageTriggerDto>>(`${baseAPIURL}`, updatedtrigger)
+    .put<IHttpResponse<MessageTriggerDto>>(`${baseAPIURL}`, updatedtrigger, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -55,7 +64,7 @@ export const updateTrigger = (updatedtrigger: MessageTriggerDto) => {
  */
 export const deleteTrigger = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -66,6 +75,7 @@ export const getNewTriggerAgents = () => {
   return axiosInstance
     .get<IHttpResponse<SelectAgentTableDto[]>>(
       `${import.meta.env.VITE_WORKSPACE_API_PATH}/agent/publish-flows`,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
@@ -75,7 +85,9 @@ export const getNewTriggerAgents = () => {
  */
 export const geTriggerAgents = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<SearchAgentsDto[]>>(`${baseAPIURL}/${id}/agents`)
+    .get<IHttpResponse<SearchAgentsDto[]>>(`${baseAPIURL}/${id}/agents`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -84,7 +96,9 @@ export const geTriggerAgents = (id: string) => {
  */
 export const deleteTriggers = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

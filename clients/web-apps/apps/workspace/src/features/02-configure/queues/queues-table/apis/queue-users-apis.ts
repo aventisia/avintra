@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { QueueUserDto } from "../dtos/queue-users-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
@@ -16,6 +17,7 @@ const getSearchUser = (value?: string, includeCurrentUser: boolean = true) => {
   return axiosInstance
     .get<IHttpResponse<WorkspaceUserDto[]>>(
       `${workspaceUserApiUrl}/users/search/${value}?includeCurrentUser=${includeCurrentUser}`,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
@@ -25,7 +27,9 @@ const getSearchUser = (value?: string, includeCurrentUser: boolean = true) => {
  */
 const getQueueUsers = (queueId?: string) => {
   return axiosInstance
-    .get<IHttpResponse<QueueUserDto[]>>(`${queueUserApiUrl}/${queueId}/list`)
+    .get<IHttpResponse<QueueUserDto[]>>(`${queueUserApiUrl}/${queueId}/list`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -34,7 +38,9 @@ const getQueueUsers = (queueId?: string) => {
  */
 const insertQueueUser = (newQueueUser: QueueUserDto) => {
   return axiosInstance
-    .post<IHttpResponse<QueueUserDto>>(`${queueUserApiUrl}`, newQueueUser)
+    .post<IHttpResponse<QueueUserDto>>(`${queueUserApiUrl}`, newQueueUser, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 /**
@@ -42,7 +48,9 @@ const insertQueueUser = (newQueueUser: QueueUserDto) => {
  */
 const updateQueueUser = (updatedUser: QueueUserDto) => {
   return axiosInstance
-    .put<IHttpResponse<QueueUserDto>>(`${queueUserApiUrl}`, updatedUser)
+    .put<IHttpResponse<QueueUserDto>>(`${queueUserApiUrl}`, updatedUser, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -51,7 +59,7 @@ const updateQueueUser = (updatedUser: QueueUserDto) => {
  */
 const deleteQueueUser = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${queueUserApiUrl}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${queueUserApiUrl}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 

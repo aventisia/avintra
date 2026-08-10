@@ -8,8 +8,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-import { createTicketZodSchema } from "../constants/ticket-zod-schema";
 import { DATA_QUERY_KEY } from "../constants";
+import { createTicketZodSchema } from "../constants/ticket-zod-schema";
 import { TicketTableDto } from "../dtos/TicketDto";
 
 interface UseDefineTicketFormOptions {
@@ -18,7 +18,11 @@ interface UseDefineTicketFormOptions {
   queryKey?: string[];
 }
 
-export const useDefineTicketForm = ({ rowId, crudAction, queryKey = DATA_QUERY_KEY }: UseDefineTicketFormOptions) => {
+export const useDefineTicketForm = ({
+  rowId,
+  crudAction,
+  queryKey = DATA_QUERY_KEY,
+}: UseDefineTicketFormOptions) => {
   const { setIsDirty } = useCrudDialogDirty();
 
   const { userSession } = useUserSessionStore(
@@ -59,7 +63,8 @@ export const useDefineTicketForm = ({ rowId, crudAction, queryKey = DATA_QUERY_K
     const toDateInputValue = (value?: string) => (value ? value.slice(0, 10) : "");
 
     form.reset({
-      requestType: (ticketData?.requestType as "ServiceRequest" | "ChangeRequest") || "ServiceRequest",
+      requestType:
+        (ticketData?.requestType as "ServiceRequest" | "ChangeRequest") || "ServiceRequest",
       title: ticketData?.title ?? "",
       description: ticketData?.description ?? "",
       requiredBy: toDateInputValue(ticketData?.requiredBy),

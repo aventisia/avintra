@@ -63,6 +63,28 @@ public class AccountUsersTableService : IAccountUsersTableService
                 .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
 
+            // Populate the Spaces property for each user by querying the SpaceUser table.
+            // NOTE: We return space IDs (not names) because the frontend form's spaces
+            // multi-select stores option values (space IDs) and resolves labels from the
+            // spaces-to-select options. The table column maps these IDs back to names.
+            var userIds = users.Select(u => u.Id).ToList();
+            var spaceUsers = await _unitOfWork.SpaceUserRepo
+                .GetByConditionAsync(w => w.TenantId == _currentTenantService.CurrentTenantId && userIds.Contains(w.UserId))
+                .Include(i => i.Space)
+                .ToListAsync();
+
+            var spaceIdsByUser = spaceUsers
+                .Where(w => w.IsActive && w.Space != null)
+                .GroupBy(g => g.UserId)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(s => s.SpaceId.ToString()).Distinct().OrderBy(n => n).ToList());
+
+            foreach (var user in users)
+            {
+                user.Spaces = spaceIdsByUser.TryGetValue(user.Id, out var ids) ? ids : new List<string>();
+            }
+
             // Task successful
             serviceResponse.Data = users.Adapt<IEnumerable<AccountUsersTableDto>>();
             serviceResponse.StatusCode = 200;
@@ -195,6 +217,10 @@ public class AccountUsersTableService : IAccountUsersTableService
                 return serviceResponse;
             }
 
+            // Persist the selected spaces to the SpaceUser table so the user's
+            // space membership is reflected in the Users table.
+            await SyncUserSpacesAsync(newUser.Id, accountUsersTableDto.Spaces);
+
             // Task successful
             serviceResponse.Data = newUser.Adapt<AccountUsersTableDto>();
             serviceResponse.StatusCode = 200;
@@ -302,6 +328,10 @@ public class AccountUsersTableService : IAccountUsersTableService
                 _logger.LogInformation("Failed while updating User roles");
                 return serviceResponse;
             }
+
+            // Persist the selected spaces to the SpaceUser table so the user's
+            // space membership is reflected in the Users table.
+            await SyncUserSpacesAsync(user.Id, accountUsersTableDto.Spaces);
 
             // Update user in other databases
             if (user.IsCreatedInOtherDbs)
@@ -425,6 +455,96 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
 
         return serviceResponse;
+    }
+
+    // Retrieves the list of spaces for the current tenant, for use in user space assignment.
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetAccountSpacesAsync()
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
+        {
+            Data = null,
+            StatusCode = 400
+        };
+
+        try
+        {
+            // Get all spaces for the current tenant
+            var spaces = await _unitOfWork.SpaceRepo
+                .GetByConditionAsync(w => w.TenantId == _currentTenantService.CurrentTenantId)
+                .OrderBy(o => o.Name)
+                .ToListAsync();
+
+            // Map to SelectOption format
+            serviceResponse.Data = spaces.Select(s => new SelectOption
+            {
+                Label = s.Name,
+                Value = s.Id.ToString(),
+                Description = s.Description,
+                IsDefault = s.IsDefault
+            }).ToList();
+
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Spaces retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Persists the user's selected spaces to the SpaceUser table. Removes any
+    // previously assigned spaces that are no longer selected and adds the new ones.
+    private async Task SyncUserSpacesAsync(Guid userId, List<string> spaceIds)
+    {
+        try
+        {
+            var tenantId = _currentTenantService.CurrentTenantId;
+
+            // Parse the selected space IDs (ignore invalid entries).
+            var selectedIds = (spaceIds ?? new List<string>())
+                .Where(id => Guid.TryParse(id, out _))
+                .Select(Guid.Parse)
+                .ToHashSet();
+
+            // Fetch the user's current space memberships.
+            var existing = await _unitOfWork.SpaceUserRepo
+                .GetByConditionAsync(w => w.UserId == userId && w.TenantId == tenantId)
+                .ToListAsync();
+
+            // Remove memberships that are no longer selected.
+            var toRemove = existing.Where(w => !selectedIds.Contains(w.SpaceId)).ToList();
+            if (toRemove.Count > 0)
+                _unitOfWork.SpaceUserRepo.Delete(toRemove);
+
+            // Add memberships for newly selected spaces.
+            var existingSpaceIds = existing.Select(w => w.SpaceId).ToHashSet();
+            var toAdd = selectedIds
+                .Where(id => !existingSpaceIds.Contains(id))
+                .Select(id => new SpaceUser
+                {
+                    UserId = userId,
+                    SpaceId = id,
+                    TenantId = tenantId,
+                    IsActive = true,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                })
+                .ToList();
+
+            if (toAdd.Count > 0)
+                await _unitOfWork.SpaceUserRepo.InsertAsync(toAdd);
+
+            if (toRemove.Count > 0 || toAdd.Count > 0)
+                await _unitOfWork.SaveAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to sync spaces for user {UserId}.", userId);
+        }
     }
 
     // Updates the roles of an account user. Removes unassinged ones and add new ones if there is any requirement

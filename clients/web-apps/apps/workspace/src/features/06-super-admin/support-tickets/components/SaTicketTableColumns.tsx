@@ -1,14 +1,16 @@
-import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@avplatform/ui";
+import { Badge } from "@avplatform/ui/badge";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
-import { Badge } from "@avplatform/ui/badge";
+import { ColumnDef } from "@tanstack/react-table";
 import { formatDistanceToNow } from "date-fns";
 import { Key } from "react";
 import { NavLink } from "react-router-dom";
-import { TicketTableDto } from "@/features/05-tenant-admin/support-tickets-v2/dtos/TicketDto";
+
 import { TICKET_STATUS_COLOR } from "@/features/05-tenant-admin/support-tickets-v2/constants/constants";
+import { TicketTableDto } from "@/features/05-tenant-admin/support-tickets-v2/dtos/TicketDto";
+
 import { TABLE_KEY } from "../constants";
 import { SaTicketRowActions } from "./ticket-row-actions/SaTicketRowActions";
 
@@ -68,15 +70,18 @@ export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
   {
     accessorKey: "ticketNumber",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} className="hidden" column={column} title="Ticket Number" />
+      <DTColumnHeader
+        tableKey={TABLE_KEY}
+        className="hidden"
+        column={column}
+        title="Ticket Number"
+      />
     ),
     cell: ({ row }) => <div className="hidden">{row.getValue("ticketNumber")}</div>,
   },
   {
     accessorKey: "requestType",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Type" />
-    ),
+    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Type" />,
     cell: ({ row }) => {
       const type = row.getValue("requestType") as string;
       return <div>{type === "ChangeRequest" ? "Change Request" : "Service Request"}</div>;
@@ -84,9 +89,7 @@ export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
   },
   {
     accessorKey: "status",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Status" />
-    ),
+    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Status" />,
     filterFn: (row, columnId, filterValue) => {
       const status = row.getValue(columnId);
 
@@ -104,18 +107,12 @@ export const saTicketTableColumns: ColumnDef<TicketTableDto>[] = [
     },
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
-      return (
-        <Badge className={cn(TICKET_STATUS_COLOR[status])}>
-          {status}
-        </Badge>
-      );
+      return <Badge className={cn(TICKET_STATUS_COLOR[status])}>{status}</Badge>;
     },
   },
   {
     accessorKey: "agentName",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Agent" />
-    ),
+    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Agent" />,
     cell: ({ row }) => <div>{row.getValue("agentName") || "-"}</div>,
   },
   {

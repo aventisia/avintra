@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { QueueTransactionEventDto } from "../dtos/queue-transaction-event-dto";
 
@@ -11,7 +12,9 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue/tra
  */
 export const getQueueWorkItemEventsById = (workItemId: string) => {
   return axiosInstance
-    .get<IHttpResponse<QueueTransactionEventDto[]>>(`${baseAPIURL}/${workItemId}/list`)
+    .get<IHttpResponse<QueueTransactionEventDto[]>>(`${baseAPIURL}/${workItemId}/list`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -20,7 +23,9 @@ export const getQueueWorkItemEventsById = (workItemId: string) => {
  */
 export const insertQueueWorkItemEvent = (dto: QueueTransactionEventDto) => {
   return axiosInstance
-    .post<IHttpResponse<QueueTransactionEventDto>>(`${baseAPIURL}`, dto)
+    .post<IHttpResponse<QueueTransactionEventDto>>(`${baseAPIURL}`, dto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -29,6 +34,8 @@ export const insertQueueWorkItemEvent = (dto: QueueTransactionEventDto) => {
  */
 export const updateQueueWorkItemEvent = (dto: QueueTransactionEventDto) => {
   return axiosInstance
-    .put<IHttpResponse<QueueTransactionEventDto>>(`${baseAPIURL}`, dto)
+    .put<IHttpResponse<QueueTransactionEventDto>>(`${baseAPIURL}`, dto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };

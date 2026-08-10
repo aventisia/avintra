@@ -24,6 +24,15 @@ const getUserRoles = () => {
 };
 
 /**
+ * Retrieves the spaces for the current tenant for user space assignment.
+ */
+const getUserSpaces = () => {
+  return axiosInstance
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/spaces-to-select`)
+    .then((res) => res.data);
+};
+
+/**
  * Inserts a new user.
  */
 const insertUser = (newUser: UsersTableDto) => {
@@ -85,6 +94,7 @@ const userOptimisticMutationFn = ({
 export {
   getUsers,
   getUserRoles,
+  getUserSpaces,
   insertUser,
   updateUser,
   deleteUser,

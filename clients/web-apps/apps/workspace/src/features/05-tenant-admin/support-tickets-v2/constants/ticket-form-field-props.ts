@@ -1,4 +1,9 @@
-import { InputFieldProps, SelectFieldProps, TextareaFieldProps, SwitchFieldProps } from "@avplatform/ui/form";
+import {
+  InputFieldProps,
+  SelectFieldProps,
+  SwitchFieldProps,
+  TextareaFieldProps,
+} from "@avplatform/ui/form";
 
 export const idProps: InputFieldProps = {
   name: "id",

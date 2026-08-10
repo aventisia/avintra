@@ -22,11 +22,7 @@
         {
           "name": "taskkill",
           "cmd": "taskkill",
-          "args": [
-            { "validator": "\\S+" },
-            { "validator": "\\S+" },
-            { "validator": "\\S+" }
-          ]
+          "args": [{ "validator": "\\S+" }, { "validator": "\\S+" }, { "validator": "\\S+" }]
         },
 
         {
@@ -39,10 +35,6 @@
   ],
   "local": true,
   "remote": {
-    "urls": [
-      "http://localhost:*/**",
-      "https://localhost:*/**",
-      "https://*.aventisia.com/**"
-    ]
+    "urls": ["http://localhost:*/**", "https://localhost:*/**", "https://*.aventisia.com/**"]
   }
 }

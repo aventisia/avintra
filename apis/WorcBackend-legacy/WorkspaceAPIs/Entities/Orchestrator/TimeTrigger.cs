@@ -14,6 +14,12 @@ public class TimeTrigger : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the space this time trigger belongs to.
+    /// Null indicates the time trigger is in the default "Central" space (shared across the tenant).
+    /// </summary>
+    public Guid? SpaceId { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the time trigger.
     /// </summary>
     public required string Name { get; set; }

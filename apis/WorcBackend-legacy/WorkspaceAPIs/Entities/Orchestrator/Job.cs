@@ -25,6 +25,12 @@ public class Job
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the space this job belongs to.
+    /// Null indicates the job is in the default "Central" space (shared across the tenant).
+    /// </summary>
+    public Guid? SpaceId { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier of the flow or agent this job is associated with.
     /// </summary>
     public Guid FlowVersionId { get; set; }

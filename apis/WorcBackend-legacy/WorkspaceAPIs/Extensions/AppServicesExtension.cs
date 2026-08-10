@@ -148,6 +148,7 @@ public static class AppServicesExtension
         services.AddScoped<ITenantModelProviderService, TenantModelProviderService>();
         services.AddScoped<ILLMProviderService, LLMProviderService>();
         services.AddScoped<IManageTenantService, ManageTenantService>();
+        services.AddScoped<ISpaceSummaryService, SpaceSummaryService>();
         services.AddScoped<IQueueWorkItemService, QueueWorkItemService>();
         services.AddScoped<IAgentBuilderStore, AgentBuilderStore>();
         services.AddSingleton<ConcurrentDictionary<Guid, AgentBuilderModel>>();

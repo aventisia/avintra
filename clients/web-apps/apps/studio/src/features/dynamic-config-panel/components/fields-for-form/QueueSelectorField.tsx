@@ -9,10 +9,10 @@ import {
   SearchableSelectField,
   SearchableSelectFieldProps,
 } from "@/react-toolkit/ui/searchable-select/SearchableSelectField.tsx";
+import { useCurrentFlowStore } from "@/stores/current-flow-store.ts";
 
 import { getQueuesByAgent } from "../../apis/queues-apis.ts";
 import { InputSchemaField, QueuesTableDto } from "../../dtos/queues-table-dto.ts";
-import { useCurrentFlowStore } from "@/stores/current-flow-store.ts";
 
 interface QueueSelectorFieldProps extends SearchableSelectFieldProps, BaseFieldProps {
   /** The name of the form field. */

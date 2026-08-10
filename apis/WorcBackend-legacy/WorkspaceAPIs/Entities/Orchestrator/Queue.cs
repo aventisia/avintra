@@ -12,6 +12,12 @@ public class Queue : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the space this queue belongs to.
+    /// Null indicates the queue is in the default "Central" space (shared across the tenant).
+    /// </summary>
+    public Guid? SpaceId { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the queue.
     /// This is a required field with a maximum length of 256 characters.
     /// </summary>

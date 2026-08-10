@@ -16,6 +16,12 @@ public class Tool : BaseEntity, IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the space this tool belongs to.
+    /// Null indicates the tool is in the default "Central" space (shared across the tenant).
+    /// </summary>
+    public Guid? SpaceId { get; set; }
+
+    /// <summary>
     /// Gets or sets the name of the tool.
     /// </summary>
     [MaxLength(255)]

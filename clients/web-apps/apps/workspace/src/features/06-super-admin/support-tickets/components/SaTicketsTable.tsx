@@ -17,8 +17,8 @@ import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
 import { useFetchSaTickets } from "../hooks/useFetchSaTickets";
-import { SaTicketBulkActions } from "./ticket-row-actions/SaTicketBulkActions";
 import { saTicketTableColumns } from "./SaTicketTableColumns";
+import { SaTicketBulkActions } from "./ticket-row-actions/SaTicketBulkActions";
 
 const tabs = ["In Progress", "Closed"];
 
@@ -87,7 +87,11 @@ export const SaTicketsTable = () => {
           <div className="flex items-center justify-between">
             <DTHeading heading={TABLE_HEADING} />
             <div className="flex items-center gap-2">
-              <DTSearchBox table={table} searchColumns={["title", "ticketNumber"]} placeholder="Search tickets..." />
+              <DTSearchBox
+                table={table}
+                searchColumns={["title", "ticketNumber"]}
+                placeholder="Search tickets..."
+              />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
               <Tabs value={tabValue} onValueChange={handleTabSelect}>
                 <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
