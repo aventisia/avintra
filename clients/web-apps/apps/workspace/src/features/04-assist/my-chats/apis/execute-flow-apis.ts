@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { ExecuteFlowRequestDto } from "../dtos/execute-flow-request-dto";
 import { ExecuteFlowResponseDto } from "../dtos/execute-flow-response-dto";
@@ -14,6 +15,8 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/execute-f
  */
 export const executeFlowOnWeb = (requestDto: ExecuteFlowRequestDto) => {
   return axiosInstance
-    .post<IHttpResponse<ExecuteFlowResponseDto>>(`${baseAPIURL}/execute`, requestDto)
+    .post<IHttpResponse<ExecuteFlowResponseDto>>(`${baseAPIURL}/execute`, requestDto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };

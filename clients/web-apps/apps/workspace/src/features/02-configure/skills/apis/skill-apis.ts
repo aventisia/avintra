@@ -6,6 +6,7 @@ import {
 } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { SkillTableDto } from "../dtos/skill-table-dto";
 
@@ -17,7 +18,7 @@ export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/sk
 export const getSkills = ({ isPersonal = true }: { isPersonal: boolean }) => {
   const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<SkillTableDto[]>>(`${baseAPIURL}/${path}`)
+    .get<IHttpResponse<SkillTableDto[]>>(`${baseAPIURL}/${path}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -26,7 +27,9 @@ export const getSkills = ({ isPersonal = true }: { isPersonal: boolean }) => {
  */
 export const isSkillNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
-    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj)
+    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -35,7 +38,7 @@ export const isSkillNameAvailable = (postObj: CheckAvailabilityDto) => {
  */
 export const insertSkill = (newSkill: SkillTableDto) => {
   return axiosInstance
-    .post<IHttpResponse<SkillTableDto>>(`${baseAPIURL}`, newSkill)
+    .post<IHttpResponse<SkillTableDto>>(`${baseAPIURL}`, newSkill, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -44,7 +47,9 @@ export const insertSkill = (newSkill: SkillTableDto) => {
  */
 export const updateSkill = (updatedSkill: SkillTableDto) => {
   return axiosInstance
-    .put<IHttpResponse<SkillTableDto>>(`${baseAPIURL}`, updatedSkill)
+    .put<IHttpResponse<SkillTableDto>>(`${baseAPIURL}`, updatedSkill, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -53,7 +58,7 @@ export const updateSkill = (updatedSkill: SkillTableDto) => {
  */
 export const deleteSkill = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -62,7 +67,9 @@ export const deleteSkill = (id: string) => {
  */
 export const deleteSkills = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -71,7 +78,7 @@ export const deleteSkills = (ids: string[]) => {
  */
 export const getLibrarySkills = () => {
   return axiosInstance
-    .get<IHttpResponse<SkillTableDto[]>>(`${baseAPIURL}/library`)
+    .get<IHttpResponse<SkillTableDto[]>>(`${baseAPIURL}/library`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 

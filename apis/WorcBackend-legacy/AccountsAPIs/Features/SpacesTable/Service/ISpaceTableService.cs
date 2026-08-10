@@ -74,4 +74,20 @@ public interface ISpaceTableService
     /// A task representing the asynchronous operation. The result contains a collection of <see cref="SpaceUserDto"/>.
     /// </returns>
     Task<ServiceResponse<IEnumerable<SpaceUserDto>>> GetSpaceUsersAsync(Guid spaceId);
+
+    /// <summary>
+    /// Adds the given users to a space (used by the share flow to sync space membership).
+    /// </summary>
+    /// <param name="spaceId">The unique identifier of the space.</param>
+    /// <param name="userIds">The list of user IDs to add to the space.</param>
+    /// <returns>A task representing the asynchronous operation. The result indicates whether the operation succeeded.</returns>
+    Task<ServiceResponse<bool>> AddSpaceUsersAsync(Guid spaceId, List<Guid> userIds);
+
+    /// <summary>
+    /// Removes the given users from a space (used by the share flow to sync space membership).
+    /// </summary>
+    /// <param name="spaceId">The unique identifier of the space.</param>
+    /// <param name="userIds">The list of user IDs to remove from the space.</param>
+    /// <returns>A task representing the asynchronous operation. The result indicates whether the operation succeeded.</returns>
+    Task<ServiceResponse<bool>> RemoveSpaceUsersAsync(Guid spaceId, List<Guid> userIds);
 }

@@ -1,16 +1,17 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@avplatform/ui/avatar";
+import { Button } from "@avplatform/ui/buttons";
+import { Form, TextareaField } from "@avplatform/ui/form";
+import { useUserSessionStore } from "@avplatform/ui/stores";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Form, TextareaField } from "@avplatform/ui/form";
-import { Button } from "@avplatform/ui/buttons";
-import { Avatar, AvatarFallback, AvatarImage } from "@avplatform/ui/avatar";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { TicketCommentDto } from "../../dtos/TicketDto";
+import { z } from "zod";
+
 import { ticketCommentZodSchema } from "../../constants/ticket-zod-schema";
-import { formatDistanceToNow } from "date-fns";
-import { useUserSessionStore } from "@avplatform/ui/stores";
+import { TicketCommentDto } from "../../dtos/TicketDto";
 import { TicketDetailApiAdapter } from "../../types/ticket-detail-api-adapter.type";
 
 type CommentFormData = z.infer<typeof ticketCommentZodSchema>;
@@ -22,7 +23,12 @@ interface CommentThreadProps {
   isClosed?: boolean;
 }
 
-export const CommentThread = ({ ticketId, comments, api, isClosed = false }: CommentThreadProps) => {
+export const CommentThread = ({
+  ticketId,
+  comments,
+  api,
+  isClosed = false,
+}: CommentThreadProps) => {
   const queryClient = useQueryClient();
   const userSession = useUserSessionStore((s) => s.userSession);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -100,11 +106,17 @@ export const CommentThread = ({ ticketId, comments, api, isClosed = false }: Com
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium">{comment.userFullName || comment.userName}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {comment.createdOn ? formatDistanceToNow(comment.createdOn, { addSuffix: true }) : ""}
+                  <span className="text-sm font-medium">
+                    {comment.userFullName || comment.userName}
                   </span>
-                  {comment.isEdited && <span className="text-xs text-muted-foreground">(edited)</span>}
+                  <span className="text-xs text-muted-foreground">
+                    {comment.createdOn
+                      ? formatDistanceToNow(comment.createdOn, { addSuffix: true })
+                      : ""}
+                  </span>
+                  {comment.isEdited && (
+                    <span className="text-xs text-muted-foreground">(edited)</span>
+                  )}
                 </div>
                 {!isClosed && comment.userName === userSession?.email && (
                   <div className="flex gap-2">
@@ -127,13 +139,22 @@ export const CommentThread = ({ ticketId, comments, api, isClosed = false }: Com
                 )}
               </div>
               {editingId === comment.id ? (
-                <Form methods={editForm} onSubmit={editForm.handleSubmit(onEditSubmit)} className="mt-2 space-y-2">
+                <Form
+                  methods={editForm}
+                  onSubmit={editForm.handleSubmit(onEditSubmit)}
+                  className="mt-2 space-y-2"
+                >
                   <TextareaField name="message" label="" placeholder="Edit your comment..." />
                   <div className="flex gap-2">
                     <Button type="submit" size="sm" disabled={updateMutation.isPending}>
                       Save
                     </Button>
-                    <Button type="button" size="sm" variant="ghost" onClick={() => setEditingId(null)}>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setEditingId(null)}
+                    >
                       Cancel
                     </Button>
                   </div>

@@ -32,9 +32,18 @@ const emailProps: InputFieldProps = {
 // User roles
 const userRolesProps: MultiSelectFieldProps = {
   name: "userRoles",
-  label: "Roles",
+  label: "User Roles",
   isRequired: true,
   placeholder: "Select roles",
+  selectOptions: [],
+};
+
+// User spaces
+const userSpacesProps: MultiSelectFieldProps = {
+  name: "spaces",
+  label: "Spaces",
+  isRequired: true,
+  placeholder: "Select spaces",
   selectOptions: [],
 };
 
@@ -94,4 +103,5 @@ export {
   twoFactorEnabledProps,
   unlockAccountProps,
   userRolesProps,
+  userSpacesProps,
 };

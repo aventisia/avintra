@@ -45,7 +45,8 @@ type CrudEntityKey =
   | "tenantInstance"
   | "user"
   | "role"
-  | "apiKey";
+  | "apiKey"
+  | "space";
 
 /**
  * Represents the type for specifying the order by which to sort data.

@@ -2,6 +2,7 @@ import type { IOptimisticMutation } from "@avplatform/ui/dtos";
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { AgentAssignMachineDto } from "../dtos/agent-assign-machine-dto";
 import { AgentsTableDto } from "../dtos/agents-table-dto";
@@ -15,14 +16,18 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/agent`;
 export const getPublishedAgents = () => {
   // Fetch agents from API
   return axiosInstance
-    .get<IHttpResponse<AgentsTableDto[]>>(`${baseAPIURL}/published`)
+    .get<IHttpResponse<AgentsTableDto[]>>(`${baseAPIURL}/published`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
 export const getSearchPublishedAgents = (query: string) => {
   // Fetch agents from API
   return axiosInstance
-    .get<IHttpResponse<AgentsTableDto[]>>(`${baseAPIURL}/search/${query}`)
+    .get<IHttpResponse<AgentsTableDto[]>>(`${baseAPIURL}/search/${query}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

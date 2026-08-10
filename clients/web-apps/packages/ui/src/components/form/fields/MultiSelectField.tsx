@@ -38,6 +38,12 @@ interface MultiSelectFieldProps
    * Defaults to false.
    */
   showRawValueFallback?: boolean;
+
+  /**
+   * Optional override for the value-change handler. When provided, it replaces
+   * the default `field.onChange`. Useful for enforcing mandatory/immutable values.
+   */
+  onValuesChange?: (value: string[]) => void;
 }
 
 /**
@@ -54,6 +60,7 @@ const MultiSelectField = ({
   placeholder,
   unknownValueLabel = "Loading...",
   showRawValueFallback = false,
+  onValuesChange,
   ...props
 }: MultiSelectFieldProps) => {
   // Get the form context
@@ -72,7 +79,7 @@ const MultiSelectField = ({
         <FormItem {...{ size }}>
           {label && <FormLabelExt {...{ size, label, disabled, isRequired, description }} />}
           <MultiSelector
-            onValuesChange={field.onChange}
+            onValuesChange={onValuesChange ?? field.onChange}
             values={field.value}
             valueToLabel={(val) =>
               valueLabelMap.get(val) ?? (showRawValueFallback ? val : unknownValueLabel)

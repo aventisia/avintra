@@ -1,5 +1,6 @@
 import { Button } from "@avplatform/ui/buttons";
 import { JsonViewer } from "@avplatform/ui/json-viewer";
+
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
 
 import { TestToolResponseDto, ToolDto } from "../../dtos/index";
@@ -109,9 +110,7 @@ export const ToolPlaygroundSection = ({
         {lastResponse && (
           <div className="rounded border p-3 space-y-1.5 flex-1 flex flex-col min-h-0">
             <div className="flex items-center gap-2">
-              <p className="text-xs font-medium">
-                Status: {lastResponse.statusCode ?? "—"}
-              </p>
+              <p className="text-xs font-medium">Status: {lastResponse.statusCode ?? "—"}</p>
               <span className={lastResponse.success ? "text-green-600" : "text-red-600"}>
                 {lastResponse.success ? "Success" : "Failed"}
               </span>

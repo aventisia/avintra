@@ -93,7 +93,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
     );
   }
 
-  const executionLogUrl = `${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}execution-log?v=${job.flowVersionId}&j=${job.id}`;
+  const executionLogUrl = `${import.meta.env.VITE_STUDIO_PATH}execution-log?v=${job.flowVersionId}&j=${job.id}`;
 
   // Helper to safely serialize optional JSON payloads for the JsonViewer
   const jsonToString = (value: Record<string, unknown> | undefined): string =>

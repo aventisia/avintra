@@ -22,6 +22,12 @@ public interface ICurrentTenantService
     Guid CurrentUserId { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the current space for the current request.
+    /// Guid.Empty indicates the default "Central" space (shared across the tenant).
+    /// </summary>
+    Guid CurrentSpaceId { get; set; }
+
+    /// <summary>
     /// Gets the container name associated with the current tenant.
     /// </summary>
     string CurrentTenantContainerName { get; }

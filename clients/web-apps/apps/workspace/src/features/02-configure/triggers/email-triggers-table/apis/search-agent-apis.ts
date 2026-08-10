@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { SearchAgentsDto } from "../dtos/search-agent-dto";
 
@@ -15,7 +16,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/agent/sea
  */
 const getSearchAgent = (value?: string) => {
   return axiosInstance
-    .get<IHttpResponse<SearchAgentsDto[]>>(`${baseAPIURL}/${value}`)
+    .get<IHttpResponse<SearchAgentsDto[]>>(`${baseAPIURL}/${value}`, { headers: getSpaceHeaders() })
     .then((res) => res.data); // Return only the response data
 };
 

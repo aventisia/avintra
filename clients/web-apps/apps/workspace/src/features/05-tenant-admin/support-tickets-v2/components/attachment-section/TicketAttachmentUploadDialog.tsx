@@ -1,7 +1,8 @@
-import { useEffect } from "react";
 import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
+import { useEffect } from "react";
 
 import { deleteFile } from "@/components/file-uploader/apis/file-upload-apis";
+
 import { TicketDetailApiAdapter } from "../../types/ticket-detail-api-adapter.type";
 import { TicketAddAttachmentForm } from "./TicketAddAttachmentForm";
 import { useFileUploadQueue } from "./file-upload";

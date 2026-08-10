@@ -43,7 +43,7 @@ export const archivedFlowsTableColumns: ColumnDef<ArchivedFlowsTableDto>[] = [
     ),
     cell: ({ row }) => (
       <FlowVersionNavLink
-        to={`${window.location.origin}${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.refId}&v=${row.original.id}`}
+        to={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.refId}&v=${row.original.id}`}
         target="_blank"
         rel="noopener noreferrer"
         title={`View ${row.original.name} v${row.original.versionNumber} in Agent Builder`}

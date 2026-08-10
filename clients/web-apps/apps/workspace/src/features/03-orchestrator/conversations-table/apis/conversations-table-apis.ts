@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { AdminConversationDto } from "../dtos/conversations-table-dto";
 
@@ -13,6 +14,7 @@ export const getConversations = (startDate: string = "", endDate: string = "") =
   return axiosInstance
     .get<IHttpResponse<AdminConversationDto[]>>(
       `${baseAPIURL}?startDate=${startDate}&endDate=${endDate}`,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
@@ -22,6 +24,8 @@ export const getConversations = (startDate: string = "", endDate: string = "") =
  */
 export const getConversationsById = (id?: string) => {
   return axiosInstance
-    .get<IHttpResponse<AdminConversationDto>>(`${baseAPIURL}/${id}/messages`)
+    .get<IHttpResponse<AdminConversationDto>>(`${baseAPIURL}/${id}/messages`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };

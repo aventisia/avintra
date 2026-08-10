@@ -8,6 +8,9 @@ type ISelectOption = {
 
   /** Description for the label if user needs more informmation to select */
   description?: string;
+
+  /** Whether this option is the system default (e.g. the "Central" space) */
+  isDefault?: boolean;
 };
 
 export { type ISelectOption };

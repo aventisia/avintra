@@ -8,7 +8,11 @@ export const titleRegex = /^[a-zA-Z\s]+$/;
 export const createTicketZodSchema = z
   .object({
     requestType: z.enum(["ServiceRequest", "ChangeRequest"]),
-    title: z.string().min(1).max(255).regex(titleRegex, "Title must not contain numbers or symbols"),
+    title: z
+      .string()
+      .min(1)
+      .max(255)
+      .regex(titleRegex, "Title must not contain numbers or symbols"),
     description: z.string().min(20).max(500),
     requiredBy: z.string().optional(),
     agentRefId: z.string().optional(),
@@ -25,7 +29,7 @@ export const createTicketZodSchema = z
       }
       return true;
     },
-    { message: "Agent is required for Change Requests", path: ["agentRefId"] }
+    { message: "Agent is required for Change Requests", path: ["agentRefId"] },
   );
 
 export const ticketCommentZodSchema = z.object({

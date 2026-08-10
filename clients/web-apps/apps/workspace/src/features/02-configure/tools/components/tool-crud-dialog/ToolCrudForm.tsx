@@ -3,10 +3,10 @@ import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type DialogCrudAction } from "@avplatform/ui/types";
-import { JsonEditor } from "@/components/json-editor/JsonEditor";
 import { useEffect } from "react";
 import { z } from "zod";
 
+import { JsonEditor } from "@/components/json-editor/JsonEditor";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 import { toolOptimisticMutationFn } from "../../apis/tools.apis";

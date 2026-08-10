@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { AssistChatDto } from "../dtos/assist-chat-dto";
 
@@ -11,7 +12,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist-ch
  */
 export const getActiveChatAgents = () => {
   return axiosInstance
-    .get<IHttpResponse<AssistChatDto[]>>(`${baseAPIURL}/active`)
+    .get<IHttpResponse<AssistChatDto[]>>(`${baseAPIURL}/active`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -20,6 +21,8 @@ export const getActiveChatAgents = () => {
  */
 export const getArchivedChatAgents = () => {
   return axiosInstance
-    .get<IHttpResponse<AssistChatDto[]>>(`${baseAPIURL}/archived`)
+    .get<IHttpResponse<AssistChatDto[]>>(`${baseAPIURL}/archived`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };

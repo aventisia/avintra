@@ -1,5 +1,6 @@
 import { Checkbox } from "@avplatform/ui";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
+import { Tooltip } from "@avplatform/ui/tooltip";
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -11,8 +12,12 @@ import { UserRowActions } from "./user-row-actions/UserRowActions";
 /**
  * Array of table columns for the users table.
  * Each column object contains an accessorKey, header component, and cell component.
+ *
+ * @param spaceIdToName A map of space ID -> space name, used to render the Spaces column.
  */
-export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
+export const usersTableColumns = (
+  spaceIdToName: Map<string, string> = new Map(),
+): ColumnDef<UsersTableDto>[] => [
   {
     accessorKey: "id",
     header: ({ table }) => (
@@ -71,6 +76,22 @@ export const usersTableColumns: ColumnDef<UsersTableDto>[] = [
         {row.getValue<string[]>("userRoles")?.slice(-1)}
       </div>
     ),
+  },
+  {
+    accessorKey: "spaces",
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("spaces")} />
+    ),
+    cell: ({ row }) => {
+      const spaceIds = row.getValue<string[]>("spaces") || [];
+      const names = spaceIds.map((id) => spaceIdToName.get(id) ?? id).filter(Boolean);
+      const display = names.join(", ") || "-";
+      return (
+        <Tooltip content={display} side="top" className="max-w-[22rem] whitespace-normal">
+          <div className="w-auto max-w-[12rem] truncate font-medium">{display}</div>
+        </Tooltip>
+      );
+    },
   },
   {
     accessorKey: "createdOn",

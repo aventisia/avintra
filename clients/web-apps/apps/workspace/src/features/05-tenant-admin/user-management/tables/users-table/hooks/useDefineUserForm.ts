@@ -23,7 +23,7 @@ interface UseDefineUserFormOptions {
 /**
  * Custom hook for defining a user form.
  */
-export const useDefineUserForm = ({ rowId }: UseDefineUserFormOptions) => {
+export const useDefineUserForm = ({ rowId, crudAction }: UseDefineUserFormOptions) => {
   // Set user email state (required for avaialbility check)
   const [userEmail, setUserEmail] = useState("");
 
@@ -49,6 +49,7 @@ export const useDefineUserForm = ({ rowId }: UseDefineUserFormOptions) => {
       lastName: "",
       email: "",
       userRoles: [],
+      spaces: [],
       twoFactorEnabled: false,
       isDisabled: false,
       unlockAccount: false,
@@ -87,6 +88,7 @@ export const useDefineUserForm = ({ rowId }: UseDefineUserFormOptions) => {
       lastName: userData?.lastName ?? "",
       email: userData?.email ?? "",
       userRoles: userData?.userRoles ?? [],
+      spaces: userData?.spaces ?? [],
       twoFactorEnabled: userData?.twoFactorEnabled ?? false,
       isDisabled: userData?.isDisabled ?? false,
       unlockAccount: false, // Field Should be visible only if unlock account is required
@@ -100,7 +102,7 @@ export const useDefineUserForm = ({ rowId }: UseDefineUserFormOptions) => {
         userData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
       lastModifiedOn: userData?.lastModifiedOn ? new Date(userData?.lastModifiedOn) : new Date(),
     });
-  }, [rowId, form, queryClient, userSession]);
+  }, [rowId, form, queryClient, userSession, crudAction]);
 
   // Get check availability state and methods
   const {

@@ -6,10 +6,6 @@ import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
-import SupportTicketsV2Page from "./pages/05-tenant-admin/SupportTicketsV2Page";
-import SupportTicketV2DetailPage from "./pages/05-tenant-admin/SupportTicketV2DetailPage";
-import SaSupportTicketsPage from "./pages/06-super-admin/SaSupportTicketsPage";
-import SaSupportTicketDetailPage from "./pages/06-super-admin/SaSupportTicketDetailPage";
 import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALayout";
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
@@ -40,12 +36,16 @@ import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
 import { AppIntegrationsPage } from "./pages/05-tenant-admin/IntegrationsPage";
 import { ModelProvidersPage } from "./pages/05-tenant-admin/ModelProvidersPage";
 import { PreferencesPage } from "./pages/05-tenant-admin/PreferencesPage";
+import { SpacesPage } from "./pages/05-tenant-admin/SpacesPage";
+import SupportTicketV2DetailPage from "./pages/05-tenant-admin/SupportTicketV2DetailPage";
+import SupportTicketsV2Page from "./pages/05-tenant-admin/SupportTicketsV2Page";
 import { TenantPage } from "./pages/05-tenant-admin/TenantPage";
 import { TenantTemplatesApprovalPage } from "./pages/05-tenant-admin/TenantTemplatesApprovalPage";
 import { UsersPage } from "./pages/05-tenant-admin/UsersPage";
 import { CreditPlansPage } from "./pages/06-super-admin/CreditPlansPage";
-
 import { PublicTemplatesApprovalPage } from "./pages/06-super-admin/PublicTemplatesApprovalPage";
+import SaSupportTicketDetailPage from "./pages/06-super-admin/SaSupportTicketDetailPage";
+import SaSupportTicketsPage from "./pages/06-super-admin/SaSupportTicketsPage";
 import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
 import { OnPremTenantsPage } from "./pages/07-global-admin/OnPremTenantsPage";
@@ -252,6 +252,10 @@ const routerConfig: RouteObject[] = [
           {
             path: "users",
             element: <UsersPage />,
+          },
+          {
+            path: "spaces",
+            element: <SpacesPage />,
           },
           {
             path: "integrations",

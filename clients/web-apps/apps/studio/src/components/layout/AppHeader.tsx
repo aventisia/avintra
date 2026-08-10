@@ -43,7 +43,7 @@ const AppHeader: React.FC = () => {
   const showBackButton = searchParams.get("return") === "1";
 
   const goBack = () => {
-    window.location.href = `${import.meta.env.VITE_WORKSPACE_PATH}`;
+    window.location.href = import.meta.env.VITE_WORKSPACE_PATH;
   };
   const isViewTenant = userSession?.access_mode == "read_only";
   return (

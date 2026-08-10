@@ -29,6 +29,31 @@ public class SpaceTableDto
     public bool? IsDisabled { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether this space is the system default.
+    /// </summary>
+    public bool IsDefault { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of users associated with the space.
+    /// </summary>
+    public int TotalUsers { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of published agents in the space.
+    /// </summary>
+    public int TotalPublishedAgents { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total execution time (in seconds) for the space.
+    /// </summary>
+    public double TotalExecutionTime { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of machines attached to the space.
+    /// </summary>
+    public int TotalMachinesAttached { get; set; }
+
+    /// <summary>
     /// Gets or sets the username of the user who created this space record.
     /// For response use only.
     /// </summary>

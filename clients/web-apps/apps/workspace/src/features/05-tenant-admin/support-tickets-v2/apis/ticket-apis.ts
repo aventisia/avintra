@@ -1,14 +1,16 @@
 import { IHttpResponse, IOptimisticMutation } from "@avplatform/ui/dtos";
+
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+
 import {
-  TicketDto,
-  TicketTableDto,
-  TicketCommentDto,
+  TenantSupportConfigDto,
   TicketAttachmentDto,
+  TicketCommentDto,
+  TicketDto,
   TicketHistoryDto,
   TicketStatusUpdateDto,
+  TicketTableDto,
   TicketTriageUpdateDto,
-  TenantSupportConfigDto,
 } from "../dtos/TicketDto";
 
 const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/support-tickets`;
@@ -16,33 +18,23 @@ const accountsAPIURL = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/sa`;
 
 /** Retrieves a ticket by its ID. */
 export const getTicket = (id: string) =>
-  axiosInstance
-    .get<IHttpResponse<TicketDto>>(`${baseAPIURL}/${id}`)
-    .then((res) => res.data);
+  axiosInstance.get<IHttpResponse<TicketDto>>(`${baseAPIURL}/${id}`).then((res) => res.data);
 
 /** Retrieves list of tickets. */
 export const getTickets = () =>
-  axiosInstance
-    .get<IHttpResponse<TicketTableDto[]>>(`${baseAPIURL}/list`)
-    .then((res) => res.data);
+  axiosInstance.get<IHttpResponse<TicketTableDto[]>>(`${baseAPIURL}/list`).then((res) => res.data);
 
 /** Insert a new ticket. */
 export const createTicket = (dto: TicketTableDto) =>
-  axiosInstance
-    .post<IHttpResponse<TicketDto>>(`${baseAPIURL}`, dto)
-    .then((res) => res.data);
+  axiosInstance.post<IHttpResponse<TicketDto>>(`${baseAPIURL}`, dto).then((res) => res.data);
 
 /** Updates an existing ticket. */
 export const updateTicket = (dto: TicketTableDto) =>
-  axiosInstance
-    .put<IHttpResponse<TicketDto>>(`${baseAPIURL}`, dto)
-    .then((res) => res.data);
+  axiosInstance.put<IHttpResponse<TicketDto>>(`${baseAPIURL}`, dto).then((res) => res.data);
 
 /** Deletes an existing ticket. */
 export const deleteTicket = (id: string) =>
-  axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
-    .then((res) => res.data);
+  axiosInstance.delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`).then((res) => res.data);
 
 /** Deletes multiple tickets by their IDs. */
 export const deleteTickets = (ids: string[]) =>
@@ -52,15 +44,11 @@ export const deleteTickets = (ids: string[]) =>
 
 /** Updates the status of an existing ticket. */
 export const updateTicketStatus = (dto: TicketStatusUpdateDto) =>
-  axiosInstance
-    .put<IHttpResponse<TicketDto>>(`${baseAPIURL}/status`, dto)
-    .then((res) => res.data);
+  axiosInstance.put<IHttpResponse<TicketDto>>(`${baseAPIURL}/status`, dto).then((res) => res.data);
 
 /** Updates the triage information of an existing ticket. */
 export const updateTicketTriage = (dto: TicketTriageUpdateDto) =>
-  axiosInstance
-    .put<IHttpResponse<TicketDto>>(`${baseAPIURL}/triage`, dto)
-    .then((res) => res.data);
+  axiosInstance.put<IHttpResponse<TicketDto>>(`${baseAPIURL}/triage`, dto).then((res) => res.data);
 
 /** Retrieves list of comments for a ticket. */
 export const getComments = (ticketId: string) =>
@@ -112,12 +100,17 @@ export const getHistory = (ticketId: string) =>
 
 export const getTenantSupportConfig = (tenantId: string) =>
   axiosInstance
-    .get<IHttpResponse<TenantSupportConfigDto>>(`${accountsAPIURL}/tenants/${tenantId}/support-config`)
+    .get<IHttpResponse<TenantSupportConfigDto>>(
+      `${accountsAPIURL}/tenants/${tenantId}/support-config`,
+    )
     .then((res) => res.data);
 
 export const updateTenantSupportConfig = (tenantId: string, dto: TenantSupportConfigDto) =>
   axiosInstance
-    .put<IHttpResponse<TenantSupportConfigDto>>(`${accountsAPIURL}/tenants/${tenantId}/support-config`, dto)
+    .put<IHttpResponse<TenantSupportConfigDto>>(
+      `${accountsAPIURL}/tenants/${tenantId}/support-config`,
+      dto,
+    )
     .then((res) => res.data);
 
 export const ticketOptimisticMutationFn = ({

@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { KnowledgeBaseFileDto, VectorizationStatus } from "../dtos/kb-file-dto";
 
@@ -86,7 +87,9 @@ const vectorStoreApiBaseUrl: string = `${import.meta.env.VITE_LLMPIPELINE_API_PA
 
 export const getKnowledgeBaseFiles = (knowledgeBaseId: string) => {
   return axiosInstance
-    .get<IHttpResponse<KnowledgeBaseFileDto[]>>(`${baseAPIURL}/${knowledgeBaseId}/files`)
+    .get<IHttpResponse<KnowledgeBaseFileDto[]>>(`${baseAPIURL}/${knowledgeBaseId}/files`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -95,6 +98,7 @@ export const registerKnowledgeBaseFile = (knowledgeBaseId: string, dto: KBRegist
     .post<IHttpResponse<KnowledgeBaseFileDto>>(
       `${baseAPIURL}/${knowledgeBaseId}/files/register`,
       dto,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
@@ -104,13 +108,16 @@ export const registerKnowledgeBaseText = (knowledgeBaseId: string, dto: KBRegist
     .post<IHttpResponse<KnowledgeBaseFileDto>>(
       `${baseAPIURL}/${knowledgeBaseId}/files/register-text`,
       dto,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
 
 export const deleteKnowledgeBaseFile = (knowledgeBaseId: string, fileId: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${knowledgeBaseId}/files/${fileId}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${knowledgeBaseId}/files/${fileId}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -123,13 +130,17 @@ export const updateKnowledgeBaseFileStatus = (
     .patch<IHttpResponse<KnowledgeBaseFileDto>>(
       `${baseAPIURL}/${knowledgeBaseId}/files/${fileId}/status`,
       dto,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
 
 export const ingestVectorStoreInput = (dto: VectorStoreIngestRequestDto) => {
   return axiosInstance
-    .post(`${vectorStoreApiBaseUrl}/ingest`, dto, { timeout: 5 * 60 * 1000 })
+    .post(`${vectorStoreApiBaseUrl}/ingest`, dto, {
+      timeout: 5 * 60 * 1000,
+      headers: getSpaceHeaders(),
+    })
     .then((res) => {
       const payload = res.data as { data?: unknown } | unknown;
       return (payload as { data?: unknown })?.data ?? payload;
@@ -139,21 +150,24 @@ export const ingestVectorStoreInput = (dto: VectorStoreIngestRequestDto) => {
 export const queryVectorStore = (
   dto: VectorStoreQueryRequestDto,
 ): Promise<VectorStoreQueryResponseDto> => {
-  return axiosInstance.post(`${vectorStoreApiBaseUrl}/query`, dto).then((res) => {
-    const payload = res.data as
-      | {
-          data?: VectorStoreQueryResponseDto;
-        }
-      | VectorStoreQueryResponseDto;
-    return ((payload as { data?: VectorStoreQueryResponseDto })?.data ??
-      payload) as VectorStoreQueryResponseDto;
-  });
+  return axiosInstance
+    .post(`${vectorStoreApiBaseUrl}/query`, dto, { headers: getSpaceHeaders() })
+    .then((res) => {
+      const payload = res.data as
+        | {
+            data?: VectorStoreQueryResponseDto;
+          }
+        | VectorStoreQueryResponseDto;
+      return ((payload as { data?: VectorStoreQueryResponseDto })?.data ??
+        payload) as VectorStoreQueryResponseDto;
+    });
 };
 
 export const deleteVectorStoreDocument = (dto: VectorStoreDeleteRequestDto) => {
   return axiosInstance
     .delete(`${vectorStoreApiBaseUrl}/delete`, {
       data: dto,
+      headers: getSpaceHeaders(),
     })
     .then((res) => {
       const payload = res.data as { data?: unknown } | unknown;

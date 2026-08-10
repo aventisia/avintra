@@ -47,7 +47,7 @@ export const AgentsSelector = ({
 
   useEffect(() => {
     if (triggerAgents) {
-      setSelectedItems([triggerAgents.data]);
+      setSelectedItems(triggerAgents.data);
     }
   }, [triggerAgents]);
 

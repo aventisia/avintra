@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
 import { DTRowAction, DataTableRowActions } from "@avplatform/ui/data-table";
 import { DropdownMenuItem } from "@avplatform/ui/dropdown-menu";
 import { DropdownMenuSeparator } from "@avplatform/ui/dropdown-menu";
 import { ExternalLinkIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+
 import { SaTicketRowDeleteAction } from "./SaTicketRowDeleteAction";
 
 interface SaTicketRowActionsProps {

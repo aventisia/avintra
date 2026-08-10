@@ -5,5 +5,6 @@ export const columnVisibilityState = {
   lastName: true,
   email: true,
   userRoles: true,
+  spaces: true,
   createdOn: true,
 };

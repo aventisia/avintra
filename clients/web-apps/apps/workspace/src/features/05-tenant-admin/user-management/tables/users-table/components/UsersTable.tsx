@@ -13,6 +13,7 @@ import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
+import { useFetchUserSpaces } from "../hooks/useFetchUserSpaces";
 import { useFetchUsers } from "../hooks/useFetchUsers";
 import { usersTableColumns } from "./UsersTableColumns";
 import { UsersBulkActions } from "./user-row-actions/UsersBulkActions";
@@ -32,9 +33,19 @@ export const UsersTable = () => {
   // Fetch users data
   const { data } = useFetchUsers();
 
+  // Fetch spaces to resolve space IDs to names in the Spaces column.
+  const { data: userSpaces } = useFetchUserSpaces();
+
+  // Build a map of space ID -> space name for the Spaces column.
+  const spaceIdToName = new Map(
+    (userSpaces?.data || []).map((option) => [option.value, option.label]),
+  );
+
+  const columns = usersTableColumns(spaceIdToName);
+
   // Create a React table for users data
   const table = useDataTable(
-    usersTableColumns,
+    columns,
     data?.data || [],
     columnVisibility,
     sortState,
@@ -62,7 +73,7 @@ export const UsersTable = () => {
           </div>
 
           {/* Data table to render data */}
-          <DataTable table={table} columnsLength={usersTableColumns.length} />
+          <DataTable table={table} columnsLength={columns.length} />
           {/* Data table Pagination component */}
           <DTPagination table={table} />
 

@@ -1,13 +1,14 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { Button } from "@avplatform/ui/buttons";
+import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { TicketDto } from "../../dtos/TicketDto";
-import { triageZodSchema } from "../../constants/ticket-zod-schema";
+import { z } from "zod";
+
 import { COMPLEXITY_OPTIONS, RISK_OPTIONS, TICKET_STATUSES } from "../../constants/constants";
+import { triageZodSchema } from "../../constants/ticket-zod-schema";
+import { TicketDto } from "../../dtos/TicketDto";
 import { TicketDetailApiAdapter } from "../../types/ticket-detail-api-adapter.type";
 
 type TriageFormData = z.infer<typeof triageZodSchema>;
@@ -92,19 +93,15 @@ export const TriagePanel = ({ ticket, api }: TriagePanelProps) => {
             label="Risk Level"
             selectOptions={RISK_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
           />
-          <InputField
-            name="estimatedEffortHours"
-            label="Estimated Effort (hours)"
-            type="number"
-          />
-          <InputField
-            name="estimatedCompletionDate"
-            label="Estimated Completion"
-            type="date"
-          />
+          <InputField name="estimatedEffortHours" label="Estimated Effort (hours)" type="number" />
+          <InputField name="estimatedCompletionDate" label="Estimated Completion" type="date" />
           <div className="flex gap-4 items-end">
             <SwitchField name="isBillable" label="Billable" description="Mark as billable" />
-            <SwitchField name="requiresCustomerApproval" label="Requires Approval" description="Requires customer approval" />
+            <SwitchField
+              name="requiresCustomerApproval"
+              label="Requires Approval"
+              description="Requires customer approval"
+            />
           </div>
         </div>
         <TextareaField

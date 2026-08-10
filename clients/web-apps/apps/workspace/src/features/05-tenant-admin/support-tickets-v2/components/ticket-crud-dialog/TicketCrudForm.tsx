@@ -1,21 +1,31 @@
 import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
-import { Form, InputField, SelectField, TextareaField, SwitchField } from "@avplatform/ui/form";
+import { Form, InputField, SelectField, SwitchField, TextareaField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { useQuery } from "@tanstack/react-query";
 import { z } from "zod";
 
+import { getPublishedAgents } from "@/features/03-orchestrator/agents-table/apis/agents-table-apis";
+
 import { ticketOptimisticMutationFn } from "../../apis/ticket-apis";
-import { createTicketZodSchema } from "../../constants/ticket-zod-schema";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
-  idProps, requestTypeProps, titleProps, descriptionProps,
-  requiredByProps, agentRefIdProps, changeSummaryProps, changeReasonProps,
-  expectedBehaviorProps, requestedTimelineProps, isDisabledProps,
+  agentRefIdProps,
+  changeReasonProps,
+  changeSummaryProps,
+  descriptionProps,
+  expectedBehaviorProps,
+  idProps,
+  isDisabledProps,
+  requestTypeProps,
+  requestedTimelineProps,
+  requiredByProps,
+  titleProps,
 } from "../../constants/ticket-form-field-props";
-import { TicketDto, TicketTableDto } from "../../dtos/TicketDto";import { useDefineTicketForm } from "../../hooks/useDefineTicketForm";
-import { getPublishedAgents } from "@/features/03-orchestrator/agents-table/apis/agents-table-apis";
+import { createTicketZodSchema } from "../../constants/ticket-zod-schema";
+import { TicketDto, TicketTableDto } from "../../dtos/TicketDto";
+import { useDefineTicketForm } from "../../hooks/useDefineTicketForm";
 
 interface TicketCrudFormProps {
   rowId: string;

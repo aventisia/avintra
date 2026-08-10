@@ -18,7 +18,9 @@ export function redirectToLoginOn401Util() {
     const { href, pathname } = window.location;
     const isLogin = pathname.includes("/login");
 
-    const base = `${import.meta.env.VITE_ACCOUNTS_PATH}login`;
+    const accountsBase = import.meta.env.VITE_ACCOUNTS_PATH;
+
+    const base = `${accountsBase}login`;
 
     const url = isLogin ? base : `${base}?redirect=${encodeURIComponent(href)}`;
 

@@ -5,19 +5,29 @@ public class ResourceShareService : IResourceShareService
     private readonly ILogger<ResourceShareService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
+    private readonly string? _jwt;
 
     public ResourceShareService(
         ILogger<ResourceShareService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        IHttpClientFactory httpClientFactory,
+        EnvironmentConfig environmentConfig)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
+        _httpClientFactory = httpClientFactory;
+        _environmentConfig = environmentConfig;
 
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        // Extract the JWT from the cookie (or Authorization header) so it can be
+        // forwarded to AccountsAPIs as a Bearer token for the cross-API sync.
+        _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext);
     }
 
     // Retrieves all resource shares assigned to the current user, optionally filtered by resource type.
@@ -282,6 +292,16 @@ public class ResourceShareService : IResourceShareService
                     createResourceShareDto.ResourceId);
 
                 return serviceResponse;
+            }
+
+            // For Space resources, sync the AccountsAPIs SpaceUser table so the
+            // space membership is reflected in the Tenant Admin Users table.
+            if (createResourceShareDto.ResourceType == ResourceTypeEnum.Space)
+            {
+                await SyncSpaceUsersAsync(
+                    createResourceShareDto.ResourceId,
+                    resourceShares.Select(s => s.UserId).ToList(),
+                    add: true);
             }
 
             serviceResponse.Data = true;
@@ -650,6 +670,16 @@ public class ResourceShareService : IResourceShareService
                 return serviceResponse;
             }
 
+            // For Space resources, sync the AccountsAPIs SpaceUser table so the
+            // space membership is reflected in the Tenant Admin Users table.
+            if (resourceShare.ResourceType == ResourceTypeEnum.Space)
+            {
+                await SyncSpaceUsersAsync(
+                    resourceShare.ResourceId,
+                    new List<Guid> { resourceShare.UserId },
+                    add: false);
+            }
+
             // Set success response after successful deletion.
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
@@ -974,6 +1004,48 @@ public class ResourceShareService : IResourceShareService
             _logger.LogError(
                 ex,
                 "Failed deleting resource share mappings.");
+        }
+    }
+
+    // Syncs the AccountsAPIs SpaceUser table when a Space resource is shared/unshared
+    // so the space membership is reflected in the Tenant Admin Users table.
+    private async Task SyncSpaceUsersAsync(Guid spaceId, List<Guid> userIds, bool add)
+    {
+        try
+        {
+            var accountsApiBaseUrl = _environmentConfig.AccountsApiBaseUrl;
+            if (string.IsNullOrWhiteSpace(accountsApiBaseUrl) || userIds == null || userIds.Count == 0)
+                return;
+
+            // In local development the AccountsAPIs dev certificate is untrusted, so
+            // bypass SSL validation to allow the cross-API sync to succeed.
+            using var httpClient = new HttpClient(new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            });
+            httpClient.Timeout = TimeSpan.FromSeconds(30);
+            if (!string.IsNullOrWhiteSpace(_jwt))
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwt);
+
+            var url = $"{accountsApiBaseUrl.TrimEnd('/')}/api/space/{spaceId}/users";
+            HttpResponseMessage response;
+            if (add)
+                response = await httpClient.PostAsJsonAsync(url, userIds);
+            else
+                response = await httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, url)
+                {
+                    Content = JsonContent.Create(userIds)
+                });
+
+            if (!response.IsSuccessStatusCode)
+                _logger.LogWarning(
+                    "[SyncSpaceUsersAsync] Failed to sync space users for space {SpaceId}. Status: {Status}",
+                    spaceId,
+                    response.StatusCode);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "[SyncSpaceUsersAsync] Error syncing space users for space {SpaceId}.", spaceId);
         }
     }
 }

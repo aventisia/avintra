@@ -1,9 +1,13 @@
 import { DeleteDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
 
+import {
+  TicketDto,
+  TicketTableDto,
+} from "@/features/05-tenant-admin/support-tickets-v2/dtos/TicketDto";
+
 import { saTicketOptimisticMutationFn } from "../../apis/sa-ticket-apis";
 import { DATA_QUERY_KEY } from "../../constants";
-import { TicketDto, TicketTableDto } from "@/features/05-tenant-admin/support-tickets-v2/dtos/TicketDto";
 
 interface SaTicketRowDeleteActionProps {
   rowId: string;

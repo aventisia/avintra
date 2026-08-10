@@ -1,12 +1,12 @@
-import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { Suspense, lazy } from "react";
 
 // Lazy load the ModelProviders component.
 const ModelProviders = lazy(() =>
-  import("@/features/05-tenant-admin/model-providers/components/ModelProviders").then(
-    (module) => ({ default: module.ModelProviders }),
-  ),
+  import("@/features/05-tenant-admin/model-providers/components/ModelProviders").then((module) => ({
+    default: module.ModelProviders,
+  })),
 );
 
 /**

@@ -1,6 +1,7 @@
-import { ModelProviderEnum } from "../enums/model-provider-enum";
 import { VaultAppsEnum } from "@/features/02-configure/vault-table/enums/vault-apps-enum";
 import { vaultAppIconMapper } from "@/features/02-configure/vault-table/vault-config/constants/vault-app-icon-mapper";
+
+import { ModelProviderEnum } from "../enums/model-provider-enum";
 
 /**
  * Metadata describing a single model provider card in the Model Providers section.

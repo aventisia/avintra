@@ -67,4 +67,18 @@ public class SpaceTableController : BaseApiController
     {
         return ResultHelper(await _spaceTableService.GetSpaceUsersAsync(spaceId));
     }
+
+    // Adds the given users to a space (used by the share flow to sync space membership).
+    [HttpPost("{spaceId}/users")]
+    public async Task<ActionResult<ServiceResponse<bool>>> AddSpaceUsers(Guid spaceId, [FromBody] List<Guid> userIds)
+    {
+        return ResultHelper(await _spaceTableService.AddSpaceUsersAsync(spaceId, userIds));
+    }
+
+    // Removes the given users from a space (used by the share flow to sync space membership).
+    [HttpDelete("{spaceId}/users")]
+    public async Task<ActionResult<ServiceResponse<bool>>> RemoveSpaceUsers(Guid spaceId, [FromBody] List<Guid> userIds)
+    {
+        return ResultHelper(await _spaceTableService.RemoveSpaceUsersAsync(spaceId, userIds));
+    }
 }

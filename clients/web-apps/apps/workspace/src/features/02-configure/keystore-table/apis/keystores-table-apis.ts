@@ -6,6 +6,7 @@ import {
 } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { KeystoresTableDto } from "../dtos/keystores-table-dto";
 
@@ -17,7 +18,9 @@ export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/ke
 export const getKeystore = ({ isPersonal = true }: { isPersonal: boolean }) => {
   const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<KeystoresTableDto[]>>(`${baseAPIURL}/${path}`)
+    .get<IHttpResponse<KeystoresTableDto[]>>(`${baseAPIURL}/${path}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -26,7 +29,7 @@ export const getKeystore = ({ isPersonal = true }: { isPersonal: boolean }) => {
  */
 export const getDecryptedKey = (rowId: string) => {
   return axiosInstance
-    .get<IHttpResponse<string>>(`${baseAPIURL}/decrypt/${rowId}`)
+    .get<IHttpResponse<string>>(`${baseAPIURL}/decrypt/${rowId}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -35,7 +38,9 @@ export const getDecryptedKey = (rowId: string) => {
  */
 export const isKeystoreNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
-    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj)
+    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -44,7 +49,9 @@ export const isKeystoreNameAvailable = (postObj: CheckAvailabilityDto) => {
  */
 export const insertKeystore = (newKeystore: KeystoresTableDto) => {
   return axiosInstance
-    .post<IHttpResponse<KeystoresTableDto>>(`${baseAPIURL}`, newKeystore)
+    .post<IHttpResponse<KeystoresTableDto>>(`${baseAPIURL}`, newKeystore, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -53,7 +60,9 @@ export const insertKeystore = (newKeystore: KeystoresTableDto) => {
  */
 export const updateKeystore = (updatedKeystore: KeystoresTableDto) => {
   return axiosInstance
-    .put<IHttpResponse<KeystoresTableDto>>(`${baseAPIURL}`, updatedKeystore)
+    .put<IHttpResponse<KeystoresTableDto>>(`${baseAPIURL}`, updatedKeystore, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -62,7 +71,7 @@ export const updateKeystore = (updatedKeystore: KeystoresTableDto) => {
  */
 export const deleteKeystore = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -71,7 +80,9 @@ export const deleteKeystore = (id: string) => {
  */
 export const deleteKeystores = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

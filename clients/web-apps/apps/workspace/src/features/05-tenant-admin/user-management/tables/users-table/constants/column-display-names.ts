@@ -7,6 +7,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "lastName", value: "Last Name" },
   { key: "email", value: "Email" },
   { key: "userRoles", value: "Top Role" },
+  { key: "spaces", value: "Spaces" },
   { key: "createdOn", value: "Created On" },
 ];
 

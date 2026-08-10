@@ -6,6 +6,7 @@ import {
 } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { QueueWorkItemDto } from "../../work-items-table/dtos/queue-work-item-dto";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
@@ -18,7 +19,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue`;
 const getQueues = ({ isPersonal = true }: { isPersonal: boolean }) => {
   const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/${path}`)
+    .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/${path}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -27,7 +28,9 @@ const getQueues = ({ isPersonal = true }: { isPersonal: boolean }) => {
  */
 const isNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
-    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj)
+    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -36,7 +39,9 @@ const isNameAvailable = (postObj: CheckAvailabilityDto) => {
  */
 const insertQueue = (newqueue: QueuesTableDto) => {
   return axiosInstance
-    .post<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, newqueue)
+    .post<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, newqueue, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -48,6 +53,7 @@ const uploadWorkItem = (workitem: QueueWorkItemDto) => {
     .post<IHttpResponse<QueueWorkItemDto>>(
       `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue-transaction/multiple-data`,
       workitem,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };
@@ -68,7 +74,9 @@ const uploadWorkItem = (workitem: QueueWorkItemDto) => {
  */
 const updateQueue = (updatedqueue: QueuesTableDto) => {
   return axiosInstance
-    .put<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, updatedqueue)
+    .put<IHttpResponse<QueuesTableDto>>(`${baseAPIURL}`, updatedqueue, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -77,7 +85,7 @@ const updateQueue = (updatedqueue: QueuesTableDto) => {
  */
 const deleteQueue = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -86,13 +94,17 @@ const deleteQueue = (id: string) => {
  */
 const deleteQueues = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
 const searchQueues = (query: string = "") => {
   return axiosInstance
-    .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/search/${query}`)
+    .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/search/${query}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

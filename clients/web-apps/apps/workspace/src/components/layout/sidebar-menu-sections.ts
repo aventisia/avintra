@@ -220,6 +220,13 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         route: "/tenant/users",
         type: ["Commercial", "Enterprise"],
       },
+      {
+        permissions: ["TA"],
+        Icon: FolderCogIcon,
+        name: "spaces",
+        route: "/tenant/spaces",
+        type: ["Commercial", "Enterprise"],
+      },
       // Add integrations only if not production
       ...(import.meta.env.MODE !== "production"
         ? ([

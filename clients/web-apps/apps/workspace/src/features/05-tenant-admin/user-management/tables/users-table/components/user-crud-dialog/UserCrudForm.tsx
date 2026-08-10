@@ -1,11 +1,10 @@
 import { Button } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
-import { AutherCard, Form, InputField, SwitchField } from "@avplatform/ui/form";
+import { AutherCard, Form, InputField, MultiSelectField, SwitchField } from "@avplatform/ui/form";
 import { useListOptimisticMutation } from "@avplatform/ui/hooks";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { useEffect } from "react";
 import { z } from "zod";
-
-import { MultiSelectField } from "@/components/multi-select/MultiSelectField";
 
 import { userOptimisticMutationFn } from "../../apis/users-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -20,11 +19,13 @@ import {
   pwdSetOnProps,
   twoFactorEnabledProps,
   userRolesProps,
+  userSpacesProps,
 } from "../../constants/user-form-field-props";
 import { userZodSchema } from "../../constants/user-zod-schema";
 import { UsersTableDto } from "../../dtos/users-table-dto";
 import { useDefineUserForm } from "../../hooks/useDefineUserForm";
 import { useFetchUserRoles } from "../../hooks/useFetchUserRoles";
+import { useFetchUserSpaces } from "../../hooks/useFetchUserSpaces";
 import { UnlockAccountField } from "./UnlockAccountField";
 
 interface UserCrudFormProps {
@@ -37,6 +38,9 @@ export const UserCrudForm = ({ rowId, crudAction }: UserCrudFormProps) => {
 
   // Fetch user roles to populate the user roles multi-selector
   const { data: userRoles } = useFetchUserRoles();
+
+  // Fetch user spaces to populate the spaces multi-selector
+  const { data: userSpaces } = useFetchUserSpaces();
 
   // Define user form
   const {
@@ -75,6 +79,30 @@ export const UserCrudForm = ({ rowId, crudAction }: UserCrudFormProps) => {
   // Is form in read mode?
   const isReadMode = crudAction === "read";
 
+  // The default "Central" space (if present) must always remain selected and cannot be removed.
+  const centralSpace = userSpaces?.data?.find((option) => option.isDefault);
+
+  // Pre-select the Central space by default when creating a new user.
+  useEffect(() => {
+    if (crudAction === "create" && centralSpace) {
+      const current = form.getValues("spaces") || [];
+      if (!current.includes(centralSpace.value)) {
+        form.setValue("spaces", [centralSpace.value, ...current], { shouldDirty: false });
+      }
+    }
+  }, [crudAction, centralSpace, form]);
+
+  // Enforce that the Central space is always selected and cannot be removed.
+  const handleSpacesChange = (value: string[]) => {
+    if (!centralSpace) {
+      form.setValue("spaces", value, { shouldDirty: true });
+      return;
+    }
+    // Always keep the Central space in the selection.
+    const next = value.includes(centralSpace.value) ? value : [centralSpace.value, ...value];
+    form.setValue("spaces", next, { shouldDirty: true });
+  };
+
   // Return the form
   return (
     <Form
@@ -99,8 +127,20 @@ export const UserCrudForm = ({ rowId, crudAction }: UserCrudFormProps) => {
         nonErrorMessage={availabilityMessage}
       />
 
-      {/* User Roles */}
-      <MultiSelectField {...userRolesProps} selectOptions={userRoles?.data || []} />
+      {/* User Roles (multi-select) */}
+      <MultiSelectField
+        {...userRolesProps}
+        selectOptions={userRoles?.data || []}
+        disabled={isReadMode}
+      />
+
+      {/* Spaces (multi-select) */}
+      <MultiSelectField
+        {...userSpacesProps}
+        selectOptions={userSpaces?.data || []}
+        onValuesChange={handleSpacesChange}
+        disabled={isReadMode}
+      />
 
       {/* Two Factor Enabled */}
       <SwitchField {...twoFactorEnabledProps} />

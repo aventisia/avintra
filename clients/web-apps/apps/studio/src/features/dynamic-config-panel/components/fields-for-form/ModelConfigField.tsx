@@ -276,7 +276,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     ) {
       const enabledIds = enabledConfig?.enabledModelIds ?? [];
       return uniqueAndNormalizeArray(
-        enabledIds.map((id) => ({ value: id, label: id, available: true } as Model)),
+        enabledIds.map((id) => ({ value: id, label: id, available: true }) as Model),
       );
     }
 
@@ -290,7 +290,14 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
           .find((p) => p.value === providerValue)
           ?.models?.filter((m) => m.available) || [];
     return uniqueAndNormalizeArray(models);
-  }, [is_byok_enabled, byokModels, filteredProviders, providerValue, enabledConfigByProvider, nodeKey]);
+  }, [
+    is_byok_enabled,
+    byokModels,
+    filteredProviders,
+    providerValue,
+    enabledConfigByProvider,
+    nodeKey,
+  ]);
 
   const currentModel = useMemo(
     () => availableModels.find((m) => m.value === modelField.value),
@@ -335,7 +342,9 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
             isLoading={isLoading}
             disabled={
               !isInitialized ||
-              (is_byok_enabled && !TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue) && !credentialsValue)
+              (is_byok_enabled &&
+                !TENANT_CONFIG_MODEL_PROVIDERS.has(providerValue) &&
+                !credentialsValue)
             }
           />
         </div>

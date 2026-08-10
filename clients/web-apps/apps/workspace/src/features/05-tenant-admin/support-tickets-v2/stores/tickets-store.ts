@@ -1,4 +1,5 @@
 import { create } from "zustand";
+
 import { TicketTableDto } from "../dtos/TicketDto";
 
 interface TicketsTableStore {

@@ -45,7 +45,12 @@ public class AgentTableService : IAgentTableService
                     (flowId == null || w.FlowId == flowId) &&
                     w.Flow.Type != FlowTypesEnum.Block &&
                     w.IsPublished &&
-                    !w.IsArchived
+                    !w.IsArchived &&
+                    // Central (Guid.Empty) shows only Central (null SpaceId) agents;
+                    // otherwise filter by the selected space.
+                    (_currentTenantService.CurrentSpaceId == Guid.Empty
+                        ? w.SpaceId == null
+                        : w.SpaceId == _currentTenantService.CurrentSpaceId)
                 )
                 .Include(i => i.Flow)
                 .Include(i => i.FlowVersionMachines)

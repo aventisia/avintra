@@ -6,6 +6,7 @@ import {
 } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { KnowledgeBaseTableDto } from "../dtos/knowledge-base-table-dto";
 
@@ -17,7 +18,9 @@ export const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/kn
 export const getKnowledgeBases = ({ isPersonal = true }: { isPersonal: boolean }) => {
   const path = isPersonal ? `list` : `list/shared`;
   return axiosInstance
-    .get<IHttpResponse<KnowledgeBaseTableDto[]>>(`${baseAPIURL}/${path}`)
+    .get<IHttpResponse<KnowledgeBaseTableDto[]>>(`${baseAPIURL}/${path}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -26,7 +29,9 @@ export const getKnowledgeBases = ({ isPersonal = true }: { isPersonal: boolean }
  */
 export const isKnowledgeBaseNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
-    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj)
+    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -35,7 +40,9 @@ export const isKnowledgeBaseNameAvailable = (postObj: CheckAvailabilityDto) => {
  */
 export const insertKnowledgeBase = (newKnowledgeBase: KnowledgeBaseTableDto) => {
   return axiosInstance
-    .post<IHttpResponse<KnowledgeBaseTableDto>>(`${baseAPIURL}`, newKnowledgeBase)
+    .post<IHttpResponse<KnowledgeBaseTableDto>>(`${baseAPIURL}`, newKnowledgeBase, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -44,7 +51,9 @@ export const insertKnowledgeBase = (newKnowledgeBase: KnowledgeBaseTableDto) => 
  */
 export const updateKnowledgeBase = (updatedKnowledgeBase: KnowledgeBaseTableDto) => {
   return axiosInstance
-    .put<IHttpResponse<KnowledgeBaseTableDto>>(`${baseAPIURL}`, updatedKnowledgeBase)
+    .put<IHttpResponse<KnowledgeBaseTableDto>>(`${baseAPIURL}`, updatedKnowledgeBase, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -53,7 +62,7 @@ export const updateKnowledgeBase = (updatedKnowledgeBase: KnowledgeBaseTableDto)
  */
 export const deleteKnowledgeBase = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -62,7 +71,9 @@ export const deleteKnowledgeBase = (id: string) => {
  */
 export const deleteKnowledgeBases = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

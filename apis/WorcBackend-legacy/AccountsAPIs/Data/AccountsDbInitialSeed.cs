@@ -23,6 +23,11 @@ public static class AccountsDbInitialSeed
             // Try to seed data
             try
             {
+                // Ensure every tenant has a default "Central" space.
+                // This runs unconditionally (idempotently) so existing tenants also get it,
+                // even when the rest of the seed is skipped by IsSeedingRequired.
+                await SeedDefaultSpacesForAllTenantsAsync(_accountsDbContext);
+
                 // Seeding is not required
                 if (!await IsSeedingRequired(_accountsDbContext)) return app;
 
@@ -294,6 +299,46 @@ public static class AccountsDbInitialSeed
         {
             Console.WriteLine("Error: Error occurred while tyring to seed default tenants: " + ex.Message);
             return null;
+        }
+    }
+
+    // Ensure every tenant has a default "Central" space.
+    // Runs unconditionally (idempotently) so existing tenants also get it,
+    // even when the rest of the seed is skipped by IsSeedingRequired.
+    //
+    // NOTE: Uses raw SQL insert to bypass the DbContext SaveChanges override,
+    // which would otherwise overwrite TenantId with Guid.Empty during startup
+    // (no request context is available at seed time).
+    private async static Task SeedDefaultSpacesForAllTenantsAsync(AccountsDbContext accountsDbContext)
+    {
+        try
+        {
+            // Fetch all tenants
+            var tenants = await accountsDbContext.Tenants.ToListAsync();
+
+            foreach (var tenant in tenants)
+            {
+                // Check if a default space already exists for the tenant
+                var existingDefaultSpace = await accountsDbContext.Spaces
+                    .Where(w => w.TenantId == tenant.Id && w.IsDefault)
+                    .SingleOrDefaultAsync();
+
+                // Default space already exists for this tenant
+                if (existingDefaultSpace != null) continue;
+
+                // Insert the default "Central" space directly via raw SQL
+                var centralSpaceId = Guid.NewGuid();
+                var now = DateTimeOffset.UtcNow;
+                var centralName = "Central";
+                var centralDescription = "The default space for shared resources, workflows, agents, and content accessible across the organization.";
+                await accountsDbContext.Database.ExecuteSqlInterpolatedAsync(
+                    $@"INSERT INTO ""Spaces"" (""Id"", ""TenantId"", ""Name"", ""Description"", ""IsDefault"", ""CreatedByUserId"", ""CreatedOn"", ""LastModifiedByUserId"", ""LastModifiedOn"", ""IsDisabled"")
+                      VALUES ({centralSpaceId}, {tenant.Id}, {centralName}, {centralDescription}, {true}, {tenant.CreatedByUserId}, {now}, {tenant.LastModifiedByUserId}, {now}, {false})");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: Error occurred while trying to seed the default spaces: " + ex.Message);
         }
     }
 

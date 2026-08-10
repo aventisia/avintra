@@ -63,5 +63,11 @@ public enum ResourceTypeEnum
     /// Represents a tool resource used for registering custom REST APIs as LLM-callable tools.
     /// </summary>
     [Description("Represents a tool resource used for registering custom REST APIs as LLM-callable tools.")]
-    Tool
+    Tool,
+
+    /// <summary>
+    /// Represents a space resource used for scoping access to a logical container.
+    /// </summary>
+    [Description("Represents a space resource used for scoping access to a logical container.")]
+    Space
 }

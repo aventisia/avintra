@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { ExecutionSettings } from "../dtos/agent-config-dto";
 
@@ -20,6 +21,7 @@ const updateFlowVersionSetting = ({
     .put<IHttpResponse<boolean>>(
       `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow-version/${versionId}/settings`,
       payload,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };

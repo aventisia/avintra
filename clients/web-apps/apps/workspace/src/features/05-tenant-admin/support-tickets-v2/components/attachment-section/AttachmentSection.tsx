@@ -1,8 +1,9 @@
-import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { Button } from "@avplatform/ui/buttons";
-import { Trash2Icon, DownloadIcon, PaperclipIcon } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { DownloadIcon, PaperclipIcon, Trash2Icon } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+
 import { TicketAttachmentDto } from "../../dtos/TicketDto";
 import { TicketDetailApiAdapter } from "../../types/ticket-detail-api-adapter.type";
 import { TicketAttachmentUploadDialog } from "./TicketAttachmentUploadDialog";
@@ -20,7 +21,12 @@ interface AttachmentSectionProps {
   isClosed?: boolean;
 }
 
-export const AttachmentSection = ({ ticketId, attachments, api, isClosed = false }: AttachmentSectionProps) => {
+export const AttachmentSection = ({
+  ticketId,
+  attachments,
+  api,
+  isClosed = false,
+}: AttachmentSectionProps) => {
   const queryClient = useQueryClient();
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false);
 
@@ -46,7 +52,12 @@ export const AttachmentSection = ({ ticketId, attachments, api, isClosed = false
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-semibold">Attachments ({attachments.length})</h2>
         {!isClosed && (
-          <Button type="button" size="sm" variant="outline" onClick={() => setUploadDialogOpen(true)}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => setUploadDialogOpen(true)}
+          >
             <PaperclipIcon className="mr-2 h-4 w-4" />
             Add Attachment
           </Button>
@@ -67,7 +78,10 @@ export const AttachmentSection = ({ ticketId, attachments, api, isClosed = false
                 <div>
                   <p className="text-sm font-medium">{attachment.fileName}</p>
                   <p className="text-xs text-muted-foreground">
-                    {formatFileSize(attachment.fileSize)} &middot; {attachment.uploadedOn ? new Date(attachment.uploadedOn).toLocaleDateString() : ""}
+                    {formatFileSize(attachment.fileSize)} &middot;{" "}
+                    {attachment.uploadedOn
+                      ? new Date(attachment.uploadedOn).toLocaleDateString()
+                      : ""}
                   </p>
                 </div>
               </div>

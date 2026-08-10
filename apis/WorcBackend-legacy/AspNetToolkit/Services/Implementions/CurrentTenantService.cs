@@ -24,6 +24,10 @@ public class CurrentTenantService : ICurrentTenantService
     // not Unknown then it also set the userId and set random Guid in CurrentUserId
     public async Task<string> SetTenantAndUser(string tenantId, string userId)
     {
+        // Reset the current space to Central (Guid.Empty) for this request.
+        // The TenantResolver middleware sets it from the X-Space-Id header / spid claim after this call.
+        CurrentSpaceId = Guid.Empty;
+
         // Set CurrentUserId (It will be Unknown by default if user is not authenticated)
         if (userId.Equals("Unknown"))
             CurrentUserId = Guid.NewGuid();
@@ -74,6 +78,9 @@ public class CurrentTenantService : ICurrentTenantService
 
     // Prop to keep userId for current request. Required for global filter to apply in DbContext
     public Guid CurrentUserId { get; set; }
+
+    // Prop to keep spaceId for current request. Guid.Empty = Central (shared across the tenant).
+    public Guid CurrentSpaceId { get; set; }
 
     // Container name associated with the current tenant.
     public required string CurrentTenantContainerName { get; set; }

@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { QueueAgentsDto } from "../dtos/queue-agents-dto";
 
@@ -11,7 +12,9 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue-age
  */
 const getQueueAgents = (queueId: string) => {
   return axiosInstance
-    .get<IHttpResponse<QueueAgentsDto[]>>(`${baseAPIURL}/${queueId}/list`)
+    .get<IHttpResponse<QueueAgentsDto[]>>(`${baseAPIURL}/${queueId}/list`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -20,7 +23,9 @@ const getQueueAgents = (queueId: string) => {
  */
 const insertQueueAgent = (queueAgent: QueueAgentsDto) => {
   return axiosInstance
-    .post<IHttpResponse<QueueAgentsDto>>(`${baseAPIURL}`, queueAgent)
+    .post<IHttpResponse<QueueAgentsDto>>(`${baseAPIURL}`, queueAgent, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -29,7 +34,9 @@ const insertQueueAgent = (queueAgent: QueueAgentsDto) => {
  */
 const updateQueueAgent = (updatedAgent: QueueAgentsDto) => {
   return axiosInstance
-    .put<IHttpResponse<QueueAgentsDto>>(`${baseAPIURL}`, updatedAgent)
+    .put<IHttpResponse<QueueAgentsDto>>(`${baseAPIURL}`, updatedAgent, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -38,7 +45,7 @@ const updateQueueAgent = (updatedAgent: QueueAgentsDto) => {
  */
 const deleteQueueAgent = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 

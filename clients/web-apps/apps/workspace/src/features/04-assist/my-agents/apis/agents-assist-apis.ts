@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { AgentsAssistDto } from "../dtos/agent-assist-dto";
 import { RemoveAgentsDto } from "../dtos/remove-agents-dto";
@@ -12,7 +13,9 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/machine`;
  */
 export const getMachineAgents = (machineId: string) => {
   return axiosInstance
-    .get<IHttpResponse<AgentsAssistDto[]>>(`${baseAPIURL}/${machineId}/agents`)
+    .get<IHttpResponse<AgentsAssistDto[]>>(`${baseAPIURL}/${machineId}/agents`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -24,6 +27,7 @@ export const removeAgents = (assignAgentDto: RemoveAgentsDto) => {
     .post<IHttpResponse<boolean>>(
       `${baseAPIURL}/${assignAgentDto.machineId}/remove-agents`,
       assignAgentDto.agentIds,
+      { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);
 };

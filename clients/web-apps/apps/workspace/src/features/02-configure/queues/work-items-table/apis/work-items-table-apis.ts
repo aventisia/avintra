@@ -1,6 +1,7 @@
 import { IHttpResponse, IOptimisticMutation } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 
@@ -11,7 +12,9 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/queue-tra
  */
 export const getQueuesWorkItemPayload = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}/payload/${id}`)
+    .get<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}/payload/${id}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -20,7 +23,9 @@ export const getQueuesWorkItemPayload = (id: string) => {
  */
 export const getQueuesWorkItemsList = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<QueueWorkItemDto[]>>(`${baseAPIURL}/list/${id}`)
+    .get<IHttpResponse<QueueWorkItemDto[]>>(`${baseAPIURL}/list/${id}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -29,7 +34,9 @@ export const getQueuesWorkItemsList = (id: string) => {
  */
 export const insertQueuesWorkItems = (dto: QueueWorkItemDto) => {
   return axiosInstance
-    .post<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}`, dto)
+    .post<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}`, dto, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -38,7 +45,9 @@ export const insertQueuesWorkItems = (dto: QueueWorkItemDto) => {
  */
 export const updateQueuesWorkItems = (updatedqueue: QueueWorkItemDto) => {
   return axiosInstance
-    .put<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}`, updatedqueue)
+    .put<IHttpResponse<QueueWorkItemDto>>(`${baseAPIURL}`, updatedqueue, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -47,7 +56,7 @@ export const updateQueuesWorkItems = (updatedqueue: QueueWorkItemDto) => {
  */
 export const deleteQueuesWorkItem = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, { headers: getSpaceHeaders() })
     .then((res) => res.data);
 };
 
@@ -56,7 +65,9 @@ export const deleteQueuesWorkItem = (id: string) => {
  */
 export const deleteQueuesWorkItems = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

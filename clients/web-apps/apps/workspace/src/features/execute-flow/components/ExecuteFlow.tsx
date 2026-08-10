@@ -48,27 +48,33 @@ const ExecuteFlow = ({ versionId }: { versionId: string; agentId: string }) => {
 
       connectionRef.current = connection;
 
-      connection.on("JobCompleted", (notification: { jobId: string; status: string; message?: string }) => {
-        if (!isMounted) return;
-        if (notification.jobId !== currentFlow.jobId) return;
+      connection.on(
+        "JobCompleted",
+        (notification: { jobId: string; status: string; message?: string }) => {
+          if (!isMounted) return;
+          if (notification.jobId !== currentFlow.jobId) return;
 
-        if (notification.status === "Completed") {
-          toast.success(notification.message || "Execution completed successfully.");
-          setExecutionState("stopped");
-        } else if (notification.status === "Failed") {
-          toast.error(notification.message || "Execution failed.");
-          setExecutionState("stopped");
-        } else if (notification.status === "Aborted" || notification.status === "Abort") {
-          toast.info(notification.message || "Execution was aborted.");
-          setExecutionState("stopped");
-        }
-      });
+          if (notification.status === "Completed") {
+            toast.success(notification.message || "Execution completed successfully.");
+            setExecutionState("stopped");
+          } else if (notification.status === "Failed") {
+            toast.error(notification.message || "Execution failed.");
+            setExecutionState("stopped");
+          } else if (notification.status === "Aborted" || notification.status === "Abort") {
+            toast.info(notification.message || "Execution was aborted.");
+            setExecutionState("stopped");
+          }
+        },
+      );
 
-      connection.on("JobProgress", (notification: { jobId: string; status: string; message?: string }) => {
-        if (!isMounted) return;
-        if (notification.jobId !== currentFlow.jobId) return;
-        console.log("Job progress:", notification);
-      });
+      connection.on(
+        "JobProgress",
+        (notification: { jobId: string; status: string; message?: string }) => {
+          if (!isMounted) return;
+          if (notification.jobId !== currentFlow.jobId) return;
+          console.log("Job progress:", notification);
+        },
+      );
 
       try {
         await connection.start();

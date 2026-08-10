@@ -9,7 +9,11 @@ import {
 } from "@avplatform/ui/cards";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 
-import { modelProviderDefinitions, getProviderIcon, isUrlBasedProvider } from "../constants/model-provider-definitions";
+import {
+  getProviderIcon,
+  isUrlBasedProvider,
+  modelProviderDefinitions,
+} from "../constants/model-provider-definitions";
 import { useFetchModelProviders } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
 import { ModelProviderSetupDialog } from "./ModelProviderSetupDialog";
@@ -47,33 +51,18 @@ export const ModelProviders = () => {
 
       <div className="grid gap-4 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
         {sortedProviders.map((provider) => {
-          const config = configuredProviders.find(
-            (c) => c.providerType === provider.value,
-          );
+          const config = configuredProviders.find((c) => c.providerType === provider.value);
           const enabledModelIds = config?.enabledModelIds ?? [];
           const enabledCount = enabledModelIds.length;
           const isDisabled = Boolean(config?.isDisabled);
 
           return (
-            <Card
-              key={provider.value}
-              className="flex flex-col p-4 hover:shadow-md"
-            >
+            <Card key={provider.value} className="flex flex-col p-4 hover:shadow-md">
               <CardHeader className="flex-row items-center gap-3 p-0">
-                <div
-                  className={`rounded-lg bg-accent p-2 ${
-                    isDisabled ? "opacity-60" : ""
-                  }`}
-                >
-                  <img
-                    src={getProviderIcon(provider)}
-                    alt={provider.label}
-                    className="h-6 w-6"
-                  />
+                <div className={`rounded-lg bg-accent p-2 ${isDisabled ? "opacity-60" : ""}`}>
+                  <img src={getProviderIcon(provider)} alt={provider.label} className="h-6 w-6" />
                 </div>
-                <CardTitle className="!mt-0 text-base capitalize">
-                  {provider.label}
-                </CardTitle>
+                <CardTitle className="!mt-0 text-base capitalize">{provider.label}</CardTitle>
                 {config && !config.isDisabled ? (
                   <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
                     Enabled
@@ -134,9 +123,7 @@ export const ModelProviders = () => {
                     ) : null}
                   </div>
                 ) : (
-                  <p className="text-sm italic text-muted-foreground">
-                    No models enabled yet.
-                  </p>
+                  <p className="text-sm italic text-muted-foreground">No models enabled yet.</p>
                 )}
               </CardContent>
 

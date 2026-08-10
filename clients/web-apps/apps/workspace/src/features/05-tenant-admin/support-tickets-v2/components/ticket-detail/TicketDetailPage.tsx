@@ -1,10 +1,5 @@
-import { useParams, NavLink } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
-import { Button } from "@avplatform/ui/buttons";
-import { useFetchTicket } from "../../hooks/useFetchTickets";
+import { Skeleton } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
-import { cn } from "@avplatform/ui/lib";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -13,14 +8,20 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@avplatform/ui/breadcrumb";
-import { Skeleton } from "@avplatform/ui";
+import { Button } from "@avplatform/ui/buttons";
+import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
-import { TriagePanel } from "../triage-panel/TriagePanel";
-import { CommentThread } from "../comment-thread/CommentThread";
-import { AttachmentSection } from "../attachment-section/AttachmentSection";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { NavLink, useParams } from "react-router-dom";
+import { toast } from "sonner";
+
 import { TICKET_STATUS_COLOR } from "../../constants/constants";
 import { TicketDto } from "../../dtos/TicketDto";
+import { useFetchTicket } from "../../hooks/useFetchTickets";
 import { TicketDetailApiAdapter } from "../../types/ticket-detail-api-adapter.type";
+import { AttachmentSection } from "../attachment-section/AttachmentSection";
+import { CommentThread } from "../comment-thread/CommentThread";
+import { TriagePanel } from "../triage-panel/TriagePanel";
 
 interface TicketDetailPageProps {
   api: TicketDetailApiAdapter;
@@ -31,24 +32,45 @@ interface TicketDetailPageProps {
 
 const metadataRows = (ticket: TicketDto) => [
   { label: "Ticket Number", value: ticket.ticketNumber || "-" },
-  { label: "Request Type", value: ticket.requestType === "ChangeRequest" ? "Change Request" : "Service Request" },
-  { label: "Status", value: ticket.status || "-", badge: ticket.status ? { text: ticket.status, className: TICKET_STATUS_COLOR[ticket.status] } : undefined },
+  {
+    label: "Request Type",
+    value: ticket.requestType === "ChangeRequest" ? "Change Request" : "Service Request",
+  },
+  {
+    label: "Status",
+    value: ticket.status || "-",
+    badge: ticket.status
+      ? { text: ticket.status, className: TICKET_STATUS_COLOR[ticket.status] }
+      : undefined,
+  },
   { label: "Agent", value: ticket.agentName || "-" },
   { label: "Required By", value: ticket.requiredBy ? formatDate(ticket.requiredBy) : "-" },
   { label: "Created By", value: ticket.createdBy || "-" },
   { label: "Created On", value: ticket.createdOn ? formatDate(ticket.createdOn) : "-" },
   { label: "Last Modified By", value: ticket.lastModifiedBy || "-" },
-  { label: "Last Modified On", value: ticket.lastModifiedOn ? formatDate(ticket.lastModifiedOn) : "-" },
+  {
+    label: "Last Modified On",
+    value: ticket.lastModifiedOn ? formatDate(ticket.lastModifiedOn) : "-",
+  },
 ];
 
 const changeRequestRows = (ticket: TicketDto) => [
   ...(ticket.changeSummary ? [{ label: "Change Summary", value: ticket.changeSummary }] : []),
   ...(ticket.changeReason ? [{ label: "Change Reason", value: ticket.changeReason }] : []),
-  ...(ticket.expectedBehavior ? [{ label: "Expected Behavior", value: ticket.expectedBehavior }] : []),
-  ...(ticket.requestedTimeline ? [{ label: "Requested Timeline", value: formatDate(ticket.requestedTimeline) }] : []),
+  ...(ticket.expectedBehavior
+    ? [{ label: "Expected Behavior", value: ticket.expectedBehavior }]
+    : []),
+  ...(ticket.requestedTimeline
+    ? [{ label: "Requested Timeline", value: formatDate(ticket.requestedTimeline) }]
+    : []),
 ];
 
-export const TicketDetailPage = ({ api, showTriage = false, showStatusAction = false, listPath = "/tenant/support/tickets" }: TicketDetailPageProps) => {
+export const TicketDetailPage = ({
+  api,
+  showTriage = false,
+  showStatusAction = false,
+  listPath = "/tenant/support/tickets",
+}: TicketDetailPageProps) => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { data, isLoading } = useFetchTicket(id || "");
@@ -66,7 +88,9 @@ export const TicketDetailPage = ({ api, showTriage = false, showStatusAction = f
       api.updateTicketStatus({ ticketId: id || "", status }),
     onSuccess: (res) => {
       if (res.data) {
-        toast.success(res.data.status === "Closed" ? "Ticket closed" : "Ticket marked as in progress");
+        toast.success(
+          res.data.status === "Closed" ? "Ticket closed" : "Ticket marked as in progress",
+        );
         invalidateTicketQueries();
       } else {
         toast.error(res.message || "Failed to update ticket status");
@@ -91,9 +115,7 @@ export const TicketDetailPage = ({ api, showTriage = false, showStatusAction = f
             <BreadcrumbList>
               <BreadcrumbItem>
                 <BreadcrumbLink asChild>
-                  <NavLink to={listPath}>
-                    Support Tickets
-                  </NavLink>
+                  <NavLink to={listPath}>Support Tickets</NavLink>
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
@@ -181,11 +203,21 @@ export const TicketDetailPage = ({ api, showTriage = false, showStatusAction = f
       )}
 
       <div className="rounded-lg border bg-background px-5 py-3.5">
-        <AttachmentSection ticketId={ticket.id || ""} attachments={ticket.attachments || []} api={api} isClosed={isClosed} />
+        <AttachmentSection
+          ticketId={ticket.id || ""}
+          attachments={ticket.attachments || []}
+          api={api}
+          isClosed={isClosed}
+        />
       </div>
 
       <div className="rounded-lg border bg-background px-5 py-3.5">
-        <CommentThread ticketId={ticket.id || ""} comments={ticket.comments || []} api={api} isClosed={isClosed} />
+        <CommentThread
+          ticketId={ticket.id || ""}
+          comments={ticket.comments || []}
+          api={api}
+          isClosed={isClosed}
+        />
       </div>
     </div>
   );

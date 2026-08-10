@@ -16,14 +16,14 @@ import { getDialogHeadingDescription as getVaultDialogHeadingDescription } from 
 import { getDialogHeadingDescription as getApiKeyDialogHeadingDescription } from "@/features/03-orchestrator/api-keys/constants";
 import { getDialogHeadingDescription as getJobDialogHeadingDescription } from "@/features/03-orchestrator/jobs-table/constants/variables";
 import { getDialogHeadingDescription as getMachineDialogHeadingDescription } from "@/features/03-orchestrator/machines-table/constants";
+import { getDialogHeadingDescription as getSpaceDialogHeadingDescription } from "@/features/05-tenant-admin/spaces/constants";
 import { getDialogHeadingDescription as getSupportTicketDialogHeadingDescription } from "@/features/05-tenant-admin/support-tickets-table/constants/constants";
 import { getDialogHeadingDescription as getTicketDialogHeadingDescription } from "@/features/05-tenant-admin/support-tickets-v2/constants";
-import { getDialogHeadingDescription as getSaTicketDialogHeadingDescription } from "@/features/06-super-admin/support-tickets/constants";
 import { getDialogHeadingDescription as getRoleDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/roles-table/constants";
 import { getDialogHeadingDescription as getUserDialogHeadingDescription } from "@/features/05-tenant-admin/user-management/tables/users-table/constants";
 import { getDialogHeadingDescription as getCreditPlanDialogHeadingDescription } from "@/features/06-super-admin/credit-plans-table/constants";
-
 import { getDialogHeadingDescription as getSubPlansDialogHeadingDescription } from "@/features/06-super-admin/subscription-plans-table/constants";
+import { getDialogHeadingDescription as getSaTicketDialogHeadingDescription } from "@/features/06-super-admin/support-tickets/constants";
 import { getDialogHeadingDescription as getTenantDialogHeadingDescription } from "@/features/06-super-admin/tenants-table/constants";
 import { getDialogHeadingDescription as getTenantInstanceDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant-instance/constants";
 import { getDialogHeadingDescription as getOnPremTenantDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant/constants";
@@ -141,6 +141,11 @@ const UserCrudDialogContent = lazy(() =>
 const RoleCrudDialogContent = lazy(() =>
   import("@/features/05-tenant-admin/user-management/tables/roles-table/components/role-crud-dialog/RoleCrudDialogContent").then(
     (m) => ({ default: m.RoleCrudDialogContent }),
+  ),
+);
+const SpaceCrudDialogContent = lazy(() =>
+  import("@/features/05-tenant-admin/spaces/components/space-crud-dialog/SpaceCrudDialogContent").then(
+    (m) => ({ default: m.SpaceCrudDialogContent }),
   ),
 );
 const ApiKeyCrudDialogContent = lazy(() =>
@@ -264,6 +269,11 @@ const crudDialogRegistry: CrudDialogRegistry = {
     maxWidth: "!max-w-[40rem]",
     getHeader: getRoleDialogHeadingDescription,
     Content: RoleCrudDialogContent,
+  },
+  space: {
+    maxWidth: "!max-w-[32rem]",
+    getHeader: getSpaceDialogHeadingDescription,
+    Content: SpaceCrudDialogContent,
   },
   apiKey: {
     maxWidth: "!max-w-[34rem]",

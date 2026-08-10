@@ -1,6 +1,6 @@
 import { Separator, Switch } from "@avplatform/ui";
+import { Input } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
-import { toast } from "@avplatform/ui/sonner";
 import {
   DialogContent,
   DialogDescription,
@@ -9,7 +9,6 @@ import {
   DialogTitle,
   DialogWrapper,
 } from "@avplatform/ui/dialog";
-import { Input } from "@avplatform/ui";
 import {
   Select,
   SelectContent,
@@ -17,23 +16,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@avplatform/ui/select";
+import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Loader2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { getCredSelectOptions } from "@/features/02-configure/queues/queues-table/apis/app-secret-apis";
 
-import { getOllamaModels, OllamaModelDto, upsertModelProvider } from "../apis/model-provider-apis";
+import { OllamaModelDto, getOllamaModels, upsertModelProvider } from "../apis/model-provider-apis";
 import {
   getProviderIcon,
   getVaultTypeForProvider,
   isUrlBasedProvider,
 } from "../constants/model-provider-definitions";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
-import {
-  MODEL_PROVIDERS_QUERY_KEY,
-  useFetchProviderModels,
-} from "../hooks/useFetchModelProviders";
+import { MODEL_PROVIDERS_QUERY_KEY, useFetchProviderModels } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
 
 type Step = "credential" | "models";
@@ -48,9 +45,9 @@ export const ModelProviderSetupDialog = () => {
   const queryClient = useQueryClient();
 
   const [step, setStep] = useState<Step>("credential");
-  const [credentialOptions, setCredentialOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
+  const [credentialOptions, setCredentialOptions] = useState<{ value: string; label: string }[]>(
+    [],
+  );
   const [isCredentialLoading, setIsCredentialLoading] = useState(false);
   const [selectedCredentialId, setSelectedCredentialId] = useState<string>("");
   const [enabledModelIds, setEnabledModelIds] = useState<string[]>([]);
@@ -197,9 +194,7 @@ export const ModelProviderSetupDialog = () => {
 
   const toggleModel = (modelValue: string) => {
     setEnabledModelIds((prev) =>
-      prev.includes(modelValue)
-        ? prev.filter((m) => m !== modelValue)
-        : [...prev, modelValue],
+      prev.includes(modelValue) ? prev.filter((m) => m !== modelValue) : [...prev, modelValue],
     );
   };
 
@@ -210,7 +205,11 @@ export const ModelProviderSetupDialog = () => {
           <DialogTitle className="justify-between">
             <div className="flex items-center gap-2">
               <div className="rounded-lg bg-accent p-2">
-                <img src={provider ? getProviderIcon(provider) : undefined} alt={provider?.label} className="h-6 w-6" />
+                <img
+                  src={provider ? getProviderIcon(provider) : undefined}
+                  alt={provider?.label}
+                  className="h-6 w-6"
+                />
               </div>
               <p>{provider?.label} — Setup</p>
             </div>
@@ -250,7 +249,10 @@ export const ModelProviderSetupDialog = () => {
                     <Button variant="ghost" onClick={handleClose}>
                       Cancel
                     </Button>
-                    <Button onClick={handleOllamaNext} disabled={!providerUrl.trim() || isOllamaLoading}>
+                    <Button
+                      onClick={handleOllamaNext}
+                      disabled={!providerUrl.trim() || isOllamaLoading}
+                    >
                       {isOllamaLoading ? "Connecting..." : "Next"}
                     </Button>
                   </div>

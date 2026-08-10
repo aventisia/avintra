@@ -46,7 +46,8 @@ const UserAccountModal = ({ className, sizeClassName = "h-8 w-8" }: UserAccountM
         setUserSession(null);
         // TODO: Temporarily added for switch tenant feat
         localStorage.removeItem("tenant_switch");
-        navigate("/redirect?msg=Logging out...&url=" + import.meta.env.VITE_ACCOUNTS_PATH);
+        const accountsBase = import.meta.env.VITE_ACCOUNTS_PATH;
+        navigate("/redirect?msg=Logging out...&url=" + accountsBase);
       } else toast.error(httpResponse.message);
     },
     onError: (error) => {

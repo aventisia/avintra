@@ -359,7 +359,7 @@ public class MyAccountService : IMyAccountService
             // Extract the current plan type from the subscription, if available.
             string? currentPlan = tenantSubscription?.Plan?.Type.ToString();
 
-            // Create new Jwt string
+            // Create Jwt string
             var jwt = _authHelperService.CreateJwt(user, jwtExpiresOn, false, sessionId, currentPlan);
 
             // Create new RefreshToken
