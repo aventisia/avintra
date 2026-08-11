@@ -22,7 +22,7 @@
       "type": "select",
       "name": "Status",
       "label": "Status",
-      "description": "Select the new status to assign to the work item.",
+      "description": "Select the new status to assign to the work item. Custom statuses defined on the work item's queue are validated at runtime.",
       "defaultValue": "Pending",
       "required": false,
       "selectOptions": [

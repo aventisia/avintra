@@ -27,8 +27,8 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
         public InArgument<string> QueueName { get; set; }
 
         [DisplayName("Status")]
-        [Description("Select the status of the work items to retrieve.")]
-        public InArgument<WorkItemStatusEnum> Status { get; set; }
+        [Description("Select the status of the work items to retrieve. Custom statuses defined on the queue are supported.")]
+        public InArgument<string> Status { get; set; }
 
         [DisplayName("Sort By")]
         [Description("Specifies how work items are sorted. Enter one or more sort expressions in the format '<Field> [ASC|DESC]', separated by commas. If no sort direction is specified, DESC is used by default. Examples: 'CreatedOn DESC', 'Priority ASC', 'CreatedOn DESC, Name ASC', or 'DueDate'.")]
@@ -84,7 +84,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                 {
                     // queueId = queueId,
                     queueName = queueName,
-                    status = status.ToString(),
+                    status = status,
                     queuePriority = queuePriority,
                     conditions = conditions,
                     top = top,

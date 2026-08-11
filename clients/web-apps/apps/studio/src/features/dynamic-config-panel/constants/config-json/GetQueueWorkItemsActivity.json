@@ -19,34 +19,12 @@
     },
     {
       "direction": "Input",
-      "type": "select",
+      "type": "queue-status-select",
       "name": "Status",
       "label": "Status",
-      "description": "Select the status of the work items to retrieve.",
+      "description": "Select the status of the work items to retrieve. Options are populated from the selected queue's statuses.",
       "defaultValue": "",
-      "required": false,
-      "selectOptions": [
-        {
-          "label": "Pending",
-          "value": "Pending",
-          "description": "Work item is pending and not yet started."
-        },
-        {
-          "label": "In Progress",
-          "value": "InProgress",
-          "description": "Work item is currently being processed."
-        },
-        {
-          "label": "Completed",
-          "value": "Completed",
-          "description": "Work item has been completed successfully."
-        },
-        {
-          "label": "Failed",
-          "value": "Failed",
-          "description": "Work item processing has failed."
-        }
-      ]
+      "required": false
     },
     {
       "direction": "Input",

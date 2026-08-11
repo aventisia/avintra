@@ -1,20 +1,77 @@
-import parse from "html-react-parser";
+import { Dispatch, SetStateAction, useEffect } from "react";
+import { useShallow } from "zustand/react/shallow";
 
-import { sanitizeHtml } from "@/features/05-tenant-admin/support-tickets-table/utils/htmlSanitizer";
+import FileViewer from "@/react-toolkit/features/file-viewer/components/FileViewer";
+import { useLocalFileStore } from "@/react-toolkit/features/file-viewer/stores/file-list-store";
 
-import AttachmentsSection from "./AttachmentSection";
-import WorkflowTimeline from "./WorkflowTimeline";
+import { QueueWorkItemDto } from "../../../dtos/queue-work-item-dto";
+import { InputSchemaField } from "../../../dtos/queues-table-dto";
+import { WorkItemOutputPane } from "../shared/WorkItemOutputPane";
 
-export const EmailWorkItem = () => {
-  const htmlString = `<div style=" padding: 12px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;"><p style="margin: 0 0 16px 0; font-size: 12px;">Please review, verify or approve the following details:</p><ol style="margin: 0; padding-left: 16px; "><li style="margin-bottom: 8px;"><a href="#contact-persons" style="color: #9b87f5; text-decoration: underline; font-size: 12px;">Contact Persons</a></li><li style="margin-bottom: 8px;"><a href="#documents" style="color: #9b87f5; text-decoration: underline; font-size: 12px;">Documents</a></li><li style="margin-bottom: 8px;"><a href="#trade-partners" style="color: #9b87f5; text-decoration: underline; font-size: 12px;">Trade Partners</a></li></ol></div>`;
+export const EmailWorkItem = ({
+  data,
+  credentialId,
+  extractedData,
+  setExtractedData,
+  inputSchema,
+}: {
+  data?: QueueWorkItemDto;
+  extractedData: string | undefined;
+  credentialId?: string;
+  inputSchema?: InputSchemaField[] | null;
+  setExtractedData: Dispatch<SetStateAction<string | undefined>>;
+}) => {
+  const { addFileUrls, clearAllFiles } = useLocalFileStore(
+    useShallow((state) => ({
+      addFileUrls: state.addFileUrls,
+      clearAllFiles: state.clearAllFiles,
+    })),
+  );
+
+  // Load the email's attachments into the shared file viewer. The email body
+  // itself is rendered by the EML viewer; any attached files (pdf, docx, xlsx,
+  // eml, images, ...) are selectable in the viewer's file list.
+  useEffect(() => {
+    if (!data?.fileUrls) return;
+
+    addFileUrls(
+      data.fileUrls.map((url) => ({
+        url,
+        requiresProxy: true,
+        credentialId,
+      })),
+    );
+
+    return () => {
+      clearAllFiles();
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.fileUrls]);
+
+  useEffect(() => {
+    if (!data?.workItemData) return;
+
+    setExtractedData(data?.workItemData);
+
+    return () => {
+      setExtractedData("");
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data?.workItemData]);
 
   return (
-    <div className="mx-auto max-w-4xl space-y-4">
-      <div className="w-full max-w-4xl rounded-lg border bg-accent p-2 text-sm">
-        {parse(sanitizeHtml(htmlString))}
+    <div className="grid gap-3 grid-cols-2">
+      <div className="border h-fit rounded-lg">
+        <FileViewer allowDelete={false} />
       </div>
-      <AttachmentsSection />
-      <WorkflowTimeline />
+
+      <WorkItemOutputPane
+        data={data}
+        extractedData={extractedData}
+        setExtractedData={setExtractedData}
+        inputSchema={inputSchema}
+      />
     </div>
   );
 };

@@ -23,3 +23,17 @@ export const statusColor: { [key in QueueWorkItemStatusEnum]: string } = {
   [QueueWorkItemStatusEnum.Pending]: "bg-orange-200 text-orange-600",
   [QueueWorkItemStatusEnum.Failed]: "bg-red-200 text-red-600",
 };
+
+/**
+ * Fallback badge classes used for custom statuses that do not have a predefined color.
+ */
+const DEFAULT_STATUS_COLOR = "bg-slate-200 text-slate-600";
+
+/**
+ * Returns the badge classes for a given status, falling back to a neutral style
+ * for custom statuses that are not part of the core set.
+ */
+export const getStatusColor = (status?: string | null): string => {
+  if (!status) return DEFAULT_STATUS_COLOR;
+  return statusColor[status as QueueWorkItemStatusEnum] ?? DEFAULT_STATUS_COLOR;
+};

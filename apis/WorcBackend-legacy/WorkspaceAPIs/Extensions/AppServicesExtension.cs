@@ -130,6 +130,7 @@ public static class AppServicesExtension
         services.AddScoped<IMachineFlowService, MachineFlowService>();
         services.AddScoped<IAgentTableService, AgentTableService>();
         services.AddScoped<IQueueTableService, QueueTableService>();
+        services.AddScoped<IQueueStatusService, QueueStatusService>();
         services.AddScoped<IQueueTransactionService, QueueTransactionService>();
         services.AddScoped<IQueueTransactionEventService, QueueTransactionEventService>();
         services.AddScoped<IQueueUserService, QueueUserService>();

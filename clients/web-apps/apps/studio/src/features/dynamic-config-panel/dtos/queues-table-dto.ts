@@ -100,6 +100,13 @@ export interface QueuesTableDto {
    * Input schema definition for the queue.
    */
   inputSchema: InputSchemaField[];
+
+  /**
+   * Custom status configuration for the queue.
+   * The core system statuses (Pending, InProgress, Completed, Failed) are implicit
+   * and are not stored here; only queue-specific custom statuses are persisted.
+   */
+  statuses?: QueueStatusDefinition[] | null;
 }
 
 /**
@@ -112,4 +119,19 @@ export interface InputSchemaField {
   type: "string" | "int" | "Date"; // Extend if more types exist
   isRequired: boolean;
   isUsedForUniqueIdentifier: boolean;
+}
+
+/**
+ * Defines a custom disposition status for a queue, including its display color and
+ * optional route queue. Disposition statuses are always terminal (end) states.
+ */
+export interface QueueStatusDefinition {
+  /** Internal status value (e.g., "Approved", "Rejected"). */
+  name: string;
+  /** Display label shown to users. */
+  label?: string | null;
+  /** Color used to render the status badge (e.g., "#22c55e"). */
+  color?: string | null;
+  /** Name of the destination queue to route the work item to when this status is selected. */
+  routeQueue?: string | null;
 }

@@ -49,6 +49,15 @@ export function UploadedItemsTable({
   }, [queryClient, queryKey, rowId]);
 
   const columns = useMemo(() => {
+    // Derive columns from the uploaded data keys so that CSV/Excel headers that
+    // don't match the queue schema still display. Schema columns come first.
+    const dataKeys = (uploadedData?.[0] ? Object.keys(uploadedData[0]) : []).filter(
+      (k) => k !== "Status" && k !== "Remark",
+    );
+
+    const schemaKeys = colData.map((f) => f.name);
+    const extraKeys = dataKeys.filter((k) => !schemaKeys.includes(k));
+
     const baseColumns: ColumnDef<any>[] = [
       {
         accessorKey: "rowId",
@@ -74,6 +83,19 @@ export function UploadedItemsTable({
         enableSorting: false,
       },
       ...generateDTColumns(colData),
+      ...extraKeys.map((key) => ({
+        accessorKey: key,
+        header: ({ column }: any) => (
+          <DTColumnHeader
+            tableKey={"uploaded-items-table"}
+            column={column}
+            title={key.charAt(0).toUpperCase() + key.slice(1)}
+          />
+        ),
+        cell: (info: any) => (
+          <div className="w-auto truncate font-medium">{String(info.getValue() ?? "")}</div>
+        ),
+      })),
     ];
 
     // Only add status column if the first row contains it
@@ -142,10 +164,15 @@ export function UploadedItemsTable({
   }
   //  columns visibility
   const columnVisibility = useMemo(() => {
+    const dataKeys = (uploadedData?.[0] ? Object.keys(uploadedData[0]) : []).filter(
+      (k) => k !== "Status" && k !== "Remark",
+    );
+
     return {
       rowId: false,
 
       ...generateColumnVisibilityState(colData),
+      ...Object.fromEntries(dataKeys.map((k) => [k, true])),
       Status: Object.keys(uploadedData[0] || [])?.includes("Status") ? true : false,
     };
   }, [colData, uploadedData]);

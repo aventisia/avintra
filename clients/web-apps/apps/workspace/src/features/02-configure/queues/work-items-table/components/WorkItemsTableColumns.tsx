@@ -4,7 +4,7 @@ import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
-import { statusColor } from "../constants/column-display-names";
+import { getStatusColor } from "../constants/column-display-names";
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 import { WorkItemRowActions } from "./WorkItemRowActions";
 
@@ -25,11 +25,7 @@ export const workItemsTableColumns: ColumnDef<QueueWorkItemDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={"Status"} />
     ),
     cell: ({ row }) => (
-      <Badge
-        className={
-          row.original.status ? statusColor[row.original.status] : "bg-slate-200 text-slate-600"
-        }
-      >
+      <Badge className={getStatusColor(row.original.status)}>
         {row.original.status?.replace(/([A-Z])/g, " $1")}
       </Badge>
     ),

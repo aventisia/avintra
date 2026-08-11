@@ -21,4 +21,18 @@ export const statusColor: { [key: string]: string } = {
   [QueueTransactionStatusTypesEnum.Failed]: "bg-red-200 text-red-600",
 };
 
+/**
+ * Fallback badge classes used for custom statuses that do not have a predefined color.
+ */
+const DEFAULT_STATUS_COLOR = "bg-slate-200 text-slate-600";
+
+/**
+ * Returns the badge classes for a given status, falling back to a neutral style
+ * for custom statuses that are not part of the core set.
+ */
+export const getStatusColor = (status?: string | null): string => {
+  if (!status) return DEFAULT_STATUS_COLOR;
+  return statusColor[status] ?? DEFAULT_STATUS_COLOR;
+};
+
 export { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY, EVENT_QUERY_KEY };

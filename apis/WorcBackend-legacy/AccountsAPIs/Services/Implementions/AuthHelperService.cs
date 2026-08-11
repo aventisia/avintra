@@ -183,6 +183,7 @@ public class AuthHelperService : IAuthHelperService
             ["tntid"] = user.Tenant?.Id.ToString(),
             ["uid"] = user.Id.ToString(),
             ["uname"] = user.UserName,
+            ["name"] = $"{user.FirstName} {user.LastName}".Trim(),
             [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
         };
 

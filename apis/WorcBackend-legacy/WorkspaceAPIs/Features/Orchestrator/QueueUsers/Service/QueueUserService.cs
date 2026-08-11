@@ -21,7 +21,7 @@ public class QueueUserService : IQueueUserService
     }
 
     // Retrieves the queues that the user is associated with
-    public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetMyQueuesAsync()
+    public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetMyQueuesAsync(DateTimeOffset? from = null, DateTimeOffset? to = null)
     {
         // Initialize the response with a default failure message
         var serviceResponse = new ServiceResponse<IEnumerable<QueuesTableDto>>
@@ -32,16 +32,66 @@ public class QueueUserService : IQueueUserService
 
         try
         {
-            // Attempt to retrieve the list of users in the specified queue
+            // A user can be associated with a queue in two ways:
+            //   1. A legacy QueueUser record (created when the queue is created or
+            //      via the older "assign users" flow).
+            //   2. A ResourceShare record (created by the "Share" feature).
+            // The Assist > Queues screen must show queues from BOTH sources, otherwise
+            // users assigned via Share won't see the queue. The Queue entity's global
+            // space query filter still applies, so only queues in the currently
+            // selected space are returned.
+            var sharedQueueIds = await _unitOfWork.ResourceShareRepo
+                .GetByConditionAsync(w =>
+                    w.UserId == _userId &&
+                    w.ResourceType == ResourceTypeEnum.Queue)
+                .Select(s => s.ResourceId)
+                .ToListAsync();
+
             var queues = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.QueueUsers != null && w.QueueUsers.Any(a => a.UserId == _userId))
+                .GetByConditionAsync(w =>
+                    w.Type == QueueTypesEnum.User &&
+                    (
+                        (w.QueueUsers != null && w.QueueUsers.Any(a => a.UserId == _userId)) ||
+                        sharedQueueIds.Contains(w.Id)
+                    ))
                 .Include(i => i.QueueTransactions)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .ToListAsync();
 
+            // Map to DTOs, then override the completed count and average processing
+            // time to reflect only items closed within the requested date range.
+            var queueDtoList = queues.Adapt<List<QueuesTableDto>>();
+
+            // Normalize the range to whole days (UTC). When not provided, default
+            // to today. The frontend sends full timestamps, so we snap `from` to
+            // the start of its day and `to` to the end of its day.
+            var rangeFrom = (from ?? DateTimeOffset.UtcNow).Date;
+            var rangeTo = (to ?? DateTimeOffset.UtcNow).Date.AddDays(1).AddTicks(-1);
+
+            foreach (var dto in queueDtoList)
+            {
+                var queue = queues.FirstOrDefault(q => q.Id == dto.Id);
+                if (queue?.QueueTransactions == null) continue;
+
+                // A "closed" item is one that is no longer active: Completed, Failed,
+                // or any disposition status (e.g. Approved, Contracted, Meetings).
+                var closedInRange = queue.QueueTransactions
+                    .Where(c =>
+                        c.Status != QueueTransactionStatusTypesEnum.Pending.ToString() &&
+                        c.Status != QueueTransactionStatusTypesEnum.InProgress.ToString() &&
+                        c.LastModifiedOn >= rangeFrom &&
+                        c.LastModifiedOn <= rangeTo)
+                    .ToList();
+
+                dto.Completed = closedInRange.Count;
+                dto.AverageProcessingTimeSeconds = closedInRange.Count > 0
+                    ? closedInRange.Average(c => (c.LastModifiedOn - c.CreatedOn).TotalSeconds)
+                    : 0;
+            }
+
             // On successful retrieval of queue users
-            serviceResponse.Data = queues.Adapt<List<QueuesTableDto>>();
+            serviceResponse.Data = queueDtoList;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queues retrieved successfully.";
             _logger.LogInformation($"Fetched {queues.Count} users for User ID: {_userId}");

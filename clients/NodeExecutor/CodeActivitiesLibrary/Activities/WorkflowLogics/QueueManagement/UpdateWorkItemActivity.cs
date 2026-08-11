@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Activities;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
@@ -22,9 +21,9 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
         public InArgument<string> WorkItemId { get; set; }
 
         [DisplayName("Status")]
-        [Description("Select the new status to assign to the work item.")]
-        [DefaultValue(WorkItemStatusEnum.Pending)]
-        public InArgument<WorkItemStatusEnum> Status { get; set; }
+        [Description("Select the new status to assign to the work item. Custom statuses defined on the work item's queue are validated at runtime.")]
+        [DefaultValue("Pending")]
+        public InArgument<string> Status { get; set; }
 
         [DisplayName("Description")]
         [Description("Optional description for the work item.")]
@@ -96,7 +95,7 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                 var payload = new
                 {
                     id = workItemId,
-                    status = status.ToString(),
+                    status = status,
                     workItemData = shouldUpdateData ? workItemData : null,
                     description = description,
                     fileUrls = fileUrlsArray
@@ -120,23 +119,5 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement
                 throw;
             }
         }
-    }
-
-    /// <summary>
-    /// Enumeration of work item status values.
-    /// </summary>
-    public enum WorkItemStatusEnum
-    {
-        [Display(Name = "Pending", Description = "Work item is pending and not yet started.")]
-        Pending,
-
-        [Display(Name = "In Progress", Description = "Work item is currently being processed.")]
-        InProgress,
-
-        [Display(Name = "Completed", Description = "Work item has been completed successfully.")]
-        Completed,
-
-        [Display(Name = "Failed", Description = "Work item processing has failed.")]
-        Failed
     }
 }

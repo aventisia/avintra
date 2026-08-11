@@ -13,6 +13,7 @@ type Actions = {
   setShowDialog: (showDialog: boolean) => void;
   setRowId: (rowId: string) => void;
   setUploadedItems: (uploadedItems?: object[]) => void;
+  resetUpload: () => void;
 };
 
 export const useQueueUploadItemsStore = create<State & Actions>()(
@@ -26,5 +27,6 @@ export const useQueueUploadItemsStore = create<State & Actions>()(
     setIsProcessing: (isProcessing) => set({ isProcessing }),
     setShowDialog: (showDialog) => set({ showDialog }),
     setRowId: (rowId) => set({ rowId }),
+    resetUpload: () => set({ uploadedItems: [], isProcessing: false }),
   })),
 );

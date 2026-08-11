@@ -17,6 +17,7 @@ import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigF
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
 import { QueueSelectorField } from "./fields-for-form/QueueSelectorField";
+import { StatusSelectorField } from "./fields-for-form/StatusSelectorField";
 import { StringArrayField } from "./fields-for-form/StringArrayField";
 import { SuggestionsField } from "./fields-for-form/SuggestionsField";
 import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
@@ -102,6 +103,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       return <JsonEditorField {...baseProps} className={field.className} />;
     case "queue-select":
       return <QueueSelectorField {...baseProps} selectOptions={[]} size="sm" />;
+    case "queue-status-select":
+      return <StatusSelectorField {...baseProps} size="sm" />;
     case "queue-conditional-group":
       return <QueueConditionGroupsField {...field} />;
     case "queue-priority-group":

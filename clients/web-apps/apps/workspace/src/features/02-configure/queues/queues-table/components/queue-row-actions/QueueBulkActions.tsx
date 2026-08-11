@@ -2,10 +2,13 @@ import { Separator } from "@avplatform/ui";
 import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
 import { Table } from "@tanstack/react-table";
+import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
+import { useTableTab } from "../../hooks/useTableTab";
 
 interface QueueBulkActionsProps {
   table: Table<QueuesTableDto>;
@@ -14,6 +17,17 @@ interface QueueBulkActionsProps {
 export function QueueBulkActions({ table }: Readonly<QueueBulkActionsProps>) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+
+  // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  const { queryKey } = useTableTab();
+
+  // Get the currently selected space so the mutation targets the same
+  // query cache key that useFetchQueues writes to (which includes the space id).
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
 
   // Get rowIds of selected rows
   const selectedRowIds =
@@ -27,7 +41,7 @@ export function QueueBulkActions({ table }: Readonly<QueueBulkActionsProps>) {
     string[],
     QueuesTableDto | boolean,
     QueuesTableDto
-  >(selectedRowIds, queueOptimisticMutationFn, DATA_QUERY_KEY);
+  >(selectedRowIds, queueOptimisticMutationFn, [...queryKey, currentSpace?.id]);
 
   return (
     <>

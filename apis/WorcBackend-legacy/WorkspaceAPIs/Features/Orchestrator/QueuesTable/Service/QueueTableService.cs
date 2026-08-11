@@ -104,13 +104,19 @@ public class QueueTableService : IQueueTableService
                     }
                 );
 
-                // Retrieve all accessible queues
+                // Retrieve all accessible queues.
+                // A queue is considered shared/accessible when the current user:
+                //   - has a ResourceShare record granting access, OR
+                //   - is tenant-wide accessible, OR
+                //   - has a legacy QueueUser record (kept in sync with the Assist
+                //     "my queues" screen so both sections show the same queues).
                 queues = await _unitOfWork.QueueRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
                         (
                             w.IsTenantWideAccess ||
-                            resourceAccess.Keys.Contains(w.Id)
+                            resourceAccess.Keys.Contains(w.Id) ||
+                            (w.QueueUsers != null && w.QueueUsers.Any(a => a.UserId == _userId))
                         )
                     )
                     .Include(i => i.QueueTransactions)
@@ -543,6 +549,11 @@ public class QueueTableService : IQueueTableService
 
             // Update only the properties whose values have changed to avoid unnecessary modifications.
 
+            if (queue.Name != queuesTableDto.Name)
+            {
+                queue.Name = queuesTableDto.Name;
+            }
+
             if (queue.Description != queuesTableDto.Description)
             {
                 queue.Description = queuesTableDto.Description;
@@ -560,9 +571,16 @@ public class QueueTableService : IQueueTableService
                 queue.InputSchema = inputSchema;
             }
 
-            if (queue.InputSchema != inputSchema)
+            var statuses = System.Text.Json.JsonSerializer.Serialize(
+                queuesTableDto.Statuses,
+                new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                }
+            );
+            if (queue.Statuses != statuses)
             {
-                queue.InputSchema = inputSchema;
+                queue.Statuses = statuses;
             }
 
             if (queuesTableDto.RouteToQueues != null && queue.RouteToQueues != queuesTableDto.RouteToQueues)
@@ -620,9 +638,9 @@ public class QueueTableService : IQueueTableService
                 queue.Type = queuesTableDto.Type;
             }
 
-            if (queue.ViewType != queuesTableDto.ViewType)
+            if (queue.ProcessingMode != queuesTableDto.ProcessingMode)
             {
-                queue.ViewType = queuesTableDto.ViewType;
+                queue.ProcessingMode = queuesTableDto.ProcessingMode;
             }
 
             // Update audit information for the modified entity.

@@ -30,10 +30,9 @@ public class Queue : BaseEntity, IMustHaveTenant
     public QueueTypesEnum Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the view type of the queue.
-    /// This categorizes the queue by its business scenario or UI presentation.
+    /// Gets or sets how work items in this queue are claimed/assigned for processing.
     /// </summary>
-    public QueueViewTypeEnum ViewType { get; set; }
+    public QueueProcessingModeEnum ProcessingMode { get; set; } = QueueProcessingModeEnum.Manual;
 
     /// <summary>
     /// Gets or sets the list of destination queues to which items from this queue can be routed.
@@ -84,6 +83,13 @@ public class Queue : BaseEntity, IMustHaveTenant
     /// Gets or sets the output data schema in JSON format.
     /// </summary>
     public string? OutputSchema { get; set; }
+
+    /// <summary>
+    /// Gets or sets the custom status configuration for the queue in JSON format.
+    /// The core system statuses (Pending, InProgress, Completed, Failed) are implicit and
+    /// are not stored here; only queue-specific custom statuses are persisted.
+    /// </summary>
+    public string? Statuses { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the queue is accessible to all users within the tenant.

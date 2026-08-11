@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { TABS, TabValue } from "../types/my-queue-types";
+import { CORE_TABS, TabValue } from "../types/my-queue-types";
 
 export const useMyQueueParams = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -12,7 +12,7 @@ export const useMyQueueParams = () => {
   const workItemParam = searchParams.get("wid");
 
   const [tabValue, setTabValue] = useState<TabValue>(
-    TABS.includes(tabParam as TabValue) ? tabParam! : "Pending",
+    tabParam && CORE_TABS.includes(tabParam as (typeof CORE_TABS)[number]) ? tabParam : "Current",
   );
   const [queueId, setQueueId] = useState<string | null>(queueIdParam);
   const [queueName, setQueueName] = useState<string | null>(queueNameParam);
@@ -33,10 +33,10 @@ export const useMyQueueParams = () => {
   );
 
   useEffect(() => {
-    if (tabParam && TABS.includes(tabParam)) {
+    if (tabParam) {
       setTabValue(tabParam);
     } else {
-      updateParams({ t: "Pending" });
+      updateParams({ t: "Current" });
     }
   }, [tabParam, updateParams]);
 

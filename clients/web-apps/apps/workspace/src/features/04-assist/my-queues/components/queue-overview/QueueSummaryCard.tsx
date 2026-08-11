@@ -1,6 +1,9 @@
+import { Badge } from "@avplatform/ui/badge";
 import { cn } from "@avplatform/ui/lib";
 
+import { QueueProcessingModeEnum } from "../../enums/queue-processing-mode-enum";
 import { QueueTransactionStatusTypesEnum } from "../../enums/queue-work-item-status-enum";
+import { formatDuration } from "../../utils/my-queue-utils";
 
 interface QueueSummaryCount {
   label: string;
@@ -11,12 +14,18 @@ interface QueueSummaryCount {
 interface QueueSummaryCardProps {
   /** Name of the queue. */
   queueName: string;
+  /** How work items in this queue are claimed for processing. */
+  processingMode?: QueueProcessingModeEnum;
   /** Count of pending items. */
   pending: number;
   /** Count of items currently in progress. */
   inProgress: number;
   /** Count of completed items. */
   completed: number;
+  /** Average age (seconds) of active (Pending + InProgress) items. */
+  averageAgeSeconds?: number;
+  /** Average processing time (seconds) of completed items. */
+  averageProcessingTimeSeconds?: number;
   /** Invoked when the card is clicked. */
   onOpen?: () => void;
 }
@@ -28,15 +37,24 @@ const statusColors: Record<QueueTransactionStatusTypesEnum, string> = {
   [QueueTransactionStatusTypesEnum.Failed]: "text-red-700",
 };
 
+const processingModeBadge: Record<QueueProcessingModeEnum, string> = {
+  [QueueProcessingModeEnum.Fifo]: "bg-sky-100 text-sky-700",
+  [QueueProcessingModeEnum.Manual]: "bg-sky-100 text-sky-700",
+};
+
 /**
- * Renders a clickable summary card for a queue showing its name and the
- * color-coded count of Pending, In-progress and Completed items.
+ * Renders a clickable summary card for a queue showing its name, the
+ * color-coded count of Pending, In-progress and Completed items, plus the
+ * average age of active items and the average processing time of completed ones.
  */
 export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
   queueName,
+  processingMode,
   pending,
   inProgress,
   completed,
+  averageAgeSeconds,
+  averageProcessingTimeSeconds,
   onOpen,
 }) => {
   const counts: QueueSummaryCount[] = [
@@ -64,9 +82,21 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
       className="group flex cursor-pointer flex-col gap-4 rounded-xl border border-border bg-card p-5 text-left shadow-sm transition-all duration-200 hover:border-primary/40 hover:shadow-md"
     >
       <div className="flex items-center justify-between gap-2">
-        <h3 className="truncate text-sm font-semibold text-accent-foreground group-hover:text-primary">
-          {queueName}
-        </h3>
+        <div className="flex min-w-0 items-center gap-2">
+          <h3 className="truncate text-sm font-semibold text-accent-foreground group-hover:text-primary">
+            {queueName}
+          </h3>
+          {processingMode && (
+            <Badge
+              className={cn(
+                "shrink-0 rounded-full px-2 py-0 text-2xs font-medium",
+                processingModeBadge[processingMode],
+              )}
+            >
+              {processingMode}
+            </Badge>
+          )}
+        </div>
         <span className="text-xs text-muted-foreground">
           <span className="text-sm font-semibold text-accent-foreground">
             {pending + inProgress + completed}
@@ -87,6 +117,21 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
             <span className="text-xs text-muted-foreground">{count.label}</span>
           </div>
         ))}
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 border-t border-border/70 pt-3">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-xs text-muted-foreground">Avg Age (Active)</span>
+          <span className="text-sm font-semibold text-accent-foreground">
+            {formatDuration(averageAgeSeconds)}
+          </span>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-xs text-muted-foreground">Avg Processing (Completed)</span>
+          <span className="text-sm font-semibold text-accent-foreground">
+            {formatDuration(averageProcessingTimeSeconds)}
+          </span>
+        </div>
       </div>
     </button>
   );
