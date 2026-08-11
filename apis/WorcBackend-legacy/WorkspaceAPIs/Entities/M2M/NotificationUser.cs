@@ -45,6 +45,11 @@ public class NotificationUser : IMustHaveTenant
     public bool IsRead { get; set; }
 
     /// <summary>
+    /// Gets or sets the date and time when the notification was marked as read.
+    /// </summary>
+    public DateTimeOffset? ReadOn { get; set; }
+
+    /// <summary>
     /// Gets or sets the version number used for row versioning. Row versioning helps detect conflicts between concurrent transactions.
     /// </summary>
     /// <remarks>

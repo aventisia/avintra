@@ -9,8 +9,9 @@ public class SuperAdminTicketService : TicketServiceBase, ISuperAdminTicketServi
         TenantDbContext tenantDbContext,
         IHttpContextAccessor httpContextAccessor,
         INotificationHelperService notificationHelperService,
+        INotificationEventService notificationEventService,
         IUploadFileService uploadFileService)
-        : base(logger, unitOfWork, workspaceDbContext, tenantDbContext, httpContextAccessor, notificationHelperService, uploadFileService)
+        : base(logger, unitOfWork, workspaceDbContext, tenantDbContext, httpContextAccessor, notificationHelperService, notificationEventService, uploadFileService)
     {
     }
 

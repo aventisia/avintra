@@ -1,0 +1,23 @@
+import { DataTableSkeleton } from "@avplatform/ui/data-table";
+import { Suspense, lazy } from "react";
+
+// Lazy load the Super Admin notifications feature component.
+const SaNotificationsManagement = lazy(() =>
+  import("@/features/06-super-admin/sa-notifications/components/SaNotificationsManagement").then(
+    (module) => ({
+      default: module.SaNotificationsManagement,
+    }),
+  ),
+);
+
+/**
+ * Renders the SaNotificationsPage component for super admins.
+ * @returns JSX element representing the SaNotificationsPage component.
+ */
+export const SaNotificationsPage = () => {
+  return (
+    <Suspense fallback={<DataTableSkeleton />}>
+      <SaNotificationsManagement />
+    </Suspense>
+  );
+};

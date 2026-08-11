@@ -16,7 +16,7 @@ export const UNBellIcon = () => {
 
   // Return Bell icon with red dot if there are any unread notifications
   return (
-    <div className="relative h-5 w-5">
+    <div className="relative flex h-5 w-5 items-center justify-center">
       <BellIcon className="h-5 w-5 text-white/80" />
       {unreadCount > 0 ? (
         <span className="absolute right-0.5 top-[0.08rem] block h-2 w-2 rounded-full bg-destructive" />

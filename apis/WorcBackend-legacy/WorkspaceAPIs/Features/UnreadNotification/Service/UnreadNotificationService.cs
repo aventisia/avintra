@@ -30,10 +30,19 @@ public class UnreadNotificationService : IUnreadNotificationService
 
         try
         {
-            // Try to get notifications
+            // Try to get notifications.
+            // Only surface notifications that have actually been dispatched (Status = Sent).
+            // Scheduled notifications must NOT appear in the bell until their due time has
+            // arrived (the dispatch job flips them to Sent at the configured schedule time).
+            // Email-only notifications (DeliveryChannel = Email) must NOT appear in the bell;
+            // only Platform and Both channels are shown in the in-app bell.
             var unreadNotifications = await _unitOfWork.NotificationUserRepo
-                                        .GetByConditionAsync(w => !w.IsRead && w.UserId == _userId)
-                                        //.OrderByDescending(o => o.) // TODO: Order by CreatedAt
+                                        .GetByConditionAsync(w => !w.IsRead &&
+                                                                  w.UserId == _userId &&
+                                                                  w.Notification != null &&
+                                                                  w.Notification.Status == NotificationStatusEnum.Sent &&
+                                                                  w.Notification.DeliveryChannel != DeliveryChannelEnum.Email)
+                                        .OrderByDescending(o => o.Notification.CreatedOn) // Newest unread first
                                         .ProjectToType<UnreadNotificationDto>()
                                         .ToListAsync();
 

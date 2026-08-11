@@ -15,6 +15,11 @@ public class UnreadNotificationDto : UserAvatarBaseDto
     public Guid Id { get; set; }
 
     /// <summary>
+    /// Gets or sets the title of the notification.
+    /// </summary>
+    public string? Title { get; set; }
+
+    /// <summary>
     /// Gets or sets the notification message. The main content of the notification.
     /// </summary>
     public required string Message { get; set; }

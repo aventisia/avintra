@@ -40,6 +40,80 @@ public class Notification : BaseEntity, IMustHaveTenant
     public bool IsSystemGenerated { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets a value indicating whether the notification was created by a Super Admin
+    /// as a platform-wide announcement. Used to keep Super Admin and Tenant Admin notification
+    /// flows logically separated while sharing the same persistence layer.
+    /// </summary>
+    public bool IsSuperAdminNotification { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the title of the notification. Max 200 characters.
+    /// </summary>
+    [MaxLength(200)]
+    public string? Title { get; set; }
+
+    /// <summary>
+    /// Gets or sets the source/discriminator of the notification (Manual, NewTicket, TicketUpdate, TicketComment, AgentPublished).
+    /// </summary>
+    [MaxLength(30)]
+    public NotificationSourceEnum? SourceType { get; set; }
+
+    /// <summary>
+    /// Gets or sets the delivery channel of the notification (Email, Platform, Both).
+    /// </summary>
+    [MaxLength(30)]
+    public DeliveryChannelEnum DeliveryChannel { get; set; } = DeliveryChannelEnum.Platform;
+
+    /// <summary>
+    /// Gets or sets the audience scope of a manually created notification (AllUsers, SelectedUsers, SelectedTenants).
+    /// </summary>
+    [MaxLength(30)]
+    public AudienceScopeEnum? AudienceScope { get; set; }
+
+    /// <summary>
+    /// Gets or sets the lifecycle status of the notification (Draft, Scheduled, Sent, Failed).
+    /// </summary>
+    [MaxLength(30)]
+    public NotificationStatusEnum Status { get; set; } = NotificationStatusEnum.Sent;
+
+    /// <summary>
+    /// Gets or sets the date and time the notification is scheduled to be sent.
+    /// Null when the notification is sent immediately.
+    /// </summary>
+    public DateTimeOffset? ScheduledFor { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date and time the notification was actually sent.
+    /// </summary>
+    public DateTimeOffset? SentOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the recurrence frequency of a scheduled notification (None, Daily, Weekly, Monthly).
+    /// </summary>
+    [MaxLength(30)]
+    public NotificationRecurrenceEnum? RecurrenceFrequency { get; set; }
+
+    /// <summary>
+    /// Gets or sets the recurrence interval (e.g. every N days/weeks/months).
+    /// </summary>
+    public int? RecurrenceInterval { get; set; }
+
+    /// <summary>
+    /// Gets or sets the weekdays on which a weekly notification recurs, serialized as JSON (e.g. [1,3,5]).
+    /// </summary>
+    public string? RecurrenceWeekdays { get; set; }
+
+    /// <summary>
+    /// Gets or sets the days of the month on which a monthly notification recurs, serialized as JSON (e.g. [1,15]).
+    /// </summary>
+    public string? RecurrenceMonthDays { get; set; }
+
+    /// <summary>
+    /// Gets or sets the date after which a recurring notification stops being sent.
+    /// </summary>
+    public DateTimeOffset? RecurrenceEndOn { get; set; }
+
+    /// <summary>
     /// Gets or sets the list of NotificationUsers associated with the notification.
     /// </summary>
     public virtual ICollection<NotificationUser>? NotificationUsers { get; set; }

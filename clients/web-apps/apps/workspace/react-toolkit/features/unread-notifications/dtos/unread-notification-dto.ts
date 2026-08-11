@@ -10,6 +10,9 @@ interface UnreadNotificationDto extends UserAvatarBaseDto {
   /** Notification primary key. A unique identifier for each notification */
   id: string;
 
+  /** (optional): The title of the notification */
+  title?: string;
+
   /** Notification message. The main content of the notification */
   message: string;
 

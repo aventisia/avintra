@@ -10,6 +10,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly IFlowVersionHistoryService _flowVersionHistoryService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly INotificationEventService _notificationEventService;
     private readonly Guid _userId;
 
     public FlowBuilderService(
@@ -18,7 +19,8 @@ public class FlowBuilderService : IFlowBuilderService
         IHttpContextAccessor httpContextAccessor,
         IUserManagementGuardService userManagementGuardService,
         IFlowVersionHistoryService flowVersionHistoryService,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        INotificationEventService notificationEventService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -28,6 +30,7 @@ public class FlowBuilderService : IFlowBuilderService
         _userManagementGuardService = userManagementGuardService;
         _flowVersionHistoryService = flowVersionHistoryService;
         _resourceShareService = resourceShareService;
+        _notificationEventService = notificationEventService;
     }
 
     // Fetch the parent flow details of given parent flow version id
@@ -336,6 +339,15 @@ public class FlowBuilderService : IFlowBuilderService
                     // Log success and set response message
                     _logger.LogInformation($"Flow version successfully published as {publishType}.");
                     serviceResponse.Message = $"{publishType} published successfully.";
+
+                    // Notify the Orchestrator Manager(s) of the tenant that an agent is ready for use
+                    if (publishFlowVersionDto.Type == PublishTypesEnum.Agent || publishFlowVersionDto.Type == PublishTypesEnum.ChatAgent)
+                    {
+                        await _notificationEventService.NotifyAgentPublishedAsync(
+                            flowVersion.Flow.TenantId,
+                            flowVersion.Flow.Id,
+                            flowVersion.Flow.Name);
+                    }
                     break;
 
                 default:

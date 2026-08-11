@@ -108,6 +108,11 @@ public class WorkspaceDbContext : DbContext
 
         // Enum to string conversion
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
+        modelBuilder.Entity<Notification>().Property(e => e.SourceType).HasConversion(new EnumToStringConverter<NotificationSourceEnum>());
+        modelBuilder.Entity<Notification>().Property(e => e.DeliveryChannel).HasConversion(new EnumToStringConverter<DeliveryChannelEnum>());
+        modelBuilder.Entity<Notification>().Property(e => e.AudienceScope).HasConversion(new EnumToStringConverter<AudienceScopeEnum>());
+        modelBuilder.Entity<Notification>().Property(e => e.Status).HasConversion(new EnumToStringConverter<NotificationStatusEnum>());
+        modelBuilder.Entity<Notification>().Property(e => e.RecurrenceFrequency).HasConversion(new EnumToStringConverter<NotificationRecurrenceEnum>());
         modelBuilder.Entity<Flow>().Property(e => e.Type).HasConversion(new EnumToStringConverter<FlowTypesEnum>());
         modelBuilder.Entity<FlowLog>().Property(e => e.Status).HasConversion(new EnumToStringConverter<FlowLogStatusEnum>());
         modelBuilder.Entity<ProjectTemplate>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectTemplateTypesEnum>());
@@ -274,7 +279,11 @@ public class WorkspaceDbContext : DbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.TenantId = CurrentTenantId;
+                    // Only stamp the tenant when it has not already been set explicitly.
+                    // The Super Admin notification flow pre-sets TenantId per target tenant
+                    // so a single notification can be delivered across multiple tenants.
+                    if (entry.Entity.TenantId == Guid.Empty)
+                        entry.Entity.TenantId = CurrentTenantId;
                     break;
             }
         }
@@ -309,7 +318,11 @@ public class WorkspaceDbContext : DbContext
             switch (entry.State)
             {
                 case EntityState.Added:
-                    entry.Entity.TenantId = CurrentTenantId;
+                    // Only stamp the tenant when it has not already been set explicitly.
+                    // The Super Admin notification flow pre-sets TenantId per target tenant
+                    // so a single notification can be delivered across multiple tenants.
+                    if (entry.Entity.TenantId == Guid.Empty)
+                        entry.Entity.TenantId = CurrentTenantId;
                     break;
             }
         }

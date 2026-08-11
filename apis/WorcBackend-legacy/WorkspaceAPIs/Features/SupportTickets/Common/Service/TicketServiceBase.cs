@@ -14,6 +14,7 @@ public abstract class TicketServiceBase
     protected readonly WorkspaceDbContext WorkspaceDbContext;
     protected readonly TenantDbContext TenantDbContext;
     protected readonly INotificationHelperService NotificationHelperService;
+    protected readonly INotificationEventService NotificationEventService;
     protected readonly IUploadFileService UploadFileService;
     protected readonly Guid UserId;
     protected readonly Guid UserTenantId;
@@ -32,6 +33,7 @@ public abstract class TicketServiceBase
         TenantDbContext tenantDbContext,
         IHttpContextAccessor httpContextAccessor,
         INotificationHelperService notificationHelperService,
+        INotificationEventService notificationEventService,
         IUploadFileService uploadFileService)
     {
         UserId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -42,6 +44,7 @@ public abstract class TicketServiceBase
         WorkspaceDbContext = workspaceDbContext;
         TenantDbContext = tenantDbContext;
         NotificationHelperService = notificationHelperService;
+        NotificationEventService = notificationEventService;
         UploadFileService = uploadFileService;
     }
 
@@ -105,25 +108,6 @@ public abstract class TicketServiceBase
             ChangedOn = DateTimeOffset.UtcNow
         };
         await UnitOfWork.TicketHistoryRepo.InsertAsync(historyEntry);
-    }
-
-    // Sends an in-app notification to the given users.
-    protected async Task SendNotificationAsync(Guid tenantId, Guid ticketId, string ticketNumber, string message, NotificationTypesEnum notificationType, List<Guid> recipientUserIds)
-    {
-        var notification = new Notification
-        {
-            TenantId = tenantId,
-            Message = message,
-            Type = notificationType,
-            ActionUrl = $"/tenant/support/ticket/details?id={ticketId}",
-            CreatedByUserId = UserId,
-            CreatedOn = DateTimeOffset.UtcNow,
-            LastModifiedByUserId = UserId,
-        };
-        await UnitOfWork.NotificationRepo.InsertAsync(notification);
-        await UnitOfWork.SaveAsync();
-        await NotificationHelperService.AddNotificationUsers(notification.Id, recipientUserIds);
-        await UnitOfWork.SaveAsync();
     }
 
     // Hook: services may override to block ticket creation (e.g. change-request gate).
@@ -251,13 +235,12 @@ public abstract class TicketServiceBase
 
             if (NotifyEnabled)
             {
-                await SendNotificationAsync(
+                await NotificationEventService.NotifyTicketCreatedAsync(
                     newTicket.TenantId,
                     newTicket.Id,
                     newTicket.TicketNumber,
                     $"Your ticket '{newTicket.TicketNumber}' has been successfully created.",
-                    NotificationTypesEnum.Information,
-                    new List<Guid> { UserId });
+                    UserId);
             }
 
             serviceResponse.Update("Ticket created successfully", 200, newTicket.Adapt<TicketDto>());
@@ -321,6 +304,16 @@ public abstract class TicketServiceBase
 
             if (!await TrySaveAsync("adding history entry"))
                 return serviceResponse;
+
+            if (NotifyEnabled)
+            {
+                await NotificationEventService.NotifyTicketUpdatedAsync(
+                    ticket.TenantId,
+                    ticket.Id,
+                    ticket.TicketNumber,
+                    $"Your ticket '{ticket.TicketNumber}' has been updated.",
+                    ticket.CreatedByUserId);
+            }
 
             serviceResponse.Update("Ticket updated successfully", 200, ticket.Adapt<TicketDto>());
         }
@@ -432,13 +425,12 @@ public abstract class TicketServiceBase
 
             if (NotifyEnabled)
             {
-                await SendNotificationAsync(
+                await NotificationEventService.NotifyTicketUpdatedAsync(
                     ticket.TenantId,
                     ticket.Id,
                     ticket.TicketNumber,
                     $"Your ticket '{ticket.TicketNumber}' status has been updated to {statusUpdateDto.Status}.",
-                    NotificationTypesEnum.Alert,
-                    new List<Guid> { ticket.CreatedByUserId });
+                    ticket.CreatedByUserId);
             }
 
             serviceResponse.Update("Ticket status updated successfully", 200, ticket.Adapt<TicketDto>());
@@ -500,13 +492,12 @@ public abstract class TicketServiceBase
 
             if (NotifyEnabled)
             {
-                await SendNotificationAsync(
+                await NotificationEventService.NotifyTicketUpdatedAsync(
                     ticket.TenantId,
                     ticket.Id,
                     ticket.TicketNumber,
                     $"Your ticket '{ticket.TicketNumber}' triage information has been updated.",
-                    NotificationTypesEnum.Information,
-                    new List<Guid> { ticket.CreatedByUserId });
+                    ticket.CreatedByUserId);
             }
 
             serviceResponse.Update("Triage updated successfully", 200, ticket.Adapt<TicketDto>());
@@ -595,13 +586,12 @@ public abstract class TicketServiceBase
 
             if (NotifyEnabled && ticket.CreatedByUserId != UserId)
             {
-                await SendNotificationAsync(
+                await NotificationEventService.NotifyTicketCommentAsync(
                     ticket.TenantId,
                     ticket.Id,
                     ticket.TicketNumber,
                     $"A new comment has been added on your ticket '{ticket.TicketNumber}'.",
-                    NotificationTypesEnum.Alert,
-                    new List<Guid> { ticket.CreatedByUserId });
+                    ticket.CreatedByUserId);
             }
 
             serviceResponse.Update("Comment added successfully", 200, newComment.Adapt<TicketCommentDto>());
