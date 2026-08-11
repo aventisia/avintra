@@ -398,8 +398,8 @@ const useSessionForRunnerInstall = () => {
 const DownloadContent: React.FC<{
   data: NonNullable<ReturnType<typeof useDesktopDownloadManifest>["data"]>;
 }> = ({ data }) => {
-  const desktop = data.desktop ?? { versions: [] };
-  const runner = data.runner ?? { versions: [] };
+  const desktop = useMemo(() => data.desktop ?? { versions: [] }, [data.desktop]);
+  const runner = useMemo(() => data.runner ?? { versions: [] }, [data.runner]);
   const { tenantId, linkedUsername } = useSessionForRunnerInstall();
 
   // OS tab — default to the user's detected platform

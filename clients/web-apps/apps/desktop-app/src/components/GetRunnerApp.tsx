@@ -1,4 +1,3 @@
-import { Button } from "@avplatform/ui/buttons";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useRunnerProvisioning } from "../hooks/useRunnerProvisioning";
@@ -6,6 +5,10 @@ import { RunnerProgress } from "./RunnerProgress";
 
 interface GetRunnerAppProps {
   appBaseUrl: string;
+  /** The latest available Runner App version, shown in the heading. */
+  latestVersion: string;
+  /** Called when the user chooses to continue without installing the Runner. */
+  onSkip: () => void;
   onComplete: () => void;
 }
 
@@ -16,7 +19,7 @@ interface GetRunnerAppProps {
  * download. It shows a minimal progress view and redirects to the service
  * login page once complete. On failure a retry button is shown.
  */
-export function GetRunnerApp({ appBaseUrl, onComplete }: GetRunnerAppProps) {
+export function GetRunnerApp({ appBaseUrl, latestVersion, onSkip, onComplete }: GetRunnerAppProps) {
   const { progress, error, download, clearError } = useRunnerProvisioning();
   const [attempt, setAttempt] = useState(0);
   // Guards against React StrictMode double-invoking the effect (which would
@@ -55,12 +58,13 @@ export function GetRunnerApp({ appBaseUrl, onComplete }: GetRunnerAppProps) {
   return (
     <div className="flex flex-1 items-center justify-center p-6">
       <div className="flex w-full flex-col items-center gap-4">
-        <RunnerProgress heading="Setting up the Runner App" progress={progress} error={error} />
-        {error && (
-          <Button type="button" onClick={handleRetry} className="h-11 text-md">
-            Retry
-          </Button>
-        )}
+        <RunnerProgress
+          heading={`Setting up Runner App v${latestVersion}...`}
+          progress={progress}
+          error={error}
+          onRetry={handleRetry}
+          onContinueAnyway={onSkip}
+        />
       </div>
     </div>
   );

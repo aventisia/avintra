@@ -58,12 +58,13 @@ export function UpdateRunnerApp({
     return (
       <div className="flex flex-1 items-center justify-center p-6">
         <div className="flex w-full flex-col items-center gap-4">
-          <RunnerProgress heading="Updating the Runner App" progress={progress} error={error} />
-          {error && (
-            <Button type="button" onClick={handleRetry} className="h-11 text-md">
-              Retry
-            </Button>
-          )}
+          <RunnerProgress
+            heading={`Updating Runner App v${latestVersion}...`}
+            progress={progress}
+            error={error}
+            onRetry={handleRetry}
+            onContinueAnyway={onSkip}
+          />
         </div>
       </div>
     );
@@ -71,7 +72,7 @@ export function UpdateRunnerApp({
 
   return (
     <SetupCard
-      title="Update available"
+      title="Runner App update available"
       subtitle="A newer version of the Runner App is available. Update now to get the latest features and improvements."
     >
       <div className="flex flex-col gap-5">

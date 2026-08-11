@@ -7,6 +7,10 @@ interface RunnerProgressProps {
   progress: RunnerProgressType | null;
   /** Optional error message. */
   error?: string | null;
+  /** Called when the user clicks the inline Retry button. */
+  onRetry?: () => void;
+  /** Called when the user clicks the inline Continue anyway button. */
+  onContinueAnyway?: () => void;
 }
 
 const STATUS_LABELS: Record<RunnerProgressType["status"], string> = {
@@ -22,7 +26,13 @@ const STATUS_LABELS: Record<RunnerProgressType["status"], string> = {
  * Shows a long progress bar with a status label and byte count that remain
  * visible across all phases.
  */
-export function RunnerProgress({ heading, progress, error }: RunnerProgressProps) {
+export function RunnerProgress({
+  heading,
+  progress,
+  error,
+  onRetry,
+  onContinueAnyway,
+}: RunnerProgressProps) {
   const status = progress?.status ?? "CHECKING";
   const percentage = error ? 0 : (progress?.percentage ?? 0);
   const downloaded = error ? 0 : (progress?.downloaded ?? 0);
@@ -48,10 +58,34 @@ export function RunnerProgress({ heading, progress, error }: RunnerProgressProps
 
         <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
           <span className="w-12">{percentage.toFixed(0)}%</span>
-          <span className="text-right">{`${formatBytes(downloaded)} / ${total ? formatBytes(total) : "..."}`}</span>
+          <span className="text-right">
+            {!error &&
+              status !== "EXTRACTING" &&
+              `${formatBytes(downloaded)} / ${total ? formatBytes(total) : "..."}`}
+          </span>
         </div>
 
-        {error && <p className="mt-3 text-left text-xs text-destructive">{error}</p>}
+        {error && (
+          <div className="mt-4 flex flex-col gap-3">
+            <p className="text-left text-xs text-destructive">{error}</p>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={onRetry}
+                className="inline-flex h-8 items-center justify-center rounded-lg bg-primary px-3 text-xs font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                Retry
+              </button>
+              <button
+                type="button"
+                onClick={onContinueAnyway}
+                className="inline-flex h-8 items-center justify-center rounded-lg border border-border bg-background px-3 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                Continue anyway
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

@@ -1,5 +1,17 @@
 import os
+import sys
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Enforce the supported Python version (3.12.x). The project depends on packages
+# (e.g. pydub -> pyaudioop) that are not compatible with Python 3.13+.
+# Fail fast with a clear message instead of a confusing import error later.
+if sys.version_info.major != 3 or sys.version_info.minor != 12:
+    raise RuntimeError(
+        f"Unsupported Python version: {sys.version_info.major}.{sys.version_info.minor}."
+        " This project requires Python 3.12.x. "
+        "Install Python 3.12 and recreate the venv with: "
+        "`py -3.12 -m venv venv` (Windows) or `python3.12 -m venv venv` (Linux/macOS)."
+    )
 
 # Load environment-specific .env (e.g., .env.local, .env.development)
 env = os.getenv("ENV", "local")
@@ -53,8 +65,8 @@ class Settings(BaseSettings):
     QDRANT_API_KEY: str = ""
 
     # TTS/STT
-    ELEVENLABS_API_URL: str = "https://api.elevenlabs.io/v1",
-    ELEVENLABS_API_KEY: str = "",
+    ELEVENLABS_API_URL: str = "https://api.elevenlabs.io/v1"
+    ELEVENLABS_API_KEY: str = ""
     
     model_config = SettingsConfigDict(
         env_file=env_files, # System env vars take precedence over these files

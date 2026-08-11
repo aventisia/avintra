@@ -34,9 +34,19 @@ public class DesktopBinariesController : BaseApiController
 
     // GET: /binaries/desktop/update/{target}/{arch}/{currentVersion}
     [HttpGet("update/{target}/{arch}/{currentVersion}")]
-    public async Task<ActionResult<ServiceResponse<UpdateCheckDto>>> CheckUpdate(string target, string arch, string currentVersion)
+    public async Task<IActionResult> CheckUpdate(string target, string arch, string currentVersion)
     {
-        return ResultHelper(await _clientBinariesService.CheckUpdateAsync(target, arch, currentVersion));
+        var response = await _clientBinariesService.CheckUpdateAsync(target, arch, currentVersion);
+
+        // The Tauri updater plugin consumes this endpoint directly and expects the
+        // raw UpdateCheckDto JSON (not the standard ServiceResponse wrapper).
+        if (response.StatusCode >= 400)
+            return StatusCode(response.StatusCode, response.Message);
+
+        if (response.StatusCode == 204)
+            return NoContent();
+
+        return Ok(response.Data);
     }
 
     // Streams a resolved binary file, or returns a not-found response when it could not be resolved.

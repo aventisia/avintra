@@ -573,7 +573,7 @@ public static class AccountsDbInitialSeed
                 Frequency = SubscriptionFrequenciesEnum.Yearly,
                 IsActive = true,
                 Status = SubscriptionStatusTypesEnum.Active,
-                NextBillingDate = DateTimeOffset.MaxValue.Date,
+                NextBillingDate = new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
                 MaxCredits = ulong.MaxValue,
                 MaxPublishedItems = int.MaxValue,
                 MaxSpaces = int.MaxValue,
@@ -646,7 +646,7 @@ public static class AccountsDbInitialSeed
                 TenantId = defaultTenant.Id,
                 SubscriptionId = tenantSubscription.Id,
                 AvailableCredits = ulong.MaxValue,
-                ExpiredOn = DateTimeOffset.MaxValue,
+                ExpiredOn = new DateTimeOffset(DateTimeOffset.MaxValue.Date, TimeSpan.Zero),
                 Type = CreditTypesEnum.Subscription,
                 CreatedByUserId = superUser.Id,
                 LastModifiedByUserId = superUser.Id

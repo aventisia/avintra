@@ -73,11 +73,12 @@
     "tailwind-merge": "^3.6.0",
     "tailwindcss-animate": "^1.0.7",
     "timezones-list": "^3.1.0",
+    "use-effect-event": "^2.0.3",
     "uuid": "^10.0.0",
     "vaul": "^0.9.1",
     "xlsx": "^0.18.5",
     "zod": "^3.23.8",
-    "zustand": "^4.5.4"
+    "zustand": "5.0.14"
   },
   "devDependencies": {
     "@avplatform/eslint-config": "*",
