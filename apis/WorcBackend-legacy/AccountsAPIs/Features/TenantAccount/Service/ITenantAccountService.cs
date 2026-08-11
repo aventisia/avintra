@@ -36,6 +36,21 @@ public interface ITenantAccountService
     Task<ServiceResponse<TenantPreferenceDto>> UpdateTenantPreferencesAsync(TenantPreferenceDto preferencesDto);
 
     /// <summary>
+    /// Retrieves the tenant's automatic notification settings, applying per-type defaults
+    /// for any missing keys (FR-2, FR-6).
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation, containing the tenant's notification settings.</returns>
+    Task<ServiceResponse<NotificationSettingsDto>> GetNotificationSettingsAsync();
+
+    /// <summary>
+    /// Partially updates the tenant's automatic notification settings (FR-3). Only the
+    /// properties present in the request are changed; omitted properties are left unchanged.
+    /// </summary>
+    /// <param name="updateDto">The partial update containing the desired states.</param>
+    /// <returns>A task representing the asynchronous operation, returning the updated notification settings.</returns>
+    Task<ServiceResponse<NotificationSettingsDto>> UpdateNotificationSettingsAsync(UpdateNotificationSettingsDto updateDto);
+
+    /// <summary>
     /// Retrieves a list of account users whose properties match the provided search key.
     /// </summary>
     /// <param name="searchKey">The keyword to search account users by.</param>

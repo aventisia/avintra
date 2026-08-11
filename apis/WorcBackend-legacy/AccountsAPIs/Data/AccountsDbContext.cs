@@ -59,6 +59,11 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<Tenant>().Property(e => e.Currency).HasConversion(new EnumToStringConverter<CurrencyTypesEnum>());
         builder.Entity<Tenant>().Property(e => e.Type).HasConversion(new EnumToStringConverter<TenantTypesEnum>());
         builder.Entity<Tenant>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<TenantResourceTypesEnum>());
+        builder.Entity<Tenant>()
+            .Property(e => e.NotificationSettings)
+            .HasConversion(
+                v => System.Text.Json.JsonSerializer.Serialize(v, (System.Text.Json.JsonSerializerOptions?)null),
+                v => string.IsNullOrWhiteSpace(v) ? null : System.Text.Json.JsonSerializer.Deserialize<NotificationSettings>(v, (System.Text.Json.JsonSerializerOptions?)null));
         builder.Entity<Tenant>().Property(e => e.Country).HasConversion(new EnumToStringConverter<CountriesEnum>());
         builder.Entity<SessionLog>().Property(e => e.HowSessionEnded).HasConversion(new EnumToStringConverter<TerminateSessionReasonsEnum>());
         builder.Entity<VerificationCode>().Property(e => e.RequestType).HasConversion(new EnumToStringConverter<VerificationCodeRequestTypesEnum>());

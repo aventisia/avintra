@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 
 import { BillingHistoryTable } from "./billing-history/components/BillingHistoryTable";
 import CompanyDetails from "./comapny-details/CompanyDetails";
+import Notifications from "./notifications/Notifications";
 import Overview from "./overview/Overview";
 import PaymentMethods from "./payment-methods/PaymentMethods";
 import Preferences from "./preferences/Preferences";
@@ -38,6 +39,12 @@ const BillingTabs = () => {
           >
             Preferences
           </TabsTrigger>
+          <TabsTrigger
+            value="notifications"
+            className="rounded-none data-[state=active]:border-b-black"
+          >
+            Notifications
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="overview" className="p-6">
           <Overview />
@@ -53,6 +60,10 @@ const BillingTabs = () => {
 
         <TabsContent value="preferences" className="p-6">
           <Preferences />
+        </TabsContent>
+
+        <TabsContent value="notifications" className="p-6">
+          <Notifications />
         </TabsContent>
 
         <TabsContent value="companyDetails" className="p-6">

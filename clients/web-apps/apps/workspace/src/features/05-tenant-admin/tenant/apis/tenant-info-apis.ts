@@ -4,8 +4,10 @@ import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { CompanyDetailsDTO } from "../dtos/company-details-dto";
 import { CurrentPlanDto } from "../dtos/current-plan-dto";
+import { NotificationSettingsDto } from "../dtos/notification-settings-dto";
 import { PaymentMethodDTO } from "../dtos/payment-methods-dto";
 import { TenantPreferencesDto } from "../dtos/tenant-prefrences-dto";
+import { UpdateNotificationSettingsDto } from "../dtos/update-notification-settings-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
 
@@ -27,6 +29,16 @@ const getTenantPreferences = () =>
 const updateTenantPreferences = (pref: TenantPreferencesDto) =>
   axiosInstance
     .put<IHttpResponse<TenantPreferencesDto>>(`${baseAPIURL}/preferences`, pref)
+    .then((res) => res.data);
+
+const getNotificationSettings = () =>
+  axiosInstance
+    .get<IHttpResponse<NotificationSettingsDto>>(`${baseAPIURL}/notification-settings`)
+    .then((res) => res.data);
+
+const updateNotificationSettings = (updateDto: UpdateNotificationSettingsDto) =>
+  axiosInstance
+    .patch<IHttpResponse<NotificationSettingsDto>>(`${baseAPIURL}/notification-settings`, updateDto)
     .then((res) => res.data);
 
 const getTenantCurrentPlan = () =>
@@ -53,6 +65,8 @@ export {
   getCompanyDetails,
   getTenantPreferences,
   updateTenantPreferences,
+  getNotificationSettings,
+  updateNotificationSettings,
   updateCompanyDetails,
   getPaymentMethods,
   getAgentsCount,

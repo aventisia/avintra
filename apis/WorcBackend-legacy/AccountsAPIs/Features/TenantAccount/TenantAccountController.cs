@@ -47,6 +47,20 @@ public class TenantAccountController : BaseApiController
         return ResultHelper(await _tenantAccountService.UpdateTenantPreferencesAsync(tenantPreferenceDto));
     }
 
+    // Retrieves the current automatic notification settings of the tenant.
+    [HttpGet("notification-settings")]
+    public async Task<ActionResult<ServiceResponse<NotificationSettingsDto>>> GetNotificationSettings()
+    {
+        return ResultHelper(await _tenantAccountService.GetNotificationSettingsAsync());
+    }
+
+    // Partially updates the automatic notification settings of the tenant.
+    [HttpPatch("notification-settings")]
+    public async Task<ActionResult<ServiceResponse<NotificationSettingsDto>>> UpdateNotificationSettings(UpdateNotificationSettingsDto updateDto)
+    {
+        return ResultHelper(await _tenantAccountService.UpdateNotificationSettingsAsync(updateDto));
+    }
+
     // Searches for account users matching the specified search key.
     [HttpGet("users/search/{searchKey}")]
     public async Task<ActionResult<ServiceResponse<IEnumerable<AppUserBaseDto>>>> SearchAccountUser(string searchKey, [FromQuery] bool includeCurrentUser = false)
