@@ -1,0 +1,35 @@
+meta {
+  name: Insert scheduled email notification
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Schedule an Email-channel notification in the future. Email delivery must be deferred to
+  // the dispatch job (when the scheduled time is reached) and NOT sent at insert time.
+  const scheduledFor = new Date(Date.now() + 60 * 1000).toISOString();
+  req.setBody({
+    message: "Scheduled email notification test",
+    type: "Information",
+    deliveryChannel: "Email",
+    audienceScope: "AllUsers",
+    title: "Scheduled Email Test",
+    scheduledFor
+  });
+}
+
+script:post-response {
+  if (res.getStatus() == 201 || res.getStatus() == 200) {
+    bru.setVar("SCHEDULED_EMAIL_NOTIFICATION_ID", res.getBody().data.id);
+    // A scheduled notification must NOT be marked Sent before its due time (email deferred).
+    if (res.getBody().data.status !== "Scheduled") {
+      bru.fail("Expected scheduled email notification to be 'Scheduled', got '" + res.getBody().data.status + "'");
+    }
+  }
+}

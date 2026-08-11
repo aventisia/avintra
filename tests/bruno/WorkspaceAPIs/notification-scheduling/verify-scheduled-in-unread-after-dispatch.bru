@@ -1,0 +1,21 @@
+meta {
+  name: Verify scheduled notification appears in unread after dispatch
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/unread/
+  body: none
+  auth: none
+}
+
+script:post-response {
+  // After dispatch, the scheduled notification's NotificationUser rows are created so it
+  // appears in the unread/bell list (Platform/Both channels).
+  const items = res.getBody().data || [];
+  const found = items.some((n) => n.id === bru.getVar("SCHEDULED_NOTIFICATION_ID"));
+  if (!found) {
+    bru.fail("Expected scheduled notification to appear in unread/bell after dispatch");
+  }
+}

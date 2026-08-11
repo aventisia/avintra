@@ -18,6 +18,10 @@ public class NotificationHelperService : INotificationHelperService
     {
         try
         {
+            // Resolve each user's tenant so the TenantId is always populated from the User table
+            // (rather than defaulting to Guid.Empty).
+            var userTenantMap = await GetUserTenantMapAsync(userIds);
+
             // Add NotificationUser records
             var notificationUserList = new List<NotificationUser>();
             foreach (var userId in userIds)
@@ -26,6 +30,7 @@ public class NotificationHelperService : INotificationHelperService
                 {
                     UserId = userId,
                     NotificationId = notificationId,
+                    TenantId = userTenantMap.TryGetValue(userId, out var tenantId) ? tenantId : Guid.Empty,
                     IsRead = false
                 });
             }
@@ -45,11 +50,18 @@ public class NotificationHelperService : INotificationHelperService
 
     // Add Notification User M2M relationship with an explicit tenant stamp.
     // Used by the Super Admin flow where a single notification is delivered to users
-    // across multiple tenants. SaveAsync required separately.
+    // across multiple tenants. Each user's TenantId is resolved from the User table so it
+    // reflects that user's actual tenant (falling back to the provided tenantId when the
+    // user cannot be found). SaveAsync required separately.
     public async Task<bool> AddNotificationUsers(Guid notificationId, Guid tenantId, List<Guid> userIds)
     {
         try
         {
+            // Resolve each user's tenant from the User table so the TenantId is always
+            // accurate per recipient, regardless of whether the notification was created
+            // by a Tenant Admin or a Super Admin.
+            var userTenantMap = await GetUserTenantMapAsync(userIds);
+
             // Add NotificationUser records
             var notificationUserList = new List<NotificationUser>();
             foreach (var userId in userIds)
@@ -58,7 +70,7 @@ public class NotificationHelperService : INotificationHelperService
                 {
                     UserId = userId,
                     NotificationId = notificationId,
-                    TenantId = tenantId,
+                    TenantId = userTenantMap.TryGetValue(userId, out var resolvedTenantId) ? resolvedTenantId : tenantId,
                     IsRead = false
                 });
             }
@@ -101,11 +113,16 @@ public class NotificationHelperService : INotificationHelperService
             // Get userIds to add (in the target set but not already present) — prevents duplicates
             var userIdsToAdd = targetUserIds.Where(w => !currentUserIds.Contains(w)).ToList();
 
+            // Resolve each user's tenant so the TenantId is always populated from the User table
+            // (rather than defaulting to Guid.Empty).
+            var userTenantMap = await GetUserTenantMapAsync(userIdsToAdd);
+
             // Add NotificationUser relationship records
             var notificationUserList = userIdsToAdd.Select(userId => new NotificationUser
             {
                 UserId = userId,
                 NotificationId = notificationId,
+                TenantId = userTenantMap.TryGetValue(userId, out var tenantId) ? tenantId : Guid.Empty,
                 IsRead = false
             }).ToList();
 
@@ -120,5 +137,19 @@ public class NotificationHelperService : INotificationHelperService
             _logger.LogError(ex.ToString());
             return false;
         }
+    }
+
+    // Builds a map of UserId -> TenantId from the WorkspaceUser (User) table for the given
+    // user IDs. Users not found are omitted from the map (callers fall back to Guid.Empty).
+    private async Task<Dictionary<Guid, Guid>> GetUserTenantMapAsync(List<Guid> userIds)
+    {
+        var distinctUserIds = userIds.Distinct().ToList();
+        if (distinctUserIds.Count == 0)
+            return new Dictionary<Guid, Guid>();
+
+        return await _unitOfWork.WorkspaceUserRepo
+            .GetByConditionAsync(w => distinctUserIds.Contains(w.Id))
+            .Select(w => new { w.Id, w.TenantId })
+            .ToDictionaryAsync(w => w.Id, w => w.TenantId);
     }
 }

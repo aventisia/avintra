@@ -1,0 +1,20 @@
+meta {
+  name: Verify scheduled notification not in unread before time
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/unread/
+  body: none
+  auth: none
+}
+
+script:post-response {
+  // The scheduled notification must NOT appear in the unread/bell list before its due time.
+  const items = res.getBody().data || [];
+  const found = items.some((n) => n.id === bru.getVar("SCHEDULED_NOTIFICATION_ID"));
+  if (found) {
+    bru.fail("Scheduled notification appeared in unread/bell before its scheduled time");
+  }
+}

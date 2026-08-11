@@ -1,0 +1,27 @@
+meta {
+  name: Insert immediate notification
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "message": "Immediate scheduling test notification",
+    "type": "Information",
+    "deliveryChannel": "Platform",
+    "audienceScope": "AllUsers",
+    "title": "Immediate Test"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() == 201 || res.getStatus() == 200) {
+    bru.setVar("IMMEDIATE_NOTIFICATION_ID", res.getBody().data.id);
+  }
+}

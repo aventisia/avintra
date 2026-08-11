@@ -8,6 +8,8 @@ namespace WorkspaceAPIs.Jobs
 {
     /// <summary>
     /// A background job that dispatches scheduled notifications whose due time has arrived.
+    /// When the scheduled time is reached it creates the <see cref="NotificationUser"/> rows
+    /// (so they appear in the bell/history) and sends the email for Email/Both channels.
     /// For recurring notifications, it computes the next occurrence and keeps them scheduled
     /// until the recurrence end date is reached.
     /// </summary>
@@ -15,17 +17,20 @@ namespace WorkspaceAPIs.Jobs
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
+        private readonly INotificationHelperService _notificationHelperService;
         private readonly TenantDbContext _tenantDbContext;
         private readonly ILogger<NotificationDispatchJob> _logger;
 
         public NotificationDispatchJob(
             IUnitOfWork unitOfWork,
             IEmailService emailService,
+            INotificationHelperService notificationHelperService,
             TenantDbContext tenantDbContext,
             ILogger<NotificationDispatchJob> logger)
         {
             _unitOfWork = unitOfWork;
             _emailService = emailService;
+            _notificationHelperService = notificationHelperService;
             _tenantDbContext = tenantDbContext;
             _logger = logger;
         }
@@ -55,8 +60,40 @@ namespace WorkspaceAPIs.Jobs
 
                 foreach (var notification in dueNotifications)
                 {
+                    // Resolve the persisted recipient user IDs (captured at insert/update time).
+                    var userIds = ParseGuidList(notification.RecipientUserIds);
+                    if (userIds == null || userIds.Count == 0)
+                    {
+                        _logger.LogWarning("No persisted recipients for scheduled notification {Id}; skipping dispatch.", notification.Id);
+                        continue;
+                    }
+
+                    // Create NotificationUser rows on the first dispatch occurrence so the
+                    // notification appears in the bell/history. Recurring notifications keep the
+                    // same audience, so only create rows when none exist yet.
+                    var existingCount = await _unitOfWork.NotificationUserRepo
+                        .GetByConditionAsync(w => w.NotificationId == notification.Id)
+                        .IgnoreQueryFilters()
+                        .CountAsync();
+
+                    if (existingCount == 0)
+                    {
+                        // Always stamp the notification's TenantId on the created rows. The
+                        // Notification entity is IMustHaveTenant (SA fan-out rows already carry
+                        // their per-tenant TenantId), so this applies to both TA and SA flows.
+                        var created = await _notificationHelperService.AddNotificationUsers(
+                            notification.Id,
+                            notification.TenantId,
+                            userIds);
+
+                        if (!created)
+                        {
+                            _logger.LogError("Failed to create NotificationUser rows for scheduled notification {Id}.", notification.Id);
+                        }
+                    }
+
                     // Send email for Email/Both delivery channels on this dispatch occurrence.
-                    await SendNotificationEmailAsync(notification);
+                    await SendNotificationEmailAsync(notification, userIds);
 
                     // If the notification is recurring, compute the next occurrence
                     if (notification.RecurrenceFrequency.HasValue &&
@@ -160,10 +197,10 @@ namespace WorkspaceAPIs.Jobs
             }
         }
 
-        // Sends a notification email for Email/Both delivery channels. Resolves recipient
-        // user IDs from the NotificationUser rows and their email addresses from the
-        // AccountsDb read-only projection. No-op for Platform-only notifications.
-        private async Task SendNotificationEmailAsync(Notification notification)
+        // Sends a notification email for Email/Both delivery channels to the given recipient
+        // user IDs, resolving their email addresses from the AccountsDb read-only projection.
+        // No-op for Platform-only notifications.
+        private async Task SendNotificationEmailAsync(Notification notification, List<Guid> userIds)
         {
             if (notification.DeliveryChannel != DeliveryChannelEnum.Email &&
                 notification.DeliveryChannel != DeliveryChannelEnum.Both)
@@ -173,15 +210,7 @@ namespace WorkspaceAPIs.Jobs
 
             try
             {
-                // Resolve recipient user IDs from the NotificationUser rows (across all tenants).
-                var userIds = await _unitOfWork.NotificationUserRepo
-                    .GetByConditionAsync(w => w.NotificationId == notification.Id)
-                    .IgnoreQueryFilters()
-                    .Select(w => w.UserId)
-                    .Distinct()
-                    .ToListAsync();
-
-                if (userIds.Count == 0)
+                if (userIds == null || userIds.Count == 0)
                 {
                     _logger.LogWarning("No recipients found for email dispatch of notification {Id}.", notification.Id);
                     return;
@@ -216,6 +245,21 @@ namespace WorkspaceAPIs.Jobs
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error sending notification email for {Id}.", notification.Id);
+            }
+        }
+
+        // Parses a JSON-serialized list of GUIDs (null-safe). Returns null when the value is
+        // empty or cannot be deserialized.
+        private static List<Guid>? ParseGuidList(string? json)
+        {
+            if (string.IsNullOrWhiteSpace(json)) return null;
+            try
+            {
+                return System.Text.Json.JsonSerializer.Deserialize<List<Guid>>(json);
+            }
+            catch
+            {
+                return null;
             }
         }
     }

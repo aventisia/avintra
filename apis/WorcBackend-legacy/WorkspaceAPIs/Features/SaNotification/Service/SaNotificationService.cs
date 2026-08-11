@@ -214,10 +214,20 @@ public class SaNotificationService : ISaNotificationService
 
                 await _unitOfWork.NotificationRepo.InsertAsync(newNotification);
 
-                if (!await _notificationHelperService.AddNotificationUsers(newNotification.Id, tenantId, userIds))
+                // Persist the resolved recipient IDs so the dispatch job can create NotificationUser
+                // rows and send emails when a scheduled notification's execution time is reached.
+                newNotification.RecipientUserIds = SerializeGuidList(userIds);
+
+                // For scheduled notifications, do NOT create NotificationUser rows here; the dispatch
+                // job creates them when the scheduled time is reached. Immediate notifications get
+                // their rows now so they appear instantly.
+                if (!isScheduled)
                 {
-                    serviceResponse.Update("Failed to insert NotificationUser relationship", 400);
-                    return serviceResponse;
+                    if (!await _notificationHelperService.AddNotificationUsers(newNotification.Id, tenantId, userIds))
+                    {
+                        serviceResponse.Update("Failed to insert NotificationUser relationship", 400);
+                        return serviceResponse;
+                    }
                 }
 
                 if (!await _unitOfWork.SaveAsync())
@@ -226,10 +236,12 @@ public class SaNotificationService : ISaNotificationService
                     return serviceResponse;
                 }
 
-                // Send email for Email/Both delivery channels (immediate notifications are marked
-                // Sent at insert and never hit the dispatch job, so email must be sent here).
-                if (newNotification.DeliveryChannel == DeliveryChannelEnum.Email ||
-                    newNotification.DeliveryChannel == DeliveryChannelEnum.Both)
+                // Send email for Email/Both delivery channels. For immediate notifications (marked
+                // Sent at insert and never hit the dispatch job) the email is sent here. Scheduled
+                // notifications defer email to the dispatch job when the scheduled time is reached.
+                if (!isScheduled &&
+                    (newNotification.DeliveryChannel == DeliveryChannelEnum.Email ||
+                     newNotification.DeliveryChannel == DeliveryChannelEnum.Both))
                 {
                     await SendNotificationEmailAsync(newNotification, userIds);
                 }
@@ -319,10 +331,20 @@ public class SaNotificationService : ISaNotificationService
                 userIds.Remove(_userId);
             }
 
-            if (!await _notificationHelperService.UpdateNotificationUsers(notification.Id, userIds))
+            // Persist the resolved recipient IDs so the dispatch job can create NotificationUser
+            // rows and send emails when a scheduled notification's execution time is reached.
+            notification.RecipientUserIds = SerializeGuidList(userIds);
+
+            // For scheduled notifications, do NOT update NotificationUser rows here; the dispatch
+            // job creates them when the scheduled time is reached. Immediate notifications get
+            // their rows updated now so they reflect the latest audience instantly.
+            if (!isScheduled)
             {
-                serviceResponse.Update("Failed to update NotificationUser relationship", 400);
-                return serviceResponse;
+                if (!await _notificationHelperService.UpdateNotificationUsers(notification.Id, userIds))
+                {
+                    serviceResponse.Update("Failed to update NotificationUser relationship", 400);
+                    return serviceResponse;
+                }
             }
 
             if (!await _unitOfWork.SaveAsync())
@@ -331,10 +353,12 @@ public class SaNotificationService : ISaNotificationService
                 return serviceResponse;
             }
 
-            // Send email for Email/Both delivery channels (immediate notifications are marked
-            // Sent at insert and never hit the dispatch job, so email must be sent here).
-            if (notification.DeliveryChannel == DeliveryChannelEnum.Email ||
-                notification.DeliveryChannel == DeliveryChannelEnum.Both)
+            // Send email for Email/Both delivery channels. For immediate notifications (marked
+            // Sent at insert and never hit the dispatch job) the email is sent here. Scheduled
+            // notifications defer email to the dispatch job when the scheduled time is reached.
+            if (!isScheduled &&
+                (notification.DeliveryChannel == DeliveryChannelEnum.Email ||
+                 notification.DeliveryChannel == DeliveryChannelEnum.Both))
             {
                 await SendNotificationEmailAsync(notification, userIds);
             }
@@ -767,6 +791,13 @@ public class SaNotificationService : ISaNotificationService
 
     // Serializes a list of integers to a JSON string for persistence (null-safe).
     private static string? SerializeIntList(List<int>? values)
+    {
+        if (values == null || values.Count == 0) return null;
+        return System.Text.Json.JsonSerializer.Serialize(values);
+    }
+
+    // Serializes a list of GUIDs to a JSON string for persistence (null-safe).
+    private static string? SerializeGuidList(List<Guid>? values)
     {
         if (values == null || values.Count == 0) return null;
         return System.Text.Json.JsonSerializer.Serialize(values);

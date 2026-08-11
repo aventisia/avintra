@@ -1215,6 +1215,9 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("RecipientUserIds")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset?>("RecurrenceEndOn")
                         .HasColumnType("timestamp with time zone");
 

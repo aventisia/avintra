@@ -88,6 +88,14 @@ public class Notification : BaseEntity, IMustHaveTenant
     public DateTimeOffset? SentOn { get; set; }
 
     /// <summary>
+    /// Gets or sets the resolved recipient user IDs, serialized as a JSON array (e.g. [guid, guid]).
+    /// Persisted so the dispatch job can create <see cref="NotificationUser"/> rows and send emails
+    /// when a scheduled notification's execution time is reached (rows are not created at insert
+    /// for scheduled notifications).
+    /// </summary>
+    public string? RecipientUserIds { get; set; }
+
+    /// <summary>
     /// Gets or sets the recurrence frequency of a scheduled notification (None, Daily, Weekly, Monthly).
     /// </summary>
     [MaxLength(30)]

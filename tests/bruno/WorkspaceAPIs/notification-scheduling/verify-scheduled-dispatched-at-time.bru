@@ -1,0 +1,29 @@
+meta {
+  name: Verify scheduled notification dispatched at time
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/{{SCHEDULED_NOTIFICATION_ID}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Wait for the Quartz dispatch job to fire (it polls every 1 minute). The notification
+  // was scheduled ~1 minute in the future, so this runs after it is due.
+  await new Promise((resolve) => setTimeout(resolve, 90 * 1000));
+}
+
+script:post-response {
+  // Once the scheduled time is reached, the dispatch job flips the notification to Sent and
+  // sets SentOn, and creates the bell (NotificationUser) rows.
+  const data = res.getBody().data;
+  if (data.status !== "Sent") {
+    bru.fail("Expected scheduled notification to be 'Sent' after dispatch, got '" + data.status + "'");
+  }
+  if (!data.sentOn) {
+    bru.fail("Expected scheduled notification to have a sentOn after dispatch");
+  }
+}

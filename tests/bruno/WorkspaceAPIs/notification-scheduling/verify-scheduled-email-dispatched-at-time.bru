@@ -1,0 +1,28 @@
+meta {
+  name: Verify scheduled email dispatched at time
+  type: http
+  seq: 9
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/{{SCHEDULED_EMAIL_NOTIFICATION_ID}}
+  body: none
+  auth: none
+}
+
+script:pre-request {
+  // Wait for the Quartz dispatch job (polls every 1 minute) to fire for the scheduled email.
+  await new Promise((resolve) => setTimeout(resolve, 90 * 1000));
+}
+
+script:post-response {
+  // Once the scheduled time is reached, the dispatch job flips the Email notification to Sent
+  // and sends the email (delivery deferred until this point).
+  const data = res.getBody().data;
+  if (data.status !== "Sent") {
+    bru.fail("Expected scheduled email notification to be 'Sent' after dispatch, got '" + data.status + "'");
+  }
+  if (!data.sentOn) {
+    bru.fail("Expected scheduled email notification to have a sentOn after dispatch");
+  }
+}
