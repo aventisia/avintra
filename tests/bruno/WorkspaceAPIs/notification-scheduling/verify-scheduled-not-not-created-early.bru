@@ -1,0 +1,23 @@
+meta {
+  name: Verify scheduled notification not dispatched before time
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/{{SCHEDULED_NOTIFICATION_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  // A scheduled notification must NOT be created/dispatched before its scheduled time.
+  // It must still be 'Scheduled' and have no SentOn, and no bell/unread row should exist.
+  const data = res.getBody().data;
+  if (data.status !== "Scheduled") {
+    bru.fail("Expected scheduled notification to be 'Scheduled', got '" + data.status + "'");
+  }
+  if (data.sentOn) {
+    bru.fail("Expected scheduled notification to have no sentOn before dispatch, got '" + data.sentOn + "'");
+  }
+}

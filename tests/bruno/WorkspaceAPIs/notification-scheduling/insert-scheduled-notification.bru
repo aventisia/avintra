@@ -1,0 +1,41 @@
+meta {
+  name: Insert scheduled notification
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "message": "Scheduled scheduling test notification",
+    "type": "Information",
+    "deliveryChannel": "Platform",
+    "audienceScope": "AllUsers",
+    "title": "Scheduled Test"
+  }
+}
+
+script:pre-request {
+  // Schedule the notification 1 minute in the future so it is created with Status = Scheduled
+  // and NOT dispatched/created immediately.
+  const scheduledFor = new Date(Date.now() + 60 * 1000).toISOString();
+  req.setBody({
+    message: "Scheduled scheduling test notification",
+    type: "Information",
+    deliveryChannel: "Platform",
+    audienceScope: "AllUsers",
+    title: "Scheduled Test",
+    scheduledFor
+  });
+}
+
+script:post-response {
+  if (res.getStatus() == 201 || res.getStatus() == 200) {
+    bru.setVar("SCHEDULED_NOTIFICATION_ID", res.getBody().data.id);
+  }
+}

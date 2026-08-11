@@ -1,0 +1,19 @@
+meta {
+  name: Verify immediate notification sent instantly
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/notification/{{IMMEDIATE_NOTIFICATION_ID}}
+  body: none
+  auth: none
+}
+
+script:post-response {
+  // An immediate (no schedule) notification must be marked Sent right away.
+  const status = res.getBody().data.status;
+  if (status !== "Sent") {
+    bru.fail("Expected immediate notification to be 'Sent', got '" + status + "'");
+  }
+}
