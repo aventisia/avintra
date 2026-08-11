@@ -42,10 +42,12 @@ import SupportTicketsV2Page from "./pages/05-tenant-admin/SupportTicketsV2Page";
 import { TenantPage } from "./pages/05-tenant-admin/TenantPage";
 import { TenantTemplatesApprovalPage } from "./pages/05-tenant-admin/TenantTemplatesApprovalPage";
 import { UsersPage } from "./pages/05-tenant-admin/UsersPage";
+import { NotificationsPage } from "./pages/05-tenant-admin/NotificationsPage";
 import { CreditPlansPage } from "./pages/06-super-admin/CreditPlansPage";
 import { PublicTemplatesApprovalPage } from "./pages/06-super-admin/PublicTemplatesApprovalPage";
 import SaSupportTicketDetailPage from "./pages/06-super-admin/SaSupportTicketDetailPage";
 import SaSupportTicketsPage from "./pages/06-super-admin/SaSupportTicketsPage";
+import { SaNotificationsPage } from "./pages/06-super-admin/SaNotificationsPage";
 import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
 import { OnPremTenantsPage } from "./pages/07-global-admin/OnPremTenantsPage";
@@ -258,6 +260,10 @@ const routerConfig: RouteObject[] = [
             element: <SpacesPage />,
           },
           {
+            path: "notifications",
+            element: <NotificationsPage />,
+          },
+          {
             path: "integrations",
             element: <AppIntegrationsPage />,
           },
@@ -315,6 +321,10 @@ const routerConfig: RouteObject[] = [
           {
             path: "approvals",
             element: <PublicTemplatesApprovalPage />,
+          },
+          {
+            path: "notifications",
+            element: <SaNotificationsPage />,
           },
           {
             path: "support",

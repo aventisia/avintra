@@ -260,18 +260,14 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         route: "/tenant/approvals",
         type: ["Commercial", "Enterprise"],
       },
-      // Add integrations only if not production
-      ...(import.meta.env.MODE !== "production"
-        ? ([
-            {
-              permissions: ["TA"],
-              Icon: BellIcon,
-              name: "notifications",
-              route: "/tenant/notifications",
-              type: ["Commercial", "Enterprise"],
-            },
-          ] as SidebarMenuItemType[])
-        : []),
+      // Add notifications menu item for tenant admin
+      {
+        permissions: ["TA"],
+        Icon: BellIcon,
+        name: "notifications",
+        route: "/tenant/notifications",
+        type: ["Commercial", "Enterprise"],
+      },
       {
         permissions: ["TA"],
         Icon: ArchiveIcon,
@@ -306,18 +302,13 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         route: "/sa/approvals",
         type: ["Commercial"],
       },
-      // Add integrations only if not production
-      ...(import.meta.env.MODE !== "production"
-        ? ([
-            {
-              permissions: ["SA"],
-              Icon: BellIcon,
-              name: "notifications",
-              route: "/sa/notifications",
-              type: ["Commercial", "Enterprise"],
-            },
-          ] as SidebarMenuItemType[])
-        : []),
+      {
+        permissions: ["SA"],
+        Icon: BellIcon,
+        name: "notifications",
+        route: "/sa/notifications",
+        type: ["Commercial", "Enterprise"],
+      },
 
       {
         permissions: ["SA"],

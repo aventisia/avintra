@@ -27,6 +27,8 @@ import { getDialogHeadingDescription as getSaTicketDialogHeadingDescription } fr
 import { getDialogHeadingDescription as getTenantDialogHeadingDescription } from "@/features/06-super-admin/tenants-table/constants";
 import { getDialogHeadingDescription as getTenantInstanceDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant-instance/constants";
 import { getDialogHeadingDescription as getOnPremTenantDialogHeadingDescription } from "@/features/07-global-admin/on-prem-tenant/constants";
+import { getDialogHeadingDescription as getNotificationDialogHeadingDescription } from "@/features/notifications/constants/notifications-table.constant";
+import { getSaDialogHeadingDescription as getSaNotificationDialogHeadingDescription } from "@/features/06-super-admin/sa-notifications/constants/sa-notifications-table.constant";
 
 const MachineCrudDialogContent = lazy(() =>
   import("@/features/03-orchestrator/machines-table/components/machine-crud-dialog/MachineCrudDialogContent").then(
@@ -151,6 +153,16 @@ const SpaceCrudDialogContent = lazy(() =>
 const ApiKeyCrudDialogContent = lazy(() =>
   import("@/features/03-orchestrator/api-keys/components/api-key-crud-dialog/ApiKeyCrudDialogContent").then(
     (m) => ({ default: m.ApiKeyCrudDialogContent }),
+  ),
+);
+const NotificationCrudDialogContent = lazy(() =>
+  import("@/features/notifications/components/notification-crud-dialog/NotificationCrudDialogContent").then(
+    (m) => ({ default: m.NotificationCrudDialogContent }),
+  ),
+);
+const SaNotificationCrudDialogContent = lazy(() =>
+  import("@/features/06-super-admin/sa-notifications/components/sa-notification-crud-dialog/SaNotificationCrudDialogContent").then(
+    (m) => ({ default: m.SaNotificationCrudDialogContent }),
   ),
 );
 
@@ -279,6 +291,16 @@ const crudDialogRegistry: CrudDialogRegistry = {
     maxWidth: "!max-w-[34rem]",
     getHeader: getApiKeyDialogHeadingDescription,
     Content: ApiKeyCrudDialogContent,
+  },
+  notification: {
+    maxWidth: "!max-w-[36rem]",
+    getHeader: getNotificationDialogHeadingDescription,
+    Content: NotificationCrudDialogContent,
+  },
+  saNotification: {
+    maxWidth: "!max-w-[36rem]",
+    getHeader: getSaNotificationDialogHeadingDescription,
+    Content: SaNotificationCrudDialogContent,
   },
 };
 

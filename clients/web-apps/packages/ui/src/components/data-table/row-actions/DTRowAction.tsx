@@ -11,6 +11,7 @@ interface DTEditRowActionProps {
   size?: "sm" | "md";
   crudAction: "update" | "read";
   entity: CrudEntityKey;
+  /** Whether the action is disabled (e.g. for immutable records). */
   disabled?: boolean;
 }
 

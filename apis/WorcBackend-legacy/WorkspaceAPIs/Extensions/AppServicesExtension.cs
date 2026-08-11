@@ -41,6 +41,8 @@ public static class AppServicesExtension
         var config = TypeAdapterConfig.GlobalSettings;
         config.Apply(new WorkspaceUserMappingProfile());
         config.Apply(new GlobalNotificationMappingProfile());
+        config.Apply(new NotificationMappingProfile());
+        config.Apply(new SaNotificationMappingProfile());
         config.Apply(new UnreadNotificationMappingProfile());
         config.Apply(new AutoNotificationMappingProfile());
         config.Apply(new FlowsTableMappingProfile());
@@ -106,8 +108,13 @@ public static class AppServicesExtension
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
         services.AddScoped<INotificationHelperService, NotificationHelperService>();
         services.AddScoped<IGlobalNotificationService, GlobalNotificationService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<ISaNotificationService, SaNotificationService>();
+        services.AddScoped<INotificationHistoryService, NotificationHistoryService>();
         services.AddScoped<IUnreadNotificationService, UnreadNotificationService>();
         services.AddScoped<IAutoNotificationService, AutoNotificationService>();
+        services.AddScoped<INotificationEventService, NotificationEventService>();
+        services.AddScoped<INotificationRecipientResolver, NotificationRecipientResolver>();
         services.AddScoped<IFlowsTableService, FlowsTableService>();
         services.AddScoped<IFlowCommentService, FlowCommentService>();
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
@@ -245,6 +252,40 @@ public static class AppServicesExtension
                 .WithSimpleSchedule(x => x
                     .WithIntervalInMinutes(5)
                     .RepeatForever()));
+
+            // LowCreditBalanceJob configuration - runs daily at 3:00 AM UTC
+            var lowCreditBalanceJobKey = new JobKey("LowCreditBalanceJob");
+            quartz.AddJob<LowCreditBalanceJob>(opts => opts.WithIdentity(lowCreditBalanceJobKey));
+
+            quartz.AddTrigger(opts => opts
+                .ForJob(lowCreditBalanceJobKey)
+                .WithIdentity("LowCreditBalanceJob-trigger")
+                .StartNow()
+                .WithCronSchedule("0 0 3 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc))
+                .WithDescription("Trigger for Low Credit Balance Job - Runs at 3:00 AM UTC daily"));
+
+            // SubscriptionRenewalReminderJob configuration - runs daily at 4:00 AM UTC
+            var subscriptionRenewalReminderJobKey = new JobKey("SubscriptionRenewalReminderJob");
+            quartz.AddJob<SubscriptionRenewalReminderJob>(opts => opts.WithIdentity(subscriptionRenewalReminderJobKey));
+
+            quartz.AddTrigger(opts => opts
+                .ForJob(subscriptionRenewalReminderJobKey)
+                .WithIdentity("SubscriptionRenewalReminderJob-trigger")
+                .StartNow()
+                .WithCronSchedule("0 0 4 * * ? *", x => x.InTimeZone(TimeZoneInfo.Utc))
+                .WithDescription("Trigger for Subscription Renewal Reminder Job - Runs at 4:00 AM UTC daily"));
+
+            // NotificationDispatchJob configuration - runs every 1 minute
+            var notificationDispatchJobKey = new JobKey("NotificationDispatchJob");
+            quartz.AddJob<NotificationDispatchJob>(opts => opts.WithIdentity(notificationDispatchJobKey));
+
+            quartz.AddTrigger(opts => opts
+                .ForJob(notificationDispatchJobKey)
+                .WithIdentity("NotificationDispatchJob-trigger")
+                .StartNow()
+                .WithSimpleSchedule(x => x
+                    .WithIntervalInMinutes(1)
+                    .RepeatForever()));
         });
 
         // Register Quartz hosted service to ensure jobs run in the background
@@ -254,5 +295,8 @@ public static class AppServicesExtension
         services.AddTransient<TimeTriggerExecutionJob>();
         services.AddTransient<TenantHistoryCleanupJob>();
         services.AddTransient<ExecutionTimeoutMonitorJob>();
+        services.AddTransient<LowCreditBalanceJob>();
+        services.AddTransient<SubscriptionRenewalReminderJob>();
+        services.AddTransient<NotificationDispatchJob>();
     }
 }

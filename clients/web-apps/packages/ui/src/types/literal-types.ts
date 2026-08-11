@@ -46,7 +46,9 @@ type CrudEntityKey =
   | "user"
   | "role"
   | "apiKey"
-  | "space";
+  | "space"
+  | "notification"
+  | "saNotification";
 
 /**
  * Represents the type for specifying the order by which to sort data.

@@ -22,6 +22,9 @@ public class TenantDbContext : DbContext
 
         // Enum to string conversion
         modelBuilder.Entity<TenantReadOnly>().Property(e => e.DbOption).HasConversion(new EnumToStringConverter<DatabaseOptionsEnum>());
+
+        // Composite key for the read-only user-role M2M projection
+        modelBuilder.Entity<AccountUserRoleReadOnly>().HasKey(e => new { e.UserId, e.RoleId });
     }
 
     /// <summary>
@@ -30,4 +33,14 @@ public class TenantDbContext : DbContext
     /// </summary>
     public DbSet<TenantReadOnly> ReadOnlyTenants { get; set; }
     public DbSet<ActiveSessionReadOnly> ReadOnlyActiveSessions { get; set; }
+
+    /// <summary>
+    /// Read-only access to AccountsDb users/roles/credits/subscriptions for
+    /// notification recipient resolution and background jobs. Do not write.
+    /// </summary>
+    public DbSet<AccountUserReadOnly> ReadOnlyAccountUsers { get; set; }
+    public DbSet<AccountRoleReadOnly> ReadOnlyAccountRoles { get; set; }
+    public DbSet<AccountUserRoleReadOnly> ReadOnlyAccountUserRoles { get; set; }
+    public DbSet<TenantCreditReadOnly> ReadOnlyTenantCredits { get; set; }
+    public DbSet<TenantSubscriptionReadOnly> ReadOnlyTenantSubscriptions { get; set; }
 }

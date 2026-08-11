@@ -1,10 +1,9 @@
-import { DotSeparator } from "@avplatform/ui";
 import { cn } from "@avplatform/ui/lib";
 import { formatDistanceToNow } from "date-fns";
 import { memo } from "react";
 
 import { UNIActions } from "@/react-toolkit/features/unread-notifications/components/unread-notification-item/UNIActions";
-import { UNIAvatar } from "@/react-toolkit/features/unread-notifications/components/unread-notification-item/UNIAvatar";
+import { UNTypeIcon } from "@/react-toolkit/features/unread-notifications/components/unread-notification-item/UNTypeIcon";
 import { UnreadNotificationDto } from "@/react-toolkit/features/unread-notifications/dtos/unread-notification-dto";
 
 interface UnreadNotificationItemProps {
@@ -40,21 +39,22 @@ export const UnreadNotificationItem = memo(({ data }: UnreadNotificationItemProp
       {/* Mark as read Button with Tooltip */}
       <UNIActions id={data.id} />
 
-      {/* Unread notification Item User or App avatar */}
-      <UNIAvatar />
+      {/* Notification type icon */}
+      <UNTypeIcon type={data.type} />
 
-      {/* Notification container for message, time and type */}
+      {/* Notification container for title, message and time */}
       <div className="mr-7 flex flex-col gap-1">
+        {/* Title */}
+        {data.title ? (
+          <p className="flex items-center text-xs font-medium tracking-wide text-foreground">
+            {data.title}
+          </p>
+        ) : null}
         {/* Message */}
         <p className="flex items-center text-xs tracking-wide text-foreground">{data.message}</p>
-        {/* Type and Time container */}
+        {/* Time */}
         <div className="flex items-center text-2xs text-muted-foreground">
-          {/* Date and time */}
           <span>{formattedTime}</span>
-          {/* Dot separator */}
-          <DotSeparator />
-          {/* Notification type */}
-          <span>{data.type}</span>
         </div>
       </div>
     </a>
