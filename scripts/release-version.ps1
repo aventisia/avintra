@@ -51,16 +51,29 @@ function Resolve-Version {
         return $VersionArgs[0]
     }
 
-    $tag = (& git -C $Root describe --tags --abbrev=0 2>$null)
-    if ([string]::IsNullOrWhiteSpace($tag)) {
+    # Collect all tags matching v<X.Y.Z> and pick the highest version. We do NOT use
+    # `git describe --tags --abbrev=0` because when multiple tags point to the same
+    # commit (e.g. v0.1.91 and v0.1.92 both on HEAD) it returns the lexicographically
+    # first one, which is not necessarily the latest release.
+    $tags = (& git -C $Root tag --list 'v[0-9]*.[0-9]*.[0-9]*' 2>$null)
+    if ([string]::IsNullOrWhiteSpace($tags)) {
         throw "no git tag found. Create a tag like 'v0.1.86' or pass an explicit version."
     }
 
-    # Strip a leading 'v' if present (v0.1.86 -> 0.1.86).
-    $ver = $tag.Trim()
-    if ($ver.StartsWith('v')) { $ver = $ver.Substring(1) }
-    Assert-Version -Version $ver
-    return $ver
+    $best = $null
+    foreach ($t in $tags) {
+        $ver = $t.Trim()
+        if ($ver.StartsWith('v')) { $ver = $ver.Substring(1) }
+        if ($ver -notmatch '^[0-9]+\.[0-9]+\.[0-9]+$') { continue }
+        if ($null -eq $best -or [version]$ver -gt [version]$best) { $best = $ver }
+    }
+
+    if ($null -eq $best) {
+        throw "no valid v<X.Y.Z> git tag found. Create a tag like 'v0.1.86' or pass an explicit version."
+    }
+
+    Assert-Version -Version $best
+    return $best
 }
 
 # ---------------------------------------------------------------------------
