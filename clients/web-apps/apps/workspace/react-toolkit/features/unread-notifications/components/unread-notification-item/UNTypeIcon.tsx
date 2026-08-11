@@ -1,6 +1,11 @@
 import { NotificationTypesEnum } from "@avplatform/ui/enums";
 import { cn } from "@avplatform/ui/lib";
-import { BellAlertIcon, BellIcon, ExclamationTriangleIcon, InformationCircleIcon } from "@heroicons/react/24/outline";
+import {
+  BellAlertIcon,
+  BellIcon,
+  ExclamationTriangleIcon,
+  InformationCircleIcon,
+} from "@heroicons/react/24/outline";
 
 interface UNTypeIconProps {
   /** The notification type used to pick the icon. */

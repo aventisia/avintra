@@ -1,13 +1,19 @@
 import { SubmitButton } from "@avplatform/ui/buttons";
 import { AsyncMultiSelectField } from "@avplatform/ui/components/form/fields/AsyncMultiSelectField";
+import { DateTimePickerField } from "@avplatform/ui/components/form/fields/DateTimePickerField";
 import {
   AudienceScopeEnum,
   DeliveryChannelEnum,
   NotificationRecurrenceEnum,
   NotificationTypesEnum,
 } from "@avplatform/ui/enums";
-import { Form, InputField, MultiSelectField, SelectField, TextareaField } from "@avplatform/ui/form";
-import { DateTimePickerField } from "@avplatform/ui/components/form/fields/DateTimePickerField";
+import {
+  Form,
+  InputField,
+  MultiSelectField,
+  SelectField,
+  TextareaField,
+} from "@avplatform/ui/form";
 import { ISelectOption } from "@avplatform/ui/types";
 import { useEffect, useRef } from "react";
 import { useWatch } from "react-hook-form";
@@ -18,12 +24,12 @@ import { AppUserBaseDto } from "../dtos/app-user-base.dto";
 import { CreateNotificationDto } from "../dtos/create-notification.dto";
 import { NotificationDto } from "../dtos/notification.dto";
 import { useCreateNotificationMutation } from "../hooks/useCreateNotificationMutation.hook";
-import { useUpdateNotificationMutation } from "../hooks/useUpdateNotificationMutation.hook";
 import {
   notificationZodSchema,
   useDefineNotificationForm,
 } from "../hooks/useDefineNotificationForm.hook";
 import { useFetchNotificationRoles } from "../hooks/useFetchNotificationRoles.hook";
+import { useUpdateNotificationMutation } from "../hooks/useUpdateNotificationMutation.hook";
 
 // The Super Admin role's display name (FullName) as returned by the roles-to-select API.
 const SUPER_ADMIN_ROLE_LABEL = "Super administrator";
@@ -58,8 +64,10 @@ export const NotificationComposeForm = ({
   // audience selection (recipients) is reflected on first render.
   const { form, isDirty, isValid } = useDefineNotificationForm(notification, recipients);
 
-  const { createNotificationMutation, isPending: isCreatePending } = useCreateNotificationMutation();
-  const { updateNotificationMutation, isPending: isUpdatePending } = useUpdateNotificationMutation();
+  const { createNotificationMutation, isPending: isCreatePending } =
+    useCreateNotificationMutation();
+  const { updateNotificationMutation, isPending: isUpdatePending } =
+    useUpdateNotificationMutation();
 
   const isPending = isCreatePending || isUpdatePending;
 
@@ -141,7 +149,8 @@ export const NotificationComposeForm = ({
           : undefined,
       scheduledFor: formData.scheduledFor ? formData.scheduledFor.toISOString() : undefined,
       recurrenceFrequency:
-        formData.recurrenceFrequency && formData.recurrenceFrequency !== NotificationRecurrenceEnum.None
+        formData.recurrenceFrequency &&
+        formData.recurrenceFrequency !== NotificationRecurrenceEnum.None
           ? formData.recurrenceFrequency
           : undefined,
       recurrenceInterval: formData.recurrenceInterval,
@@ -157,7 +166,9 @@ export const NotificationComposeForm = ({
         formData.recurrenceMonthDays.length > 0
           ? formData.recurrenceMonthDays.map(Number)
           : undefined,
-      recurrenceEndOn: formData.recurrenceEndOn ? formData.recurrenceEndOn.toISOString() : undefined,
+      recurrenceEndOn: formData.recurrenceEndOn
+        ? formData.recurrenceEndOn.toISOString()
+        : undefined,
     };
 
     if (isEdit && notification) {
@@ -181,7 +192,10 @@ export const NotificationComposeForm = ({
     const previous = previousAudienceScope.current;
     previousAudienceScope.current = audienceScope;
 
-    if (previous === AudienceScopeEnum.SelectedUsers && audienceScope !== AudienceScopeEnum.SelectedUsers) {
+    if (
+      previous === AudienceScopeEnum.SelectedUsers &&
+      audienceScope !== AudienceScopeEnum.SelectedUsers
+    ) {
       form.setValue("recipients", []);
     }
   }, [audienceScope, form]);
@@ -189,7 +203,12 @@ export const NotificationComposeForm = ({
   return (
     <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="px-2.5 pb-5">
       {/* Title */}
-      <InputField name="title" label="Title" placeholder="Notification title" description="Max 200 characters." />
+      <InputField
+        name="title"
+        label="Title"
+        placeholder="Notification title"
+        description="Max 200 characters."
+      />
 
       {/* Message */}
       <TextareaField
@@ -252,9 +271,7 @@ export const NotificationComposeForm = ({
         <AsyncMultiSelectField<AppUserBaseDto>
           name="recipients"
           label="Recipients"
-          fetcher={(query) =>
-            searchWorkspaceUsers(query, false).then((res) => res.data ?? [])
-          }
+          fetcher={(query) => searchWorkspaceUsers(query, false).then((res) => res.data ?? [])}
           getItemId={(item) => item.id}
           getItemLabel={(item) =>
             `${item.firstName} ${item.lastName}${item.userName ? ` (${item.userName})` : ""}`

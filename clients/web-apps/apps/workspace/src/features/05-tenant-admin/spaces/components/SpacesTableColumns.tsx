@@ -37,9 +37,7 @@ export const spacesTableColumns: ColumnDef<SpacesTableDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("name")}</div>
-    ),
+    cell: ({ row }) => <div className="w-auto truncate font-medium">{row.getValue("name")}</div>,
   },
   {
     accessorKey: "totalUsers",
@@ -73,7 +71,9 @@ export const spacesTableColumns: ColumnDef<SpacesTableDto>[] = [
       />
     ),
     cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{formatExecutionTime(row.getValue("totalExecutionTime"))}</div>
+      <div className="w-auto truncate font-medium">
+        {formatExecutionTime(row.getValue("totalExecutionTime"))}
+      </div>
     ),
   },
   {

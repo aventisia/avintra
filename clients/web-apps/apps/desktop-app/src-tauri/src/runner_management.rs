@@ -86,7 +86,7 @@ pub struct RunnerCheckResult {
 #[tauri::command]
 pub async fn check_runner_app(app_base_url: String) -> Result<RunnerCheckResult, String> {
     let latest_url = format!(
-        "{}/accounts/api/binaries/runner/latest",
+        "{}/files/binaries/runner/latest",
         app_base_url.trim_end_matches('/')
     );
 
@@ -142,7 +142,7 @@ pub async fn download_runner_app(
     on_progress: Channel<RunnerProgress>,
 ) -> Result<String, String> {
     let base = app_base_url.trim_end_matches('/');
-    let latest_url = format!("{base}/accounts/api/binaries/runner/latest");
+    let latest_url = format!("{base}/files/binaries/runner/latest");
 
     let _ = on_progress.send(RunnerProgress {
         downloaded: 0,

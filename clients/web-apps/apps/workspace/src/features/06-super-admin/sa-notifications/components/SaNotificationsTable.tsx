@@ -11,12 +11,12 @@ import {
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { useMemo } from "react";
 
+import { columnDisplayNames } from "../constants/column-display-names";
+import { columnVisibilityState } from "../constants/column-visibility-state";
+import { SA_TABLE_HEADING, SA_TABLE_KEY } from "../constants/sa-notifications-table.constant";
 import { useFetchSaNotifications } from "../hooks/useFetchSaNotifications.hook";
 import { getSaNotificationsTableColumns } from "./SaNotificationsTableColumns";
 import { SaNotificationBulkActions } from "./sa-notification-row-actions/SaNotificationBulkActions";
-import { SA_TABLE_HEADING, SA_TABLE_KEY } from "../constants/sa-notifications-table.constant";
-import { columnDisplayNames } from "../constants/column-display-names";
-import { columnVisibilityState } from "../constants/column-visibility-state";
 
 /**
  * Renders the Super Admin notifications table with search, column view filter,
@@ -27,7 +27,10 @@ export const SaNotificationsTable = () => {
   useDocumentTitle(SA_TABLE_HEADING);
 
   // Get data-table preferences (column visibility / sorting) from local storage
-  const { columnVisibility, sortState } = getDataTablePreferences(SA_TABLE_KEY, columnVisibilityState);
+  const { columnVisibility, sortState } = getDataTablePreferences(
+    SA_TABLE_KEY,
+    columnVisibilityState,
+  );
 
   const { data, isLoading } = useFetchSaNotifications();
 
@@ -64,7 +67,12 @@ export const SaNotificationsTable = () => {
           {/* Bulk delete actions */}
           <SaNotificationBulkActions table={table} />
 
-          <DTPagination table={table} isRowSelectionEnabled singularLabel="notification" pluralLabel="notifications" />
+          <DTPagination
+            table={table}
+            isRowSelectionEnabled
+            singularLabel="notification"
+            pluralLabel="notifications"
+          />
         </div>
       )}
     </>

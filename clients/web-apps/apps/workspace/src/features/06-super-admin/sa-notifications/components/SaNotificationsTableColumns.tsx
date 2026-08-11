@@ -4,8 +4,8 @@ import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { SaNotificationDto } from "../dtos/sa-notification.dto";
 import { SA_NOTIFICATIONS_TABLE_KEY } from "../constants/sa-notifications-table.constant";
+import { SaNotificationDto } from "../dtos/sa-notification.dto";
 import { SaNotificationRowActions } from "./sa-notification-row-actions/SaNotificationRowActions";
 
 /**

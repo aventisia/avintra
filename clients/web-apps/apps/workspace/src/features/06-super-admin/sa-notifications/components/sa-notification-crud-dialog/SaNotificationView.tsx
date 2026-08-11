@@ -62,13 +62,17 @@ export const SaNotificationView = ({ rowId }: SaNotificationViewProps) => {
         {/* Notification profile section */}
         <div className="flex flex-col gap-1">
           <p className="text-2xs uppercase tracking-wide text-muted-foreground">Notification</p>
-          <p className="text-base font-medium leading-tight">{notification.title || FALLBACK_VALUE}</p>
+          <p className="text-base font-medium leading-tight">
+            {notification.title || FALLBACK_VALUE}
+          </p>
         </div>
 
         {/* Message section */}
         <div className="flex flex-col gap-1">
           <p className="text-2xs uppercase tracking-wide text-muted-foreground">Message</p>
-          <p className="whitespace-pre-wrap text-sm text-muted-foreground">{notification.message}</p>
+          <p className="whitespace-pre-wrap text-sm text-muted-foreground">
+            {notification.message}
+          </p>
         </div>
 
         {/* Type, Status, Delivery, Source, Audience section */}
@@ -79,30 +83,46 @@ export const SaNotificationView = ({ rowId }: SaNotificationViewProps) => {
           <ViewField label="Delivery" value={formatEnumLabel(notification.deliveryChannel)} />
           <ViewField label="Source" value={formatEnumLabel(notification.sourceType)} />
           <ViewField label="Audience" value={formatEnumLabel(notification.audienceScope)} />
-          <ViewField label="Action URL" value={notification.actionUrl || FALLBACK_VALUE} className="break-all" />
+          <ViewField
+            label="Action URL"
+            value={notification.actionUrl || FALLBACK_VALUE}
+            className="break-all"
+          />
         </div>
       </ViewDefaultCard>
 
       {/* Schedule section */}
-      <ViewInfoRowsCard title="Schedule" icon={<BellIcon className="size-3.5 text-muted-foreground" />}>
+      <ViewInfoRowsCard
+        title="Schedule"
+        icon={<BellIcon className="size-3.5 text-muted-foreground" />}
+      >
         <ViewInfoRow label="Scheduled For" value={formatDate(notification.scheduledFor, true)} />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow label="Sent On" value={formatDate(notification.sentOn, true)} />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow label="Recurrence" value={formatEnumLabel(notification.recurrenceFrequency)} />
         <Separator className="h-[0.5px]" />
-        <ViewInfoRow label="Recurrence End" value={formatDate(notification.recurrenceEndOn, true)} />
+        <ViewInfoRow
+          label="Recurrence End"
+          value={formatDate(notification.recurrenceEndOn, true)}
+        />
       </ViewInfoRowsCard>
 
       {/* Audit trail section */}
-      <ViewInfoRowsCard title="Audit Trail" icon={<BellIcon className="size-3.5 text-muted-foreground" />}>
+      <ViewInfoRowsCard
+        title="Audit Trail"
+        icon={<BellIcon className="size-3.5 text-muted-foreground" />}
+      >
         <ViewInfoRow label="Created By" value={notification.createdBy} />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow label="Created On" value={formatDate(notification.createdOn, true)} />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow label="Last Modified By" value={notification.lastModifiedBy} />
         <Separator className="h-[0.5px]" />
-        <ViewInfoRow label="Last Modified On" value={formatDate(notification.lastModifiedOn, true)} />
+        <ViewInfoRow
+          label="Last Modified On"
+          value={formatDate(notification.lastModifiedOn, true)}
+        />
       </ViewInfoRowsCard>
     </ViewContainer>
   );

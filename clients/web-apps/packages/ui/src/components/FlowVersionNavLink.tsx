@@ -69,7 +69,9 @@ export const FlowVersionNavLink = ({
       <a
         href={String(to)}
         className={linkClassName}
-        rel={anchorProps.rel ?? (anchorProps.target === "_blank" ? "noopener noreferrer" : undefined)}
+        rel={
+          anchorProps.rel ?? (anchorProps.target === "_blank" ? "noopener noreferrer" : undefined)
+        }
         {...anchorProps}
       >
         {content}

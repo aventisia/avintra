@@ -1,10 +1,10 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   AudienceScopeEnum,
   DeliveryChannelEnum,
   NotificationRecurrenceEnum,
   NotificationTypesEnum,
 } from "@avplatform/ui/enums";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -19,7 +19,10 @@ const saNotificationZodSchema = z
       .max(200, "Title cannot exceed 200 characters.")
       .regex(/^[a-zA-Z\s]*$/, "Title can only contain alphabetic characters.")
       .optional(),
-    message: z.string().min(1, "Message is required.").max(500, "Message cannot exceed 500 characters."),
+    message: z
+      .string()
+      .min(1, "Message is required.")
+      .max(500, "Message cannot exceed 500 characters."),
     actionUrl: z.string().max(1000, "Action URL cannot exceed 1000 characters.").optional(),
     type: z.nativeEnum(NotificationTypesEnum, { message: "Invalid notification type." }),
     deliveryChannel: z.nativeEnum(DeliveryChannelEnum, { message: "Invalid delivery channel." }),
@@ -72,10 +75,7 @@ const saNotificationZodSchema = z
     }
 
     // A recurring notification requires a scheduled time and an end date
-    if (
-      data.recurrenceFrequency &&
-      data.recurrenceFrequency !== NotificationRecurrenceEnum.None
-    ) {
+    if (data.recurrenceFrequency && data.recurrenceFrequency !== NotificationRecurrenceEnum.None) {
       if (!data.scheduledFor) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -166,7 +166,9 @@ const useDefineSaNotificationForm = (
           recurrenceInterval: notification.recurrenceInterval ?? 1,
           recurrenceWeekdays: (notification.recurrenceWeekdays ?? []).map(String),
           recurrenceMonthDays: (notification.recurrenceMonthDays ?? []).map(String),
-          recurrenceEndOn: notification.recurrenceEndOn ? new Date(notification.recurrenceEndOn) : undefined,
+          recurrenceEndOn: notification.recurrenceEndOn
+            ? new Date(notification.recurrenceEndOn)
+            : undefined,
         }
       : defaultValues,
     resolver: zodResolver(saNotificationZodSchema),

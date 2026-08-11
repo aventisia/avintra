@@ -4,8 +4,8 @@ import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table
 import { formatDate } from "@avplatform/ui/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { NotificationDto } from "../dtos/notification.dto";
 import { NOTIFICATIONS_TABLE_KEY } from "../constants/notifications-table.constant";
+import { NotificationDto } from "../dtos/notification.dto";
 import { NotificationRowActions } from "./notification-row-actions/NotificationRowActions";
 
 /**
@@ -42,7 +42,9 @@ export const getNotificationsTableColumns = (): ColumnDef<NotificationDto>[] => 
     ),
     cell: ({ row }) => {
       const title = row.getValue<string | null>("title");
-      return <div className="w-auto max-w-[24rem] truncate font-medium">{title || FALLBACK_VALUE}</div>;
+      return (
+        <div className="w-auto max-w-[24rem] truncate font-medium">{title || FALLBACK_VALUE}</div>
+      );
     },
   },
   {

@@ -1,6 +1,4 @@
 import { Button } from "@avplatform/ui/buttons";
-import { PlusIcon } from "@heroicons/react/24/outline";
-import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import {
   DTHeading,
   DTPagination,
@@ -10,16 +8,18 @@ import {
   DataTableSkeleton,
   getDataTablePreferences,
 } from "@avplatform/ui/data-table";
+import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
+import { PlusIcon } from "@heroicons/react/24/outline";
 import { useMemo, useState } from "react";
 
-import { useFetchNotifications } from "../hooks/useFetchNotifications.hook";
-import { getNotificationsTableColumns } from "./NotificationsTableColumns";
-import { NotificationComposeForm } from "./NotificationComposeForm";
-import { NotificationBulkActions } from "./notification-row-actions/NotificationBulkActions";
-import { TABLE_HEADING, TABLE_KEY } from "../constants/notifications-table.constant";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
+import { TABLE_HEADING, TABLE_KEY } from "../constants/notifications-table.constant";
+import { useFetchNotifications } from "../hooks/useFetchNotifications.hook";
+import { NotificationComposeForm } from "./NotificationComposeForm";
+import { getNotificationsTableColumns } from "./NotificationsTableColumns";
+import { NotificationBulkActions } from "./notification-row-actions/NotificationBulkActions";
 
 /**
  * Renders the notifications table with search, column view filter, row selection
@@ -59,7 +59,11 @@ export const NotificationsTable = () => {
                 placeholder="Search notifications..."
               />
               <DTViewOptions {...{ table, columnDisplayNames, tableKey: TABLE_KEY }} />
-              <Button size="xs" className="gap-2 text-sm tracking-wide" onClick={() => setIsCreateOpen(true)}>
+              <Button
+                size="xs"
+                className="gap-2 text-sm tracking-wide"
+                onClick={() => setIsCreateOpen(true)}
+              >
                 <PlusIcon className="h-4 w-4" />
                 Create
               </Button>
@@ -72,7 +76,12 @@ export const NotificationsTable = () => {
           {/* Bulk delete actions */}
           <NotificationBulkActions table={table} />
 
-          <DTPagination table={table} isRowSelectionEnabled singularLabel="notification" pluralLabel="notifications" />
+          <DTPagination
+            table={table}
+            isRowSelectionEnabled
+            singularLabel="notification"
+            pluralLabel="notifications"
+          />
         </div>
       )}
 

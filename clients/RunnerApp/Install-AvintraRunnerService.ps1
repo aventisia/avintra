@@ -137,7 +137,7 @@ function Resolve-RunnerZipUrl {
 
     Write-Step "Resolving latest runner version from backend..."
     $base = $AppBaseUrl.TrimEnd('/')
-    $latestUrl = "$base/accounts/api/binaries/runner/latest"
+    $latestUrl = "$base/files/binaries/runner/latest"
     $latest = Invoke-RestMethod -Uri $latestUrl -UseBasicParsing
 
     if ([string]::IsNullOrWhiteSpace($latest.url)) {
