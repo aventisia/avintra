@@ -298,8 +298,9 @@ pub async fn download_update(
             )
             .await;
 
-        match download_result {
+        let result = match download_result {
             Ok(bytes) => {
+                println!("[updater] Download successful: {} bytes", bytes.len());
                 // Success: Store the bytes in state
                 let mut lock = state_arc.lock().await;
                 lock.content = Some(bytes);
@@ -312,8 +313,10 @@ pub async fn download_update(
                     percentage: 100,
                     status: ProgressStatus::Downloaded,
                 });
+                Ok(())
             }
             Err(e) => {
+                println!("[updater] Download FAILED: {}", e);
                 // Failure: Notify UI
                 let _ = error_channel.send(DownloadProgress {
                     downloaded: 0,
@@ -321,14 +324,30 @@ pub async fn download_update(
                     percentage: 0,
                     status: ProgressStatus::Error,
                 });
-                println!("[updater] Download failed: {}", e);
+                Err(UpdateError::new("DOWNLOAD_ERROR", e.to_string()))
             }
+        };
+
+        // Save task handle to allow cancellation (only on success)
+        if result.is_ok() {
+            state_arc.lock().await.download_task = None;
         }
+
+        result
     });
 
-    // Save task handle to allow cancellation
-    state.0.lock().await.download_task = Some(task);
-    Ok(())
+    // Wait for the download to complete and return the result
+    match task.await {
+        Ok(Ok(())) => Ok(()),
+        Ok(Err(e)) => {
+            println!("[updater] Download command failed: {}", e.message);
+            Err(e)
+        }
+        Err(join_err) => {
+            println!("[updater] Download task panicked: {}", join_err);
+            Err(UpdateError::new("TASK_PANIC", "Download task failed"))
+        }
+    }
 }
 
 /* COMMAND: INSTALL
@@ -385,7 +404,6 @@ pub async fn install_update(
         status: ProgressStatus::Installed,
     });
 
-    println!("[updater] restarting app");
     app.restart();
 }
 
