@@ -299,7 +299,7 @@ pipeline {
                             steps {
                                 dir('clients/web-apps') {
                                     echo 'Building web-apps...'
-                                    sh "npm run build -- -- --filter=!desktop-app --mode=${getBuildMode(env.BRANCH_NAME)}"
+                                    sh "npx turbo run build --filter=accounts --filter=workspace --filter=studio -- --mode=${getBuildMode(env.BRANCH_NAME)}"
                                 }
                             }
                         }

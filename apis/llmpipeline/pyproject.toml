@@ -1,0 +1,5 @@
+[project]
+name = "llmpipeline"
+version = "0.1.44"
+description = "LLM Pipeline APIs - FastAPI service for LLM pipelines"
+requires-python = ">=3.12,<3.13"

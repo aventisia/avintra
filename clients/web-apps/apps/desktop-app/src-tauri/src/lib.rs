@@ -20,11 +20,8 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         // Register the PendingUpdate wrapper so commands can find it
         .manage(PendingUpdate::new())
-        .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        .plugin(tauri_plugin_process::init())
         .invoke_handler(tauri::generate_handler![
             commands::launch_runner_app,
             commands::launch_ui_inspector,
@@ -50,13 +47,15 @@ pub fn run() {
             }
 
             // Set tauri window title with version
-            let window = app.get_webview_window("main").unwrap();
-            let version = env!("CARGO_PKG_VERSION"); // reads version from Cargo.toml
-                                                     // Get the current title
-            let current_title = window.title().unwrap_or_else(|_| String::from(""));
-            let new_title = format!("{current_title} v{version}");
-            window.set_title(&new_title).unwrap();
-            window.maximize().unwrap();
+            if let Some(window) = app.get_webview_window("main") {
+                let version = env!("CARGO_PKG_VERSION"); // reads version from Cargo.toml
+                let current_title = window.title().unwrap_or_default();
+                let new_title = format!("{current_title} v{version}");
+                let _ = window.set_title(&new_title);
+                let _ = window.maximize();
+            } else {
+                eprintln!("Warning: main window not found during setup");
+            }
 
             Ok(())
         })

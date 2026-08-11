@@ -169,7 +169,7 @@
     "react-router-dom": "^6.24.1",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8",
-    "zustand": "^5.0.0"
+    "zustand": "5.0.14"
   },
   "devDependencies": {
     "@avplatform/eslint-config": "*",

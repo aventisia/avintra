@@ -22,7 +22,7 @@ sudo apt -y install python3 python3-pip python3-venv tesseract-ocr ocrmypdf ffmp
 
 ### Python dependencies
 
-- Python 3.8+
+- **Python 3.12.x** (required — the project is not compatible with Python 3.13+; see `pyproject.toml` and the version guard in `app/core/config.py`)
 - All required packages are listed in `requirements.txt` (install with `pip install -r requirements.txt`)
 - Notable packages:
   - [FastAPI](https://fastapi.tiangolo.com/)
@@ -38,11 +38,20 @@ sudo apt -y install python3 python3-pip python3-venv tesseract-ocr ocrmypdf ffmp
    git clone <your-repo-url>
    cd llmpipelineapis
    ```
-2. **Create a virtual environment:**
+2. **Create a virtual environment with Python 3.12:**
+
    ```sh
-   python3 -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   # Windows
+   py -3.12 -m venv venv
+   venv\Scripts\activate
+
+   # Linux / macOS
+   python3.12 -m venv venv
+   source venv/bin/activate
    ```
+
+   > If you don't have Python 3.12 installed, install it first (e.g. from https://www.python.org/downloads/release/python-3123/ on Windows, or via your package manager on Linux/macOS).
+
 3. **Install Python dependencies:**
    ```sh
    pip install -r requirements.txt

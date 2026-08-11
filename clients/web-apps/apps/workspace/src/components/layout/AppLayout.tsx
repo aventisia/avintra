@@ -1,6 +1,4 @@
 // import { Sidebar } from "@avplatform/layout";
-import { AppUpdateToast } from "@avplatform/tauri-utils";
-import { IS_TAURI } from "@avplatform/ui/constants";
 import { cn } from "@avplatform/ui/lib";
 import { ScrollArea } from "@avplatform/ui/scroll";
 import { useBaseLayoutStore } from "@avplatform/ui/stores";
@@ -11,10 +9,6 @@ import { useShallow } from "zustand/react/shallow";
 import { WorkspaceCrudDialogProvider } from "@/components/crud-dialog";
 import { DotPattern } from "@/components/layout/DotPattern";
 import useCheckMachineStatus from "@/features/03-orchestrator/machines-table/hooks/useCheckMachineStatus";
-// import {
-//   useCheckForUpdate,
-//   useRedirectOnRelaunch,
-// } from "@avplatform/tauri-utils";
 import { useFetchPaymentStatus } from "@/features/05-tenant-admin/tenant/hooks/useFetchPaymentStatus";
 import { PROCESSING_STATES } from "@/features/execute-flow";
 import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger";
@@ -30,7 +24,6 @@ import { useAppLoaderStore } from "@/stores/app-loader-store";
 import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 import { getWebSocketUrl } from "@/utils/get-websocket-url";
 
-import AppBanner from "./AppBanner";
 import AppHeader from "./AppHeader";
 import { AppLoader } from "./AppLoader";
 import { AppRedirectPage } from "./AppRedirectPage";
@@ -46,10 +39,9 @@ export const AppLayout = () => {
   const location = useLocation();
 
   // Get the state and actions from the base layout store
-  const { sidebarExpand, appBanner, setViteEnvVars, setSidebarMenuSections } = useBaseLayoutStore(
+  const { sidebarExpand, setViteEnvVars, setSidebarMenuSections } = useBaseLayoutStore(
     useShallow((state) => ({
       sidebarExpand: state.sidebarExpand,
-      appBanner: state.appBanner,
       setViteEnvVars: state.setViteEnvVars,
       setSidebarMenuSections: state.setSidebarMenuSections,
     })),
@@ -84,7 +76,7 @@ export const AppLayout = () => {
   // running. React Router only allows one active blocker at a time, so we avoid
   // registering this blocker alongside the CRUD dialog's blocker in web mode.
   const isExecuting = PROCESSING_STATES.includes(executionState);
-  const showNavigationBlocker = import.meta.env.MODE !== "production" && IS_TAURI && isExecuting;
+  const showNavigationBlocker = import.meta.env.MODE !== "production" && isExecuting;
 
   // Prevent closing the Tauri app while an execution is in progress
   usePreventClose({
@@ -93,12 +85,6 @@ export const AppLayout = () => {
 
   // Run check for pending logs if any and post them to respective job data
   useRecoverCrashLogs();
-
-  // Redirect to relaunch URL if available (if app is inside Tauri)
-  // useRedirectOnRelaunch();
-
-  // Check for new version updates if app is inside the Tauri
-  // useCheckForUpdate();
 
   useFetchPaymentStatus();
 
@@ -183,11 +169,7 @@ export const AppLayout = () => {
 
     // Check if the user has exactly one "TD" role
     const hasSingleTD = userSession.userRoles.includes("TD") && userSession.userRoles.length === 1;
-    if (IS_TAURI) {
-      setConnectWebsocket(!hasSingleTD && osID != "");
-    } else {
-      setConnectWebsocket(!hasSingleTD);
-    }
+    setConnectWebsocket(!hasSingleTD && osID != "");
   }, [isPending, osID, userSession]);
 
   if (isAppLoading) return <AppLoader />;
@@ -203,17 +185,9 @@ export const AppLayout = () => {
               "z-[-10] mt-2 [mask-image:linear-gradient(to_bottom_left,white,transparent,transparent)]",
             )}
           />
-          <AppBanner />
-          {IS_TAURI ? <AppUpdateToast domain={window.location.origin} /> : null}
           <AppHeader />
           <Sidebar />
-          <ScrollArea
-            className={cn(
-              appBanner
-                ? "h-[calc(100vh-var(--header-height)-var(--header-padding)-var(--banner-height))]"
-                : "h-[calc(100vh-var(--header-height)-var(--header-padding))]",
-            )}
-          >
+          <ScrollArea className={cn("h-[calc(100vh-var(--header-height)-var(--header-padding))]")}>
             <main
               className={cn(
                 "px-3 md:px-7 py-0 transition-all duration-500",

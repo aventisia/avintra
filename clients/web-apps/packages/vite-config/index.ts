@@ -22,4 +22,17 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  server: {
+    allowedHosts: ["local-avintra.aventisia.com"],
+  },
+  // `use-effect-event` (a transitive dep of @assistant-ui/react) ships a broken
+  // `exports["."].source` condition pointing at an unpublished `src/index.ts`.
+  // Vite enables the `source` condition during dep optimization, so esbuild
+  // fails to resolve it. Drop `source` from the optimizer conditions so it
+  // falls back to the built `dist/index.js`.
+  optimizeDeps: {
+    esbuildOptions: {
+      conditions: ["module", "import", "browser", "development", "default"],
+    },
+  },
 });

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace AccountsAPIs.DTOs;
 
 /// <summary>
@@ -18,6 +20,7 @@ public class UpdateCheckDto
     /// <summary>
     /// Publication date of the latest version in ISO 8601 format.
     /// </summary>
+    [JsonPropertyName("pub_date")]
     public string PubDate { get; set; } = string.Empty;
 
     /// <summary>
