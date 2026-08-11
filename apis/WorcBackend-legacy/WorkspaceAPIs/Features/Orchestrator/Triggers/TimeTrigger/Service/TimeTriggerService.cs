@@ -61,10 +61,12 @@ public class TimeTriggerService(
                     }
                 );
 
-                // Retrieve tenant-wide or explicitly shared triggers
+                // Retrieve tenant-wide or explicitly shared triggers.
+                // Exclude triggers created by the current user; those belong in the personal tab.
                 timeTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.TriggerType == TriggerTypesEnum.Time &&
+                        w.CreatedByUserId != _userId &&
                         (
                             w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)
                         )
