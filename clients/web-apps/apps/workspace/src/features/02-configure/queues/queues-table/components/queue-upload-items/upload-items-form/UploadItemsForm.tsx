@@ -2,8 +2,10 @@ import { Input, Textarea } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { Label } from "@avplatform/ui/label";
 import { cn } from "@avplatform/ui/lib";
+import { toast } from "@avplatform/ui/sonner";
 import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
+import * as XLSX from "xlsx";
 
 import { useUploadItemMutation } from "../../../hooks/useUploadItemMutation";
 import { useQueueUploadItemsStore } from "../../../stores/queues-upload-item-store";
@@ -24,6 +26,15 @@ export const UploadItemsForm = ({
       setUploadedItems: state.setUploadedItems,
     })),
   );
+
+  // When a different queue is selected (rowId changes) the dialog content stays
+  // mounted, so reset any previously-uploaded items and the remark to avoid
+  // leaking them into the newly-opened queue.
+  useEffect(() => {
+    setUploadedData([]);
+    setRemark("");
+  }, [rowId]);
+
   useEffect(() => {
     if (uploadedItems && uploadedItems?.length > 0) setUploadedData(uploadedItems);
   }, [uploadedItems]);
@@ -31,76 +42,109 @@ export const UploadItemsForm = ({
   const { mutate: mutateUploadWorkItem, isPending } = useUploadItemMutation();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // eslint-disable-next-line no-debugger
-    debugger;
     event.preventDefault();
     const file = event.target.files?.[0];
 
     if (!file) return;
 
+    // Clear the input value so the SAME file can be selected again on a
+    // subsequent upload attempt. Otherwise onChange won't fire again and the
+    // upload form would silently keep stale (or empty) data.
+    event.target.value = "";
+
     const isJson = file.type === "application/json" || file.name.endsWith(".json");
     const isCsv = file.type === "text/csv" || file.name.endsWith(".csv");
+    const isExcel =
+      file.name.endsWith(".xlsx") ||
+      file.name.endsWith(".xls") ||
+      file.type ===
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      file.type === "application/vnd.ms-excel";
 
-    if (!isJson && !isCsv) {
+    if (!isJson && !isCsv && !isExcel) {
       console.error("Unsupported file type");
       return;
     }
 
-    const reader = new FileReader();
+    // JSON is read as text; CSV is read as text; Excel is read as an ArrayBuffer.
+    if (isJson) {
+      const reader = new FileReader();
 
-    reader.onload = (e) => {
-      try {
-        const content = e.target?.result as string;
-
-        if (isJson) {
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result as string;
           const parsedData = JSON.parse(content);
           console.log("JSON data:", parsedData);
           setUploadedData(parsedData);
-        } else if (isCsv) {
-          // const parsedData = parseCSV(content);
-          const parsedData = parseCSVGeneric(content);
+        } catch (err) {
+          console.error("Error parsing file:", err);
+        }
+      };
+
+      reader.onerror = () => {
+        console.error("File reading error");
+      };
+
+      reader.readAsText(file);
+      return;
+    }
+
+    if (isCsv) {
+      // CSV is text, so read it as a string and let xlsx parse it (handles
+      // quoted fields, CRLF line endings, and empty lines).
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result as string;
+          const workbook = XLSX.read(content, { type: "string" });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const parsedData = XLSX.utils.sheet_to_json<Record<string, string | number>>(firstSheet, {
+            defval: "",
+          });
           console.log("CSV data:", parsedData);
           setUploadedData(parsedData);
+        } catch (err) {
+          console.error("Error parsing file:", err);
         }
+      };
+
+      reader.onerror = () => {
+        console.error("File reading error");
+      };
+
+      reader.readAsText(file);
+      return;
+    }
+
+    // Excel files are binary, so read them as an ArrayBuffer.
+    file.arrayBuffer().then((buffer) => {
+      try {
+        const workbook = XLSX.read(buffer, { type: "array" });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const parsedData = XLSX.utils.sheet_to_json<Record<string, string | number>>(firstSheet, {
+          defval: "",
+        });
+        console.log("Excel data:", parsedData);
+        setUploadedData(parsedData);
       } catch (err) {
         console.error("Error parsing file:", err);
-        // setJsonData([]);
       }
-    };
-
-    reader.onerror = () => {
-      console.error("File reading error");
-    };
-
-    reader.readAsText(file);
+    });
   };
 
   // Define submit handler
   const onSubmit = () => {
+    if (!Array.isArray(uploadedData) || uploadedData.length === 0) {
+      toast.error("No work items to upload. Please select a file first.");
+      return;
+    }
+
     // Create or update the queue
     mutateUploadWorkItem({
       queueId: rowId,
       payloadData: JSON.stringify(uploadedData),
       ...(remark?.trim() && { remarks: remark.trim() }),
-    });
-  };
-
-  const parseCSVGeneric = (csvText: string): Record<string, string | number>[] => {
-    const lines = csvText.trim().split("\n");
-    if (lines.length < 2) return [];
-
-    const headers = lines[0].split(",").map((h) => h.trim());
-
-    return lines.slice(1).map((line) => {
-      const values = line.split(",").map((v) => v.trim());
-      const row: Record<string, string | number> = {};
-
-      headers.forEach((header, index) => {
-        const value = values[index] ?? "";
-        row[header] = isNaN(Number(value)) ? value : Number(value);
-      });
-
-      return row;
     });
   };
 
@@ -112,7 +156,7 @@ export const UploadItemsForm = ({
           ref={fileInputRef}
           onChange={handleFileUpload}
           className="hidden"
-          accept=".json,application/json,.csv,text/csv"
+          accept=".json,application/json,.csv,text/csv,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
         />
       </div>
       {uploadedItems && (

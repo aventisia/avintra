@@ -9,7 +9,7 @@ public interface IQueueUserService
     /// Fetches all users associated with a specific queue.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation, containing a list of user details for the specified queue.</returns>
-    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetMyQueuesAsync();
+    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetMyQueuesAsync(DateTimeOffset? from = null, DateTimeOffset? to = null);
 
     /// <summary>
     /// Retrieves all queue users associated with a specific queue.

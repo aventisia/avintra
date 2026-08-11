@@ -4,7 +4,7 @@ import { DTColumnHeader } from "@avplatform/ui/data-table";
 import { KeyValueLookupType } from "@avplatform/ui/types";
 import { ColumnDef } from "@tanstack/react-table";
 
-import { TABLE_KEY, statusColor } from "../constants";
+import { TABLE_KEY, getStatusColor } from "../constants";
 import { InputSchemaField } from "../dtos/queues-table-dto";
 import { WorkItemRow } from "../types/my-queue-types";
 import { WorkItemsTableCellLink } from "./work-item-table/WorkItemsTableCellLink";
@@ -33,37 +33,97 @@ export const generateColumnsDisplayName = (fields: InputSchemaField[]): KeyValue
     value: field.name.charAt(0).toUpperCase() + field.name.slice(1),
   }));
 
-export const buildColumns = (inputSchema: InputSchemaField[]): ColumnDef<WorkItemRow>[] => [
-  {
-    accessorKey: "rowId",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title="WorkItem" />
-    ),
-    cell: ({ row }) => (
-      <WorkItemsTableCellLink rowId={row.original.rowId}>
-        {row.original.rowId}
-      </WorkItemsTableCellLink>
-    ),
-    enableSorting: false,
-  },
-  ...generateDTColumns(inputSchema),
-  {
-    accessorKey: "status",
-    header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Status" />,
-    cell: ({ row }) => (
-      <Badge
-        className={
-          row.original.status ? statusColor[row.original.status] : "bg-slate-200 text-slate-600"
-        }
-      >
-        {row.original.status?.replace(/([A-Z])/g, " $1")}
-      </Badge>
-    ),
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => (
-      <WorkItemActions rowId={row.original.rowId} status={row.original.status ?? ""} />
-    ),
-  },
-];
+export const buildColumns = (
+  inputSchema: InputSchemaField[],
+  isFifo = false,
+  tabValue?: string,
+): ColumnDef<WorkItemRow>[] => {
+  const isHistory = tabValue === "History";
+
+  return [
+    {
+      accessorKey: "rowId",
+      header: ({ column }) => (
+        <DTColumnHeader tableKey={TABLE_KEY} column={column} title="WorkItem" />
+      ),
+      cell: ({ row }) => (
+        <WorkItemsTableCellLink rowId={row.original.rowId}>
+          {row.original.rowId}
+        </WorkItemsTableCellLink>
+      ),
+      enableSorting: false,
+    },
+    ...generateDTColumns(inputSchema),
+    {
+      accessorKey: "assignee",
+      header: ({ column }) => (
+        <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Assignee" />
+      ),
+      cell: ({ row }) => (
+        <div className="w-32 truncate font-medium">
+          {row.original.assignee ?? FALLBACK_VALUE}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "createdOn",
+      header: ({ column }) => (
+        <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Created On" />
+      ),
+      cell: ({ row }) => {
+        const value = row.original.createdOn;
+        if (!value) return <div className="text-muted-foreground">{FALLBACK_VALUE}</div>;
+        return (
+          <div className="w-40 truncate font-medium">
+            {new Date(value).toLocaleString()}
+          </div>
+        );
+      },
+    },
+    // History-only: when the work item was closed.
+    ...(isHistory
+      ? [
+          {
+            accessorKey: "closedOn",
+            header: ({ column }: { column: { id: string } }) => (
+              <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Closed On" />
+            ),
+            cell: ({ row }: { row: { original: WorkItemRow } }) => {
+              const value = row.original.closedOn;
+              if (!value) return <div className="text-muted-foreground">{FALLBACK_VALUE}</div>;
+              return (
+                <div className="w-40 truncate font-medium">
+                  {new Date(value).toLocaleString()}
+                </div>
+              );
+            },
+          },
+        ]
+      : []),
+    {
+      accessorKey: "status",
+      header: ({ column }) => (
+        <DTColumnHeader
+          tableKey={TABLE_KEY}
+          column={column}
+          title={isHistory ? "Disposition Status" : "Status"}
+        />
+      ),
+      cell: ({ row }) => (
+        <Badge className={getStatusColor(row.original.status)}>
+          {row.original.status?.replace(/([A-Z])/g, " $1")}
+        </Badge>
+      ),
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <WorkItemActions
+          rowId={row.original.rowId}
+          status={row.original.status ?? ""}
+          isFifo={isFifo}
+        />
+      ),
+    },
+  ];
+};

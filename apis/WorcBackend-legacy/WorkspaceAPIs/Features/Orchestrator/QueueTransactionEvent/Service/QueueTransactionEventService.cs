@@ -5,6 +5,7 @@ public class QueueTransactionEventService : IQueueTransactionEventService
     private readonly ILogger<QueueTransactionEventService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly string _displayName;
 
     public QueueTransactionEventService(
         ILogger<QueueTransactionEventService> logger,
@@ -15,9 +16,23 @@ public class QueueTransactionEventService : IQueueTransactionEventService
         _userId = Guid.Parse(
             httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ??
             Guid.Empty.ToString());
+        _displayName = GetDisplayName(httpContextAccessor.HttpContext?.User);
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+    }
+
+    // Returns the user's display name (First Name + Last Name) from the "name" claim,
+    // falling back to the username/email if the claim is missing.
+    private static string GetDisplayName(System.Security.Claims.ClaimsPrincipal? user)
+    {
+        // The JWT "name" claim is mapped to ClaimTypes.Name by the default inbound
+        // claim type map, so check both the mapped type and the raw short name.
+        var name = user?.FindFirstValue(System.Security.Claims.ClaimTypes.Name)
+                   ?? user?.FindFirstValue("name");
+        if (!string.IsNullOrWhiteSpace(name)) return name;
+
+        return user?.FindFirstValue("uname") ?? string.Empty;
     }
 
     // Retrieves all events associated with the specified queue transaction.
@@ -166,9 +181,11 @@ public class QueueTransactionEventService : IQueueTransactionEventService
                 case QueueTransactionEventEnum.StatusChange:
 
                     // Update the transaction status to InProgress when a pending transaction starts processing
-                    if (queueTransaction.Status == QueueTransactionStatusTypesEnum.Pending)
+                    if (queueTransaction.Status == QueueTransactionStatusTypesEnum.Pending.ToString())
                     {
-                        queueTransaction.Status = QueueTransactionStatusTypesEnum.InProgress;
+                        queueTransaction.Status = QueueTransactionStatusTypesEnum.InProgress.ToString();
+                        // Record who opened/claimed the work item for processing.
+                        queueTransaction.Assignee = _displayName;
                     }
 
                     break;
@@ -176,7 +193,7 @@ public class QueueTransactionEventService : IQueueTransactionEventService
                 case QueueTransactionEventEnum.Closed:
 
                     // Mark the transaction as completed when the queue transaction is closed
-                    queueTransaction.Status = QueueTransactionStatusTypesEnum.Completed;
+                    queueTransaction.Status = QueueTransactionStatusTypesEnum.Completed.ToString();
 
                     break;
             }

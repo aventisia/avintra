@@ -54,6 +54,7 @@ export type DCPControlType =
   | "memory-config"
   | "json-editor"
   | "queue-select"
+  | "queue-status-select"
   | "queue-conditional-group"
   | "queue-priority-group"
   | "string-array"

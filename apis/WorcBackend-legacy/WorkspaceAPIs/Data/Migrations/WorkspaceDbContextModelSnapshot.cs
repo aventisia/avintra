@@ -1605,6 +1605,10 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("OutputSchema")
                         .HasColumnType("text");
 
+                    b.Property<string>("ProcessingMode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<List<string>>("RouteToQueues")
                         .HasColumnType("text[]");
 
@@ -1616,6 +1620,9 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<Guid?>("SpaceId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Statuses")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -1629,10 +1636,6 @@ namespace WorkspaceAPIs.Data.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("xid")
                         .HasColumnName("xmin");
-
-                    b.Property<string>("ViewType")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -1701,6 +1704,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Assignee")
+                        .HasColumnType("text");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("text");

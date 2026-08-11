@@ -6,6 +6,7 @@ public class QueueTransactionService : IQueueTransactionService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly string _username;
+    private readonly string _displayName;
     private readonly IStringEncryptionService _stringEncryptionService;
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
@@ -17,10 +18,24 @@ public class QueueTransactionService : IQueueTransactionService
         // Extract the user ID from the HTTP context (user's UID)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _username = httpContextAccessor.HttpContext?.User?.FindFirstValue("uname") ?? string.Empty;
+        _displayName = GetDisplayName(httpContextAccessor.HttpContext?.User);
 
         _logger = logger;
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
+    }
+
+    // Returns the user's display name (First Name + Last Name) from the "name" claim,
+    // falling back to the username/email if the claim is missing.
+    private static string GetDisplayName(System.Security.Claims.ClaimsPrincipal? user)
+    {
+        // The JWT "name" claim is mapped to ClaimTypes.Name by the default inbound
+        // claim type map, so check both the mapped type and the raw short name.
+        var name = user?.FindFirstValue(System.Security.Claims.ClaimTypes.Name)
+                   ?? user?.FindFirstValue("name");
+        if (!string.IsNullOrWhiteSpace(name)) return name;
+
+        return user?.FindFirstValue("uname") ?? string.Empty;
     }
 
     // Retrieve all transactions for a specific queue
@@ -410,7 +425,7 @@ public class QueueTransactionService : IQueueTransactionService
                     // Map DTO to entity and populate fields
                     var newTransaction = queueTransactionDto.Adapt<QueueTransaction>();
                     newTransaction.PayloadData = serializedPayload;
-                    newTransaction.Status = QueueTransactionStatusTypesEnum.Pending;
+                    newTransaction.Status = QueueTransactionStatusTypesEnum.Pending.ToString();
 
                     newTransactions.Add(newTransaction);
 
@@ -444,11 +459,19 @@ public class QueueTransactionService : IQueueTransactionService
                     return serviceResponse;
                 }
             }
+            else
+            {
+                // No work items were produced (empty payload, all items skipped, etc.).
+                // Surface a meaningful error instead of a false "success" message.
+                _logger.LogWarning("No work items were added to queue {QueueId}: payload contained no valid items.", queueTransactionDto.QueueId);
+                serviceResponse.Message = "No work items were added. The uploaded file contained no valid items to insert.";
+                return serviceResponse;
+            }
 
             // Set response status code and attach updated DTO to response
             serviceResponse.StatusCode = 200;
             serviceResponse.Data = queueTransactionDto;
-            serviceResponse.Message = "Transaction validated and added successfully.";
+            serviceResponse.Message = $"Transaction validated and added successfully. {newTransactions.Count} work item(s) added to the queue.";
             _logger.LogInformation("Transaction processing completed successfully. All transactions inserted into queue {QueueId}.", queueTransactionDto.QueueId);
         }
         catch (Exception ex)
@@ -488,6 +511,12 @@ public class QueueTransactionService : IQueueTransactionService
             // Update the existing queue transaction entity with values from the DTO
             queueTransaction.Status = queueTransactionDto.Status;
             queueTransaction.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            // Record who claimed the work item when it moves into InProgress.
+            if (queueTransactionDto.Status == QueueTransactionStatusTypesEnum.InProgress.ToString())
+            {
+                queueTransaction.Assignee = _displayName;
+            }
 
             // Mark the transaction as updated
             _unitOfWork.QueueTransactionRepo.Update(queueTransaction);

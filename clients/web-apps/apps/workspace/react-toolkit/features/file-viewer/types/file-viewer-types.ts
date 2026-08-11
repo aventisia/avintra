@@ -1,6 +1,9 @@
 export const FILE_TYPE = {
   PDF: "pdf",
   IMAGE: "image",
+  DOCX: "docx",
+  XLSX: "xlsx",
+  EML: "eml",
   UNSUPPORTED: "unsupported",
 } as const;
 
@@ -22,6 +25,12 @@ const IMAGE_EXTENSIONS = new Set([
 
 const PDF_EXTENSIONS = new Set(["pdf"]);
 
+const DOCX_EXTENSIONS = new Set(["docx", "doc"]);
+
+const XLSX_EXTENSIONS = new Set(["xlsx", "xls", "csv"]);
+
+const EML_EXTENSIONS = new Set(["eml"]);
+
 // Extend this map as new viewer types are supported
 const EXTENSION_TYPE_MAP: Record<string, FileType> = {};
 
@@ -30,6 +39,15 @@ IMAGE_EXTENSIONS.forEach((ext) => {
 });
 PDF_EXTENSIONS.forEach((ext) => {
   EXTENSION_TYPE_MAP[ext] = FILE_TYPE.PDF;
+});
+DOCX_EXTENSIONS.forEach((ext) => {
+  EXTENSION_TYPE_MAP[ext] = FILE_TYPE.DOCX;
+});
+XLSX_EXTENSIONS.forEach((ext) => {
+  EXTENSION_TYPE_MAP[ext] = FILE_TYPE.XLSX;
+});
+EML_EXTENSIONS.forEach((ext) => {
+  EXTENSION_TYPE_MAP[ext] = FILE_TYPE.EML;
 });
 
 export function getFileType(extension: string): FileType {
@@ -49,5 +67,8 @@ export function isImage(extension: string) {
 export const FILE_TYPE_LABEL: Record<FileType, string> = {
   [FILE_TYPE.PDF]: "PDF",
   [FILE_TYPE.IMAGE]: "Image",
+  [FILE_TYPE.DOCX]: "Word Document",
+  [FILE_TYPE.XLSX]: "Spreadsheet",
+  [FILE_TYPE.EML]: "Email",
   [FILE_TYPE.UNSUPPORTED]: "Unsupported",
 };

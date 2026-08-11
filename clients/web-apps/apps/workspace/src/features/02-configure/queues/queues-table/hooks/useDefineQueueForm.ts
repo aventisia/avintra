@@ -10,6 +10,7 @@ import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { CrudActionTypeConverter } from "@/react-toolkit/utils";
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { isNameAvailable } from "../apis/queues-table-apis";
 import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
@@ -37,32 +38,78 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
     })),
   );
 
+  // Get the currently selected space so the form reads from the same
+  // query cache key that useFetchQueues writes to (which includes the space id).
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
+
+  // Example work item schema shown when creating a new queue. The schema is a JSON array,
+  // where each element describes one field of the work item.
   const defaultSchema = [
     {
-      name: "userId",
-      description: "Unique identifier for the user",
-      label: "User ID",
+      name: "requestId",
+      description: "Unique identifier for the request",
+      label: "Request ID",
       type: "string",
       isRequired: true,
       isUsedForUniqueIdentifier: true,
     },
     {
-      name: "age",
-      description: "Age of the user",
-      label: "Age",
+      name: "amount",
+      description: "Monetary amount of the request",
+      label: "Amount",
       type: "int",
-      isRequired: false,
+      isRequired: true,
       isUsedForUniqueIdentifier: false,
     },
     {
-      name: "createdAt",
-      description: "Account creation date",
-      label: "Created At",
+      name: "submittedOn",
+      description: "Date the request was submitted",
+      label: "Submitted On",
       type: "Date",
       isRequired: false,
       isUsedForUniqueIdentifier: false,
     },
+    {
+      name: "notes",
+      description: "Free-form notes attached to the request",
+      label: "Notes",
+      type: "string",
+      isRequired: false,
+      isUsedForUniqueIdentifier: false,
+    },
+    {
+      name: "tags",
+      description: "List of labels attached to the request",
+      label: "Tags",
+      type: "Array",
+      isRequired: false,
+      isUsedForUniqueIdentifier: false,
+    },
   ];
+
+  // Example disposition status structure shown when creating a new queue.
+  const defaultStatuses = JSON.stringify(
+    [
+      {
+        name: "Approved",
+        label: "Approved",
+        color: "#22c55e",
+        routeQueue: "",
+      },
+      {
+        name: "Rejected",
+        label: "Rejected",
+        color: "#ef4444",
+        routeQueue: "",
+      },
+    ],
+    null,
+    2,
+  );
 
   // Get query client
   const queryClient = useQueryClient();
@@ -84,8 +131,9 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       // shouldRetryAbandonedItems: false,
       // maximumRetryAttempts: 3,
       inputSchema: "[]",
+      statuses: defaultStatuses,
       routeToQueues: [],
-      viewType: "DocumentProcessing",
+      processingMode: "Manual",
       credentialId: null,
       // outputDataSchemaFile: undefined,
 
@@ -107,10 +155,14 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
 
   // Fetch queue data when rowId changes
   useEffect(() => {
+    // The cache key must match the one used by useFetchQueues, which appends
+    // the current space id to the base tab query key.
+    const fullQueryKey = [...queryKey, currentSpace?.id];
+
     // Get queues data from query client
     const queuesData = queryClient.getQueryData<{
       data: QueuesTableDto[];
-    }>(queryKey);
+    }>(fullQueryKey);
 
     // Get queue data by id
     const queueData = queuesData?.data.find((item) => item.id === rowId);
@@ -126,7 +178,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       description: queueData?.description,
       type: queueData?.type ?? "Agent",
       routeToQueues: queueData?.routeToQueues ?? [],
-      viewType: queueData?.viewType || "DocumentProcessing",
+      processingMode: queueData?.processingMode || "Manual",
       credentialId: queueData?.credentialId || null,
       isUniqueReferencesEnforced: queueData?.isUniqueReferencesEnforced,
       isStoredEncrypted: queueData?.isStoredEncrypted,
@@ -134,6 +186,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       // shouldRetryAbandonedItems: queueData?.shouldRetryAbandonedItems,
       // maximumRetryAttempts: queueData?.maximumRetryAttempts,
       inputSchema: JSON.stringify(queueData?.inputSchema, null, 2) ?? JSON.stringify(defaultSchema),
+      statuses: JSON.stringify(queueData?.statuses, null, 2) ?? defaultStatuses,
       // outputDataSchemaFile: undefined,
 
       isDisabled: queueData?.isDisabled,
@@ -144,7 +197,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
         queueData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
       lastModifiedOn: queueData?.lastModifiedOn ? new Date(queueData?.lastModifiedOn) : new Date(),
     });
-  }, [rowId, form, queryClient, userSession, crudAction]);
+  }, [rowId, form, queryClient, userSession, crudAction, currentSpace?.id]);
 
   // Get check availability state and methods
   const {
@@ -166,6 +219,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
     return {
       ...formData,
       inputSchema: JSON.parse(formData.inputSchema),
+      statuses: JSON.parse(formData.statuses),
       lastModifiedBy: userSession?.email ?? "",
       lastModifiedOn: new Date().toISOString(),
     };

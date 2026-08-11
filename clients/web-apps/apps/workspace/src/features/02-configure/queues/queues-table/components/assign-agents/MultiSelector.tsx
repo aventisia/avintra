@@ -19,7 +19,8 @@ interface MultiSelectorProps {
   isLoading: boolean;
   isError: boolean;
   placeholder?: string;
-  maxHeight?: string;
+  disabled?: boolean;
+  className?: string;
 }
 
 export const MultiSelector: React.FC<MultiSelectorProps> = ({
@@ -28,11 +29,11 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
   onItemSelect,
   onItemRemove,
   onSearchChange,
-  //   searchQuery,
   isLoading,
   isError,
   placeholder = "Search and select items...",
-  //   maxHeight = "200px",
+  disabled = false,
+  className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -53,7 +54,6 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
   const handleInputChange = (value: string) => {
     setInputValue(value);
     onSearchChange(value);
-    // setIsOpen(true);
   };
 
   const handleItemSelect = (item: AgentsTableDto) => {
@@ -61,7 +61,6 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
     setInputValue("");
     onSearchChange("");
     setIsOpen(false);
-    // inputRef.current?.focus();
   };
 
   const handleInputFocus = () => {
@@ -81,113 +80,127 @@ export const MultiSelector: React.FC<MultiSelectorProps> = ({
   const filteredResults = searchResults.filter((result) => !isItemSelected(result.id));
 
   return (
-    <div ref={containerRef} className="relative w-full">
-      {/* Selected Items and Input Container */}
-      <div className="flex min-h-10 items-center justify-between gap-2 rounded-lg border border-input bg-background px-2 py-1 text-sm ring-offset-background focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
-        <ScrollArea
-          onClick={() => {
-            inputRef.current?.focus();
-          }}
-          className={cn("grow")}
-        >
-          <div className="flex flex-wrap items-center gap-1">
-            {/* Selected Items */}
-            {selectedItems.map((item) => (
-              <Badge key={item.id} variant="outline" className="flex items-center pl-2.5 pr-0">
-                {/* Agent name */}
-                <div className="flex flex-col">
-                  <p className="max-w-24 truncate text-2xs font-medium">
-                    {`${item.name} -v${item.versionNumber}`}
-                  </p>
+    <div
+      ref={containerRef}
+      className={cn(
+        "flex w-full  justify-between rounded-lg border border-input bg-background shadow-sm shadow-black/5 ring-offset-background transition-shadow",
+        "focus-within:border-primary focus-within:outline-none focus-within:ring-[3px] focus-within:ring-ring",
+        disabled && "cursor-not-allowed opacity-80",
+        className,
+      )}
+    >
+      {/* LEFT SIDE: Custom Search & Select (Maintains inline input behavior) */}
+      <div className="relative flex w-full flex-1 items-center min-w-0">
+        <div className="flex min-h-10 w-full items-center justify-between gap-2 px-2 py-1.5 text-sm">
+          <ScrollArea
+            onClick={() => {
+              if (!disabled) inputRef.current?.focus();
+            }}
+            className={cn("grow")}
+            viewportClassName="max-h-16"
+          >
+            <div className="flex flex-wrap items-center gap-1">
+              {/* Selected Items */}
+              {selectedItems.map((item) => (
+                <Badge key={item.id} variant="outline" className="flex items-center pl-2.5 pr-0">
+                  <div className="flex flex-col">
+                    <span className="max-w-32 truncate text-2xs">
+                      {`${item.name} -v${item.versionNumber}`}
+                    </span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon5"
+                    className="rounded-full"
+                    disabled={disabled}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onItemRemove(item.id);
+                    }}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </Badge>
+              ))}
+
+              {/* Search Input (Trigger and Search at same place) */}
+              <div className="relative min-w-32 flex-1">
+                <Input
+                  ref={inputRef}
+                  type="text"
+                  value={inputValue}
+                  disabled={disabled}
+                  onChange={(e) => handleInputChange(e.target.value)}
+                  onFocus={handleInputFocus}
+                  onKeyDown={handleKeyDown}
+                  placeholder={selectedItems.length === 0 ? placeholder : ""}
+                  className="h-5 w-full rounded-none border-none bg-transparent p-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+              </div>
+            </div>
+          </ScrollArea>
+
+          {/* Dropdown Toggle for Left Side */}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={disabled}
+            className="ml-1 h-6 w-6 shrink-0 p-0 hover:bg-transparent"
+            onClick={() => setIsOpen(!isOpen)}
+          >
+            {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </Button>
+        </div>
+
+        {/* Dropdown Results */}
+        {isOpen && (
+          <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-white shadow-md">
+            <div className="p-2">
+              {isLoading && (
+                <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
+                  <LoadingSpinner className="mr-2 h-4 w-4 text-primary" />
+                  Searching...
                 </div>
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon7"
-                  className="rounded-full"
-                  onClick={() => onItemRemove(item.id)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </Badge>
-            ))}
-
-            {/* Search Input */}
-            <div className="relative min-w-28 flex-1">
-              <Input
-                ref={inputRef}
-                type="text"
-                value={inputValue}
-                onChange={(e) => handleInputChange(e.target.value)}
-                onFocus={handleInputFocus}
-                onKeyDown={handleKeyDown}
-                placeholder={selectedItems.length === 0 ? placeholder : ""}
-                className="h-5 w-full rounded-none border-none p-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
+              )}
+              {isError && (
+                <div className="p-4 text-center text-sm text-red-600">Error loading results</div>
+              )}
+              {!isLoading && !isError && inputValue && filteredResults.length === 0 && (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  No results found for "{inputValue}"
+                </div>
+              )}
+              {!isLoading && !isError && !inputValue && filteredResults.length === 0 && (
+                <div className="p-4 text-center text-sm text-muted-foreground">
+                  Start typing to search...
+                </div>
+              )}
+              {filteredResults.length > 0 ? (
+                <ScrollArea className="h-52">
+                  {filteredResults.map((result) => (
+                    <div
+                      key={result.id}
+                      className={cn(
+                        "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent",
+                        isItemSelected(result.id) && "cursor-not-allowed opacity-50",
+                      )}
+                      onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}
+                    >
+                      <div className="flex flex-col">
+                        <p className="truncate text-sm font-medium">
+                          {`${result.name} -v${result.versionNumber}`}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </ScrollArea>
+              ) : null}
             </div>
           </div>
-        </ScrollArea>
-
-        {/* Dropdown Toggle */}
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="ml-1 h-6 w-6 p-0"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        </Button>
+        )}
       </div>
-
-      {/* Dropdown Results */}
-      {isOpen && (
-        <div className="absolute top-full z-50 mt-1 h-fit w-full rounded-lg border bg-white shadow">
-          <div className="p-2">
-            {isLoading && (
-              <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
-                <LoadingSpinner className="mr-2 h-4 w-4 text-primary" />
-                Searching...
-              </div>
-            )}
-            {isError && (
-              <div className="p-4 text-center text-sm text-red-600">Error loading results</div>
-            )}
-            {!isLoading && !isError && inputValue && filteredResults.length === 0 && (
-              <div className="p-4 text-center text-sm text-muted-foreground">
-                No results found for "{inputValue}"
-              </div>
-            )}
-            {!isLoading && !isError && !inputValue && (
-              <div className="p-4 text-center text-sm text-muted-foreground">
-                Start typing to search...
-              </div>
-            )}
-            {filteredResults.length ? (
-              <ScrollArea className="h-52">
-                {filteredResults.map((result) => (
-                  <div
-                    key={result.id}
-                    className={cn(
-                      "flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-accent",
-                      isItemSelected(result.id) && "cursor-not-allowed opacity-50",
-                    )}
-                    onClick={() => !isItemSelected(result.id) && handleItemSelect(result)}
-                  >
-                    {/* Agent name */}
-                    <div className="flex flex-col">
-                      <p className="truncate text-sm font-medium">
-                        {`${result.name} -v${result.versionNumber}`}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </ScrollArea>
-            ) : null}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

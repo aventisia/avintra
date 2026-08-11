@@ -20,7 +20,6 @@ import { useFetchQueues } from "../hooks/useFetchQueues";
 import { useTableTab } from "../hooks/useTableTab";
 import { queuesTableColumns } from "./QueuesTableColumns";
 import AssignAgentsDialog from "./assign-agents/AssignAgentsDialog";
-import AssignUsersDialog from "./assign-users/AssignUsersDialog";
 import { QueueBulkActions } from "./queue-row-actions/QueueBulkActions";
 import UploadItemsDialog from "./queue-upload-items/UploadItemsDialog";
 
@@ -59,7 +58,6 @@ export const QueuesTable = () => {
       {data ? (
         <div className="space-y-4 pb-4 pt-[17px]">
           <AssignAgentsDialog />
-          <AssignUsersDialog />
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">

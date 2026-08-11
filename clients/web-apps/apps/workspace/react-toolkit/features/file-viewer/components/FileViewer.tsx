@@ -15,6 +15,8 @@ import { type LocalFile, useLocalFileStore } from "../stores/file-list-store";
 import { useViewerStore } from "../stores/file-viewer-store";
 import { usePdfViewerStore } from "../stores/pdf-previewer-store";
 import { FILE_TYPE, FileType, getFileType } from "../types/file-viewer-types";
+import DocxViewer from "./docx-viewer/DocxViewer";
+import EmlViewer from "./eml-viewer/EmlViewer";
 import UnsupportedViewer from "./UnsupportedViewer";
 import FileViewerHeader from "./file-viewer-header/FileViewerHeader";
 import PageControl from "./file-viewer-header/PageControl";
@@ -22,6 +24,7 @@ import ImageControlPanel from "./image-viewer/ImageControlPanel";
 import ImageViewer from "./image-viewer/ImageViewer";
 import PdfControlPanel from "./pdf-viewer/PdfControlPanel";
 import PdfViewer from "./pdf-viewer/PdfViewer";
+import XlsxViewer from "./xlsx-viewer/XlsxViewer";
 
 // Registry
 //
@@ -45,6 +48,18 @@ const VIEWER_REGISTRY: Record<FileType, ViewerRegistryEntry> = {
   [FILE_TYPE.IMAGE]: {
     Viewer: ImageViewer,
     ControlPanel: ImageControlPanel,
+  },
+  [FILE_TYPE.DOCX]: {
+    Viewer: DocxViewer,
+    ControlPanel: null,
+  },
+  [FILE_TYPE.XLSX]: {
+    Viewer: XlsxViewer,
+    ControlPanel: null,
+  },
+  [FILE_TYPE.EML]: {
+    Viewer: EmlViewer,
+    ControlPanel: null,
   },
   [FILE_TYPE.UNSUPPORTED]: {
     // Viewer receives fileUrl but UnsupportedViewer only needs the extension;

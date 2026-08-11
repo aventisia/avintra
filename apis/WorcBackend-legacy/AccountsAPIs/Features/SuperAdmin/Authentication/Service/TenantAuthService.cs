@@ -459,6 +459,7 @@ public class TenantAuthService : ITenantAuthService
             ["tntid"] = tenantId,
             ["uid"] = user.Id.ToString(),
             ["uname"] = user.UserName,
+            ["name"] = $"{user.FirstName} {user.LastName}".Trim(),
             [JwtRegisteredClaimNames.Jti] = Guid.NewGuid().ToString(),
             ["access_mode"] = isReadOnly ? "read_only" : "read_write"
         };

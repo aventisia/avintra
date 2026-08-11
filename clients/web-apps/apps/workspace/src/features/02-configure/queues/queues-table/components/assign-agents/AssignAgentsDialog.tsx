@@ -1,7 +1,13 @@
-import { Button } from "@avplatform/ui/buttons";
-import { Dialog, DialogContent, DialogDefaultHeader } from "@avplatform/ui/dialog";
+import { buttonVariants } from "@avplatform/ui/buttons";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from "@avplatform/ui/dialog";
+import { ScrollArea } from "@avplatform/ui/scroll";
 import { Tooltip } from "@avplatform/ui/tooltip";
-import { ArrowLeftIcon, PlusIcon } from "lucide-react";
+import { X } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useQueueAgentsStore } from "../../stores/queue-agents-store";
@@ -9,12 +15,11 @@ import AgentsList from "./AgentsList";
 import { SearchAgents } from "./SearchAgents";
 
 const AssignAgentsDialog = () => {
-  const { open, setOpen, setView, view } = useQueueAgentsStore(
+  const { open, setOpen, queueName } = useQueueAgentsStore(
     useShallow((state) => ({
       open: state.showDialog,
       setOpen: state.setShowDialog,
-      setView: state.setView,
-      view: state.view,
+      queueName: state.queueName,
     })),
   );
 
@@ -22,36 +27,42 @@ const AssignAgentsDialog = () => {
     <Dialog
       open={open}
       onOpenChange={(open: boolean) => {
-        setView("Agents");
         setOpen(open);
       }}
     >
-      <DialogContent className="h-[60vh]">
-        <DialogDefaultHeader heading={`Queue Agents`} />
-        <div className="h-[calc(60vh-5.1rem)] p-2 px-4 pb-4">
-          <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-2 text-md font-semibold">
-              {view == "Search" ? (
-                <>
-                  <Button onClick={() => setView("Agents")} variant={"ghost"} size={"icon7"}>
-                    <ArrowLeftIcon className="h-5 w-5" />
-                  </Button>
-                  <span>Assign Agent(s)</span>
-                </>
-              ) : (
-                <span className="pl-1">Assigned Agent(s)</span>
-              )}
-            </div>
-            {view == "Agents" ? (
-              <Tooltip content="Assign Agent(s)">
-                <Button onClick={() => setView("Search")} variant={"ghost"} size={"icon7"}>
-                  <PlusIcon className="h-5 w-5" />
-                </Button>
-              </Tooltip>
-            ) : null}
+      <DialogContent className="h-[75vh] min-w-[40rem]">
+        <div
+          className={
+            "relative flex items-center justify-between border-b p-3.5 text-lg tracking-wide"
+          }
+        >
+          {/* Left side - Dialog Heading and description */}
+          <div className="ml-2 flex flex-col">
+            <DialogTitle className="flex items-center font-semibold  text-foreground">
+              <span className="truncate w-[35rem]">{`Assign Agents - ${queueName ?? "Queue"}`}</span>
+            </DialogTitle>
           </div>
-          {view == "Agents" ? <AgentsList /> : <SearchAgents />}
+          {/* Right side - Dialog action buttons */}
+          <div className="flex items-center">
+            {/* Close Dialog */}
+            <Tooltip content={"Close"} shortcut="Esc">
+              <DialogClose className={buttonVariants({ variant: "ghost", size: "icon8" })}>
+                <X className="h-5 w-5 text-[--icon-color]" />
+                <span className="sr-only">Close</span>
+              </DialogClose>
+            </Tooltip>
+          </div>
         </div>
+        <ScrollArea className="h-[calc(75vh-4rem)]">
+          <div className="p-4 pb-0">
+            <SearchAgents />
+          </div>
+
+          <p className="text-md font-semibold px-4 mt-2">Assigned Agent(s)</p>
+          <div className="p-2 px-4 pb-4">
+            <AgentsList />
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

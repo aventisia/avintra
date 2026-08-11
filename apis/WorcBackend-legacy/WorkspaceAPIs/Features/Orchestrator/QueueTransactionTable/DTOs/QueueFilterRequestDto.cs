@@ -39,7 +39,7 @@ public class QueueFilterRequestDto
     /// Gets or sets the status of the work items to filter by.
     /// If null, work items of all statuses are considered.
     /// </summary>
-    public QueueTransactionStatusTypesEnum? Status { get; set; }
+    public string? Status { get; set; }
 }
 
 /// <summary>

@@ -22,10 +22,9 @@ public class QueuesTableDto
     public QueueTypesEnum Type { get; set; }
 
     /// <summary>
-    /// Gets or sets the view type of the queue.
-    /// This categorizes the queue by its business scenario or UI presentation.
+    /// Gets or sets how work items in this queue are claimed/assigned for processing.
     /// </summary>
-    public QueueViewTypeEnum ViewType { get; set; }
+    public QueueProcessingModeEnum ProcessingMode { get; set; } = QueueProcessingModeEnum.Manual;
 
     /// <summary>
     /// Gets or sets the list of destination queues to which items from this queue can be routed.
@@ -77,6 +76,13 @@ public class QueuesTableDto
     public string? OutputSchema { get; set; }
 
     /// <summary>
+    /// Gets or sets the custom status configuration for the queue.
+    /// The core system statuses (Pending, InProgress, Completed, Failed) are implicit and
+    /// are not stored here; only queue-specific custom statuses are persisted.
+    /// </summary>
+    public List<QueueStatusDefinitionDto>? Statuses { get; set; }
+
+    /// <summary>
     /// Gets or sets the number of queue items currently in progress.
     /// </summary>
     public int InProgress { get; set; }
@@ -100,6 +106,18 @@ public class QueuesTableDto
     /// Gets or sets the total number of items in the queue items.
     /// </summary>
     public int Total { get; set; }
+
+    /// <summary>
+    /// Gets or sets the average age (in seconds) of the active (Pending + InProgress) items.
+    /// Age is measured from when the item was created (CreatedOn) to now.
+    /// </summary>
+    public double AverageAgeSeconds { get; set; }
+
+    /// <summary>
+    /// Gets or sets the average processing time (in seconds) of the completed items.
+    /// Processing time is measured from CreatedOn to LastModifiedOn.
+    /// </summary>
+    public double AverageProcessingTimeSeconds { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the queue is accessible to all users within the tenant.

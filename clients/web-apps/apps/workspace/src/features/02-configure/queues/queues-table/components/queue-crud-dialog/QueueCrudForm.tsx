@@ -1,6 +1,5 @@
 import { Input } from "@avplatform/ui";
 import { Button, SubmitButton } from "@avplatform/ui/buttons";
-import { AsyncMultiSelectField } from "@avplatform/ui/components/form/fields/AsyncMultiSelectField";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import {
   AutherCard,
@@ -16,18 +15,20 @@ import { ISelectOption } from "@avplatform/ui/types";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getCredSelectOptions } from "../../apis/app-secret-apis";
-import { queueOptimisticMutationFn, searchQueues } from "../../apis/queues-table-apis";
+import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import {
   descriptionProps,
   idProps,
   isDisabledProps,
   nameProps,
+  processingModeProps,
   typeProps,
-  viewTypeProps,
 } from "../../constants/queue-form-field-props";
 import { queueZodSchema } from "../../constants/queue-zod-schema";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
@@ -118,6 +119,14 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
   const { queryKey } = useTableTab();
 
+  // Get the currently selected space so the mutation targets the same
+  // query cache key that useFetchQueues writes to (which includes the space id).
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
+
   // Define optimistic mutation to crete or update the queue
   const {
     mutate: mutatequeue,
@@ -126,7 +135,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
   } = useListOptimisticMutation<QueuesTableDto, QueuesTableDto | boolean, QueuesTableDto>(
     [rowId],
     queueOptimisticMutationFn,
-    queryKey,
+    [...queryKey, currentSpace?.id],
   );
 
   // Define submit handler
@@ -170,11 +179,11 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
           form.getValues("type") !== "" && <SelectField {...typeProps} />
         )}
 
-        {/* View Type */}
+        {/* Processing Mode */}
         {crudAction === "create" ? (
-          <SelectField {...viewTypeProps} />
+          <SelectField {...processingModeProps} />
         ) : (
-          form.getValues("viewType") !== "" && <SelectField {...viewTypeProps} />
+          form.getValues("processingMode") !== "" && <SelectField {...processingModeProps} />
         )}
       </div>
       {/* Name */}
@@ -187,13 +196,13 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
       {/* Description */}
       <TextareaField {...descriptionProps} />
       <SwitchField
-        name="hasUniqueRef"
-        description="Enforce unique references"
+        name="isUniqueReferencesEnforced"
+        description="Prevents duplicate work items by checking the fields marked as unique identifiers in the work item schema."
         label="Enforce unique references"
       />
       <SwitchField
         name="isStoredEncrypted"
-        description="Store in encrypted format"
+        description="Encrypts the work item data at rest in the database so it cannot be read in plain text."
         label="Store in encrypted format"
       />
       {/* autor etry  */}
@@ -243,7 +252,12 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
 
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <FormLabelExt label="Work Item schema" isRequired disabled={isReadMode} />
+            <FormLabelExt
+              label="Work Item schema"
+              isRequired
+              disabled={isReadMode}
+              description={`Define the list of fields that each work item in the queue must contain, as a JSON array. Each element is an object with: name (field key), description (optional), label (display text), type (string, int, Date or Array), isRequired (true = the field is mandatory on every work item), and isUsedForUniqueIdentifier (true = this field is used to detect duplicate work items). The value must be a JSON array, e.g. [{"name":"requestId","type":"string","isRequired":true,"isUsedForUniqueIdentifier":true}]. An example array is pre-filled below - edit or replace it as needed.`}
+            />
             <Button onClick={handleClick} type="button" variant={"link"}>
               Browse File
             </Button>
@@ -252,17 +266,22 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
             <JsonEditorField name="inputSchema" disabled={isReadMode} />
           </pre>
         </div>
-      </div>
-      <AsyncMultiSelectField<string>
-        fetcher={(query) => searchQueues(query).then((res) => res.data.map((q) => q.name) || [])}
-        filters={undefined}
-        getItemId={(item) => item}
-        getItemLabel={(item) => item}
-        name="routeToQueues"
-        queryKeyBase={"searchQueues"}
-        label="Route Queues"
-      />
 
+        {/* Disposition Statuses */}
+        <div>
+          <div className="mb-2 flex items-center justify-between">
+            <FormLabelExt
+              label="Disposition Status"
+              isRequired={form.watch("type") === "User"}
+              disabled={isReadMode}
+              description="Queue-specific disposition statuses (e.g., Approved, Rejected) in addition to the core Pending, In-progress, Completed and Failed statuses. Required when the Instance Type is User. An example structure is pre-filled below. Keys: name (status value), label (display text), color (badge color, e.g. #22c55e), routeQueue (name of the destination queue to route the work item to when this status is selected; empty = no routing). Disposition statuses are always terminal (end) states."
+            />
+          </div>
+          <pre>
+            <JsonEditorField name="statuses" disabled={isReadMode} />
+          </pre>
+        </div>
+      </div>
       <SelectField
         selectOptions={selectOptions ?? []}
         name="credentialId"

@@ -14,11 +14,13 @@ interface AssignAgentsRowActionProps {
 export const AssignAgentsRowAction: React.FC<AssignAgentsRowActionProps> = ({
   size = "md",
   rowId,
+  queueName,
 }) => {
-  const { setOpen, setQueueId } = useQueueAgentsStore(
+  const { setOpen, setQueueId, setQueueName } = useQueueAgentsStore(
     useShallow((s) => ({
       setOpen: s.setShowDialog,
       setQueueId: s.setQueueId,
+      setQueueName: s.setQueueName,
     })),
   );
 
@@ -30,6 +32,7 @@ export const AssignAgentsRowAction: React.FC<AssignAgentsRowActionProps> = ({
       onClick={() => {
         setOpen(true);
         setQueueId(rowId);
+        setQueueName(queueName);
       }}
     />
   );

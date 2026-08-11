@@ -1,9 +1,11 @@
 import { useDocumentTitle } from "@avplatform/ui/hooks";
 import { Loader2 } from "lucide-react";
+import { useMemo, useState } from "react";
 
 import { TABLE_HEADING } from "../../constants";
 import { useFetchQueues } from "../../hooks/useFetchQueues";
 import { useMyQueueParams } from "../../hooks/useMyQueueParams";
+import HistoryDateRangeFilter from "../history/HistoryDateRangeFilter";
 import { QueueSummaryCard } from "./QueueSummaryCard";
 
 /**
@@ -15,7 +17,15 @@ export const QueueOverview = () => {
   useDocumentTitle(TABLE_HEADING);
 
   const { setQueueId, setQueueName, updateParams } = useMyQueueParams();
-  const { data, isLoading } = useFetchQueues({ onlyUserQueues: true });
+
+  // Date range for the "Completed" metrics. Defaults to today only.
+  const today = useMemo(() => new Date(), []);
+  const [dateRange, setDateRange] = useState<{ from: Date; to?: Date }>({
+    from: today,
+    to: today,
+  });
+
+  const { data, isLoading } = useFetchQueues({ onlyUserQueues: true, dateRange });
 
   const queues = data?.data ?? [];
 
@@ -41,16 +51,19 @@ export const QueueOverview = () => {
   const openQueue = (queue: (typeof queues)[number]) => {
     setQueueId(queue.id);
     setQueueName(queue.name);
-    updateParams({ qid: queue.id, qn: queue.name, t: "Pending" });
+    updateParams({ qid: queue.id, qn: queue.name, t: "Current" });
   };
 
   return (
     <div className="space-y-4 pb-4 pt-[17px]">
-      <div>
-        <h1 className="text-lg font-bold text-accent-foreground">{TABLE_HEADING} Overview</h1>
-        <p className="text-sm text-muted-foreground">
-          A summary of the queues you have access to. Click a queue to view its work items.
-        </p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-lg font-bold text-accent-foreground">{TABLE_HEADING} Overview</h1>
+          <p className="text-sm text-muted-foreground">
+            A summary of the queues you have access to. Click a queue to view its work items.
+          </p>
+        </div>
+        <HistoryDateRangeFilter value={dateRange} onChange={setDateRange} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -58,9 +71,12 @@ export const QueueOverview = () => {
           <QueueSummaryCard
             key={queue.id}
             queueName={queue.name}
+            processingMode={queue.processingMode}
             pending={queue.pending}
             inProgress={queue.inProgress}
             completed={queue.completed}
+            averageAgeSeconds={queue.averageAgeSeconds}
+            averageProcessingTimeSeconds={queue.averageProcessingTimeSeconds}
             onOpen={() => openQueue(queue)}
           />
         ))}

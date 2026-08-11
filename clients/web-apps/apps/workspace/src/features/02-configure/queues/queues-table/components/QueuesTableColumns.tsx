@@ -62,6 +62,15 @@ export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableD
     ),
   },
   {
+    accessorKey: "processingMode",
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("processingMode")} />
+    ),
+    cell: ({ row }) => (
+      <div className="w-auto truncate font-medium">{row.getValue("processingMode") ?? "--"}</div>
+    ),
+  },
+  {
     accessorKey: "inProgress",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("inProgress")} />
@@ -152,7 +161,6 @@ export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableD
       <QueueRowActions
         rowId={row.id ?? "rowId"}
         queueName={row.name ?? ""}
-        type={row.type ?? ""}
         accessLevel={row.accessLevel}
         isTenantWideAccess={row.isTenantWideAccess || false}
       />

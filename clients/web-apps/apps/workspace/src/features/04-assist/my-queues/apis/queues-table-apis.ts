@@ -22,11 +22,17 @@ const getQueues = () => {
 /**
  * Retrieves list of my queues.
  */
-const getMyQueues = () => {
+const getMyQueues = (dateRange?: { from?: Date; to?: Date }) => {
+  const params = new URLSearchParams();
+  if (dateRange?.from) params.set("from", dateRange.from.toISOString());
+  if (dateRange?.to) params.set("to", dateRange.to.toISOString());
+  const qs = params.toString();
+
   return axiosInstance
-    .get<IHttpResponse<QueuesTableDto[]>>(`${baseAPIURL}/queue-user/my-queues`, {
-      headers: getSpaceHeaders(),
-    })
+    .get<IHttpResponse<QueuesTableDto[]>>(
+      `${baseAPIURL}/queue-user/my-queues${qs ? `?${qs}` : ""}`,
+      { headers: getSpaceHeaders() },
+    )
     .then((res) => res.data);
 };
 
@@ -71,6 +77,19 @@ const routeQueuesWorkItem = (payload: { id: string; queueName: string }) => {
     .then((res) => res.data);
 };
 
+/**
+ * Claims the next available work item for the given queue (FIFO mode only).
+ */
+const getNextQueuesWorkItem = (queueId: string) => {
+  return axiosInstance
+    .put<IHttpResponse<QueueWorkItemDto>>(
+      `${baseAPIURL}/queue/workitem/next`,
+      { queueId },
+      { headers: getSpaceHeaders() },
+    )
+    .then((res) => res.data);
+};
+
 export {
   getQueues,
   getMyQueues,
@@ -78,4 +97,5 @@ export {
   getQueueWorkItemById,
   updateQueuesWorkItem,
   routeQueuesWorkItem,
+  getNextQueuesWorkItem,
 };

@@ -8,16 +8,23 @@ import { useOpenWorkItem } from "../../../hooks/useOpenWorkItem";
 interface WorkItemRowOpenActionProps {
   rowId: string;
   status: QueueWorkItemStatusEnum | string;
+  isFifo?: boolean;
 }
 
-export const WorkItemRowOpenAction = ({ rowId }: WorkItemRowOpenActionProps) => {
+export const WorkItemRowOpenAction = ({ rowId, status, isFifo = false }: WorkItemRowOpenActionProps) => {
   const navigate = useNavigate();
   const { getWorkItemUrl } = useOpenWorkItem();
+
+  // In FIFO mode, pending items must be claimed via "Get Next Item" and cannot
+  // be free-picked from the table.
+  const disabled = isFifo && status === QueueWorkItemStatusEnum.Pending;
+
   // Return the component
   return (
     <SimpleDDMenuItem
       content="Open"
       Icon={ArrowTopRightOnSquareIcon}
+      disabled={disabled}
       onClick={() => {
         navigate(getWorkItemUrl(rowId));
       }}

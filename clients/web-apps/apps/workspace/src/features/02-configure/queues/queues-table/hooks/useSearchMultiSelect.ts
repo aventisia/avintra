@@ -11,7 +11,6 @@ import { useSearchAgentsList } from "./useSearchAgentsList";
 export const useSearchMultiSelect = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState<AgentsTableDto[]>([]);
-  const [selectedValue, setSelectedValue] = useState("View");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
@@ -52,7 +51,7 @@ export const useSearchMultiSelect = () => {
           assignAgents({
             flowVersionId: id,
             queueId,
-            accessType: selectedValue,
+            accessType: "View",
           }),
         ),
       );
@@ -71,8 +70,6 @@ export const useSearchMultiSelect = () => {
     handleItemSelect,
     handleItemRemove,
     handleClearAll,
-    selectedValue,
-    setSelectedValue,
     isSubmitting,
     handleSubmit,
     searchData,

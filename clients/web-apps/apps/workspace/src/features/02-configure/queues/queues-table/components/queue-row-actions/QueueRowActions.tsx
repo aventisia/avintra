@@ -9,14 +9,12 @@ import { getResourceAccessActions } from "@/features/resource-share/utils/resour
 
 import { useTableTab } from "../../hooks/useTableTab";
 import { AssignAgentsRowAction } from "./AssignAgentsRowAction";
-import { AssignUsersRowAction } from "./AssignUsersRowAction";
 import { QueueRowDeleteAction } from "./QueueRowDeleteAction";
 import { UploadItemsRowAction } from "./UploadItemsRowAction";
 
 interface QueueRowActionsProps {
   rowId: string;
   queueName: string;
-  type: string;
   accessLevel: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
 }
@@ -24,7 +22,6 @@ interface QueueRowActionsProps {
 export const QueueRowActions = ({
   rowId,
   queueName,
-  type,
   accessLevel,
   isTenantWideAccess,
 }: QueueRowActionsProps) => {
@@ -39,9 +36,6 @@ export const QueueRowActions = ({
       {/* Edit Queue details */}
       {actions?.update && <DTRowAction rowId={rowId} crudAction="update" entity="queue" />}
 
-      {actions?.update && type == "User" && (
-        <AssignUsersRowAction rowId={rowId} queueName={queueName} />
-      )}
       {actions?.update && <AssignAgentsRowAction rowId={rowId} queueName={queueName} />}
 
       {actions?.update && <UploadItemsRowAction rowId={rowId} />}
