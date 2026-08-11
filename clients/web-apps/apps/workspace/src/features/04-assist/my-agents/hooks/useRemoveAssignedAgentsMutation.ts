@@ -1,19 +1,12 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useShallow } from "zustand/react/shallow";
 
-import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
+import { DUMMY_MACHINE_ID } from "@/constants/machine-identity";
 
 import { removeAgents } from "../apis/agents-assist-apis";
 
 export const useRemoveAssignedAgentsMutation = () => {
   const queryClient = useQueryClient();
-
-  const { osID: machineId } = useTuariUserMetadataStore(
-    useShallow((state) => ({
-      osID: state.osID,
-    })),
-  );
 
   return useMutation({
     mutationFn: removeAgents,
@@ -23,7 +16,7 @@ export const useRemoveAssignedAgentsMutation = () => {
         className: "sonner-toaster-sm",
       });
 
-      queryClient.invalidateQueries({ queryKey: ["agents-assist", machineId] });
+      queryClient.invalidateQueries({ queryKey: ["agents-assist", DUMMY_MACHINE_ID] });
     },
 
     onError: (error) => {

@@ -21,9 +21,8 @@ public class RunnerAppOptions
     // When set, the service executes only that job and exits (used for console/manual runs).
     public Guid? JobId { get; set; }
 
-    public string OsId { get; set; } = string.Empty;
-    public string Username { get; set; } = string.Empty;
-    public string AppVersion { get; set; } = "1.0.0";
+    public string OsId { get; set; } = MachineIdentity.OsId;
+    public string Username { get; set; } = MachineIdentity.Username;
 
     public bool IsServiceMode => !string.IsNullOrWhiteSpace(ApiKey) && !string.IsNullOrWhiteSpace(TenantId);
 }

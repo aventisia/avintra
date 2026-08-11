@@ -5,9 +5,8 @@ import {
   getDataTablePreferences,
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
-import { useShallow } from "zustand/react/shallow";
 
-import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
+import { DUMMY_MACHINE_ID } from "@/constants/machine-identity";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -23,11 +22,7 @@ import { ExecutionAction } from "./assign-agent-item-actions/ExecutionAction";
  * @returns The rendered ConfigsTable component.
  */
 export const AgentsAssistTable = () => {
-  const { osID: machineId } = useTuariUserMetadataStore(
-    useShallow((state) => ({
-      osID: state.osID,
-    })),
-  );
+  const machineId = DUMMY_MACHINE_ID;
 
   // Set the document title
   useDocumentTitle(TABLE_HEADING);

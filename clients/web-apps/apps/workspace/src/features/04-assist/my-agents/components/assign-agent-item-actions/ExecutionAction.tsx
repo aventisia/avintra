@@ -7,9 +7,9 @@ import { Tooltip } from "@avplatform/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
 
+import { DUMMY_MACHINE_ID } from "@/constants/machine-identity";
 import { useCreateJobMutation } from "@/features/03-orchestrator/agents-table/hooks/useCreateJobMutation";
 import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
-import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 
 type ExecutionActionProps = {
   rowId: string;
@@ -25,12 +25,6 @@ export const ExecutionAction = ({
   executionState,
   jobId,
 }: ExecutionActionProps) => {
-  const { osID: machineId } = useTuariUserMetadataStore(
-    useShallow((state) => ({
-      osID: state.osID,
-    })),
-  );
-
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
@@ -75,7 +69,7 @@ export const ExecutionAction = ({
                 return;
               }
 
-              createJobMutation({ flowVersionId: rowId, osId: machineId });
+              createJobMutation({ flowVersionId: rowId, osId: DUMMY_MACHINE_ID });
             }}
           >
             {isPending ? (

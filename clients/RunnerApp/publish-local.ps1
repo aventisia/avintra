@@ -1,0 +1,121 @@
+#Requires -Version 5.1
+<#
+.SYNOPSIS
+    Publishes RunnerApp locally for desktop-app development on Windows.
+
+.DESCRIPTION
+    Builds RunnerApp as a self-contained single-file executable and stages it
+    into the desktop app's local runtime directory:
+
+        %LOCALAPPDATA%\AvintraDesktopApp\binaries\runner-app
+
+    The published executable is renamed from RunnerApp.exe to
+    AvintraRunnerApp.exe so it matches the file the desktop app expects to
+    launch (see runner_management.rs). A version.txt marker is written so the
+    desktop app's runner check reports the correct installed version.
+
+    This script is intended for local development only. Use publish.sh for
+    CI/distribution builds that produce a versioned zip artifact.
+
+.PARAMETER Version
+    Version string written to version.txt and used in messages.
+    Defaults to the <Version> value from RunnerApp.csproj.
+
+.PARAMETER Runtime
+    .NET runtime identifier to publish for. Defaults to win-x64.
+
+.PARAMETER Force
+    Allow overwriting an existing local installation. Present for compatibility
+    with future switches; the script always overwrites by default.
+
+.EXAMPLE
+    .\publish-local.ps1
+
+.EXAMPLE
+    .\publish-local.ps1 -Version 0.1.90 -Runtime win-x64
+#>
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory = $false)]
+    [string] $Version = "",
+
+    [Parameter(Mandatory = $false)]
+    [string] $Runtime = "win-x64",
+
+    [Parameter(Mandatory = $false)]
+    [switch] $Force
+)
+
+$ErrorActionPreference = "Stop"
+
+$ScriptDir = $PSScriptRoot
+$Csproj = Join-Path $ScriptDir "RunnerApp.csproj"
+
+if (-not (Test-Path $Csproj)) {
+    throw "RunnerApp project not found at $Csproj"
+}
+
+# --- Resolve version ----------------------------------------------------------
+if ([string]::IsNullOrWhiteSpace($Version)) {
+    $CsprojXml = [xml](Get-Content $Csproj -Raw)
+    $Version = $CsprojXml.Project.PropertyGroup.Version | Select-Object -First 1
+    if ([string]::IsNullOrWhiteSpace($Version)) {
+        $Version = $CsprojXml.Project.PropertyGroup.InformationalVersion | Select-Object -First 1
+    }
+}
+
+if ([string]::IsNullOrWhiteSpace($Version)) {
+    throw "Cannot determine version. Set <Version> in RunnerApp.csproj or pass -Version."
+}
+
+$Version = $Version.Trim()
+
+# --- Resolve destination ------------------------------------------------------
+$LocalAppData = [Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)
+$Destination = Join-Path $LocalAppData "AvintraDesktopApp\binaries\runner-app"
+
+# --- Publish ------------------------------------------------------------------
+$PublishDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString("N"))
+New-Item -ItemType Directory -Path $PublishDir | Out-Null
+
+try {
+    Write-Host "Publishing RunnerApp ($Runtime, self-contained) v$Version ..."
+
+    dotnet publish $Csproj `
+        -c Release `
+        -r $Runtime `
+        --self-contained true `
+        -p:PublishSingleFile=true `
+        -p:IncludeNativeLibrariesForSelfExtract=true `
+        -p:EnableCompressionInSingleFile=true `
+        -o $PublishDir
+
+    if ($LASTEXITCODE -ne 0) {
+        throw "dotnet publish failed with exit code $LASTEXITCODE"
+    }
+
+    # --- Stage into desktop app local directory --------------------------------
+    if (Test-Path $Destination) {
+        Write-Host "Cleaning existing local runner directory: $Destination"
+        Remove-Item -Path "$Destination\*" -Recurse -Force -ErrorAction SilentlyContinue
+    } else {
+        New-Item -ItemType Directory -Path $Destination -Force | Out-Null
+    }
+
+    $PublishedExe = Join-Path $PublishDir "RunnerApp.exe"
+    if (-not (Test-Path $PublishedExe)) {
+        throw "Expected published executable not found: $PublishedExe"
+    }
+
+    $TargetExe = Join-Path $Destination "AvintraRunnerApp.exe"
+    Copy-Item -Path $PublishedExe -Destination $TargetExe -Force
+
+    $VersionFile = Join-Path $Destination "version.txt"
+    Set-Content -Path $VersionFile -Value $Version -NoNewline -Force
+
+    Write-Host "Staged local runner at $Destination"
+    Write-Host "  - $TargetExe"
+    Write-Host "  - $VersionFile"
+} finally {
+    Remove-Item -Path $PublishDir -Recurse -Force -ErrorAction SilentlyContinue
+}

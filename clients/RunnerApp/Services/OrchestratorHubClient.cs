@@ -8,9 +8,6 @@ public class OrchestratorHubClient : IOrchestratorHubClient
 {
     private readonly string _hubUrl;
     private readonly string _accessToken;
-    private readonly string _osId;
-    private readonly string _username;
-    private readonly string _appVersion;
     private readonly ILogger<OrchestratorHubClient> _logger;
     private HubConnection? _connection;
     private bool _disposed;
@@ -18,24 +15,18 @@ public class OrchestratorHubClient : IOrchestratorHubClient
     public OrchestratorHubClient(
         string appBaseUrl,
         string accessToken,
-        string osId,
-        string username,
-        string appVersion,
         ILogger<OrchestratorHubClient> logger)
     {
         // The backend reads the client identity from the query string (OrchestratorHub.OnConnectedAsync),
         // not from headers, so the identity is passed as query parameters.
         var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
         query["clientType"] = "AvintraMachine";
-        query["osId"] = osId;
-        query["username"] = username;
-        query["appVersion"] = appVersion;
+        query["osId"] = MachineIdentity.OsId;
+        query["username"] = MachineIdentity.Username;
+        query["appVersion"] = MachineIdentity.AppVersion;
 
         _hubUrl = $"{appBaseUrl.TrimEnd('/')}/orchestrator-hub?{query}";
         _accessToken = accessToken;
-        _osId = osId;
-        _username = username;
-        _appVersion = appVersion;
         _logger = logger;
     }
 
@@ -63,7 +54,10 @@ public class OrchestratorHubClient : IOrchestratorHubClient
 
         _logger.LogInformation("Connecting to OrchestratorHub at {HubUrl}...", _hubUrl);
         await _connection.StartAsync(ct);
-        _logger.LogInformation("Connected to OrchestratorHub as machine {OsId}/{Username}.", _osId, _username);
+        _logger.LogInformation(
+            "Connected to OrchestratorHub as machine {OsId}/{Username}.",
+            MachineIdentity.OsId,
+            MachineIdentity.Username);
     }
 
     public async Task DisconnectAsync()

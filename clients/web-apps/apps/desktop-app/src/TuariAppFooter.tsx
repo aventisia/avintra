@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 interface UserMetaData {
   os_id: string;
   username: string;
+  hostname: string;
   app_version: string;
 }
 
@@ -52,6 +53,7 @@ const TauriAppFooter = () => {
   const renderMetadata = metadata ?? {
     app_version: "0.0.0-dev",
     username: "dev-user",
+    hostname: "browser",
     os_id: "browser",
   };
 
@@ -75,6 +77,11 @@ const TauriAppFooter = () => {
       </span>
 
       <div className="flex items-center gap-3">
+        <span>
+          <span className="opacity-70">Host:</span>{" "}
+          <span className="font-mono">{renderMetadata.hostname || "NA"}</span>
+        </span>
+        <span className="opacity-40">·</span>
         <span>
           <span className="opacity-70">User:</span>{" "}
           <span className="font-mono">{renderMetadata.username || "NA"}</span>

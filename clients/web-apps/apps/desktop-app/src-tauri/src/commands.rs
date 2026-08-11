@@ -6,13 +6,12 @@ pub fn launch_runner_app(
     app_base_url: String,
     job_id: String,
     access_token: String,
-    os_id: String,
-    username: String,
-    app_version: String,
 ) -> Result<(), String> {
     // The runner is provisioned independently (via download_runner_app) under
     // the local app data dir so it can be updated without republishing the whole
     // Tauri app. The app always launches the runner from the runner-app folder.
+    // RunnerApp reads its own machine identity (osId, username, hostname, appVersion),
+    // so the only values the desktop app must pass are the API URL, job id, and token.
     let runner_app_path = crate::runner_management::runner_exe_path()?;
 
     if !runner_app_path.exists() {
@@ -29,12 +28,6 @@ pub fn launch_runner_app(
         .arg(job_id)
         .arg("--accessToken")
         .arg(access_token)
-        .arg("--osId")
-        .arg(os_id)
-        .arg("--username")
-        .arg(username)
-        .arg("--appVersion")
-        .arg(app_version)
         .spawn()
         .map_err(|e| format!("Failed to start the runner: {}", e))?;
     Ok(())
@@ -72,12 +65,13 @@ pub fn launch_ui_inspector(ws_port: u16) -> Result<(), String> {
 pub struct UserMetadata {
     pub os_id: String,
     pub username: String,
+    pub hostname: String,
     pub app_version: String,
 }
 
 /// Retrieves complete user metadata for tracking and identification
 ///
-/// Returns OS installation ID, username, and app version.
+/// Returns OS installation ID, username, hostname, and app version.
 ///
 /// OS ID Sources:
 /// - Windows: MachineGuid from Registry (HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography)
@@ -86,6 +80,9 @@ pub struct UserMetadata {
 /// Username Sources:
 /// - Windows: USERNAME environment variable (e.g., "john.doe", "Administrator")
 /// - Linux: USER environment variable (e.g., "john", "root")
+///
+/// Hostname Source:
+/// - tauri-plugin-os hostname() helper
 ///
 /// App Version: Extracted from Cargo.toml at compile time
 #[tauri::command]
@@ -147,13 +144,16 @@ pub fn get_user_metadata() -> Result<UserMetadata, String> {
     let username: String =
         return Err("Username retrieval is only available on Windows and Linux".into());
 
-    // Get app version from Cargo.toml at compile time
+    // Get hostname from the OS
+    let hostname = tauri_plugin_os::hostname();
 
+    // Get app version from Cargo.toml at compile time
     let app_version = env!("CARGO_PKG_VERSION").to_string();
 
     Ok(UserMetadata {
         os_id,
         username,
+        hostname,
         app_version,
     })
 }

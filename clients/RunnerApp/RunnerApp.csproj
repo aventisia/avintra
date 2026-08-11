@@ -6,16 +6,19 @@
     <Nullable>enable</Nullable>
     <AssemblyName>RunnerApp</AssemblyName>
     <RootNamespace>RunnerApp</RootNamespace>
-    <Version>0.1.88</Version>
-    <InformationalVersion>0.1.88</InformationalVersion>
+    <Version>0.1.89</Version>
+    <InformationalVersion>0.1.89</InformationalVersion>
 
     <!--
-      Self-contained single-file Windows publish.
+      Self-contained single-file publish.
       The .NET 8 runtime and native dependencies are bundled into one executable,
       so the target machine does not need .NET 8 installed.
+
+      RuntimeIdentifiers is plural so local-dev scripts can publish for either
+      win-x64 or linux-x64 by passing -r <rid>. CI still defaults to win-x64.
     -->
     <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
     <PublishSingleFile>true</PublishSingleFile>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
     <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
@@ -24,8 +27,9 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -60,13 +60,13 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     if (options.IsServiceMode)
     {
         registration = await registerClient.RegisterMachineWithApiKeyAsync(
-            "Windows", options.OsId, options.Username, Environment.MachineName,
+            "Windows", options.OsId, options.Username, MachineIdentity.Hostname,
             options.TenantId, options.ApiKey, options.LinkedUsername);
     }
     else
     {
         registration = await registerClient.RegisterMachineAsync(
-            "Windows", options.OsId, options.Username, Environment.MachineName);
+            "Windows", options.OsId, options.Username, MachineIdentity.Hostname);
     }
 
     var accessToken = registration?.Jwt ?? options.AccessToken;
@@ -84,9 +84,6 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     await using var hubClient = new OrchestratorHubClient(
         options.AppBaseUrl,
         accessToken,
-        options.OsId,
-        options.Username,
-        options.AppVersion,
         hubLogger);
 
     var cts = new CancellationTokenSource();
@@ -461,9 +458,6 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
     string? appBaseUrl = null;
     string? accessToken = null;
     Guid? jobId = null;
-    string? osId = null;
-    string? username = null;
-    string? appVersion = null;
     string? apiKey = null;
     string? tenantId = null;
     string? linkedUsername = null;
@@ -480,15 +474,6 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
                 break;
             case "--jobid":
                 if (++i < args.Length && Guid.TryParse(args[i], out var id)) jobId = id;
-                break;
-            case "--osid":
-                if (++i < args.Length) osId = args[i];
-                break;
-            case "--username":
-                if (++i < args.Length) username = args[i];
-                break;
-            case "--appversion":
-                if (++i < args.Length) appVersion = args[i];
                 break;
             case "--apikey":
                 if (++i < args.Length) apiKey = args[i];
@@ -523,9 +508,6 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
         AppBaseUrl = appBaseUrl,
         AccessToken = accessToken ?? string.Empty,
         JobId = jobId,
-        OsId = osId ?? Environment.MachineName,
-        Username = username ?? Environment.UserName,
-        AppVersion = appVersion ?? "1.0.0",
         ApiKey = apiKey ?? string.Empty,
         TenantId = tenantId ?? string.Empty,
         LinkedUsername = linkedUsername ?? string.Empty,
@@ -552,9 +534,6 @@ static void PrintUsage()
     Console.Error.WriteLine("  --appBaseUrl <url>       Backend API base URL (required)");
     Console.Error.WriteLine("  --accessToken <token>    JWT access token (console mode)");
     Console.Error.WriteLine("  --jobId <guid>           Job ID to execute (console mode; optional in service mode)");
-    Console.Error.WriteLine("  --osId <id>              Machine OS identifier (default: machine name)");
-    Console.Error.WriteLine("  --username <name>        Machine username (default: current user)");
-    Console.Error.WriteLine("  --appVersion <ver>       App version (default: 1.0.0)");
     Console.Error.WriteLine("  --apiKey <key>           Tenant API key (service mode, long-lived registration)");
     Console.Error.WriteLine("  --tenantId <guid>        Tenant ID (service mode)");
     Console.Error.WriteLine("  --linkedUsername <name>  Linked workspace username (service mode)");
