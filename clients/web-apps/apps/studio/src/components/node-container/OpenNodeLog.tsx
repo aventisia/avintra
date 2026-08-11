@@ -1,7 +1,8 @@
 import { cn } from "@avplatform/ui/lib";
-import { CheckCircle2Icon, CircleXIcon, RepeatIcon } from "lucide-react";
+import { CheckCircle2Icon, CircleXIcon, Loader2, RepeatIcon } from "lucide-react";
 import React, { useRef } from "react";
 
+import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { useNodePopoverStore } from "@/features/execution-logs/stores/node-popover-store";
@@ -37,6 +38,10 @@ export default function OpenNodeLog({
 
   const isExecutionLog = useIsExecutionLogsRoute();
   const { openPopover, closePopover } = useNodePopoverStore();
+
+  // Live status for a running local (unpublished) flow, driven by the RunnerApp over the
+  // Tauri WebSocket. Only shows on the design canvas (not the execution-log route).
+  const liveStatus = useLiveExecutionStore((state) => state.liveExecutionMap[nodeId]);
 
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -131,6 +136,29 @@ export default function OpenNodeLog({
                     {retryCount}
                   </span>
                 </div>
+              )}
+            </>
+          )}
+          {children}
+        </div>
+      ) : liveStatus ? (
+        <div
+          className={cn(
+            "relative border rounded-lg",
+            liveStatus === "running" && showBorder && "border-blue-500",
+            liveStatus === "success" && showBorder && "border-green-500",
+            liveStatus === "failed" && showBorder && "border-red-500",
+            className,
+          )}
+        >
+          {showIcon && (
+            <>
+              {liveStatus === "running" ? (
+                <Loader2 className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] animate-spin text-blue-600" />
+              ) : liveStatus === "success" ? (
+                <CheckCircle2Icon className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] text-green-600" />
+              ) : (
+                <CircleXIcon className="absolute right-1 top-1 h-[0.7rem] w-[0.7rem] text-red-500" />
               )}
             </>
           )}

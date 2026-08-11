@@ -29,7 +29,9 @@ import {
 import { insertJob } from "../apis/jobs-table-apis";
 import { abortJobExecution } from "../apis/jobs-table-apis";
 import { JobStatusEnum } from "../enums/job-status-enum";
+import { useLocalExecutionWebSocket } from "../hooks/useLocalExecutionWebSocket";
 import { useJobDataStore } from "../stores/job-data-store";
+import { useLiveExecutionStore } from "../stores/live-execution-store";
 
 const ExecuteFlow = () => {
   const [isStarting, setIsStarting] = useState<boolean>(false);
@@ -69,6 +71,11 @@ const ExecuteFlow = () => {
   const { isPending: isSaving, saveData, isSavePending } = useSaveFlow();
   const { executeFlowOnWebMutationAsync } = useExecuteFlowMutation();
 
+  // Live local (desktop) execution progress: subscribes to the Tauri WebSocket whenever a
+  // job is active and dispatches per-node status into the live-execution store. No-op in
+  // plain-browser / server mode (only opens a socket once jobId is set).
+  const { sendControl } = useLocalExecutionWebSocket();
+
   // Connect to SignalR hub for real-time job notifications
   useJobNotifications(
     (notification) => {
@@ -96,6 +103,15 @@ const ExecuteFlow = () => {
   const abortExecution = async () => {
     if (!currentFlow?.jobId) {
       setExecutionState("stopped");
+      return;
+    }
+
+    // Local (desktop) runs are controlled over the Tauri WebSocket: the RunnerApp owns the
+    // terminal status (CloseJob(Aborted)). Server/web runs abort via the backend API.
+    if (IS_TAURI) {
+      sendControl("abort");
+      setExecutionState("stopped");
+      toast.warning("Execution has been aborted");
       return;
     }
 
@@ -183,6 +199,8 @@ const ExecuteFlow = () => {
 
         setCurrentFlow({ ...currentFlow, jobId: jobRes.data.id });
         updateField("startTime", executionStartTime);
+        // Clear any stale live node statuses before the new run begins.
+        useLiveExecutionStore.getState().resetLiveExecution();
 
         // Launch the runner app as a sidecar to run the flow on this machine.
         // The runner is provisioned (downloaded/updated) when the desktop app

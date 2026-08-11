@@ -62,10 +62,13 @@ public class JobsTableService : IJobsTableService
                 return serviceResponse.Update("Invalid date range", 400);
 
             // Retrieve the list of records
+            // Convert the resolved date range to UTC before querying. Npgsql only supports writing
+            // DateTimeOffset values with offset 0 (UTC) to a 'timestamp with time zone' column, and
+            // the client-supplied dates may carry a non-zero offset (e.g. +05:30).
             var jobs = await _unitOfWork.JobRepo
                         .GetByConditionAsync(w =>
-                            w.CreatedOn >= dateRange.StartDate.Date &&
-                            w.CreatedOn < dateRange.EndDate.Date.AddDays(1)
+                            w.CreatedOn >= dateRange.StartDate.Date.ToUniversalTime() &&
+                            w.CreatedOn < dateRange.EndDate.Date.AddDays(1).ToUniversalTime()
                         )
                         // When we use ProjectToType then we don't have to explicitly include the related entities (FlowVersion and Flow) because the mapping configuration will handle it. However, if you want to include them for other reasons (like eager loading), you can uncomment the following lines.
                         //.Include(i => i.FlowVersion)
@@ -872,10 +875,13 @@ public class JobsTableService : IJobsTableService
                 return serviceResponse.Update("Start date cannot be greater than end date.", 400);
 
             // Initialize the base query with date filter
+            // Convert the resolved date range to UTC before querying. Npgsql only supports writing
+            // DateTimeOffset values with offset 0 (UTC) to a 'timestamp with time zone' column, and
+            // the client-supplied dates may carry a non-zero offset (e.g. +05:30).
             var jobsExportQuery = _unitOfWork.JobRepo
                                     .GetByConditionAsync(w =>
-                                        w.StartTime >= dateRange.StartDate.Date &&
-                                        w.StartTime < dateRange.EndDate.Date.AddDays(1)
+                                        w.StartTime >= dateRange.StartDate.Date.ToUniversalTime() &&
+                                        w.StartTime < dateRange.EndDate.Date.AddDays(1).ToUniversalTime()
                                     )
                                     .OrderByDescending(o => o.StartTime)
                                     .AsQueryable();
