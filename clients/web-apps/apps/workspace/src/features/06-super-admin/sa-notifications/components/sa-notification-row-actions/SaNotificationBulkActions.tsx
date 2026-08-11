@@ -5,8 +5,8 @@ import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { Table } from "@tanstack/react-table";
 
 import { deleteMultipleSaNotifications } from "../../apis/sa-notification-apis";
-import { SA_NOTIFICATIONS_QUERY_KEY } from "../../hooks/useFetchSaNotifications.hook";
 import { SaNotificationDto } from "../../dtos/sa-notification.dto";
+import { SA_NOTIFICATIONS_QUERY_KEY } from "../../hooks/useFetchSaNotifications.hook";
 
 interface SaNotificationBulkActionsProps {
   table: Table<SaNotificationDto>;
@@ -23,7 +23,8 @@ export function SaNotificationBulkActions({ table }: SaNotificationBulkActionsPr
     .filter((id): id is string => id !== undefined);
 
   // Construct entity name for alert dialog
-  const entityName = selectedRowIds.length > 1 ? `${selectedRowIds.length} notifications` : `notification`;
+  const entityName =
+    selectedRowIds.length > 1 ? `${selectedRowIds.length} notifications` : `notification`;
 
   // Get mutation function to delete the notifications
   const { mutate } = useTableRowOptimisticMutation<string[], number, SaNotificationDto>(

@@ -26,8 +26,7 @@ interface CurrentSpaceState {
  * each user's last-selected space is remembered independently. Falls back to
  * "anonymous" when no session is present (e.g. before login / after logout).
  */
-const getCurrentUserKey = () =>
-  useUserSessionStore.getState().userSession?.email ?? "anonymous";
+const getCurrentUserKey = () => useUserSessionStore.getState().userSession?.email ?? "anonymous";
 
 /**
  * Custom storage that scopes the persisted space per user. The persist

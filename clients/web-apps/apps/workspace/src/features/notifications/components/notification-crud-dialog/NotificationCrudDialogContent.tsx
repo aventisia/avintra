@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { AudienceScopeEnum } from "@avplatform/ui/enums";
 import { type DialogCrudAction } from "@avplatform/ui/types";
+import { useQuery } from "@tanstack/react-query";
 
 import { getNotification, getNotificationRecipients } from "../../apis/notification-apis";
 import { NotificationComposeForm } from "../NotificationComposeForm";

@@ -13,7 +13,10 @@ interface SaNotificationDeleteActionProps {
  * Renders the delete action for a Super Admin notification row.
  * Confirms via alert dialog, then deletes the notification.
  */
-export const SaNotificationDeleteAction = ({ rowId, disabled }: SaNotificationDeleteActionProps) => {
+export const SaNotificationDeleteAction = ({
+  rowId,
+  disabled,
+}: SaNotificationDeleteActionProps) => {
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
   const { deleteSaNotificationMutation } = useDeleteSaNotificationMutation();

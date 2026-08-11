@@ -410,7 +410,7 @@ const DownloadContent: React.FC<{
   // /workspace/) and uses the correct backend host (not a localhost dev hostname
   // the Windows machine can't resolve).
   const apiBaseUrl = useMemo(() => {
-    const path = import.meta.env.VITE_ACCOUNTS_API_PATH ?? "/accounts/api";
+    const path = import.meta.env.VITE_FILES_API_PATH ?? "/files";
     const origin = window.location.origin.replace(/\/$/, "");
     return `${origin}${path.startsWith("/") ? "" : "/"}${path}`;
   }, []);

@@ -31,7 +31,5 @@ export const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {
  */
 export const formatEnumLabel = (value?: string | null): string => {
   if (!value) return "";
-  return value
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2");
+  return value.replace(/([a-z0-9])([A-Z])/g, "$1 $2").replace(/([A-Z])([A-Z][a-z])/g, "$1 $2");
 };

@@ -1,5 +1,6 @@
 import { Calendar } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { NotificationTypesEnum } from "@avplatform/ui/enums";
 import { Popover, PopoverContent, PopoverTrigger } from "@avplatform/ui/popover";
 import {
   Select,
@@ -8,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@avplatform/ui/select";
-import { NotificationTypesEnum } from "@avplatform/ui/enums";
 import { format } from "date-fns";
 import { CalendarDays } from "lucide-react";
 import { useState } from "react";

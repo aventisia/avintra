@@ -3,9 +3,9 @@ import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
+import { AppUserBaseDto } from "../dtos/app-user-base.dto";
 import { CreateNotificationDto } from "../dtos/create-notification.dto";
 import { NotificationDto } from "../dtos/notification.dto";
-import { AppUserBaseDto } from "../dtos/app-user-base.dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/notification`;
 const userSearchAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;

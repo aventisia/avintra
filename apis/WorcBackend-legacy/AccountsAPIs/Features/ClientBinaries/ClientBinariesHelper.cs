@@ -177,7 +177,7 @@ public static class ClientBinariesHelper
     {
         var hasFile = !string.IsNullOrEmpty(versionInfo.filePath);
         var version = versionInfo.version;
-        var baseUrl = $"https://{environmentConfig.AppBaseUrl}/accounts/api/binaries/{downloadPath}/{version}";
+        var baseUrl = $"https://{environmentConfig.AppBaseUrl}/files/binaries/{downloadPath}/{version}";
 
         var windowsArtifact = new ArtifactDto
         {

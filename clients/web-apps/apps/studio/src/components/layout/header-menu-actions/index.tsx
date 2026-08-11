@@ -100,19 +100,6 @@ export const HeaderActionMenu: React.FC = () => {
             onClick={openUIInspector}
           />
         ) : null}
-        {/* {!IS_TAURI ? (
-          <SimpleDDMenuItem
-            size="md"
-            Icon={DownloadIcon}
-            content="Download Desktop App"
-            onClick={() => {
-              window.open(
-                `${import.meta.env.VITE_ACCOUNTS_API_PATH}/binaries/desktop/download/`,
-                "_blank",
-              );
-            }}
-          />
-        ) : null} */}
 
         <SimpleDDMenuItem
           size="md"

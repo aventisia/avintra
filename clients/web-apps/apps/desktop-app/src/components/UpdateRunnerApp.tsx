@@ -59,7 +59,7 @@ export function UpdateRunnerApp({
       <div className="flex flex-1 items-center justify-center p-6">
         <div className="flex w-full flex-col items-center gap-4">
           <RunnerProgress
-            heading={`Updating Runner App v${latestVersion}...`}
+            heading={`Updating Runner App v${latestVersion}`}
             progress={progress}
             error={error}
             onRetry={handleRetry}
@@ -73,7 +73,7 @@ export function UpdateRunnerApp({
   return (
     <SetupCard
       title="Runner App update available"
-      subtitle="A newer version of the Runner App is available. Update now to get the latest features and improvements."
+      subtitle="A newer version of the Avintra Runner App is available. We recommend updating to the latest version for the best experience."
     >
       <div className="flex flex-col gap-5">
         <div className="flex flex-col gap-3 rounded-xl border border-border bg-slate-50/60 p-4 text-sm">

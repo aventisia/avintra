@@ -79,7 +79,7 @@ public class ClientBinariesService : IClientBinariesService
         var result = new RunnerLatestDto
         {
             Version = latestVersion,
-            Url = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/binaries/runner/download/{latestVersion}"
+            Url = $"https://{_environmentConfig.AppBaseUrl}/files/binaries/runner/download/{latestVersion}"
         };
 
         _cache.Set(cacheKey, result, TimeSpan.FromSeconds(60));
@@ -123,7 +123,7 @@ public class ClientBinariesService : IClientBinariesService
                 ["windows-x86_64"] = new UpdateCheckPlatformDto
                 {
                     Signature = signature,
-                    Url = $"https://{_environmentConfig.AppBaseUrl}/accounts/api/binaries/desktop/download/{latestVersion}"
+                    Url = $"https://{_environmentConfig.AppBaseUrl}/files/binaries/desktop/download/{latestVersion}"
                 }
             }
         };

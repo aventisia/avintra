@@ -7,24 +7,30 @@ import {
   NotificationRecurrenceEnum,
   NotificationTypesEnum,
 } from "@avplatform/ui/enums";
-import { Form, InputField, MultiSelectField, SelectField, TextareaField } from "@avplatform/ui/form";
+import {
+  Form,
+  InputField,
+  MultiSelectField,
+  SelectField,
+  TextareaField,
+} from "@avplatform/ui/form";
 import { ISelectOption } from "@avplatform/ui/types";
 import { useEffect, useRef } from "react";
 import { useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { AppUserBaseDto } from "../../../notifications/dtos/app-user-base.dto";
-import { searchAllUsers, getSaTenants } from "../apis/sa-notification-apis";
+import { getSaTenants, searchAllUsers } from "../apis/sa-notification-apis";
 import { CreateSaNotificationDto } from "../dtos/create-sa-notification.dto";
 import { SaNotificationDto } from "../dtos/sa-notification.dto";
 import { SaTenantOptionDto } from "../dtos/sa-tenant-option.dto";
 import { useCreateSaNotificationMutation } from "../hooks/useCreateSaNotificationMutation.hook";
-import { useUpdateSaNotificationMutation } from "../hooks/useUpdateSaNotificationMutation.hook";
-import { useFetchSaNotificationRoles } from "../hooks/useFetchSaNotificationRoles.hook";
 import {
   saNotificationZodSchema,
   useDefineSaNotificationForm,
 } from "../hooks/useDefineSaNotificationForm.hook";
+import { useFetchSaNotificationRoles } from "../hooks/useFetchSaNotificationRoles.hook";
+import { useUpdateSaNotificationMutation } from "../hooks/useUpdateSaNotificationMutation.hook";
 
 interface SaNotificationComposeFormProps {
   /** The notification being edited, or null for create. */
@@ -56,8 +62,10 @@ export const SaNotificationComposeForm = ({
   // audience selection (recipients / tenants) is reflected on first render.
   const { form, isDirty, isValid } = useDefineSaNotificationForm(notification, recipients, tenants);
 
-  const { createSaNotificationMutation, isPending: isCreatePending } = useCreateSaNotificationMutation();
-  const { updateSaNotificationMutation, isPending: isUpdatePending } = useUpdateSaNotificationMutation();
+  const { createSaNotificationMutation, isPending: isCreatePending } =
+    useCreateSaNotificationMutation();
+  const { updateSaNotificationMutation, isPending: isUpdatePending } =
+    useUpdateSaNotificationMutation();
 
   const isPending = isCreatePending || isUpdatePending;
 
@@ -139,7 +147,8 @@ export const SaNotificationComposeForm = ({
           : undefined,
       scheduledFor: formData.scheduledFor ? formData.scheduledFor.toISOString() : undefined,
       recurrenceFrequency:
-        formData.recurrenceFrequency && formData.recurrenceFrequency !== NotificationRecurrenceEnum.None
+        formData.recurrenceFrequency &&
+        formData.recurrenceFrequency !== NotificationRecurrenceEnum.None
           ? formData.recurrenceFrequency
           : undefined,
       recurrenceInterval: formData.recurrenceInterval,
@@ -155,7 +164,9 @@ export const SaNotificationComposeForm = ({
         formData.recurrenceMonthDays.length > 0
           ? formData.recurrenceMonthDays.map(Number)
           : undefined,
-      recurrenceEndOn: formData.recurrenceEndOn ? formData.recurrenceEndOn.toISOString() : undefined,
+      recurrenceEndOn: formData.recurrenceEndOn
+        ? formData.recurrenceEndOn.toISOString()
+        : undefined,
     };
 
     if (isEdit && notification) {
@@ -178,10 +189,16 @@ export const SaNotificationComposeForm = ({
     const previous = previousAudienceScope.current;
     previousAudienceScope.current = audienceScope;
 
-    if (previous === AudienceScopeEnum.SelectedUsers && audienceScope !== AudienceScopeEnum.SelectedUsers) {
+    if (
+      previous === AudienceScopeEnum.SelectedUsers &&
+      audienceScope !== AudienceScopeEnum.SelectedUsers
+    ) {
       form.setValue("recipients", []);
     }
-    if (previous === AudienceScopeEnum.SelectedTenants && audienceScope !== AudienceScopeEnum.SelectedTenants) {
+    if (
+      previous === AudienceScopeEnum.SelectedTenants &&
+      audienceScope !== AudienceScopeEnum.SelectedTenants
+    ) {
       form.setValue("tenants", []);
     }
   }, [audienceScope, form]);
@@ -189,7 +206,12 @@ export const SaNotificationComposeForm = ({
   return (
     <Form methods={form} onSubmit={form.handleSubmit(onSubmit)} className="px-2.5 pb-5">
       {/* Title */}
-      <InputField name="title" label="Title" placeholder="Notification title" description="Max 200 characters." />
+      <InputField
+        name="title"
+        label="Title"
+        placeholder="Notification title"
+        description="Max 200 characters."
+      />
 
       {/* Message */}
       <TextareaField
@@ -252,9 +274,7 @@ export const SaNotificationComposeForm = ({
         <AsyncMultiSelectField<AppUserBaseDto>
           name="recipients"
           label="Recipients"
-          fetcher={(query) =>
-            searchAllUsers(query).then((res) => res.data ?? [])
-          }
+          fetcher={(query) => searchAllUsers(query).then((res) => res.data ?? [])}
           getItemId={(item) => item.id}
           getItemLabel={(item) =>
             `${item.firstName} ${item.lastName}${item.userName ? ` (${item.userName})` : ""}`
@@ -271,9 +291,7 @@ export const SaNotificationComposeForm = ({
         <AsyncMultiSelectField<SaTenantOptionDto>
           name="tenants"
           label="Tenants"
-          fetcher={() =>
-            getSaTenants().then((res) => res.data ?? [])
-          }
+          fetcher={() => getSaTenants().then((res) => res.data ?? [])}
           getItemId={(item) => item.id}
           getItemLabel={(item) => item.name}
           queryKeyBase={["sa-notification-tenants"]}

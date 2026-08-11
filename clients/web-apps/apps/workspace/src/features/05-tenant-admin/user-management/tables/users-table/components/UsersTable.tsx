@@ -44,13 +44,7 @@ export const UsersTable = () => {
   const columns = usersTableColumns(spaceIdToName);
 
   // Create a React table for users data
-  const table = useDataTable(
-    columns,
-    data?.data || [],
-    columnVisibility,
-    sortState,
-    true,
-  );
+  const table = useDataTable(columns, data?.data || [], columnVisibility, sortState, true);
 
   // Return the rendered DataTable component.
   return (

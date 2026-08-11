@@ -10,7 +10,7 @@ import type { DownloadManifestDto } from "../dtos/download-manifest.dto";
  */
 const getDownloadManifest = async () => {
   const response = await axiosInstance.get<DownloadManifestDto>(
-    `${import.meta.env.VITE_ACCOUNTS_API_PATH}/binaries/download-manifest`,
+    `${import.meta.env.VITE_FILES_API_PATH}/binaries/download-manifest`,
   );
   // ServiceResponse<T> returns { data: T, statusCode, message }
   const wrapped = response.data as unknown as { data: DownloadManifestDto };

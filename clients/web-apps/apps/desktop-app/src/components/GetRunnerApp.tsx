@@ -59,7 +59,7 @@ export function GetRunnerApp({ appBaseUrl, latestVersion, onSkip, onComplete }: 
     <div className="flex flex-1 items-center justify-center p-6">
       <div className="flex w-full flex-col items-center gap-4">
         <RunnerProgress
-          heading={`Setting up Runner App v${latestVersion}...`}
+          heading={`Setting up Runner App v${latestVersion}`}
           progress={progress}
           error={error}
           onRetry={handleRetry}
