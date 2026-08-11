@@ -125,7 +125,7 @@ export function useAppUpdater(domain: string): UseAppUpdaterReturn {
       await invoke("download_update", { onProgress });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setError({ code: "DL_START", message: err.message });
+      setError({ code: "DL_START", message: err.message || String(err) });
       setDownloading(false);
     }
   }, [downloading]);
