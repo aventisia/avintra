@@ -90,9 +90,6 @@ public class RunnerAppService : BackgroundService
         await using var hubClient = new OrchestratorHubClient(
             _options.AppBaseUrl,
             accessToken,
-            _options.OsId,
-            _options.Username,
-            _options.AppVersion,
             hubLogger);
 
         var commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -152,12 +149,12 @@ public class RunnerAppService : BackgroundService
         {
             // Long-lived registration using the tenant API key. Refreshed each cycle.
             return await registerClient.RegisterMachineWithApiKeyAsync(
-                "Windows", _options.OsId, _options.Username, Environment.MachineName,
+                "Windows", _options.OsId, _options.Username, MachineIdentity.Hostname,
                 _options.TenantId, _options.ApiKey, _options.LinkedUsername, cancellationToken);
         }
 
         return await registerClient.RegisterMachineAsync(
-            "Windows", _options.OsId, _options.Username, Environment.MachineName, cancellationToken);
+            "Windows", _options.OsId, _options.Username, MachineIdentity.Hostname, cancellationToken);
     }
 
     private async Task ConnectHubWithRetryAsync(IOrchestratorHubClient hubClient, CancellationToken cancellationToken)

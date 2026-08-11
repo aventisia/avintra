@@ -15,13 +15,12 @@ import useCheckJobTrigger from "@/features/execute-flow/hooks/useCheckJobTrigger
 import { useCurrentFlowStore } from "@/features/execute-flow/stores/current-flow-store";
 import { usePreventClose } from "@/hooks/usePreventClose";
 import { useRecoverCrashLogs } from "@/hooks/useRecoverCrashLogs";
-import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
+import { useTauriMachineIdentity } from "@/hooks/useTauriMachineIdentity";
 import useWebSocket from "@/hooks/useWebSocket";
 import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useAppLoaderStore } from "@/stores/app-loader-store";
-import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 import { getWebSocketUrl } from "@/utils/get-websocket-url";
 
 import AppHeader from "./AppHeader";
@@ -56,13 +55,7 @@ export const AppLayout = () => {
     })),
   );
 
-  const { osID, username, appVersion } = useTuariUserMetadataStore(
-    useShallow((state) => ({
-      osID: state.osID,
-      username: state.username,
-      appVersion: state.appVersion,
-    })),
-  );
+  const { osID, username, appVersion, isLoading: isIdentityLoading } = useTauriMachineIdentity();
 
   // Get setExecutionState action from current flow store
   const { executionState } = useCurrentFlowStore(
@@ -91,8 +84,6 @@ export const AppLayout = () => {
   // Validate user session
   const { isPending, userSession } = useValidateUserSession();
 
-  useTauriUserMetadata();
-
   // Establish websocket connection and expose ref
   const { connection, isReady } = useWebSocket({
     url: getWebSocketUrl({
@@ -100,7 +91,7 @@ export const AppLayout = () => {
       appVersion,
       username,
     }),
-    shouldConnect: connectWebsocket,
+    shouldConnect: connectWebsocket && !isIdentityLoading,
   });
 
   // Check and invalidates machines data based on websocket

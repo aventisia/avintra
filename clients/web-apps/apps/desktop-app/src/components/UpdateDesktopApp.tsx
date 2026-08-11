@@ -3,6 +3,7 @@ import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
 import { useEffect, useState } from "react";
 
+import { versionsEqual } from "../lib/versions";
 import { RunnerProgress } from "./RunnerProgress";
 import { SetupCard } from "./SetupCard";
 
@@ -53,7 +54,9 @@ export function UpdateDesktopApp({ domain, onInstall, onSkip }: UpdateDesktopApp
         }
 
         const installedVersion = result.current_version;
-        if (installedVersion && result.version === installedVersion) {
+        // Compare semantically so leading "v", trailing ".0", and build metadata
+        // don't cause an equal version to briefly flash the update card.
+        if (versionsEqual(result.version, installedVersion)) {
           onSkip();
           return;
         }

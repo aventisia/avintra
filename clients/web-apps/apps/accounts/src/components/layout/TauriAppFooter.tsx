@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 interface UserMetaData {
   os_id: string;
   username: string;
+  hostname: string;
   app_version: string;
 }
 /** Component renders a TauriAppFooter */

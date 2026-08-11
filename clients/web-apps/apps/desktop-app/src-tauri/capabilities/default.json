@@ -7,6 +7,8 @@
     "core:default",
     "updater:default",
     "store:default",
+    "os:default",
+    "os:allow-hostname",
     "fs:default",
     {
       "identifier": "fs:allow-app-read-recursive",

@@ -17,7 +17,6 @@ import { getAvailableCredits } from "@/features/available-credits/available-cred
 import { useSaveFlow } from "@/features/react-flow/hooks/useSaveFlow";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
-import { useTuariUserMetadataStore } from "@/stores/tuari-user-metadata-store";
 import { NodeDataType } from "@/types/node-data-type";
 
 import {
@@ -66,8 +65,6 @@ const ExecuteFlow = () => {
       flowType: state.flowType,
     })),
   );
-
-  const { osID, hostname, appVersion } = useTuariUserMetadataStore();
 
   const { isPending: isSaving, saveData, isSavePending } = useSaveFlow();
   const { executeFlowOnWebMutationAsync } = useExecuteFlowMutation();
@@ -187,22 +184,22 @@ const ExecuteFlow = () => {
         setCurrentFlow({ ...currentFlow, jobId: jobRes.data.id });
         updateField("startTime", executionStartTime);
 
-        // Launch the runner app as a sidecar to run the flow on this machine
+        // Launch the runner app as a sidecar to run the flow on this machine.
+        // The runner is provisioned (downloaded/updated) when the desktop app
+        // opens, so we only launch it here rather than re-checking it.
+        // RunnerApp reads its own machine identity, so we only pass the URL,
+        // job id, and access token.
         if (IS_TAURI) {
           try {
-            // Ensure the executor is installed and up to date (downloaded independently
-            // from the Tauri app via the runner-app download endpoints).
-            await invoke("ensure_runner_app", {
-              appBaseUrl: window.location.origin,
+            console.log("launch_runner_app", {
+              appBaseUrl: `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}`,
+              jobId: jobRes.data.id,
+              accessToken: userSession.data?.accessToken,
             });
-
             await invoke("launch_runner_app", {
               appBaseUrl: `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}`,
               jobId: jobRes.data.id,
               accessToken: userSession.data?.accessToken,
-              osId: osID,
-              username: hostname,
-              appVersion,
             });
           } catch (error) {
             console.error("Failed to launch the executor:", error);

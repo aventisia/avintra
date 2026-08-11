@@ -4,7 +4,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { PROCESSING_STATES } from "@/features/execute-flow";
 import { usePreventClose } from "@/hooks/usePreventClose";
-import useTauriUserMetadata from "@/hooks/useTauriUserMetadata";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
 import { useAppLoaderStore } from "@/stores/app-loader-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -29,8 +28,6 @@ export const AppLayout = () => {
   usePreventClose({
     isProcessing: PROCESSING_STATES.includes(executionState),
   });
-
-  useTauriUserMetadata();
 
   // Validate user session
   const { isPending } = useValidateUserSession();
