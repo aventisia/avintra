@@ -1,0 +1,19 @@
+meta {
+  name: Update tenant notification settings
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/tenant-account/notification-settings
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "lowCredits": false,
+    "subscription": true,
+    "publishAgent": true
+  }
+}

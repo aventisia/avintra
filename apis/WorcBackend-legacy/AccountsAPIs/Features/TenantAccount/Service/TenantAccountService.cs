@@ -380,6 +380,126 @@ public class TenantAccountService : ITenantAccountService
 
         return serviceResponse;
     }
+
+    /// <inheritdoc />
+    public async Task<ServiceResponse<NotificationSettingsDto>> GetNotificationSettingsAsync()
+    {
+        var serviceResponse = new ServiceResponse<NotificationSettingsDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve notification settings. Please try again."
+        };
+
+        try
+        {
+            _logger.LogInformation("Attempting to retrieve notification settings for TenantId: {TenantId}", _tenantId);
+
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t => t.Id == _tenantId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (tenant == null)
+            {
+                serviceResponse.Message = "Tenant not found.";
+                serviceResponse.StatusCode = 404;
+                _logger.LogWarning("Tenant not found for notification settings retrieval. TenantId: {TenantId}", _tenantId);
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = BuildNotificationSettingsDto(_tenantId, tenant.NotificationSettings);
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Notification settings retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while retrieving notification settings for TenantId: {TenantId}", _tenantId);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <inheritdoc />
+    public async Task<ServiceResponse<NotificationSettingsDto>> UpdateNotificationSettingsAsync(UpdateNotificationSettingsDto updateDto)
+    {
+        var serviceResponse = new ServiceResponse<NotificationSettingsDto>
+        {
+            Data = null,
+            Message = "Failed to update notification settings. Please try again."
+        };
+
+        try
+        {
+            _logger.LogInformation("Attempting to update notification settings for TenantId: {TenantId}", _tenantId);
+
+            var tenant = await _unitOfWork.TenantRepo
+                .GetByConditionAsync(t => t.Id == _tenantId)
+                .FirstOrDefaultAsync();
+
+            if (tenant == null)
+            {
+                serviceResponse.Message = "Tenant not found.";
+                serviceResponse.StatusCode = 404;
+                _logger.LogWarning("Tenant not found for notification settings update. TenantId: {TenantId}", _tenantId);
+                return serviceResponse;
+            }
+
+            // Start from the current settings (or defaults if none stored yet).
+            var settings = tenant.NotificationSettings ?? new NotificationSettings();
+
+            // FR-3: only apply the properties that were explicitly provided (non-null).
+            // FR-9: the DTO's bool? properties reject non-boolean JSON values at model
+            // binding time, so a non-boolean value never reaches here.
+            if (updateDto.LowCredits.HasValue)
+                settings.LowCredits = updateDto.LowCredits.Value;
+
+            if (updateDto.Subscription.HasValue)
+                settings.Subscription = updateDto.Subscription.Value;
+
+            if (updateDto.PublishAgent.HasValue)
+                settings.PublishAgent = updateDto.PublishAgent.Value;
+
+            tenant.NotificationSettings = settings;
+            tenant.LastModifiedByUserId = _userId;
+            tenant.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            _unitOfWork.TenantRepo.Update(tenant);
+
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Update failed while saving notification settings for TenantId: {TenantId}", _tenantId);
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = BuildNotificationSettingsDto(_tenantId, settings);
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Notification settings updated successfully.";
+            _logger.LogInformation("Successfully updated notification settings for TenantId: {TenantId}", _tenantId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while updating notification settings for TenantId: {TenantId}", _tenantId);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
+    /// Builds the strongly-typed response DTO from the tenant's notification settings,
+    /// applying per-type defaults for any missing settings (FR-6).
+    /// </summary>
+    private static NotificationSettingsDto BuildNotificationSettingsDto(Guid tenantId, NotificationSettings? settings)
+    {
+        var effective = settings ?? new NotificationSettings();
+        return new NotificationSettingsDto
+        {
+            TenantId = tenantId,
+            LowCredits = effective.LowCredits,
+            Subscription = effective.Subscription,
+            PublishAgent = effective.PublishAgent
+        };
+    }
+
     /// <summary>
     /// Validates Azure Entra (Azure AD) credentials by attempting to acquire an access token.
     /// </summary>

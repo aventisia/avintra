@@ -198,4 +198,11 @@ public class Tenant : BaseEntity
     /// When disabled, Tenant Admins cannot create Change Request tickets.
     /// </summary>
     public bool IsChangeRequestEnabled { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the per-tenant, per-notification-type automatic notification control
+    /// flags. Stored as a JSON column on the Tenants table. Missing keys fall back to the
+    /// per-type default (see <see cref="NotificationSettings"/>).
+    /// </summary>
+    public NotificationSettings? NotificationSettings { get; set; }
 }

@@ -10,17 +10,20 @@ public class NotificationEventService : INotificationEventService
     private readonly ILogger<NotificationEventService> _logger;
     private readonly IAutoNotificationService _autoNotificationService;
     private readonly INotificationRecipientResolver _recipientResolver;
+    private readonly TenantDbContext _tenantDbContext;
     private readonly Guid _userId;
 
     public NotificationEventService(
         ILogger<NotificationEventService> logger,
         IAutoNotificationService autoNotificationService,
         INotificationRecipientResolver recipientResolver,
+        TenantDbContext tenantDbContext,
         IHttpContextAccessor httpContextAccessor)
     {
         _logger = logger;
         _autoNotificationService = autoNotificationService;
         _recipientResolver = recipientResolver;
+        _tenantDbContext = tenantDbContext;
 
         // Set _userId from the JWT "uid" claim (empty Guid when absent, e.g. background jobs)
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -31,6 +34,12 @@ public class NotificationEventService : INotificationEventService
     {
         try
         {
+            if (!await IsNotificationEnabledAsync(tenantId, s => s.PublishAgent))
+            {
+                _logger.LogInformation("PublishAgent notifications are disabled for tenant {TenantId}; skipping.", tenantId);
+                return;
+            }
+
             var omUserIds = await _recipientResolver.ResolveUserIdsByRoleNameAsync(CustomRolesEnum.OM.ToString(), tenantId);
             if (omUserIds.Count == 0)
             {
@@ -80,6 +89,12 @@ public class NotificationEventService : INotificationEventService
     {
         try
         {
+            if (!await IsNotificationEnabledAsync(tenantId, s => s.LowCredits))
+            {
+                _logger.LogInformation("LowCredit notifications are disabled for tenant {TenantId}; skipping.", tenantId);
+                return;
+            }
+
             var taUserIds = await _recipientResolver.ResolveUserIdsByRoleNameAsync(CustomRolesEnum.TA.ToString(), tenantId);
             if (taUserIds.Count == 0)
             {
@@ -111,6 +126,12 @@ public class NotificationEventService : INotificationEventService
     {
         try
         {
+            if (!await IsNotificationEnabledAsync(tenantId, s => s.Subscription))
+            {
+                _logger.LogInformation("Subscription notifications are disabled for tenant {TenantId}; skipping.", tenantId);
+                return;
+            }
+
             var taUserIds = await _recipientResolver.ResolveUserIdsByRoleNameAsync(CustomRolesEnum.TA.ToString(), tenantId);
             if (taUserIds.Count == 0)
             {
@@ -180,5 +201,25 @@ public class NotificationEventService : INotificationEventService
         {
             _logger.LogError(ex, "Failed to notify recipients about ticket {TicketId}.", ticketId);
         }
+    }
+
+    /// <summary>
+    /// Centralized gate (NFR-4): determines whether an automatic notification type is
+    /// enabled for a tenant. Reads the tenant's strongly-typed notification settings and
+    /// falls back to the per-type default when the settings are null (FR-6). When disabled,
+    /// the caller must skip notification creation silently (FR-5).
+    /// </summary>
+    /// <param name="tenantId">The tenant whose setting is being checked.</param>
+    /// <param name="selector">Selects the boolean flag for the notification type.</param>
+    /// <returns><c>true</c> if the notification should be created/dispatched; otherwise <c>false</c>.</returns>
+    private async Task<bool> IsNotificationEnabledAsync(Guid tenantId, Func<NotificationSettings, bool> selector)
+    {
+        var tenant = await _tenantDbContext.ReadOnlyTenants
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == tenantId);
+
+        // Tenant not found or no settings stored: fall back to the per-type default
+        // (the model's properties default to true, preserving current behavior).
+        return tenant?.NotificationSettings == null || selector(tenant.NotificationSettings);
     }
 }

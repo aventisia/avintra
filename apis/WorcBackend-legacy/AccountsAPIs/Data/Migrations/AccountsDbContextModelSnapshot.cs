@@ -1346,6 +1346,9 @@ namespace AccountsAPIs.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("NotificationSettings")
+                        .HasColumnType("text");
+
                     b.Property<int>("NumberOfEmployees")
                         .HasColumnType("integer");
 
