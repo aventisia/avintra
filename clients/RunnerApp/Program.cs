@@ -52,105 +52,146 @@ return await RunConsoleAsync(options);
 
 static async Task<int> RunConsoleAsync(RunnerAppOptions options)
 {
+    var isLocal = !options.IsServiceMode;
+    var targetJobId = options.JobId!.Value;
+
+    // Backend REST client + execution engine are shared by both modes.
     using var httpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
-    var registerClient = new BackendHttpClient(httpClient, options.AccessToken);
-
-    // Register machine with backend and obtain its machine JWT
-    MachineRegistrationResult? registration;
-    if (options.IsServiceMode)
-    {
-        registration = await registerClient.RegisterMachineWithApiKeyAsync(
-            "Windows", options.OsId, options.Username, MachineIdentity.Hostname,
-            options.TenantId, options.ApiKey, options.LinkedUsername);
-    }
-    else
-    {
-        registration = await registerClient.RegisterMachineAsync(
-            "Windows", options.OsId, options.Username, MachineIdentity.Hostname);
-    }
-
-    var accessToken = registration?.Jwt ?? options.AccessToken;
-    if (registration != null)
-        Console.WriteLine($"Registered as machine {registration.MachineId}.");
-    else
-        Console.WriteLine("Warning: Machine registration failed. Continuing with the provided token.");
-
-    using var engineHttpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
-    var backendClient = new BackendHttpClient(engineHttpClient, accessToken);
-    var engine = new DesktopExecutionEngine(accessToken);
-
-    using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-    var hubLogger = loggerFactory.CreateLogger<OrchestratorHubClient>();
-    await using var hubClient = new OrchestratorHubClient(
-        options.AppBaseUrl,
-        accessToken,
-        hubLogger);
+    var backendClient = new BackendHttpClient(httpClient, options.AccessToken);
+    var engine = new DesktopExecutionEngine(options.AccessToken);
 
     var cts = new CancellationTokenSource();
-    var commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>();
     var abortRequested = false;
     var pauseResume = new ManualResetEventSlim(true);
 
-    hubClient.CommandReceived += (_, e) =>
+    // Local mode: no machine registration, no server SignalR. Progress + control flow over
+    // the Tauri local WebSocket (single-shot, unpublished, under-development flows).
+    await using var hubClient = isLocal ? null : new OrchestratorHubClient(
+        options.AppBaseUrl,
+        options.AccessToken,
+        LoggerFactory.Create(builder => builder.AddConsole()).CreateLogger<OrchestratorHubClient>());
+
+    await using var localWs = isLocal
+        ? new LocalWebSocketClient(options.WebsocketPort, targetJobId)
+        : null;
+
+    if (isLocal)
     {
-        if (e.Command == ExecutorCommand.Initiate)
+        DebugLog.Info($"Running in LOCAL mode for job {targetJobId} " +
+                      $"with websocket port {options.WebsocketPort}.");
+
+        localWs!.CommandReceived += (_, command) =>
         {
-            commandReceived.TrySetResult(e);
+            switch (command)
+            {
+                case LocalControlCommand.Abort:
+                    DebugLog.Info("Received Abort via local WebSocket.");
+                    abortRequested = true;
+                    pauseResume.Set();
+                    cts.Cancel();
+                    break;
+                case LocalControlCommand.Pause:
+                    DebugLog.Info("Received Pause via local WebSocket.");
+                    pauseResume.Reset();
+                    break;
+                case LocalControlCommand.Resume:
+                    DebugLog.Info("Received Resume via local WebSocket.");
+                    pauseResume.Set();
+                    break;
+            }
+        };
+
+        localWs.Disconnected += (_, reason) =>
+            DebugLog.Warn($"Local WebSocket disconnected: {reason}");
+
+        await localWs.ConnectAsync();
+    }
+    else
+    {
+        // Register the machine with the backend and obtain its machine JWT.
+        DebugLog.Info("Running in SERVER mode.");
+
+        MachineRegistrationResult? registration;
+        if (options.IsServiceMode)
+        {
+            registration = await backendClient.RegisterMachineWithApiKeyAsync(
+                "Windows", options.OsId, options.Username, MachineIdentity.Hostname,
+                options.TenantId, options.ApiKey, options.LinkedUsername);
         }
-        else if (e.Command == ExecutorCommand.Abort || e.Command == ExecutorCommand.Killed)
+        else
         {
-            abortRequested = true;
-            pauseResume.Set();
+            registration = await backendClient.RegisterMachineAsync(
+                "Windows", options.OsId, options.Username, MachineIdentity.Hostname);
+        }
+
+        var accessToken = registration?.Jwt ?? options.AccessToken;
+        if (registration != null)
+            Console.WriteLine($"Registered as machine {registration.MachineId}.");
+        else
+            Console.WriteLine("Warning: Machine registration failed. Continuing with the provided token.");
+
+        // Use the machine JWT (if any) for subsequent backend + hub calls.
+        backendClient = new BackendHttpClient(httpClient, accessToken);
+        engine = new DesktopExecutionEngine(accessToken);
+
+        var commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>();
+
+        hubClient!.CommandReceived += (_, e) =>
+        {
+            if (e.Command == ExecutorCommand.Initiate)
+            {
+                commandReceived.TrySetResult(e);
+            }
+            else if (e.Command == ExecutorCommand.Abort || e.Command == ExecutorCommand.Killed)
+            {
+                abortRequested = true;
+                pauseResume.Set();
+                commandReceived.TrySetResult(null);
+                cts.Cancel();
+            }
+            else if (e.Command == ExecutorCommand.Pause)
+            {
+                pauseResume.Reset();
+            }
+            else if (e.Command == ExecutorCommand.Resume)
+            {
+                pauseResume.Set();
+            }
+        };
+
+        hubClient.Disconnected += (_, reason) =>
+        {
+            Console.WriteLine($"SignalR disconnected: {reason}.");
             commandReceived.TrySetResult(null);
-            cts.Cancel();
-        }
-        else if (e.Command == ExecutorCommand.Pause)
+        };
+
+        Console.WriteLine("Connecting to OrchestratorHub...");
+        try
         {
-            pauseResume.Reset();
+            await hubClient.ConnectAsync();
         }
-        else if (e.Command == ExecutorCommand.Resume)
+        catch (Exception ex)
         {
-            pauseResume.Set();
+            Console.WriteLine($"Failed to connect to OrchestratorHub: {ex.Message}.");
+            commandReceived.TrySetResult(null);
         }
-    };
 
-    hubClient.Disconnected += (_, reason) =>
-    {
-        Console.WriteLine($"SignalR disconnected: {reason}.");
-        commandReceived.TrySetResult(null);
-    };
-
-    hubClient.Reconnected += (_, _) =>
-    {
-        Console.WriteLine("SignalR reconnected.");
-    };
-
-    Console.WriteLine("Connecting to OrchestratorHub...");
-    try
-    {
-        await hubClient.ConnectAsync();
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Failed to connect to OrchestratorHub: {ex.Message}.");
-        commandReceived.TrySetResult(null);
-    }
-
-    if (!options.JobId.HasValue)
-    {
-        Console.WriteLine("Waiting for Initiate command...");
-        var initiateTimeout = Task.Delay(TimeSpan.FromSeconds(30), cts.Token);
-        var completed = await Task.WhenAny(commandReceived.Task, initiateTimeout);
-
-        if (completed == initiateTimeout)
+        if (!options.JobId.HasValue)
         {
-            Console.WriteLine("No Initiate command received via SignalR within timeout.");
-            return 1;
-        }
-    }
+            Console.WriteLine("Waiting for Initiate command...");
+            var initiateTimeout = Task.Delay(TimeSpan.FromSeconds(30), cts.Token);
+            var completed = await Task.WhenAny(commandReceived.Task, initiateTimeout);
 
-    var command = commandReceived.Task.IsCompletedSuccessfully ? commandReceived.Task.Result : null;
-    var targetJobId = command?.JobId ?? options.JobId!.Value;
+            if (completed == initiateTimeout)
+            {
+                Console.WriteLine("No Initiate command received via SignalR within timeout.");
+                return 1;
+            }
+        }
+
+        var command = commandReceived.Task.IsCompletedSuccessfully ? commandReceived.Task.Result : null;
+        targetJobId = command?.JobId ?? options.JobId!.Value;
+    }
 
     Console.WriteLine($"Fetching execution graph for job {targetJobId}...");
     var graph = await backendClient.GetExecutionGraphAsync(targetJobId);
@@ -172,16 +213,24 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
 
     FlowExecutionResult result;
     var lastReportedNode = string.Empty;
-    var progressTimer = new System.Timers.Timer(TimeSpan.FromSeconds(15).TotalMilliseconds) { AutoReset = true };
-    progressTimer.Elapsed += (_, _) =>
+
+    // Local mode: push every node transition over the local WS immediately so the Studio
+    // app can render live node indicators. Server mode: keep the periodic backend progress
+    // timer so the OrchestratorHub receives updates.
+    System.Timers.Timer? progressTimer = null;
+    if (!isLocal)
     {
-        if (!string.IsNullOrEmpty(lastReportedNode))
+        progressTimer = new System.Timers.Timer(TimeSpan.FromSeconds(15).TotalMilliseconds) { AutoReset = true };
+        progressTimer.Elapsed += (_, _) =>
         {
-            Console.WriteLine($"Progress: executing node {lastReportedNode}");
-            _ = hubClient.ReportProgressAsync(targetJobId, $"Executing node {lastReportedNode}");
-        }
-    };
-    progressTimer.Start();
+            if (!string.IsNullOrEmpty(lastReportedNode))
+            {
+                Console.WriteLine($"Progress: executing node {lastReportedNode}");
+                _ = hubClient!.ReportProgressAsync(targetJobId, $"Executing node {lastReportedNode}");
+            }
+        };
+        progressTimer.Start();
+    }
 
     try
     {
@@ -189,6 +238,13 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         result = await engine.ExecuteAsync(graph, cts.Token, nodeId =>
         {
             lastReportedNode = nodeId;
+
+            // Local mode: push progress over the WS (running) as each node starts.
+            if (localWs is not null)
+            {
+                DebugLog.Info($"Node progress (running): {nodeId}");
+                _ = localWs.PushNodeProgressAsync(nodeId, "running", nodeId);
+            }
         });
     }
     catch (OperationCanceledException)
@@ -225,6 +281,18 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         _ => "Failed"
     };
 
+    // Local mode: push the final per-node outcome over the local WS so the Studio app can
+    // flip running nodes to success/failed as the run finishes.
+    if (localWs is not null && result.NodeLogs is not null)
+    {
+        foreach (var log in result.NodeLogs)
+        {
+            var status = log.IsSuccess ? "success" : "failed";
+            DebugLog.Info($"Node progress ({status}): {log.NodeId}");
+            await localWs.PushNodeProgressAsync(log.NodeId, status, log.NodeName);
+        }
+    }
+
     Console.WriteLine($"Closing job with status: {jobStatus}");
     try
     {
@@ -235,10 +303,11 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         Console.WriteLine($"Warning: Failed to close job: {ex.Message}");
     }
 
-    progressTimer.Stop();
-    progressTimer.Dispose();
+    progressTimer?.Stop();
+    progressTimer?.Dispose();
 
-    await hubClient.ReportCompletionAsync(targetJobId, jobStatus, result.ErrorMessage);
+    if (hubClient is not null)
+        await hubClient.ReportCompletionAsync(targetJobId, jobStatus, result.ErrorMessage);
 
     Console.WriteLine($"Execution finished: {result.Status}");
     return result.IsSuccess ? 0 : 1;
@@ -461,6 +530,7 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
     string? apiKey = null;
     string? tenantId = null;
     string? linkedUsername = null;
+    int websocketPort = 0;
 
     for (int i = 0; i < args.Length; i++)
     {
@@ -483,6 +553,9 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
                 break;
             case "--linkedusername":
                 if (++i < args.Length) linkedUsername = args[i];
+                break;
+            case "--websocketport":
+                if (++i < args.Length && int.TryParse(args[i], out var port)) websocketPort = port;
                 break;
         }
     }
@@ -511,6 +584,7 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
         ApiKey = apiKey ?? string.Empty,
         TenantId = tenantId ?? string.Empty,
         LinkedUsername = linkedUsername ?? string.Empty,
+        WebsocketPort = websocketPort,
     };
 }
 
@@ -532,8 +606,9 @@ static void PrintUsage()
     Console.Error.WriteLine("");
     Console.Error.WriteLine("Run options:");
     Console.Error.WriteLine("  --appBaseUrl <url>       Backend API base URL (required)");
-    Console.Error.WriteLine("  --accessToken <token>    JWT access token (console mode)");
-    Console.Error.WriteLine("  --jobId <guid>           Job ID to execute (console mode; optional in service mode)");
+    Console.Error.WriteLine("  --accessToken <token>    JWT access token (console/local mode)");
+    Console.Error.WriteLine("  --jobId <guid>           Job ID to execute (console/local mode; optional in service mode)");
+    Console.Error.WriteLine("  --websocketPort <port>   Local Tauri WebSocket port (local/non-service mode, node progress + control)");
     Console.Error.WriteLine("  --apiKey <key>           Tenant API key (service mode, long-lived registration)");
     Console.Error.WriteLine("  --tenantId <guid>        Tenant ID (service mode)");
     Console.Error.WriteLine("  --linkedUsername <name>  Linked workspace username (service mode)");

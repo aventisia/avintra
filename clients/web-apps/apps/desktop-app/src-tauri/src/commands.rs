@@ -1,5 +1,7 @@
 use serde::Serialize;
-use std::process::Command;
+use std::fs::OpenOptions;
+use std::path::PathBuf;
+use std::process::{Command, Stdio};
 
 #[tauri::command]
 pub fn launch_runner_app(
@@ -11,7 +13,14 @@ pub fn launch_runner_app(
     // the local app data dir so it can be updated without republishing the whole
     // Tauri app. The app always launches the runner from the runner-app folder.
     // RunnerApp reads its own machine identity (osId, username, hostname, appVersion),
-    // so the only values the desktop app must pass are the API URL, job id, and token.
+    // so the values the desktop app passes are the API URL, job id, and access token.
+    // The mode is derived by the runner itself from IsServiceMode (apiKey+tenantId),
+    // which are absent here, so the runner always runs in local mode.
+    //
+    // The local Tauri WebSocket port is read directly from the in-process WebSocket
+    // server (websocket::get_websocket_port) rather than passed through the frontend,
+    // and forwarded so the runner can push node progress and receive abort/pause/resume
+    // control messages.
     let runner_app_path = crate::runner_management::runner_exe_path()?;
 
     if !runner_app_path.exists() {
@@ -21,16 +30,45 @@ pub fn launch_runner_app(
         ));
     }
 
-    Command::new(runner_app_path)
-        .arg("--appBaseUrl")
+    let mut cmd = Command::new(runner_app_path);
+    cmd.arg("--appBaseUrl")
         .arg(app_base_url)
         .arg("--jobId")
         .arg(job_id)
         .arg("--accessToken")
-        .arg(access_token)
-        .spawn()
+        .arg(access_token);
+
+    if let Some(port) = crate::websocket::get_websocket_port() {
+        if port > 0 {
+            cmd.arg("--websocketPort").arg(port.to_string());
+        }
+    }
+
+    // The desktop app does not capture the runner's stdout, so redirect it (and
+    // stderr) to the same debug log file the runner itself writes to, making
+    // console output visible when debugging a run.
+    cmd.stdout(Stdio::from(open_runner_log()?))
+        .stderr(Stdio::from(open_runner_log()?));
+
+    cmd.spawn()
         .map_err(|e| format!("Failed to start the runner: {}", e))?;
     Ok(())
+}
+
+/// Opens (creates/append) the runner debug log file used by the runner itself
+/// (%LOCALAPPDATA%\AvintraDesktopApp\logs\runner-debug.log) for stdout/stderr redirection.
+fn open_runner_log() -> Result<std::fs::File, String> {
+    let dir: PathBuf = dirs::data_local_dir()
+        .ok_or("Cannot resolve local app data directory")?
+        .join("AvintraDesktopApp")
+        .join("logs");
+    std::fs::create_dir_all(&dir)
+        .map_err(|e| format!("Failed to create logs directory {}: {}", dir.display(), e))?;
+    OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(dir.join("runner-debug.log"))
+        .map_err(|e| format!("Failed to open runner debug log: {}", e))
 }
 
 #[tauri::command]
