@@ -1,0 +1,36 @@
+meta {
+  name: v2 llm embeddings - simple
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/v2/llm/embeddings
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "openai",
+    "model": "text-embedding-3-small",
+    "input": "This is a test sentence for embedding.",
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "dimensions": 1536,
+    "encoding_format": "float",
+    "reference_id": "",
+    "reference_type": "Platform",
+    "reference_name": "",
+    "action": "imporve_prompt"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

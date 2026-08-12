@@ -59,3 +59,6 @@ langchain-google-genai>=2.0,<4.0
 langchain-openrouter>=0.2,<2.0
 # langgraph-checkpoint-postgres>=3.0,<4.0
 # psycopg-binary>=3.0,<4.0
+
+# LiteLLM provider abstraction layer (LLM Providers v2 feature)
+litellm>=1.40.0,<2.0.0
