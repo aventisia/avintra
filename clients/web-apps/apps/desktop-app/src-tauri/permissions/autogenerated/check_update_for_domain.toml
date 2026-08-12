@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-check-update-for-domain"
+description = "Enables the check_update_for_domain command without any pre-configured scope."
+commands.allow = ["check_update_for_domain"]
+
+[[permission]]
+identifier = "deny-check-update-for-domain"
+description = "Denies the check_update_for_domain command without any pre-configured scope."
+commands.deny = ["check_update_for_domain"]

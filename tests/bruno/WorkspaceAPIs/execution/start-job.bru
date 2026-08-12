@@ -1,0 +1,15 @@
+meta {
+  name: Start job
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/execution/job/{{JOB_ID}}/start
+  body: json
+  auth: none
+}
+
+body:json {
+  {}
+}

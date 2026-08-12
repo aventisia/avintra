@@ -209,13 +209,8 @@ const ExecuteFlow = () => {
         // job id, and access token.
         if (IS_TAURI) {
           try {
-            console.log("launch_runner_app", {
-              appBaseUrl: `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}`,
-              jobId: jobRes.data.id,
-              accessToken: userSession.data?.accessToken,
-            });
             await invoke("launch_runner_app", {
-              appBaseUrl: `${window.location.origin}${import.meta.env.VITE_WORKSPACE_API_PATH}`,
+              appBaseUrl: `${window.location.origin}`,
               jobId: jobRes.data.id,
               accessToken: userSession.data?.accessToken,
             });

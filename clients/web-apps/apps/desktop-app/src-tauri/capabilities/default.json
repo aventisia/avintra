@@ -31,7 +31,19 @@
     {
       "identifier": "store:allow-save",
       "allow": [{ "key": "*" }]
-    }
+    },
+    "allow-launch-runner-app",
+    "allow-launch-ui-inspector",
+    "allow-get-user-metadata",
+    "allow-check-runner-app",
+    "allow-download-runner-app",
+    "allow-get-websocket-port",
+    "allow-check-update-for-domain",
+    "allow-download-update",
+    "allow-install-update",
+    "allow-cancel-download",
+    "allow-get-app-version",
+    "allow-has-pending-update"
   ],
   "local": true,
   "remote": {
