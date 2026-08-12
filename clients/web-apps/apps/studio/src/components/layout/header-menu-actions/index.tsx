@@ -159,7 +159,7 @@ export const HeaderActionMenu: React.FC = () => {
             <SimpleDDMenuItem size="md" Icon={DockIcon} content="Archive" />
           </>
         ) : null}
-        <DropdownMenuSeparator className="my-1" />
+        <DropdownMenuSeparator className="mt-1 mb-2" />
         <PublishFlow />
       </DropdownMenuContent>
     </DropdownMenu>
