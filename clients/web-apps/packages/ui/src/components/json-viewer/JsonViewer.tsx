@@ -1,10 +1,10 @@
-import { CopyButton } from "@avplatform/ui/buttons";
-import { useCopyToClipboard } from "@avplatform/ui/hooks";
-import { cn } from "@avplatform/ui/lib";
-import { ScrollArea } from "@avplatform/ui/scroll";
 import JsonView from "@uiw/react-json-view";
 import { useMemo } from "react";
 
+import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
+import { cn } from "../../lib/utils";
+import { CopyButton } from "../buttons/CopyButton";
+import { ScrollArea } from "../scroll/ScrollArea";
 import "./json-viewer.css";
 
 const JSON_INDENT_WIDTH = 18;

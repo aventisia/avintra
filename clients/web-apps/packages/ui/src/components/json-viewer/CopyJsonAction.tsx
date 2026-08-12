@@ -1,5 +1,5 @@
-import { CopyButton } from "@avplatform/ui/buttons";
-import { useCopyToClipboard } from "@avplatform/ui/hooks";
+import { useCopyToClipboard } from "../../hooks/useCopyToClipboard";
+import { CopyButton } from "../buttons/CopyButton";
 
 /** Props for the shared header copy action. */
 type CopyJsonActionProps = {
