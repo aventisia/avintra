@@ -1,0 +1,35 @@
+meta {
+  name: Close job
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/execution/job/{{JOB_ID}}/close
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "closingStatus": "Completed",
+    "nodeExecutionLogs": [
+      {
+        "nodeExecutionId": "{{NODE_EXECUTION_ID}}",
+        "retryAttempt": 0,
+        "nodeId": "{{NODE_ID}}",
+        "nodeDisplayName": "{{NODE_DISPLAY_NAME}}",
+        "nodeUniqueName": "{{NODE_UNIQUE_NAME}}",
+        "isSuccess": true,
+        "duration": 1.5,
+        "inputs": {
+          "input1": "value1"
+        },
+        "outputs": {
+          "output1": "value1"
+        }
+      }
+    ],
+    "remarks": "Closed via Bruno test"
+  }
+}

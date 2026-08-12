@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-launch-runner-app"
+description = "Enables the launch_runner_app command without any pre-configured scope."
+commands.allow = ["launch_runner_app"]
+
+[[permission]]
+identifier = "deny-launch-runner-app"
+description = "Denies the launch_runner_app command without any pre-configured scope."
+commands.deny = ["launch_runner_app"]

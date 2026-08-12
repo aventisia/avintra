@@ -19,7 +19,7 @@ public class BackendHttpClient : IBackendClient
 
     public async Task<ExecutionGraphDto?> GetExecutionGraphAsync(Guid jobId, CancellationToken ct = default)
     {
-        var response = await _httpClient.GetAsync($"execution/graph/{jobId}", ct);
+        var response = await _httpClient.GetAsync($"workspace/api/execution/graph/{jobId}", ct);
         var wrapper = await EnsureServiceSuccessAsync<ExecutionGraphDto>(response, ct);
         return wrapper?.Data;
     }
@@ -28,13 +28,13 @@ public class BackendHttpClient : IBackendClient
     {
         var dtos = MapLogsToDtos(logs);
 
-        var response = await _httpClient.PostAsJsonAsync($"execution/logs/{jobId}", dtos, ct);
+        var response = await _httpClient.PostAsJsonAsync($"workspace/api/execution/logs/{jobId}", dtos, ct);
         await EnsureServiceSuccessAsync<bool>(response, ct);
     }
 
     public async Task StartJobAsync(Guid jobId, CancellationToken ct = default)
     {
-        var response = await _httpClient.PostAsJsonAsync($"execution/job/{jobId}/start", new { }, ct);
+        var response = await _httpClient.PostAsJsonAsync($"workspace/api/execution/job/{jobId}/start", new { }, ct);
         await EnsureServiceSuccessAsync<object>(response, ct);
     }
 
@@ -48,7 +48,7 @@ public class BackendHttpClient : IBackendClient
             nodeExecutionLogs = dtos,
         };
 
-        var response = await _httpClient.PostAsJsonAsync($"execution/job/{jobId}/close", payload, ct);
+        var response = await _httpClient.PostAsJsonAsync($"workspace/api/execution/job/{jobId}/close", payload, ct);
         await EnsureServiceSuccessAsync<object>(response, ct);
     }
 
@@ -63,7 +63,7 @@ public class BackendHttpClient : IBackendClient
             linkedUserAccountId = GetLinkedUserAccountId(),
         };
 
-        var response = await _httpClient.PostAsJsonAsync("machine-auth/register", payload, ct);
+        var response = await _httpClient.PostAsJsonAsync("accounts/api/machine-auth/register", payload, ct);
         var wrapper = await EnsureServiceSuccessAsync<MachineAuthResponseDto>(response, ct);
         if (wrapper?.Data is null)
             return null;
@@ -84,7 +84,7 @@ public class BackendHttpClient : IBackendClient
 
         // API-key authenticated registration: the key and tenant header let the backend
         // resolve the tenant without a user JWT, and the linked username resolves the user.
-        var request = new HttpRequestMessage(HttpMethod.Post, "machine-auth/register")
+        var request = new HttpRequestMessage(HttpMethod.Post, "accounts/api/machine-auth/register")
         {
             Content = JsonContent.Create(payload)
         };

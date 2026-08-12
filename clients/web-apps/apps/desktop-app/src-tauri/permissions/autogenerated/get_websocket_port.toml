@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-get-websocket-port"
+description = "Enables the get_websocket_port command without any pre-configured scope."
+commands.allow = ["get_websocket_port"]
+
+[[permission]]
+identifier = "deny-get-websocket-port"
+description = "Denies the get_websocket_port command without any pre-configured scope."
+commands.deny = ["get_websocket_port"]

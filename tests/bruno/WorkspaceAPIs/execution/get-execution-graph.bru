@@ -1,0 +1,24 @@
+meta {
+  name: Get execution graph
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{WORKSPACE_APIS_BASE_URL}}/execution/graph/{{JOB_ID}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  JOB_ID: f6158c61-8e2e-4238-968a-fb52566abe4d
+}
+
+script:post-response {
+  if(res.getStatus() == 200){
+      bru.setGlobalEnvVar(
+          "EXECUTION_GRAPH_JOB_ID",
+          res.getBody().data.jobId
+      );
+  }
+}
