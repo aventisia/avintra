@@ -55,7 +55,8 @@ public class NotificationEventService : INotificationEventService
                 Type = NotificationTypesEnum.Information,
                 ActionUrl = $"/tenant/agents",
                 SourceType = NotificationSourceEnum.AgentPublished,
-                UserIdList = omUserIds
+                UserIdList = omUserIds,
+                DeliveryChannel = await GetDeliveryChannelAsync(tenantId)
             };
 
             await _autoNotificationService.InsertAutoNotificationAsync(dto);
@@ -110,7 +111,8 @@ public class NotificationEventService : INotificationEventService
                 Type = NotificationTypesEnum.Warning,
                 ActionUrl = $"/tenant/credits",
                 SourceType = NotificationSourceEnum.LowCredit,
-                UserIdList = taUserIds
+                UserIdList = taUserIds,
+                DeliveryChannel = await GetDeliveryChannelAsync(tenantId)
             };
 
             await _autoNotificationService.InsertAutoNotificationAsync(dto);
@@ -147,7 +149,8 @@ public class NotificationEventService : INotificationEventService
                 Type = NotificationTypesEnum.Reminder,
                 ActionUrl = $"/tenant/billing",
                 SourceType = NotificationSourceEnum.SubscriptionRenewal,
-                UserIdList = taUserIds
+                UserIdList = taUserIds,
+                DeliveryChannel = await GetDeliveryChannelAsync(tenantId)
             };
 
             await _autoNotificationService.InsertAutoNotificationAsync(dto);
@@ -221,5 +224,21 @@ public class NotificationEventService : INotificationEventService
         // Tenant not found or no settings stored: fall back to the per-type default
         // (the model's properties default to true, preserving current behavior).
         return tenant?.NotificationSettings == null || selector(tenant.NotificationSettings);
+    }
+
+    /// <summary>
+    /// Resolves the delivery channel for a tenant's automatic notifications. Reads the
+    /// tenant's notification settings and falls back to <see cref="DeliveryChannelEnum.Platform"/>
+    /// when no settings are stored.
+    /// </summary>
+    /// <param name="tenantId">The tenant whose delivery channel is being resolved.</param>
+    /// <returns>The configured delivery channel, defaulting to <see cref="DeliveryChannelEnum.Platform"/>.</returns>
+    private async Task<DeliveryChannelEnum> GetDeliveryChannelAsync(Guid tenantId)
+    {
+        var tenant = await _tenantDbContext.ReadOnlyTenants
+            .AsNoTracking()
+            .FirstOrDefaultAsync(t => t.Id == tenantId);
+
+        return tenant?.NotificationSettings?.DeliveryChannel ?? DeliveryChannelEnum.Platform;
     }
 }

@@ -7,7 +7,6 @@ import { CurrentPlanDto } from "../dtos/current-plan-dto";
 import { NotificationSettingsDto } from "../dtos/notification-settings-dto";
 import { PaymentMethodDTO } from "../dtos/payment-methods-dto";
 import { TenantPreferencesDto } from "../dtos/tenant-prefrences-dto";
-import { UpdateNotificationSettingsDto } from "../dtos/update-notification-settings-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant-account`;
 
@@ -36,9 +35,9 @@ const getNotificationSettings = () =>
     .get<IHttpResponse<NotificationSettingsDto>>(`${baseAPIURL}/notification-settings`)
     .then((res) => res.data);
 
-const updateNotificationSettings = (updateDto: UpdateNotificationSettingsDto) =>
+const updateNotificationSettings = (settingsDto: NotificationSettingsDto) =>
   axiosInstance
-    .patch<IHttpResponse<NotificationSettingsDto>>(`${baseAPIURL}/notification-settings`, updateDto)
+    .put<IHttpResponse<NotificationSettingsDto>>(`${baseAPIURL}/notification-settings`, settingsDto)
     .then((res) => res.data);
 
 const getTenantCurrentPlan = () =>

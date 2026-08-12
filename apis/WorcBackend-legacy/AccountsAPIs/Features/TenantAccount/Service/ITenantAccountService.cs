@@ -43,12 +43,13 @@ public interface ITenantAccountService
     Task<ServiceResponse<NotificationSettingsDto>> GetNotificationSettingsAsync();
 
     /// <summary>
-    /// Partially updates the tenant's automatic notification settings (FR-3). Only the
-    /// properties present in the request are changed; omitted properties are left unchanged.
+    /// Updates the tenant's automatic notification settings (FR-3). The full settings
+    /// object is applied; the numeric configuration properties are validated to be greater
+    /// than zero before persisting.
     /// </summary>
-    /// <param name="updateDto">The partial update containing the desired states.</param>
+    /// <param name="settingsDto">The notification settings to apply.</param>
     /// <returns>A task representing the asynchronous operation, returning the updated notification settings.</returns>
-    Task<ServiceResponse<NotificationSettingsDto>> UpdateNotificationSettingsAsync(UpdateNotificationSettingsDto updateDto);
+    Task<ServiceResponse<NotificationSettingsDto>> UpdateNotificationSettingsAsync(NotificationSettingsDto settingsDto);
 
     /// <summary>
     /// Retrieves a list of account users whose properties match the provided search key.

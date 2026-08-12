@@ -38,4 +38,23 @@ public class NotificationSettingsDto
     /// agent is published and ready for use.
     /// </summary>
     public bool PublishAgent { get; set; }
+
+    /// <summary>
+    /// Gets or sets the number of days before the subscription renewal date at which the
+    /// renewal reminder starts being sent to the Tenant Admin. Required and must be greater
+    /// than zero. Defaults to 7.
+    /// </summary>
+    public int SubscriptionRenewalReminderDays { get; set; } = 7;
+
+    /// <summary>
+    /// Gets or sets the credit balance threshold below which the Tenant Admin is notified
+    /// that the credit balance is low. Required and must be greater than zero. Defaults to 1000.
+    /// </summary>
+    public double LowCreditThreshold { get; set; } = 1000;
+
+    /// <summary>
+    /// Gets or sets the delivery channel used for automatic notifications.
+    /// Supported values: Platform, Email, or Both. Defaults to Platform.
+    /// </summary>
+    public DeliveryChannelEnum DeliveryChannel { get; set; } = DeliveryChannelEnum.Platform;
 }

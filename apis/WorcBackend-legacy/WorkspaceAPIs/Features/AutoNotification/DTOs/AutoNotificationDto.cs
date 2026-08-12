@@ -46,4 +46,10 @@ public class AutoNotificationDto
     /// </summary>
     [MinLength(1)]
     public required List<Guid> UserIdList { get; set; }
+
+    /// <summary>
+    /// Gets or sets the delivery channel for this notification.
+    /// Defaults to <see cref="DeliveryChannelEnum.Platform"/>.
+    /// </summary>
+    public DeliveryChannelEnum DeliveryChannel { get; set; } = DeliveryChannelEnum.Platform;
 }

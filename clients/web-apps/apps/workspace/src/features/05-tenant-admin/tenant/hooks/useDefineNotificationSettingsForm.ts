@@ -1,3 +1,4 @@
+import { DeliveryChannelEnum } from "@avplatform/ui/enums";
 import { toast } from "@avplatform/ui/sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -7,7 +8,7 @@ import { z } from "zod";
 
 import { updateNotificationSettings } from "../apis/tenant-info-apis";
 import { notificationSettingsSchema } from "../constants/notification-settings-zod-schema";
-import { UpdateNotificationSettingsDto } from "../dtos/update-notification-settings-dto";
+import { NotificationSettingsDto } from "../dtos/notification-settings-dto";
 import { useFetchNotificationSettings } from "./useFetchNotificationSettings";
 
 export const useDefineNotificationSettingsForm = () => {
@@ -23,6 +24,9 @@ export const useDefineNotificationSettingsForm = () => {
       lowCredits: false,
       subscription: false,
       publishAgent: false,
+      subscriptionRenewalReminderDays: 7,
+      lowCreditThreshold: 1000,
+      deliveryChannel: DeliveryChannelEnum.Platform,
     },
   });
 
@@ -33,35 +37,18 @@ export const useDefineNotificationSettingsForm = () => {
         lowCredits: data.data.lowCredits,
         subscription: data.data.subscription,
         publishAgent: data.data.publishAgent,
+        subscriptionRenewalReminderDays: data.data.subscriptionRenewalReminderDays,
+        lowCreditThreshold: data.data.lowCreditThreshold,
+        deliveryChannel: data.data.deliveryChannel,
       });
     }
   }, [data?.data]);
 
-  // Build a partial update payload containing only the fields that changed, so that
-  // changing one setting does not unintentionally modify the others (partial update).
-  const buildUpdateDto = (
-    formData: z.infer<typeof notificationSettingsSchema>,
-  ): UpdateNotificationSettingsDto => {
-    const original = data?.data;
-    const updateDto: UpdateNotificationSettingsDto = {};
-
-    if (original && formData.lowCredits !== original.lowCredits) {
-      updateDto.lowCredits = formData.lowCredits;
-    }
-    if (original && formData.subscription !== original.subscription) {
-      updateDto.subscription = formData.subscription;
-    }
-    if (original && formData.publishAgent !== original.publishAgent) {
-      updateDto.publishAgent = formData.publishAgent;
-    }
-
-    return updateDto;
-  };
-
-  // Handle form submission
+  // Handle form submission. The full settings object is sent; the backend applies and
+  // validates it (numeric configuration must be greater than zero).
   const { mutate, isPending } = useMutation({
     mutationFn: (formData: z.infer<typeof notificationSettingsSchema>) =>
-      updateNotificationSettings(buildUpdateDto(formData)),
+      updateNotificationSettings(formData as NotificationSettingsDto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["TENANT_NOTIFICATION_SETTINGS"] });
       toast.success("Notification settings updated successfully.");

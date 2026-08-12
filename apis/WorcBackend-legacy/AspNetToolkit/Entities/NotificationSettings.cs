@@ -1,5 +1,7 @@
 namespace AspNetToolkit.Entities;
 
+using System.ComponentModel.DataAnnotations;
+
 /// <summary>
 /// Strongly-typed model of the per-tenant, per-notification-type automatic notification
 /// control flags. Stored as a JSON column on the Tenant entity.
@@ -32,4 +34,27 @@ public class NotificationSettings
     /// is published and ready for use.
     /// </summary>
     public bool PublishAgent { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the number of days before the subscription renewal date at which the
+    /// renewal reminder starts being sent to the Tenant Admin. Required and must be greater
+    /// than zero. Defaults to 7.
+    /// </summary>
+    [Range(1, int.MaxValue, ErrorMessage = "SubscriptionRenewalReminderDays must be greater than 0.")]
+    public int SubscriptionRenewalReminderDays { get; set; } = 7;
+
+    /// <summary>
+    /// Gets or sets the credit balance threshold below which the Tenant Admin is notified
+    /// that the credit balance is low. Required and must be greater than zero. Defaults to 1000.
+    /// </summary>
+    [Range(1, double.MaxValue, ErrorMessage = "LowCreditThreshold must be greater than 0.")]
+    public double LowCreditThreshold { get; set; } = 1000;
+
+    /// <summary>
+    /// Gets or sets the delivery channel used for automatic notifications.
+    /// Supported values: <see cref="DeliveryChannelEnum.Platform"/>,
+    /// <see cref="DeliveryChannelEnum.Email"/>, or <see cref="DeliveryChannelEnum.Both"/>.
+    /// Defaults to <see cref="DeliveryChannelEnum.Platform"/>.
+    /// </summary>
+    public DeliveryChannelEnum DeliveryChannel { get; set; } = DeliveryChannelEnum.Platform;
 }
