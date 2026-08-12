@@ -307,6 +307,42 @@ function getKnowledgeBaseConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   });
 }
 
+function getSkillsConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
+  const skillsSchema = z.preprocess((val) => {
+    if (Array.isArray(val)) {
+      return val;
+    }
+
+    if (typeof val === "string") {
+      return val
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item) => item.length > 0);
+    }
+
+    return [];
+  }, z.array(z.string()));
+
+  if (field.defaultValue && typeof field.defaultValue === "object" && "skills" in field.defaultValue) {
+    const defaultSkills = field?.defaultValue?.skills;
+    const normalizedSkills = Array.isArray(defaultSkills)
+      ? defaultSkills
+      : typeof defaultSkills === "string"
+        ? defaultSkills
+            .split(",")
+            .map((item) => item.trim())
+            .filter((item) => item.length > 0)
+        : [];
+
+    skillsSchema.default(normalizedSkills as string[]);
+  }
+
+  return z.object({
+    skills: skillsSchema,
+  });
+}
+
+
 function getMemoryConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // Start by defining the schema without default values
   const memoryProviderSchema = z.string();
@@ -392,6 +428,8 @@ function getZodType(field: DCPFieldSchemaType): ZodTypeAny {
       return getVoiceConfigSchema(field);
     case "knowledge-base-config":
       return getKnowledgeBaseConfigSchema(field);
+    case "skills-config":
+      return getSkillsConfigSchema(field);
     case "memory-config":
       return getMemoryConfigSchema(field);
     case "queue-conditional-group":

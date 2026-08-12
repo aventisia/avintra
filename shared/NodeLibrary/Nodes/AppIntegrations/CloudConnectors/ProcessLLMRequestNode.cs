@@ -19,6 +19,9 @@ public class ProcessLLMRequestNode : BaseNode
     [DisplayName("Knowledge Base Configuration")]
     public InArgument<JsonElement> KbConfig { get; set; } = new InArgument<JsonElement>();
 
+    [DisplayName("Skills Configuration")]
+    public InArgument<JsonElement> SkillsConfig { get; set; } = new InArgument<JsonElement>();
+
     [DisplayName("Memory Configuration")]
     public InArgument<JsonElement> MemoryConfig { get; set; } = new InArgument<JsonElement>();
 
@@ -45,6 +48,7 @@ public class ProcessLLMRequestNode : BaseNode
             var inputPrompt = Prompt.Get(context);
             var filesList = Files.Get(context);
             var kbConfig = KbConfig.Get(context);
+            var skillsConfig = SkillsConfig.Get(context);
             var memoryConfig = MemoryConfig.Get(context);
             var toolsConfig = ToolsConfig.Get(context);
             var recommendedActionsConfig = RecommendedActionsConfig.Get(context);
@@ -61,6 +65,9 @@ public class ProcessLLMRequestNode : BaseNode
             var kbNames = GetStringArrayProperty(kbConfig, "knowledgeBase");
             var hasKbNames = kbNames is { Count: > 0 };
             var topK = hasKbNames ? (GetIntProperty(kbConfig, "numberOfChunks") ?? 5) : (int?)null;
+
+            var skillNames = GetStringArrayProperty(skillsConfig, "skills");
+            var hasSkillNames = skillNames is { Count: > 0 };
 
             // Get agent configuration values for dynamic actions and follow-up message generation.
             var enableDynamicActions = GetBoolProperty(recommendedActionsConfig, "enableDynamicActions");
@@ -95,6 +102,7 @@ public class ProcessLLMRequestNode : BaseNode
                 agent_name = flowMetadata.Name,
                 kb_names = hasKbNames ? kbNames : null,
                 top_k = topK,
+                skill_names = hasSkillNames ? skillNames : null,
                 tool_config = toolsConfig.ValueKind == JsonValueKind.Object ? toolsConfig.Deserialize<Dictionary<string, object>>() : null,
                 is_chat_agent = enableDynamicActions == null ? false : true,
                 generate_followup_messages = enableDynamicActions ?? false,

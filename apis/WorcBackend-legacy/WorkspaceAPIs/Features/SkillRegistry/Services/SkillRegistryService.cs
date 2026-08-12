@@ -693,4 +693,61 @@ public class SkillRegistryService : ISkillRegistryService
 
         return serviceResponse;
     }
+
+    /// <summary>
+    /// Retrieves skills accessible to the current user in selectable option format.
+    /// Includes personal, shared, and platform (library) skills that are active and not disabled.
+    /// </summary>
+    public async Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableSkillOptionsAsync()
+    {
+        var serviceResponse = new ServiceResponse<IEnumerable<SelectOption>>
+        {
+            Data = null,
+            StatusCode = 400,
+            Message = "Failed to retrieve skill options. Please try again"
+        };
+
+        try
+        {
+            // Retrieve skill IDs accessible to current user through explicit sharing.
+            var accessibleSkillIds = await _resourceShareService
+                .GetAccessibleResourceIdsAsync(
+                    _userId,
+                    ResourceTypeEnum.Skill,
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit
+                );
+
+            var options = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(w =>
+                    w.IsDisabled == false &&
+                    w.IsActive &&
+                    (
+                        w.CreatedByUserId == _userId ||
+                        w.IsTenantWideAccess ||
+                        accessibleSkillIds.Contains(w.Id) ||
+                        w.Type == ComponentTypeEnum.Platform
+                    )
+                )
+                .OrderBy(s => s.Name)
+                .Select(s => new SelectOption
+                {
+                    Value = s.Name,
+                    Label = s.Name,
+                    Description = s.Description,
+                })
+                .ToListAsync();
+
+            serviceResponse.Data = options;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Skill options retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving skill options for user {UserId}", _userId);
+        }
+
+        return serviceResponse;
+    }
 }

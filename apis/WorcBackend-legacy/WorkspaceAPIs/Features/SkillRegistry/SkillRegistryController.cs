@@ -91,4 +91,11 @@ public class SkillRegistryController : BaseApiController
     {
         return ResultHelper(await _skillRegistryService.GetLibrarySkillsAsync());
     }
+
+    // Retrieves skills in select-option format for dropdowns.
+    [HttpGet("skills-to-select")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<SelectOption>>>> GetSelectableSkillOptions()
+    {
+        return ResultHelper(await _skillRegistryService.GetSelectableSkillOptionsAsync());
+    }
 }

@@ -18,6 +18,7 @@ import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
 import { QueueSelectorField } from "./fields-for-form/QueueSelectorField";
 import { StatusSelectorField } from "./fields-for-form/StatusSelectorField";
+import { SkillsConfigField } from "./fields-for-form/SkillsConfigField";
 import { StringArrayField } from "./fields-for-form/StringArrayField";
 import { SuggestionsField } from "./fields-for-form/SuggestionsField";
 import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";
@@ -96,6 +97,8 @@ export const RenderField = (field: DCPFieldSchemaType) => {
       );
     case "knowledge-base-config":
       return <KnowledgeBaseConfigField name={field.name} />;
+    case "skills-config":
+      return <SkillsConfigField name={field.name} />;
 
     case "memory-config":
       return <MemoryConfigField name={field.name} />;

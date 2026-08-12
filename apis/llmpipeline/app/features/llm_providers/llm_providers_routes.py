@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 from .llm_providers_schemas import EmbeddingRequest, LLMRequest
 from .llm_providers_factory import get_llm_provider
 from .llm_kb_retrieval import retrieve_and_inject_kb_context
+from .llm_skill_retrieval import resolve_and_inject_skill_context
 from app.features.llm_providers.llm_job_manager import start_llm_streaming_job, cancel_llm_job, get_active_llm_jobs
 from app.core.logger import logger
 
@@ -28,6 +29,10 @@ async def generate_llm_response_route(llm_request: LLMRequest, _user: User = Dep
         # Retrieve KB context chunks and inject into input if kb_names are provided
         if llm_request.kb_names:
             await retrieve_and_inject_kb_context(llm_request, _user)
+
+        # Resolve selected skills and inject skill instructions into input if skill_names are provided
+        if llm_request.skill_names:
+            await resolve_and_inject_skill_context(llm_request, _user)
             
         # Send request to provider and return response (streaming or non-streaming)
         if llm_request.stream:

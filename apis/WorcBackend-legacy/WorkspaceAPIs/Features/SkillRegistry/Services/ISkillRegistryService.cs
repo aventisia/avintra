@@ -66,4 +66,10 @@ public interface ISkillRegistryService
     /// </summary>
     /// <returns>The task result contains the service response with the list of library skill details.</returns>
     Task<ServiceResponse<IEnumerable<SkillDto>>> GetLibrarySkillsAsync();
+
+    /// <summary>
+    /// Retrieves skills accessible to the current user in selectable option format.
+    /// </summary>
+    /// <returns>The task result contains the service response with selectable skill options.</returns>
+    Task<ServiceResponse<IEnumerable<SelectOption>>> GetSelectableSkillOptionsAsync();
 }
