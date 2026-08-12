@@ -68,7 +68,7 @@ public class ProcessLLMRequestNode : BaseNode
 
             // Build the LLM pipeline API endpoint using the resolved application base URL.
             var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
-            var apiUrl = $"https://{baseUrl}/llmpipeline/api/llm/generate";
+            var apiUrl = $"https://{baseUrl}/llmpipeline/api/v2/llm/generate";
 
             // Create the LLM input payload using conversation history when available,
             // otherwise using the standalone prompt with optional follow-up instructions.

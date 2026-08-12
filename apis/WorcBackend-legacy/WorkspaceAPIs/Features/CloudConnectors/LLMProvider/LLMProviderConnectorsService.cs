@@ -153,7 +153,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwt);
 
-            string endpoint = $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/llm/generate";
+            string endpoint = $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/v2/llm/generate";
 
             var jsonContent = new StringContent(
                 System.Text.Json.JsonSerializer.Serialize(llmPipelinePayload), Encoding.UTF8, "application/json");
