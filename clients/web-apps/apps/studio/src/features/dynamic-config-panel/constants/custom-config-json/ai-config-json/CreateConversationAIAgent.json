@@ -59,6 +59,17 @@
     },
     {
       "direction": "Input",
+      "type": "skills-config",
+      "name": "__SkillsConfig__Conversation",
+      "label": "Skill(s)",
+      "defaultValue": {
+        "skills": []
+      },
+      "required": false,
+      "category": "Context"
+    },
+    {
+      "direction": "Input",
       "type": "memory-config",
       "name": "__MemoryConfig__Conversation",
       "defaultValue": {

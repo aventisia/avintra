@@ -57,6 +57,17 @@
       "required": false,
       "category": "Context"
     },
+    {
+      "direction": "Input",
+      "type": "skills-config",
+      "name": "__SkillsConfig__Inferencing",
+      "label": "Skill(s)",
+      "defaultValue": {
+        "skills": []
+      },
+      "required": false,
+      "category": "Context"
+    },
 
     {
       "direction": "Input",

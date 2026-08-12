@@ -244,7 +244,7 @@ def _build_skill_config_from_db(skill: Skill) -> SkillConfig | None:
 
     if skill_md and skill_md.content:
         try:
-            content = skill_md.content_text
+            content = skill_md.content
             if content.startswith("---"):
                 parts = content.split("---", 2)
                 if len(parts) >= 3:
@@ -272,7 +272,7 @@ def _build_skill_config_from_db(skill: Skill) -> SkillConfig | None:
             "id": str(file.id),
             "file_name": file.file_name,
             "file_type": file.file_type,
-            "content": file.content_text,
+            "content": file.content,
         }
         for file in (skill.files or [])
     ]

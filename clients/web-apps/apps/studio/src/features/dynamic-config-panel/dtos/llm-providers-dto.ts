@@ -123,6 +123,8 @@ export interface LLMRequestDto {
 
   kb_names?: string[] | null;
 
+  skill_names?: string[] | null;
+
   is_chat_agent?: boolean;
 
   generate_followup_messages?: boolean;

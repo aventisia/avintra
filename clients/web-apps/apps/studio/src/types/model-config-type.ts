@@ -22,3 +22,8 @@ export interface KBConfigType {
   sourceThreshold: number;
   numberOfChunks: number;
 }
+
+export interface SkillsConfigType {
+  skills: string[];
+}
+

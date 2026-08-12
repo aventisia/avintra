@@ -1,4 +1,9 @@
-import { KBConfigType, ModelConfigType, VoiceConfigType } from "@/types/model-config-type";
+import {
+  KBConfigType,
+  ModelConfigType,
+  SkillsConfigType,
+  VoiceConfigType,
+} from "@/types/model-config-type";
 
 export interface ToolActionConfig {
   action: string;
@@ -50,6 +55,17 @@ export function getKBConfig(
   for (const key in data) {
     if (key.includes("__KbConfig__")) {
       return { config: data[key] as KBConfigType, key };
+    }
+  }
+  return null;
+}
+
+export function getSkillsConfig(
+  data: Record<string, unknown>,
+): { config: SkillsConfigType; key: string } | null {
+  for (const key in data) {
+    if (key.includes("__SkillsConfig__")) {
+      return { config: data[key] as SkillsConfigType, key };
     }
   }
   return null;

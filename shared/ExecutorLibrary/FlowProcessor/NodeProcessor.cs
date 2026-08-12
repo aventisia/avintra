@@ -364,6 +364,7 @@ public class NodeProcessor : INodeProcessor
                 var k when k.Contains("__VoiceConfig__") => "VoiceConfig",
                 var k when k.Contains("__Prompt__") => "Prompt",
                 var k when k.Contains("__KbConfig__") => "KbConfig",
+                var k when k.Contains("__SkillsConfig__") => "SkillsConfig",
                 var k when k.Contains("__MemoryConfig__") => "MemoryConfig",
                 var k when k.Contains("__ToolsConfig__") => "ToolsConfig",
                 var k when k.Contains("__RecommendedActionsConfig__") => "RecommendedActionsConfig",

@@ -51,6 +51,7 @@ export type DCPControlType =
   | "voice-config-select"
   | "prompt-input"
   | "knowledge-base-config"
+  | "skills-config"
   | "memory-config"
   | "json-editor"
   | "queue-select"

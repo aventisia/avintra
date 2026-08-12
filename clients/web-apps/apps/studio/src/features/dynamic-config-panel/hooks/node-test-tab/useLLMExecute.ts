@@ -14,6 +14,7 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import {
   getKBConfig,
   getModelConfig,
+  getSkillsConfig,
   getSuggestionsConfig,
   getToolsConfig,
 } from "../../utils/ai-node-config-helper";
@@ -106,6 +107,7 @@ export function useLLMExecute(
     const { config: modelConfig } = modelConfigData;
 
     const kbConfigData = getKBConfig(formData);
+    const skillsConfigData = getSkillsConfig(formData);
 
     const dataUrlFiles = files.length > 0 ? await filesToDataUrls(files) : undefined;
 
@@ -130,6 +132,7 @@ export function useLLMExecute(
       temperature: modelConfig.temperature,
       top_p: modelConfig.top_p,
       kb_names: kbConfigData ? kbConfigData.config.knowledgeBase : null,
+      skill_names: skillsConfigData ? skillsConfigData.config.skills : null,
       stream: false,
       ref_id: currentFlow.id,
       ref_name: currentFlow.name,
