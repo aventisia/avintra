@@ -32,7 +32,7 @@ export const QueueRowDeleteAction = ({ rowId }: QueueRowDeleteActionProps) => {
     string,
     boolean | QueuesTableDto,
     QueuesTableDto
-  >([rowId], queueOptimisticMutationFn, [...queryKey, currentSpace?.id]);
+  >([rowId], queueOptimisticMutationFn, [...queryKey, currentSpace?.id] as string[]);
 
   // Return Delete alert dialog trigger
   return (

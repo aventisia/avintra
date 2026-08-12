@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { TABLE_HEADING } from "../../constants";
 import { useFetchQueues } from "../../hooks/useFetchQueues";
 import { useMyQueueParams } from "../../hooks/useMyQueueParams";
-import HistoryDateRangeFilter from "../history/HistoryDateRangeFilter";
+import HistoryDateRangeFilter, { DateRange } from "../history/HistoryDateRangeFilter";
 import { QueueSummaryCard } from "./QueueSummaryCard";
 
 /**
@@ -20,7 +20,7 @@ export const QueueOverview = () => {
 
   // Date range for the "Completed" metrics. Defaults to today only.
   const today = useMemo(() => new Date(), []);
-  const [dateRange, setDateRange] = useState<{ from: Date; to?: Date }>({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: today,
     to: today,
   });

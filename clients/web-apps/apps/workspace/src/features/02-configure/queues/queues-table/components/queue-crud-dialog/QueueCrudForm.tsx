@@ -135,7 +135,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
   } = useListOptimisticMutation<QueuesTableDto, QueuesTableDto | boolean, QueuesTableDto>(
     [rowId],
     queueOptimisticMutationFn,
-    [...queryKey, currentSpace?.id],
+    [...queryKey, currentSpace?.id] as string[],
   );
 
   // Define submit handler
