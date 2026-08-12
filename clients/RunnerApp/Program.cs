@@ -245,6 +245,18 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
                 DebugLog.Info($"Node progress (running): {nodeId}");
                 _ = localWs.PushNodeProgressAsync(nodeId, "running", nodeId);
             }
+        },
+        // Local mode: push the per-node outcome over the WS immediately as each node
+        // completes, so the Studio app flips the node from spinner to success/failed
+        // right away instead of waiting for the whole flow to finish.
+        nodeLog =>
+        {
+            if (localWs is not null)
+            {
+                var status = nodeLog.IsSuccess ? "success" : "failed";
+                DebugLog.Info($"Node progress ({status}): {nodeLog.NodeId}");
+                _ = localWs.PushNodeProgressAsync(nodeLog.NodeId, status, nodeLog.NodeName);
+            }
         });
     }
     catch (OperationCanceledException)
@@ -291,6 +303,15 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
             DebugLog.Info($"Node progress ({status}): {log.NodeId}");
             await localWs.PushNodeProgressAsync(log.NodeId, status, log.NodeName);
         }
+    }
+
+    // Local mode: tell the Studio app the whole job has reached a terminal state so it can
+    // reset the execute button (stop -> play) without waiting on a backend SignalR event,
+    // which local runs do not emit.
+    if (localWs is not null)
+    {
+        DebugLog.Info($"Job completed ({jobStatus})");
+        await localWs.PushJobCompletedAsync(jobStatus, result.ErrorMessage);
     }
 
     Console.WriteLine($"Closing job with status: {jobStatus}");

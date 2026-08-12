@@ -15,6 +15,14 @@ interface NodeProgressMessage {
   status: NodeProgressStatus;
 }
 
+/** Sent once by the RunnerApp when the whole local job reaches a terminal state. */
+interface JobCompletedMessage {
+  type: "jobCompleted";
+  jobId: string;
+  status: string;
+  message?: string;
+}
+
 interface ControlMessage {
   type: "control";
   jobId: string;
@@ -58,22 +66,31 @@ export const useLocalExecutionWebSocket = () => {
       socketRef.current = socket;
 
       socket.onmessage = (event) => {
-        let message: NodeProgressMessage;
+        let message: NodeProgressMessage | JobCompletedMessage;
         try {
-          message = JSON.parse(event.data as string) as NodeProgressMessage;
+          message = JSON.parse(event.data as string) as NodeProgressMessage | JobCompletedMessage;
         } catch {
           return;
         }
 
-        if (message.type !== "nodeProgress") return;
-        if (message.jobId !== jobId) return; // broadcast echo — filter by own job
+        // Broadcast echo bus: filter strictly by the current job id.
+        if (message.jobId !== jobId) return;
 
-        useLiveExecutionStore.getState().setNodeStatus(message.nodeId, message.status);
+        if (message.type === "nodeProgress") {
+          useLiveExecutionStore.getState().setNodeStatus(message.nodeId, message.status);
+        } else if (message.type === "jobCompleted") {
+          // Local (desktop) runs do not get a backend SignalR JobCompleted notification
+          // (the runner only calls the REST CloseJob endpoint). The runner pushes this
+          // message over the WS once the whole job finishes, so reset the execute button
+          // back to the green play state here.
+          useCurrentFlowStore.getState().setExecutionState("stopped");
+        }
       };
 
       socket.onclose = () => {
         if (!closed) {
-          // Local run finished; clear the live map so stale spinners don't linger.
+          // Socket closed while a local job was active (e.g. the Tauri server stopped).
+          // Clear the live map so stale spinners don't linger.
           useLiveExecutionStore.getState().resetLiveExecution();
         }
       };

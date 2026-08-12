@@ -1,4 +1,4 @@
-import { INVALID_CREDS, REQUEST_TIMEOUT } from "@avplatform/ui/constants";
+import { INVALID_CREDS, IS_TAURI, REQUEST_TIMEOUT } from "@avplatform/ui/constants";
 import { toast } from "@avplatform/ui/sonner";
 import { sleep } from "@avplatform/ui/utils";
 import axios from "axios";
@@ -45,6 +45,15 @@ axiosInstance.interceptors.request.use(
   (request) => {
     // Include cookies with the request
     request.withCredentials = true;
+
+    // When running inside the Tauri desktop app, tell the backend which client
+    // and version is making the request so job execution location can be
+    // attributed correctly.
+    if (IS_TAURI) {
+      request.headers["X-Client-Type"] = "AvintraDesktopApp";
+      const match = navigator.userAgent.match(/AvintraDesktopApp\/([0-9]+(?:\.[0-9]+)*)/);
+      request.headers["X-Client-Version"] = match?.[1] ?? "";
+    }
 
     return request;
   },

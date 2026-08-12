@@ -44,7 +44,8 @@ public class FlowProcessor
         ReactFlowDataModel flow,
         Dictionary<string, object?>? initialVariables = null,
         CancellationToken cancellationToken = default,
-        Action<string>? onNodeProgress = null)
+        Action<string>? onNodeProgress = null,
+        Action<NodeExecutionLog>? onNodeCompleted = null)
     {
         var startTime = DateTimeOffset.UtcNow;
         var flowExecutionContext = new FlowExecutionContext();
@@ -102,7 +103,8 @@ public class FlowProcessor
                     conditionalStates,
                     loopStates,
                     executionStack,
-                    cancellationToken);
+                    cancellationToken,
+                    onNodeCompleted);
 
                 if (nextNodeId is null)
                 {
@@ -142,7 +144,8 @@ public class FlowProcessor
         Dictionary<string, ConditionalBranchState> conditionalStates,
         Dictionary<string, LoopState> loopStates,
         Stack<FlowExecutionFrame> executionStack,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        Action<NodeExecutionLog>? onNodeCompleted = null)
     {
         if (node.Data?.IsDisabled == true)
         {
@@ -163,7 +166,7 @@ public class FlowProcessor
             case "activityNode":
             case "aiNode":
             case "cloudConnectorNode":
-                return await ProcessExecutableNodeAsync(node, flow, flowExecutionContext, logs, cancellationToken);
+                return await ProcessExecutableNodeAsync(node, flow, flowExecutionContext, logs, cancellationToken, onNodeCompleted);
 
             case "flowEndNode":
                 return null;
@@ -288,13 +291,22 @@ public class FlowProcessor
         ReactFlowDataModel flow,
         FlowExecutionContext flowExecutionContext,
         List<NodeExecutionLog> logs,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        Action<NodeExecutionLog>? onNodeCompleted = null)
     {
         var result = await _nodeProcessor.ExecuteAsync(node, flowExecutionContext, cancellationToken);
 
         if (result.NodeLog is not null)
         {
             logs.Add(result.NodeLog);
+        }
+
+        // Report per-node completion immediately so consumers (e.g. the local WS progress
+        // bus) can flip a node from running/spinner to success/failed as soon as it finishes,
+        // rather than waiting for the entire flow to complete.
+        if (result.NodeLog is not null)
+        {
+            onNodeCompleted?.Invoke(result.NodeLog);
         }
 
         if (!result.IsSuccess)

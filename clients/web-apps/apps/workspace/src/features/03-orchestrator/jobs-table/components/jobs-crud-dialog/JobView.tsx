@@ -185,6 +185,15 @@ export const JobView = ({ rowId }: JobViewProps) => {
         />
         <Separator className="h-[0.5px]" />
         <ViewInfoRow
+          label="Credits Consumed"
+          value={
+            typeof job.creditsConsumed === "number"
+              ? job.creditsConsumed.toLocaleString()
+              : FALLBACK_VALUE
+          }
+        />
+        <Separator className="h-[0.5px]" />
+        <ViewInfoRow
           label="Execution Location"
           valueClassName="text-right"
           value={
@@ -198,50 +207,54 @@ export const JobView = ({ rowId }: JobViewProps) => {
         />
       </ViewInfoRowsCard>
 
-      {/* Remarks section */}
-      <ViewInfoRowsCard
-        title="Remarks"
-        icon={<MessageSquareTextIcon className="size-3.5 text-muted-foreground" />}
-      >
-        <div className="px-0.5 py-1.5">
-          <p className="text-xs whitespace-pre-wrap text-foreground">
-            {job.remarks ?? FALLBACK_VALUE}
-          </p>
-        </div>
-      </ViewInfoRowsCard>
+      {/* Remarks section - hidden if empty */}
+      {job.remarks && (
+        <ViewInfoRowsCard
+          title="Remarks"
+          icon={<MessageSquareTextIcon className="size-3.5 text-muted-foreground" />}
+        >
+          <div className="px-0.5 py-1.5">
+            <p className="text-xs whitespace-pre-wrap text-foreground">{job.remarks}</p>
+          </div>
+        </ViewInfoRowsCard>
+      )}
 
-      {/* Job input data section */}
-      <ViewInfoRowsCard
-        title="Input Data"
-        icon={<FileJsonIcon className="size-3.5 text-muted-foreground" />}
-        action={createCopyJsonAction(jsonToString(job.jobInputData))}
-      >
-        {job.jobInputData ? (
-          <JsonViewer jsonData={jsonToString(job.jobInputData)} enableValueClipboard />
-        ) : (
-          <p className="px-0.5 py-1.5 text-xs text-foreground">{FALLBACK_VALUE}</p>
-        )}
-      </ViewInfoRowsCard>
+      {/* Job input data section - hidden if empty */}
+      {job.jobInputData && (
+        <ViewInfoRowsCard
+          title="Input Data"
+          icon={<FileJsonIcon className="size-3.5 text-muted-foreground" />}
+          action={createCopyJsonAction(jsonToString(job.jobInputData))}
+        >
+          <JsonViewer
+            jsonData={jsonToString(job.jobInputData)}
+            enableValueClipboard
+            viewportClassName=""
+          />
+        </ViewInfoRowsCard>
+      )}
 
-      {/* Job output data section */}
-      <ViewInfoRowsCard
-        title="Output Data"
-        icon={<FileJsonIcon className="size-3.5 text-muted-foreground" />}
-        action={createCopyJsonAction(jsonToString(job.jobOutputData))}
-      >
-        {job.jobOutputData ? (
-          <JsonViewer jsonData={jsonToString(job.jobOutputData)} enableValueClipboard />
-        ) : (
-          <p className="px-0.5 py-1.5 text-xs text-foreground">{FALLBACK_VALUE}</p>
-        )}
-      </ViewInfoRowsCard>
+      {/* Job output data section - hidden if empty */}
+      {job.jobOutputData && (
+        <ViewInfoRowsCard
+          title="Output Data"
+          icon={<FileJsonIcon className="size-3.5 text-muted-foreground" />}
+          action={createCopyJsonAction(jsonToString(job.jobOutputData))}
+        >
+          <JsonViewer
+            jsonData={jsonToString(job.jobOutputData)}
+            enableValueClipboard
+            viewportClassName=""
+          />
+        </ViewInfoRowsCard>
+      )}
 
-      {/* Last node log section */}
-      <ViewInfoRowsCard
-        title="Last Node Log"
-        icon={<LogsIcon className="size-3.5 text-muted-foreground" />}
-        action={
-          job.lastNodeLog ? (
+      {/* Last node log section - hidden if empty */}
+      {job.lastNodeLog && (
+        <ViewInfoRowsCard
+          title="Last Node Log"
+          icon={<LogsIcon className="size-3.5 text-muted-foreground" />}
+          action={
             <a
               href={executionLogUrl}
               target="_blank"
@@ -252,15 +265,15 @@ export const JobView = ({ rowId }: JobViewProps) => {
               <ExternalLinkIcon className="size-3.5 -mt-[0.135rem]" />
               Full log
             </a>
-          ) : undefined
-        }
-      >
-        {job.lastNodeLog ? (
-          <JsonViewer jsonData={jsonToString(job.lastNodeLog)} enableValueClipboard />
-        ) : (
-          <p className="px-0.5 py-1.5 text-xs text-foreground">{FALLBACK_VALUE}</p>
-        )}
-      </ViewInfoRowsCard>
+          }
+        >
+          <JsonViewer
+            jsonData={jsonToString(job.lastNodeLog)}
+            enableValueClipboard
+            viewportClassName=""
+          />
+        </ViewInfoRowsCard>
+      )}
     </ViewContainer>
   );
 };
