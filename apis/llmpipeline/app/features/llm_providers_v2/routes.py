@@ -51,7 +51,10 @@ async def generate_llm_response_route(
         raise
     except Exception as e:
         log_exception(logger, e, "Error generating LLM response: ")
-        raise HTTPException(status_code=500, detail="Error generating LLM response.")
+        raise HTTPException(
+            status_code=500,
+            detail="The request could not be processed. Please check the request and try again.",
+        )
 
 
 @router.post("/v2/llm/embeddings", response_model=EmbeddingResponse)

@@ -6,7 +6,7 @@ import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { LLMRequestDto, LLMResponseDto } from "../dtos/llm-providers-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/llm`;
+const baseAPIURL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/v2/llm`;
 
 const generateLLMResponse = (obj: LLMRequestDto) => {
   return axiosInstance

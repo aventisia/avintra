@@ -1,7 +1,6 @@
 # Chat/completion orchestration for the LLM Providers v2 feature.
 from __future__ import annotations
 
-import os
 import time
 
 from fastapi import HTTPException
@@ -10,7 +9,12 @@ from fastapi.responses import StreamingResponse
 from app.core.credit_manager import CreditManagerService
 from app.core.logger import log_exception, logger
 from app.features.auth.authenticated_user import User
-from app.utils.file_converter_utils import file_to_base64
+from app.utils.errors import friendly_error
+from app.utils.file_converter_utils import (
+    data_uri_mime,
+    file_input_filename,
+    file_to_base64,
+)
 
 from .kb_integration import augment_with_kb_context
 from .litellm_service import litellm_service
@@ -24,26 +28,24 @@ from .schemas import LLMGenerationChunk, LLMGenerationRequest, LLMGenerationResp
 from .streaming_job_manager import v2_job_manager
 
 
-def _file_input_filename(file_input: str, default: str = "file") -> str:
-    """Extract a readable filename from a URL / path / base64 data URI."""
-    if file_input.startswith("data:"):
-        return default
-    return os.path.basename(file_input.split("?")[0]) or default
-
-
 def _attach_files(messages: list[dict], files: list[str]) -> list[dict]:
     """Attach file attachments to a user message as vision/file content blocks.
 
-    Mirrors the legacy OpenAI provider: images become `image_url` blocks; all
-    other files become `input_file` blocks. Invalid files are skipped.
+    Images become `image_url` blocks; all other files become `file` blocks in
+    the shape LiteLLM's chat-completions providers expect
+    (`{"type": "file", "file": {"file_data", "filename", "format"}}`). Invalid
+    files raise a clear 400 naming the offending entry so the caller can fix
+    their request.
     """
-    # Find the first user message to host the attachments.
-    target_index = 0
+    # Attachments belong on a user-role message only. Target the most recent
+    # user message so files never land on system/assistant/other roles or on an
+    # older user message.
+    target_index = -1
     for idx, msg in enumerate(messages):
         if msg.get("role") == "user":
             target_index = idx
-            break
-    else:
+
+    if target_index == -1:
         # No user message: create one so files have a place to attach.
         messages.append({"role": "user", "content": []})
         target_index = len(messages) - 1
@@ -56,20 +58,38 @@ def _attach_files(messages: list[dict], files: list[str]) -> list[dict]:
         messages[target_index]["content"] = []
 
     for file_data in files:
-        base64_uri = file_to_base64(file_data)
+        try:
+            base64_uri = file_to_base64(file_data)
+        except HTTPException as exc:
+            # Surface which file failed so the caller can correct it.
+            raise HTTPException(
+                status_code=exc.status_code,
+                detail=f"Invalid file '{file_data}': {exc.detail}",
+            ) from exc
+
         if not base64_uri:
-            continue  # skip invalid files
+            # Defensive: file_to_base64 always returns a data URI or raises, but
+            # if it ever returns a falsy value treat it as an invalid entry.
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid file '{file_data}': file could not be read.",
+            )
 
         if base64_uri.startswith("data:image/"):
             messages[target_index]["content"].append(
                 {"type": "image_url", "image_url": {"url": base64_uri}}
             )
         else:
+            # LiteLLM chat-completions `file` content block. `format` carries
+            # the MIME type so providers (e.g. Gemini) can classify the file.
             messages[target_index]["content"].append(
                 {
-                    "type": "input_file",
-                    "filename": _file_input_filename(file_data, default="file"),
-                    "file_data": base64_uri,
+                    "type": "file",
+                    "file": {
+                        "file_data": base64_uri,
+                        "filename": file_input_filename(file_data, default="file"),
+                        "format": data_uri_mime(base64_uri),
+                    },
                 }
             )
 
@@ -84,7 +104,50 @@ def _messages_from_request(req: LLMGenerationRequest) -> list[dict]:
 
     if req.files:
         messages = _attach_files(messages, req.files)
+
+    # OpenAI requires the word "json" to appear in the messages when using
+    # `response_format` of type `json_object` (i.e. JSON output without a
+    # schema). If the caller did not already ask for JSON, add a system
+    # instruction so the request is not rejected by the provider. Merge into an
+    # existing system message to avoid duplicate system messages.
+    if req.is_json_output and not req.json_schema and not _messages_mention_json(messages):
+        _ensure_json_instruction(messages)
+
     return messages
+
+
+def _ensure_json_instruction(messages: list[dict]) -> None:
+    """Add a JSON-output instruction to the messages in place.
+
+    Appends to the first system message if one exists, otherwise prepends a new
+    system message. Keeps a single system message so providers that reject
+    multiple system messages are not tripped up.
+    """
+    instruction = "Return your response in valid JSON format."
+    for msg in messages:
+        if msg.get("role") == "system":
+            content = msg.get("content")
+            if isinstance(content, str):
+                msg["content"] = f"{content}\n{instruction}"
+            elif isinstance(content, list):
+                content.append({"type": "text", "text": instruction})
+            else:
+                msg["content"] = instruction
+            return
+    messages.insert(0, {"role": "system", "content": instruction})
+
+
+def _messages_mention_json(messages: list[dict]) -> bool:
+    """True if any message content already contains the word 'json'."""
+    for msg in messages:
+        content = msg.get("content")
+        if isinstance(content, str) and "json" in content.lower():
+            return True
+        if isinstance(content, list):
+            for block in content:
+                if isinstance(block, dict) and "json" in str(block.get("text", "")).lower():
+                    return True
+    return False
 
 
 def _build_response_format(req: LLMGenerationRequest) -> dict | None:
@@ -97,7 +160,10 @@ def _build_response_format(req: LLMGenerationRequest) -> dict | None:
                 try:
                     schema = json.loads(schema)
                 except Exception:
-                    schema = {"type": "json_object"}
+                    raise HTTPException(
+                        status_code=400,
+                        detail="The provided json_schema is not valid JSON.",
+                    )
             return {"type": "json_schema", "json_schema": {"name": "response", "schema": schema}}
         return {"type": "json_object"}
     return None
@@ -168,7 +234,13 @@ class GenerationService:
             raise
         except Exception as e:
             log_exception(logger, e, f"[LLM-V2] generation error: ")
-            raise HTTPException(status_code=502, detail=str(e))
+            raise HTTPException(
+                status_code=502,
+                detail=(
+                    f"The request could not be processed by provider "
+                    f"'{req.provider}' for model '{req.model}'. {friendly_error(e)}"
+                ),
+            )
 
         output = self._extract_output(result)
         usage = getattr(result, "usage", None) or {}
@@ -231,13 +303,31 @@ class GenerationService:
                             conversation_id=req.conversation_id,
                         )
                         yield chunk_dto.model_dump_json()
+            except HTTPException as exc:
+                # Emit a clear, final error frame so the client is not silently
+                # truncated mid-stream.
+                log_exception(logger, exc, "[LLM-V2] stream error: ")
+                yield self._error_chunk(req, str(exc.detail)).model_dump_json()
             except Exception as e:
                 log_exception(logger, e, "[LLM-V2] stream error: ")
+                yield self._error_chunk(req, friendly_error(e)).model_dump_json()
             finally:
                 v2_job_manager.cleanup(job_id)
 
         job_id = v2_job_manager.register(event_stream)
         return job_id, event_stream()
+
+    @staticmethod
+    def _error_chunk(req: LLMGenerationRequest, error: str) -> LLMGenerationChunk:
+        """Build a final streaming chunk carrying a human-readable error."""
+        return LLMGenerationChunk(
+            provider=req.provider,
+            model=req.model,
+            output="",
+            conversation_id=req.conversation_id,
+            done=True,
+            error=error,
+        )
 
     @staticmethod
     def _extract_output(result) -> str | dict | list:

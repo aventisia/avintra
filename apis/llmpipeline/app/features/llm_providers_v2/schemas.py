@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Literal, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 def _utc_now() -> datetime:
@@ -77,6 +77,15 @@ class LLMGenerationRequest(BaseModel):
     conversation_id: Optional[str] = None
     is_temp_chat: bool = False
 
+    @model_validator(mode="after")
+    def _validate_json_output(self) -> "LLMGenerationRequest":
+        # JSON output mode is valid on its own (provider JSON mode) even when no
+        # schema is supplied. A schema implies JSON output, so enable it so the
+        # request is processed with the provider's structured-output capability.
+        if self.json_schema:
+            self.is_json_output = True
+        return self
+
 
 class LLMGenerationResponse(BaseModel):
     provider: str
@@ -111,6 +120,9 @@ class LLMGenerationChunk(BaseModel):
     conversation_id: Optional[str] = None
     # Indicates whether this is the final chunk of the stream.
     done: Optional[bool] = False
+    # Human-readable error, set on the final chunk when streaming fails after
+    # the response has started so the client is not silently truncated.
+    error: Optional[str] = None
 
 
 class EmbeddingRequest(BaseModel):

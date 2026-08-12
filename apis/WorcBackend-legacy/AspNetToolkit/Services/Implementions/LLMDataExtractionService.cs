@@ -281,7 +281,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             );
 
             // Construct the request URL
-            var requestUrl = $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/llm/generate";
+            var requestUrl = $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/v2/llm/generate";
 
             // Send POST request to the LLM Pipeline API
             var apiResponse = await client.PostAsync(requestUrl, content);

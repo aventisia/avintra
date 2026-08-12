@@ -13,6 +13,7 @@ from fastapi import HTTPException
 from app.core.logger import log_exception, logger
 from app.core.vault_manager import VaultManager
 from app.features.auth.authenticated_user import User
+from app.utils.errors import friendly_error
 
 from .provider_registry import (
     build_litellm_model,
@@ -123,7 +124,13 @@ class LiteLLMService:
                 logger, e,
                 f"[LLM-V2] chat_completion error for {request.provider}/{request.model}: ",
             )
-            raise HTTPException(status_code=502, detail=f"Provider error: {str(e)}")
+            raise HTTPException(
+                status_code=502,
+                detail=(
+                    f"Provider '{request.provider}' failed to complete the request "
+                    f"for model '{request.model}'. {friendly_error(e)}"
+                ),
+            )
 
     async def embed(
         self,
@@ -170,7 +177,13 @@ class LiteLLMService:
                 logger, e,
                 f"[LLM-V2] embed error for {request.provider}/{request.model}: ",
             )
-            raise HTTPException(status_code=502, detail=f"Provider error: {str(e)}")
+            raise HTTPException(
+                status_code=502,
+                detail=(
+                    f"Provider '{request.provider}' failed to compute embeddings "
+                    f"for model '{request.model}'. {friendly_error(e)}"
+                ),
+            )
 
     async def list_providers(self) -> list[str]:
         """Return the list of providers supported by LiteLLM (dynamic)."""

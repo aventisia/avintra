@@ -87,6 +87,46 @@ MIME_TO_EXTENSION = {
 EXTENSION_TO_MIME = {ext: mime for mime, ext in MIME_TO_EXTENSION.items()}
 
 
+def extension_for_mime(mime: Optional[str]) -> Optional[str]:
+    """Return the file extension for a MIME type, or None if unknown."""
+    if not mime:
+        return None
+    return MIME_TO_EXTENSION.get(mime.lower())
+
+
+def data_uri_mime(data_uri: str) -> str:
+    """Extract the MIME type from a `data:<mime>;base64,...` URI.
+
+    Falls back to `application/octet-stream` when the MIME type is missing or
+    the URI is malformed.
+    """
+    try:
+        metadata = data_uri.split(",", 1)[0]
+        mime = metadata.removeprefix("data:").split(";", 1)[0]
+        return mime or "application/octet-stream"
+    except Exception:
+        return "application/octet-stream"
+
+
+def file_input_filename(file_input: str, default: str = "file") -> str:
+    """Extract a readable filename from a URL / path / base64 data URI.
+
+    For a data URI there is no filename, so a sensible default is derived from
+    the MIME type (e.g. 'file.pdf').
+    """
+    candidate = file_input
+    if candidate.startswith("http://") or candidate.startswith("https://"):
+        candidate = candidate.split("?")[0]
+    elif candidate.startswith("data:"):
+        mime = data_uri_mime(candidate)
+        ext = extension_for_mime(mime)
+        return f"file{ext}" if ext else default
+    elif candidate.startswith("file://"):
+        candidate = candidate[len("file://"):]
+
+    return os.path.basename(candidate) or default
+
+
 def check_pdf_not_encrypted(file_path: str) -> None:
     """
     Check if a PDF file is encrypted/password-protected.
@@ -117,7 +157,7 @@ def check_pdf_not_encrypted(file_path: str) -> None:
 
 def file_to_local_path(file_input: str) -> tuple[str, bool]:
     """
-    Resolve any file input (URL, data URI, or local path)
+    Resolve any file input (URL, data URI, local path, or file:// URI)
     into a local file path.
 
     Returns:
@@ -125,6 +165,9 @@ def file_to_local_path(file_input: str) -> tuple[str, bool]:
         - local_file_path: path to the file on disk
         - is_temp: True if a temp file was created (caller must clean up)
     """
+
+    # Normalize file:// URIs to a plain local path before classification.
+    file_input = _normalize_file_scheme(file_input)
 
     # If input is a URL, download it
     if _is_url(file_input):
@@ -188,6 +231,7 @@ def file_to_base64(file_input: str) -> str:
     - Local file
     - Remote URL
     - Base64 data URI
+    - file:// URI
 
     into:
     data:<mime>;base64,<content>
@@ -200,6 +244,9 @@ def file_to_base64(file_input: str) -> str:
     temp_file_path = None
 
     try:
+
+        # Normalize file:// URIs to a plain local path before classification.
+        file_input = _normalize_file_scheme(file_input)
 
         # If input is a URL, download it first
         if _is_url(file_input):
@@ -304,7 +351,10 @@ def file_to_base64(file_input: str) -> str:
 
         raise HTTPException(
             status_code=500,
-            detail="Failed to convert file to base64."
+            detail=(
+                f"Failed to convert file to base64. "
+                f"Please check the file '{file_input}' and try again."
+            )
         )
 
     # Always cleanup temp files
@@ -338,6 +388,16 @@ def _is_url(value: str) -> bool:
         value.startswith("http://")
         or value.startswith("https://")
     )
+
+
+# Normalize a file:// URI (e.g. file:///tmp/report.pdf) to a plain local path.
+def _normalize_file_scheme(value: str) -> str:
+
+    if not value.startswith("file://"):
+
+        return value
+
+    return value[len("file://"):]
 
 
 # Download remote file to temp storage

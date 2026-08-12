@@ -47,7 +47,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
         protected override IAsyncResult BeginExecute(AsyncCodeActivityContext context, AsyncCallback callback, object state)
         {
             // Get api url from config
-            var apiUrl = $"{ConfigurationManager.AppSettings["APP_BASE_URL"]}/llmpipeline/api/llm/generate";
+            var apiUrl = $"{ConfigurationManager.AppSettings["APP_BASE_URL"]}/llmpipeline/api/v2/llm/generate";
 
             // Capture all required values from context at the start
             var modelConfig = ModelConfig.Get(context);
