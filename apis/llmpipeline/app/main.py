@@ -12,6 +12,7 @@ from app.core.database import dispose_all_db_engines
 from app.features.extract_file_text.extract_file_text_routes import router as extract_file_text_router
 from app.dependencies.authorize import authorize
 from app.features.llm_providers.llm_providers_routes import router as llm_router
+from app.features.llm_providers_v2.routes import router as llm_v2_router
 from app.features.langgraph.graphs.langraph_routes import router as langgraph_router
 from app.features.vector_stores.vector_stores_routes import router as vector_stores_router
 from app.features.auth.authenticated_user import User
@@ -53,6 +54,7 @@ async def unhandled_exception_handler(_request: Request, exc: Exception):
 # Register API routes with tags for automatic documentation
 app.include_router(extract_file_text_router, tags=["Extract text from file"])
 app.include_router(llm_router, tags=["LLM Providers"])
+app.include_router(llm_v2_router, tags=["LLM Providers v2 (LiteLLM)"])
 app.include_router(langgraph_router, tags=["LangGraph"],)
 app.include_router(vector_stores_router, tags=["Vector Stores"])
 app.include_router(convert_to_pdf_router, tags=["Convert to PDF"])

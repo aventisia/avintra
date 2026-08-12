@@ -1,0 +1,49 @@
+meta {
+  name: v2 llm generate - strict json schema
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/v2/llm/generate
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "input": "List 3 benefits of exercise as a JSON array of strings",
+    "is_json_output": true,
+    "json_schema": {
+      "type": "object",
+      "properties": {
+        "benefits": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "required": ["benefits"]
+    },
+    "max_output_tokens": 100,
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "temperature": "1.0",
+    "top_p": "1.0",
+    "stream": false,
+    "ref_type": "Platform",
+    "ref_id": "",
+    "ref_name": "",
+    "action": "imporve_prompt"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
