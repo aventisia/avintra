@@ -241,42 +241,58 @@ public class FlowBuilderService : IFlowBuilderService
 
         try
         {
-            // Fetch the flow version with matching ID, flow ID, and ownership or shared access by current user
+            // Fetch the flow version by ID and FlowId without applying access filters.
+            // Access and ownership checks are performed separately so users get meaningful error messages.
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Id == publishFlowVersionDto.Id &&
-                    w.FlowId == publishFlowVersionDto.FlowId &&
-                    (
-                        w.CreatedByUserId == _userId ||
-                        (
-                            w.Flow.FlowUsers != null && w.Flow.FlowUsers.Any(a => a.UserId == _userId)
-                        )
-                    ))
+                    w.FlowId == publishFlowVersionDto.FlowId)
                 .Include(fv => fv.Flow)
                 .ThenInclude(flow => flow.FlowUsers)
                 .OrderByDescending(fv => fv.CreatedOn)
                 .SingleOrDefaultAsync();
 
-            // If the flow version is not found, return failure message
+            // If the flow version is not found, return a clear existence error.
             if (flowVersion == null)
             {
-                _logger.LogInformation($"No flow version found for FlowId {publishFlowVersionDto.FlowId} with VersionId {publishFlowVersionDto.Id}.");
+                _logger.LogInformation("No flow version found for FlowId {FlowId} with VersionId {VersionId}.", publishFlowVersionDto.FlowId, publishFlowVersionDto.Id);
                 serviceResponse.Message = "Flow version does not exist.";
                 return serviceResponse;
             }
 
-            // Check if the user is the creator or has the required access (Owner/Edit)
-            var flowUserAccess = flowVersion.Flow.FlowUsers?.FirstOrDefault(w =>
+            // Verify the user has any access to the flow (owner, edit, or view).
+            var (canAccess, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                flowVersion.Flow.Id,
+                ResourceTypeEnum.Flow,
+                flowVersion.Flow.CreatedByUserId,
+                flowVersion.Flow.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.View,
+                });
+
+            if (!canAccess)
+            {
+                _logger.LogWarning("User {UserId} does not have access to flow {FlowId}.", _userId, flowVersion.Flow.Id);
+                serviceResponse.Message = "You do not have access to this flow.";
+                return serviceResponse;
+            }
+
+            // Publishing requires owner-level access.
+            var isFlowCreator = flowVersion.Flow.CreatedByUserId == _userId;
+            var isFlowUserOwner = flowVersion.Flow.FlowUsers?.Any(w =>
                 w.FlowId == flowVersion.Flow.Id &&
                 w.UserId == _userId &&
-                (w.Type == ProjectUserAccessEnum.Owner || w.Type == ProjectUserAccessEnum.Edit)
-            );
+                w.Type == ProjectUserAccessEnum.Owner) ?? false;
+            var hasResourceOwnerAccess = accessLevel == ResourceAccessTypeEnum.Owner;
 
-            // Allow access if the user is the creator, else check if they have access
-            if (flowVersion.Flow.CreatedByUserId != _userId && flowUserAccess == null)
+            if (!isFlowCreator && !isFlowUserOwner && !hasResourceOwnerAccess)
             {
-                _logger.LogWarning($"User {_userId} is not authorized to modify this flow.");
-                serviceResponse.Message = "You don't have access to modify this flow.";
+                _logger.LogWarning("User {UserId} is not authorized to publish flow {FlowId}.", _userId, flowVersion.Flow.Id);
+                serviceResponse.Message = "You do not have permission to publish this flow.";
                 return serviceResponse;
             }
 
