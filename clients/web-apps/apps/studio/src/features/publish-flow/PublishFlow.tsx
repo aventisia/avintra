@@ -1,4 +1,5 @@
-import { SimpleDDMenuItem } from "@avplatform/ui/dropdown-menu";
+import { LoadingSpinner } from "@avplatform/ui";
+import { Button } from "@avplatform/ui/buttons";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { toast } from "@avplatform/ui/sonner";
@@ -57,11 +58,11 @@ const PublishFlow = () => {
   const type = flowData?.type?.replace(/([a-z])([A-Z])/g, "$1 $2");
 
   return (
-    <SimpleDDMenuItem
-      size="md"
-      Icon={RocketIcon}
-      content="Publish"
+    <Button
+      variant="default"
+      size="sm"
       disabled={isDisabled}
+      className=" items-center justify-start gap-2 "
       onClick={() => {
         if (!flowData) return;
         if (flowData?.type == FlowTypesEnum.ChatAgent) {
@@ -87,7 +88,14 @@ const PublishFlow = () => {
           isDestructive: false,
         });
       }}
-    />
+    >
+      {isPending ? (
+        <LoadingSpinner className="h-4 w-4 shrink-0" />
+      ) : (
+        <RocketIcon className="h-4 w-4 shrink-0" />
+      )}
+        <span className="text-sm font-bold">Publish</span>
+    </Button>
   );
 };
 
