@@ -216,8 +216,8 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             case nameof(M365SharePointActionsEnum.FileUpload):
                 {
                     // Read input values from the payload
-                    var drivePath = CloudConnectionPayloadUtil.GetValue(payload, "drivePath");
-                    var fileName = CloudConnectionPayloadUtil.GetValue(payload, "fileName");
+                    var drivePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
+                    var fileName = CloudConnectionPayloadUtil.GetValue(payload, "FileName");
                     var contentSource = CloudConnectionPayloadUtil.GetValue(payload, "ContentSource");
                     var content = CloudConnectionPayloadUtil.GetValue(payload, "Content");
 
@@ -292,8 +292,9 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     // Resolve the file's item ID within the drive
                     var itemId = await GetItemIdFromFilePathAsync(filePath, accessToken);
 
-                    // Build Microsoft Graph endpoint URL for deletion
-                    var requestUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/items/{itemId}/content";
+                    // Build Microsoft Graph endpoint URL for deletion.
+                    // The item is deleted via /items/{itemId} (the '/content' suffix is not valid for deletion).
+                    var requestUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/items/{itemId}";
 
                     // Execute DELETE request
                     return await HttpClientHelper.DeleteAsync(requestUrl, accessToken);
@@ -329,16 +330,20 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     // Build Microsoft Graph copy endpoint
                     var requestUrl = $"{GRAPH_BASE_URL}/drives/{sourceDriveId}/items/{sourceItemId}/copy";
 
-                    // Prepare request body
-                    var copyBody = new
+                    // Prepare request body. 'name' is optional in the Graph API and must be
+                    // omitted (not sent as empty string) when no new file name is provided,
+                    // otherwise the destination keeps the original file name.
+                    var copyBody = new Dictionary<string, object>
                     {
-                        parentReference = new
+                        ["parentReference"] = new Dictionary<string, object>
                         {
-                            driveId = destinationDriveId,
-                            id = destinationFolderItemId
-                        },
-                        name = newFileName
+                            ["driveId"] = destinationDriveId,
+                            ["id"] = destinationFolderItemId
+                        }
                     };
+
+                    if (!string.IsNullOrWhiteSpace(newFileName))
+                        copyBody["name"] = newFileName;
 
                     // Execute copy request
                     return await HttpClientHelper.PostAsync(requestUrl, copyBody, accessToken);
@@ -394,9 +399,9 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             case nameof(M365SharePointActionsEnum.CheckInFile):
                 {
                     // Read inputs from payload
-                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
-                    var comment = CloudConnectionPayloadUtil.GetValue(payload, "comment") ?? "Checked in";
-                    var checkInType = CloudConnectionPayloadUtil.GetValue(payload, "checkInType") ?? "major"; // "major" or "minor"
+                    var filePath = CloudConnectionPayloadUtil.GetValue(payload, "FilePath");
+                    var comment = CloudConnectionPayloadUtil.GetValue(payload, "Comment") ?? "Checked in";
+                    var checkInType = CloudConnectionPayloadUtil.GetValue(payload, "CheckInType") ?? "Simple";
 
                     // Resolve document library (Drive) and file item ID
                     var driveId = await GetDriveIdFromFilePathAsync(filePath, accessToken);
@@ -405,12 +410,17 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     // Build Graph endpoint URL for checkin
                     var requestUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/items/{itemId}/checkin";
 
-                    // Prepare request body
-                    var requestBody = new
+                    // Prepare request body. Graph's 'checkInAs' only accepts "published"
+                    // (or unspecified). The config offers Minor/Major/Simple, which we map:
+                    //   - Major  -> checkInAs = published (creates a major version)
+                    //   - Minor/Simple -> omit checkInAs
+                    var requestBody = new Dictionary<string, object>
                     {
-                        comment = comment,
-                        checkInAs = checkInType
+                        ["comment"] = comment
                     };
+
+                    if (string.Equals(checkInType, "Major", StringComparison.OrdinalIgnoreCase))
+                        requestBody["checkInAs"] = "published";
 
                     // Execute POST request to check in the file
                     return await HttpClientHelper.PostAsync(requestUrl, requestBody, accessToken);
