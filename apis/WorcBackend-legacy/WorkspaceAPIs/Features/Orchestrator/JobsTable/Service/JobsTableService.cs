@@ -1,7 +1,5 @@
 namespace WorkspaceAPIs.Services;
 
-using AspNetToolkit.DTOs;
-
 public class JobsTableService : IJobsTableService
 {
     private readonly ILogger<JobsTableService> _logger;
@@ -12,9 +10,9 @@ public class JobsTableService : IJobsTableService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
-    private readonly string _userMachine;
     private readonly string? _authHeader;
     private readonly INodeExecutionLogService _nodeExecutionLogService;
+    private readonly IClientContextResolver _clientContextResolver;
 
     public JobsTableService(
         ILogger<JobsTableService> logger,
@@ -25,13 +23,11 @@ public class JobsTableService : IJobsTableService
         IWebhookCallbackService webhookCallbackService,
         IHttpClientFactory httpClientFactory,
         EnvironmentConfig environmentConfig,
-        INodeExecutionLogService nodeExecutionLogService)
+        INodeExecutionLogService nodeExecutionLogService,
+        IClientContextResolver clientContextResolver)
     {
         // Set the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-
-        // Fetch the custom header: X-User-Machine (only set if running inside Tauri Desktop App)
-        _userMachine = httpContextAccessor.HttpContext?.Request?.Headers["X-User-Machine"].FirstOrDefault() ?? string.Empty;
 
         // Forward the current request's Authorization header so calls to AccountsAPIs are authenticated.
         _authHeader = httpContextAccessor.HttpContext?.Request?.Headers["Authorization"].FirstOrDefault();
@@ -44,6 +40,7 @@ public class JobsTableService : IJobsTableService
         _httpClientFactory = httpClientFactory;
         _environmentConfig = environmentConfig;
         _nodeExecutionLogService = nodeExecutionLogService;
+        _clientContextResolver = clientContextResolver;
     }
 
     // Retrieves a list of all jobs between optional start and end date filters.
@@ -115,9 +112,16 @@ public class JobsTableService : IJobsTableService
             jobRecordDto.JobInputData = JobsTableHelpers.ParseJsonOrNull(jobRecord.InputArgumentsJson);
             jobRecordDto.JobOutputData = JobsTableHelpers.ParseJsonOrNull(jobRecord.OutputDataJson);
 
-            // TODO: Once we start saving the Execution log in its own table then we can fetch
-            // the last node execution log and set it in the JobRecordDto. For now, we will set it to null.
-            jobRecordDto.LastNodeLog = null;
+            // Populate the last node execution log for terminal jobs when logs exist.
+            if (jobRecord.Status.IsTerminal())
+            {
+                var lastLogResponse = await _nodeExecutionLogService.GetLastNodeExecutionLogAsync(jobId);
+                jobRecordDto.LastNodeLog = lastLogResponse.Data;
+            }
+            else
+            {
+                jobRecordDto.LastNodeLog = null;
+            }
 
             // Task successful
             return serviceResponse.Update(null, 200, jobRecordDto);
@@ -256,7 +260,7 @@ public class JobsTableService : IJobsTableService
                     return serviceResponse.Update("User not found.", 404);
 
                 // TODO: Property name to be changed CreatedByName = [Full name - email]
-                newJob.ExecutedBy = $"{userRecord.FirstName} {userRecord.LastName} - {userRecord.UserName}";
+                newJob.ExecutedBy = $"{userRecord.FirstName} {userRecord.LastName} ({userRecord.UserName})";
 
                 // TODO: Property name to be changed CreatedById = [User Id]
                 newJob.RefId = userRecord.Id;
@@ -266,7 +270,7 @@ public class JobsTableService : IJobsTableService
             if (!flowVersion.IsFlowVersionPublished)
             {
                 // TODO: Property name to be changed ExecutionLocation 
-                newJob.ExecutedOn = !string.IsNullOrEmpty(_userMachine) ? _userMachine : "Agent Builder (web)";
+                newJob.ExecutedOn = _clientContextResolver.GetUnpublishedExecutionLocation();
             }
 
             // TODO: Mannual mapping till the time JobInputData is stored as JsonDocument in the database
@@ -842,9 +846,10 @@ public class JobsTableService : IJobsTableService
                 return serviceResponse.Update("Credit usage tracking endpoint returned an error.", (int)response.StatusCode);
             }
 
-            var recordedUsage = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<RecordedCreditUsageDto>>(responseBody, new System.Text.Json.JsonSerializerOptions
+            var recordedUsage = System.Text.Json.JsonSerializer.Deserialize<ServiceResponse<RecordedCreditUsageDto>>(responseBody, new JsonSerializerOptions
             {
-                PropertyNameCaseInsensitive = true
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
             });
 
             if (recordedUsage == null)

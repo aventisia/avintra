@@ -9,14 +9,17 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly ILogger<ExecuteFlowStep2Service> _logger;
     private readonly Guid? _userId;
+    private readonly IClientContextResolver _clientContextResolver;
 
     public ExecuteFlowStep2Service(
         IServiceScopeFactory scopeFactory,
         ILogger<ExecuteFlowStep2Service> logger,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        IClientContextResolver clientContextResolver)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
+        _clientContextResolver = clientContextResolver;
 
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
@@ -80,7 +83,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                         ? $"{user.FirstName} {user.LastName}"
                         : "Agent Builder";
 
-                    job.ExecutedOn = "Agent Builder (web)";
+                    job.ExecutedOn = _clientContextResolver.GetAgentBuilderOrigin();
                 }
                 // Trigger-based execution
                 else if (

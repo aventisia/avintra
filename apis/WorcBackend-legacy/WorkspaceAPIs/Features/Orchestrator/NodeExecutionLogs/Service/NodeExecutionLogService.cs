@@ -60,6 +60,54 @@ public class NodeExecutionLogService : INodeExecutionLogService
         return serviceResponse.Update("Logs retrieved.", 200, dtos);
     }
 
+    // Retrieves the most recent node execution log for the specified job as a JSON document.
+    public async Task<ServiceResponse<JsonDocument?>> GetLastNodeExecutionLogAsync(Guid jobId)
+    {
+        var serviceResponse = ServiceResponse<JsonDocument?>.Create("Failed to retrieve last node execution log.", 500);
+
+        var lastLog = await _unitOfWork.JobNodeExecutionLogRepo
+            .GetByConditionAsync(n => n.JobId == jobId)
+            .OrderByDescending(n => n.ExecutedAt)
+            .ThenByDescending(n => n.Id)
+            .FirstOrDefaultAsync();
+
+        if (lastLog is null)
+        {
+            return serviceResponse.Update("No node execution logs found.", 200, (JsonDocument?)null);
+        }
+
+        var document = BuildLastNodeLogDocument(lastLog);
+        return serviceResponse.Update("Last node execution log retrieved.", 200, document);
+    }
+
+    // Builds a JSON document representing the last executed node for display in the job details view.
+    private static JsonDocument BuildLastNodeLogDocument(JobNodeExecutionLog entity)
+    {
+        var inputsJson = NodeExecutionLogCompressionHelpers.DecompressJson(entity.InputsJsonCompressed);
+        var outputsJson = NodeExecutionLogCompressionHelpers.DecompressJson(entity.OutputsJsonCompressed);
+
+        using var stream = new System.IO.MemoryStream();
+        using (var writer = new Utf8JsonWriter(stream))
+        {
+            writer.WriteStartObject();
+            writer.WriteString("nodeExecutionId", entity.NodeExecutionId);
+            writer.WriteNumber("retryAttempt", entity.RetryAttempt);
+            writer.WriteString("nodeId", entity.NodeId);
+            writer.WriteString("nodeDisplayName", entity.NodeDisplayName);
+            writer.WriteString("nodeUniqueName", entity.NodeUniqueName);
+            writer.WriteBoolean("isSuccess", entity.IsSuccess);
+            writer.WriteNumber("duration", entity.Duration);
+            writer.WriteString("executedAt", entity.ExecutedAt);
+            writer.WritePropertyName("inputs");
+            writer.WriteRawValue(inputsJson ?? "{}", skipInputValidation: true);
+            writer.WritePropertyName("outputs");
+            writer.WriteRawValue(outputsJson ?? "{}", skipInputValidation: true);
+            writer.WriteEndObject();
+        }
+
+        return JsonDocument.Parse(stream.ToArray());
+    }
+
     // Maps a DTO to a new entity with compressed JSON payloads.
     private static JobNodeExecutionLog MapDtoToEntity(NodeExecutionLogDto dto, Guid jobId, Guid tenantId)
     {

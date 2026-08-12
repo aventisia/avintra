@@ -141,8 +141,8 @@ public class JobRecordDto
     public JsonDocument? JobOutputData { get; set; }
 
     /// <summary>
-    /// Gets or sets execution log of the last executed node in the job if job fails or is aborted. 
-    /// This can be useful for debugging and understanding the state of the job at the point of failure or abortion.
+    /// Gets or sets execution log of the last executed node in the job.
+    /// This can be useful for debugging and understanding the state of the job at the point of execution.
     /// </summary>
     public JsonDocument? LastNodeLog { get; set; }
 }

@@ -19,4 +19,11 @@ public interface INodeExecutionLogService
     /// <param name="jobId">The unique identifier of the job.</param>
     /// <returns>A task representing the asynchronous operation, containing the collection of node execution logs.</returns>
     Task<ServiceResponse<List<NodeExecutionLogDto>>> GetNodeExecutionLogsAsync(Guid jobId);
+
+    /// <summary>
+    /// Retrieves the most recent node execution log for the specified job.
+    /// </summary>
+    /// <param name="jobId">The unique identifier of the job.</param>
+    /// <returns>A task representing the asynchronous operation, containing the last node execution log as a JSON document, or <c>null</c> if no logs exist.</returns>
+    Task<ServiceResponse<JsonDocument?>> GetLastNodeExecutionLogAsync(Guid jobId);
 }

@@ -16,7 +16,11 @@ public class DesktopExecutionEngine : IExecutionEngine
         _accessToken = accessToken;
     }
 
-    public async Task<FlowExecutionResult> ExecuteAsync(ExecutionGraphDto graph, CancellationToken ct = default, Action<string>? onNodeProgress = null)
+    public async Task<FlowExecutionResult> ExecuteAsync(
+        ExecutionGraphDto graph,
+        CancellationToken ct = default,
+        Action<string>? onNodeProgress = null,
+        Action<NodeExecutionLog>? onNodeCompleted = null)
     {
         var flow = ReactFlowHelper.Parse(graph.ReactFlowObject)
             ?? throw new InvalidOperationException("Failed to parse parent flow graph.");
@@ -43,7 +47,7 @@ public class DesktopExecutionEngine : IExecutionEngine
         };
 
         var processor = new FlowProcessor(new NodeProcessor(), flowGraphProvider: provider);
-        return await processor.ExecuteAsync(flow, initialVariables, ct, onNodeProgress);
+        return await processor.ExecuteAsync(flow, initialVariables, ct, onNodeProgress, onNodeCompleted);
     }
 
     private static JsonNode? ParseInputArguments(string? json)

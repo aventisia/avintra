@@ -39,6 +39,7 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     enableSorting: false,
   },
   {
+    id: "job",
     accessorKey: "id",
     header: ({ column }) => <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Job" />,
     cell: ({ row }) => (
@@ -168,11 +169,19 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdByName")} />
     ),
-    cell: ({ row }) => (
-      <div title={row.getValue("createdByName") ?? ""} className="max-w-40 truncate font-medium">
-        {row.getValue("createdByName") ?? FALLBACK_VALUE}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const createdByName = row.getValue("createdByName") as string | undefined;
+      // Backend format: "Full Name (email@domain.com)" - extract just the display name
+      const displayName =
+        createdByName && createdByName.includes(" (")
+          ? createdByName.split(" (")[0].trim()
+          : createdByName;
+      return (
+        <div title={createdByName ?? ""} className="max-w-40 truncate font-medium">
+          {displayName ?? FALLBACK_VALUE}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "createdAt",

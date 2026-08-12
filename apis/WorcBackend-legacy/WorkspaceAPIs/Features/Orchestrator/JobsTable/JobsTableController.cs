@@ -89,47 +89,4 @@ public class JobsTableController : BaseApiController
         }
         return ResultHelper(exportedData);
     }
-
-
-
-    // TODO: Need to check this
-    // [HttpGet("logs/list")]
-    // public async Task<ActionResult<ServiceResponse<IEnumerable<JobsTableRowDto>>>> GetJobLogs(
-    //     [FromQuery] DateTimeOffset? startDate,
-    //     [FromQuery] DateTimeOffset? endDate)
-    // {
-    //     return ResultHelper(await _jobsTableService.GetJobLogsAsync(startDate, endDate));
-    // }
-
-    // [HttpPost("{jobId}/retry")]
-    // public async Task<ActionResult<ServiceResponse<bool>>> RetryJobAsync(Guid jobId)
-    // {
-    //     return ResultHelper(await _jobsTableService.RetryJobAsync(jobId));
-    // }
-
-    // [HttpPost("{jobId}/cancel")]
-    // public async Task<ActionResult<ServiceResponse<bool>>> CancelJob(Guid jobId)
-    // {
-    //     return ResultHelper(await _jobsTableService.CancelJobAsync(jobId));
-    // }
-
-    // // Exports jobs data into a CSV file
-    // [HttpPost("export")]
-    // public async Task<ActionResult> ExportJobs(ExportJobRequestDto exportJobRequestDto)
-    // {
-    //     var exportedData = await _jobsTableService.ExportJobsAsync(exportJobRequestDto);
-    //     if (exportedData.StatusCode == 200 && exportedData.Data != null)
-    //     {
-    //         return exportedData.Data;
-    //     }
-    //     return ResultHelper(exportedData);
-    // }
-
-    // //Trigger the creation of a new job (custom authorization)
-    // [AllowAnonymous, CustomAuthorize] // Allows automated triggers or special tokens
-    // [HttpPost("trigger")]
-    // public async Task<ActionResult<ServiceResponse<JobTableDto>>> TriggerJobCreation([FromBody] JobUpsertDto jobUpsertDto)
-    // {
-    //     return ResultHelper(await _jobsTableService.InsertJobAsync(jobUpsertDto));
-    // }
 }

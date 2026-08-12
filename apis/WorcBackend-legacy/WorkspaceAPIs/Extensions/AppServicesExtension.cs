@@ -104,6 +104,9 @@ public static class AppServicesExtension
         services.AddScoped<IExecuteFlowStep2Service, ExecuteFlowStep2Service>();
         services.AddScoped<IExecutionGraphService, ExecutionGraphService>();
 
+        // Client context resolution (User-Agent / client-type headers)
+        services.AddScoped<IClientContextResolver, ClientContextResolver>();
+
         // Feature Services
         services.AddScoped<IWorkspaceUserService, WorkspaceUserService>();
         services.AddScoped<INotificationHelperService, NotificationHelperService>();

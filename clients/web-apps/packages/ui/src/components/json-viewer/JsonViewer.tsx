@@ -25,6 +25,13 @@ type JsonViewerProps = {
   enableValueClipboard?: boolean;
   /** Optional root class name. */
   className?: string;
+  /**
+   * Custom classes applied to the internal viewport (controls scroll/height).
+   * Defaults to `max-h-72` so content scrolls when it exceeds 18rem.
+   * Pass an empty string or override to remove the max-height restriction
+   * (e.g. when the viewer is already inside a scrolling container).
+   */
+  viewportClassName?: string;
 };
 
 /**
@@ -39,6 +46,7 @@ export const JsonViewer = ({
   showCopyAllButton,
   enableValueClipboard = false,
   className,
+  viewportClassName = "max-h-72",
 }: JsonViewerProps) => {
   const { parsedJson, parseError } = useMemo(() => {
     try {
@@ -64,7 +72,7 @@ export const JsonViewer = ({
   return (
     <ScrollArea
       className={cn("relative w-full pb-2", className)}
-      viewportClassName="max-h-72"
+      viewportClassName={viewportClassName}
       showHorizontalScrollbar
     >
       {showCopyAllButton && !parseError && (

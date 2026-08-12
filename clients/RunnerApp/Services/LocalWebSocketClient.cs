@@ -72,6 +72,26 @@ public sealed class LocalWebSocketClient : IAsyncDisposable
         return SendAsync(payload, ct);
     }
 
+    /// <summary>
+    /// Pushes a terminal job-status message to the Studio app over the local WS so it can
+    /// reset its UI (e.g. return the execute button to its play state). Unlike the per-node
+    /// progress messages this is sent once, when the whole job finishes.
+    /// </summary>
+    public Task PushJobCompletedAsync(
+        string status,
+        string? message = null,
+        CancellationToken ct = default)
+    {
+        var payload = JsonSerializer.Serialize(new
+        {
+            type = "jobCompleted",
+            jobId = _jobId,
+            status,
+            message
+        });
+        return SendAsync(payload, ct);
+    }
+
     /// <summary>Disconnect and release resources.</summary>
     public async Task DisconnectAsync()
     {
