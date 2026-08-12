@@ -1,3 +1,5 @@
+import { DeliveryChannelEnum } from "@avplatform/ui/enums";
+
 /**
  * Represents the full set of per-tenant automatic notification control settings.
  * Each property maps to a single controllable notification type and indicates whether
@@ -26,4 +28,23 @@ export interface NotificationSettingsDto {
    * is enabled for the tenant.
    */
   publishAgent: boolean;
+
+  /**
+   * Gets or sets the number of days before the subscription renewal date at which the
+   * renewal reminder starts being sent to the Tenant Admin. Required and must be greater
+   * than zero. Defaults to 7.
+   */
+  subscriptionRenewalReminderDays: number;
+
+  /**
+   * Gets or sets the credit balance threshold below which the Tenant Admin is notified
+   * that the credit balance is low. Required and must be greater than zero. Defaults to 1000.
+   */
+  lowCreditThreshold: number;
+
+  /**
+   * Gets or sets the delivery channel used for automatic notifications.
+   * Supported values: Platform, Email, or Both. Defaults to Platform.
+   */
+  deliveryChannel: DeliveryChannelEnum;
 }

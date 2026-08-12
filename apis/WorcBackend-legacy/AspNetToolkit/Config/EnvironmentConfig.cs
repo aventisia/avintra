@@ -65,19 +65,6 @@ public class EnvironmentConfig
     public string WorkspaceApiBaseUrl { get; set; } = string.Empty;
     public string LlmPipelineApiBaseUrl { get; set; } = string.Empty;
 
-    // Notifications
-    /// <summary>
-    /// The credit balance threshold below which the Tenant Admin is notified
-    /// that the credit balance is low. Defaults to 1000.
-    /// </summary>
-    public double LowCreditThreshold { get; set; } = 1000;
-
-    /// <summary>
-    /// Number of days before the subscription renewal date at which daily
-    /// renewal reminders start being sent to the Tenant Admin. Defaults to 7.
-    /// </summary>
-    public int SubscriptionRenewalReminderDays { get; set; } = 7;
-
     // Sales emails
     public string SalesEmails { get; set; } = string.Empty;
 

@@ -420,7 +420,7 @@ public class TenantAccountService : ITenantAccountService
     }
 
     /// <inheritdoc />
-    public async Task<ServiceResponse<NotificationSettingsDto>> UpdateNotificationSettingsAsync(UpdateNotificationSettingsDto updateDto)
+    public async Task<ServiceResponse<NotificationSettingsDto>> UpdateNotificationSettingsAsync(NotificationSettingsDto settingsDto)
     {
         var serviceResponse = new ServiceResponse<NotificationSettingsDto>
         {
@@ -447,17 +447,25 @@ public class TenantAccountService : ITenantAccountService
             // Start from the current settings (or defaults if none stored yet).
             var settings = tenant.NotificationSettings ?? new NotificationSettings();
 
-            // FR-3: only apply the properties that were explicitly provided (non-null).
-            // FR-9: the DTO's bool? properties reject non-boolean JSON values at model
-            // binding time, so a non-boolean value never reaches here.
-            if (updateDto.LowCredits.HasValue)
-                settings.LowCredits = updateDto.LowCredits.Value;
+            // Apply the full settings object from the request.
+            settings.LowCredits = settingsDto.LowCredits;
+            settings.Subscription = settingsDto.Subscription;
+            settings.PublishAgent = settingsDto.PublishAgent;
+            settings.SubscriptionRenewalReminderDays = settingsDto.SubscriptionRenewalReminderDays;
+            settings.LowCreditThreshold = settingsDto.LowCreditThreshold;
+            settings.DeliveryChannel = settingsDto.DeliveryChannel;
 
-            if (updateDto.Subscription.HasValue)
-                settings.Subscription = updateDto.Subscription.Value;
-
-            if (updateDto.PublishAgent.HasValue)
-                settings.PublishAgent = updateDto.PublishAgent.Value;
+            // Enforce validation so invalid values (0, negative) cannot be persisted.
+            var validationContext = new ValidationContext(settings);
+            var validationResults = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(settings, validationContext, validationResults, validateAllProperties: true))
+            {
+                serviceResponse.Message = string.Join(" ", validationResults.Select(r => r.ErrorMessage));
+                serviceResponse.StatusCode = 400;
+                _logger.LogWarning("Invalid notification settings for TenantId: {TenantId}. {Errors}",
+                    _tenantId, serviceResponse.Message);
+                return serviceResponse;
+            }
 
             tenant.NotificationSettings = settings;
             tenant.LastModifiedByUserId = _userId;
@@ -496,7 +504,10 @@ public class TenantAccountService : ITenantAccountService
             TenantId = tenantId,
             LowCredits = effective.LowCredits,
             Subscription = effective.Subscription,
-            PublishAgent = effective.PublishAgent
+            PublishAgent = effective.PublishAgent,
+            SubscriptionRenewalReminderDays = effective.SubscriptionRenewalReminderDays,
+            LowCreditThreshold = effective.LowCreditThreshold,
+            DeliveryChannel = effective.DeliveryChannel
         };
     }
 

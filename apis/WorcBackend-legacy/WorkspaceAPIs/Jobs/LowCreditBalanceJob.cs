@@ -1,4 +1,3 @@
-using AspNetToolkit.Config;
 using AspNetToolkit.Data;
 using AspNetToolkit.Entities;
 using WorkspaceAPIs.Services;
@@ -13,33 +12,30 @@ namespace WorkspaceAPIs.Jobs
     {
         private readonly TenantDbContext _tenantDbContext;
         private readonly INotificationEventService _notificationEventService;
-        private readonly EnvironmentConfig _environmentConfig;
         private readonly ILogger<LowCreditBalanceJob> _logger;
 
         public LowCreditBalanceJob(
             TenantDbContext tenantDbContext,
             INotificationEventService notificationEventService,
-            EnvironmentConfig environmentConfig,
             ILogger<LowCreditBalanceJob> logger)
         {
             _tenantDbContext = tenantDbContext;
             _notificationEventService = notificationEventService;
-            _environmentConfig = environmentConfig;
             _logger = logger;
         }
 
         public async Task Execute(IJobExecutionContext context)
         {
             var currentDateTime = DateTimeOffset.UtcNow;
-            var threshold = _environmentConfig.LowCreditThreshold;
             _logger.LogInformation("Low credit balance job started at {Time:O}.", currentDateTime);
 
             try
             {
-                // Enumerate all enabled tenants
+                // Enumerate all enabled tenants along with their notification settings
+                // so the per-tenant threshold is used for the low-credit check.
                 var tenants = await _tenantDbContext.ReadOnlyTenants
                     .Where(w => !w.IsDisabled)
-                    .Select(s => new { s.Id, s.Name })
+                    .Select(s => new { s.Id, s.Name, s.NotificationSettings })
                     .ToListAsync();
 
                 if (tenants.Count == 0)
@@ -60,6 +56,11 @@ namespace WorkspaceAPIs.Jobs
                 foreach (var tenant in tenants)
                 {
                     var availableCredits = creditByTenant.TryGetValue(tenant.Id, out var total) ? total : 0;
+
+                    // Use the tenant's stored threshold; fall back to the model default (1000)
+                    // when no settings are stored. The value is always greater than zero.
+                    var threshold = tenant.NotificationSettings?.LowCreditThreshold
+                        ?? new NotificationSettings().LowCreditThreshold;
 
                     if (availableCredits < threshold)
                     {
