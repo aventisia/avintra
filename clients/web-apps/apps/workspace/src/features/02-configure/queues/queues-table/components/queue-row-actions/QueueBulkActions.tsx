@@ -41,7 +41,7 @@ export function QueueBulkActions({ table }: Readonly<QueueBulkActionsProps>) {
     string[],
     QueuesTableDto | boolean,
     QueuesTableDto
-  >(selectedRowIds, queueOptimisticMutationFn, [...queryKey, currentSpace?.id]);
+  >(selectedRowIds, queueOptimisticMutationFn, [...queryKey, currentSpace?.id] as string[]);
 
   return (
     <>

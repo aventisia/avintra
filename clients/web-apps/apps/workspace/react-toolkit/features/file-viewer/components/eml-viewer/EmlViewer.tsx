@@ -32,7 +32,7 @@ const EmlViewer = ({ fileUrl }: EmlViewerProps) => {
         const parsed = parseEml(text);
         setData(parsed);
         setError(null);
-      } catch (err) {
+      } catch {
         if (!cancelled) setError("Unable to preview this email.");
       }
     };

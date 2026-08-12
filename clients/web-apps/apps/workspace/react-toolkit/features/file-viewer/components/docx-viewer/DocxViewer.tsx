@@ -34,7 +34,7 @@ const DocxViewer = ({ fileUrl }: DocxViewerProps) => {
           experimental: false,
           useBase64URL: true,
         });
-      } catch (err) {
+      } catch {
         if (!cancelled) {
           containerRef.current!.innerHTML =
             '<p class="text-sm text-muted-foreground p-4">Unable to preview this document.</p>';

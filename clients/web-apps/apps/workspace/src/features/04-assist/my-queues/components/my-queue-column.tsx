@@ -2,7 +2,7 @@ import { Badge } from "@avplatform/ui/badge";
 import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { DTColumnHeader } from "@avplatform/ui/data-table";
 import { KeyValueLookupType } from "@avplatform/ui/types";
-import { ColumnDef } from "@tanstack/react-table";
+import { Column, ColumnDef } from "@tanstack/react-table";
 
 import { TABLE_KEY, getStatusColor } from "../constants";
 import { InputSchemaField } from "../dtos/queues-table-dto";
@@ -85,7 +85,7 @@ export const buildColumns = (
       ? [
           {
             accessorKey: "closedOn",
-            header: ({ column }: { column: { id: string } }) => (
+            header: ({ column }: { column: Column<WorkItemRow, unknown> }) => (
               <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Closed On" />
             ),
             cell: ({ row }: { row: { original: WorkItemRow } }) => {

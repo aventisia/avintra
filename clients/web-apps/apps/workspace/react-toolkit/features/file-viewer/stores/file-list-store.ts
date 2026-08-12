@@ -33,7 +33,6 @@ const EXT_TO_MIME: Record<string, string> = {
   gif: "image/gif",
   webp: "image/webp",
   svg: "image/svg+xml",
-  pdf: "application/pdf",
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   doc: "application/msword",
   xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

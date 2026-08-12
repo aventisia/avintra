@@ -20,7 +20,7 @@ import { useMyQueueParams } from "../../hooks/useMyQueueParams";
 import { TabValue } from "../../types/my-queue-types";
 import { buildTabs, generateColumnVisibility } from "../../utils/my-queue-utils";
 import { buildColumns, generateColumnsDisplayName } from "../my-queue-column";
-import HistoryDateRangeFilter from "../history/HistoryDateRangeFilter";
+import HistoryDateRangeFilter, { DateRange } from "../history/HistoryDateRangeFilter";
 
 export const MyQueueWokItemTable = () => {
   useDocumentTitle(TABLE_HEADING);
@@ -30,7 +30,7 @@ export const MyQueueWokItemTable = () => {
 
   // History date range. Defaults to today only.
   const today = useMemo(() => new Date(), []);
-  const [dateRange, setDateRange] = useState<{ from: Date; to?: Date }>({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: today,
     to: today,
   });

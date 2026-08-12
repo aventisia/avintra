@@ -101,7 +101,9 @@ const HistoryDateRangeFilter = ({ value, onChange }: HistoryDateRangeFilterProps
               mode="range"
               selected={selectedRange}
               numberOfMonths={2}
-              onSelect={(range) => setSelectedRange(range)}
+              onSelect={(range) => {
+                if (range) setSelectedRange(range);
+              }}
             />
 
             {/* Buttons */}

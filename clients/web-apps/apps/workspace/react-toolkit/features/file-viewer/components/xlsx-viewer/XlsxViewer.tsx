@@ -40,7 +40,7 @@ const XlsxViewer = ({ fileUrl }: XlsxViewerProps) => {
         setSheets(parsed);
         setActiveSheet(0);
         setError(null);
-      } catch (err) {
+      } catch {
         if (!cancelled) setError("Unable to preview this spreadsheet.");
       }
     };
