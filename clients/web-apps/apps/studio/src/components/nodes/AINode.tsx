@@ -64,7 +64,7 @@ export const AINode = memo(
       : (data?.selectedModel?.llMs as unknown as string[]);
 
     return (
-      <OpenNodeLog nodeId={id}>
+      <OpenNodeLog nodeId={id} isDisabled={data?.isDisabled}>
         <div
           className={cn(
             "custom-drag-handle flex h-16 w-48  rounded-lg border border-[#1E1B4B] bg-[#1E1B4B] hover:ring hover:ring-ring",

@@ -96,7 +96,7 @@ export const BlockNode = memo(
     }, [data.type, data.label, data.selectedBlock, id, updateNodeData]);
 
     return (
-      <OpenNodeLog nodeId={id}>
+      <OpenNodeLog nodeId={id} isDisabled={data?.isDisabled}>
         <div
           className={cn(
             "custom-drag-handle relative flex h-16 w-16 rounded-full border-2 border-[#1E1B4B] bg-[#1E1B4B] hover:ring hover:ring-ring",

@@ -1,3 +1,5 @@
+using System.Runtime.InteropServices;
+
 namespace NodeLibrary.Helpers;
 
 public static class NodeLogHelper
@@ -18,6 +20,12 @@ public static class NodeLogHelper
     {
         if (value == null)
             return "null";
+
+        // COM objects (e.g., Excel.Application, Excel.Workbook) cannot be safely serialized or
+        // accessed from arbitrary threads. Logging them as a placeholder prevents RCW separation
+        // errors during output collection.
+        if (Marshal.IsComObject(value))
+            return $"[COM Object: {value.GetType().Name}]";
 
         // Handle primitive type like int, bool, double, etc. return as is
         if (value.GetType().IsPrimitive)

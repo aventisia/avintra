@@ -33,7 +33,7 @@ export const BranchNode1 = memo(
       <>
         <>
           {nodeData?.name === "ConditionalBranchActivity" ? (
-            <OpenNodeLog nodeId={nodeId} showIcon={false}>
+            <OpenNodeLog nodeId={nodeId} showIcon={false} isDisabled={nodeData?.isDisabled}>
               <OpenNodeConfig {...{ nodeData, nodeId }}>
                 <div
                   className={cn(

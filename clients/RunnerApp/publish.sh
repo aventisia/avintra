@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Publishes the RunnerApp as a self-contained, single-file Windows binary and
-# packages it into a versioned zip ready for upload/distribution.
+# Publishes the RunnerApp as a self-contained Windows binary and packages it
+# into a versioned zip ready for upload/distribution.
 #
 # Usage:
 #   ./publish.sh [--version <ver>] [--runtime <rid>] [--output <dir>]
@@ -82,14 +82,11 @@ dotnet publish "$CSPROJ" \
   -c Release \
   -r "$RUNTIME" \
   --self-contained true \
-  -p:PublishSingleFile=true \
-  -p:IncludeNativeLibrariesForSelfExtract=true \
-  -p:EnableCompressionInSingleFile=true \
   -o "$PUBLISH_DIR"
 
 mkdir -p "$OUTPUT_DIR"
 
-# Rename the published single-file executable to AvintraRunnerService.
+# Rename the published executable to AvintraRunnerService.
 # We do this after publish instead of setting AssemblyName to avoid an
 # "Ambiguous project name" conflict during NuGet restore.
 EXENAME="RunnerApp"
@@ -103,7 +100,7 @@ mv "$PUBLISH_DIR/$EXENAME" "$PUBLISH_DIR/$NEWEXENAME" 2>/dev/null || true
 ZIP_NAME="AvintraRunnerService_${VERSION}_${RUNTIME}.zip"
 ZIP_PATH="$OUTPUT_DIR/$ZIP_NAME"
 
-# Zip the published output (single-file exe). The zip is what gets distributed/downloaded.
+# Zip the published output (executable + dependencies). The zip is what gets distributed/downloaded.
 if command -v zip >/dev/null 2>&1; then
   (cd "$PUBLISH_DIR" && zip -qr "$ZIP_PATH" .)
 elif command -v python3 >/dev/null 2>&1; then

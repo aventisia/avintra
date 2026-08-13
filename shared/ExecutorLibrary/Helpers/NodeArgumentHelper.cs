@@ -176,6 +176,16 @@ public static class NodeArgumentHelper
         if (underlying == typeof(DateTime) && DateTime.TryParse(str, out var dt)) return dt;
         if (underlying == typeof(DateTimeOffset) && DateTimeOffset.TryParse(str, out var dto)) return dto;
 
+        // Parse enum values from their string name or numeric value
+        if (underlying.IsEnum)
+        {
+            if (Enum.TryParse(underlying, str, ignoreCase: true, out var enumValue))
+                return enumValue;
+
+            // If a numeric string was provided, TryParse already handles it; reaching here means unparseable.
+            return targetType.IsValueType ? Activator.CreateInstance(targetType) : null;
+        }
+
         // Try JSON deserialization for complex types from string
         try
         {

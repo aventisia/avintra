@@ -25,7 +25,7 @@ const SUPPORT_NODE_TYPES = new Set([
  */
 export const isEmptyFlow = (nodes: Node<NodeDataType>[]): boolean => {
   const executableNodeCount = nodes.filter(
-    (node) => !SUPPORT_NODE_TYPES.has(node.type || ""),
+    (node) => !SUPPORT_NODE_TYPES.has(node.type || "") && node.data?.isDisabled !== true,
   ).length;
   return executableNodeCount === 0;
 };

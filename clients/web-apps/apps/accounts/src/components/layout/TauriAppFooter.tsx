@@ -21,7 +21,7 @@ const TauriAppFooter = () => {
 
           setMetadata(data || null);
         } catch (err) {
-          console.log("Tuari metadata error:", err);
+          console.log("Tauri metadata error:", err);
         }
       }
     };
