@@ -1,5 +1,7 @@
+using AspNetToolkit.Enums;
 using ExecutorLibrary.FlowProcessor;
 using ExecutorLibrary.FlowProcessor.Models;
+using Microsoft.EntityFrameworkCore;
 using NodeLibrary.Core;
 
 namespace WorkspaceAPIs.Services;
@@ -10,6 +12,9 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
     private readonly ILogger<ExecuteFlowStep2Service> _logger;
     private readonly Guid? _userId;
     private readonly IClientContextResolver _clientContextResolver;
+
+    // Maximum length allowed for a job remark.
+    private const int MaxRemarkLength = 2000;
 
     public ExecuteFlowStep2Service(
         IServiceScopeFactory scopeFactory,
@@ -50,8 +55,12 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             // Get the flow notification service to send real-time updates
             var executionNotificationService = scope.ServiceProvider.GetRequiredService<IExecutionNotificationService>();
 
-            // Get the job from the database
-            var job = await unitOfWork.JobRepo.GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId).SingleOrDefaultAsync();
+            // Get the job from the database, including its flow version/type to decide whether to persist output data.
+            var job = await unitOfWork.JobRepo
+                .GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId)
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
+                .SingleOrDefaultAsync();
 
             // Validate: Job not found
             if (job is null)
@@ -163,13 +172,15 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             var flowProcessor = new FlowProcessor(new NodeProcessor());
             var flowResult = await flowProcessor.ExecuteAsync(flowExecutionArgs.FlowData, initialVariables);
 
-            // Extract chat-specific output if this is a chat-triggered flow
-            var outputDataJson = ExtractOutputDataJson(initialVariables, flowResult);
+            // Only persist output data for chat-triggered executions or ChatAgent flows.
+            var flowType = job.FlowVersion?.Flow?.Type;
+            var outputDataJson = ExtractOutputDataJson(initialVariables, flowResult, flowType);
 
             // Update the job with the final status and results after execution
             job.Status = MapFlowStatusToJobStatus(flowResult.Status);
             job.EndTime = flowResult.EndTime;
             job.OutputDataJson = outputDataJson;
+            job.Remark = BuildTerminalRemark(flowResult);
             unitOfWork.JobRepo.Update(job);
 
             // Persist per-node execution logs in the isolated ws_NodeExecutionLogs table.
@@ -211,7 +222,11 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
             var executionNotificationService = scope.ServiceProvider.GetRequiredService<IExecutionNotificationService>();
 
-            var job = await unitOfWork.JobRepo.GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId).SingleOrDefaultAsync();
+            var job = await unitOfWork.JobRepo
+                .GetByConditionAsync(w => w.Id == flowExecutionArgs.JobId)
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
+                .SingleOrDefaultAsync();
 
             if (job is null)
             {
@@ -271,13 +286,15 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             var flowProcessor = new FlowProcessor(new NodeProcessor());
             var flowResult = await flowProcessor.ExecuteAsync(flowExecutionArgs.FlowData, initialVariables);
 
-            // Extract chat-specific output if this is a chat-triggered flow
-            var outputDataJson = ExtractOutputDataJson(initialVariables, flowResult);
+            // Only persist output data for chat-triggered executions or ChatAgent flows.
+            var flowType = job.FlowVersion?.Flow?.Type;
+            var outputDataJson = ExtractOutputDataJson(initialVariables, flowResult, flowType);
 
             // Update the job with the final status and results
             job.Status = MapFlowStatusToJobStatus(flowResult.Status);
             job.EndTime = flowResult.EndTime;
             job.OutputDataJson = outputDataJson;
+            job.Remark = BuildTerminalRemark(flowResult);
             unitOfWork.JobRepo.Update(job);
 
             // Persist per-node execution logs in the isolated ws_NodeExecutionLogs table.
@@ -362,15 +379,19 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
         }
     }
 
-    // Helper: Extracts the OutputDataJson string for the job based on whether it's a chat-triggered flow or not.
-    // For chat flows, extracts the LLM response text from _ChatLLMResult.
-    // For non-chat flows, serializes the full FlowExecutionResult.
-    private static string ExtractOutputDataJson(Dictionary<string, object?> initialVariables, FlowExecutionResult flowResult)
+    // Helper: Extracts the OutputDataJson string for the job only when it is a chat-triggered flow
+    // or the flow type is ChatAgent. For chat flows, extracts the LLM response text from _ChatLLMResult.
+    // For all other cases, returns null so that no output data is persisted.
+    private static string? ExtractOutputDataJson(Dictionary<string, object?> initialVariables, FlowExecutionResult flowResult, FlowTypesEnum? flowType)
     {
-        // Check if this is a chat-triggered flow
-        if (initialVariables.TryGetValue("TriggeredBy", out var triggeredBy) &&
-            string.Equals(triggeredBy?.ToString(), "chat", StringComparison.OrdinalIgnoreCase) &&
-            flowResult.OutputVariables is not null &&
+        bool isChatOutput = (initialVariables.TryGetValue("TriggeredBy", out var triggeredBy) &&
+            string.Equals(triggeredBy?.ToString(), "chat", StringComparison.OrdinalIgnoreCase)) ||
+            flowType == FlowTypesEnum.ChatAgent;
+
+        if (!isChatOutput)
+            return null;
+
+        if (flowResult.OutputVariables is not null &&
             flowResult.OutputVariables.TryGetValue("_ChatLLMResult", out var chatResult) &&
             chatResult is not null)
         {
@@ -387,15 +408,6 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                     if (outputProp.ValueKind == System.Text.Json.JsonValueKind.String)
                         return outputProp.GetString() ?? string.Empty;
 
-                    // output is an object (e.g., {"raw_text": "...", "error": "..."} when is_json_output is true
-                    // but LLM didn't return valid JSON) — extract raw_text
-                    // if (outputProp.ValueKind == System.Text.Json.JsonValueKind.Object &&
-                    //     outputProp.TryGetProperty("raw_text", out var rawTextProp) &&
-                    //     rawTextProp.ValueKind == System.Text.Json.JsonValueKind.String)
-                    // {
-                    //     return rawTextProp.GetString() ?? string.Empty;
-                    // }
-
                     // Fallback for other output types (array, etc.)
                     return outputProp.GetRawText();
                 }
@@ -409,8 +421,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             }
         }
 
-        // Non-chat: serialize the full FlowExecutionResult
-        return System.Text.Json.JsonSerializer.Serialize(flowResult);
+        return null;
     }
 
     // Helper: Marks the job as failed in case of unhandled exceptions during flow execution
@@ -426,6 +437,8 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
 
             var job = await unitOfWork.JobRepo
                 .GetByConditionAsync(w => w.Id == jobId)
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2.Flow)
                 .SingleOrDefaultAsync();
 
             if (job is null)
@@ -433,9 +446,14 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 return;
             }
 
+            var flowType = job.FlowVersion?.Flow?.Type;
+
             job.Status = JobStatusEnum.Failed;
             job.EndTime = DateTimeOffset.UtcNow;
-            job.OutputDataJson = System.Text.Json.JsonSerializer.Serialize(new { ErrorMessage = errorMessage });
+            job.OutputDataJson = flowType == FlowTypesEnum.ChatAgent
+                ? System.Text.Json.JsonSerializer.Serialize(new { ErrorMessage = errorMessage })
+                : null;
+            job.Remark = TruncateRemark(errorMessage);
 
             unitOfWork.JobRepo.Update(job);
             if (await unitOfWork.SaveAsync())
@@ -486,6 +504,44 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             FlowExecutionStatus.Aborted => JobStatusEnum.Aborted,
             _ => JobStatusEnum.Failed,
         };
+    }
+
+    // Helper: Trims a remark to the maximum allowed length, adding an ellipsis when truncated.
+    private static string? TruncateRemark(string? remarks)
+    {
+        if (string.IsNullOrWhiteSpace(remarks) || remarks.Length <= MaxRemarkLength)
+            return remarks;
+
+        return remarks[..(MaxRemarkLength - 3)] + "...";
+    }
+
+    // Helper: Builds a terminal-status remark for the job using the first failed node's output status.
+    private static string? BuildTerminalRemark(FlowExecutionResult flowResult)
+    {
+        return TruncateRemark(flowResult.Status switch
+        {
+            FlowExecutionStatus.Failed => BuildFailedNodeRemark(flowResult),
+            FlowExecutionStatus.Aborted => "Job aborted.",
+            _ => null,
+        });
+    }
+
+    // Helper: Formats a failed node execution message from the first failed node log.
+    // The error message is placed first so truncation in the UI still shows the useful part.
+    private static string BuildFailedNodeRemark(FlowExecutionResult flowResult)
+    {
+        var failedLog = flowResult.NodeLogs.FirstOrDefault(l => !l.IsSuccess);
+        if (failedLog is not null)
+        {
+            var statusMessage = failedLog.Outputs.TryGetValue("Status", out var status) ? status : null;
+            if (!string.IsNullOrWhiteSpace(statusMessage))
+                return $"{statusMessage} (node: {failedLog.NodeName})";
+        }
+
+        if (!string.IsNullOrWhiteSpace(flowResult.ErrorMessage))
+            return flowResult.ErrorMessage;
+
+        return "Flow execution failed.";
     }
 
     // Helper: Maps a shared NodeExecutionLog model to a JobNodeExecutionLog entity with compressed payloads.

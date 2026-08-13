@@ -36,6 +36,13 @@ type JsonViewerProps = {
    * Defaults to the internal constant `JSON_SHORTEN_AFTER_LENGTH`.
    */
   shortenTextAfterLength?: number;
+  /**
+   * Whether long string values should wrap onto multiple lines.
+   * When `true` (default), long values wrap to stay inside the container.
+   * When `false`, long values stay on a single line and the viewer shows a
+   * horizontal scrollbar.
+   */
+  wrapLongValues?: boolean;
 };
 
 /**
@@ -52,6 +59,7 @@ export const JsonViewer = ({
   className,
   viewportClassName = "max-h-72",
   shortenTextAfterLength = 80,
+  wrapLongValues = true,
 }: JsonViewerProps) => {
   const { parsedJson, parseError } = useMemo(() => {
     try {
@@ -76,8 +84,12 @@ export const JsonViewer = ({
 
   return (
     <ScrollArea
-      className={cn("relative w-full pb-2", className)}
-      viewportClassName={viewportClassName}
+      className={cn(
+        "relative w-full min-w-0 max-w-full pb-2",
+        !wrapLongValues && "overflow-x-auto",
+        className,
+      )}
+      viewportClassName={cn("w-full min-w-0", viewportClassName)}
       showHorizontalScrollbar
     >
       {showCopyAllButton && !parseError && (
@@ -94,23 +106,27 @@ export const JsonViewer = ({
       )}
 
       {parseError ? (
-        <div className="px-1 py-2">
+        <div className="min-w-0 px-1 py-2">
           <p className="text-xs font-medium text-destructive">Invalid JSON</p>
           <pre className="mt-1 whitespace-pre-wrap break-all font-mono text-xs text-muted-foreground">
             {jsonData}
           </pre>
         </div>
       ) : (
-        <JsonView
-          value={parsedJson}
-          enableClipboard={enableValueClipboard}
-          displayDataTypes={false}
-          indentWidth={JSON_INDENT_WIDTH}
-          highlightUpdates={false}
-          shortenTextAfterLength={shortenTextAfterLength}
-        >
-          <JsonView.Copied render={renderCopiedButton} />
-        </JsonView>
+        <div className="min-w-0 max-w-full">
+          <JsonView
+            value={parsedJson}
+            enableClipboard={enableValueClipboard}
+            displayDataTypes={false}
+            indentWidth={JSON_INDENT_WIDTH}
+            highlightUpdates={false}
+            shortenTextAfterLength={shortenTextAfterLength}
+            style={{ minWidth: 0, maxWidth: "100%" }}
+            className={wrapLongValues ? "wrap-json-values" : undefined}
+          >
+            <JsonView.Copied render={renderCopiedButton} />
+          </JsonView>
+        </div>
       )}
     </ScrollArea>
   );

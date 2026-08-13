@@ -95,6 +95,7 @@ public class OrchestratorHub : Hub
                 // Mark the job as killed and set the end time if it has not already been recorded.
                 job.EndTime ??= DateTimeOffset.UtcNow;
                 job.Status = JobStatusEnum.Killed;
+                job.Remark = "Job killed: machine reconnected while job was running.";
 
                 _workspaceInternalDbContext.Jobs.Update(job);
 

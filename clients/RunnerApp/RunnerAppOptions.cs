@@ -32,10 +32,13 @@ public class RunnerAppOptions
     public string Username { get; set; } = MachineIdentity.Username;
 
     /// <summary>
-    /// True when running as the long-lived Windows service (tenant apiKey + tenantId present):
+    /// True when running as the long-lived Windows service (tenant apiKey + tenantId + linkedUsername present):
     /// machine registration + server SignalR over the backend OrchestratorHub. False for local
     /// single-shot execution of an unpublished, under-development flow, where progress and
     /// control travel over the local Tauri WebSocket.
     /// </summary>
-    public bool IsServiceMode => !string.IsNullOrWhiteSpace(ApiKey) && !string.IsNullOrWhiteSpace(TenantId);
+    public bool IsServiceMode =>
+        !string.IsNullOrWhiteSpace(ApiKey) &&
+        !string.IsNullOrWhiteSpace(TenantId) &&
+        !string.IsNullOrWhiteSpace(LinkedUsername);
 }

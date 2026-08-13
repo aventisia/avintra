@@ -1,8 +1,3 @@
-using RunnerApp.Services;
-using ExecutorLibrary.FlowProcessor.Models;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-
 namespace RunnerApp;
 
 /// <summary>
@@ -293,7 +288,14 @@ public class RunnerAppService : BackgroundService
             _logger.LogInformation("Closing job {JobId} with status {Status}.", targetJobId, jobStatus);
             try
             {
-                await backendClient.CloseJobAsync(targetJobId, result.Status, result.NodeLogs.ToList(), cancellationToken);
+                var closeRemarks = result.Status switch
+                {
+                    FlowExecutionStatus.Failed => BackendHttpClient.BuildFailedNodeRemark(result.NodeLogs.ToList(), result.ErrorMessage),
+                    FlowExecutionStatus.Aborted => "Job aborted by runner.",
+                    _ => null,
+                };
+
+                await backendClient.CloseJobAsync(targetJobId, result.Status, result.NodeLogs.ToList(), closeRemarks, cancellationToken);
             }
             catch (Exception ex)
             {

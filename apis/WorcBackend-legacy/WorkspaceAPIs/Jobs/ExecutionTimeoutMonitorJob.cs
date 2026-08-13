@@ -95,6 +95,7 @@ namespace WorkspaceAPIs.Jobs
                     // Mark the timed-out job as killed.
                     runningJob.Status = JobStatusEnum.Killed;
                     runningJob.EndTime = currentUtcTime;
+                    runningJob.Remark = $"Job killed: execution exceeded {maximumExecutionTimeInMinutes} minute(s) timeout.";
 
                     killedJobCount++;
 
