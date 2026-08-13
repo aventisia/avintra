@@ -1,0 +1,38 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Region",
+    "label": "Region",
+    "description": "Select the AWS region where your Bedrock resources are hosted.",
+    "defaultValue": "us-east-1",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "AccessKeyId",
+    "label": "Access Key ID",
+    "description": "Enter your AWS Access Key ID used to authenticate with Bedrock.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "SecretAccessKey",
+    "label": "Secret Access Key",
+    "description": "Enter your AWS Secret Access Key used to authenticate with Bedrock.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "SessionToken",
+    "label": "Session Token",
+    "description": "Enter your AWS session token if you are using temporary security credentials.",
+    "defaultValue": "",
+    "required": false
+  }
+]

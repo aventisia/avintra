@@ -1,0 +1,38 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "API Key",
+    "defaultValue": "",
+    "required": true,
+    "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ResourceName",
+    "label": "Resource Name",
+    "defaultValue": "",
+    "required": true,
+    "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ApiVersion",
+    "label": "API Version",
+    "defaultValue": "2024-06-01",
+    "required": false,
+    "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Endpoint",
+    "label": "Endpoint",
+    "defaultValue": "",
+    "required": true,
+    "description": ""
+  }
+]

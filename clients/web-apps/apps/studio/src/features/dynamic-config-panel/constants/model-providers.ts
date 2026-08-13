@@ -729,6 +729,18 @@ export const modelProviders: Provider[] = [
     isEnabled: true,
     models: [],
   },
+  {
+    value: "groq",
+    label: "Groq",
+    isEnabled: true,
+    models: [],
+  },
+  {
+    value: "mistral",
+    label: "Mistral",
+    isEnabled: true,
+    models: [],
+  },
 ];
 
 /**

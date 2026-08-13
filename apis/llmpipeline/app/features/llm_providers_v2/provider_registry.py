@@ -268,9 +268,14 @@ def validate_model(provider: str, model: str, is_byok: bool = False, credential_
 
     - Non-BYOK (POST credit-based): must be in the hardcoded `PROVIDER_MODEL_MAP` list.
     - BYOK (real credential_id): must be in `litellm.models_by_provider[provider]`.
+      Providers with no model catalog (empty set) are accepted — LiteLLM will
+      validate the model at call time, so we don't reject catalog-less providers.
     """
     if _has_credential(is_byok, credential_id):
         available = _litellm_models(provider)
+        # Catalog-less providers (empty model set) are valid; don't reject them.
+        if not available:
+            return
     else:
         available = set(get_models_for_provider(provider))
 

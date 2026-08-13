@@ -1,124 +1,336 @@
 namespace AspNetToolkit.Enums;
 
 /// <summary>
-/// Specifies the types of application secrets used to integrate with third-party services, such as API keys for external platforms or tools.
+/// Specifies the types of application secrets used to integrate with third-party services.
 /// </summary>
 public enum AppSecretTypesEnum
 {
-    /// <summary>
-    /// API key used to access OpenAI services like GPT models, embeddings, or image generation.
-    /// </summary>
     [Description("OpenAI API Key")]
     OpenAI,
-
-    /// <summary>
-    /// AWS credentials used to access services like S3, Lambda, Rekognition, etc.
-    /// </summary>
     [Description("AWS Credentials")]
     AWS,
-
-    /// <summary>
-    /// Twilio credentials for messaging, voice, or other communication services.
-    /// </summary>
     [Description("Twilio API Credentials")]
     Twilio,
-
-    /// <summary>
-    /// API key used to authenticate with SendGrid for sending emails.
-    /// </summary>
     [Description("SendGrid API Key")]
     SendGrid,
-
-    /// <summary>
-    /// Personal Access Token used to authenticate with the GitHub API.
-    /// </summary>
     [Description("GitHub API Key")]
     GitHub,
-
-    /// <summary>
-    /// Represents the credentials required for Microsoft 365 services.
-    /// </summary>
     [Description("M365 Credentials")]
     M365,
-
-    /// <summary>
-    /// Represents general credentials used for various services.
-    /// </summary>
     [Description("General Credentials")]
     GeneralCredentials,
-
-    /// <summary>
-    /// Represents the credentials needed for integrating with Anthropic services.
-    /// </summary>
     [Description("Anthropic Credentials")]
     Anthropic,
-
-    /// <summary>
-    /// Represents the credentials required for Google Gemini API integration.
-    /// </summary>
     [Description("Google Gemini Credentials")]
     GoogleGemini,
-
-    /// <summary>
-    /// Represents the credentials needed for integrating with Google Workspace services.
-    /// </summary>
     [Description("Google Workspace Credentials")]
     GoogleWorkspace,
-
-    /// <summary>
-    /// Represents the credentials required for Azure OpenAI API integration.
-    /// </summary>
     [Description("Azure OpenAI Credentials")]
     AzureOpenAI,
-
-    /// <summary>
-    /// Represents the credentials required for integrating with ElevenLabs API.
-    /// </summary>
     [Description("ElevenLabs Credentials")]
     ElevenLabs,
-
-    /// <summary>
-    /// Represents the credentials required for integrating with OpenRouter API.
-    /// </summary>
     [Description("OpenRouter Credentials")]
     OpenRouter,
-
-    /// <summary>
-    /// Represents the credentials required for integrating with Azure Storage.
-    /// </summary>
     [Description("Azure Storage Credentials")]
     AzureStorage,
-
-    /// <summary>
-    /// Represents credentials required to access a data source using a connection string.
-    /// </summary>
     [Description("Connection String Credentials")]
     ConnectionString,
-
-    /// <summary>
-    /// Represents the credentials required for Qdrant vector database access.
-    /// </summary>
     [Description("Qdrant Credentials")]
     Qdrant,
-
-    /// <summary>
-    /// Represents the credentials required for connecting to a self-hosted Ollama server.
-    /// </summary>
     [Description("Ollama On-prem Credentials")]
     Ollama,
-
-    /// <summary>
-    /// Represents the credentials required for connecting to Ollama Cloud (https://ollama.com/v1).
-    /// </summary>
     [Description("Ollama Cloud Credentials")]
     OllamaCloud,
-
+    [Description("Groq Credentials")]
+    Groq,
+    [Description("Bedrock Credentials")]
+    Bedrock,
+    [Description("Mistral Credentials")]
+    Mistral,
     EmailClient,
     AzureBlobStorage,
-
-    /// <summary>
-    /// API key used to authenticate with a custom REST API tool registered in the Tool Registry.
-    /// </summary>
     [Description("Custom API Tool Credentials")]
     CustomApiTool,
+
+    // --- Individual LiteLLM provider types (generated) ---
+    [Description("a2a Credentials")]
+    A2a,
+    [Description("a2a_agent Credentials")]
+    A2aAgent,
+    [Description("ai21 Credentials")]
+    Ai21,
+    [Description("ai21_chat Credentials")]
+    Ai21Chat,
+    [Description("aiml Credentials")]
+    Aiml,
+    [Description("aiohttp_openai Credentials")]
+    AiohttpOpenai,
+    [Description("amazon_nova Credentials")]
+    AmazonNova,
+    [Description("anthropic_text Credentials")]
+    AnthropicText,
+    [Description("apertis Credentials")]
+    Apertis,
+    [Description("assemblyai Credentials")]
+    Assemblyai,
+    [Description("auto_router Credentials")]
+    AutoRouter,
+    [Description("aws_polly Credentials")]
+    AwsPolly,
+    [Description("azure Credentials")]
+    Azure,
+    [Description("azure_ai Credentials")]
+    AzureAi,
+    [Description("azure_text Credentials")]
+    AzureText,
+    [Description("baseten Credentials")]
+    Baseten,
+    [Description("bedrock_mantle Credentials")]
+    BedrockMantle,
+    [Description("black_forest_labs Credentials")]
+    BlackForestLabs,
+    [Description("bytez Credentials")]
+    Bytez,
+    [Description("cerebras Credentials")]
+    Cerebras,
+    [Description("charity_engine Credentials")]
+    CharityEngine,
+    [Description("chatgpt Credentials")]
+    Chatgpt,
+    [Description("chutes Credentials")]
+    Chutes,
+    [Description("clarifai Credentials")]
+    Clarifai,
+    [Description("cloudflare Credentials")]
+    Cloudflare,
+    [Description("codestral Credentials")]
+    Codestral,
+    [Description("cohere Credentials")]
+    Cohere,
+    [Description("cohere_chat Credentials")]
+    CohereChat,
+    [Description("cometapi Credentials")]
+    Cometapi,
+    [Description("compactifai Credentials")]
+    Compactifai,
+    [Description("cursor Credentials")]
+    Cursor,
+    [Description("custom Credentials")]
+    Custom,
+    [Description("custom_openai Credentials")]
+    CustomOpenai,
+    [Description("darkbloom Credentials")]
+    Darkbloom,
+    [Description("dashscope Credentials")]
+    Dashscope,
+    [Description("databricks Credentials")]
+    Databricks,
+    [Description("datarobot Credentials")]
+    Datarobot,
+    [Description("deepgram Credentials")]
+    Deepgram,
+    [Description("deepinfra Credentials")]
+    Deepinfra,
+    [Description("deepseek Credentials")]
+    Deepseek,
+    [Description("docker_model_runner Credentials")]
+    DockerModelRunner,
+    [Description("dotprompt Credentials")]
+    Dotprompt,
+    [Description("empower Credentials")]
+    Empower,
+    [Description("fal_ai Credentials")]
+    FalAi,
+    [Description("featherless_ai Credentials")]
+    FeatherlessAi,
+    [Description("fireworks_ai Credentials")]
+    FireworksAi,
+    [Description("friendliai Credentials")]
+    Friendliai,
+    [Description("galadriel Credentials")]
+    Galadriel,
+    [Description("gdc Credentials")]
+    Gdc,
+    [Description("gigachat Credentials")]
+    Gigachat,
+    [Description("github Credentials")]
+    Github,
+    [Description("github_copilot Credentials")]
+    GithubCopilot,
+    [Description("gradient_ai Credentials")]
+    GradientAi,
+    [Description("helicone Credentials")]
+    Helicone,
+    [Description("heroku Credentials")]
+    Heroku,
+    [Description("hosted_vllm Credentials")]
+    HostedVllm,
+    [Description("huggingface Credentials")]
+    Huggingface,
+    [Description("humanloop Credentials")]
+    Humanloop,
+    [Description("hyperbolic Credentials")]
+    Hyperbolic,
+    [Description("inception Credentials")]
+    Inception,
+    [Description("infinity Credentials")]
+    Infinity,
+    [Description("jina_ai Credentials")]
+    JinaAi,
+    [Description("lambda_ai Credentials")]
+    LambdaAi,
+    [Description("langflow Credentials")]
+    Langflow,
+    [Description("langfuse Credentials")]
+    Langfuse,
+    [Description("langgraph Credentials")]
+    Langgraph,
+    [Description("lemonade Credentials")]
+    Lemonade,
+    [Description("libertai Credentials")]
+    Libertai,
+    [Description("litellm_agent Credentials")]
+    LitellmAgent,
+    [Description("litellm_proxy Credentials")]
+    LitellmProxy,
+    [Description("llamafile Credentials")]
+    Llamafile,
+    [Description("lm_studio Credentials")]
+    LmStudio,
+    [Description("manus Credentials")]
+    Manus,
+    [Description("maritalk Credentials")]
+    Maritalk,
+    [Description("meta Credentials")]
+    Meta,
+    [Description("meta_llama Credentials")]
+    MetaLlama,
+    [Description("milvus Credentials")]
+    Milvus,
+    [Description("minimax Credentials")]
+    Minimax,
+    [Description("modelscope Credentials")]
+    Modelscope,
+    [Description("moonshot Credentials")]
+    Moonshot,
+    [Description("morph Credentials")]
+    Morph,
+    [Description("nano-gpt Credentials")]
+    NanoGpt,
+    [Description("nebius Credentials")]
+    Nebius,
+    [Description("neosantara Credentials")]
+    Neosantara,
+    [Description("nlp_cloud Credentials")]
+    NlpCloud,
+    [Description("novita Credentials")]
+    Novita,
+    [Description("nscale Credentials")]
+    Nscale,
+    [Description("nvidia_nim Credentials")]
+    NvidiaNim,
+    [Description("nvidia_riva Credentials")]
+    NvidiaRiva,
+    [Description("oci Credentials")]
+    Oci,
+    [Description("ollama_chat Credentials")]
+    OllamaChat,
+    [Description("oobabooga Credentials")]
+    Oobabooga,
+    [Description("openai_like Credentials")]
+    OpenaiLike,
+    [Description("ovhcloud Credentials")]
+    Ovhcloud,
+    [Description("parasail Credentials")]
+    Parasail,
+    [Description("perplexity Credentials")]
+    Perplexity,
+    [Description("petals Credentials")]
+    Petals,
+    [Description("pg_vector Credentials")]
+    PgVector,
+    [Description("pinstripes Credentials")]
+    Pinstripes,
+    [Description("poe Credentials")]
+    Poe,
+    [Description("predibase Credentials")]
+    Predibase,
+    [Description("publicai Credentials")]
+    Publicai,
+    [Description("ragflow Credentials")]
+    Ragflow,
+    [Description("recraft Credentials")]
+    Recraft,
+    [Description("reducto Credentials")]
+    Reducto,
+    [Description("replicate Credentials")]
+    Replicate,
+    [Description("runwayml Credentials")]
+    Runwayml,
+    [Description("s3_vectors Credentials")]
+    S3Vectors,
+    [Description("sagemaker Credentials")]
+    Sagemaker,
+    [Description("sagemaker_chat Credentials")]
+    SagemakerChat,
+    [Description("sagemaker_nova Credentials")]
+    SagemakerNova,
+    [Description("sambanova Credentials")]
+    Sambanova,
+    [Description("sap Credentials")]
+    Sap,
+    [Description("scaleway Credentials")]
+    Scaleway,
+    [Description("snowflake Credentials")]
+    Snowflake,
+    [Description("soniox Credentials")]
+    Soniox,
+    [Description("stability Credentials")]
+    Stability,
+    [Description("synthetic Credentials")]
+    Synthetic,
+    [Description("tencent Credentials")]
+    Tencent,
+    [Description("tensormesh Credentials")]
+    Tensormesh,
+    [Description("text-completion-codestral Credentials")]
+    TextCompletionCodestral,
+    [Description("text-completion-inception Credentials")]
+    TextCompletionInception,
+    [Description("text-completion-openai Credentials")]
+    TextCompletionOpenai,
+    [Description("together_ai Credentials")]
+    TogetherAi,
+    [Description("topaz Credentials")]
+    Topaz,
+    [Description("triton Credentials")]
+    Triton,
+    [Description("v0 Credentials")]
+    V0,
+    [Description("vercel_ai_gateway Credentials")]
+    VercelAiGateway,
+    [Description("vertex_ai Credentials")]
+    VertexAi,
+    [Description("vertex_ai_beta Credentials")]
+    VertexAiBeta,
+    [Description("vllm Credentials")]
+    Vllm,
+    [Description("volcengine Credentials")]
+    Volcengine,
+    [Description("voyage Credentials")]
+    Voyage,
+    [Description("wandb Credentials")]
+    Wandb,
+    [Description("watsonx Credentials")]
+    Watsonx,
+    [Description("watsonx_text Credentials")]
+    WatsonxText,
+    [Description("xai Credentials")]
+    Xai,
+    [Description("xiaomi_mimo Credentials")]
+    XiaomiMimo,
+    [Description("xinference Credentials")]
+    Xinference,
+    [Description("zai Credentials")]
+    Zai,
 }

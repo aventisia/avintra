@@ -1153,6 +1153,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(azureOpenAiCredentials.ApiKey);
                         azureOpenAiCredentials.ApiKey = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(azureOpenAiCredentials, jsonOptions);
                     }
                     else
                     {
@@ -1294,6 +1295,2296 @@ public class AppSecretService : IAppSecretService
                     }
                     break;
                 }
+
+            case AppSecretTypesEnum.Groq:
+                {
+                    // Deserialize JSON into GroqCredentialsDto
+                    var groqCredentials = System.Text.Json.JsonSerializer.Deserialize<GroqCredentialsDto>(rawJson, jsonOptions);
+                    if (groqCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(groqCredentials.ApiKey);
+                        groqCredentials.ApiKey = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(groqCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Groq credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
+            case AppSecretTypesEnum.Bedrock:
+                {
+                    // Deserialize JSON into BedrockCredentialsDto
+                    var bedrockCredentials = System.Text.Json.JsonSerializer.Deserialize<BedrockCredentialsDto>(rawJson, jsonOptions);
+                    if (bedrockCredentials != null)
+                    {
+                        validationResult.EncryptedValues["SecretAccessKey"] = _encryptionService.EncryptString(bedrockCredentials.SecretAccessKey);
+                        bedrockCredentials.SecretAccessKey = string.Empty;
+
+                        if (!string.IsNullOrWhiteSpace(bedrockCredentials.SessionToken))
+                        {
+                            validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(bedrockCredentials.SessionToken);
+                            bedrockCredentials.SessionToken = string.Empty;
+                        }
+
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(bedrockCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Bedrock credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
+            case AppSecretTypesEnum.Mistral:
+                {
+                    // Deserialize JSON into MistralCredentialsDto
+                    var mistralCredentials = System.Text.Json.JsonSerializer.Deserialize<MistralCredentialsDto>(rawJson, jsonOptions);
+                    if (mistralCredentials != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(mistralCredentials.ApiKey);
+                        mistralCredentials.ApiKey = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(mistralCredentials, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid Mistral credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.A2a:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<A2aCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid a2a credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.A2aAgent:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<A2aAgentCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid a2a_agent credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Ai21:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<Ai21CredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid ai21 credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Ai21Chat:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<Ai21ChatCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid ai21_chat credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Aiml:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<AimlCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid aiml credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.AiohttpOpenai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<AiohttpOpenaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid aiohttp_openai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.AmazonNova:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<AmazonNovaCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["SecretAccessKey"] = _encryptionService.EncryptString(dto.SecretAccessKey);
+                        dto.SecretAccessKey = string.Empty;
+                        validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
+                        dto.SessionToken = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid amazon_nova credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.AnthropicText:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<AnthropicTextCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid anthropic_text credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Apertis:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ApertisCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid apertis credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Assemblyai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<AssemblyaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid assemblyai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.AutoRouter:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<AutoRouterCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid auto_router credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.AwsPolly:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<AwsPollyCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["SecretAccessKey"] = _encryptionService.EncryptString(dto.SecretAccessKey);
+                        dto.SecretAccessKey = string.Empty;
+                        validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
+                        dto.SessionToken = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid aws_polly credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Azure:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<AzureCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid azure credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.AzureAi:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<AzureAiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid azure_ai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.AzureText:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<AzureTextCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid azure_text credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Baseten:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<BasetenCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid baseten credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.BedrockMantle:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<BedrockMantleCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["SecretAccessKey"] = _encryptionService.EncryptString(dto.SecretAccessKey);
+                        dto.SecretAccessKey = string.Empty;
+                        validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
+                        dto.SessionToken = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid bedrock_mantle credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.BlackForestLabs:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<BlackForestLabsCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid black_forest_labs credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Bytez:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<BytezCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid bytez credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Cerebras:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CerebrasCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid cerebras credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.CharityEngine:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CharityEngineCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid charity_engine credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Chatgpt:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ChatgptCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid chatgpt credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Chutes:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ChutesCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid chutes credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Clarifai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ClarifaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid clarifai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Cloudflare:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CloudflareCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid cloudflare credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Codestral:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CodestralCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid codestral credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Cohere:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CohereCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid cohere credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.CohereChat:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CohereChatCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid cohere_chat credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Cometapi:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CometapiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid cometapi credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Compactifai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CompactifaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid compactifai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Cursor:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CursorCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid cursor credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Custom:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CustomCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid custom credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.CustomOpenai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<CustomOpenaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid custom_openai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Darkbloom:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<DarkbloomCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid darkbloom credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Dashscope:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<DashscopeCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid dashscope credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Databricks:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<DatabricksCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid databricks credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Datarobot:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<DatarobotCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid datarobot credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Deepgram:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<DeepgramCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid deepgram credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Deepinfra:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<DeepinfraCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid deepinfra credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Deepseek:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<DeepseekCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid deepseek credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.DockerModelRunner:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<DockerModelRunnerCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid docker_model_runner credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Dotprompt:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<DotpromptCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid dotprompt credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Empower:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<EmpowerCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid empower credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.FalAi:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<FalAiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid fal_ai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.FeatherlessAi:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<FeatherlessAiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid featherless_ai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.FireworksAi:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<FireworksAiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid fireworks_ai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Friendliai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<FriendliaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid friendliai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Galadriel:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<GaladrielCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid galadriel credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Gdc:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<GdcCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid gdc credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Gigachat:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<GigachatCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid gigachat credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Github:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<GithubCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid github credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.GithubCopilot:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<GithubCopilotCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid github_copilot credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.GradientAi:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<GradientAiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid gradient_ai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Helicone:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<HeliconeCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid helicone credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Heroku:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<HerokuCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid heroku credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.HostedVllm:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<HostedVllmCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid hosted_vllm credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Huggingface:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<HuggingfaceCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid huggingface credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Humanloop:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<HumanloopCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid humanloop credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Hyperbolic:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<HyperbolicCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid hyperbolic credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Inception:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<InceptionCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid inception credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Infinity:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<InfinityCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid infinity credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.JinaAi:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<JinaAiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid jina_ai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.LambdaAi:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<LambdaAiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid lambda_ai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Langflow:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<LangflowCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid langflow credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Langfuse:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<LangfuseCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid langfuse credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Langgraph:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<LanggraphCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid langgraph credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Lemonade:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<LemonadeCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid lemonade credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Libertai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<LibertaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid libertai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.LitellmAgent:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<LitellmAgentCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid litellm_agent credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.LitellmProxy:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<LitellmProxyCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid litellm_proxy credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Llamafile:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<LlamafileCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid llamafile credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.LmStudio:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<LmStudioCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid lm_studio credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Manus:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ManusCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid manus credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Maritalk:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<MaritalkCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid maritalk credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Meta:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<MetaCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid meta credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.MetaLlama:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<MetaLlamaCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid meta_llama credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Milvus:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<MilvusCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid milvus credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Minimax:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<MinimaxCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid minimax credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Modelscope:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ModelscopeCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid modelscope credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Moonshot:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<MoonshotCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid moonshot credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Morph:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<MorphCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid morph credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.NanoGpt:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<NanoGptCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid nano-gpt credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Nebius:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<NebiusCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid nebius credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Neosantara:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<NeosantaraCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid neosantara credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.NlpCloud:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<NlpCloudCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid nlp_cloud credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Novita:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<NovitaCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid novita credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Nscale:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<NscaleCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid nscale credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.NvidiaNim:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<NvidiaNimCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid nvidia_nim credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.NvidiaRiva:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<NvidiaRivaCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid nvidia_riva credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Oci:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<OciCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid oci credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.OllamaChat:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<OllamaChatCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid ollama_chat credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Oobabooga:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<OobaboogaCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid oobabooga credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.OpenaiLike:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<OpenaiLikeCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid openai_like credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Ovhcloud:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<OvhcloudCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid ovhcloud credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Parasail:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ParasailCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid parasail credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Perplexity:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<PerplexityCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid perplexity credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Petals:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<PetalsCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid petals credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.PgVector:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<PgVectorCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid pg_vector credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Pinstripes:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<PinstripesCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid pinstripes credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Poe:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<PoeCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid poe credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Predibase:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<PredibaseCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid predibase credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Publicai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<PublicaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid publicai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Ragflow:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<RagflowCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid ragflow credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Recraft:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<RecraftCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid recraft credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Reducto:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ReductoCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid reducto credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Replicate:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ReplicateCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid replicate credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Runwayml:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<RunwaymlCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid runwayml credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.S3Vectors:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<S3VectorsCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid s3_vectors credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Sagemaker:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<SagemakerCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["SecretAccessKey"] = _encryptionService.EncryptString(dto.SecretAccessKey);
+                        dto.SecretAccessKey = string.Empty;
+                        validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
+                        dto.SessionToken = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid sagemaker credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.SagemakerChat:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<SagemakerChatCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["SecretAccessKey"] = _encryptionService.EncryptString(dto.SecretAccessKey);
+                        dto.SecretAccessKey = string.Empty;
+                        validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
+                        dto.SessionToken = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid sagemaker_chat credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.SagemakerNova:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<SagemakerNovaCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["SecretAccessKey"] = _encryptionService.EncryptString(dto.SecretAccessKey);
+                        dto.SecretAccessKey = string.Empty;
+                        validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
+                        dto.SessionToken = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid sagemaker_nova credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Sambanova:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<SambanovaCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid sambanova credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Sap:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<SapCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid sap credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Scaleway:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ScalewayCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid scaleway credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Snowflake:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<SnowflakeCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid snowflake credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Soniox:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<SonioxCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid soniox credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Stability:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<StabilityCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid stability credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Synthetic:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<SyntheticCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid synthetic credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Tencent:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<TencentCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid tencent credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Tensormesh:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<TensormeshCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid tensormesh credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.TextCompletionCodestral:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<TextCompletionCodestralCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid text-completion-codestral credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.TextCompletionInception:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<TextCompletionInceptionCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid text-completion-inception credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.TextCompletionOpenai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<TextCompletionOpenaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid text-completion-openai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.TogetherAi:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<TogetherAiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid together_ai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Topaz:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<TopazCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid topaz credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Triton:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<TritonCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid triton credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.V0:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<V0CredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid v0 credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.VercelAiGateway:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<VercelAiGatewayCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid vercel_ai_gateway credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.VertexAi:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<VertexAiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ServiceAccountJson"] = _encryptionService.EncryptString(dto.ServiceAccountJson);
+                        dto.ServiceAccountJson = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid vertex_ai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.VertexAiBeta:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<VertexAiBetaCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ServiceAccountJson"] = _encryptionService.EncryptString(dto.ServiceAccountJson);
+                        dto.ServiceAccountJson = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid vertex_ai_beta credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Vllm:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<VllmCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid vllm credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Volcengine:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<VolcengineCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid volcengine credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Voyage:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<VoyageCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid voyage credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Wandb:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<WandbCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid wandb credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Watsonx:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<WatsonxCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid watsonx credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.WatsonxText:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<WatsonxTextCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid watsonx_text credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Xai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<XaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid xai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.XiaomiMimo:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<XiaomiMimoCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid xiaomi_mimo credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Xinference:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<XinferenceCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid xinference credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+            case AppSecretTypesEnum.Zai:
+                {
+                    var dto = System.Text.Json.JsonSerializer.Deserialize<ZaiCredentialsDto>(rawJson, jsonOptions);
+                    if (dto != null)
+                    {
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+
+                    }
+                    else
+                    {
+                        validationResult.Remark = "Invalid zai credentials: required fields missing or format incorrect.";
+                    }
+                    break;
+                }
+
 
             // Default case for unsupported credential types
             default:

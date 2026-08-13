@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Url",
+    "label": "Base URL",
+    "defaultValue": "",
+    "required": false,
+    "description": ""
+  }
+]
