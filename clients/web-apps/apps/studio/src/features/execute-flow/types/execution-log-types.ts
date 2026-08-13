@@ -3,6 +3,9 @@ type AgentExecutionLogType = {
   versionLog: NodeExecutionLogType[];
   jobId: string;
   isLogSavePending: boolean;
+  /** Job-level outcome captured at the end of a local run, used to restore state on refresh. */
+  isSuccess?: boolean;
+  executedOn?: string;
 };
 
 type NodeExecutionLogType = {

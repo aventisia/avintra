@@ -178,7 +178,7 @@ const renderCopiedButton = (props: unknown) => {
       aria-label={copied ? "Copied" : "Copy"}
       onClick={onClick}
       className="text-muted-foreground/60 size-3.5 hover:text-primary ml-1 inline-flex opacity-60 hover:opacity-100"
-      iconClassName="size-3"
+      iconClassName="size-2.5"
     />
   );
 };

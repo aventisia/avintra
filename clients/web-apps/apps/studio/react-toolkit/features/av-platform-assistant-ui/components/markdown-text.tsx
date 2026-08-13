@@ -78,8 +78,15 @@ function extractJsonFromPre(children?: ReactNode): string | null {
       text += node;
     } else if (Array.isArray(node)) {
       node.forEach(walk);
-    } else if (node && typeof node === "object" && "props" in (node as any)) {
-      walk((node as any).props?.children);
+    } else if (
+      node &&
+      typeof node === "object" &&
+      "props" in node &&
+      node.props != null &&
+      typeof node.props === "object" &&
+      "children" in node.props
+    ) {
+      walk(node.props.children as ReactNode);
     }
   };
   walk(children);

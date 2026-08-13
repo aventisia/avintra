@@ -51,7 +51,15 @@ export const usePreventNavigation = ({
   // =======================================================================
   // 1. REACT ROUTER NAVIGATION BLOCK (Handles internal <Link> navigation)
   // =======================================================================
-  const blocker = useBlocker(({ nextLocation }) => {
+  const blocker = useBlocker(({ nextLocation, currentLocation }) => {
+    // Allow search-param-only updates (e.g. adding showRunResults=1 or j=jobId
+    // during execution) — these don't navigate away from the page.
+    const isSearchOnlyChange =
+      nextLocation.pathname === currentLocation.pathname &&
+      nextLocation.search !== currentLocation.search;
+
+    if (isSearchOnlyChange) return false;
+
     // Block for unsaved changes (Applies universally)
     if (isDirtyRef.current) return true;
 
