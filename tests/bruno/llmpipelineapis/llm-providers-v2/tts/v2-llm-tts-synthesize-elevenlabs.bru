@@ -1,0 +1,39 @@
+meta {
+  name: v2 llm tts - synthesize (ElevenLabs, platform credits)
+  type: http
+  seq: 17
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/v2/llm/tts/synthesize
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "elevenlabs",
+    "model": "eleven_multilingual_v2",
+    "input": "Hello! This is a sample text to speech conversion.",
+    "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+    "language": "en",
+    "speed": 1.0,
+    "stream": false,
+    "credentials_id": "",
+    "is_byok_enabled": false,
+    "ref_type": "Workflow",
+    "ref_id": "wf_11224",
+    "ref_name": "ElevenLabs Synthesis Pipeline",
+    "action": "WorkflowExecution",
+    "agent_name": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

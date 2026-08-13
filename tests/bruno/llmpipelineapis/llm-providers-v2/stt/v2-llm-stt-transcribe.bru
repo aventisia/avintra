@@ -1,0 +1,37 @@
+meta {
+  name: v2 llm stt - transcribe (BYOK)
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/v2/llm/stt/transcribe
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "openai",
+    "model": "whisper-1",
+    "input": "{{BASE_64}}",
+    "language": "en",
+    "stream": false,
+    "credentials_id": "{{BYOK_CREDENTIAL_ID}}",
+    "is_byok_enabled": true,
+    "ref_type": "Workflow",
+    "ref_id": "wf_11223",
+    "ref_name": "LiteLLM Transcription Pipeline",
+    "action": "WorkflowExecution",
+    "agent_name": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -10,10 +10,16 @@ from .schemas import ModelsResponse, ProvidersResponse
 
 
 class ProviderAdminService:
-    async def list_providers(self) -> ProvidersResponse:
-        providers = await litellm_service.list_providers()
+    async def list_providers(
+        self,
+        capability: str | None = None,
+        provider: str | None = None,
+    ) -> ProvidersResponse:
+        providers = await litellm_service.list_providers(
+            capability=capability,
+            provider=provider,
+        )
         return ProvidersResponse(providers=providers, count=len(providers))
-
     async def list_models(self, provider: str, capability: str | None = None) -> ModelsResponse:
         models = await litellm_service.list_models(provider, capability)
         return ModelsResponse(provider=provider, models=models, count=len(models))

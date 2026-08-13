@@ -1,0 +1,39 @@
+meta {
+  name: v2 llm tts - synthesize (BYOK)
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/v2/llm/tts/synthesize
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "openai",
+    "model": "gpt-4o-mini-tts",
+    "input": "Hello! This is a sample text to speech conversion.",
+    "voice_id": "alloy",
+    "language": "en",
+    "speed": 1.0,
+    "stream": false,
+    "credentials_id": "",
+    "is_byok_enabled": false,
+    "ref_type": "Workflow",
+    "ref_id": "wf_11224",
+    "ref_name": "LiteLLM Synthesis Pipeline",
+    "action": "WorkflowExecution",
+    "agent_name": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
