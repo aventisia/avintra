@@ -110,6 +110,13 @@ public static class WorkspaceDbInitialSeed
                     (u.Email != null && u.Email.ToLower() == adminEmail.ToLower())
                     || (u.UserName != null && u.UserName.ToLower() == adminEmail.ToLower()));
 
+            logger.LogInformation(
+                "Resolved default admin account lookup for {AdminEmail}: found={Found}, userId={UserId}, tenantId={TenantId}",
+                adminEmail,
+                accountUser != null,
+                accountUser?.Id,
+                accountUser?.TenantId);
+
             if (accountUser is null)
             {
                 logger.LogWarning("Default admin account user not found for email {AdminEmail}.", adminEmail);
@@ -188,6 +195,11 @@ public static class WorkspaceDbInitialSeed
 
         var skillDirectories = Directory.GetDirectories(skillsPath);
 
+        logger.LogInformation(
+            "Found {Count} skill directories in {SkillsPath}.",
+            skillDirectories.Length,
+            skillsPath);
+
         if (skillDirectories.Length == 0)
         {
             logger.LogWarning("No skill directories found in {SkillsPath}.", skillsPath);
@@ -250,8 +262,8 @@ public static class WorkspaceDbInitialSeed
                     Name = name,
                     Description = description,
                     Type = ComponentTypeEnum.Platform,
-                    IsGlobal = true,
-                    IsTenantWideAccess = true,
+                    IsGlobal = false,
+                    IsTenantWideAccess = false,
                     IsActive = true,
                     CreatedByUserId = platformAdmin.UserId,
                     LastModifiedByUserId = platformAdmin.UserId,
@@ -269,8 +281,8 @@ public static class WorkspaceDbInitialSeed
                 skill.Description = description;
                 skill.LastModifiedByUserId = platformAdmin.UserId;
                 skill.LastModifiedOn = now;
-                skill.IsGlobal = true;
-                skill.IsTenantWideAccess = true;
+                skill.IsGlobal = false;
+                skill.IsTenantWideAccess = false;
                 skill.IsActive = true;
                 skill.Type = ComponentTypeEnum.Platform;
             }
