@@ -18,19 +18,25 @@ import {
 } from "@avplatform/ui/select";
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { Loader2, X } from "lucide-react";
+import { Loader2, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 import { getCredSelectOptions } from "@/features/02-configure/queues/queues-table/apis/app-secret-apis";
 
-import { OllamaModelDto, getOllamaModels, upsertModelProvider } from "../apis/model-provider-apis";
+import {
+  getLlmModelsV2,
+  OllamaModelDto,
+  getOllamaModels,
+  upsertModelProvider,
+} from "../apis/model-provider-apis";
 import {
   getProviderIcon,
   getVaultTypeForProvider,
   isUrlBasedProvider,
 } from "../constants/model-provider-definitions";
+import { LlmModelInfoDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
-import { MODEL_PROVIDERS_QUERY_KEY, useFetchProviderModels } from "../hooks/useFetchModelProviders";
+import { MODEL_PROVIDERS_QUERY_KEY } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
 
 type Step = "credential" | "models";
@@ -59,12 +65,10 @@ export const ModelProviderSetupDialog = () => {
   const [ollamaModels, setOllamaModels] = useState<OllamaModelDto[]>([]);
   const [isOllamaLoading, setIsOllamaLoading] = useState(false);
 
-  const { data: modelsData, isFetching: isModelsFetching } = useFetchProviderModels(
-    provider?.value,
-    selectedCredentialId,
-  );
-
-  const modelOptions = useMemo(() => modelsData?.data ?? [], [modelsData]);
+  // v2 provider/model browsing state (credential-based providers)
+  const [providerModels, setProviderModels] = useState<LlmModelInfoDto[]>([]);
+  const [isProvidersLoading, setIsProvidersLoading] = useState(false);
+  const [modelSearch, setModelSearch] = useState("");
 
   const resetState = () => {
     setStep("credential");
@@ -74,6 +78,8 @@ export const ModelProviderSetupDialog = () => {
     setIsDisabled(false);
     setProviderUrl("");
     setOllamaModels([]);
+    setProviderModels([]);
+    setModelSearch("");
   };
 
   // When the dialog opens for a provider, load the vault credentials and, if a
@@ -146,9 +152,28 @@ export const ModelProviderSetupDialog = () => {
     onError: () => toast.error("Failed to save provider configuration."),
   });
 
+  // Fetch the models for the selected provider from the LLM pipeline API
+  // (`/v2/llm/models?provider=X`). The provider name is sent in lowercase.
+  const loadProviderModels = async () => {
+    if (!provider) return;
+    setIsProvidersLoading(true);
+    setProviderModels([]);
+    setModelSearch("");
+    try {
+      const modelsRes = await getLlmModelsV2(provider.value.toLowerCase());
+      setProviderModels(modelsRes?.models ?? []);
+    } catch (err) {
+      console.error("Failed to fetch models", err);
+      toast.error("Failed to load models.");
+    } finally {
+      setIsProvidersLoading(false);
+    }
+  };
+
   const handleNext = () => {
     if (!selectedCredentialId) return;
     setStep("models");
+    void loadProviderModels();
   };
 
   // Fetch models from the Ollama server at the entered URL.
@@ -197,6 +222,15 @@ export const ModelProviderSetupDialog = () => {
       prev.includes(modelValue) ? prev.filter((m) => m !== modelValue) : [...prev, modelValue],
     );
   };
+
+  // Apply the model-name search to the selected provider's models.
+  const filteredModels = useMemo(() => {
+    const query = modelSearch.trim().toLowerCase();
+    return providerModels.filter((m) => {
+      if (query && !m.id.toLowerCase().includes(query)) return false;
+      return true;
+    });
+  }, [providerModels, modelSearch]);
 
   return (
     <DialogWrapper open={isOpen} onOpenChangeFn={handleClose}>
@@ -342,7 +376,7 @@ export const ModelProviderSetupDialog = () => {
                 />
               </div>
 
-              {isModelsFetching || isOllamaLoading ? (
+              {isOllamaLoading ? (
                 <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Loading models...
@@ -369,26 +403,46 @@ export const ModelProviderSetupDialog = () => {
                     ))}
                   </div>
                 )
-              ) : modelOptions.length === 0 ? (
-                <p className="py-8 text-center text-sm italic text-muted-foreground">
-                  No models returned for this provider.
-                </p>
-              ) : (
-                <div className="max-h-[320px] space-y-1 overflow-y-auto pr-1">
-                  {modelOptions.map((model) => (
-                    <div
-                      key={model.value}
-                      className="flex items-center justify-between rounded-lg border px-3 py-2"
-                    >
-                      <span className="truncate pr-2 text-sm">{model.label}</span>
-                      <Switch
-                        checked={enabledModelIds.includes(model.value)}
-                        onCheckedChange={() => toggleModel(model.value)}
-                        size="sm"
-                      />
-                    </div>
-                  ))}
+              ) : isProvidersLoading ? (
+                <div className="flex items-center justify-center gap-2 py-8 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading models...
                 </div>
+              ) : (
+                <>
+                  {/* Model search */}
+                  <div className="relative">
+                    <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <Input
+                      value={modelSearch}
+                      onChange={(e) => setModelSearch(e.target.value)}
+                      placeholder="Search models..."
+                      className="pl-8"
+                    />
+                  </div>
+
+                  {filteredModels.length === 0 ? (
+                    <p className="py-8 text-center text-sm italic text-muted-foreground">
+                      No models match your search.
+                    </p>
+                  ) : (
+                    <div className="max-h-[320px] space-y-1 overflow-y-auto pr-1">
+                      {filteredModels.map((model) => (
+                        <div
+                          key={model.id}
+                          className="flex items-center justify-between rounded-lg border px-3 py-2"
+                        >
+                          <span className="truncate pr-2 text-sm">{model.id}</span>
+                          <Switch
+                            checked={enabledModelIds.includes(model.id)}
+                            onCheckedChange={() => toggleModel(model.id)}
+                            size="sm"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
 
               <div className="flex items-center justify-between gap-2">

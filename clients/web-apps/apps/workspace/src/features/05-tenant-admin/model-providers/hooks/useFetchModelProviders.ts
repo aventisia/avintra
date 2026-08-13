@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getModelProviders, getProviderModels } from "../apis/model-provider-apis";
+import {
+  getLlmModelsV2,
+  getLlmProvidersV2,
+  getModelProviders,
+  getProviderModels,
+} from "../apis/model-provider-apis";
 
 export const MODEL_PROVIDERS_QUERY_KEY = ["model-providers"] as const;
 
@@ -23,5 +28,28 @@ export const useFetchProviderModels = (providerType?: string, credentialId?: str
     queryKey: ["model-providers", "models", providerType, credentialId],
     queryFn: () => getProviderModels(providerType as string, credentialId as string),
     enabled: Boolean(providerType && credentialId),
+  });
+};
+
+/**
+ * Custom hook to fetch the list of providers supported by LiteLLM from the LLM
+ * pipeline API (`/v2/llm/providers`).
+ */
+export const useFetchLlmProvidersV2 = (capability?: string) => {
+  return useQuery({
+    queryKey: ["llm-providers-v2", capability],
+    queryFn: () => getLlmProvidersV2(capability),
+  });
+};
+
+/**
+ * Custom hook to fetch the list of models for a given provider from the LLM
+ * pipeline API (`/v2/llm/models?provider=X`). Enabled only when a provider is given.
+ */
+export const useFetchLlmModelsV2 = (provider?: string, capability?: string) => {
+  return useQuery({
+    queryKey: ["llm-models-v2", provider, capability],
+    queryFn: () => getLlmModelsV2(provider as string, capability),
+    enabled: Boolean(provider),
   });
 };
