@@ -23,6 +23,10 @@ if (options is null)
     return 1;
 }
 
+// Make the app base URL available to nodes that still rely on AppConfigHelper.ResolveAppBaseUrl().
+// This is a compatibility bridge; new/updated nodes should read CallerContext.Get(context).AppBaseUrl.
+Environment.SetEnvironmentVariable("APP_BASE_URL", options.AppBaseUrl);
+
 if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsServiceMode)
 {
     // Run as Windows service using Generic Host
@@ -58,7 +62,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     // Backend REST client + execution engine are shared by both modes.
     using var httpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
     var backendClient = new BackendHttpClient(httpClient, options.AccessToken);
-    var engine = new DesktopExecutionEngine(options.AccessToken);
+    var engine = new DesktopExecutionEngine(options.AccessToken, options.AppBaseUrl);
 
     var cts = new CancellationTokenSource();
     var abortRequested = false;
@@ -132,7 +136,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
 
         // Use the machine JWT (if any) for subsequent backend + hub calls.
         backendClient = new BackendHttpClient(httpClient, accessToken);
-        engine = new DesktopExecutionEngine(accessToken);
+        engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl);
 
         var commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>();
 

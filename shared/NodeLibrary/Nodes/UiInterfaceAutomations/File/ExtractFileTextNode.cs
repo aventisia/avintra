@@ -16,13 +16,13 @@ public class ExtractFileTextNode : BaseNode
 
         try
         {
-            var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
+            var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
+            var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
             var apiUrl = $"{baseUrl}/llmpipeline/api/extract-file-text";
             var filePath = FilePath.Get(context);
             if (string.IsNullOrWhiteSpace(filePath))
                 throw new ArgumentException("File path is required.", nameof(FilePath));
 
-            var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
             var formattedFile = FormatFile(filePath);
 
             var requestObj = new

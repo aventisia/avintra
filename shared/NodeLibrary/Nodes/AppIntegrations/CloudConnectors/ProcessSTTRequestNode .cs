@@ -24,15 +24,15 @@ public class ProcessSTTRequestNode : BaseNode
     {
         try
         {
-            // Resolve the application base URL and construct the STT API endpoint.
-            var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
-            var apiUrl = $"https://{baseUrl}/llmpipeline/api/stt/transcribe";
-
             // Retrieve all required inputs from the workflow execution context.
             var modelConfig = ModelConfig.Get(context);
             var files = Files.Get(context);
             var flowMetadata = FlowMetadata.Get(context) ?? throw new InvalidOperationException("Agent metadata is required");
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
+
+            // Resolve the application base URL from the caller context and construct the STT API endpoint.
+            var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
+            var apiUrl = $"{baseUrl}/llmpipeline/api/stt/transcribe";
 
             var threadMessages = ThreadMessages.Get(context);
 
