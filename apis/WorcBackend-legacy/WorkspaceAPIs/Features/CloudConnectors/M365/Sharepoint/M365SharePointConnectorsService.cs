@@ -314,6 +314,9 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
 
             case nameof(M365SharePointActionsEnum.CopyFile):
                 {
+                    _logger.LogInformation(
+                        "Payload: {@Payload}",
+                        payload);
                     // Read inputs from payload
                     var sourceDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
                     var destinationDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "drivePath");
@@ -328,9 +331,9 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     var destinationFolderItemId = await GetItemIdFromFilePathAsync(destinationDrivePath, accessToken);
 
                     // Build Microsoft Graph copy endpoint
-                    var requestUrl = $"{GRAPH_BASE_URL}/drives/{sourceDriveId}/items/{sourceItemId}/copy"+
+                    var requestUrl = $"{GRAPH_BASE_URL}/drives/{sourceDriveId}/items/{sourceItemId}/copy" +
                         "?@microsoft.graph.conflictBehavior=rename";
-                        
+
                     // Prepare request body. 'name' is optional in the Graph API and must be
                     // omitted (not sent as empty string) when no new file name is provided,
                     // otherwise the destination keeps the original file name.
