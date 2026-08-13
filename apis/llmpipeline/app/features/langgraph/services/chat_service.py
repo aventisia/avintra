@@ -1,5 +1,6 @@
 """High-level service that runs LangGraph chat workflows."""
 
+import asyncio
 from collections.abc import AsyncIterator
 from datetime import datetime, timezone
 from typing import Any
@@ -24,6 +25,7 @@ from app.features.langgraph.skills.skill_loader import load_default_skills
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_loader import load_default_tools
 from app.features.langgraph.tools.tool_registry import ToolRegistry
+from app.features.langgraph.services.tool_skill_selector import _expand_tool_config
 from app.features.custom_tools.custom_tool_loader import load_tools_for_tenant as load_custom_tools
 from app.core.config import settings
 from app.features.llm_providers.llm_providers_schemas import (
@@ -321,6 +323,10 @@ class ChatService:
         # Track tool name/args per tool_call_id so the UI can render the tool
         # widget (with human-in-loop approval) before execution.
         tool_call_meta: dict[str, dict] = {}
+        # When a chat agent is configured to emit JSON (e.g. from a custom
+        # prompt/template), the streamed deltas are raw JSON tokens. We buffer
+        # them and suppress the raw token frames, then parse the JSON at the end.
+        suppress_raw_deltas = request.is_chat_agent
 
         async for event in graph.astream_events(
             {"messages": messages},
@@ -333,20 +339,48 @@ class ChatService:
             event_metadata = event.get("metadata", {})
             node_name = event_metadata.get("langgraph_node")
 
+            # Node about to run: surface a human-readable status frame so the
+            # UI can show which step the agent is currently taking.
+            if event_type == "on_chain_start":
+                status = self._status_for_node(node_name)
+                if status:
+                    yield LLMChunkResponse(
+                        provider=request.provider,
+                        model=request.model,
+                        output=status,
+                        type="status",
+                        conversation_id=conversation_id,
+                    )
+                continue
+
             # Token-level deltas from the chat model.
             if event_type == "on_chat_model_stream":
                 chunk = data.get("chunk")
                 if chunk is not None:
-                    text = self._extract_text_delta(chunk)
-                    if text:
-                        text_buffer.append(text)
+                    # Reasoning/thinking deltas (when the model emits them).
+                    reasoning = self._extract_reasoning_delta(chunk)
+                    if reasoning:
                         yield LLMChunkResponse(
                             provider=request.provider,
                             model=request.model,
-                            output=text,
-                            type="delta",
+                            output=reasoning,
+                            type="reasoning",
                             conversation_id=conversation_id,
                         )
+                    text = self._extract_text_delta(chunk)
+                    if text:
+                        text_buffer.append(text)
+                        # For chat-agent JSON-mode output, suppress raw JSON
+                        # deltas; the final parsed text/followups are emitted at
+                        # the end as proper typed frames.
+                        if not suppress_raw_deltas:
+                            yield LLMChunkResponse(
+                                provider=request.provider,
+                                model=request.model,
+                                output=text,
+                                type="delta",
+                                conversation_id=conversation_id,
+                            )
                 continue
 
             # Tool invocation started: capture name + args for the UI.
@@ -363,6 +397,14 @@ class ChatService:
                         "name": tool_name,
                         "args": tool_input.get("args", {}),
                     }
+                    # Surface the running tool as a status frame.
+                    yield LLMChunkResponse(
+                        provider=request.provider,
+                        model=request.model,
+                        output=f"Running tool: {tool_name}" if tool_name else "Running tool",
+                        type="status",
+                        conversation_id=conversation_id,
+                    )
                 continue
 
             # Completed tool call (result available).
@@ -485,11 +527,70 @@ class ChatService:
                     type="followup",
                     conversation_id=conversation_id,
                 )
+            # Recommended actions are surfaced as follow-up suggestions.
+            if final_output.recommended_actions:
+                yield LLMChunkResponse(
+                    provider=request.provider,
+                    model=request.model,
+                    output=final_output.recommended_actions,
+                    type="followup",
+                    conversation_id=conversation_id,
+                )
             final_text = final_output.text
         elif isinstance(final_output, str):
             final_text = final_output
         else:
             final_text = str(final_output or "")
+
+        # If the model emitted raw JSON text deltas (common when a chat-agent
+        # prompt asks for JSON), the text_buffer will contain the raw JSON while
+        # final_text is likely empty. Parse the buffered JSON to recover the
+        # real assistant text and any follow-up suggestions. The model may emit
+        # multiple concatenated JSON objects (e.g. tool metadata then the chat
+        # payload), so find the object that contains a ``text`` field.
+        if not final_text and suppress_raw_deltas and text_buffer:
+            buffered = "".join(text_buffer)
+            parsed_response = self._extract_chat_agent_json_response(buffered)
+            if isinstance(parsed_response, dict):
+                final_text = parsed_response.get("text") or ""
+                recommended = parsed_response.get("recommended_actions") or []
+                followups = parsed_response.get("followup_messages") or []
+                if followups:
+                    yield LLMChunkResponse(
+                        provider=request.provider,
+                        model=request.model,
+                        output=followups,
+                        type="followup",
+                        conversation_id=conversation_id,
+                    )
+                if recommended:
+                    yield LLMChunkResponse(
+                        provider=request.provider,
+                        model=request.model,
+                        output=recommended,
+                        type="followup",
+                        conversation_id=conversation_id,
+                    )
+            else:
+                final_text = buffered
+
+        # For chat agents whose model emitted a structured JSON payload, the
+        # whole answer was produced in one conceptual chunk. Replay the final
+        # text as word-by-word deltas so the UI renders streaming text instead
+        # of dumping the full message at once. Non-JSON chat agents already see
+        # real deltas during ``on_chat_model_stream``.
+        if final_text and suppress_raw_deltas:
+            for chunk in self._word_streaming_chunks(final_text, words_per_chunk=2):
+                yield LLMChunkResponse(
+                    provider=request.provider,
+                    model=request.model,
+                    output=chunk,
+                    type="delta",
+                    conversation_id=conversation_id,
+                )
+                # Delay between chunks so the user perceives progressive typing.
+                await asyncio.sleep(0.06)
+            final_text = ""
 
         yield LLMChunkResponse(
             provider=request.provider,
@@ -515,6 +616,70 @@ class ChatService:
             return ""
         except Exception:
             return ""
+
+    @staticmethod
+    def _extract_reasoning_delta(chunk: Any) -> str:
+        """Extract a reasoning/thinking delta from a LangChain chat message chunk.
+
+        Reasoning content is surfaced by "thinking" models (e.g. Gemini 3
+        thinking, OpenAI o-series) either via ``additional_kwargs``
+        (``reasoning_content``) or as a dedicated ``thinking`` block inside the
+        content list. Returns an empty string when the chunk carries none.
+        """
+        try:
+            # OpenAI-style reasoning content in additional_kwargs.
+            additional_kwargs = getattr(chunk, "additional_kwargs", None) or {}
+            reasoning = additional_kwargs.get("reasoning_content")
+            if isinstance(reasoning, str) and reasoning:
+                return reasoning
+
+            # Thinking blocks embedded in the content list.
+            content = chunk.content
+            if isinstance(content, list):
+                parts: list[str] = []
+                for part in content:
+                    if not isinstance(part, dict):
+                        continue
+                    if part.get("type") == "thinking":
+                        # Gemini's LangChain provider stores the thought text
+                        # under the ``thinking`` key (NOT ``text``):
+                        #   {"type": "thinking", "thinking": part.text, ...}
+                        text = part.get("thinking") or part.get("text") or ""
+                        if isinstance(text, str) and text:
+                            parts.append(text)
+                    elif part.get("type") == "text":
+                        # Some providers stream reasoning as a text block with
+                        # a ``reasoning`` flag; Gemini 3 marks thought-bearing
+                        # text blocks with ``extras.signature``.
+                        if part.get("reasoning"):
+                            text = part.get("text", "")
+                            if isinstance(text, str) and text:
+                                parts.append(text)
+                        else:
+                            extras = part.get("extras") or {}
+                            if extras.get("signature"):
+                                text = part.get("text", "")
+                                if isinstance(text, str) and text:
+                                    parts.append(text)
+                return "".join(parts)
+            return ""
+        except Exception:
+            return ""
+
+    @staticmethod
+    def _status_for_node(node_name: str) -> str | None:
+        """Map a LangGraph node name to a human-readable status label.
+
+        Returns ``None`` for nodes that should not surface a status frame.
+        """
+        if not node_name:
+            return None
+        return {
+            "seed_request": "Preparing request",
+            "agent_selector": "Selecting tools and skills",
+            "model": "Thinking",
+            "tools": "Executing tools",
+        }.get(node_name)
 
     async def _load_custom_tools(
         self,
@@ -625,10 +790,7 @@ class ChatService:
     ) -> Any:
         """Retrieve or create a compiled LangGraph instance."""
 
-        explicit_tool_names = [
-            config.tool
-            for config in (request.tool_config or [])
-        ]
+        explicit_tool_names = _expand_tool_config(request.tool_config or [])
         explicit_skill_names = list(request.skill_names or [])
 
         tool_config_key = tuple(sorted(explicit_tool_names))
@@ -762,6 +924,7 @@ class ChatService:
         text = ""
         tools: list[dict] = []
         followup_messages: list[str] = []
+        recommended_actions: list[str] = []
 
         if isinstance(output, dict):
             text = output.get("text", "")
@@ -769,9 +932,19 @@ class ChatService:
 
             if include_followups:
                 followup_messages = output.get("followup_messages", [])
+                recommended_actions = output.get("recommended_actions", [])
 
         elif isinstance(output, str):
-            text = output
+            # Chat agents sometimes return JSON strings even when the request
+            # does not explicitly set ``is_json_output`` (custom prompt).
+            parsed = self._extract_chat_agent_json_response(output)
+            if isinstance(parsed, dict):
+                text = parsed.get("text", "")
+                if include_followups:
+                    followup_messages = parsed.get("followup_messages", [])
+                    recommended_actions = parsed.get("recommended_actions", [])
+            else:
+                text = output
 
         elif isinstance(output, list):
             tools = output
@@ -780,6 +953,7 @@ class ChatService:
             text=text,
             tools=tools,
             followup_messages=followup_messages,
+            recommended_actions=recommended_actions,
         )
 
     def _extract_output_from_response(
@@ -806,6 +980,60 @@ class ChatService:
             return extract_json_from_llm_response(output)
 
         return output
+
+    @staticmethod
+    def _extract_chat_agent_json_response(text: str) -> Any:
+        """Parse all JSON objects in ``text`` and return the chat payload.
+
+        Some chat-agent prompts cause the model to emit multiple concatenated
+        JSON objects, e.g. metadata (``{"tool_names": [...]}``) followed by the
+        actual response object (``{"text": "...", "recommended_actions": [...]}``).
+        This helper walks the text, decodes every top-level JSON object, and
+        returns the object that contains a ``text`` key (the chat payload).
+        """
+        import json
+
+        text = text.strip()
+        if not text:
+            return None
+
+        decoder = json.JSONDecoder()
+        idx = 0
+        objects: list[Any] = []
+        while idx < len(text):
+            char = text[idx]
+            if char not in ("{", "["):
+                idx += 1
+                continue
+            try:
+                parsed, end = decoder.raw_decode(text, idx)
+                objects.append(parsed)
+                idx += end
+            except ValueError:
+                idx += 1
+
+        # Prefer the object that carries the assistant message text.
+        for obj in objects:
+            if isinstance(obj, dict) and "text" in obj:
+                return obj
+
+        # Fall back to the first object/array if no text-bearing object exists.
+        return objects[0] if objects else None
+
+    @staticmethod
+    def _word_streaming_chunks(text: str, words_per_chunk: int = 1):
+        """Yield ``text`` in small chunks to simulate streaming output.
+
+        Splits on whitespace boundaries so words stay intact. The chunk size
+        can be increased if the message feels too slow.
+        """
+        words = text.split(" ")
+        for i in range(0, len(words), words_per_chunk):
+            chunk = " ".join(words[i : i + words_per_chunk])
+            # Preserve the trailing space between chunks (except at the end).
+            if i + words_per_chunk < len(words):
+                chunk += " "
+            yield chunk
 
     def _extract_response_status(
         self,

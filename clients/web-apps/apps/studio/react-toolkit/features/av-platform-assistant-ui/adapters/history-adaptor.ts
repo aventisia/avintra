@@ -6,9 +6,7 @@ import {
   ThreadMessage,
 } from "@assistant-ui/react";
 
-import {
-  getConversationMessages,
-} from "../apis/assist-conversations-apis";
+import { getConversationMessages } from "../apis/assist-conversations-apis";
 import {
   ConversationMessageDto,
   ConversationMessageSenderEnum,

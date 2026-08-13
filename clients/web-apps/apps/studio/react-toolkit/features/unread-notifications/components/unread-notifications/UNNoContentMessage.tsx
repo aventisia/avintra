@@ -1,6 +1,6 @@
 import { NoContentMessage } from "@avplatform/ui";
-import { BellSlashIcon } from "@heroicons/react/24/outline";
 import { cn } from "@avplatform/ui/lib";
+import { BellSlashIcon } from "@heroicons/react/24/outline";
 
 interface UNNoContentMessageProps {
   /** (Optional): Additional class name to override the empty-state container */

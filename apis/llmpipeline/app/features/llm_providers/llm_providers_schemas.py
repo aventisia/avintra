@@ -56,6 +56,7 @@ class ChatAgentResponse(BaseModel):
     text: str    # Message to display
     tools: Optional[List[dict]] = []    # Tool actions
     followup_messages: Optional[List[str]] = []  # Suggested actions the user can take next.
+    recommended_actions: Optional[List[str]] = []  # Additional suggested next actions.
 
 # Chunk response schema for streaming LLM response
 class LLMChunkResponse(BaseModel):

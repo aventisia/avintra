@@ -56,6 +56,15 @@ def build_chat_graph(
 
     builder = StateGraph(ChatState)
 
+    # Seed the graph state with the original request and authenticated user
+    # so downstream nodes (especially the tool executor) can access
+    # credential/configuration details without closing over mutable objects.
+    builder.add_node(
+        "seed_request",
+        _create_seed_request_node(request, user),
+    )
+    builder.add_edge(START, "seed_request")
+
     # First step: identify required tools and skills for this request
     builder.add_node(
         "agent_selector",
@@ -71,7 +80,7 @@ def build_chat_graph(
         ),
     )
 
-    builder.add_edge(START, "agent_selector")
+    builder.add_edge("seed_request", "agent_selector")
 
     # Model node dynamically binds selected tools and skills
     builder.add_node(
@@ -98,12 +107,28 @@ def build_chat_graph(
     # Execute selected tools and return result back to model
     builder.add_node(
         "tools",
-        _create_dynamic_tool_node(tool_registry),
+        _create_dynamic_tool_node(tool_registry, request),
     )
 
     builder.add_edge("tools", "model")
 
     return builder.compile(checkpointer=graph_memory)
+
+
+def _create_seed_request_node(request: LLMRequest, user: User):
+    """Write the original request and user into graph state metadata."""
+
+    async def seed_request(state: ChatState):
+        metadata = state.get("metadata") or {}
+        return {
+            "metadata": {
+                **metadata,
+                "request": request,
+                "user": user,
+            }
+        }
+
+    return seed_request
 
 
 def _create_agent_selector_node(
@@ -217,6 +242,16 @@ def _create_dynamic_model_node(
         # Inject selected skill instructions into system prompt
         skill_prompt = _build_skill_prompt(selected_skills)
 
+        # When tools are bound, add a strong instruction that the model must
+        # actually call them for matching requests rather than simulating the
+        # action or apologizing.
+        tool_instruction = _build_tool_instruction(tools)
+        if tool_instruction:
+            if skill_prompt:
+                skill_prompt = f"{tool_instruction}\n\n{skill_prompt}"
+            else:
+                skill_prompt = tool_instruction
+
         # Structured output cannot be combined with tool calling
         # because both control the model response format
         response_format = _get_response_format(llm_request)
@@ -236,7 +271,7 @@ def _create_dynamic_model_node(
     return model_node_factory
 
 
-def _create_dynamic_tool_node(tool_registry: ToolRegistry):
+def _create_dynamic_tool_node(tool_registry: ToolRegistry, request: LLMRequest):
     """
     Execute only the tools selected by agent selector.
     """
@@ -249,7 +284,7 @@ def _create_dynamic_tool_node(tool_registry: ToolRegistry):
         # Resolve selected tool names into executable tools
         tools = tool_registry.get_by_names(selected_tool_names or [])
 
-        return await create_tool_node(tools)(state)
+        return await create_tool_node(tools, request)(state)
 
     return tool_node_factory
 
@@ -325,6 +360,36 @@ def _build_skill_prompt(skills: list[SkillConfig] | None) -> str | None:
     )
 
     return "\n".join(lines)
+
+
+def _build_tool_instruction(tools: list[BaseTool]) -> str | None:
+    """Return a system instruction that forces the model to use bound tools."""
+
+    if not tools:
+        return None
+
+    names = [tool.name for tool in tools]
+    descriptions = []
+    for tool in tools:
+        desc = getattr(tool, "description", "") or ""
+        # Preserve first sentence only to keep prompt concise.
+        first_sentence = desc.split(".")[0].strip() if desc else ""
+        if first_sentence:
+            descriptions.append(f"- {tool.name}: {first_sentence}.")
+        else:
+            descriptions.append(f"- {tool.name}")
+
+    return (
+        "You have access to the following tools. "
+        "When the user's request can be fulfilled by one of these tools, "
+        "you MUST call the tool instead of answering with plain text or apologizing. "
+        "Do not say you cannot perform the action; use the tool directly.\n\n"
+        "Available tools:\n"
+        + "\n".join(descriptions)
+        + "\n\n"
+        "Important: Only call a tool when it is clearly needed to satisfy the request. "
+        "If the user asks for something unrelated, answer normally."
+    )
 
 
 def _get_response_format(llm_request: LLMRequest) -> dict[str, Any] | None:

@@ -33,7 +33,10 @@ def create_chat_model(
         )
 
     # Create Gemini model
-    if provider == "gemini":
+    # The frontend/backend schema uses provider value "googlegemini"
+    # (see LLMRequest.ProviderLiteral), so accept both that and the
+    # shorter "gemini" alias to avoid an "Unsupported LLM provider" error.
+    if provider in ("gemini", "googlegemini"):
         return create_gemini_model(
             user=user,
             llm_request=llm_request,

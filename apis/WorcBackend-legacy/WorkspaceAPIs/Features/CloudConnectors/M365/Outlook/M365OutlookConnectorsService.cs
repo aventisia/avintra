@@ -98,21 +98,30 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
         if (string.IsNullOrEmpty(mailboxAddress))
             mailboxAddress = CloudConnectionPayloadUtil.GetValue(payload, "from");
 
-        // Function to determine the correct path based on mailbox address
+        // Function to determine the correct path based on mailbox address.
+        // Application-only (client_credentials) tokens cannot use /me, so a
+        // sender mailbox is required. Without it we return an empty path and let
+        // the caller produce a clear error response.
         string GetMailboxPath(string mailbox)
         {
             if (string.IsNullOrWhiteSpace(mailbox))
             {
-                // If mailboxAddress is not provided, use the authenticated user's mailbox ("me")
-                return "me";
+                return string.Empty;
             }
 
-            // Otherwise, use the provided mailbox address
             return $"users/{mailbox}";
         }
 
         // Construct paths for messages and mail folders
         string userPath = GetMailboxPath(mailboxAddress);
+
+        if (string.IsNullOrWhiteSpace(userPath))
+        {
+            _logger.LogWarning(
+                "Outlook action {Action} requires a sender mailboxAddress/from value for application-only M365 authentication.",
+                action);
+            return JsonDocument.Parse(@"{""statusCode"":400,""error"":""Sender mailbox (mailboxAddress/from) is required for application-only M365 authentication.""}");
+        }
 
         // Construct the final URL paths for messages and folders API
         string messagesApiUrl = $"{baseUrl}/{userPath}";

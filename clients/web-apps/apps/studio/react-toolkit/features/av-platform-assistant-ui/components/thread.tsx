@@ -16,8 +16,10 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   CheckIcon,
+  ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronUpIcon,
   CopyIcon,
   DownloadIcon,
   MoreHorizontalIcon,
@@ -26,6 +28,7 @@ import {
   SquareIcon,
 } from "lucide-react";
 import type { FC } from "react";
+import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import ToolsCall from "../../tool-widget/components/ToolsCall";
@@ -271,6 +274,40 @@ const MessageError: FC = () => {
   );
 };
 
+/**
+ * Collapsible block that shows the assistant's chain-of-thought — the ordered
+ * sequence of every step the model took ("Selecting tools and skills",
+ * "Thinking", "Running tool: X") plus any reasoning/thinking text the model
+ * emitted. It persists after the final response is surfaced.
+ */
+const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="aui-assistant-reasoning-block my-2 w-full overflow-hidden rounded-lg border border-border/60 bg-muted/30">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center gap-1.5 px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-muted/50"
+        aria-expanded={open}
+      >
+        {open ? (
+          <ChevronUpIcon className="size-3.5 shrink-0" />
+        ) : (
+          <ChevronDownIcon className="size-3.5 shrink-0" />
+        )}
+        <span className="font-medium">Thinking</span>
+        {text && <span className="truncate opacity-70">· {text.replace(/^\u2022 /gm, "").split("\n")[0]}</span>}
+      </button>
+      {open && (
+        <div className="aui-assistant-reasoning-content border-t border-border/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
+          {text || "Thinking…"}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const AssistantMessage: FC = () => {
   const { readOnly, archived } = useThreadConfigStore();
   const isDisabled = readOnly || archived;
@@ -302,6 +339,10 @@ const AssistantMessage: FC = () => {
                   {part.toolUI ?? <ToolsCall {...part} />}
                 </div>
               );
+            }
+
+            if (part.type === "reasoning") {
+              return <ReasoningBlock text={part.text ?? ""} />;
             }
 
             if (part.type === "text") {

@@ -7,6 +7,7 @@ from uuid import UUID
 class User(BaseModel):
     user_id: UUID
     username: str
+    email: Optional[str] = None
     roles: Optional[List[str]]
     tenant_id: UUID
     access_token: Optional[str] = Field(default=None, exclude=True, repr=False)

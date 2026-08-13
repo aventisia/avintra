@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     # In local/dev environments the backend may use a self-signed cert, so set this to false there.
     SSL_VERIFY: bool = True
 
+    # Internal WorkspaceAPIs URL used for cloud-connector tool execution.
+    # Defaults to https://{APP_BASE_URL}/api (the ASP.NET backend path base).
+    # Override for local dev when WorkspaceAPIs runs on a non-standard port.
+    WORKSPACE_API_URL: str = ""
+
     # PostgreSQL settings
     POSTGRESQL_HOST: str
     POSTGRESQL_PORT: str

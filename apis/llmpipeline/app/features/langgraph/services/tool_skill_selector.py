@@ -162,7 +162,9 @@ async def resolve_requested_or_selected_tools_and_skills(
     skill_names = getattr(request, "skill_names", None)
 
     if tool_config:
-        explicit_tools = [config.tool for config in tool_config]
+        # Studio stores tools as { tool: "outlook", actions: [{ action: "send_email" }] }.
+        # LangGraph registers one tool per action, named "<tool>_<action>".
+        explicit_tools = _expand_tool_config(tool_config)
 
     if skill_names:
         explicit_skills = skill_names
@@ -204,6 +206,25 @@ async def resolve_requested_or_selected_tools_and_skills(
     )
 
     return selection.tool_names, selected_skills
+
+
+def _expand_tool_config(tool_config: list[Any]) -> list[str]:
+    """Expand Studio tool config entries into LangGraph tool names.
+
+    Studio format: { tool: "outlook", actions: [{ action: "send_email" }] }
+    LangGraph name: "outlook_send_email"
+    """
+    names: list[str] = []
+    for config in tool_config:
+        tool = getattr(config, "tool", None) or config.get("tool", "")
+        actions = getattr(config, "actions", None) or config.get("actions", [])
+        for action in actions:
+            action_name = getattr(action, "action", None) or action.get("action", "")
+            if tool and action_name:
+                names.append(f"{tool}_{action_name}")
+        if not actions and tool:
+            names.append(tool)
+    return names
 
 
 def _resolve_skill_configs(

@@ -100,10 +100,21 @@ class GeminiProvider(BaseLLMProvider):
             if "response_data" in locals() and isinstance(response_data, dict):
                 error_context = response_data.get("error", "")
 
+            # Surface the HTTP error response body when available (e.g. a 400
+            # from Gemini includes a structured error detail that otherwise
+            # gets swallowed because raise_for_status() throws before response.json()).
+            http_body = ""
+            resp = getattr(e, "response", None)
+            if resp is not None:
+                try:
+                    http_body = resp.text
+                except Exception:
+                    http_body = ""
+
             log_exception(
                 logger,
                 e,
-                "GoogleGemini llm transactional request error: ",
+                f"GoogleGemini llm transactional request error: {http_body} ",
                 error_context,
             )
 

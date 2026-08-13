@@ -13,6 +13,15 @@ CHAT_AGENT_RESPONSE_SCHEMA = {
                 "description": "A single, independent follow-up suggestion."
             },
             "maxItems": 5
+        },
+        "recommended_actions": {
+            "type": "array",
+            "description": "A list of up to 5 specific, actionable recommendations the user can act on.",
+            "items": {
+                "type": "string",
+                "description": "A single, independent recommended action."
+            },
+            "maxItems": 5
         }
     },
     "required": ["text", "followup_messages"],

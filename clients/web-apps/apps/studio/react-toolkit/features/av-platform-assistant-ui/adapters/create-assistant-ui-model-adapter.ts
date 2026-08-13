@@ -22,7 +22,9 @@ const toMessageText = (
 ): string => {
   return content
     .map((part) => {
-      if (part.type === "text" || part.type === "reasoning") return part.text;
+      // Reasoning/thinking traces are intentionally excluded so they are not
+      // sent back to the LLM as conversation context.
+      if (part.type === "text") return part.text;
 
       if (part.type === "tool-call") {
         const p = part as any;
@@ -103,6 +105,12 @@ export const createAssistantUIModelAdapter = ({
       const contentParts: any[] = [];
       const toolAccumulator: Record<string, any> = {};
       let hasTextContent = false;
+      let lastYieldedSnapshot = "";
+      // Persistent chain-of-thought. Every step the model takes is appended
+      // here in order and retained after the response is surfaced.
+      const steps: string[] = [];
+      // Genuine reasoning/thinking tokens emitted by the model.
+      let reasoningText = "";
 
       const pushText = (text: string) => {
         const last = contentParts[contentParts.length - 1];
@@ -112,6 +120,33 @@ export const createAssistantUIModelAdapter = ({
           contentParts.push({ type: "text", text });
         }
         hasTextContent ||= text.trim().length > 0;
+      };
+
+      // Compose the full chain-of-thought text: the ordered step list first,
+      // then any genuine reasoning content the model emitted.
+      const buildReasoningText = () => {
+        const lines: string[] = [];
+        for (const step of steps) lines.push(`\u2022 ${step}`);
+        if (reasoningText) lines.push(reasoningText);
+        return lines.join("\n");
+      };
+
+      // Update (or create) the reasoning part so the chain-of-thought is
+      // always rendered. The part persists after the stream ends.
+      const setReasoningPart = () => {
+        const text = buildReasoningText();
+        const idx = contentParts.findIndex((p) => p.type === "reasoning");
+        if (idx !== -1) contentParts[idx].text = text;
+        else contentParts.push({ type: "reasoning", text });
+      };
+
+      // Yield the current content parts so @assistant-ui/react re-renders the
+      // assistant message incrementally while the SSE stream is still open.
+      const maybeYield = function* () {
+        const currentSnapshot = JSON.stringify(contentParts);
+        if (currentSnapshot === lastYieldedSnapshot) return;
+        lastYieldedSnapshot = currentSnapshot;
+        yield { content: contentParts.map((part) => ({ ...part })) };
       };
 
       try {
@@ -134,9 +169,43 @@ export const createAssistantUIModelAdapter = ({
           }
 
           switch (frame?.type) {
+            case "status": {
+              // Live step status (e.g. "Selecting tools and skills",
+              // "Thinking", "Running tool: X"). Append it to the persistent
+              // chain-of-thought so the full sequence is retained even after
+              // the final response is surfaced.
+              const status = typeof frame.output === "string" ? frame.output : "";
+              if (status) {
+                const last = steps[steps.length - 1];
+                // Replace an in-progress placeholder (e.g. the tool being run
+                // changes) rather than appending near-duplicates; otherwise
+                // accumulate every distinct step.
+                if (last !== status) {
+                  steps.push(status);
+                  setReasoningPart();
+                  yield* maybeYield();
+                }
+              }
+              break;
+            }
+            case "reasoning": {
+              // Genuine thinking/reasoning tokens emitted by the model.
+              const reasoning = typeof frame.output === "string" ? frame.output : "";
+              if (reasoning) {
+                reasoningText += reasoning;
+                setReasoningPart();
+                yield* maybeYield();
+              }
+              break;
+            }
             case "delta": {
               const text = typeof frame.output === "string" ? frame.output : "";
-              if (text) pushText(text);
+              if (text) {
+                pushText(text);
+                // The response is being surfaced — the chain-of-thought part
+                // remains visible above the text.
+                yield* maybeYield();
+              }
               break;
             }
             case "tool_call": {
@@ -240,7 +309,10 @@ export const createAssistantUIModelAdapter = ({
           content: [
             {
               type: "text",
-              text: error instanceof Error ? error.message : "An error occurred during the chat request.",
+              text:
+                error instanceof Error
+                  ? error.message
+                  : "An error occurred during the chat request.",
             },
           ],
         };

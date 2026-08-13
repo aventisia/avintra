@@ -6,7 +6,7 @@ import {
 } from "@assistant-ui/react-markdown";
 import { cn } from "@avplatform/ui/lib";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { type FC, memo, type ReactNode, useState } from "react";
+import { type FC, type ReactNode, memo, useState } from "react";
 import remarkGfm from "remark-gfm";
 
 import { DataViz } from "./data-viz";
@@ -235,7 +235,14 @@ const defaultComponents = memoizeMarkdownComponents({
   sup: ({ className, ...props }) => (
     <sup className={cn("aui-md-sup [&>a]:text-xs [&>a]:no-underline", className)} {...props} />
   ),
-  pre: function Pre({ className, children, ...props }: { className?: string; children?: ReactNode }) {
+  pre: function Pre({
+    className,
+    children,
+    ...props
+  }: {
+    className?: string;
+    children?: ReactNode;
+  }) {
     // Detect a JSON data block and render it as a table/chart instead of raw code.
     const json = extractJsonFromPre(children);
     if (json) {

@@ -1,5 +1,5 @@
-import { Dialog, DialogContent, DialogClose } from "@avplatform/ui/dialog";
 import { buttonVariants } from "@avplatform/ui/buttons";
+import { Dialog, DialogClose, DialogContent } from "@avplatform/ui/dialog";
 import { cn } from "@avplatform/ui/lib";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { X } from "lucide-react";
