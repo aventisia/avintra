@@ -9,20 +9,23 @@ public class FlowProcessor
 {
     private const int DefaultMaxExecutedNodeVisits = 10_000;
     private const int DefaultMaxLoopIterations = 1_000;
+    private const int DefaultMaxNodeExecutionLogs = 1_000;
     private static readonly TimeSpan DefaultExecutionTimeout = TimeSpan.FromMinutes(10);
 
     private readonly INodeProcessor _nodeProcessor;
     private readonly IFlowGraphProvider? _flowGraphProvider;
     private readonly int _maxExecutedNodeVisits;
     private readonly int _maxLoopIterations;
+    private readonly int _maxNodeExecutionLogs;
     private readonly TimeSpan _executionTimeout;
 
     public FlowProcessor(
         INodeProcessor nodeProcessor,
         int maxExecutedNodeVisits = DefaultMaxExecutedNodeVisits,
         int maxLoopIterations = DefaultMaxLoopIterations,
+        int maxNodeExecutionLogs = DefaultMaxNodeExecutionLogs,
         TimeSpan? executionTimeout = null)
-        : this(nodeProcessor, null, maxExecutedNodeVisits, maxLoopIterations, executionTimeout)
+        : this(nodeProcessor, null, maxExecutedNodeVisits, maxLoopIterations, maxNodeExecutionLogs, executionTimeout)
     {
     }
 
@@ -31,12 +34,14 @@ public class FlowProcessor
         IFlowGraphProvider? flowGraphProvider,
         int maxExecutedNodeVisits = DefaultMaxExecutedNodeVisits,
         int maxLoopIterations = DefaultMaxLoopIterations,
+        int maxNodeExecutionLogs = DefaultMaxNodeExecutionLogs,
         TimeSpan? executionTimeout = null)
     {
         _nodeProcessor = nodeProcessor;
         _flowGraphProvider = flowGraphProvider;
         _maxExecutedNodeVisits = maxExecutedNodeVisits;
         _maxLoopIterations = maxLoopIterations;
+        _maxNodeExecutionLogs = maxNodeExecutionLogs;
         _executionTimeout = executionTimeout ?? DefaultExecutionTimeout;
     }
 
@@ -298,7 +303,10 @@ public class FlowProcessor
 
         if (result.NodeLog is not null)
         {
-            logs.Add(result.NodeLog);
+            // Keep the log list bounded so the final CloseJobAsync payload does not grow
+            // unbounded on long-running flows. Oldest entries are dropped once the limit is
+            // reached, preserving recent failure context.
+            logs.EnqueueBounded(result.NodeLog, _maxNodeExecutionLogs);
         }
 
         // Report per-node completion immediately so consumers (e.g. the local WS progress
