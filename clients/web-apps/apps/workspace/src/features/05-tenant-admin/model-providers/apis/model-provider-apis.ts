@@ -2,10 +2,13 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
+import { LlmModelsResponseDto, LlmProvidersResponseDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tenant-model-provider`;
+const llmPipelineBaseURL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}/v2/llm`;
 
 /**
  * Retrieves all model provider configurations for the current tenant.
@@ -64,5 +67,33 @@ export const getOllamaModels = (providerUrl: string) => {
     .get<IHttpResponse<OllamaModelDto[]>>(
       `${import.meta.env.VITE_WORKSPACE_API_PATH}/onprem-model/ollama/models?providerUrl=${encodeURIComponent(providerUrl)}`,
     )
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves the list of providers supported by LiteLLM (dynamic) from the LLM
+ * pipeline API. Returns raw JSON (not wrapped in IHttpResponse).
+ */
+export const getLlmProvidersV2 = (capability?: string) => {
+  const params = capability ? `?capability=${encodeURIComponent(capability)}` : "";
+  return axiosInstance
+    .get<LlmProvidersResponseDto>(`${llmPipelineBaseURL}/providers${params}`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Retrieves the list of models for a given provider from the LLM pipeline API.
+ * Returns raw JSON (not wrapped in IHttpResponse).
+ */
+export const getLlmModelsV2 = (provider: string, capability?: string) => {
+  const params = capability
+    ? `?provider=${encodeURIComponent(provider)}&capability=${encodeURIComponent(capability)}`
+    : `?provider=${encodeURIComponent(provider)}`;
+  return axiosInstance
+    .get<LlmModelsResponseDto>(`${llmPipelineBaseURL}/models${params}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
