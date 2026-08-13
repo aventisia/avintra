@@ -1,6 +1,5 @@
+import { JsonViewer } from "@avplatform/ui/json-viewer";
 import { cn } from "@avplatform/ui/lib";
-
-import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 
 interface STJsonViewerProps {
   jsonData: string;
@@ -18,7 +17,7 @@ const STJsonViewer = ({ label, jsonData, className }: STJsonViewerProps) => {
       </div>
 
       {/* JsonViewer */}
-      <JsonViewer jsonData={jsonData} enableClipboard className="h-[34vh]" />
+      <JsonViewer jsonData={jsonData} enableValueClipboard className="h-[34vh]" />
     </div>
   );
 };

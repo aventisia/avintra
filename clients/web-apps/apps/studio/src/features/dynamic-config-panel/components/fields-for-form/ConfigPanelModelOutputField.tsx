@@ -1,6 +1,7 @@
 import { Switch } from "@avplatform/ui";
 import { buttonVariants } from "@avplatform/ui/buttons";
 import { FormControl, FormField, FormItem } from "@avplatform/ui/form";
+import { JsonViewer } from "@avplatform/ui/json-viewer";
 import { cn } from "@avplatform/ui/lib";
 import { PopoverTrigger } from "@avplatform/ui/popover";
 import { Tooltip } from "@avplatform/ui/tooltip";
@@ -9,7 +10,6 @@ import { useEffect } from "react";
 import { FieldPath, FieldValues, useController, useFormContext } from "react-hook-form";
 import { useShallow } from "zustand/react/shallow";
 
-import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 import { VariableSelectorWrapper } from "@/components/variable-selector/VariableSelectorWrapper";
 import { useVariableSelectorStore } from "@/stores/variable-selector-store";
 
@@ -105,12 +105,17 @@ const ConfigPanelModelOutputField = ({
                 >
                   <VariableIcon className="h-4 w-4" />
                 </PopoverTrigger>
-
+                  {/* TODO: not sure if JsonViewer is required here or not */}
                 {description ? (
                   <Tooltip
                     className="max-w-[50vw] bg-white"
                     content={
-                      <JsonViewer jsonData={description} className="h-[calc(50vh)] w-full p-1" />
+                      <JsonViewer
+                        jsonData={description}
+                        enableValueClipboard
+                        parseNestedStrings
+                        className="h-[calc(50vh)] w-full p-1"
+                      />
                     }
                   >
                     <div className="rounded hover:bg-slate-100 hover:text-primary">
