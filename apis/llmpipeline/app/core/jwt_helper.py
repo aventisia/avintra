@@ -47,6 +47,7 @@ def get_user_from_jwt(token: str) -> User:
         return User(
             user_id=UUID(payload.get("uid")),
             username=payload.get("uname"),
+            email=payload.get("email") or payload.get("uname"),
             roles=payload.get("http://schemas.microsoft.com/ws/2008/06/identity/claims/role", []),
             tenant_id=UUID(payload.get("tntid"))
         )

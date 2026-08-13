@@ -78,14 +78,7 @@ const StatusSelectorField = ({
     return [...CORE_STATUSES, ...customOptions];
   })();
 
-  return (
-    <SelectField
-      name={name}
-      {...props}
-      selectOptions={statusOptions}
-      size="sm"
-    />
-  );
+  return <SelectField name={name} {...props} selectOptions={statusOptions} size="sm" />;
 };
 
 StatusSelectorField.displayName = "StatusSelectorField";

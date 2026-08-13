@@ -97,6 +97,14 @@ export function useToolCallManager({
 
   const executeTool = useCallback(
     (formData: Record<string, unknown>) => {
+      // If the backend already executed the tool and returned a result, do not
+      // call the connector a second time. This prevents duplicate actions such
+      // as sending the same email twice.
+      if (result) {
+        handleExecutionOutcome("success", result);
+        return;
+      }
+
       executeMutation(
         {
           agentId: output?.agentId ?? "",
@@ -143,14 +151,16 @@ export function useToolCallManager({
   );
 
   // Auto-execute when the tool is configured for automatic approval.
-  // Uses a stable `executeTool` reference so the dep array is honest.
+  // Skip if the backend already executed the tool and supplied a result,
+  // otherwise we would send the email / perform the action a second time.
   useEffect(() => {
     if (output?.approval !== "auto") return;
+    if (result) return;
     if (output?.approval === "auto" && isAwaitingUser) {
       // Guard: fall back to empty object so we never pass `undefined` as a record.
       executeTool((output?.payload ?? {}) as Record<string, unknown>);
     }
-  }, [output?.approval, output?.payload, isAwaitingUser, executeTool]);
+  }, [output?.approval, output?.payload, isAwaitingUser, executeTool, result]);
 
   const cancelTool = useCallback(() => {
     handleExecutionOutcome("cancelled", TOOL_CALL_RESULT_MESSAGES.USER_CANCELLED);
