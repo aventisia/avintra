@@ -14,6 +14,7 @@ interface OpenNodeLogProps {
   className?: string;
   showIcon?: boolean;
   showBorder?: boolean;
+  isDisabled?: boolean;
 }
 
 export default function OpenNodeLog({
@@ -22,6 +23,7 @@ export default function OpenNodeLog({
   className,
   showIcon = true,
   showBorder = true,
+  isDisabled = false,
 }: OpenNodeLogProps) {
   const { executionMap, executionHistoryMap, nodeToParentStack, activeIteration } =
     useExecutionStore();
@@ -41,7 +43,11 @@ export default function OpenNodeLog({
 
   // Live status for a running local (unpublished) flow, driven by the RunnerApp over the
   // Tauri WebSocket. Only shows on the design canvas (not the execution-log route).
-  const liveStatus = useLiveExecutionStore((state) => state.liveExecutionMap[nodeId]);
+  // Disabled nodes are not executed, so suppress any live status (especially the running
+  // spinner) that may still be broadcast for them.
+  const liveStatus = useLiveExecutionStore((state) =>
+    isDisabled ? undefined : state.liveExecutionMap[nodeId],
+  );
 
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 

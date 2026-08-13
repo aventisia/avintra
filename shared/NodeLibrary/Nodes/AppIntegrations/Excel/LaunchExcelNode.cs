@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using NodeLibrary.ExcelNodes.Enums;
 using NodeLibrary.ExcelNodes.Helpers;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -22,12 +23,6 @@ public class LaunchExcelNode : BaseNode
     [RenderIfCondition(nameof(LaunchMode), ExcelLaunchModeEnum.OpenExisting)]
     public InArgument<bool> OpenAsReadOnly { get; set; } = new InArgument<bool>();
 
-    [DisplayName("Nest Under New Process"), Description("If true, launches Excel in a new process.")]
-    public InArgument<bool> NestUnderNewProcess { get; set; } = new InArgument<bool>();
-
-    [DisplayName("Use Machine Locale"), Description("If true, uses the machine's locale settings.")]
-    public InArgument<bool> UseMachineLocale { get; set; } = new InArgument<bool>();
-
     [DisplayName("Read Protection Password"), Description("Optional password to protect the document from being modified.")]
     [RenderIfCondition(nameof(LaunchMode), ExcelLaunchModeEnum.OpenExisting)]
     public InArgument<SecureString> ReadProtectionPassword { get; set; } = new InArgument<SecureString>();
@@ -44,16 +39,51 @@ public class LaunchExcelNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
+        try
+        {
+            var tcs = new TaskCompletionSource();
+            var staThread = new Thread(() =>
+            {
+                try
+                {
+                    ExecuteSta(context);
+                    tcs.SetResult();
+                }
+                catch (Exception ex)
+                {
+                    tcs.SetException(ex);
+                }
+            });
+            staThread.SetApartmentState(ApartmentState.STA);
+            staThread.Start();
+            staThread.Join();
+            tcs.Task.GetAwaiter().GetResult();
+        }
+        catch (Exception ex)
+        {
+            var inner = ex.InnerException ?? ex;
+            var hresult = inner is System.Runtime.InteropServices.COMException comEx
+                ? $" (HRESULT: 0x{comEx.HResult:X8})"
+                : string.Empty;
+
+            IsSuccess.Set(context, false);
+            ExcelInstance.Set(context, null);
+            WorkbookInstance.Set(context, null);
+            StatusMessage.Set(context, $"Error launching Excel: {inner.GetType().Name}: {inner.Message}{hresult}");
+        }
+    }
+
+    private void ExecuteSta(INodeContext context)
+    {
         Excel.Application excelApp = null;
+        Excel.Workbooks workbooks = null;
         Excel.Workbook workbook = null;
+        var comObjectsToRelease = new List<object>();
 
         try
         {
             var launchMode = LaunchMode.Get(context);
             var makeVisible = MakeInstanceVisible.Get(context);
-            var nestUnderNewProcess = NestUnderNewProcess.Get(context);
-            var useMachineLocale = UseMachineLocale.Get(context);
 
             try
             {
@@ -79,9 +109,11 @@ public class LaunchExcelNode : BaseNode
                         var readPassword = ReadProtectionPassword.Get(context);
                         var writePassword = WriteProtectionPassword.Get(context);
 
+                        workbooks = excelApp.Workbooks;
                         bool workbookAlreadyOpen = false;
-                        foreach (Excel.Workbook wb in excelApp.Workbooks)
+                        foreach (Excel.Workbook wb in workbooks)
                         {
+                            comObjectsToRelease.Add(wb);
                             var openWorkbookName = System.IO.Path.GetFileName(wb.FullName);
                             var targetWorkbookName = System.IO.Path.GetFileName(documentPath);
 
@@ -96,7 +128,7 @@ public class LaunchExcelNode : BaseNode
 
                         if (!workbookAlreadyOpen)
                         {
-                            workbook = excelApp.Workbooks.Open(
+                            workbook = workbooks.Open(
                                 Filename: documentPath,
                                 ReadOnly: readOnly,
                                 Password: readPassword,
@@ -107,27 +139,34 @@ public class LaunchExcelNode : BaseNode
                     }
 
                 case ExcelLaunchModeEnum.NewWorkbook:
-                    workbook = excelApp.Workbooks.Add();
+                    workbooks = excelApp.Workbooks;
+                    workbook = workbooks.Add();
                     break;
 
                 default:
                     throw new InvalidOperationException("Invalid launch mode selected.");
             }
 
-            ExcelInstance.Set(context, excelApp);
-            WorkbookInstance.Set(context, workbook);
-
             IsSuccess.Set(context, true);
             StatusMessage.Set(context, "Launched excel successfully");
+
+            ExcelInstance.Set(context, excelApp);
+            WorkbookInstance.Set(context, workbook);
         }
-        catch (Exception ex)
+        catch
         {
-            status = $"Error launching Excel: {ex.Message}";
-            excelApp?.Quit();
-            IsSuccess.Set(context, false);
-            ExcelInstance.Set(context, null);
-            WorkbookInstance.Set(context, null);
-            StatusMessage.Set(context, status);
+            try { workbook?.Close(SaveChanges: false); } catch { /* ignore */ }
+            try { excelApp?.Quit(); } catch { /* ignore */ }
+            throw;
+        }
+        finally
+        {
+            foreach (var obj in comObjectsToRelease)
+            {
+                try { Marshal.ReleaseComObject(obj); } catch { /* ignore */ }
+            }
+
+            try { if (workbooks != null && !ReferenceEquals(workbooks, workbook)) Marshal.ReleaseComObject(workbooks); } catch { /* ignore */ }
         }
     }
 }

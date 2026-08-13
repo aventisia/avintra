@@ -70,26 +70,23 @@ const TauriAppFooter = () => {
   }
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 flex items-center justify-between border-t border-border/50 bg-card/80 px-6 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
+    <footer className="fixed font-mono bottom-0 left-0 right-0 flex items-center justify-between border-t border-border/50 bg-card/80 px-6 py-2.5 text-xs text-muted-foreground backdrop-blur-sm">
       <span>
         <span className="opacity-70">Version</span>{" "}
-        <span className="font-mono">{renderMetadata.app_version || "NA"}</span>
+        <span>{renderMetadata.app_version || "NA"}</span>
       </span>
 
       <div className="flex items-center gap-3">
         <span>
-          <span className="opacity-70">Host:</span>{" "}
-          <span className="font-mono">{renderMetadata.hostname || "NA"}</span>
+          <span className="opacity-70">Host:</span> <span>{renderMetadata.hostname || "NA"}</span>
         </span>
         <span className="opacity-40">·</span>
         <span>
-          <span className="opacity-70">User:</span>{" "}
-          <span className="font-mono">{renderMetadata.username || "NA"}</span>
+          <span className="opacity-70">User:</span> <span>{renderMetadata.username || "NA"}</span>
         </span>
         <span className="opacity-40">·</span>
         <span>
-          <span className="opacity-70">OS ID:</span>{" "}
-          <span className="font-mono">{renderMetadata.os_id || "NA"}</span>
+          <span className="opacity-70">OS ID:</span> <span>{renderMetadata.os_id || "NA"}</span>
         </span>
       </div>
     </footer>

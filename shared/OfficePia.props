@@ -1,0 +1,18 @@
+<Project>
+    <PropertyGroup>
+        <!--
+      Path to the Office Core Primary Interop Assembly (office.dll / Microsoft.Office.Core).
+      This DLL is required by the Excel and Word interop packages at runtime, but it is not
+      included in the NuGet PIA packages. By default we look in the Visual Studio VSTO redist
+      location. Override via:
+        - MSBuild property: /p:OfficePiaPath=...
+        - Environment variable: OFFICE_PIA_PATH
+    -->
+        <OfficePiaPath Condition="'$(OfficePiaPath)' == '' and '$(OFFICE_PIA_PATH)' != ''">$(OFFICE_PIA_PATH)</OfficePiaPath>
+        <OfficePiaPath Condition="'$(OfficePiaPath)' == ''">$(MSBuildProgramFiles32)\Microsoft Visual Studio\Shared\Visual Studio Tools for Office\PIA\Office15\Office.dll</OfficePiaPath>
+    </PropertyGroup>
+
+    <Target Name="EnsureOfficePia" BeforeTargets="BeforeBuild">
+        <Error Text="Office Core PIA (office.dll) was not found at '$(OfficePiaPath)'. Set the OfficePiaPath MSBuild property or the OFFICE_PIA_PATH environment variable to the correct location." Condition="!Exists('$(OfficePiaPath)')" />
+    </Target>
+</Project>

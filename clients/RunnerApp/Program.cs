@@ -242,6 +242,13 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
             // Local mode: push progress over the WS (running) as each node starts.
             if (localWs is not null)
             {
+                var node = graph.Nodes.FirstOrDefault(n => n.Id == nodeId);
+                if (node?.Data?.IsDisabled == true)
+                {
+                    DebugLog.Info($"Node progress (running) skipped because node is disabled: {nodeId}");
+                    return;
+                }
+
                 DebugLog.Info($"Node progress (running): {nodeId}");
                 _ = localWs.PushNodeProgressAsync(nodeId, "running", nodeId);
             }
@@ -256,6 +263,20 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
                 var status = nodeLog.IsSuccess ? "success" : "failed";
                 DebugLog.Info($"Node progress ({status}): {nodeLog.NodeId}");
                 _ = localWs.PushNodeProgressAsync(nodeLog.NodeId, status, nodeLog.NodeName);
+            }
+
+            // Always log failed node details to the console/debug log so a local run
+            // can be diagnosed even when the backend close request fails or the WebSocket
+            // is not connected.
+            if (!nodeLog.IsSuccess)
+            {
+                var inputs = nodeLog.Inputs is not null && nodeLog.Inputs.Count > 0
+                    ? string.Join(", ", nodeLog.Inputs.Select(kvp => $"{kvp.Key}={kvp.Value}"))
+                    : "none";
+                var status = nodeLog.Outputs is not null && nodeLog.Outputs.TryGetValue("Status", out var s)
+                    ? s
+                    : "no status";
+                DebugLog.Warn($"Node '{nodeLog.NodeName}' ({nodeLog.NodeId}) failed after {nodeLog.Duration:F0}ms. Inputs: {inputs}. Status: {status}");
             }
         });
     }

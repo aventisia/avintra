@@ -48,7 +48,7 @@ const BaseNode: React.FC<BaseNodeProps> = ({ selected, nodeData, children, nodeI
   };
 
   return (
-    <OpenNodeLog nodeId={nodeId}>
+    <OpenNodeLog nodeId={nodeId} isDisabled={nodeData?.isDisabled}>
       {nodeData?.isGroupHead &&
         !nodeData?.isExpanded &&
         Array.from({ length: renderCount }).map((_, i) => (

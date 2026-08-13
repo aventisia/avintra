@@ -40,6 +40,14 @@ public class InArgument<T> : NodeArgument
         }
         catch
         {
+            // Enum values frequently arrive as strings (e.g., "NewWorkbook"). Try parsing the string name.
+            var targetType = typeof(T);
+            var enumType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+            if (enumType.IsEnum && Value is string str && Enum.TryParse(enumType, str, ignoreCase: true, out var enumValue))
+            {
+                return (T)enumValue;
+            }
+
             return default;
         }
     }

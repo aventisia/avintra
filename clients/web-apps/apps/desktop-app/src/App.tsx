@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useState } from "react";
 
 import ServiceUrlPage from "./ServiceUrlPage";
-import { TauriAppFooter } from "./TuariAppFooter";
+import { TauriAppFooter } from "./TauriAppFooter";
 import { GetRunnerApp } from "./components/GetRunnerApp";
 import { UpdateDesktopApp } from "./components/UpdateDesktopApp";
 import { UpdateRunnerApp } from "./components/UpdateRunnerApp";

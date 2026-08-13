@@ -4,8 +4,8 @@
     Publishes RunnerApp locally for desktop-app development on Windows.
 
 .DESCRIPTION
-    Builds RunnerApp as a self-contained single-file executable and stages it
-    into the desktop app's local runtime directory:
+    Builds RunnerApp as a self-contained executable and stages it into the
+    desktop app's local runtime directory:
 
         %LOCALAPPDATA%\AvintraDesktopApp\binaries\runner-app
 
@@ -85,9 +85,6 @@ try {
         -c Release `
         -r $Runtime `
         --self-contained true `
-        -p:PublishSingleFile=true `
-        -p:IncludeNativeLibrariesForSelfExtract=true `
-        -p:EnableCompressionInSingleFile=true `
         -o $PublishDir
 
     if ($LASTEXITCODE -ne 0) {
@@ -102,19 +99,28 @@ try {
         New-Item -ItemType Directory -Path $Destination -Force | Out-Null
     }
 
-    $PublishedExe = Join-Path $PublishDir "RunnerApp.exe"
-    if (-not (Test-Path $PublishedExe)) {
-        throw "Expected published executable not found: $PublishedExe"
+    # The runner is published as a self-contained executable. Copy the whole
+    # publish directory so all managed dependencies (including Office interop
+    # assemblies) are available at runtime.
+    Get-ChildItem -Path $PublishDir -Recurse | ForEach-Object {
+        $relativePath = $_.FullName.Substring($PublishDir.Length + 1)
+        $targetPath = Join-Path $Destination $relativePath
+        if ($_.PSIsContainer) {
+            New-Item -ItemType Directory -Path $targetPath -Force | Out-Null
+        } else {
+            # Rename RunnerApp.exe to AvintraRunnerApp.exe during staging.
+            if ($_.Name -eq "RunnerApp.exe") {
+                $targetPath = Join-Path $Destination "AvintraRunnerApp.exe"
+            }
+            Copy-Item -Path $_.FullName -Destination $targetPath -Force
+        }
     }
-
-    $TargetExe = Join-Path $Destination "AvintraRunnerApp.exe"
-    Copy-Item -Path $PublishedExe -Destination $TargetExe -Force
 
     $VersionFile = Join-Path $Destination "version.txt"
     Set-Content -Path $VersionFile -Value $Version -NoNewline -Force
 
     Write-Host "Staged local runner at $Destination"
-    Write-Host "  - $TargetExe"
+    Write-Host "  - $(Join-Path $Destination "AvintraRunnerApp.exe")"
     Write-Host "  - $VersionFile"
 } finally {
     Remove-Item -Path $PublishDir -Recurse -Force -ErrorAction SilentlyContinue
