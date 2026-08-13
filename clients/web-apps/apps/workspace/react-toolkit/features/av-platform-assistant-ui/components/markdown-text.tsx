@@ -7,9 +7,10 @@ import {
 import { useCopyToClipboard } from "@avplatform/ui/hooks";
 import { cn } from "@avplatform/ui/lib";
 import { CheckIcon, CopyIcon } from "lucide-react";
-import { type FC, memo } from "react";
+import { type FC, memo, type ReactNode } from "react";
 import remarkGfm from "remark-gfm";
 
+import { DataViz } from "./data-viz";
 import { TooltipIconButton } from "./tooltip-icon-button";
 
 const MarkdownTextImpl = () => {
@@ -43,6 +44,42 @@ const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
     </div>
   );
 };
+
+/**
+ * Extracts a JSON string from a markdown `<pre>` block's children.
+ * The children are typically a single `<code>` element whose text content is
+ * the JSON. Returns the JSON string if it parses, otherwise null.
+ */
+function extractJsonFromPre(children?: ReactNode): string | null {
+  if (children == null) return null;
+
+  // Flatten React children into a string.
+  let text = "";
+  const walk = (node: ReactNode) => {
+    if (typeof node === "string" || typeof node === "number") {
+      text += node;
+    } else if (Array.isArray(node)) {
+      node.forEach(walk);
+    } else if (node && typeof node === "object" && "props" in (node as any)) {
+      walk((node as any).props?.children);
+    }
+  };
+  walk(children);
+
+  const trimmed = text.trim();
+  if (!trimmed) return null;
+
+  // Only treat it as a data block if it parses as JSON and looks like data.
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (parsed && typeof parsed === "object") {
+      return trimmed;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
 
 const defaultComponents = memoizeMarkdownComponents({
   h1: ({ className, ...props }) => (
@@ -180,15 +217,24 @@ const defaultComponents = memoizeMarkdownComponents({
   sup: ({ className, ...props }) => (
     <sup className={cn("aui-md-sup [&>a]:text-xs [&>a]:no-underline", className)} {...props} />
   ),
-  pre: ({ className, ...props }) => (
-    <pre
-      className={cn(
-        "aui-md-pre overflow-x-auto rounded-t-none rounded-b-lg border border-border/50 border-t-0 bg-muted/30 p-3 text-xs leading-relaxed",
-        className,
-      )}
-      {...props}
-    />
-  ),
+  pre: function Pre({ className, children, ...props }: { className?: string; children?: ReactNode }) {
+    // Detect a JSON data block and render it as a table/chart instead of raw code.
+    const json = extractJsonFromPre(children);
+    if (json) {
+      return <DataViz json={json} />;
+    }
+    return (
+      <pre
+        className={cn(
+          "aui-md-pre overflow-x-auto rounded-t-none rounded-b-lg border border-border/50 border-t-0 bg-muted/30 p-3 text-xs leading-relaxed",
+          className,
+        )}
+        {...props}
+      >
+        {children}
+      </pre>
+    );
+  },
   code: function Code({ className, ...props }) {
     const isCodeBlock = useIsMarkdownCodeBlock();
     return (

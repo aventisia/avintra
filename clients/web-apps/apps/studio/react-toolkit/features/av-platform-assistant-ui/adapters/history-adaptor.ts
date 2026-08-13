@@ -8,7 +8,6 @@ import {
 
 import {
   getConversationMessages,
-  insertConversationMessage,
 } from "../apis/assist-conversations-apis";
 import {
   ConversationMessageDto,
@@ -18,13 +17,9 @@ import {
 /**
  * Binds assistant-ui message logs to your backend tables.
  * @param getConversationId Lazy dynamic getter to fetch or create the DB identifier.
- * @param flowVersionId Context marker for the active logic flow.
- * @param isReadOnly If true, prevents appending new data to the database.
  */
 export const createHistoryAdapter = (
   getConversationId: (allocateIfMissing: boolean) => Promise<string | undefined>,
-  flowVersionId: string,
-  isReadOnly: boolean,
 ): ThreadHistoryAdapter => {
   const mapRole = (role: ConversationMessageSenderEnum): ThreadMessage["role"] => {
     switch (role) {
@@ -37,24 +32,6 @@ export const createHistoryAdapter = (
       default:
         return "assistant";
     }
-  };
-
-  const mapToDtoRole = (role: ThreadMessage["role"]): ConversationMessageSenderEnum => {
-    switch (role) {
-      case "user":
-        return ConversationMessageSenderEnum.USER;
-      case "assistant":
-        return ConversationMessageSenderEnum.ASSISTANT;
-      case "system":
-        return ConversationMessageSenderEnum.SYSTEM;
-    }
-  };
-
-  const extractText = (msg: ThreadMessage): string => {
-    for (const part of msg.content ?? []) {
-      if (part.type === "text") return part.text;
-    }
-    return "";
   };
 
   const mapDtoToThreadMessage = (msg: ConversationMessageDto): ThreadMessage => {
@@ -93,17 +70,6 @@ export const createHistoryAdapter = (
     };
   };
 
-  // Takes dynamic threadId now
-  const mapThreadToDto = (msg: ThreadMessage, threadId: string): ConversationMessageDto => ({
-    conversationId: threadId,
-    flowVersionId,
-    content: extractText(msg),
-    role: mapToDtoRole(msg.role),
-    metadata: msg.metadata as Record<string, unknown>,
-    files: null,
-    createdOn: msg.createdAt ? msg.createdAt.toISOString() : new Date().toISOString(),
-  });
-
   return {
     async load(): Promise<ExportedMessageRepository> {
       try {
@@ -133,25 +99,15 @@ export const createHistoryAdapter = (
       }
     },
 
-    async append(item: ExportedMessageRepositoryItem): Promise<void> {
-      if (isReadOnly) {
-        console.warn("History Adapter: Attempted to append in readOnly mode. Action blocked.");
-        return;
-      }
-
-      try {
-        // Enforce lazy allocation. If the user hits enter and an ID doesn't exist, generate one now.
-        const threadId = await getConversationId(true);
-        if (!threadId) return; // Silent fail (applies to temporary mode which skips DB logic entirely)
-
-        const msg = item.message;
-        if (!msg) return;
-
-        const dto = mapThreadToDto(msg, threadId);
-        await insertConversationMessage(dto);
-      } catch (err) {
-        console.error("Failed to append communication log:", err);
-      }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    async append(_item: ExportedMessageRepositoryItem): Promise<void> {
+      // Load-only history adapter.
+      //
+      // Message persistence is owned by the llmpipeline /chat/completions
+      // streaming path (it writes the user + assistant + tool messages to
+      // worc_ConversationMessages as it streams). Writing again here would
+      // create duplicate rows, so append is intentionally a no-op.
+      return;
     },
   };
 };

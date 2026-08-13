@@ -151,6 +151,46 @@ async def generate_langgraph_response_route(
         )
 
 
+@router.post("/chat/completions/normalized")
+async def generate_langgraph_response_normalized_route(
+    request: LLMRequest,
+    user: User = Depends(authorize()),
+):
+    """Stream a chat completion using the normalized, frontend-friendly protocol.
+
+    Yields clean ``LLMChunkResponse``-shaped SSE frames (``delta``, ``tool_call``,
+    ``tools``, ``followup``, ``done``) that the browser chat client can consume
+    directly for token streaming, tool calling, and follow-up suggestions.
+
+    Returns:
+        A ``text/event-stream`` SSE response.
+    """
+
+    credential_id = str(request.credential_id).strip() if request.credential_id else None
+    if credential_id in {"", "00000000-0000-0000-0000-000000000000"}:
+        request.credential_id = None
+    else:
+        request.credential_id = credential_id
+
+    if request.conversation_id is None:
+        request.conversation_id = str(uuid4())
+
+    if request.kb_names:
+        await retrieve_and_inject_kb_context(request, user)
+
+    async def event_generator():
+        if request.is_temp_chat:
+            async for chunk in chat_service.stream_normalized(request, user):
+                yield _serialize_chunk(chunk)
+        else:
+            async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
+                async for chunk in chat_service.stream_normalized(request, user, db_session=session):
+                    yield _serialize_chunk(chunk)
+                    await session.commit()
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
 def _serialize_chunk(chunk: Any) -> str:
     """Serialize a stream chunk into a single SSE frame."""
 
