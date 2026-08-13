@@ -15,14 +15,16 @@ import { useShallow } from "zustand/react/shallow";
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
+import { CanvasNodeDetailPanel } from "@/features/execute-flow/components/CanvasNodeDetailPanel";
+import { ClearRunResultsPanel } from "@/features/execute-flow/components/ClearRunResultsPanel";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
-import { useTrackSelection } from "@/hooks/useTrackSelection";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { useTrackSelectionStore } from "@/stores/track-selection-store";
 
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
 import { useCopyPasteShortcuts } from "../hooks/useCopyPasteShortcuts";
@@ -82,8 +84,6 @@ export const ReactFlowExt = () => {
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
   const customEdgesTypeObjMemo = useMemo(() => CustomEdgeTypeObj, []);
 
-  // Track ReactFlow selection change
-  useTrackSelection();
   useCopyPasteShortcuts();
 
   useHistoryTracker(); // Initialize background  tracking
@@ -183,9 +183,21 @@ export const ReactFlowExt = () => {
     setMenu(null);
   }, [setMenu]);
 
-  const handleSelectionChange = useCallback(({ nodes }: OnSelectionChangeParams) => {
-    setSelectedNode(nodes[0] || null);
-  }, []);
+  const { setSelectedNodes, setMultipleNodesSelected } = useTrackSelectionStore(
+    useShallow((state) => ({
+      setSelectedNodes: state.setSelectedNodes,
+      setMultipleNodesSelected: state.setMultipleNodesSelected,
+    })),
+  );
+
+  const handleSelectionChange = useCallback(
+    ({ nodes }: OnSelectionChangeParams) => {
+      setSelectedNode(nodes[0] || null);
+      setSelectedNodes(nodes);
+      setMultipleNodesSelected(nodes.length > 1);
+    },
+    [setSelectedNode, setSelectedNodes, setMultipleNodesSelected],
+  );
 
   // Render ReactFlow component
   return (
@@ -220,10 +232,12 @@ export const ReactFlowExt = () => {
           >
             {flowType === FlowTypesEnum.ChatAgent && <TestChatAgent />}
             <ViewControls />
+            <ClearRunResultsPanel />
             <BackgroundExt />
             <MiniMapExt />
           </ReactFlow>
           <ReactFlowContextMenu />
+          <CanvasNodeDetailPanel />
           {isLoading && (
             <div className="absolute inset-0 -top-16 flex items-center justify-center  backdrop-blur-sm">
               <LoadingSpinner className="h-6 w-6 text-primary" />

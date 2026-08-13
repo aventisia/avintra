@@ -201,6 +201,9 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         return 1;
     }
 
+    var parsedFlow = ReactFlowHelper.Parse(graph.ReactFlowObject)
+        ?? throw new InvalidOperationException("Failed to parse execution graph ReactFlow object.");
+
     Console.WriteLine("Marking job as running...");
     try
     {
@@ -242,7 +245,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
             // Local mode: push progress over the WS (running) as each node starts.
             if (localWs is not null)
             {
-                var node = graph.Nodes.FirstOrDefault(n => n.Id == nodeId);
+                var node = parsedFlow.Nodes.FirstOrDefault(n => n.Id == nodeId);
                 if (node?.Data?.IsDisabled == true)
                 {
                     DebugLog.Info($"Node progress (running) skipped because node is disabled: {nodeId}");
@@ -250,7 +253,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
                 }
 
                 DebugLog.Info($"Node progress (running): {nodeId}");
-                _ = localWs.PushNodeProgressAsync(nodeId, "running", nodeId);
+                _ = localWs.PushNodeProgressAsync(nodeId, "running", nodeId, null);
             }
         },
         // Local mode: push the per-node outcome over the WS immediately as each node
@@ -262,7 +265,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
             {
                 var status = nodeLog.IsSuccess ? "success" : "failed";
                 DebugLog.Info($"Node progress ({status}): {nodeLog.NodeId}");
-                _ = localWs.PushNodeProgressAsync(nodeLog.NodeId, status, nodeLog.NodeName);
+                _ = localWs.PushNodeProgressAsync(nodeLog.NodeId, status, nodeLog.NodeName, nodeLog);
             }
 
             // Always log failed node details to the console/debug log so a local run
@@ -322,7 +325,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         {
             var status = log.IsSuccess ? "success" : "failed";
             DebugLog.Info($"Node progress ({status}): {log.NodeId}");
-            await localWs.PushNodeProgressAsync(log.NodeId, status, log.NodeName);
+            await localWs.PushNodeProgressAsync(log.NodeId, status, log.NodeName, log);
         }
     }
 
@@ -332,7 +335,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     if (localWs is not null)
     {
         DebugLog.Info($"Job completed ({jobStatus})");
-        await localWs.PushJobCompletedAsync(jobStatus, result.ErrorMessage);
+        await localWs.PushJobCompletedAsync(jobStatus, result.ErrorMessage, result.NodeLogs?.ToList());
     }
 
     Console.WriteLine($"Closing job with status: {jobStatus}");

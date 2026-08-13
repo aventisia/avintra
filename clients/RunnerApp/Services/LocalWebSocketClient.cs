@@ -1,5 +1,6 @@
 using System.Net.WebSockets;
 using System.Text;
+using ExecutorLibrary.FlowProcessor.Models;
 
 namespace RunnerApp.Services;
 
@@ -58,6 +59,7 @@ public sealed class LocalWebSocketClient : IAsyncDisposable
         string nodeId,
         string status,
         string nodeName,
+        NodeExecutionLog? nodeLog = null,
         CancellationToken ct = default)
     {
         var payload = JsonSerializer.Serialize(new
@@ -66,7 +68,8 @@ public sealed class LocalWebSocketClient : IAsyncDisposable
             jobId = _jobId,
             nodeId,
             status,
-            nodeName
+            nodeName,
+            nodeLog
         });
         return SendAsync(payload, ct);
     }
@@ -74,11 +77,13 @@ public sealed class LocalWebSocketClient : IAsyncDisposable
     /// <summary>
     /// Pushes a terminal job-status message to the Studio app over the local WS so it can
     /// reset its UI (e.g. return the execute button to its play state). Unlike the per-node
-    /// progress messages this is sent once, when the whole job finishes.
+    /// progress messages this is sent once, when the whole job finishes. Includes the full
+    /// per-node execution logs so the Studio app can persist results locally for refresh.
     /// </summary>
     public Task PushJobCompletedAsync(
         string status,
         string? message = null,
+        IReadOnlyList<NodeExecutionLog>? nodeLogs = null,
         CancellationToken ct = default)
     {
         var payload = JsonSerializer.Serialize(new
@@ -86,7 +91,8 @@ public sealed class LocalWebSocketClient : IAsyncDisposable
             type = "jobCompleted",
             jobId = _jobId,
             status,
-            message
+            message,
+            nodeLogs
         });
         return SendAsync(payload, ct);
     }

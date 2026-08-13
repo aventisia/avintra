@@ -30,6 +30,7 @@ import { insertJob } from "../apis/jobs-table-apis";
 import { abortJobExecution } from "../apis/jobs-table-apis";
 import { JobStatusEnum } from "../enums/job-status-enum";
 import { useLocalExecutionWebSocket } from "../hooks/useLocalExecutionWebSocket";
+import { useRunResultsQueryParams } from "../hooks/useRunResultsQueryParams";
 import { useJobDataStore } from "../stores/job-data-store";
 import { useLiveExecutionStore } from "../stores/live-execution-store";
 
@@ -70,6 +71,7 @@ const ExecuteFlow = () => {
 
   const { isPending: isSaving, saveData, isSavePending } = useSaveFlow();
   const { executeFlowOnWebMutationAsync } = useExecuteFlowMutation();
+  const { setShowRunResults, setJobId } = useRunResultsQueryParams();
 
   // Live local (desktop) execution progress: subscribes to the Tauri WebSocket whenever a
   // job is active and dispatches per-node status into the live-execution store. No-op in
@@ -82,12 +84,15 @@ const ExecuteFlow = () => {
       if (notification.status === "Completed" && flowType !== FlowTypesEnum.ChatAgent) {
         toast.success(notification.message || "Flow execution completed successfully!");
         setExecutionState("stopped");
+        setShowRunResults(true);
       } else if (notification.status === "Failed") {
         toast.error(notification.message || "Flow execution failed.");
         setExecutionState("stopped");
+        setShowRunResults(true);
       } else if (notification.status === "Abort") {
         toast.info(notification.message || "Flow execution was aborted.");
         setExecutionState("stopped");
+        setShowRunResults(true);
       }
       queryClient.invalidateQueries({ queryKey: ["AGENT_JOB_EXECUTION"] });
     },
@@ -110,14 +115,12 @@ const ExecuteFlow = () => {
     // terminal status (CloseJob(Aborted)). Server/web runs abort via the backend API.
     if (IS_TAURI) {
       sendControl("abort");
-      setExecutionState("stopped");
-      toast.warning("Execution has been aborted");
-      return;
     }
 
     try {
       await abortJobExecution(currentFlow.jobId);
       setExecutionState("stopped");
+      setShowRunResults(true);
       toast.warning("Execution has been aborted");
     } catch (error) {
       console.error("Failed to abort execution:", error);
@@ -198,6 +201,8 @@ const ExecuteFlow = () => {
         });
 
         setCurrentFlow({ ...currentFlow, jobId: jobRes.data.id });
+        setJobId(jobRes.data.id);
+        setShowRunResults(true);
         updateField("startTime", executionStartTime);
         // Clear any stale live node statuses before the new run begins.
         useLiveExecutionStore.getState().resetLiveExecution();

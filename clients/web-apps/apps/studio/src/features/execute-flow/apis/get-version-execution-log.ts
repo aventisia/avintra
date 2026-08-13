@@ -17,8 +17,8 @@ export const getLocalExecutionLog = async (versionId: string) => {
       {
         executionId: "debug",
         number: "debug",
-        isSuccess: false,
-        executedOn: new Date().toISOString(),
+        isSuccess: versionLog.isSuccess ?? false,
+        executedOn: versionLog.executedOn ?? new Date().toISOString(),
         duration: 0,
         nodes: versionLog.versionLog.map((nodeLog): ExecutionNode => ({
           nodeExecutionId: nodeLog.nodeExecutionId,
