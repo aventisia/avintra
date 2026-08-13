@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{LLM_PIPELINE_APIS_BASE_URL}}/v2/llm/cancel/REPLACE_WITH_JOB_ID
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/v2/llm/cancel/{{ACTIVE_JOB_ID}}
   body: none
   auth: bearer
 }

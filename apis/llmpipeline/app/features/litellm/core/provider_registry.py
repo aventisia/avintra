@@ -28,14 +28,24 @@ PROVIDER_ALIASES: dict[str, str] = {
 }
 
 # Map LiteLLM's `litellm.model_cost[model]["mode"]` to our capability enum.
-# `mode` is LiteLLM's only reliable capability classifier. Unlisted modes
-# (e.g. image_generation, realtime) map to no capability and are dropped.
+# `mode` is LiteLLM's only reliable capability classifier. Unknown modes are
+# dropped (they map to no capability).
 CAPABILITY_BY_MODE: dict[str, str] = {
     "chat": "text",
     "completion": "text",
+    "responses": "responses",
     "embedding": "embedding",
     "audio_speech": "tts",
     "audio_transcription": "stt",
+    "image_generation": "image_generation",
+    "image_edit": "image_edit",
+    "video_generation": "video_generation",
+    "moderation": "moderation",
+    "ocr": "ocr",
+    "realtime": "realtime",
+    "rerank": "rerank",
+    "search": "search",
+    "vector_store": "vector_store",
 }
 
 
@@ -174,6 +184,19 @@ PROVIDER_MODEL_MAP: dict[str, dict[str, dict[str, str | None]]] = {
     "deepinfra": {
         "meta-llama/Meta-Llama-3.1-8B-Instruct": {"input": None, "output": None, "cache": None},
         "BAAI/bge-large-en-v1.5": {"service": None},
+    },
+    "elevenlabs": {
+        # STT (Scribe) models.
+        "scribe_v2": {"service": "ElevenLabsScribeV2"},
+        "scribe_v2_realtime": {"service": "ElevenLabsScribeV2Realtime"},
+        "scribe_v1": {"service": "ElevenLabsScribeV1"},
+        # TTS models.
+        "eleven_v3": {"service": "ElevenLabsV3"},
+        "eleven_multilingual_v2": {"service": "ElevenLabsMultilingualV2"},
+        "eleven_multilingual_v3": {"service": "ElevenLabsMultilingualV3"},
+        "eleven_turbo_v2": {"service": "ElevenLabsTurboV2"},
+        "eleven_flash_v2": {"service": "ElevenLabsFlashV2"},
+        "eleven_english_v2": {"service": "ElevenLabsEnglishV2"},
     },
 }
 

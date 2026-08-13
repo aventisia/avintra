@@ -6,7 +6,6 @@ import time
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 
-from app.core.credit_manager import CreditManagerService
 from app.core.logger import log_exception, logger
 from app.features.auth.authenticated_user import User
 from app.utils.errors import friendly_error
@@ -17,15 +16,20 @@ from app.utils.file_converter_utils import (
 )
 
 from .kb_integration import augment_with_kb_context
-from .litellm_service import litellm_service
-from .provider_registry import (
+from ..core.credit_utils import (
+    build_credit_entry,
+    check_sufficient_credits,
+    post_platform_credit_usage,
+)
+from ..core.litellm_service import litellm_service
+from ..core.provider_registry import (
     get_credit_service_type,
     should_post_usage,
     validate_model,
     validate_provider,
 )
-from .schemas import LLMGenerationChunk, LLMGenerationRequest, LLMGenerationResponse
-from .streaming_job_manager import v2_job_manager
+from ..core.schemas import LLMGenerationChunk, LLMGenerationRequest, LLMGenerationResponse
+from ..core.streaming_job_manager import v2_job_manager
 
 
 def _attach_files(messages: list[dict], files: list[str]) -> list[dict]:
@@ -169,12 +173,23 @@ def _build_response_format(req: LLMGenerationRequest) -> dict | None:
     return None
 
 
-def _check_credits(req: LLMGenerationRequest, user: User) -> None:
-    if req.is_byok_enabled and req.credential_id:
-        return
-    credit_mgr = CreditManagerService()
-    if not credit_mgr.has_sufficient_credits(req.provider, user.access_token):
-        raise HTTPException(status_code=400, detail="Insufficient credits.")
+def _map_finish_reason_to_status(finish_reason: str | None) -> str:
+    """Map a provider finish reason to a user-facing response status.
+
+    Finish reasons are OpenAI/LiteLLM stream terminators. We translate them into
+    the statuses the `LLMGenerationResponse` contract exposes:
+
+      - 'stop'            -> completed   (natural end of generation)
+      - 'tool_calls' / 'function_call' -> completed (provider returned tool calls)
+      - 'length'          -> incomplete (output was truncated by max-token limit)
+      - 'content_filter'  -> failed     (output was blocked by the content filter)
+      - None / any other  -> completed  (treated as a successful response)
+    """
+    if finish_reason == "length":
+        return "incomplete"
+    if finish_reason == "content_filter":
+        return "failed"
+    return "completed"
 
 
 def _post_credit_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, user: User) -> None:
@@ -182,32 +197,18 @@ def _post_credit_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, u
     if not should_post_usage(req.is_byok_enabled, req.credential_id):
         return
     try:
-        credit_mgr = CreditManagerService()
-        payload = []
+        entries = []
         if (resp.input_tokens or 0) > 0:
             service = get_credit_service_type(req.provider, req.model, "input")
             if service:
-                payload.append(_entry(req, service, resp.input_tokens))
+                entries.append(build_credit_entry(service, resp.input_tokens, req.ref_type, req.ref_id, req.ref_name, req.action, req.agent_name))
         if (resp.output_tokens or 0) > 0:
             service = get_credit_service_type(req.provider, req.model, "output")
             if service:
-                payload.append(_entry(req, service, resp.output_tokens))
-        if payload:
-            credit_mgr.post_credit_usage(req.provider, payload, user.access_token)
+                entries.append(build_credit_entry(service, resp.output_tokens, req.ref_type, req.ref_id, req.ref_name, req.action, req.agent_name))
+        post_platform_credit_usage(req.provider, entries, user.access_token)
     except Exception as e:
         logger.warning(f"[LLM-V2] Failed to post credit usage: {e}")
-
-
-def _entry(req: LLMGenerationRequest, service_type: str, units: int) -> dict:
-    return {
-        "ServiceType": service_type,
-        "ConsumedUnit": max(units, 0),
-        "RefType": req.ref_type,
-        "RefId": req.ref_id,
-        "RefName": req.ref_name,
-        "Action": req.action or "AgentExecution",
-        "TriggeredByAgent": req.agent_name,
-    }
 
 
 class GenerationService:
@@ -217,7 +218,7 @@ class GenerationService:
     async def generate(self, req: LLMGenerationRequest, user: User) -> LLMGenerationResponse:
         validate_provider(req.provider, req.is_byok_enabled, req.credential_id)
         validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_id)
-        # _check_credits(req, user)
+        check_sufficient_credits(req.is_byok_enabled, req.credential_id, req.provider, user.access_token)
         await augment_with_kb_context(req, user)
 
         messages = _messages_from_request(req)
@@ -244,12 +245,13 @@ class GenerationService:
 
         output = self._extract_output(result)
         usage = getattr(result, "usage", None) or {}
+        finish_reason = self._extract_finish_reason(result)
         response = LLMGenerationResponse(
             provider=req.provider,
             model=req.model,
             output=output,
-            status="completed",
-            finish_reason=self._extract_finish_reason(result),
+            status=_map_finish_reason_to_status(finish_reason),
+            finish_reason=finish_reason,
             max_output_tokens=req.max_output_tokens,
             temperature=req.temperature or 1.0,
             top_p=req.top_p or 1.0,
@@ -271,16 +273,23 @@ class GenerationService:
 
         The stream generator yields `LLMGenerationChunk` model_dump_json strings,
         one per non-empty content delta, stopping early if the job is cancelled.
+        When the stream finishes, a final `LLMGenerationResponse` is emitted and
+        credit usage is posted (only for platform, non-BYOK requests).
         """
         validate_provider(req.provider, req.is_byok_enabled, req.credential_id)
         validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_id)
-        # _check_credits(req, user)
+        check_sufficient_credits(req.is_byok_enabled, req.credential_id, req.provider, user.access_token)
         await augment_with_kb_context(req, user)
 
         messages = _messages_from_request(req)
         response_format = _build_response_format(req)
 
         async def event_stream():
+            # Accumulate the streamed text so a final response can be returned
+            # and billed once the provider finishes streaming.
+            streamed_text: list[str] = []
+            finish_reason: str | None = None
+            start = time.perf_counter()
             try:
                 # chat_completion is an async method: await it to obtain the
                 # stream's async generator before iterating.
@@ -295,7 +304,9 @@ class GenerationService:
                     text = ""
                     if delta and delta[0].delta:
                         text = delta[0].delta.content or ""
+                        finish_reason = getattr(delta[0], "finish_reason", None) or finish_reason
                     if text:
+                        streamed_text.append(text)
                         chunk_dto = LLMGenerationChunk(
                             provider=req.provider,
                             model=req.model,
@@ -308,11 +319,38 @@ class GenerationService:
                 # truncated mid-stream.
                 log_exception(logger, exc, "[LLM-V2] stream error: ")
                 yield self._error_chunk(req, str(exc.detail)).model_dump_json()
+                return
             except Exception as e:
                 log_exception(logger, e, "[LLM-V2] stream error: ")
                 yield self._error_chunk(req, friendly_error(e)).model_dump_json()
+                return
             finally:
                 v2_job_manager.cleanup(job_id)
+
+            # The stream completed: assemble the final response from the
+            # accumulated deltas and emit it so the client knows streaming ended.
+            response = LLMGenerationResponse(
+                provider=req.provider,
+                model=req.model,
+                output="".join(streamed_text),
+                status=_map_finish_reason_to_status(finish_reason),
+                finish_reason=finish_reason,
+                stream=True,
+                time_taken=round(time.perf_counter() - start, 2),
+                input_tokens=0,
+                output_tokens=0,
+                is_json_output=req.is_json_output,
+                is_byok_enabled=req.is_byok_enabled,
+                credential_id=req.credential_id,
+                conversation_id=req.conversation_id,
+                is_temp_chat=req.is_temp_chat,
+            )
+            yield response.model_dump_json()
+
+            # Post credit usage only for platform (non-BYOK) requests.
+            if not should_post_usage(req.is_byok_enabled, req.credential_id):
+                return
+            _post_credit_usage(req, response, user)
 
         job_id = v2_job_manager.register(event_stream)
         return job_id, event_stream()

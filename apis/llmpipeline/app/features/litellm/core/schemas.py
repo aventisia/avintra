@@ -27,6 +27,7 @@ ProviderLiteral = Literal[
     "ollama",
     "openrouter",
     "deepinfra",
+    "elevenlabs",
 ]
 
 
@@ -35,6 +36,16 @@ class ProviderCapability(str, Enum):
     EMBEDDING = "embedding"
     TTS = "tts"
     STT = "stt"
+    IMAGE_GENERATION = "image_generation"
+    IMAGE_EDIT = "image_edit"
+    VIDEO_GENERATION = "video_generation"
+    MODERATION = "moderation"
+    OCR = "ocr"
+    REALTIME = "realtime"
+    RERANK = "rerank"
+    RESPONSES = "responses"
+    SEARCH = "search"
+    VECTOR_STORE = "vector_store"
 
 
 class V2ChatMessage(BaseModel):
@@ -154,12 +165,19 @@ class EmbeddingResponse(BaseModel):
 
 
 class ProviderInfo(BaseModel):
-    """A provider as reported by LiteLLM (dynamic)."""
+    """A provider as reported by LiteLLM (dynamic).
+
+    `capabilities` is the set of capabilities (text/embedding/tts/stt, ...) the
+    provider supports, derived from its models in LiteLLM's model catalog.
+    Models are NOT included here; they are served separately by the
+    `/v2/llm/models` endpoint.
+    """
     name: str
+    capabilities: list[str] = Field(default_factory=list)
 
 
 class ProvidersResponse(BaseModel):
-    providers: list[str]
+    providers: list[ProviderInfo]
     count: int = 0
 
 
@@ -194,3 +212,86 @@ class ModelsResponse(BaseModel):
     provider: str
     models: list[ModelInfo]
     count: int = 0
+
+
+class STTRequest(BaseModel):
+    """Self-contained Speech-to-Text request for the LiteLLM feature.
+
+    Mirrors the ElevenLabs `STTProviderRequest` contract (coexists with it) but
+    is intentionally defined here so the LiteLLM feature never imports from the
+    ElevenLabs `stt_providers` schemas.
+    """
+    provider: str
+    model: str
+    input: str  # URL, local path, or base64 data URI
+    language: Optional[str] = None
+    stream: bool = False
+    credentials_id: Optional[str] = None
+    is_byok_enabled: bool = False
+    ref_type: str = ""
+    ref_id: str = ""
+    ref_name: str = ""
+    action: str = ""
+    agent_name: Optional[str] = None
+
+
+class STTResponse(BaseModel):
+    provider: str
+    model: str
+    output: Optional[str] = None
+    status: Literal["completed", "failed"] = "completed"
+    error: Optional[str] = None
+    stream: bool = False
+    credentials_id: Optional[str] = None
+    is_byok_enabled: bool = False
+    duration_seconds: Optional[float] = None
+    token_count: Optional[float] = None
+    time_taken: Optional[float] = None
+    created_on: datetime = Field(default_factory=_utc_now)
+    ref_id: Optional[str] = None
+    ref_type: Optional[str] = None
+    ref_name: Optional[str] = None
+    agent_name: Optional[str] = None
+    action: Optional[str] = None
+
+
+class TTSRequest(BaseModel):
+    """Self-contained Text-to-Speech request for the LiteLLM feature.
+
+    Mirrors the ElevenLabs `TTSProviderRequest` contract (coexists with it) but
+    is intentionally defined here so the LiteLLM feature never imports from the
+    ElevenLabs `tts_providers` schemas.
+    """
+    provider: str
+    model: str
+    input: str
+    voice_id: Optional[str] = None
+    language: Optional[str] = None
+    speed: float = 1.0
+    stream: bool = False
+    credentials_id: Optional[str] = None
+    is_byok_enabled: bool = False
+    ref_type: str = ""
+    ref_id: str = ""
+    ref_name: str = ""
+    action: str = ""
+    agent_name: Optional[str] = None
+
+
+class TTSResponse(BaseModel):
+    provider: str
+    model: str
+    output: Optional[str] = None  # base64-encoded audio
+    status: Literal["completed", "failed"] = "completed"
+    error: Optional[str] = None
+    stream: bool = False
+    credentials_id: Optional[str] = None
+    is_byok_enabled: bool = False
+    token_count: Optional[float] = None
+    time_taken: Optional[float] = None
+    created_on: datetime = Field(default_factory=_utc_now)
+    ref_id: Optional[str] = None
+    ref_type: Optional[str] = None
+    ref_name: Optional[str] = None
+    agent_name: Optional[str] = None
+    action: Optional[str] = None

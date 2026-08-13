@@ -1,0 +1,25 @@
+meta {
+  name: v2 llm list tts models
+  type: http
+  seq: 15
+}
+
+get {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/v2/llm/models?provider=elevenlabs&capability=tts
+  body: none
+  auth: bearer
+}
+
+params:query {
+  provider: elevenlabs
+  capability: tts
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -15,7 +15,7 @@ from app.features.llm_providers.llm_providers_schemas import (
     LLMRequest as LegacyLLMRequest,
 )
 
-from .schemas import LLMGenerationRequest
+from ..core.schemas import LLMGenerationRequest
 
 
 def _to_legacy_request(req: LLMGenerationRequest) -> LegacyLLMRequest:
