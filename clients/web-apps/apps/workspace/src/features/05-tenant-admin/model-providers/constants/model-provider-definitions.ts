@@ -3,52 +3,26 @@ import { vaultAppIconMapper } from "@/features/02-configure/vault-table/vault-co
 
 import { ModelProviderEnum } from "../enums/model-provider-enum";
 
-/**
- * Metadata describing a single model provider card in the Model Providers section.
- */
 export interface ModelProviderDefinition {
-  /** Backend provider type value (matches LLMProviderTypesEnum). */
   value: ModelProviderEnum;
-
-  /** Display name shown on the card. */
   label: string;
-
-  /** The vault (AppSecret) enum used to resolve the brand icon and filter credentials. */
   vaultType: VaultAppsEnum;
-
-  /** Short description shown on the card. */
   description: string;
-
-  /**
-   * Whether this provider uses a self-hosted URL (e.g. Ollama) instead of a vault
-   * credential. Such providers are configured via a URL + on-prem model flow.
-   */
   isUrlBased?: boolean;
 }
 
-/** Base URL prefix used to render brand assets (same as the vault). */
 const basePath = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
 
-/**
- * Resolves the brand icon for a provider.
- * URL-based providers (e.g. Ollama) use a dedicated brand asset; others use the
- * same vault icon mapper the vault uses.
- */
 export const getProviderIcon = (provider: ModelProviderDefinition): string => {
   if (provider.isUrlBased) {
-    // URL-based providers (e.g. Ollama) use a dedicated brand asset (.webp).
     return `${basePath}/brand-img/${provider.value.toLowerCase()}.webp`;
   }
   return `${basePath}${vaultAppIconMapper[provider.vaultType]}`;
 };
 
-/**
- * Returns whether the given provider uses a self-hosted URL instead of a vault credential.
- */
 export const isUrlBasedProvider = (providerType: ModelProviderEnum): boolean =>
   modelProviderDefinitions.find((p) => p.value === providerType)?.isUrlBased ?? false;
 
-/** Registry of the five model providers rendered in the section. */
 export const modelProviderDefinitions: ModelProviderDefinition[] = [
   {
     value: ModelProviderEnum.OpenAI,
@@ -93,12 +67,868 @@ export const modelProviderDefinitions: ModelProviderDefinition[] = [
     vaultType: VaultAppsEnum.OllamaCloud,
     description: "Connect to Ollama Cloud to use its hosted models.",
   },
+  {
+    value: ModelProviderEnum.Groq,
+    label: "Groq",
+    vaultType: VaultAppsEnum.Groq,
+    description: "Enable Groq LPU-accelerated models.",
+  },
+  {
+    value: ModelProviderEnum.Bedrock,
+    label: "Bedrock",
+    vaultType: VaultAppsEnum.Bedrock,
+    description: "Enable Amazon Bedrock foundation models.",
+  },
+  {
+    value: ModelProviderEnum.Mistral,
+    label: "Mistral",
+    vaultType: VaultAppsEnum.Mistral,
+    description: "Enable Mistral AI models.",
+  },
+
+  // --- Individual LiteLLM provider types (generated) ---
+  {
+    value: ModelProviderEnum.A2a,
+    label: "A2a",
+    vaultType: VaultAppsEnum.A2a,
+    description: "Enable a2a models.",
+  },
+  {
+    value: ModelProviderEnum.A2aAgent,
+    label: "A2aAgent",
+    vaultType: VaultAppsEnum.A2aAgent,
+    description: "Enable a2a_agent models.",
+  },
+  {
+    value: ModelProviderEnum.Ai21,
+    label: "Ai21",
+    vaultType: VaultAppsEnum.Ai21,
+    description: "Enable ai21 models.",
+  },
+  {
+    value: ModelProviderEnum.Ai21Chat,
+    label: "Ai21Chat",
+    vaultType: VaultAppsEnum.Ai21Chat,
+    description: "Enable ai21_chat models.",
+  },
+  {
+    value: ModelProviderEnum.Aiml,
+    label: "Aiml",
+    vaultType: VaultAppsEnum.Aiml,
+    description: "Enable aiml models.",
+  },
+  {
+    value: ModelProviderEnum.AiohttpOpenai,
+    label: "AiohttpOpenai",
+    vaultType: VaultAppsEnum.AiohttpOpenai,
+    description: "Enable aiohttp_openai models.",
+  },
+  {
+    value: ModelProviderEnum.AmazonNova,
+    label: "AmazonNova",
+    vaultType: VaultAppsEnum.AmazonNova,
+    description: "Enable amazon_nova models.",
+  },
+  {
+    value: ModelProviderEnum.AnthropicText,
+    label: "AnthropicText",
+    vaultType: VaultAppsEnum.AnthropicText,
+    description: "Enable anthropic_text models.",
+  },
+  {
+    value: ModelProviderEnum.Apertis,
+    label: "Apertis",
+    vaultType: VaultAppsEnum.Apertis,
+    description: "Enable apertis models.",
+  },
+  {
+    value: ModelProviderEnum.Assemblyai,
+    label: "Assemblyai",
+    vaultType: VaultAppsEnum.Assemblyai,
+    description: "Enable assemblyai models.",
+  },
+  {
+    value: ModelProviderEnum.AutoRouter,
+    label: "AutoRouter",
+    vaultType: VaultAppsEnum.AutoRouter,
+    description: "Enable auto_router models.",
+  },
+  {
+    value: ModelProviderEnum.AwsPolly,
+    label: "AwsPolly",
+    vaultType: VaultAppsEnum.AwsPolly,
+    description: "Enable aws_polly models.",
+  },
+  {
+    value: ModelProviderEnum.Azure,
+    label: "Azure",
+    vaultType: VaultAppsEnum.Azure,
+    description: "Enable azure models.",
+  },
+  {
+    value: ModelProviderEnum.AzureAi,
+    label: "AzureAi",
+    vaultType: VaultAppsEnum.AzureAi,
+    description: "Enable azure_ai models.",
+  },
+  {
+    value: ModelProviderEnum.AzureText,
+    label: "AzureText",
+    vaultType: VaultAppsEnum.AzureText,
+    description: "Enable azure_text models.",
+  },
+  {
+    value: ModelProviderEnum.Baseten,
+    label: "Baseten",
+    vaultType: VaultAppsEnum.Baseten,
+    description: "Enable baseten models.",
+  },
+  {
+    value: ModelProviderEnum.BedrockMantle,
+    label: "BedrockMantle",
+    vaultType: VaultAppsEnum.BedrockMantle,
+    description: "Enable bedrock_mantle models.",
+  },
+  {
+    value: ModelProviderEnum.BlackForestLabs,
+    label: "BlackForestLabs",
+    vaultType: VaultAppsEnum.BlackForestLabs,
+    description: "Enable black_forest_labs models.",
+  },
+  {
+    value: ModelProviderEnum.Bytez,
+    label: "Bytez",
+    vaultType: VaultAppsEnum.Bytez,
+    description: "Enable bytez models.",
+  },
+  {
+    value: ModelProviderEnum.Cerebras,
+    label: "Cerebras",
+    vaultType: VaultAppsEnum.Cerebras,
+    description: "Enable cerebras models.",
+  },
+  {
+    value: ModelProviderEnum.CharityEngine,
+    label: "CharityEngine",
+    vaultType: VaultAppsEnum.CharityEngine,
+    description: "Enable charity_engine models.",
+  },
+  {
+    value: ModelProviderEnum.Chatgpt,
+    label: "Chatgpt",
+    vaultType: VaultAppsEnum.Chatgpt,
+    description: "Enable chatgpt models.",
+  },
+  {
+    value: ModelProviderEnum.Chutes,
+    label: "Chutes",
+    vaultType: VaultAppsEnum.Chutes,
+    description: "Enable chutes models.",
+  },
+  {
+    value: ModelProviderEnum.Clarifai,
+    label: "Clarifai",
+    vaultType: VaultAppsEnum.Clarifai,
+    description: "Enable clarifai models.",
+  },
+  {
+    value: ModelProviderEnum.Cloudflare,
+    label: "Cloudflare",
+    vaultType: VaultAppsEnum.Cloudflare,
+    description: "Enable cloudflare models.",
+  },
+  {
+    value: ModelProviderEnum.Codestral,
+    label: "Codestral",
+    vaultType: VaultAppsEnum.Codestral,
+    description: "Enable codestral models.",
+  },
+  {
+    value: ModelProviderEnum.Cohere,
+    label: "Cohere",
+    vaultType: VaultAppsEnum.Cohere,
+    description: "Enable cohere models.",
+  },
+  {
+    value: ModelProviderEnum.CohereChat,
+    label: "CohereChat",
+    vaultType: VaultAppsEnum.CohereChat,
+    description: "Enable cohere_chat models.",
+  },
+  {
+    value: ModelProviderEnum.Cometapi,
+    label: "Cometapi",
+    vaultType: VaultAppsEnum.Cometapi,
+    description: "Enable cometapi models.",
+  },
+  {
+    value: ModelProviderEnum.Compactifai,
+    label: "Compactifai",
+    vaultType: VaultAppsEnum.Compactifai,
+    description: "Enable compactifai models.",
+  },
+  {
+    value: ModelProviderEnum.Cursor,
+    label: "Cursor",
+    vaultType: VaultAppsEnum.Cursor,
+    description: "Enable cursor models.",
+  },
+  {
+    value: ModelProviderEnum.Custom,
+    label: "Custom",
+    vaultType: VaultAppsEnum.Custom,
+    description: "Enable custom models.",
+  },
+  {
+    value: ModelProviderEnum.CustomOpenai,
+    label: "CustomOpenai",
+    vaultType: VaultAppsEnum.CustomOpenai,
+    description: "Enable custom_openai models.",
+  },
+  {
+    value: ModelProviderEnum.Darkbloom,
+    label: "Darkbloom",
+    vaultType: VaultAppsEnum.Darkbloom,
+    description: "Enable darkbloom models.",
+  },
+  {
+    value: ModelProviderEnum.Dashscope,
+    label: "Dashscope",
+    vaultType: VaultAppsEnum.Dashscope,
+    description: "Enable dashscope models.",
+  },
+  {
+    value: ModelProviderEnum.Databricks,
+    label: "Databricks",
+    vaultType: VaultAppsEnum.Databricks,
+    description: "Enable databricks models.",
+  },
+  {
+    value: ModelProviderEnum.Datarobot,
+    label: "Datarobot",
+    vaultType: VaultAppsEnum.Datarobot,
+    description: "Enable datarobot models.",
+  },
+  {
+    value: ModelProviderEnum.Deepgram,
+    label: "Deepgram",
+    vaultType: VaultAppsEnum.Deepgram,
+    description: "Enable deepgram models.",
+  },
+  {
+    value: ModelProviderEnum.Deepinfra,
+    label: "Deepinfra",
+    vaultType: VaultAppsEnum.Deepinfra,
+    description: "Enable deepinfra models.",
+  },
+  {
+    value: ModelProviderEnum.Deepseek,
+    label: "Deepseek",
+    vaultType: VaultAppsEnum.Deepseek,
+    description: "Enable deepseek models.",
+  },
+  {
+    value: ModelProviderEnum.DockerModelRunner,
+    label: "DockerModelRunner",
+    vaultType: VaultAppsEnum.DockerModelRunner,
+    description: "Enable docker_model_runner models.",
+  },
+  {
+    value: ModelProviderEnum.Dotprompt,
+    label: "Dotprompt",
+    vaultType: VaultAppsEnum.Dotprompt,
+    description: "Enable dotprompt models.",
+  },
+  {
+    value: ModelProviderEnum.Empower,
+    label: "Empower",
+    vaultType: VaultAppsEnum.Empower,
+    description: "Enable empower models.",
+  },
+  {
+    value: ModelProviderEnum.FalAi,
+    label: "FalAi",
+    vaultType: VaultAppsEnum.FalAi,
+    description: "Enable fal_ai models.",
+  },
+  {
+    value: ModelProviderEnum.FeatherlessAi,
+    label: "FeatherlessAi",
+    vaultType: VaultAppsEnum.FeatherlessAi,
+    description: "Enable featherless_ai models.",
+  },
+  {
+    value: ModelProviderEnum.FireworksAi,
+    label: "FireworksAi",
+    vaultType: VaultAppsEnum.FireworksAi,
+    description: "Enable fireworks_ai models.",
+  },
+  {
+    value: ModelProviderEnum.Friendliai,
+    label: "Friendliai",
+    vaultType: VaultAppsEnum.Friendliai,
+    description: "Enable friendliai models.",
+  },
+  {
+    value: ModelProviderEnum.Galadriel,
+    label: "Galadriel",
+    vaultType: VaultAppsEnum.Galadriel,
+    description: "Enable galadriel models.",
+  },
+  {
+    value: ModelProviderEnum.Gdc,
+    label: "Gdc",
+    vaultType: VaultAppsEnum.Gdc,
+    description: "Enable gdc models.",
+  },
+  {
+    value: ModelProviderEnum.Gigachat,
+    label: "Gigachat",
+    vaultType: VaultAppsEnum.Gigachat,
+    description: "Enable gigachat models.",
+  },
+  {
+    value: ModelProviderEnum.Github,
+    label: "Github",
+    vaultType: VaultAppsEnum.Github,
+    description: "Enable github models.",
+  },
+  {
+    value: ModelProviderEnum.GithubCopilot,
+    label: "GithubCopilot",
+    vaultType: VaultAppsEnum.GithubCopilot,
+    description: "Enable github_copilot models.",
+  },
+  {
+    value: ModelProviderEnum.GradientAi,
+    label: "GradientAi",
+    vaultType: VaultAppsEnum.GradientAi,
+    description: "Enable gradient_ai models.",
+  },
+  {
+    value: ModelProviderEnum.Helicone,
+    label: "Helicone",
+    vaultType: VaultAppsEnum.Helicone,
+    description: "Enable helicone models.",
+  },
+  {
+    value: ModelProviderEnum.Heroku,
+    label: "Heroku",
+    vaultType: VaultAppsEnum.Heroku,
+    description: "Enable heroku models.",
+  },
+  {
+    value: ModelProviderEnum.HostedVllm,
+    label: "HostedVllm",
+    vaultType: VaultAppsEnum.HostedVllm,
+    description: "Enable hosted_vllm models.",
+  },
+  {
+    value: ModelProviderEnum.Huggingface,
+    label: "Huggingface",
+    vaultType: VaultAppsEnum.Huggingface,
+    description: "Enable huggingface models.",
+  },
+  {
+    value: ModelProviderEnum.Humanloop,
+    label: "Humanloop",
+    vaultType: VaultAppsEnum.Humanloop,
+    description: "Enable humanloop models.",
+  },
+  {
+    value: ModelProviderEnum.Hyperbolic,
+    label: "Hyperbolic",
+    vaultType: VaultAppsEnum.Hyperbolic,
+    description: "Enable hyperbolic models.",
+  },
+  {
+    value: ModelProviderEnum.Inception,
+    label: "Inception",
+    vaultType: VaultAppsEnum.Inception,
+    description: "Enable inception models.",
+  },
+  {
+    value: ModelProviderEnum.Infinity,
+    label: "Infinity",
+    vaultType: VaultAppsEnum.Infinity,
+    description: "Enable infinity models.",
+  },
+  {
+    value: ModelProviderEnum.JinaAi,
+    label: "JinaAi",
+    vaultType: VaultAppsEnum.JinaAi,
+    description: "Enable jina_ai models.",
+  },
+  {
+    value: ModelProviderEnum.LambdaAi,
+    label: "LambdaAi",
+    vaultType: VaultAppsEnum.LambdaAi,
+    description: "Enable lambda_ai models.",
+  },
+  {
+    value: ModelProviderEnum.Langflow,
+    label: "Langflow",
+    vaultType: VaultAppsEnum.Langflow,
+    description: "Enable langflow models.",
+  },
+  {
+    value: ModelProviderEnum.Langfuse,
+    label: "Langfuse",
+    vaultType: VaultAppsEnum.Langfuse,
+    description: "Enable langfuse models.",
+  },
+  {
+    value: ModelProviderEnum.Langgraph,
+    label: "Langgraph",
+    vaultType: VaultAppsEnum.Langgraph,
+    description: "Enable langgraph models.",
+  },
+  {
+    value: ModelProviderEnum.Lemonade,
+    label: "Lemonade",
+    vaultType: VaultAppsEnum.Lemonade,
+    description: "Enable lemonade models.",
+  },
+  {
+    value: ModelProviderEnum.Libertai,
+    label: "Libertai",
+    vaultType: VaultAppsEnum.Libertai,
+    description: "Enable libertai models.",
+  },
+  {
+    value: ModelProviderEnum.LitellmAgent,
+    label: "LitellmAgent",
+    vaultType: VaultAppsEnum.LitellmAgent,
+    description: "Enable litellm_agent models.",
+  },
+  {
+    value: ModelProviderEnum.LitellmProxy,
+    label: "LitellmProxy",
+    vaultType: VaultAppsEnum.LitellmProxy,
+    description: "Enable litellm_proxy models.",
+  },
+  {
+    value: ModelProviderEnum.Llamafile,
+    label: "Llamafile",
+    vaultType: VaultAppsEnum.Llamafile,
+    description: "Enable llamafile models.",
+  },
+  {
+    value: ModelProviderEnum.LmStudio,
+    label: "LmStudio",
+    vaultType: VaultAppsEnum.LmStudio,
+    description: "Enable lm_studio models.",
+  },
+  {
+    value: ModelProviderEnum.Manus,
+    label: "Manus",
+    vaultType: VaultAppsEnum.Manus,
+    description: "Enable manus models.",
+  },
+  {
+    value: ModelProviderEnum.Maritalk,
+    label: "Maritalk",
+    vaultType: VaultAppsEnum.Maritalk,
+    description: "Enable maritalk models.",
+  },
+  {
+    value: ModelProviderEnum.Meta,
+    label: "Meta",
+    vaultType: VaultAppsEnum.Meta,
+    description: "Enable meta models.",
+  },
+  {
+    value: ModelProviderEnum.MetaLlama,
+    label: "MetaLlama",
+    vaultType: VaultAppsEnum.MetaLlama,
+    description: "Enable meta_llama models.",
+  },
+  {
+    value: ModelProviderEnum.Milvus,
+    label: "Milvus",
+    vaultType: VaultAppsEnum.Milvus,
+    description: "Enable milvus models.",
+  },
+  {
+    value: ModelProviderEnum.Minimax,
+    label: "Minimax",
+    vaultType: VaultAppsEnum.Minimax,
+    description: "Enable minimax models.",
+  },
+  {
+    value: ModelProviderEnum.Modelscope,
+    label: "Modelscope",
+    vaultType: VaultAppsEnum.Modelscope,
+    description: "Enable modelscope models.",
+  },
+  {
+    value: ModelProviderEnum.Moonshot,
+    label: "Moonshot",
+    vaultType: VaultAppsEnum.Moonshot,
+    description: "Enable moonshot models.",
+  },
+  {
+    value: ModelProviderEnum.Morph,
+    label: "Morph",
+    vaultType: VaultAppsEnum.Morph,
+    description: "Enable morph models.",
+  },
+  {
+    value: ModelProviderEnum.NanoGpt,
+    label: "NanoGpt",
+    vaultType: VaultAppsEnum.NanoGpt,
+    description: "Enable nano-gpt models.",
+  },
+  {
+    value: ModelProviderEnum.Nebius,
+    label: "Nebius",
+    vaultType: VaultAppsEnum.Nebius,
+    description: "Enable nebius models.",
+  },
+  {
+    value: ModelProviderEnum.Neosantara,
+    label: "Neosantara",
+    vaultType: VaultAppsEnum.Neosantara,
+    description: "Enable neosantara models.",
+  },
+  {
+    value: ModelProviderEnum.NlpCloud,
+    label: "NlpCloud",
+    vaultType: VaultAppsEnum.NlpCloud,
+    description: "Enable nlp_cloud models.",
+  },
+  {
+    value: ModelProviderEnum.Novita,
+    label: "Novita",
+    vaultType: VaultAppsEnum.Novita,
+    description: "Enable novita models.",
+  },
+  {
+    value: ModelProviderEnum.Nscale,
+    label: "Nscale",
+    vaultType: VaultAppsEnum.Nscale,
+    description: "Enable nscale models.",
+  },
+  {
+    value: ModelProviderEnum.NvidiaNim,
+    label: "NvidiaNim",
+    vaultType: VaultAppsEnum.NvidiaNim,
+    description: "Enable nvidia_nim models.",
+  },
+  {
+    value: ModelProviderEnum.NvidiaRiva,
+    label: "NvidiaRiva",
+    vaultType: VaultAppsEnum.NvidiaRiva,
+    description: "Enable nvidia_riva models.",
+  },
+  {
+    value: ModelProviderEnum.Oci,
+    label: "Oci",
+    vaultType: VaultAppsEnum.Oci,
+    description: "Enable oci models.",
+  },
+  {
+    value: ModelProviderEnum.OllamaChat,
+    label: "OllamaChat",
+    vaultType: VaultAppsEnum.OllamaChat,
+    description: "Enable ollama_chat models.",
+  },
+  {
+    value: ModelProviderEnum.Oobabooga,
+    label: "Oobabooga",
+    vaultType: VaultAppsEnum.Oobabooga,
+    description: "Enable oobabooga models.",
+  },
+  {
+    value: ModelProviderEnum.OpenaiLike,
+    label: "OpenaiLike",
+    vaultType: VaultAppsEnum.OpenaiLike,
+    description: "Enable openai_like models.",
+  },
+  {
+    value: ModelProviderEnum.Ovhcloud,
+    label: "Ovhcloud",
+    vaultType: VaultAppsEnum.Ovhcloud,
+    description: "Enable ovhcloud models.",
+  },
+  {
+    value: ModelProviderEnum.Parasail,
+    label: "Parasail",
+    vaultType: VaultAppsEnum.Parasail,
+    description: "Enable parasail models.",
+  },
+  {
+    value: ModelProviderEnum.Perplexity,
+    label: "Perplexity",
+    vaultType: VaultAppsEnum.Perplexity,
+    description: "Enable perplexity models.",
+  },
+  {
+    value: ModelProviderEnum.Petals,
+    label: "Petals",
+    vaultType: VaultAppsEnum.Petals,
+    description: "Enable petals models.",
+  },
+  {
+    value: ModelProviderEnum.PgVector,
+    label: "PgVector",
+    vaultType: VaultAppsEnum.PgVector,
+    description: "Enable pg_vector models.",
+  },
+  {
+    value: ModelProviderEnum.Pinstripes,
+    label: "Pinstripes",
+    vaultType: VaultAppsEnum.Pinstripes,
+    description: "Enable pinstripes models.",
+  },
+  {
+    value: ModelProviderEnum.Poe,
+    label: "Poe",
+    vaultType: VaultAppsEnum.Poe,
+    description: "Enable poe models.",
+  },
+  {
+    value: ModelProviderEnum.Predibase,
+    label: "Predibase",
+    vaultType: VaultAppsEnum.Predibase,
+    description: "Enable predibase models.",
+  },
+  {
+    value: ModelProviderEnum.Publicai,
+    label: "Publicai",
+    vaultType: VaultAppsEnum.Publicai,
+    description: "Enable publicai models.",
+  },
+  {
+    value: ModelProviderEnum.Ragflow,
+    label: "Ragflow",
+    vaultType: VaultAppsEnum.Ragflow,
+    description: "Enable ragflow models.",
+  },
+  {
+    value: ModelProviderEnum.Recraft,
+    label: "Recraft",
+    vaultType: VaultAppsEnum.Recraft,
+    description: "Enable recraft models.",
+  },
+  {
+    value: ModelProviderEnum.Reducto,
+    label: "Reducto",
+    vaultType: VaultAppsEnum.Reducto,
+    description: "Enable reducto models.",
+  },
+  {
+    value: ModelProviderEnum.Replicate,
+    label: "Replicate",
+    vaultType: VaultAppsEnum.Replicate,
+    description: "Enable replicate models.",
+  },
+  {
+    value: ModelProviderEnum.Runwayml,
+    label: "Runwayml",
+    vaultType: VaultAppsEnum.Runwayml,
+    description: "Enable runwayml models.",
+  },
+  {
+    value: ModelProviderEnum.S3Vectors,
+    label: "S3Vectors",
+    vaultType: VaultAppsEnum.S3Vectors,
+    description: "Enable s3_vectors models.",
+  },
+  {
+    value: ModelProviderEnum.Sagemaker,
+    label: "Sagemaker",
+    vaultType: VaultAppsEnum.Sagemaker,
+    description: "Enable sagemaker models.",
+  },
+  {
+    value: ModelProviderEnum.SagemakerChat,
+    label: "SagemakerChat",
+    vaultType: VaultAppsEnum.SagemakerChat,
+    description: "Enable sagemaker_chat models.",
+  },
+  {
+    value: ModelProviderEnum.SagemakerNova,
+    label: "SagemakerNova",
+    vaultType: VaultAppsEnum.SagemakerNova,
+    description: "Enable sagemaker_nova models.",
+  },
+  {
+    value: ModelProviderEnum.Sambanova,
+    label: "Sambanova",
+    vaultType: VaultAppsEnum.Sambanova,
+    description: "Enable sambanova models.",
+  },
+  {
+    value: ModelProviderEnum.Sap,
+    label: "Sap",
+    vaultType: VaultAppsEnum.Sap,
+    description: "Enable sap models.",
+  },
+  {
+    value: ModelProviderEnum.Scaleway,
+    label: "Scaleway",
+    vaultType: VaultAppsEnum.Scaleway,
+    description: "Enable scaleway models.",
+  },
+  {
+    value: ModelProviderEnum.Snowflake,
+    label: "Snowflake",
+    vaultType: VaultAppsEnum.Snowflake,
+    description: "Enable snowflake models.",
+  },
+  {
+    value: ModelProviderEnum.Soniox,
+    label: "Soniox",
+    vaultType: VaultAppsEnum.Soniox,
+    description: "Enable soniox models.",
+  },
+  {
+    value: ModelProviderEnum.Stability,
+    label: "Stability",
+    vaultType: VaultAppsEnum.Stability,
+    description: "Enable stability models.",
+  },
+  {
+    value: ModelProviderEnum.Synthetic,
+    label: "Synthetic",
+    vaultType: VaultAppsEnum.Synthetic,
+    description: "Enable synthetic models.",
+  },
+  {
+    value: ModelProviderEnum.Tencent,
+    label: "Tencent",
+    vaultType: VaultAppsEnum.Tencent,
+    description: "Enable tencent models.",
+  },
+  {
+    value: ModelProviderEnum.Tensormesh,
+    label: "Tensormesh",
+    vaultType: VaultAppsEnum.Tensormesh,
+    description: "Enable tensormesh models.",
+  },
+  {
+    value: ModelProviderEnum.TextCompletionCodestral,
+    label: "TextCompletionCodestral",
+    vaultType: VaultAppsEnum.TextCompletionCodestral,
+    description: "Enable text-completion-codestral models.",
+  },
+  {
+    value: ModelProviderEnum.TextCompletionInception,
+    label: "TextCompletionInception",
+    vaultType: VaultAppsEnum.TextCompletionInception,
+    description: "Enable text-completion-inception models.",
+  },
+  {
+    value: ModelProviderEnum.TextCompletionOpenai,
+    label: "TextCompletionOpenai",
+    vaultType: VaultAppsEnum.TextCompletionOpenai,
+    description: "Enable text-completion-openai models.",
+  },
+  {
+    value: ModelProviderEnum.TogetherAi,
+    label: "TogetherAi",
+    vaultType: VaultAppsEnum.TogetherAi,
+    description: "Enable together_ai models.",
+  },
+  {
+    value: ModelProviderEnum.Topaz,
+    label: "Topaz",
+    vaultType: VaultAppsEnum.Topaz,
+    description: "Enable topaz models.",
+  },
+  {
+    value: ModelProviderEnum.Triton,
+    label: "Triton",
+    vaultType: VaultAppsEnum.Triton,
+    description: "Enable triton models.",
+  },
+  {
+    value: ModelProviderEnum.V0,
+    label: "V0",
+    vaultType: VaultAppsEnum.V0,
+    description: "Enable v0 models.",
+  },
+  {
+    value: ModelProviderEnum.VercelAiGateway,
+    label: "VercelAiGateway",
+    vaultType: VaultAppsEnum.VercelAiGateway,
+    description: "Enable vercel_ai_gateway models.",
+  },
+  {
+    value: ModelProviderEnum.VertexAi,
+    label: "VertexAi",
+    vaultType: VaultAppsEnum.VertexAi,
+    description: "Enable vertex_ai models.",
+  },
+  {
+    value: ModelProviderEnum.VertexAiBeta,
+    label: "VertexAiBeta",
+    vaultType: VaultAppsEnum.VertexAiBeta,
+    description: "Enable vertex_ai_beta models.",
+  },
+  {
+    value: ModelProviderEnum.Vllm,
+    label: "Vllm",
+    vaultType: VaultAppsEnum.Vllm,
+    description: "Enable vllm models.",
+  },
+  {
+    value: ModelProviderEnum.Volcengine,
+    label: "Volcengine",
+    vaultType: VaultAppsEnum.Volcengine,
+    description: "Enable volcengine models.",
+  },
+  {
+    value: ModelProviderEnum.Voyage,
+    label: "Voyage",
+    vaultType: VaultAppsEnum.Voyage,
+    description: "Enable voyage models.",
+  },
+  {
+    value: ModelProviderEnum.Wandb,
+    label: "Wandb",
+    vaultType: VaultAppsEnum.Wandb,
+    description: "Enable wandb models.",
+  },
+  {
+    value: ModelProviderEnum.Watsonx,
+    label: "Watsonx",
+    vaultType: VaultAppsEnum.Watsonx,
+    description: "Enable watsonx models.",
+  },
+  {
+    value: ModelProviderEnum.WatsonxText,
+    label: "WatsonxText",
+    vaultType: VaultAppsEnum.WatsonxText,
+    description: "Enable watsonx_text models.",
+  },
+  {
+    value: ModelProviderEnum.Xai,
+    label: "Xai",
+    vaultType: VaultAppsEnum.Xai,
+    description: "Enable xai models.",
+  },
+  {
+    value: ModelProviderEnum.XiaomiMimo,
+    label: "XiaomiMimo",
+    vaultType: VaultAppsEnum.XiaomiMimo,
+    description: "Enable xiaomi_mimo models.",
+  },
+  {
+    value: ModelProviderEnum.Xinference,
+    label: "Xinference",
+    vaultType: VaultAppsEnum.Xinference,
+    description: "Enable xinference models.",
+  },
+  {
+    value: ModelProviderEnum.Zai,
+    label: "Zai",
+    vaultType: VaultAppsEnum.Zai,
+    description: "Enable zai models.",
+  },
 ];
 
-/**
- * Maps a provider type to the vault (AppSecret) type string name used by
- * the app-secret API query (`?type=...`), e.g. "OpenAI", "GoogleGemini".
- */
 export const getVaultTypeForProvider = (providerType: ModelProviderEnum): string =>
   VaultAppsEnum[
     modelProviderDefinitions.find((p) => p.value === providerType)?.vaultType ??

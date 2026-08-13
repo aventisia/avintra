@@ -37,6 +37,8 @@ const PROVIDER_MAP: Record<string, string> = {
   elevenlabs: "ElevenLabs",
   ollama: "Ollama",
   ollamacloud: "OllamaCloud",
+  groq: "Groq",
+  mistral: "Mistral",
 };
 
 // Studio provider values whose models are sourced from the tenant config's

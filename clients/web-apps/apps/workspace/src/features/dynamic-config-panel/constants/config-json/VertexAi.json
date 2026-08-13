@@ -1,0 +1,29 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ProjectId",
+    "label": "Project ID",
+    "defaultValue": "",
+    "required": true,
+    "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Location",
+    "label": "Location",
+    "defaultValue": "us-central1",
+    "required": true,
+    "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "textarea",
+    "name": "ServiceAccountJson",
+    "label": "Service Account JSON",
+    "defaultValue": "",
+    "required": true,
+    "description": ""
+  }
+]

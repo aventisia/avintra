@@ -1,0 +1,29 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "API Key",
+    "defaultValue": "",
+    "required": true,
+    "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "ProjectId",
+    "label": "Project ID",
+    "defaultValue": "",
+    "required": true,
+    "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Region",
+    "label": "Region",
+    "defaultValue": "",
+    "required": false,
+    "description": ""
+  }
+]

@@ -1,0 +1,38 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "Region",
+    "label": "Region",
+    "defaultValue": "us-east-1",
+    "required": true,
+    "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "AccessKeyId",
+    "label": "Access Key ID",
+    "defaultValue": "",
+    "required": true,
+    "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "SecretAccessKey",
+    "label": "Secret Access Key",
+    "defaultValue": "",
+    "required": true,
+    "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "SessionToken",
+    "label": "Session Token",
+    "defaultValue": "",
+    "required": false,
+    "description": ""
+  }
+]
