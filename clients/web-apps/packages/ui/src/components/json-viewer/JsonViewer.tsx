@@ -43,6 +43,36 @@ type JsonViewerProps = {
    * horizontal scrollbar.
    */
   wrapLongValues?: boolean;
+  /**
+   * Attempt to recursively parse stringified JSON values within parsed
+   * objects/arrays. Useful when the payload contains escaped JSON strings,
+   * e.g. LLM responses that embed stringified objects inside a JSON envelope.
+   */
+  parseNestedStrings?: boolean;
+};
+
+const parseJsonRecursively = (value: unknown): unknown => {
+  if (value === null || typeof value !== "object") return value;
+
+  if (Array.isArray(value)) {
+    return value.map(parseJsonRecursively);
+  }
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).map(([key, entry]) => {
+      if (typeof entry === "string") {
+        const trimmed = entry.trim();
+        if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+          try {
+            return [key, parseJsonRecursively(JSON.parse(entry))];
+          } catch {
+            return [key, entry];
+          }
+        }
+      }
+      return [key, parseJsonRecursively(entry)];
+    }),
+  );
 };
 
 /**
@@ -60,14 +90,19 @@ export const JsonViewer = ({
   viewportClassName = "max-h-72",
   shortenTextAfterLength = 80,
   wrapLongValues = true,
+  parseNestedStrings = false,
 }: JsonViewerProps) => {
   const { parsedJson, parseError } = useMemo(() => {
     try {
-      return { parsedJson: JSON.parse(jsonData), parseError: false };
+      let parsed = JSON.parse(jsonData);
+      if (parseNestedStrings) {
+        parsed = parseJsonRecursively(parsed);
+      }
+      return { parsedJson: parsed, parseError: false };
     } catch {
       return { parsedJson: undefined, parseError: true };
     }
-  }, [jsonData]);
+  }, [jsonData, parseNestedStrings]);
 
   const serializedJson = useMemo(
     () => (parseError ? jsonData : JSON.stringify(parsedJson, null, 2)),

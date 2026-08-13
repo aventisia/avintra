@@ -1,9 +1,9 @@
 import { AutosizeTextarea } from "@avplatform/ui";
+import { JsonViewer } from "@avplatform/ui/json-viewer";
 import { useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import CustomCheckbox from "@/components/CustomCheckbox";
-import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 import JsonViewerSkeleton from "@/components/json-viewer/JsonViewerSkeleton";
 import { DCPTabsContent } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsContent";
 import {
@@ -114,7 +114,7 @@ const LLMTestContent = ({
             </div>
             <JsonViewer
               jsonData={JSON.stringify(previewPayload ?? {}, null, 2)}
-              enableClipboard
+              enableValueClipboard
               className="min-h-80 h-auto"
             />
           </div>
@@ -132,7 +132,8 @@ const LLMTestContent = ({
             ) : (
               <JsonViewer
                 jsonData={llmData ? JSON.stringify(llmData ?? {}) : "{}"}
-                enableClipboard
+                enableValueClipboard
+                parseNestedStrings
                 className="min-h-80 h-auto"
               />
             )}

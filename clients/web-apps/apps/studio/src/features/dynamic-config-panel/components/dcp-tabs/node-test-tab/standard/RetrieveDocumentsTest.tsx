@@ -1,7 +1,7 @@
+import { JsonViewer } from "@avplatform/ui/json-viewer";
 import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import { JsonViewer } from "@/components/json-viewer/JsonViewer";
 import JsonViewerSkeleton from "@/components/json-viewer/JsonViewerSkeleton";
 import { VectorStoreQueryRequestDto } from "@/features/dynamic-config-panel/apis/vector-store-apis";
 import { DCPTabsContent } from "@/features/dynamic-config-panel/components/dcp-tabs/DCPTabsContent";
@@ -179,7 +179,11 @@ const RetrieveDocumentsTest = ({ formData }: Props) => {
         ) : (
           /* API response viewer */
 
-          <JsonViewer jsonData={JSON.stringify(data ?? {}, null, 2)} className="h-[70vh]" />
+          <JsonViewer
+            jsonData={JSON.stringify(data ?? {}, null, 2)}
+            enableValueClipboard
+            className="h-[70vh]"
+          />
         )}
       </div>
     </DCPTabsContent>

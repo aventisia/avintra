@@ -1,4 +1,4 @@
-import { JsonViewer } from "@/components/json-viewer/JsonViewer";
+import { JsonViewer } from "@avplatform/ui/json-viewer";
 
 interface FELInputOutputProps {
   jsonData: string;
@@ -14,9 +14,9 @@ const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
       </div>
       <JsonViewer
         jsonData={jsonData}
-        className="h-[15rem] w-[27rem] max-w-[27rem] p-1"
-        enableClipboard
+        enableValueClipboard
         wrapLongValues={false}
+        className="h-[15rem] w-[27rem] max-w-[27rem] p-1"
       />
     </div>
   );
