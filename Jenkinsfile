@@ -91,6 +91,41 @@ pipeline {
         }
         
         // ======================
+        // Python API Build Stage
+        // ======================
+        
+        stage('LLM Pipeline API') {
+            when {
+                expression { env.BUILD_LLMPIPELINE_API == 'true' }
+            }
+            steps {
+                dir('apis/llmpipeline') {
+                    script {
+                        sshagent(credentials: ['aventisia_vps_ssh']) {
+                            def targetServers = getTargetServers(env.BRANCH_NAME)
+                            echo "Deploying LLM Pipeline to ${targetServers.size()} server(s)..."
+                            
+                            targetServers.each { server ->
+                                def deployPath = '/home/admin/fastapis/llmpipeline/'
+                                
+                                echo "Transferring to ${server}..."
+                                sh "rsync -avz --exclude 'venv' --exclude '.gitignore' --exclude 'base.pt' --exclude 'Jenkinsfile' --exclude '.git' --delete . admin@${server}:${deployPath}"
+                                
+                                echo "Installing required packages..."
+                                sh "ssh admin@${server} 'cd ${deployPath} && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt'"
+                                
+                                echo "Restarting the service..."
+                                sh "ssh admin@${server} 'sudo systemctl restart llmpipeline_apis.service'"
+                                
+                                echo "Successfully deployed LLM Pipeline to ${server}"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ======================
         // .NET APIs Build Stages
         // ======================
         
@@ -193,42 +228,7 @@ pipeline {
                 }
             }
         }
-        
-        // ======================
-        // Python API Build Stage
-        // ======================
-        
-        stage('LLM Pipeline API') {
-            when {
-                expression { env.BUILD_LLMPIPELINE_API == 'true' }
-            }
-            steps {
-                dir('apis/llmpipeline') {
-                    script {
-                        sshagent(credentials: ['aventisia_vps_ssh']) {
-                            def targetServers = getTargetServers(env.BRANCH_NAME)
-                            echo "Deploying LLM Pipeline to ${targetServers.size()} server(s)..."
-                            
-                            targetServers.each { server ->
-                                def deployPath = '/home/admin/fastapis/llmpipeline/'
-                                
-                                echo "Transferring to ${server}..."
-                                sh "rsync -avz --exclude 'venv' --exclude '.gitignore' --exclude 'base.pt' --exclude 'Jenkinsfile' --exclude '.git' --delete . admin@${server}:${deployPath}"
-                                
-                                echo "Installing required packages..."
-                                sh "ssh admin@${server} 'cd ${deployPath} && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt'"
-                                
-                                echo "Restarting the service..."
-                                sh "ssh admin@${server} 'sudo systemctl restart llmpipeline_apis.service'"
-                                
-                                echo "Successfully deployed LLM Pipeline to ${server}"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
+          
         // ======================
         // Client Apps Build Stages
         // ======================
