@@ -217,6 +217,11 @@ pipeline {
                                         
                                         targetServers.each { server ->
                                             sh "rsync -avz --delete ${WORKSPACE}/apis/WorcBackend-legacy/WorkspaceAPIs/Published/* admin@${server}:/var/www/aventisia.com/apis/workspace/"
+
+                                            echo "Copying default platform skills metadata to shared files directory..."
+                                            sh "ssh admin@${server} 'mkdir -p /var/www/aventisia.com/files/skills'"
+                                            sh "rsync -avz --delete ${WORKSPACE}/apis/llmpipeline/app/features/langgraph/skills/ admin@${server}:/var/www/aventisia.com/files/skills/"
+
                                             sh "ssh admin@${server} 'sudo systemctl restart workspace_apis.service'"
                                             echo "Successfully deployed Workspace API to ${server}"
                                         }
