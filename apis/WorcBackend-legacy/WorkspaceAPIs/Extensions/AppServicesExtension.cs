@@ -6,6 +6,7 @@ using WorkspaceAPIs.Features.CloudConnectors.SendGrid;
 using WorkspaceAPIs.Features.CloudConnectors.Twilio;
 using WorkspaceAPIs.Features.CloudConnectors.VectorStore;
 using WorkspaceAPIs.Features.CloudConnectors.VectorStore.PgVector;
+using WorkspaceAPIs.Features.Chats.StreamingChat.Service;
 
 namespace WorkspaceAPIs.Extensions;
 
@@ -167,6 +168,7 @@ public static class AppServicesExtension
         services.AddScoped<IAssistChatService, AssistChatService>();
         services.AddScoped<IConversationService, ConversationService>();
         services.AddScoped<IConversationMessageService, ConversationMessageService>();
+        services.AddScoped<IStreamingChatService, StreamingChatService>();
         services.AddScoped<IAdminConversationService, AdminConversationService>();
         services.AddScoped<IKnowledgeBaseService, KnowledgeBaseService>();
         services.AddScoped<IKnowledgeBaseFileService, KnowledgeBaseFileService>();

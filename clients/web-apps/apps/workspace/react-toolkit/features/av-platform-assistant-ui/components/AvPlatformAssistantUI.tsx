@@ -1,5 +1,7 @@
 import {
   AssistantRuntimeProvider,
+  AuiConfig,
+  AuiProvider,
   SuggestionAdapter,
   Suggestions,
   ThreadMessageLike,
@@ -207,8 +209,8 @@ const RuntimeWrapper = ({
     // This allows `initialMessages` to render without the DB adapter wiping them out.
     if (readOnly && !conversationIdRef.current) return undefined;
 
-    return createHistoryAdapter(getConversationId, flowVersionId, !!readOnly);
-  }, [getConversationId, flowVersionId, mode, readOnly]);
+    return createHistoryAdapter(getConversationId);
+  }, [getConversationId, mode, readOnly]);
   /**
    * Dynamic Suggestion Engine.
    */
@@ -233,8 +235,9 @@ const RuntimeWrapper = ({
           getConversationId, // Pass the dynamic getter
           onRequestComplete,
           onSuggestionsUpdate: handleSuggestionsUpdate,
+          isTempChat: mode === "temporary",
         }),
-      [flowVersionId, getConversationId, onRequestComplete, handleSuggestionsUpdate],
+      [flowVersionId, getConversationId, onRequestComplete, handleSuggestionsUpdate, mode],
     ),
     {
       initialMessages,
@@ -245,13 +248,33 @@ const RuntimeWrapper = ({
     },
   );
 
-  const aui = useAui({
-    suggestions: Suggestions(defaultActions),
-  });
-
   return (
-    <AssistantRuntimeProvider aui={aui} runtime={runtime}>
-      <Thread title={title} description={description} />
+    <AssistantRuntimeProvider runtime={runtime}>
+      <SuggestionsProvider defaultActions={defaultActions}>
+        <Thread title={title} description={description} />
+      </SuggestionsProvider>
     </AssistantRuntimeProvider>
+  );
+};
+
+/**
+ * Provides the `suggestions` scope to the thread. `useAui` must be called
+ * INSIDE the AssistantRuntimeProvider (which installs the AuiProvider
+ * internally); we then extend that client with the suggestions scope via a
+ * nested AuiProvider.
+ */
+const SuggestionsProvider = ({
+  defaultActions,
+  children,
+}: {
+  defaultActions?: string[];
+  children: React.ReactNode;
+}) => {
+  const aui = useAui();
+  const config = AuiConfig({ suggestions: Suggestions(defaultActions ?? []) });
+  return (
+    <AuiProvider extends={aui} config={config}>
+      {children}
+    </AuiProvider>
   );
 };

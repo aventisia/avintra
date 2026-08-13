@@ -259,6 +259,263 @@ class ChatService:
             jwt=user.access_token,
         )
 
+    async def stream_normalized(
+        self,
+        request: LLMRequest,
+        user: User,
+        db_session: AsyncSession | None = None,
+    ) -> AsyncIterator[Any]:
+        """Stream chat responses as a normalized, frontend-friendly protocol.
+
+        Unlike :meth:`stream` (which emits raw LangGraph ``astream_events``),
+        this yields clean ``LLMChunkResponse``-shaped dicts that the browser
+        chat client can consume directly:
+
+        - ``{"type": "delta", "output": "<partial text>"}`` token deltas
+        - ``{"type": "tool_call", "output": {tool payload}}`` tool invocations
+        - ``{"type": "followup", "output": [...]}`` suggested follow-ups
+        - ``{"type": "done", "output": "<final text>"}`` final completion
+
+        ``conversation_id`` is set on every chunk so the client can persist it.
+        """
+
+        from app.features.llm_providers.llm_providers_schemas import (
+            LLMChunkResponse,
+        )
+
+        start_time = time.perf_counter()
+        langgraph_response = self._create_initial_response(request)
+        conversation_id = request.conversation_id or str(uuid4())
+        request.conversation_id = conversation_id
+
+        if db_session is not None:
+            await self._load_custom_tools(request, user, db_session)
+
+        graph = self._graph(
+            request=request,
+            user=user,
+            db_session=db_session,
+        )
+        config = self._thread_config(conversation_id)
+
+        messages, request_messages, persisted_ids = await self._prepare_input(
+            request=request,
+            graph=graph,
+            config=config,
+            db_session=db_session,
+        )
+
+        if not request.is_temp_chat and db_session is not None and request_messages:
+            await self.conversation_service.save_message(
+                db_session=db_session,
+                request=request,
+                user=user,
+                conversation_id=conversation_id,
+                message=request_messages[-1],
+                persisted_ids=persisted_ids,
+            )
+
+        text_buffer: list[str] = []
+        graph_response = None
+        persisted_tool_call_ids: set[str] = set()
+        # Track tool name/args per tool_call_id so the UI can render the tool
+        # widget (with human-in-loop approval) before execution.
+        tool_call_meta: dict[str, dict] = {}
+
+        async for event in graph.astream_events(
+            {"messages": messages},
+            config=config,
+            stream_mode="messages",
+            version="v2",
+        ):
+            event_type = event.get("event")
+            data = event.get("data", {})
+            event_metadata = event.get("metadata", {})
+            node_name = event_metadata.get("langgraph_node")
+
+            # Token-level deltas from the chat model.
+            if event_type == "on_chat_model_stream":
+                chunk = data.get("chunk")
+                if chunk is not None:
+                    text = self._extract_text_delta(chunk)
+                    if text:
+                        text_buffer.append(text)
+                        yield LLMChunkResponse(
+                            provider=request.provider,
+                            model=request.model,
+                            output=text,
+                            type="delta",
+                            conversation_id=conversation_id,
+                        )
+                continue
+
+            # Tool invocation started: capture name + args for the UI.
+            if event_type == "on_tool_start":
+                tool_name = event.get("name") or ""
+                tool_input = data.get("input") or {}
+                tool_call_id = (
+                    tool_input.get("tool_call_id")
+                    if isinstance(tool_input, dict)
+                    else None
+                )
+                if tool_call_id:
+                    tool_call_meta[tool_call_id] = {
+                        "name": tool_name,
+                        "args": tool_input.get("args", {}),
+                    }
+                continue
+
+            # Completed tool call (result available).
+            if event_type == "on_tool_end":
+                output = data.get("output")
+                if isinstance(output, ToolMessage):
+                    graph_response = self._latest_ai_message(
+                        [output],
+                        fallback=graph_response,
+                    )
+                    tool_call_id = getattr(output, "tool_call_id", None)
+                    meta = tool_call_meta.get(tool_call_id, {})
+                    yield LLMChunkResponse(
+                        provider=request.provider,
+                        model=request.model,
+                        output={
+                            "tool_call_id": tool_call_id,
+                            "name": meta.get("name", ""),
+                            "args": meta.get("args", {}),
+                            "content": getattr(output, "content", ""),
+                        },
+                        type="tool_call",
+                        conversation_id=conversation_id,
+                    )
+                    if not request.is_temp_chat and db_session is not None:
+                        await self.conversation_service.save_message(
+                            db_session=db_session,
+                            request=request,
+                            user=user,
+                            conversation_id=conversation_id,
+                            message=output,
+                            persisted_ids=persisted_ids,
+                            persisted_tool_call_ids=persisted_tool_call_ids,
+                        )
+                continue
+
+            # Node completion: capture the latest AI message (final text).
+            if event_type == "on_chain_end":
+                output = data.get("output")
+                if isinstance(output, dict):
+                    output_messages = output.get("messages", [])
+                    graph_response = self._latest_ai_message(
+                        output_messages,
+                        fallback=graph_response,
+                    )
+                    # Surface selected skills when the agent_selector node finishes.
+                    if node_name == "agent_selector":
+                        metadata = output.get("metadata") or {}
+                        selected_skills = metadata.get("selected_skills") or []
+                        for skill in selected_skills:
+                            skill_name = getattr(skill, "name", None) or (
+                                skill.get("name") if isinstance(skill, dict) else None
+                            )
+                            if skill_name:
+                                yield LLMChunkResponse(
+                                    provider=request.provider,
+                                    model=request.model,
+                                    output={"name": skill_name},
+                                    type="skill",
+                                    conversation_id=conversation_id,
+                                )
+                    if (
+                        not request.is_temp_chat
+                        and db_session is not None
+                        and node_name
+                        and output_messages
+                    ):
+                        await self.conversation_service.save_message(
+                            db_session=db_session,
+                            request=request,
+                            user=user,
+                            conversation_id=conversation_id,
+                            message=output_messages[-1],
+                            persisted_ids=persisted_ids,
+                            persisted_tool_call_ids=persisted_tool_call_ids,
+                        )
+
+        # Persist the final AI message if not already saved.
+        if not request.is_temp_chat and db_session is not None:
+            try:
+                state = await graph.aget_state(config)
+                final_messages = state.values.get("messages", [])
+            except Exception:
+                final_messages = []
+            if final_messages:
+                graph_response = self._latest_ai_message(final_messages, fallback=graph_response)
+                await self.conversation_service.save_message(
+                    db_session=db_session,
+                    request=request,
+                    user=user,
+                    conversation_id=conversation_id,
+                    message=final_messages[-1],
+                    persisted_ids=persisted_ids,
+                    persisted_tool_call_ids=persisted_tool_call_ids,
+                )
+
+        final_response = self._create_final_response(
+            request=request,
+            response=langgraph_response,
+            graph_response=graph_response,
+            start_time=start_time,
+            jwt=user.access_token,
+        )
+
+        final_output = final_response.output
+        if isinstance(final_output, ChatAgentResponse):
+            if final_output.tools:
+                yield LLMChunkResponse(
+                    provider=request.provider,
+                    model=request.model,
+                    output=final_output.tools,
+                    type="tools",
+                    conversation_id=conversation_id,
+                )
+            if final_output.followup_messages:
+                yield LLMChunkResponse(
+                    provider=request.provider,
+                    model=request.model,
+                    output=final_output.followup_messages,
+                    type="followup",
+                    conversation_id=conversation_id,
+                )
+            final_text = final_output.text
+        elif isinstance(final_output, str):
+            final_text = final_output
+        else:
+            final_text = str(final_output or "")
+
+        yield LLMChunkResponse(
+            provider=request.provider,
+            model=request.model,
+            output=final_text,
+            type="done",
+            conversation_id=conversation_id,
+        )
+
+    @staticmethod
+    def _extract_text_delta(chunk: Any) -> str:
+        """Extract a plain-text delta from a LangChain chat message chunk."""
+        try:
+            content = chunk.content
+            if isinstance(content, str):
+                return content
+            if isinstance(content, list):
+                return "".join(
+                    part.get("text", "")
+                    for part in content
+                    if isinstance(part, dict)
+                )
+            return ""
+        except Exception:
+            return ""
+
     async def _load_custom_tools(
         self,
         request: LLMRequest,
