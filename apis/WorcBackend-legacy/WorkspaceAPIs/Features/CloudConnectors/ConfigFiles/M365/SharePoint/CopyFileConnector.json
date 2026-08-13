@@ -18,7 +18,7 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "FilePath",
+      "name": "filePath",
       "label": "Source File Path",
       "description": "The full SharePoint URL of the file you want to copy. For example: /sites/YourSite/Shared Documents/YourFile.txt",
       "defaultValue": ""
@@ -26,7 +26,7 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "DrivePath",
+      "name": "drivePath",
       "label": "Destination Folder Path",
       "description": "The full SharePoint URL of the destination folder where the file should be copied.",
       "defaultValue": ""
@@ -34,7 +34,7 @@
     {
       "direction": "Input",
       "type": "text",
-      "name": "FileName",
+      "name": "fileName",
       "label": "New File Name",
       "description": "The new name for the copied file. If left blank, the copied file will retain the original name.",
       "defaultValue": ""
