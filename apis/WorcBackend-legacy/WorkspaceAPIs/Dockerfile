@@ -18,6 +18,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /Publish .
 
+# Copy default platform skills metadata so the seeder can read them at startup.
+COPY apis/llmpipeline/app/features/langgraph/skills /app/skills
+
 # Set port environment variable
 ENV ASPNETCORE_URLS=http://+:4001
 ENV ASPNETCORE_ENVIRONMENT=Development
