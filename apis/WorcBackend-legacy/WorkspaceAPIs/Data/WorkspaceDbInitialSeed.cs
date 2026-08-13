@@ -1,4 +1,6 @@
 // For more info on How to seed data, watch YT video: https://www.youtube.com/watch?v=0B7QjRSvcGI
+using AspNetToolkit.Config;
+using AspNetToolkit.Data;
 using WorkspaceAPIs.Entities;
 using WorkspaceAPIs.Enums;
 using WorkspaceAPIs.Helpers;
@@ -7,14 +9,8 @@ namespace WorkspaceAPIs.Data;
 
 public static class WorkspaceDbInitialSeed
 {
-    // Platform tenant represents globally-managed platform resources (e.g., platform skills).
-    private static readonly Guid PlatformTenantId = Guid.Empty;
-
     // Central space is represented by a null SpaceId.
     private static readonly Guid? PlatformSpaceId = null;
-
-    // Deterministic user id used as the creator/last-modifier for platform resources.
-    private static readonly Guid PlatformSystemUserId = new("11111111-1111-1111-1111-111111111111");
 
     public async static Task<WebApplication> SeedInitialData(this WebApplication app)
     {
@@ -26,6 +22,12 @@ public static class WorkspaceDbInitialSeed
             // Get configuration
             var _configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
+            // Get environment config for default admin email lookup
+            var _environmentConfig = scope.ServiceProvider.GetRequiredService<EnvironmentConfig>();
+
+            // Get tenant db context to resolve the default admin account user
+            using var _tenantDbContext = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
+
             // Get logger factory for seed-time logging
             var _loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
             var _logger = _loggerFactory.CreateLogger(nameof(WorkspaceDbInitialSeed));
@@ -33,11 +35,24 @@ public static class WorkspaceDbInitialSeed
             // Apply pending database migrations
             await ApplyMigrationsAsync(_workspaceDbContext);
 
-            // Seed the default platform system user used by platform resources.
-            await SeedPlatformSystemUserAsync(_workspaceDbContext, _logger);
+            // Resolve the default admin user that owns platform resources.
+            var platformAdmin = await ResolvePlatformAdminUserAsync(
+                _workspaceDbContext,
+                _tenantDbContext,
+                _environmentConfig,
+                _logger);
+
+            if (platformAdmin is null)
+            {
+                _logger.LogWarning(
+                    "No default admin user found for email {AdminEmail}. Skipping platform skill seeding.",
+                    _environmentConfig.OnPremAdminEmail);
+
+                return app;
+            }
 
             // Seed default platform skills from the llmpipeline skills folder.
-            await SeedDefaultSkillsAsync(_workspaceDbContext, _configuration, _logger);
+            await SeedDefaultSkillsAsync(_workspaceDbContext, _configuration, platformAdmin.Value, _logger);
 
             return app;
         }
@@ -69,37 +84,78 @@ public static class WorkspaceDbInitialSeed
     }
 
     /// <summary>
-    /// Ensures a platform system workspace user exists. This user is used as the creator
-    /// and last-modifier for platform-managed resources such as platform skills.
+    /// Looks up the default admin account user by <see cref="EnvironmentConfig.OnPremAdminEmail"/>
+    /// from the tenant (AccountsDb) context, then ensures a matching WorkspaceUser row exists.
+    /// Returns the workspace user id and the admin's tenant id, or null when no admin can be resolved.
     /// </summary>
-    private static async Task SeedPlatformSystemUserAsync(WorkspaceDbContext workspaceDbContext, ILogger logger)
+    private static async Task<(Guid UserId, Guid TenantId)?> ResolvePlatformAdminUserAsync(
+        WorkspaceDbContext workspaceDbContext,
+        TenantDbContext tenantDbContext,
+        EnvironmentConfig environmentConfig,
+        ILogger logger)
     {
         try
         {
-            var existingUser = await workspaceDbContext.Users
-                .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(u => u.Id == PlatformSystemUserId);
+            var adminEmail = environmentConfig.OnPremAdminEmail?.Trim();
 
-            if (existingUser != null)
-                return;
-
-            var systemUser = new WorkspaceUser
+            if (string.IsNullOrWhiteSpace(adminEmail))
             {
-                Id = PlatformSystemUserId,
-                TenantId = PlatformTenantId,
-                UserName = "system",
-                FirstName = "Platform",
-                LastName = "System",
-            };
+                logger.LogWarning("EnvironmentConfig.OnPremAdminEmail is not set. Cannot resolve platform admin user.");
+                return null;
+            }
 
-            await workspaceDbContext.Users.AddAsync(systemUser);
-            await workspaceDbContext.SaveChangesAsync();
+            // ReadOnlyAccountUsers user name/email is seeded with OnPremAdminEmail value.
+            var accountUser = await tenantDbContext.ReadOnlyAccountUsers
+                .FirstOrDefaultAsync(u =>
+                    (u.Email != null && u.Email.ToLower() == adminEmail.ToLower())
+                    || (u.UserName != null && u.UserName.ToLower() == adminEmail.ToLower()));
 
-            logger.LogInformation("Seeded platform system workspace user.");
+            if (accountUser is null)
+            {
+                logger.LogWarning("Default admin account user not found for email {AdminEmail}.", adminEmail);
+                return null;
+            }
+
+            if (accountUser.TenantId is null || accountUser.TenantId == Guid.Empty)
+            {
+                logger.LogWarning(
+                    "Default admin account user {UserId} does not have an assigned tenant. Skipping platform skill seeding.",
+                    accountUser.Id);
+                return null;
+            }
+
+            var adminTenantId = accountUser.TenantId.Value;
+
+            var workspaceUser = await workspaceDbContext.Users
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync(u => u.Id == accountUser.Id);
+
+            if (workspaceUser is null)
+            {
+                workspaceUser = new WorkspaceUser
+                {
+                    Id = accountUser.Id,
+                    TenantId = adminTenantId,
+                    UserName = accountUser.UserName ?? adminEmail,
+                    FirstName = accountUser.FirstName ?? "Platform",
+                    LastName = accountUser.LastName ?? "Admin",
+                };
+
+                await workspaceDbContext.Users.AddAsync(workspaceUser);
+                await workspaceDbContext.SaveChangesAsync();
+
+                logger.LogInformation(
+                    "Seeded workspace user {UserId} for default admin {AdminEmail} under tenant {TenantId}.",
+                    workspaceUser.Id,
+                    adminEmail,
+                    adminTenantId);
+            }
+
+            return (workspaceUser.Id, adminTenantId);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error seeding platform system workspace user.");
+            logger.LogError(ex, "Error resolving default admin workspace user.");
             throw;
         }
     }
@@ -111,6 +167,7 @@ public static class WorkspaceDbInitialSeed
     private static async Task SeedDefaultSkillsAsync(
         WorkspaceDbContext workspaceDbContext,
         IConfiguration configuration,
+        (Guid UserId, Guid TenantId) platformAdmin,
         ILogger logger)
     {
         var skillsPathSetting = configuration["Skills:DefaultSkillsPath"];
@@ -139,7 +196,7 @@ public static class WorkspaceDbInitialSeed
 
         foreach (var skillDirectory in skillDirectories)
         {
-            await SeedDefaultSkillAsync(workspaceDbContext, skillDirectory, logger);
+            await SeedDefaultSkillAsync(workspaceDbContext, skillDirectory, platformAdmin, logger);
         }
     }
 
@@ -149,6 +206,7 @@ public static class WorkspaceDbInitialSeed
     private static async Task SeedDefaultSkillAsync(
         WorkspaceDbContext workspaceDbContext,
         string skillDirectory,
+        (Guid UserId, Guid TenantId) platformAdmin,
         ILogger logger)
     {
         var skillName = Path.GetFileName(skillDirectory);
@@ -187,7 +245,7 @@ public static class WorkspaceDbInitialSeed
                 skill = new Skill
                 {
                     Id = skillId,
-                    TenantId = PlatformTenantId,
+                    TenantId = platformAdmin.TenantId,
                     SpaceId = PlatformSpaceId,
                     Name = name,
                     Description = description,
@@ -195,8 +253,8 @@ public static class WorkspaceDbInitialSeed
                     IsGlobal = true,
                     IsTenantWideAccess = true,
                     IsActive = true,
-                    CreatedByUserId = PlatformSystemUserId,
-                    LastModifiedByUserId = PlatformSystemUserId,
+                    CreatedByUserId = platformAdmin.UserId,
+                    LastModifiedByUserId = platformAdmin.UserId,
                     CreatedOn = now,
                     LastModifiedOn = now,
                 };
@@ -206,9 +264,10 @@ public static class WorkspaceDbInitialSeed
             else
             {
                 skill = existingSkill;
+                skill.TenantId = platformAdmin.TenantId;
                 skill.Name = name;
                 skill.Description = description;
-                skill.LastModifiedByUserId = PlatformSystemUserId;
+                skill.LastModifiedByUserId = platformAdmin.UserId;
                 skill.LastModifiedOn = now;
                 skill.IsGlobal = true;
                 skill.IsTenantWideAccess = true;
@@ -227,14 +286,14 @@ public static class WorkspaceDbInitialSeed
                 var skillFile = new SkillFile
                 {
                     Id = Guid.NewGuid(),
-                    TenantId = PlatformTenantId,
+                    TenantId = platformAdmin.TenantId,
                     SpaceId = PlatformSpaceId,
                     SkillId = skillId,
                     FileName = "SKILL.md",
                     Content = content,
                     FileType = "markdown",
-                    CreatedByUserId = PlatformSystemUserId,
-                    LastModifiedByUserId = PlatformSystemUserId,
+                    CreatedByUserId = platformAdmin.UserId,
+                    LastModifiedByUserId = platformAdmin.UserId,
                     CreatedOn = now,
                     LastModifiedOn = now,
                 };
@@ -243,9 +302,10 @@ public static class WorkspaceDbInitialSeed
             }
             else
             {
+                existingSkillFile.TenantId = platformAdmin.TenantId;
                 existingSkillFile.Content = content;
                 existingSkillFile.FileType = "markdown";
-                existingSkillFile.LastModifiedByUserId = PlatformSystemUserId;
+                existingSkillFile.LastModifiedByUserId = platformAdmin.UserId;
                 existingSkillFile.LastModifiedOn = now;
             }
 
