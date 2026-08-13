@@ -11,10 +11,11 @@ public static class NodeLogHelper
         };
     }
 
+    private const int MAX_STRING_SIZE = 500; // Maximum characters for plain text strings
+    private const string TRUNCATED_MARKER = "...[truncated]";
+
     public static string ConvertValueForLogging(string key, object value, string inOrOut, bool simpleOutputOnly)
     {
-        const int MAX_STRING_SIZE = 2000; // Maximum characters for plain text strings
-
         if (value == null)
             return "null";
 
@@ -27,7 +28,7 @@ public static class NodeLogHelper
         {
             case string s:
                 // Only truncate plain strings, not JSON
-                return s.Length > MAX_STRING_SIZE ? s.Substring(0, MAX_STRING_SIZE) + "... [truncated]" : s;
+                return s.Length > MAX_STRING_SIZE ? s.Substring(0, MAX_STRING_SIZE) + TRUNCATED_MARKER : s;
             case DateTime date:
                 return date.ToString("o"); // ISO 8601 format
             case TimeSpan _:
@@ -53,7 +54,7 @@ public static class NodeLogHelper
         if (simpleOutputOnly)
         {
             var simpleOutput = value?.ToString() ?? "null";
-            return simpleOutput.Length > MAX_STRING_SIZE ? simpleOutput.Substring(0, MAX_STRING_SIZE) + "... [truncated]" : simpleOutput;
+            return simpleOutput.Length > MAX_STRING_SIZE ? simpleOutput.Substring(0, MAX_STRING_SIZE) + TRUNCATED_MARKER : simpleOutput;
         }
 
         // Handle DataTable as json with top 100 rows to avoid logging too much data
@@ -81,8 +82,8 @@ public static class NodeLogHelper
                 var conditionsList = new List<string>();
                 foreach (var cond in group)
                 {
-                    var firstValueFormatted = cond.FirstValue is string s ? (s.Length > MAX_STRING_SIZE ? s.Substring(0, MAX_STRING_SIZE) + "... [truncated]" : s) : cond.FirstValue?.ToString() ?? "null";
-                    var secondValueFormatted = cond.SecondValue is string s2 ? (s2.Length > MAX_STRING_SIZE ? s2.Substring(0, MAX_STRING_SIZE) + "... [truncated]" : s2) : cond.SecondValue?.ToString() ?? "null";
+                    var firstValueFormatted = cond.FirstValue is string s ? (s.Length > MAX_STRING_SIZE ? s.Substring(0, MAX_STRING_SIZE) + TRUNCATED_MARKER : s) : cond.FirstValue?.ToString() ?? "null";
+                    var secondValueFormatted = cond.SecondValue is string s2 ? (s2.Length > MAX_STRING_SIZE ? s2.Substring(0, MAX_STRING_SIZE) + TRUNCATED_MARKER : s2) : cond.SecondValue?.ToString() ?? "null";
                     conditionsList.Add($"{firstValueFormatted} {cond.ComparisonOperator} {secondValueFormatted}");
                 }
                 groupsObject[$"Group {groupIndex++}"] = conditionsList;
@@ -145,7 +146,7 @@ public static class NodeLogHelper
         {
             // fallback: type name with truncation for long text
             var fallback = value?.ToString() ?? "null";
-            return fallback.Length > MAX_STRING_SIZE ? fallback.Substring(0, MAX_STRING_SIZE) + "... [truncated]" : fallback;
+            return fallback.Length > MAX_STRING_SIZE ? fallback.Substring(0, MAX_STRING_SIZE) + TRUNCATED_MARKER : fallback;
         }
     }
 }

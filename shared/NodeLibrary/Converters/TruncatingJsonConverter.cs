@@ -6,7 +6,7 @@ namespace NodeLibrary.Converters;
 public class TruncatingJsonConverter : JsonConverter<object>
 {
     private const int MAX_FIELD_LENGTH = 500; // Maximum characters for any field value
-    private const string TRUNCATION_SUFFIX = "... [truncated]";
+    private const string TRUNCATION_SUFFIX = "...[truncated]";
 
     public override bool CanConvert(Type typeToConvert)
     {
