@@ -1,6 +1,5 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
-using ExecutorLibrary.FlowProcessor.Models;
 
 namespace RunnerApp.Services;
 
@@ -38,7 +37,7 @@ public class BackendHttpClient : IBackendClient
         await EnsureServiceSuccessAsync<object>(response, ct);
     }
 
-    public async Task CloseJobAsync(Guid jobId, FlowExecutionStatus status, List<NodeExecutionLog> logs, CancellationToken ct = default)
+    public async Task CloseJobAsync(Guid jobId, FlowExecutionStatus status, List<NodeExecutionLog> logs, string? remarks = null, CancellationToken ct = default)
     {
         var dtos = MapLogsToDtos(logs);
 
@@ -46,10 +45,32 @@ public class BackendHttpClient : IBackendClient
         {
             closingStatus = status.ToString(),
             nodeExecutionLogs = dtos,
+            remarks,
         };
 
         var response = await _httpClient.PostAsJsonAsync($"workspace/api/execution/job/{jobId}/close", payload, ct);
         await EnsureServiceSuccessAsync<object>(response, ct);
+    }
+
+    /// <summary>
+    /// Builds a concise remark for a failed flow execution using the first failed node's output status.
+    /// The error message is placed first so truncation in the UI still shows the useful part.
+    /// Falls back to the provided error message or a generic message when no failed node log is available.
+    /// </summary>
+    public static string BuildFailedNodeRemark(List<NodeExecutionLog> logs, string? errorMessage = null)
+    {
+        var failedLog = logs.FirstOrDefault(l => !l.IsSuccess);
+        if (failedLog is not null)
+        {
+            var statusMessage = failedLog.Outputs.TryGetValue("Status", out var status) ? status : null;
+            if (!string.IsNullOrWhiteSpace(statusMessage))
+                return $"{statusMessage} (node: {failedLog.NodeName})";
+        }
+
+        if (!string.IsNullOrWhiteSpace(errorMessage))
+            return $"{errorMessage}";
+
+        return "Flow execution failed.";
     }
 
     public async Task<MachineRegistrationResult?> RegisterMachineAsync(string operatingSystem, string osId, string username, string hostname, CancellationToken ct = default)

@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.SignalR.Client;
-
 namespace RunnerApp.Services;
 
 public enum ExecutorCommand

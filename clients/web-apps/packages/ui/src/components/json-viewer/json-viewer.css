@@ -4,3 +4,76 @@
     monospace !important;
   font-size: 0.76rem !important;
 }
+
+.w-json-view-container {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+.w-json-view-container .w-json-view-key,
+.w-json-view-container .w-json-view-value,
+.w-json-view-container .w-json-view-line,
+.w-json-view-container .w-rjv-line,
+.w-json-view-container .w-rjv-wrap,
+.w-json-view-container .w-rjv-value {
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+/* Default: long values stay on one line and the viewer scrolls horizontally. */
+.w-json-view-container .w-json-view-value > span,
+.w-json-view-container .w-json-view-value .w-json-view-string,
+.w-json-view-container .w-rjv-value > span,
+.w-json-view-container .w-rjv-line > span,
+.w-json-view-container .w-json-view-string {
+  display: inline-block !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  white-space: pre !important;
+  vertical-align: top;
+}
+
+/* Modifier: wrap long values onto multiple lines instead of scrolling. */
+.w-json-view-container.wrap-json-values .w-json-view-value > span,
+.w-json-view-container.wrap-json-values .w-json-view-value .w-json-view-string,
+.w-json-view-container.wrap-json-values .w-rjv-value > span,
+.w-json-view-container.wrap-json-values .w-rjv-line > span,
+.w-json-view-container.wrap-json-values .w-json-view-string {
+  max-width: 100% !important;
+  overflow-wrap: break-word !important;
+  word-break: break-word !important;
+  white-space: pre-wrap !important;
+}
+
+.w-json-view-container .w-json-view-fold,
+.w-json-view-container .w-json-view-fold-content,
+.w-json-view-container .w-rjv-fold,
+.w-json-view-container .w-rjv-fold-content {
+  max-width: 100% !important;
+  min-width: 0 !important;
+}
+
+.w-json-view-container .w-json-view-ele,
+.w-json-view-container .w-json-view-line,
+.w-json-view-container .w-rjv-line,
+.w-json-view-container .w-rjv-ele {
+  display: flex !important;
+  align-items: baseline;
+}
+
+.w-json-view-container.wrap-json-values .w-json-view-ele,
+.w-json-view-container.wrap-json-values .w-json-view-line,
+.w-json-view-container.wrap-json-values .w-rjv-line,
+.w-json-view-container.wrap-json-values .w-rjv-ele {
+  flex-wrap: wrap !important;
+}
+
+.w-json-view-container .w-json-view-quotes,
+.w-json-view-container .w-json-view-string.w-json-view-string,
+.w-json-view-container .w-rjv-quotes,
+.w-json-view-container .w-rjv-string {
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+}

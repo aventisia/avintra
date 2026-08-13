@@ -11,8 +11,10 @@ public class JobsTableService : IJobsTableService
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
     private readonly string? _authHeader;
+    private readonly string _displayName;
     private readonly INodeExecutionLogService _nodeExecutionLogService;
     private readonly IClientContextResolver _clientContextResolver;
+    private const int MaxRemarkLength = 2000;
 
     public JobsTableService(
         ILogger<JobsTableService> logger,
@@ -32,6 +34,9 @@ public class JobsTableService : IJobsTableService
         // Forward the current request's Authorization header so calls to AccountsAPIs are authenticated.
         _authHeader = httpContextAccessor.HttpContext?.Request?.Headers["Authorization"].FirstOrDefault();
 
+        // Capture the display name for attribution in job remarks (e.g. "Job aborted by FirstName LastName").
+        _displayName = GetDisplayName(httpContextAccessor.HttpContext?.User);
+
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
@@ -41,6 +46,30 @@ public class JobsTableService : IJobsTableService
         _environmentConfig = environmentConfig;
         _nodeExecutionLogService = nodeExecutionLogService;
         _clientContextResolver = clientContextResolver;
+    }
+
+    /// <summary>
+    /// Returns the user's display name (First Name + Last Name) from the JWT "name" claim,
+    /// falling back to the username/email claim if the name claim is missing.
+    /// </summary>
+    private static string GetDisplayName(System.Security.Claims.ClaimsPrincipal? user)
+    {
+        var name = user?.FindFirstValue(System.Security.Claims.ClaimTypes.Name)
+                   ?? user?.FindFirstValue("name");
+        if (!string.IsNullOrWhiteSpace(name)) return name;
+
+        return user?.FindFirstValue("uname") ?? string.Empty;
+    }
+
+    /// <summary>
+    /// Trims a remark to the maximum allowed length, adding an ellipsis when truncated.
+    /// </summary>
+    private static string? TruncateRemark(string? remarks)
+    {
+        if (string.IsNullOrWhiteSpace(remarks) || remarks.Length <= MaxRemarkLength)
+            return remarks;
+
+        return remarks[..(MaxRemarkLength - 3)] + "...";
     }
 
     // Retrieves a list of all jobs between optional start and end date filters.
@@ -699,8 +728,9 @@ public class JobsTableService : IJobsTableService
             job.Status = closingStatus;
             job.EndTime = now;
 
-            if (!string.IsNullOrWhiteSpace(remarks))
-                job.Remark = remarks;
+            var normalizedRemarks = TruncateRemark(remarks);
+            if (!string.IsNullOrWhiteSpace(normalizedRemarks))
+                job.Remark = normalizedRemarks;
 
             // Persist per-node execution logs from the desktop/web executor if provided.
             if (nodeExecutionLogs is { Count: > 0 })
@@ -772,6 +802,12 @@ public class JobsTableService : IJobsTableService
             // Set the job status to Aborted and record the end time.
             job.Status = JobStatusEnum.Aborted;
             job.EndTime = DateTimeOffset.UtcNow;
+
+            // Record an attribution remark when the user name is available.
+            var abortRemark = !string.IsNullOrWhiteSpace(_displayName)
+                ? $"Job aborted by {_displayName}."
+                : "Job aborted.";
+            job.Remark = TruncateRemark(abortRemark);
 
             // Update the job in the repository.
             _unitOfWork.JobRepo.Update(job);

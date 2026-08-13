@@ -1,9 +1,5 @@
-using RunnerApp;
-using RunnerApp.Services;
-using ExecutorLibrary.FlowProcessor.Models;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using RunnerApp;
 
 var mode = ParseMode(args);
 if (mode == ExecutorMode.Install)
@@ -321,7 +317,14 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     Console.WriteLine($"Closing job with status: {jobStatus}");
     try
     {
-        await backendClient.CloseJobAsync(targetJobId, result.Status, result.NodeLogs.ToList());
+        var closeRemarks = result.Status switch
+        {
+            FlowExecutionStatus.Failed => BackendHttpClient.BuildFailedNodeRemark(result.NodeLogs.ToList(), result.ErrorMessage),
+            FlowExecutionStatus.Aborted => "Job aborted by runner.",
+            _ => null,
+        };
+
+        await backendClient.CloseJobAsync(targetJobId, result.Status, result.NodeLogs.ToList(), closeRemarks);
     }
     catch (Exception ex)
     {
@@ -588,12 +591,14 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
     if (string.IsNullOrWhiteSpace(appBaseUrl))
         return null;
 
-    // Service mode requires a tenant API key and tenant ID. If the user explicitly passed --service
-    // we must enforce those values; otherwise we fall back to console mode which needs an access token.
+    // Service mode requires a tenant API key, tenant ID, and linked username. If the user
+    // explicitly passed --service we must enforce those values; otherwise we fall back to
+    // console mode which needs an access token.
     var isExplicitService = args.Contains("--service", StringComparer.OrdinalIgnoreCase);
     var hasApiKey = !string.IsNullOrWhiteSpace(apiKey);
     var hasTenantId = !string.IsNullOrWhiteSpace(tenantId);
-    var isServiceMode = hasApiKey && hasTenantId;
+    var hasLinkedUsername = !string.IsNullOrWhiteSpace(linkedUsername);
+    var isServiceMode = hasApiKey && hasTenantId && hasLinkedUsername;
 
     if (isExplicitService && !isServiceMode)
         return null;
