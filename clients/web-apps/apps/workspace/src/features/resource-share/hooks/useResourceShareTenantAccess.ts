@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -58,23 +57,11 @@ export const useResourceShareTenantAccess = ({ queryKey }: UseTenantAccessProps)
   });
 
   /**
-   * Retrieves the active resource from the React Query cache,
-   * merges the draft tenant access state, and executes the mutation.
+   * Executes the tenant-wide access mutation for the active resource.
    */
   const handleCommitTenantAccess = async () => {
     if (!resourceId) {
       console.error("No active resource selected for sharing");
-      return;
-    }
-
-    const cacheData = queryClient.getQueryData<any>(queryKey);
-
-    // Fallback to empty array to handle variations in API response wrappers
-    const items = Array.isArray(cacheData) ? cacheData : cacheData?.data || [];
-    const activeRowDto = items.find((row: any) => row.id === resourceId);
-
-    if (!activeRowDto) {
-      console.error(`Row with ID ${resourceId} not found in cache.`);
       return;
     }
 
