@@ -1,23 +1,23 @@
 ---
-name: code_review
-description: Review source code and provide feedback on bugs, style, security, and best practices.
+name: sql-generator
+description: Generate SQL queries from natural language descriptions and schema context.
 providers: []
 license:
   name: MIT
   url: https://opensource.org/licenses/MIT
   terms: ""
 references:
-  - title: Code Review Skill Source
+  - title: SQL Generator Skill Source
     url: ./
     type: source
 tags:
-  - development
-  - review
+  - database
+  - sql
 ---
 
-# Code Review
+# SQL Generator
 
-Reviews source code and provides feedback on bugs, style, security, and best practices.
+Generates SQL queries from natural language descriptions and optional schema context.
 
 ## License
 

@@ -43,9 +43,11 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                 return serviceResponse;
             }
 
-            // Retrieve the skill and verify access.
+            // Retrieve the skill and verify access (bypass global tenant/space filters
+            // so platform/global skills seeded with Guid.Empty tenant remain visible).
             var skill = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w => w.Id == skillId)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // Return 404 when skill does not exist.
@@ -84,6 +86,7 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                 .Include(i => i.CreatedByUser)
                 .OrderBy(i => i.FileName)
                 .IgnoreAutoIncludes()
+                .IgnoreQueryFilters()
                 .ToListAsync();
 
             serviceResponse.Update("Skill files retrieved successfully", 200, files.Adapt<List<SkillFileDto>>());
@@ -319,11 +322,13 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                 return serviceResponse;
             }
 
-            // Retrieve the skill with its files and verify access.
+            // Retrieve the skill with its files and verify access (bypass global
+            // tenant/space filters so platform/global skills remain accessible).
             var skill = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w => w.Id == skillId)
                 .Include(i => i.Files)
                 .IgnoreAutoIncludes()
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // Return 404 when skill does not exist.

@@ -1,23 +1,23 @@
 ---
-name: sql_generator
-description: Generate SQL queries from natural language descriptions and schema context.
+name: email-writer
+description: Draft a professional email based on the provided topic, tone, and recipient details.
 providers: []
 license:
   name: MIT
   url: https://opensource.org/licenses/MIT
   terms: ""
 references:
-  - title: SQL Generator Skill Source
+  - title: Email Writer Skill Source
     url: ./
     type: source
 tags:
-  - database
-  - sql
+  - writing
+  - communication
 ---
 
-# SQL Generator
+# Email Writer
 
-Generates SQL queries from natural language descriptions and optional schema context.
+Drafts a professional email using the provided topic, tone, and recipient details.
 
 ## License
 

@@ -172,11 +172,13 @@ public class SkillRegistryService : ISkillRegistryService
             }
 
             // Retrieve the skill by ID including its related users and files.
+            // Bypass global tenant/space filters so platform/global skills are visible.
             var skill = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w => w.Id == skillId)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.Files)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // Return when skill does not exist.

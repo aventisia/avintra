@@ -1,23 +1,23 @@
 ---
-name: email_writer
-description: Draft a professional email based on the provided topic, tone, and recipient details.
+name: code-review
+description: Review source code and provide feedback on bugs, style, security, and best practices.
 providers: []
 license:
   name: MIT
   url: https://opensource.org/licenses/MIT
   terms: ""
 references:
-  - title: Email Writer Skill Source
+  - title: Code Review Skill Source
     url: ./
     type: source
 tags:
-  - writing
-  - communication
+  - development
+  - review
 ---
 
-# Email Writer
+# Code Review
 
-Drafts a professional email using the provided topic, tone, and recipient details.
+Reviews source code and provides feedback on bugs, style, security, and best practices.
 
 ## License
 
