@@ -17,6 +17,11 @@ public class CallerContext
     public Guid TenantId { get; set; } = Guid.Empty;
     public Guid? UserId { get; set; }
     public string? AccessToken { get; set; }
+
+    /// <summary>
+    /// The resolved application base URL (e.g., avintra.aventisia.com) supplied by the runner.
+    /// </summary>
+    public string? AppBaseUrl { get; set; }
 }
 
 

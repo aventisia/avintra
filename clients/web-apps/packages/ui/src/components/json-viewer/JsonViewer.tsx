@@ -8,7 +8,6 @@ import { ScrollArea } from "../scroll/ScrollArea";
 import "./json-viewer.css";
 
 const JSON_INDENT_WIDTH = 18;
-const JSON_SHORTEN_AFTER_LENGTH = 80;
 
 /** Props for the per-row copy icon supplied by @uiw/react-json-view. */
 type JsonCopiedRenderProps = {
@@ -32,6 +31,11 @@ type JsonViewerProps = {
    * (e.g. when the viewer is already inside a scrolling container).
    */
   viewportClassName?: string;
+  /**
+   * Number of characters after which long string values are truncated.
+   * Defaults to the internal constant `JSON_SHORTEN_AFTER_LENGTH`.
+   */
+  shortenTextAfterLength?: number;
 };
 
 /**
@@ -47,6 +51,7 @@ export const JsonViewer = ({
   enableValueClipboard = false,
   className,
   viewportClassName = "max-h-72",
+  shortenTextAfterLength = 80,
 }: JsonViewerProps) => {
   const { parsedJson, parseError } = useMemo(() => {
     try {
@@ -102,7 +107,7 @@ export const JsonViewer = ({
           displayDataTypes={false}
           indentWidth={JSON_INDENT_WIDTH}
           highlightUpdates={false}
-          shortenTextAfterLength={JSON_SHORTEN_AFTER_LENGTH}
+          shortenTextAfterLength={shortenTextAfterLength}
         >
           <JsonView.Copied render={renderCopiedButton} />
         </JsonView>

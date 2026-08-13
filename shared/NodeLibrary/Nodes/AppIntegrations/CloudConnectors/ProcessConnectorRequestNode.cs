@@ -32,9 +32,9 @@ public class ProcessConnectorRequestNode : BaseNode
             var payload = Payload.Get(context);
             var flowMetadata = FlowMetadata.Get(context) ?? throw new InvalidOperationException("Agent metadata is required");
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
-            
-            var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
-            var apiUrl = $"https://{baseUrl}/workspace/api/cloud-connector/{provider?.ToLower()}/invoke";
+
+            var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
+            var apiUrl = $"{baseUrl}/workspace/api/cloud-connector/{provider?.ToLower()}/invoke";
 
             var requestObj = new
             {

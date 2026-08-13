@@ -230,6 +230,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
             jsonData={jsonToString(job.jobInputData)}
             enableValueClipboard
             viewportClassName=""
+            shortenTextAfterLength={70}
           />
         </ViewInfoRowsCard>
       )}
@@ -245,6 +246,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
             jsonData={jsonToString(job.jobOutputData)}
             enableValueClipboard
             viewportClassName=""
+            shortenTextAfterLength={70}
           />
         </ViewInfoRowsCard>
       )}
@@ -271,6 +273,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
             jsonData={jsonToString(job.lastNodeLog)}
             enableValueClipboard
             viewportClassName=""
+            shortenTextAfterLength={70}
           />
         </ViewInfoRowsCard>
       )}

@@ -73,9 +73,9 @@ public class ProcessLLMRequestNode : BaseNode
             var enableDynamicActions = GetBoolProperty(recommendedActionsConfig, "enableDynamicActions");
             var followUpMessagePrompt = GetStringProperty(recommendedActionsConfig, "followUpMessagePrompt");
 
-            // Build the LLM pipeline API endpoint using the resolved application base URL.
-            var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
-            var apiUrl = $"https://{baseUrl}/llmpipeline/api/v2/llm/generate";
+            // Build the LLM pipeline API endpoint using the application base URL from the caller context.
+            var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
+            var apiUrl = $"{baseUrl}/llmpipeline/api/v2/llm/generate";
 
             // Create the LLM input payload using conversation history when available,
             // otherwise using the standalone prompt with optional follow-up instructions.

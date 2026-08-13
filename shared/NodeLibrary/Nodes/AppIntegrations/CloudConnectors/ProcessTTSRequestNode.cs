@@ -27,10 +27,6 @@ public class ProcessTTSRequestNode : BaseNode
     {
         try
         {
-            // Resolve the application base URL and construct the TTS API endpoint.
-            var baseUrl = AppConfigHelper.ResolveAppBaseUrl();
-            var apiUrl = $"https://{baseUrl}/llmpipeline/api/tts/synthesize";
-
             // Retrieve the workflow inputs required to process the request.
             var modelConfig = ModelConfig.Get(context);
             var inputText = InputText.Get(context);
@@ -39,6 +35,10 @@ public class ProcessTTSRequestNode : BaseNode
             var flowMetadata = FlowMetadata.Get(context) ?? throw new InvalidOperationException("Agent metadata is required");
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
             var threadMessages = ThreadMessages.Get(context);
+
+            // Resolve the application base URL from the caller context and construct the TTS API endpoint.
+            var baseUrl = callerContext.AppBaseUrl ?? throw new InvalidOperationException("App base URL is required");
+            var apiUrl = $"{baseUrl}/llmpipeline/api/tts/synthesize";
 
             // Construct the request payload expected by the TTS service.
             var requestObj = new

@@ -84,7 +84,7 @@ public class RunnerAppService : BackgroundService
 
         using var httpClient = new HttpClient { BaseAddress = new Uri(_options.AppBaseUrl) };
         var backendClient = new BackendHttpClient(httpClient, accessToken);
-        var engine = new DesktopExecutionEngine(accessToken);
+        var engine = new DesktopExecutionEngine(accessToken, _options.AppBaseUrl);
 
         var hubLogger = _loggerFactory.CreateLogger<OrchestratorHubClient>();
         await using var hubClient = new OrchestratorHubClient(

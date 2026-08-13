@@ -10,10 +10,12 @@ namespace RunnerApp.Services;
 public class DesktopExecutionEngine : IExecutionEngine
 {
     private readonly string _accessToken;
+    private readonly string _appBaseUrl;
 
-    public DesktopExecutionEngine(string accessToken)
+    public DesktopExecutionEngine(string accessToken, string appBaseUrl)
     {
         _accessToken = accessToken;
+        _appBaseUrl = appBaseUrl;
     }
 
     public async Task<FlowExecutionResult> ExecuteAsync(
@@ -37,7 +39,8 @@ public class DesktopExecutionEngine : IExecutionEngine
             ["_caller"] = new CallerContext
             {
                 TenantId = graph.TenantId,
-                AccessToken = _accessToken
+                AccessToken = _accessToken,
+                AppBaseUrl = _appBaseUrl
             },
             ["_job"] = new JobContext
             {
