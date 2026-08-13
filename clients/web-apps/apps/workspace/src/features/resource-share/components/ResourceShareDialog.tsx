@@ -13,6 +13,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import CustomCheckbox from "@/components/CustomCheckbox";
 
+import { ResourceTypeEnum } from "../enums/resource-type-enum";
 import { useResourceShareTenantAccess } from "../hooks/useResourceShareTenantAccess";
 import { useResourceShareStore } from "../stores/resource-share-store";
 import { SearchUsers } from "./SearchUsers";
@@ -27,13 +28,18 @@ interface ResourceShareDialogProps {
  * Integrates tenant-wide access toggling and specific user assignment workflows.
  */
 function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
-  const { showDialog, resourceName, setShowDialog } = useResourceShareStore(
+  const { showDialog, resourceName, resourceType, setShowDialog } = useResourceShareStore(
     useShallow((state) => ({
       showDialog: state.showDialog,
       resourceName: state.resourceName,
+      resourceType: state.resourceType,
       setShowDialog: state.setShowDialog,
     })),
   );
+
+  // Space resources don't support tenant-wide assignment, so hide the
+  // "Share to all team members" checkbox for them.
+  const isSpaceResource = resourceType === ResourceTypeEnum.Space;
 
   // Hook to handle tenant wide access, since this property exists in table list
   const {
@@ -74,14 +80,16 @@ function ResourceShareDialog({ queryKey }: ResourceShareDialogProps) {
 
         /> */}
         <ScrollArea className="h-[calc(75vh-4rem)]">
-          <div className="p-4 pb-0">
-            <CustomCheckbox
-              checked={assignAllDraft}
-              label="Share to all team members"
-              description="All users in this tenant will be assigned automatically"
-              onCheckedChange={setAssignAllDraft}
-            />
-          </div>
+          {!isSpaceResource && (
+            <div className="p-4 pb-0">
+              <CustomCheckbox
+                checked={assignAllDraft}
+                label="Share to all team members"
+                description="All users in this tenant will be assigned automatically"
+                onCheckedChange={setAssignAllDraft}
+              />
+            </div>
+          )}
 
           <SearchUsers
             isTenantAccessDraft={assignAllDraft}

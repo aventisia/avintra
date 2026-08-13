@@ -6,15 +6,21 @@ import { User2Icon } from "lucide-react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useFetchResourceShare } from "../hooks/useFetchResourceShare";
+import { ResourceTypeEnum } from "../enums/resource-type-enum";
 import { useResourceShareStore } from "../stores/resource-share-store";
 import { ResourceShareItemActions } from "./resource-share-item-actions";
+import { RemoveUserIconButton } from "./resource-share-item-actions/RemoveUserIconButton";
 
 const UsersList = () => {
-  const { resourceId } = useResourceShareStore(
+  const { resourceId, resourceType } = useResourceShareStore(
     useShallow((s) => ({
       resourceId: s.resourceId,
+      resourceType: s.resourceType,
     })),
   );
+
+  // Space resources only support removal (no View/Edit/Owner actions).
+  const isSpaceResource = resourceType === ResourceTypeEnum.Space;
 
   // Use to fetch users list of Resource Share
   const { data } = useFetchResourceShare(resourceId ?? "");
@@ -54,7 +60,11 @@ const UsersList = () => {
                     {" "}
                     {val.accessLevel?.replace(/([A-Z])/g, " $1")}
                   </span>
-                  <ResourceShareItemActions item={val} />
+                  {isSpaceResource ? (
+                    <RemoveUserIconButton id={val.id || ""} />
+                  ) : (
+                    <ResourceShareItemActions item={val} />
+                  )}
                 </div>
               </div>
             </CommandItem>
