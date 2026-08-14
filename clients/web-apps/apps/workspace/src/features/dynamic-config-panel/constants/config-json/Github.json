@@ -1,11 +1,28 @@
 [
   {
     "direction": "Input",
-    "type": "password",
-    "name": "ApiKey",
-    "label": "API Key",
+    "type": "text",
+    "name": "GitHubServer",
+    "label": "GitHub Server",
+    "description": "GitHubServer",
+    "defaultValue": "https://api.github.com",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "User",
+    "label": "User",
+    "description": "GitHub User",
     "defaultValue": "",
-    "required": true,
-    "description": ""
+    "required": false
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "AccessToken",
+    "label": "Access Token",
+    "description": "AccessToken.",
+    "required": true
   }
 ]
