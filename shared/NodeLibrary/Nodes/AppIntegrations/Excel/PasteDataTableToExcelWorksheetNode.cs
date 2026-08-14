@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Paste DataTable to Excel Worksheet"), Description("Pastes the contents of a DataTable into the specified Excel worksheet at a given location.")]
@@ -7,7 +6,7 @@ namespace NodeLibrary.ExcelNodes;
 public class PasteDataTableToExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet where the DataTable will be pasted.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Data Table"), Description("The DataTable containing the data to paste.")]
     public required InArgument<DataTable> DataTableInput { get; set; }
@@ -25,7 +24,7 @@ public class PasteDataTableToExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var dataTable = DataTableInput.Get(context);
             var startColStr = StartColumn.Get(context);
             var startRow = StartRow.Get(context);
@@ -44,7 +43,7 @@ public class PasteDataTableToExcelWorksheetNode : BaseNode
             {
                 for (int col = 0; col < dataTable.Columns.Count; col++)
                 {
-                    ((Excel.Range)worksheet.Cells[currentRow, startCol + col]).Value2 = dataTable.Columns[col].ColumnName;
+                    (worksheet.Cells[currentRow, startCol + col]).Value2 = dataTable.Columns[col].ColumnName;
                 }
                 currentRow++;
             }
@@ -53,7 +52,7 @@ public class PasteDataTableToExcelWorksheetNode : BaseNode
             {
                 for (int col = 0; col < dataTable.Columns.Count; col++)
                 {
-                    ((Excel.Range)worksheet.Cells[currentRow + row, startCol + col]).Value2 =
+                    (worksheet.Cells[currentRow + row, startCol + col]).Value2 =
                         dataTable.Rows[row][col]?.ToString() ?? string.Empty;
                 }
             }
@@ -76,3 +75,8 @@ public class PasteDataTableToExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+

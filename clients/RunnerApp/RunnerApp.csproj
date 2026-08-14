@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="../../shared/OfficePia.props" />
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
@@ -17,10 +15,8 @@
       The .NET 8 runtime and dependencies are bundled into the publish directory,
       so the target machine does not need .NET 8 installed.
 
-      Single-file publish is intentionally disabled because Office Primary Interop
-      Assemblies (Microsoft.Office.Interop.Excel/Word) cannot be loaded by the
-      single-file host at runtime. Keeping them as loose files next to the executable
-      allows COM interop to work.
+      Single-file publish remains disabled to keep deployment consistent with
+      prior releases and to simplify COM/Office late-binding diagnostics.
 
       RuntimeIdentifiers is plural so local-dev scripts can publish for either
       win-x64 or linux-x64 by passing -r <rid>. CI still defaults to win-x64.
@@ -41,12 +37,5 @@
   <ItemGroup>
     <ProjectReference Include="../../shared/ExecutorLibrary/ExecutorLibrary.csproj" />
     <ProjectReference Include="../../shared/NodeLibrary/NodeLibrary.csproj" />
-  </ItemGroup>
-
-  <!-- Ensure the Office Core PIA (office.dll) is copied into publish output.
-       The upstream NodeLibrary reference sets Private=true but Publish only copies transitive
-       files it sees as direct references for the entry project. -->
-  <ItemGroup>
-    <Content Include="$(OfficePiaPath)" CopyToPublishDirectory="PreserveNewest" Visible="false" />
   </ItemGroup>
 </Project>

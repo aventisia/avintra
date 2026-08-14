@@ -1,5 +1,5 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Insert Row to Excel Worksheet"), Description("Inserts a new row at the specified position in an Excel worksheet.")]
@@ -7,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class InsertRowToExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet in which to insert the row.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Row Index"), Description("The row number where the new row will be inserted. Existing rows shift down.")]
     public required InArgument<int> RowIndex { get; set; }
@@ -16,7 +16,7 @@ public class InsertRowToExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var rowIndex = RowIndex.Get(context);
 
             if (worksheet == null)
@@ -25,7 +25,7 @@ public class InsertRowToExcelWorksheetNode : BaseNode
             if (rowIndex < 1)
                 throw new ArgumentOutOfRangeException(nameof(RowIndex), "Row index must be >= 1.");
 
-            ((Excel.Range)worksheet.Rows[rowIndex]).Insert(Excel.XlInsertShiftDirection.xlShiftDown);
+            (worksheet.Rows[rowIndex]).Insert(OfficeConstants.XlShiftDown);
 
             IsSuccess.Set(context, true);
             StatusMessage.Set(context, $"Successfully inserted row at position {rowIndex}.");
@@ -37,3 +37,9 @@ public class InsertRowToExcelWorksheetNode : BaseNode
         }
     }
 }
+
+
+
+
+
+

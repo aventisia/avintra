@@ -1,6 +1,5 @@
-using NodeLibrary.ExcelNodes.Enums;
-using NodeLibrary.ExcelNodes.Helpers;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
+using NodeLibrary.Office;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -9,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class WriteToExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet object where the value will be written.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Value To Write"), Description("The value (text or DataTable) to write into the specified cell or range.")]
     public required InArgument<object> ValueToWrite { get; set; }
@@ -38,20 +37,25 @@ public class WriteToExcelWorksheetNode : BaseNode
 
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
-            var rawValue = ValueToWrite.Get(context);
+            dynamic worksheetArg = WorksheetInstance.Get(context);
+            dynamic rawValue = ValueToWrite.Get(context);
             var writeMode = WriteMode.Get(context);
+            dynamic worksheet;
 
-            if (worksheet == null)
+            if (worksheetArg == null)
             {
-                var excelApp = (Excel.Application)ComHelper.GetActiveObject("Excel.Application");
-                worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                var excelApp = OfficeAutomationHelper.GetActiveApplication(OfficeApplication.Excel);
+                worksheet = excelApp.ActiveSheet;
+            }
+            else
+            {
+                worksheet = worksheetArg;
             }
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance is not provided or active sheet not found.");
 
-            var workbook = worksheet.Parent as Excel.Workbook;
+            var workbook = worksheet.Parent;
 
             switch (writeMode)
             {
@@ -66,7 +70,7 @@ public class WriteToExcelWorksheetNode : BaseNode
                         if (rowNumber <= 0)
                             throw new ArgumentException("Row number must be greater than zero.");
 
-                        Excel.Range targetCell = (Excel.Range)worksheet.Cells[rowNumber, colIndex];
+                        var targetCell = worksheet.Cells[rowNumber, colIndex];
                         if (targetCell == null)
                             throw new ArgumentException($"Invalid cell reference at row {rowNumber} and column index {colIndex}.");
 
@@ -76,7 +80,7 @@ public class WriteToExcelWorksheetNode : BaseNode
 
                 case ExcelCellWriteModeEnum.OnCurrentlyActiveCell:
                     {
-                        var activeCell = worksheet.Application.Selection as Excel.Range;
+                        var activeCell = worksheet.Application.Selection;
                         if (activeCell == null)
                             throw new InvalidOperationException("No active cell found in worksheet.");
                         WriteValueToRange(activeCell, rawValue);
@@ -91,7 +95,7 @@ public class WriteToExcelWorksheetNode : BaseNode
                         if (string.IsNullOrWhiteSpace(name))
                             throw new ArgumentException("Name cannot be empty when using 'On Named Cells' mode.");
 
-                        Excel.Range namedRange = null;
+                        dynamic? namedRange = null;
 
                         try
                         {
@@ -128,7 +132,7 @@ public class WriteToExcelWorksheetNode : BaseNode
                             if (populateEntireRange)
                                 namedRange.Value = value;
                             else
-                                ((Excel.Range)namedRange.Cells[1, 1]).Value = value;
+                                namedRange.Cells[1, 1].Value = value;
                         }
                         break;
                     }
@@ -147,7 +151,7 @@ public class WriteToExcelWorksheetNode : BaseNode
         }
     }
 
-    private void WriteValueToRange(Excel.Range range, object value)
+    private void WriteValueToRange(dynamic range, object value)
     {
         if (value is DataTable dataTable)
         {
@@ -171,7 +175,7 @@ public class WriteToExcelWorksheetNode : BaseNode
         }
     }
 
-    private void WriteDataTableToRange(Excel.Range startCell, DataTable dataTable, bool populateEntireRange)
+    private void WriteDataTableToRange(dynamic startCell, DataTable dataTable, bool populateEntireRange)
     {
         if (dataTable.Rows.Count == 0 || dataTable.Columns.Count == 0)
             return;
@@ -188,7 +192,7 @@ public class WriteToExcelWorksheetNode : BaseNode
             for (int c = 0; c < colCount; c++)
                 values[r + 1, c] = dataTable.Rows[r][c];
 
-        Excel.Range targetRange = startCell.Resize[rowCount + 1, colCount];
+        dynamic targetRange = startCell.Resize[rowCount + 1, colCount];
         targetRange.Value = values;
     }
 
@@ -201,3 +205,7 @@ public class WriteToExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+

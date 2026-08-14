@@ -1,6 +1,6 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Paste Cells to Excel Worksheet"), Description("Pastes previously copied cells to a specified location in an Excel worksheet.")]
@@ -8,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class PasteCellsToExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet where cells will be pasted.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Paste Mode"), Description("Specifies where to paste: to a specific cell, named range, or active cell.")]
     public required InArgument<CellPasteModeEnum> PasteMode { get; set; }
@@ -32,14 +32,14 @@ public class PasteCellsToExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var pasteMode = PasteMode.Get(context);
             var pasteType = PasteType.Get(context);
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");
 
-            Excel.Range targetRange;
+            dynamic targetRange;
 
             switch (pasteMode)
             {
@@ -48,7 +48,7 @@ public class PasteCellsToExcelWorksheetNode : BaseNode
                         var colStr = Column.Get(context);
                         var row = Row.Get(context);
                         int colNum = int.TryParse(colStr, out int num) ? num : GetColumnIndex(colStr);
-                        targetRange = (Excel.Range)worksheet.Cells[row, colNum];
+                        targetRange = worksheet.Cells[row, colNum];
                         break;
                     }
 
@@ -75,14 +75,14 @@ public class PasteCellsToExcelWorksheetNode : BaseNode
 
             targetRange.Select();
 
-            Excel.XlPasteType xlPasteType = pasteType switch
+            var xlPasteType = pasteType switch
             {
-                ExcelPasteTypeEnum.All => Excel.XlPasteType.xlPasteAll,
-                ExcelPasteTypeEnum.Values => Excel.XlPasteType.xlPasteValues,
-                ExcelPasteTypeEnum.Formulas => Excel.XlPasteType.xlPasteFormulas,
-                ExcelPasteTypeEnum.Formats => Excel.XlPasteType.xlPasteFormats,
-                ExcelPasteTypeEnum.Comments => Excel.XlPasteType.xlPasteComments,
-                _ => Excel.XlPasteType.xlPasteAll
+                ExcelPasteTypeEnum.All => OfficeConstants.XlPasteAll,
+                ExcelPasteTypeEnum.Values => OfficeConstants.XlPasteValues,
+                ExcelPasteTypeEnum.Formulas => OfficeConstants.XlPasteFormulas,
+                ExcelPasteTypeEnum.Formats => OfficeConstants.XlPasteFormats,
+                ExcelPasteTypeEnum.Comments => OfficeConstants.XlPasteComments,
+                _ => OfficeConstants.XlPasteAll
             };
 
             worksheet.PasteSpecial(Format: xlPasteType);
@@ -104,3 +104,9 @@ public class PasteCellsToExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+
+

@@ -1,5 +1,4 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -8,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class SaveExcelNode : BaseNode
 {
     [DisplayName("Excel Application"), Description("The Excel Application object containing the workbook to save.")]
-    public required InArgument<Excel.Application> ExcelApplication { get; set; }
+    public required InArgument<object> ExcelApplication { get; set; }
 
     [DisplayName("Save Mode"), Description("Specifies how to save the workbook.")]
     public required InArgument<ExcelFileSaveModeEnum> SaveMode { get; set; } = new InArgument<ExcelFileSaveModeEnum>(ExcelFileSaveModeEnum.Save);
@@ -27,7 +26,7 @@ public class SaveExcelNode : BaseNode
 
         try
         {
-            var excelApp = ExcelApplication.Get(context);
+            dynamic excelApp = ExcelApplication.Get(context);
             var saveMode = SaveMode.Get(context);
 
             if (excelApp?.ActiveWorkbook == null)
@@ -69,3 +68,8 @@ public class SaveExcelNode : BaseNode
         }
     }
 }
+
+
+
+
+

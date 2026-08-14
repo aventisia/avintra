@@ -1,6 +1,5 @@
-using NodeLibrary.ExcelNodes.Enums;
-using System.Runtime.InteropServices;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
+using NodeLibrary.Office;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -9,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class CloseExcelNode : BaseNode
 {
     [DisplayName("Excel Application"), Description("The Excel Application object to close.")]
-    public required InArgument<Excel.Application> ExcelApplication { get; set; }
+    public required InArgument<object> ExcelApplication { get; set; }
 
     [DisplayName("Before Closing Excel"), Description("Specifies what to do before closing Excel.")]
     public InArgument<ExcelCloseOptionEnum> BeforeClosingExcel { get; set; } = new InArgument<ExcelCloseOptionEnum>(ExcelCloseOptionEnum.SaveDocument);
@@ -20,16 +19,15 @@ public class CloseExcelNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
-            var excelApp = ExcelApplication.Get(context);
+            dynamic excelAppArg = ExcelApplication.Get(context);
             var closeOption = BeforeClosingExcel.Get(context);
 
-            if (excelApp == null)
+            if (excelAppArg == null)
                 throw new InvalidOperationException("Excel Application is null.");
 
+            dynamic excelApp = excelAppArg;
             excelApp.DisplayAlerts = false;
 
             switch (closeOption)
@@ -56,12 +54,11 @@ public class CloseExcelNode : BaseNode
 
             excelApp.Quit();
 
-            if (excelApp?.ActiveWorkbook != null)
-                Marshal.ReleaseComObject(excelApp.ActiveWorkbook);
-            Marshal.ReleaseComObject(excelApp);
+            OfficeAutomationHelper.Release(excelApp.ActiveWorkbook);
+            OfficeAutomationHelper.Release(excelApp);
 
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, status);
+            StatusMessage.Set(context, "Success");
         }
         catch (Exception ex)
         {
@@ -70,3 +67,7 @@ public class CloseExcelNode : BaseNode
         }
     }
 }
+
+
+
+

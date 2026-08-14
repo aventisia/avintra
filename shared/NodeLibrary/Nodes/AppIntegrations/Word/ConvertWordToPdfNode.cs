@@ -1,6 +1,5 @@
 using System.IO;
-using System.Runtime.InteropServices;
-using Word = Microsoft.Office.Interop.Word;
+using NodeLibrary.Office;
 
 namespace NodeLibrary.WordNodes;
 
@@ -16,8 +15,8 @@ public class ConvertWordToPdfNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        Word.Application wordApp = null;
-        Word.Document document = null;
+        dynamic? wordApp = null;
+        dynamic? document = null;
 
         try
         {
@@ -33,11 +32,20 @@ public class ConvertWordToPdfNode : BaseNode
             if (string.IsNullOrWhiteSpace(outputPath))
                 outputPath = Path.ChangeExtension(inputPath, ".pdf");
 
-            wordApp = new Word.Application
+            try
             {
-                Visible = false,
-                ScreenUpdating = false
-            };
+                wordApp = OfficeAutomationHelper.CreateApplication(OfficeApplication.Word);
+            }
+            catch (Exception activationEx)
+            {
+                throw new OfficeAutomationException(
+                    OfficeApplication.Word,
+                    "convert Word document to PDF",
+                    activationEx);
+            }
+
+            wordApp.Visible = false;
+            wordApp.ScreenUpdating = false;
 
             document = wordApp.Documents.Open(
                 inputPath,
@@ -46,14 +54,14 @@ public class ConvertWordToPdfNode : BaseNode
 
             document.ExportAsFixedFormat(
                 outputPath,
-                Word.WdExportFormat.wdExportFormatPDF,
+                OfficeConstants.WdExportFormatPDF,
                 OpenAfterExport: false,
-                OptimizeFor: Word.WdExportOptimizeFor.wdExportOptimizeForPrint,
-                Range: Word.WdExportRange.wdExportAllDocument,
-                Item: Word.WdExportItem.wdExportDocumentContent,
+                OptimizeFor: OfficeConstants.WdExportOptimizeForPrint,
+                Range: OfficeConstants.WdExportAllDocument,
+                Item: OfficeConstants.WdExportDocumentContent,
                 IncludeDocProps: true,
                 KeepIRM: true,
-                CreateBookmarks: Word.WdExportCreateBookmarks.wdExportCreateHeadingBookmarks,
+                CreateBookmarks: OfficeConstants.WdExportCreateHeadingBookmarks,
                 DocStructureTags: true,
                 BitmapMissingFonts: true,
                 UseISO19005_1: false);
@@ -68,23 +76,21 @@ public class ConvertWordToPdfNode : BaseNode
         }
         finally
         {
-            if (document != null)
-            {
-                document.Close(false);
-                Marshal.ReleaseComObject(document);
-            }
+            OfficeAutomationHelper.Release(document);
 
             if (wordApp != null)
             {
-                wordApp.Quit();
-                Marshal.ReleaseComObject(wordApp);
+                try
+                {
+                    wordApp.Quit();
+                }
+                catch (Exception)
+                {
+                    // Best-effort quit; ignore errors during cleanup.
+                }
             }
 
-            document = null;
-            wordApp = null;
-
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+            OfficeAutomationHelper.Release(wordApp);
         }
     }
 }

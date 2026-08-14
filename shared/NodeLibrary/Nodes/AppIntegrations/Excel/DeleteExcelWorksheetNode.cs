@@ -1,5 +1,4 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -8,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class DeleteExcelWorksheetNode : BaseNode
 {
     [DisplayName("Workbook Instance"), Description("The Excel Workbook from which the worksheet will be deleted.")]
-    public required InArgument<Excel.Workbook> WorkbookInstance { get; set; }
+    public required InArgument<object> WorkbookInstance { get; set; }
 
     [DisplayName("Delete Mode"), Description("Specifies how to identify the worksheet to delete (by Name or by Index).")]
     public required InArgument<WorksheetDeleteByModeEnum> DeleteMode { get; set; }
@@ -25,13 +24,13 @@ public class DeleteExcelWorksheetNode : BaseNode
     {
         try
         {
-            var workbook = WorkbookInstance.Get(context);
+            dynamic workbook = WorkbookInstance.Get(context);
             var deleteMode = DeleteMode.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance cannot be null.");
 
-            Excel.Worksheet targetSheet = null;
+            dynamic targetSheet = null;
 
             switch (deleteMode)
             {
@@ -40,7 +39,7 @@ public class DeleteExcelWorksheetNode : BaseNode
                         var name = WorksheetName.Get(context);
                         if (string.IsNullOrWhiteSpace(name))
                             throw new ArgumentException("Worksheet name must be provided when DeleteMode is 'Name'.");
-                        foreach (Excel.Worksheet ws in workbook.Worksheets)
+                        foreach (var ws in workbook.Worksheets)
                         {
                             if (ws.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
                             {
@@ -58,7 +57,7 @@ public class DeleteExcelWorksheetNode : BaseNode
                         var index = WorksheetIndex.Get(context);
                         if (index < 1 || index > workbook.Worksheets.Count)
                             throw new ArgumentOutOfRangeException(nameof(WorksheetIndex), $"Index must be between 1 and {workbook.Worksheets.Count}.");
-                        targetSheet = (Excel.Worksheet)workbook.Worksheets[index];
+                        targetSheet = workbook.Worksheets[index];
                         break;
                     }
 
@@ -81,3 +80,8 @@ public class DeleteExcelWorksheetNode : BaseNode
         }
     }
 }
+
+
+
+
+

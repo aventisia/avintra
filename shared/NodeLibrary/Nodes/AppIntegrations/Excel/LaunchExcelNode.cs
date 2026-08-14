@@ -1,7 +1,5 @@
-using System.Runtime.InteropServices;
-using NodeLibrary.ExcelNodes.Enums;
-using NodeLibrary.ExcelNodes.Helpers;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
+using NodeLibrary.Office;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -32,10 +30,10 @@ public class LaunchExcelNode : BaseNode
     public InArgument<SecureString> WriteProtectionPassword { get; set; } = new InArgument<SecureString>();
 
     [DisplayName("Excel Instance"), Description("Returns the launched Excel Application object.")]
-    public OutArgument<Excel.Application> ExcelInstance { get; set; } = new OutArgument<Excel.Application>();
+    public OutArgument<object> ExcelInstance { get; set; } = new OutArgument<object>();
 
     [DisplayName("Workbook Instance"), Description("Returns the active or newly created Workbook object.")]
-    public OutArgument<Excel.Workbook> WorkbookInstance { get; set; } = new OutArgument<Excel.Workbook>();
+    public OutArgument<object> WorkbookInstance { get; set; } = new OutArgument<object>();
 
     protected override void Execute(INodeContext context)
     {
@@ -62,22 +60,18 @@ public class LaunchExcelNode : BaseNode
         catch (Exception ex)
         {
             var inner = ex.InnerException ?? ex;
-            var hresult = inner is System.Runtime.InteropServices.COMException comEx
-                ? $" (HRESULT: 0x{comEx.HResult:X8})"
-                : string.Empty;
-
             IsSuccess.Set(context, false);
             ExcelInstance.Set(context, null);
             WorkbookInstance.Set(context, null);
-            StatusMessage.Set(context, $"Error launching Excel: {inner.GetType().Name}: {inner.Message}{hresult}");
+            StatusMessage.Set(context, $"Error launching Excel: {inner.Message}");
         }
     }
 
     private void ExecuteSta(INodeContext context)
     {
-        Excel.Application excelApp = null;
-        Excel.Workbooks workbooks = null;
-        Excel.Workbook workbook = null;
+        dynamic? excelApp = null;
+        dynamic? workbooks = null;
+        dynamic? workbook = null;
         var comObjectsToRelease = new List<object>();
 
         try
@@ -87,13 +81,17 @@ public class LaunchExcelNode : BaseNode
 
             try
             {
-                excelApp = (Excel.Application)ComHelper.GetActiveObject("Excel.Application");
+                excelApp = OfficeAutomationHelper.GetActiveApplication(OfficeApplication.Excel);
                 if (makeVisible)
                     excelApp.Visible = true;
             }
+            catch (OfficeAutomationException)
+            {
+                throw;
+            }
             catch
             {
-                excelApp = new Excel.Application();
+                excelApp = OfficeAutomationHelper.CreateApplication(OfficeApplication.Excel);
                 excelApp.Visible = makeVisible;
             }
 
@@ -111,10 +109,10 @@ public class LaunchExcelNode : BaseNode
 
                         workbooks = excelApp.Workbooks;
                         bool workbookAlreadyOpen = false;
-                        foreach (Excel.Workbook wb in workbooks)
+                        foreach (var wb in workbooks)
                         {
                             comObjectsToRelease.Add(wb);
-                            var openWorkbookName = System.IO.Path.GetFileName(wb.FullName);
+                            var openWorkbookName = System.IO.Path.GetFileName((string)wb.FullName);
                             var targetWorkbookName = System.IO.Path.GetFileName(documentPath);
 
                             if (string.Equals(openWorkbookName, targetWorkbookName, StringComparison.OrdinalIgnoreCase))
@@ -163,10 +161,17 @@ public class LaunchExcelNode : BaseNode
         {
             foreach (var obj in comObjectsToRelease)
             {
-                try { Marshal.ReleaseComObject(obj); } catch { /* ignore */ }
+                OfficeAutomationHelper.Release(obj);
             }
 
-            try { if (workbooks != null && !ReferenceEquals(workbooks, workbook)) Marshal.ReleaseComObject(workbooks); } catch { /* ignore */ }
+            if (workbooks is not null && !ReferenceEquals(workbooks, workbook))
+            {
+                OfficeAutomationHelper.Release(workbooks);
+            }
         }
     }
 }
+
+
+
+

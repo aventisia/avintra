@@ -2,6 +2,7 @@
   "extends": "@avplatform/typescript-config/vite.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "paths": {
       "@avplatform/ui/*": ["../ui/src/*"]
     }

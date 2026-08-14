@@ -1,8 +1,6 @@
 using System.IO;
+using NodeLibrary.Office;
 using NodeLibrary.WordNodes.Enums;
-using Bookmark = Microsoft.Office.Interop.Word.Bookmark;
-using Word = Microsoft.Office.Interop.Word;
-using WordRange = Microsoft.Office.Interop.Word.Range;
 
 namespace NodeLibrary.WordNodes;
 
@@ -11,7 +9,7 @@ namespace NodeLibrary.WordNodes;
 public class InsertImageInWordDocumentNode : BaseNode
 {
     [DisplayName("Word Instance"), Description("The specific Word instance to use.")]
-    public required InArgument<Word.Application> WordInstance { get; set; }
+    public required InArgument<object> WordInstance { get; set; }
 
     [DisplayName("Insert Image To"), Description("Specifies where in the document to insert the image.")]
     public required InArgument<InsertLocationEnum> InsertImageTo { get; set; }
@@ -32,21 +30,22 @@ public class InsertImageInWordDocumentNode : BaseNode
     {
         try
         {
-            var wordApp = WordInstance.Get(context);
+            var wordAppArg = WordInstance.Get(context);
             var insertLocation = InsertImageTo.Get(context);
             var imageSource = InsertImageFrom.Get(context);
             var imagePath = ImagePath.Get(context);
             var bookmarkName = BookmarkName.Get(context);
             var searchText = TextToSearch.Get(context);
 
-            if (wordApp == null)
+            if (wordAppArg == null)
                 throw new ArgumentException("Word application instance cannot be null.");
 
-            Word._Document activeDocument = wordApp.ActiveDocument;
+            dynamic wordApp = wordAppArg;
+            dynamic activeDocument = wordApp.ActiveDocument;
             if (activeDocument == null)
                 throw new InvalidOperationException("No active Word document found.");
 
-            WordRange insertionRange = GetInsertionRange(activeDocument, insertLocation, bookmarkName, searchText);
+            dynamic insertionRange = GetInsertionRange(activeDocument, insertLocation, bookmarkName, searchText);
 
             switch (imageSource)
             {
@@ -79,34 +78,34 @@ public class InsertImageInWordDocumentNode : BaseNode
         }
     }
 
-    private static WordRange GetInsertionRange(
-        Word._Document document,
+    private static dynamic GetInsertionRange(
+        dynamic document,
         InsertLocationEnum location,
         string bookmarkName,
         string searchText)
     {
-        WordRange range = null;
+        dynamic range = null;
 
         switch (location)
         {
             case InsertLocationEnum.BeginningOfWordFile:
                 range = document.Content.Paragraphs[1].Range;
-                range.Collapse(Word.WdCollapseDirection.wdCollapseStart);
+                range.Collapse(OfficeConstants.WdCollapseStart);
                 break;
 
             case InsertLocationEnum.EndOfWordFile:
                 range = document.Content;
-                range.Collapse(Word.WdCollapseDirection.wdCollapseEnd);
+                range.Collapse(OfficeConstants.WdCollapseEnd);
                 break;
 
             case InsertLocationEnum.BeforeBookmark:
                 if (string.IsNullOrWhiteSpace(bookmarkName))
                     throw new ArgumentException("Bookmark name must be provided for this insert mode.");
 
-                if (document.Bookmarks.Cast<Bookmark>().Any(b => b.Name == bookmarkName))
+                if (document.Bookmarks.Exists(bookmarkName))
                 {
                     range = document.Bookmarks[bookmarkName].Range;
-                    range.Collapse(Word.WdCollapseDirection.wdCollapseStart);
+                    range.Collapse(OfficeConstants.WdCollapseStart);
                 }
                 else
                 {
@@ -118,10 +117,10 @@ public class InsertImageInWordDocumentNode : BaseNode
                 if (string.IsNullOrWhiteSpace(bookmarkName))
                     throw new ArgumentException("Bookmark name must be provided for this insert mode.");
 
-                if (document.Bookmarks.Cast<Bookmark>().Any(b => b.Name == bookmarkName))
+                if (document.Bookmarks.Exists(bookmarkName))
                 {
                     range = document.Bookmarks[bookmarkName].Range;
-                    range.Collapse(Word.WdCollapseDirection.wdCollapseEnd);
+                    range.Collapse(OfficeConstants.WdCollapseEnd);
                 }
                 else
                 {
@@ -148,18 +147,18 @@ public class InsertImageInWordDocumentNode : BaseNode
         return range;
     }
 
-    private static WordRange FindTextRange(Word._Document document, string text, bool insertBefore)
+    private static dynamic FindTextRange(dynamic document, string text, bool insertBefore)
     {
-        foreach (Word.Paragraph para in document.Paragraphs)
+        foreach (dynamic para in document.Paragraphs)
         {
-            WordRange paraRange = para.Range.Duplicate;
+            dynamic paraRange = para.Range.Duplicate;
             paraRange.Find.ClearFormatting();
 
             if (!string.IsNullOrEmpty(text) && paraRange.Find.Execute(FindText: text))
             {
                 paraRange.Collapse(insertBefore
-                    ? Word.WdCollapseDirection.wdCollapseStart
-                    : Word.WdCollapseDirection.wdCollapseEnd);
+                    ? OfficeConstants.WdCollapseStart
+                    : OfficeConstants.WdCollapseEnd);
 
                 return paraRange;
             }

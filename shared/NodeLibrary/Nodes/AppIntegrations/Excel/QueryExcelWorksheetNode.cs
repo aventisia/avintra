@@ -1,4 +1,4 @@
-using System.Data.OleDb;
+﻿using System.Data.OleDb;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -72,3 +72,7 @@ public class QueryExcelWorksheetNode : BaseNode
         }
     }
 }
+
+
+
+

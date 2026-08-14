@@ -1,6 +1,6 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Filter Cells in Excel Worksheet"), Description("Applies a filter to a specified range of cells in the provided Excel worksheet.")]
@@ -8,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class FilterCellsInExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet on which to apply the filter.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Filter Mode"), Description("The filter mode to apply.")]
     public required InArgument<ExcelFilterOperatorEnum> FilterMode { get; set; }
@@ -38,7 +38,7 @@ public class FilterCellsInExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var filterMode = FilterMode.Get(context);
             var columnStr = Column.Get(context);
             var startRow = StartRow.Get(context);
@@ -64,7 +64,7 @@ public class FilterCellsInExcelWorksheetNode : BaseNode
 
             int relativeColumn = filterColumn - startCol + 1;
 
-            Excel.XlAutoFilterOperator xlOperator = Excel.XlAutoFilterOperator.xlAnd;
+            var xlOperator = OfficeConstants.XlAnd;
 
             string? criteria1 = filterMode switch
             {
@@ -88,7 +88,7 @@ public class FilterCellsInExcelWorksheetNode : BaseNode
             else if (filterMode == ExcelFilterOperatorEnum.IsBetween)
             {
                 string criteria2 = $"<={filterValue2}";
-                range.AutoFilter(relativeColumn, criteria1, Excel.XlAutoFilterOperator.xlAnd, criteria2);
+                range.AutoFilter(relativeColumn, criteria1, OfficeConstants.XlAnd, criteria2);
             }
             else
             {
@@ -113,3 +113,9 @@ public class FilterCellsInExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+
+

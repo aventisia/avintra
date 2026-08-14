@@ -1,5 +1,4 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -8,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class AddNewWorksheetNode : BaseNode
 {
     [DisplayName("Workbook Instance"), Description("The Excel Workbook object where the new worksheet will be added.")]
-    public required InArgument<Excel.Workbook> WorkbookInstance { get; set; }
+    public required InArgument<object> WorkbookInstance { get; set; }
 
     [DisplayName("New Worksheet Name"), Description("The name of the new worksheet to be created.")]
     public InArgument<string> NewWorksheetName { get; set; } = new InArgument<string>();
@@ -22,14 +21,14 @@ public class AddNewWorksheetNode : BaseNode
 
         try
         {
-            var workbook = WorkbookInstance.Get(context);
+            dynamic workbook = WorkbookInstance.Get(context);
             var newWorksheetName = NewWorksheetName.Get(context);
             var addWorksheetAs = AddWorksheetAs.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance is not available.");
 
-            Excel.Worksheet newSheet = (Excel.Worksheet)workbook.Sheets.Add();
+            dynamic newSheet = workbook.Sheets.Add();
 
             if (!string.IsNullOrWhiteSpace(newWorksheetName))
                 newSheet.Name = newWorksheetName;
@@ -61,3 +60,8 @@ public class AddNewWorksheetNode : BaseNode
         }
     }
 }
+
+
+
+
+

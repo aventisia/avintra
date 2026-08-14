@@ -1,6 +1,6 @@
 using System.IO;
+using NodeLibrary.Office;
 using NodeLibrary.WordNodes.Enums;
-using Word = Microsoft.Office.Interop.Word;
 
 namespace NodeLibrary.WordNodes;
 
@@ -9,7 +9,7 @@ namespace NodeLibrary.WordNodes;
 public class SaveWordNode : BaseNode
 {
     [DisplayName("Word Instance"), Description("The specific Word instance to save.")]
-    public required InArgument<Word.Application> WordInstance { get; set; }
+    public required InArgument<object> WordInstance { get; set; }
 
     [DisplayName("Save Mode"), Description("Specifies how to save the document.")]
     public InArgument<SaveModeEnum> SaveMode { get; set; } = new InArgument<SaveModeEnum>(SaveModeEnum.SaveDocument);
@@ -26,18 +26,20 @@ public class SaveWordNode : BaseNode
     {
         try
         {
-            var wordApp = WordInstance.Get(context);
+            var wordAppArg = WordInstance.Get(context);
             var saveMode = SaveMode.Get(context);
             var savePath = SavePath.Get(context);
             var saveFormat = SaveFormat.Get(context);
 
-            if (wordApp == null)
+            if (wordAppArg == null)
                 throw new ArgumentNullException(nameof(WordInstance), "WordInstance cannot be null.");
+
+            dynamic wordApp = wordAppArg;
 
             if (wordApp.Documents.Count == 0)
                 throw new InvalidOperationException("No active documents are open in the Word instance.");
 
-            var activeDoc = wordApp.ActiveDocument;
+            dynamic activeDoc = wordApp.ActiveDocument;
             var status = string.Empty;
 
             switch (saveMode)
@@ -51,19 +53,19 @@ public class SaveWordNode : BaseNode
                     if (string.IsNullOrWhiteSpace(savePath))
                         throw new ArgumentException("SavePath must be provided when using 'Save Document As'.");
 
-                    Word.WdSaveFormat format;
+                    int format;
                     string finalPath = savePath;
 
                     switch (saveFormat)
                     {
                         case SaveFormatEnum.Docx:
-                            format = Word.WdSaveFormat.wdFormatDocumentDefault;
+                            format = OfficeConstants.WdFormatDocumentDefault;
                             if (!finalPath.EndsWith(".docx", StringComparison.OrdinalIgnoreCase))
                                 finalPath = Path.ChangeExtension(finalPath, ".docx");
                             break;
 
                         case SaveFormatEnum.Pdf:
-                            format = Word.WdSaveFormat.wdFormatPDF;
+                            format = OfficeConstants.WdFormatPDF;
                             if (!finalPath.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
                                 finalPath = Path.ChangeExtension(finalPath, ".pdf");
                             break;

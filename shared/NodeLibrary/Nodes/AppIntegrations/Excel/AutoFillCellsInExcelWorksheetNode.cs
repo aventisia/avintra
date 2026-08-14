@@ -1,6 +1,5 @@
-using NodeLibrary.ExcelNodes.Enums;
+﻿using NodeLibrary.ExcelNodes.Enums;
 using NodeLibrary.ExcelNodes.Helpers;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -9,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class AutoFillCellsInExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet to use.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Ranges Format"), Description("Specifies how ranges are defined: by specific ranges or named cells.")]
     public required InArgument<ExcelRangesFormatEnum> RangesFormat { get; set; }
@@ -52,13 +51,13 @@ public class AutoFillCellsInExcelWorksheetNode : BaseNode
 
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var rangesFormat = RangesFormat.Get(context);
 
             if (worksheet == null)
             {
-                var excelApp = (Excel.Application)ComHelper.GetActiveObject("Excel.Application");
-                worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                dynamic excelApp = ComHelper.GetActiveObject("Excel.Application");
+                worksheet = excelApp?.ActiveSheet;
             }
 
             if (worksheet == null)
@@ -86,8 +85,8 @@ public class AutoFillCellsInExcelWorksheetNode : BaseNode
                         string sourceRangeStr = $"{startColumn}{startRow}:{sourceEndColumn}{sourceEndRow}";
                         string targetRangeStr = $"{startColumn}{destinationEndRow - (sourceEndRow - startRow)}:{destinationEndColumn}{destinationEndRow}";
 
-                        Excel.Range sourceRange = worksheet.Range[sourceRangeStr];
-                        Excel.Range targetRange = worksheet.Range[targetRangeStr];
+                        dynamic sourceRange = worksheet.Range[sourceRangeStr];
+                        dynamic targetRange = worksheet.Range[targetRangeStr];
 
                         if (sourceRange.Value is not object[,] sourceValues)
                             throw new InvalidOperationException($"Source range '{sourceRangeStr}' does not contain valid data.");
@@ -97,7 +96,7 @@ public class AutoFillCellsInExcelWorksheetNode : BaseNode
 
                         for (int i = 1; i <= rowCount; i++)
                             for (int j = 1; j <= colCount; j++)
-                                ((Excel.Range)targetRange.Cells[i, j]).Value = sourceValues[i, j];
+                                (targetRange.Cells[i, j]).Value = sourceValues[i, j];
 
                         status += $" Copied data from '{sourceRangeStr}' to '{targetRangeStr}'.";
                         break;
@@ -111,8 +110,8 @@ public class AutoFillCellsInExcelWorksheetNode : BaseNode
                         if (string.IsNullOrWhiteSpace(sourceCellsName) || string.IsNullOrWhiteSpace(destinationCellsName))
                             throw new ArgumentException("Both Source Cells Name and Destination Cells Name must be specified.");
 
-                        Excel.Range sourceRange = worksheet.Names.Item(sourceCellsName).RefersToRange;
-                        Excel.Range targetRange = worksheet.Names.Item(destinationCellsName).RefersToRange;
+                        dynamic sourceRange = worksheet.Names.Item(sourceCellsName).RefersToRange;
+                        dynamic targetRange = worksheet.Names.Item(destinationCellsName).RefersToRange;
 
                         if (sourceRange.Value is not object[,] sourceValues)
                             throw new InvalidOperationException($"Source named range '{sourceCellsName}' does not contain valid data.");
@@ -122,7 +121,7 @@ public class AutoFillCellsInExcelWorksheetNode : BaseNode
 
                         for (int i = 1; i <= rowCount; i++)
                             for (int j = 1; j <= colCount; j++)
-                                ((Excel.Range)targetRange.Cells[i, j]).Value = sourceValues[i, j];
+                                (targetRange.Cells[i, j]).Value = sourceValues[i, j];
 
                         status += $" Copied data from named range '{sourceCellsName}' to named range '{destinationCellsName}'.";
                         break;
@@ -142,3 +141,8 @@ public class AutoFillCellsInExcelWorksheetNode : BaseNode
         }
     }
 }
+
+
+
+
+

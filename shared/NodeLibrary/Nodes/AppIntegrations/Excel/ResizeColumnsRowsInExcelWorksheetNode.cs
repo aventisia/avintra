@@ -1,5 +1,4 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -8,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class ResizeColumnsRowsInExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet in which to resize columns or rows.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Resize Mode"), Description("Specifies what to resize: Columns, Rows, or Both.")]
     public required InArgument<ExcelColumnResizeTargetEnum> ResizeMode { get; set; }
@@ -40,7 +39,7 @@ public class ResizeColumnsRowsInExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var resizeMode = ResizeMode.Get(context);
             var resizeType = ResizeType.Get(context);
 
@@ -105,3 +104,8 @@ public class ResizeColumnsRowsInExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+

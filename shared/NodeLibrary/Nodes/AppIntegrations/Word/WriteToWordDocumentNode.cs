@@ -1,6 +1,5 @@
 using NodeLibrary.WordNodes.Enums;
-using Word = Microsoft.Office.Interop.Word;
-using WordRange = Microsoft.Office.Interop.Word.Range;
+using NodeLibrary.Office;
 
 namespace NodeLibrary.WordNodes;
 
@@ -9,7 +8,7 @@ namespace NodeLibrary.WordNodes;
 public class WriteToWordDocumentNode : BaseNode
 {
     [DisplayName("Word Instance"), Description("The specific Word instance to use.")]
-    public required InArgument<Word.Application> WordInstance { get; set; }
+    public required InArgument<object> WordInstance { get; set; }
 
     [DisplayName("Text to Write"), Description("The text to be written or appended to the Word document.")]
     public required InArgument<string> TextToWrite { get; set; }
@@ -30,13 +29,18 @@ public class WriteToWordDocumentNode : BaseNode
     {
         try
         {
-            var wordApp = WordInstance.Get(context);
+            var wordAppArg = WordInstance.Get(context);
             var textToWrite = TextToWrite.Get(context);
             var appendNewLine = AppendNewLine.Get(context);
             var writeLocation = WriteTextTo.Get(context);
             var bookmarkName = BookmarkName.Get(context);
 
-            if (wordApp == null || wordApp.Documents.Count == 0)
+            if (wordAppArg == null)
+                throw new InvalidOperationException("No active Word document found.");
+
+            dynamic wordApp = wordAppArg;
+
+            if (wordApp.Documents.Count == 0)
                 throw new InvalidOperationException("No active Word document found.");
 
             if ((writeLocation == WriteLocationEnum.BeforeBookmark || writeLocation == WriteLocationEnum.AfterBookmark) &&
@@ -45,7 +49,7 @@ public class WriteToWordDocumentNode : BaseNode
                 throw new ArgumentException("Bookmark Name is required when writing before or after a bookmark.");
             }
 
-            Word._Document activeDocument = wordApp.ActiveDocument;
+            dynamic activeDocument = wordApp.ActiveDocument;
 
             switch (writeLocation)
             {
@@ -79,36 +83,36 @@ public class WriteToWordDocumentNode : BaseNode
         }
     }
 
-    private static void InsertAtBeginning(Word._Document document, string text, bool appendNewLine)
+    private static void InsertAtBeginning(dynamic document, string text, bool appendNewLine)
     {
         document.Content.InsertBefore(text);
         if (appendNewLine)
             document.Content.InsertBefore("\r\n");
     }
 
-    private static void InsertAtEnd(Word._Document document, string text, bool appendNewLine)
+    private static void InsertAtEnd(dynamic document, string text, bool appendNewLine)
     {
         document.Content.InsertAfter(text);
         if (appendNewLine)
             document.Content.InsertAfter("\r\n");
     }
 
-    private static void InsertBeforeBookmark(Word._Document document, string bookmarkName, string text, bool appendNewLine)
+    private static void InsertBeforeBookmark(dynamic document, string bookmarkName, string text, bool appendNewLine)
     {
         if (!document.Bookmarks.Exists(bookmarkName))
             throw new ArgumentException($"Bookmark '{bookmarkName}' not found in the document.");
 
-        WordRange bookmarkRange = document.Bookmarks[bookmarkName].Range;
+        dynamic bookmarkRange = document.Bookmarks[bookmarkName].Range;
         bookmarkRange.Text = text + (appendNewLine ? "\r\n" : "");
     }
 
-    private static void InsertAfterBookmark(Word._Document document, string bookmarkName, string text, bool appendNewLine)
+    private static void InsertAfterBookmark(dynamic document, string bookmarkName, string text, bool appendNewLine)
     {
         if (!document.Bookmarks.Exists(bookmarkName))
             throw new ArgumentException($"Bookmark '{bookmarkName}' not found in the document.");
 
-        WordRange bookmarkRange = document.Bookmarks[bookmarkName].Range;
-        bookmarkRange.Collapse(Word.WdCollapseDirection.wdCollapseEnd);
+        dynamic bookmarkRange = document.Bookmarks[bookmarkName].Range;
+        bookmarkRange.Collapse(OfficeConstants.WdCollapseEnd);
         bookmarkRange.Text = text + (appendNewLine ? "\r\n" : "");
     }
 }

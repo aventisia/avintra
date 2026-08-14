@@ -1,13 +1,11 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
-namespace NodeLibrary.ExcelNodes;
+﻿namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Open Excel Workbook"), Description("Opens or reuses an Excel workbook in an existing Excel instance by workbook name.")]
 [NodeMetadata(icon: "/assets/Excel.svg")]
 public class OpenWorkbookNode : BaseNode
 {
     [DisplayName("Excel Instance"), Description("Existing Excel application instance.")]
-    public required InArgument<Excel.Application> ExcelInstance { get; set; }
+    public required InArgument<object> ExcelInstance { get; set; }
 
     [DisplayName("Workbook Name"), Description("Workbook file name to open (example: Report.xlsx).")]
     public required InArgument<string> WorkbookName { get; set; }
@@ -19,19 +17,17 @@ public class OpenWorkbookNode : BaseNode
     public InArgument<SecureString> ReadProtectionPassword { get; set; } = new InArgument<SecureString>();
 
     [DisplayName("Workbook Instance"), Description("The Excel workbook instance that is opened or reused.")]
-    public OutArgument<Excel.Workbook> WorkbookInstance { get; set; } = new OutArgument<Excel.Workbook>();
+    public OutArgument<object> WorkbookInstance { get; set; } = new OutArgument<object>();
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
-            var excelApp = ExcelInstance.Get(context);
+            dynamic excelApp = ExcelInstance.Get(context);
             var workbookName = WorkbookName.Get(context);
             var readOnly = OpenAsReadOnly.Get(context);
             var password = ReadProtectionPassword.Get(context);
-            Excel.Workbook workbook = null;
+            dynamic? workbook = null;
 
             if (excelApp == null)
                 throw new ArgumentException("Excel instance is not provided.");
@@ -39,10 +35,11 @@ public class OpenWorkbookNode : BaseNode
             if (string.IsNullOrWhiteSpace(workbookName))
                 throw new ArgumentException("Workbook name is not provided.");
 
-            foreach (Excel.Workbook wb in excelApp.Workbooks)
+            dynamic workbooks = ((dynamic)excelApp).Workbooks;
+            foreach (var wb in workbooks)
             {
                 if (string.Equals(
-                    System.IO.Path.GetFileName(wb.FullName),
+                    System.IO.Path.GetFileName((string)wb.FullName),
                     workbookName,
                     StringComparison.OrdinalIgnoreCase))
                 {
@@ -54,7 +51,7 @@ public class OpenWorkbookNode : BaseNode
                 }
             }
 
-            workbook = excelApp.Workbooks.Open(
+            workbook = workbooks.Open(
                 workbookName,
                 ReadOnly: readOnly,
                 Password: password
@@ -72,3 +69,7 @@ public class OpenWorkbookNode : BaseNode
         }
     }
 }
+
+
+
+

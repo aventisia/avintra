@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Rename Excel Worksheet"), Description("Renames a specified worksheet in the Excel workbook.")]
@@ -7,7 +6,7 @@ namespace NodeLibrary.ExcelNodes;
 public class RenameExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet to rename.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("New Name"), Description("The new name for the worksheet.")]
     public required InArgument<string> NewName { get; set; }
@@ -16,7 +15,7 @@ public class RenameExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var newName = NewName.Get(context);
 
             if (worksheet == null)
@@ -41,3 +40,8 @@ public class RenameExcelWorksheetNode : BaseNode
         }
     }
 }
+
+
+
+
+

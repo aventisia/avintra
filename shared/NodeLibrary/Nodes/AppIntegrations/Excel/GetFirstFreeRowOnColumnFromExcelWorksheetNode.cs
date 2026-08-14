@@ -1,5 +1,5 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Get First Free Row on Column from Excel Worksheet"), Description("Gets the first free (empty) row in a specified column of the Excel worksheet.")]
@@ -7,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class GetFirstFreeRowOnColumnFromExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet to examine.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Column"), Description("The column letter or number to check for the first free row.")]
     public required InArgument<string> Column { get; set; }
@@ -19,7 +19,7 @@ public class GetFirstFreeRowOnColumnFromExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var columnStr = Column.Get(context);
 
             if (worksheet == null)
@@ -31,8 +31,8 @@ public class GetFirstFreeRowOnColumnFromExcelWorksheetNode : BaseNode
                 throw new ArgumentException($"Invalid column: '{columnStr}'.");
 
             // Find the last used row in the column, then add 1
-            Excel.Range lastCell = worksheet.Cells[worksheet.Rows.Count, colIndex] as Excel.Range;
-            Excel.Range firstFreeCell = lastCell.End[Excel.XlDirection.xlUp];
+            dynamic lastCell = worksheet.Cells[worksheet.Rows.Count, colIndex];
+            dynamic firstFreeCell = lastCell.End[OfficeConstants.XlUp];
 
             int freeRow;
             if (firstFreeCell.Row == 1 && firstFreeCell.Value2 == null)
@@ -59,3 +59,9 @@ public class GetFirstFreeRowOnColumnFromExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+
+

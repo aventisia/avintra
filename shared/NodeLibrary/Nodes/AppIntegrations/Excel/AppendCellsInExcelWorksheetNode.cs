@@ -1,6 +1,5 @@
-using NodeLibrary.ExcelNodes.Enums;
+﻿using NodeLibrary.ExcelNodes.Enums;
 using NodeLibrary.ExcelNodes.Helpers;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -9,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class AppendCellsInExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet where data will be appended.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Data Table"), Description("The DataTable containing the data to be appended to the worksheet.")]
     public required InArgument<DataTable> DataTable { get; set; }
@@ -34,7 +33,7 @@ public class AppendCellsInExcelWorksheetNode : BaseNode
 
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var dataTable = DataTable.Get(context);
             var appendMode = AppendMode.Get(context);
             var hasHeaders = FirstRowHasHeaders.Get(context);
@@ -42,8 +41,8 @@ public class AppendCellsInExcelWorksheetNode : BaseNode
 
             if (worksheet == null)
             {
-                var excelApp = (Excel.Application)ComHelper.GetActiveObject("Excel.Application");
-                worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                dynamic excelApp = ComHelper.GetActiveObject("Excel.Application");
+                worksheet = excelApp?.ActiveSheet;
             }
 
             switch (appendMode)
@@ -67,7 +66,7 @@ public class AppendCellsInExcelWorksheetNode : BaseNode
                             bool isEmpty = true;
                             for (int c = 1; c <= namedColCount; c++)
                             {
-                                if (((Excel.Range)namedRange.Cells[r, c])?.Value != null)
+                                if ((namedRange.Cells[r, c])?.Value != null)
                                 {
                                     isEmpty = false;
                                     break;
@@ -98,7 +97,7 @@ public class AppendCellsInExcelWorksheetNode : BaseNode
 
                             for (int colIndex = 0; colIndex < dataTable.Columns.Count; colIndex++)
                             {
-                                var cell = (Excel.Range)namedRange.Cells[adjustedRow, colIndex + 1];
+                                var cell = namedRange.Cells[adjustedRow, colIndex + 1];
                                 cell.Value = row[colIndex]?.ToString();
                             }
                             rowIndex++;
@@ -149,3 +148,8 @@ public class AppendCellsInExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+
