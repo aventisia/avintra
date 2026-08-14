@@ -1,4 +1,4 @@
-using Word = Microsoft.Office.Interop.Word;
+using NodeLibrary.Office;
 
 namespace NodeLibrary.WordNodes;
 
@@ -7,7 +7,7 @@ namespace NodeLibrary.WordNodes;
 public class FindAndReplaceWordsInWordDocumentNode : BaseNode
 {
     [DisplayName("Word Instance"), Description("The specific Word instance to use.")]
-    public required InArgument<Word.Application> WordInstance { get; set; }
+    public required InArgument<object> WordInstance { get; set; }
 
     [DisplayName("All Matches"), Description("Specifies whether to replace all occurrences or just the first one.")]
     public InArgument<bool> AllMatches { get; set; } = new InArgument<bool>(false);
@@ -33,7 +33,7 @@ public class FindAndReplaceWordsInWordDocumentNode : BaseNode
     {
         try
         {
-            var wordApp = WordInstance.Get(context);
+            var wordAppArg = WordInstance.Get(context);
             var allMatches = AllMatches.Get(context);
             var textToFind = TextToFind.Get(context);
             var textToReplaceWith = TextToReplaceWith.Get(context);
@@ -41,17 +41,22 @@ public class FindAndReplaceWordsInWordDocumentNode : BaseNode
             var matchCase = MatchCase.Get(context);
             var matchWholeWordsOnly = MatchWholeWordsOnly.Get(context);
 
-            if (wordApp == null || wordApp.Documents.Count == 0)
+            if (wordAppArg == null)
+                throw new ArgumentNullException(nameof(WordInstance), "WordInstance cannot be null.");
+
+            dynamic wordApp = wordAppArg;
+
+            if (wordApp.Documents.Count == 0)
                 throw new InvalidOperationException("No active Word document found.");
 
-            Word._Document activeDocument = wordApp.ActiveDocument;
+            dynamic activeDocument = wordApp.ActiveDocument;
 
-            var findObject = activeDocument.Content.Find;
+            dynamic findObject = activeDocument.Content.Find;
             findObject.ClearFormatting();
             findObject.Text = textToFind;
             findObject.Replacement.Text = textToReplaceWith;
             findObject.Forward = true;
-            findObject.Wrap = Word.WdFindWrap.wdFindContinue;
+            findObject.Wrap = OfficeConstants.WdFindContinue;
             findObject.MatchCase = matchCase;
             findObject.MatchWholeWord = matchWholeWordsOnly;
             findObject.MatchWildcards = useWildcards;
@@ -59,16 +64,16 @@ public class FindAndReplaceWordsInWordDocumentNode : BaseNode
             if (allMatches)
             {
                 findObject.Execute(
-                    Replace: Word.WdReplace.wdReplaceAll,
+                    Replace: OfficeConstants.WdReplaceAll,
                     Format: false,
-                    Wrap: Word.WdFindWrap.wdFindContinue);
+                    Wrap: OfficeConstants.WdFindContinue);
             }
             else
             {
                 findObject.Execute(
-                    Replace: Word.WdReplace.wdReplaceOne,
+                    Replace: OfficeConstants.WdReplaceOne,
                     Format: false,
-                    Wrap: Word.WdFindWrap.wdFindContinue);
+                    Wrap: OfficeConstants.WdFindContinue);
             }
 
             IsSuccess.Set(context, true);

@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Get First Free Column/Row from Excel Worksheet"), Description("Gets the first free column and row in the used range of the specified Excel worksheet.")]
@@ -7,7 +6,7 @@ namespace NodeLibrary.ExcelNodes;
 public class GetFirstFreeColumnRowFromExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet to examine for the first free column and row.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("First Free Column"), Description("The first free (empty) column index after the used range.")]
     public OutArgument<int> FirstFreeColumn { get; set; } = new OutArgument<int>();
@@ -22,7 +21,7 @@ public class GetFirstFreeColumnRowFromExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");
@@ -60,3 +59,8 @@ public class GetFirstFreeColumnRowFromExcelWorksheetNode : BaseNode
         return result;
     }
 }
+
+
+
+
+

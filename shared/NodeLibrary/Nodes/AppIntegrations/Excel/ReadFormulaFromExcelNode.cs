@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Read Formula from Excel"), Description("Reads the formula (not the calculated value) from a specified cell in an Excel worksheet.")]
@@ -7,7 +6,7 @@ namespace NodeLibrary.ExcelNodes;
 public class ReadFormulaFromExcelNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet from which to read the formula.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Column"), Description("The column letter or number of the cell containing the formula.")]
     public required InArgument<string> Column { get; set; }
@@ -25,7 +24,7 @@ public class ReadFormulaFromExcelNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var columnStr = Column.Get(context);
             var row = Row.Get(context);
 
@@ -37,7 +36,7 @@ public class ReadFormulaFromExcelNode : BaseNode
             if (colIndex < 1)
                 throw new ArgumentException($"Invalid column: '{columnStr}'.");
 
-            var cell = (Excel.Range)worksheet.Cells[row, colIndex];
+            var cell = worksheet.Cells[row, colIndex];
 
             if ((bool)cell.HasFormula)
             {
@@ -70,3 +69,8 @@ public class ReadFormulaFromExcelNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+

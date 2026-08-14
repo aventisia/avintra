@@ -1,6 +1,5 @@
-using Microsoft.Office.Interop.Word;
+using NodeLibrary.Office;
 using NodeLibrary.WordNodes.Enums;
-using Word = Microsoft.Office.Interop.Word;
 
 namespace NodeLibrary.WordNodes;
 
@@ -9,7 +8,7 @@ namespace NodeLibrary.WordNodes;
 public class ReadFromWordDocumentNode : BaseNode
 {
     [DisplayName("Word Instance"), Description("The specific Word instance to read from.")]
-    public required InArgument<Word.Application> WordInstance { get; set; }
+    public required InArgument<object> WordInstance { get; set; }
 
     [DisplayName("Retrieve"), Description("Specifies the portion of the document to retrieve.")]
     public InArgument<RetrieveOptionEnum> Retrieve { get; set; } = new InArgument<RetrieveOptionEnum>(RetrieveOptionEnum.WholeDocument);
@@ -32,15 +31,17 @@ public class ReadFromWordDocumentNode : BaseNode
         try
         {
             // Retrieve input values
-            var wordApp = WordInstance.Get(context);
+            var wordAppArg = WordInstance.Get(context);
             var retrieveOption = Retrieve.Get(context);
-            if (wordApp == null)
+            if (wordAppArg == null)
             {
                 throw new ArgumentNullException(nameof(WordInstance), "WordInstance cannot be null.");
             }
 
+            dynamic wordApp = wordAppArg;
+
             // Get the active document
-            Word._Document activeDocument = wordApp.ActiveDocument;
+            dynamic activeDocument = wordApp.ActiveDocument;
 
             if (activeDocument == null)
             {
@@ -109,11 +110,6 @@ public class ReadFromWordDocumentNode : BaseNode
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error reading from Word document: {ex.Message}");
         }
-        finally
-        {
-            IsSuccess.Set(context, true);
-            StatusMessage.Set(context, "Read from word document successfully"); // Optional: update base class status
-        }
     }
 
     // Helper method to retrieve content of a specific page
@@ -154,14 +150,14 @@ public class ReadFromWordDocumentNode : BaseNode
     }
 
     // Helper method to retrieve content of a specific page
-    private string GetPageContent(Word._Document document, int pageNumber)
+    private string GetPageContent(dynamic document, int pageNumber)
     {
         // Validate that the page number is greater than zero
         if (pageNumber <= 0)
             throw new ArgumentException("Page number must be greater than zero.");
 
         // Compute the total number of pages in the document
-        int totalPages = document.ComputeStatistics(WdStatistic.wdStatisticPages);
+        int totalPages = document.ComputeStatistics(OfficeConstants.WdStatisticPages);
 
         // Validate that the requested page number does not exceed the total number of pages in the document
         if (pageNumber > totalPages)
@@ -169,12 +165,12 @@ public class ReadFromWordDocumentNode : BaseNode
                 $"Page {pageNumber} does not exist. Document contains {totalPages} page(s).");
 
         // Use the GoTo method to navigate to the specified page and retrieve its content
-        object what = WdGoToItem.wdGoToPage;
-        object which = WdGoToDirection.wdGoToAbsolute;
+        object what = OfficeConstants.WdGoToPage;
+        object which = OfficeConstants.WdGoToAbsolute;
         object page = pageNumber;
 
         // Get the range for the start of the specified page
-        Word.Range startRange = document.GoTo(
+        dynamic startRange = document.GoTo(
             ref what,
             ref which,
             ref page);
@@ -190,7 +186,7 @@ public class ReadFromWordDocumentNode : BaseNode
             object nextPage = pageNumber + 1;
 
             // Get the range for the start of the next page
-            Word.Range nextRange = document.GoTo(
+            dynamic nextRange = document.GoTo(
                 ref what,
                 ref which,
                 ref nextPage);
@@ -205,14 +201,14 @@ public class ReadFromWordDocumentNode : BaseNode
         }
 
         // Create a range for the specified page using the determined start and end positions
-        Word.Range pageRange = document.Range(start, end);
+        dynamic pageRange = document.Range(start, end);
 
         // Return the text content of the page, trimming any leading or trailing whitespace. If the text is null, return an empty string.
         return pageRange.Text?.Trim() ?? string.Empty;
     }
 
     // Helper method to retrieve content of specified bookmarks
-    private string GetBookmarkContent(_Document document, string? bookmarkInput)
+    private string GetBookmarkContent(dynamic document, string? bookmarkInput)
     {
         // Validate that bookmark names are provided
         if (string.IsNullOrEmpty(bookmarkInput))

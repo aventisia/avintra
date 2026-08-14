@@ -19,8 +19,6 @@ public class NodeProcessor : INodeProcessor
     /// </summary>
     private static readonly Lazy<ConcurrentDictionary<string, Type>> NodeTypeCache = new(BuildNodeTypeCache);
 
-    private static bool _piaResolverInitialized;
-
     public async Task<NodeExecutionResult> ExecuteAsync(
         ReactFlowNodeModel node,
         FlowExecutionContext context,
@@ -64,10 +62,6 @@ public class NodeProcessor : INodeProcessor
             baseNode.CallerContext = new InArgument<CallerContext>(context.Get<CallerContext>("_caller") ?? new CallerContext());
             baseNode.IsSuccess = new OutArgument<bool>();
             baseNode.StatusMessage = new OutArgument<string>();
-
-            // Ensure PIA dependencies (e.g., Microsoft.Office.Core / office.dll) resolve from the app base directory
-            // because self-contained publish may not always register them in deps.json.
-            EnsurePiaAssemblyResolverInitialized();
 
             // 4. Map inputs from ReactFlow node data to InArgument properties
             var inputLogs = new Dictionary<string, string>();
@@ -430,36 +424,5 @@ public class NodeProcessor : INodeProcessor
         }
 
         return cache;
-    }
-
-    private static void EnsurePiaAssemblyResolverInitialized()
-    {
-        if (_piaResolverInitialized)
-            return;
-
-        _piaResolverInitialized = true;
-
-        try
-        {
-            var appBase = AppContext.BaseDirectory;
-            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) =>
-            {
-                var name = new AssemblyName(args.Name).Name;
-                if (!string.Equals(name, "office", StringComparison.OrdinalIgnoreCase))
-                    return null;
-
-                var candidate = Path.Combine(appBase, "Office.dll");
-                if (File.Exists(candidate))
-                {
-                    return Assembly.LoadFrom(candidate);
-                }
-
-                return null;
-            };
-        }
-        catch
-        {
-            // Best-effort: if resolver registration fails, let normal resolution continue.
-        }
     }
 }

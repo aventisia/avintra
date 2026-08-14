@@ -1,6 +1,5 @@
-using System.Runtime.InteropServices;
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Close Excel Workbook"), Description("Closes the specified Excel workbook and optionally quits the Excel application.")]
@@ -8,11 +7,11 @@ namespace NodeLibrary.ExcelNodes;
 public class CloseWorkbookNode : BaseNode
 {
     [DisplayName("Workbook Instance"), Description("The Excel Workbook instance to be closed.")]
-    public required InArgument<Excel.Workbook> WorkbookInstance { get; set; }
+    public required InArgument<object> WorkbookInstance { get; set; }
 
     [DisplayName("Excel Application Instance"), Description("The Excel Application instance to optionally quit after closing the workbook.")]
     [RenderIfCondition(nameof(QuitExcelApp), true)]
-    public InArgument<Excel.Application> ExcelApp { get; set; } = new InArgument<Excel.Application>();
+    public InArgument<object> ExcelApp { get; set; } = new InArgument<object>();
 
     [DisplayName("Save Before Closing"), Description("Whether to save the workbook before closing.")]
     public InArgument<bool> SaveBeforeClose { get; set; } = new InArgument<bool>(true);
@@ -23,8 +22,8 @@ public class CloseWorkbookNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Success";
-        Excel.Workbook workbook = null;
-        Excel.Application excelApp = null;
+        dynamic workbook = null;
+        dynamic excelApp = null;
 
         try
         {
@@ -37,13 +36,13 @@ public class CloseWorkbookNode : BaseNode
                 throw new InvalidOperationException("Workbook instance is null or invalid.");
 
             workbook.Close(saveBeforeClose);
-            Marshal.ReleaseComObject(workbook);
+            OfficeAutomationHelper.Release(workbook);
             workbook = null;
 
             if (excelApp != null && quitApp)
             {
                 excelApp.Quit();
-                Marshal.ReleaseComObject(excelApp);
+                OfficeAutomationHelper.Release(excelApp);
                 excelApp = null;
             }
 
@@ -60,3 +59,9 @@ public class CloseWorkbookNode : BaseNode
         }
     }
 }
+
+
+
+
+
+

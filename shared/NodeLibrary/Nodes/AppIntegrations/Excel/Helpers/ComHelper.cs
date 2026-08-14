@@ -5,7 +5,7 @@ namespace NodeLibrary.ExcelNodes.Helpers;
 /// <summary>
 /// Helper class providing COM interop functionality not available in .NET 8.
 /// </summary>
-internal static class ComHelper
+public static class ComHelper
 {
     [DllImport("oleaut32.dll", PreserveSig = false)]
     private static extern void GetActiveObject(ref Guid rclsid, IntPtr pvReserved, [MarshalAs(UnmanagedType.IUnknown)] out object ppunk);

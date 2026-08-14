@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Get Active Excel Worksheet"), Description("Gets the currently active worksheet from the specified Excel workbook instance.")]
@@ -7,10 +6,10 @@ namespace NodeLibrary.ExcelNodes;
 public class GetActiveExcelWorksheetNode : BaseNode
 {
     [DisplayName("Workbook Instance"), Description("The Excel Workbook from which to get the active worksheet.")]
-    public required InArgument<Excel.Workbook> WorkbookInstance { get; set; }
+    public required InArgument<object> WorkbookInstance { get; set; }
 
     [DisplayName("Active Worksheet"), Description("The currently active worksheet in the workbook.")]
-    public OutArgument<Excel.Worksheet> ActiveWorksheet { get; set; } = new OutArgument<Excel.Worksheet>();
+    public OutArgument<object> ActiveWorksheet { get; set; } = new OutArgument<object>();
 
     [DisplayName("Worksheet Name"), Description("The name of the active worksheet.")]
     public OutArgument<string> WorksheetName { get; set; } = new OutArgument<string>();
@@ -22,12 +21,12 @@ public class GetActiveExcelWorksheetNode : BaseNode
     {
         try
         {
-            var workbook = WorkbookInstance.Get(context);
+            dynamic workbook = WorkbookInstance.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance cannot be null.");
 
-            var activeSheet = workbook.ActiveSheet as Excel.Worksheet;
+            var activeSheet = workbook.ActiveSheet;
 
             if (activeSheet == null)
                 throw new InvalidOperationException("No active worksheet found in the workbook.");
@@ -46,3 +45,8 @@ public class GetActiveExcelWorksheetNode : BaseNode
         }
     }
 }
+
+
+
+
+

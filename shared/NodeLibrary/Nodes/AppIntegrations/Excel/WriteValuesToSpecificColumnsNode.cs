@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Write Values to Specific Columns"), Description("Writes values to specific columns in a row of an Excel worksheet, useful for populating multiple columns at once.")]
@@ -7,7 +6,7 @@ namespace NodeLibrary.ExcelNodes;
 public class WriteValuesToSpecificColumnsNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet where the values will be written.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Row"), Description("The row number where the values will be written.")]
     public required InArgument<int> Row { get; set; }
@@ -19,7 +18,7 @@ public class WriteValuesToSpecificColumnsNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var row = Row.Get(context);
             var columnValuePairs = ColumnValuePairs.Get(context);
 
@@ -39,7 +38,7 @@ public class WriteValuesToSpecificColumnsNode : BaseNode
                 if (colIndex < 1)
                     throw new ArgumentException($"Invalid column: '{kvp.Key}'.");
 
-                ((Excel.Range)worksheet.Cells[row, colIndex]).Value2 = kvp.Value;
+                (worksheet.Cells[row, colIndex]).Value2 = kvp.Value;
                 writtenCount++;
             }
 
@@ -60,3 +59,8 @@ public class WriteValuesToSpecificColumnsNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+

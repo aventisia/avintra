@@ -1,5 +1,5 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Lookup Range in Excel Worksheet"), Description("Looks up a value in a specified range and returns the corresponding value from another column or the cell address.")]
@@ -7,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class LookupRangeInExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet in which to perform the lookup.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Lookup Value"), Description("The value to look for in the search column.")]
     public required InArgument<string> LookupValue { get; set; }
@@ -43,7 +43,7 @@ public class LookupRangeInExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var lookupValue = LookupValue.Get(context);
             var searchColumnStr = SearchColumn.Get(context);
             var startRow = StartRow.Get(context);
@@ -58,15 +58,15 @@ public class LookupRangeInExcelWorksheetNode : BaseNode
 
             if (endRow == 0)
             {
-                var lastCell = (Excel.Range)worksheet.Cells[worksheet.Rows.Count, searchCol];
-                endRow = lastCell.End[Excel.XlDirection.xlUp].Row;
+                var lastCell = worksheet.Cells[worksheet.Rows.Count, searchCol];
+                endRow = lastCell.End[OfficeConstants.XlUp].Row;
             }
 
             var searchRange = worksheet.Range[worksheet.Cells[startRow, searchCol], worksheet.Cells[endRow, searchCol]];
 
-            Excel.Range found = searchRange.Find(
+            dynamic found = searchRange.Find(
                 What: lookupValue,
-                LookAt: Excel.XlLookAt.xlWhole,
+                LookAt: OfficeConstants.XlWhole,
                 MatchCase: matchCase);
 
             if (found != null)
@@ -78,7 +78,7 @@ public class LookupRangeInExcelWorksheetNode : BaseNode
                 if (!string.IsNullOrEmpty(resultColumnStr))
                 {
                     int resultCol = int.TryParse(resultColumnStr, out int rNum) ? rNum : GetColumnIndex(resultColumnStr);
-                    var resultCell = (Excel.Range)worksheet.Cells[found.Row, resultCol];
+                    var resultCell = worksheet.Cells[found.Row, resultCol];
                     FoundValue.Set(context, resultCell.Value2?.ToString() ?? string.Empty);
                 }
                 else
@@ -114,3 +114,9 @@ public class LookupRangeInExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+
+

@@ -1,6 +1,5 @@
-using System.IO;
+using NodeLibrary.Office;
 using NodeLibrary.WordNodes.Enums;
-using Word = Microsoft.Office.Interop.Word;
 
 namespace NodeLibrary.WordNodes;
 
@@ -19,7 +18,7 @@ public class LaunchWordNode : BaseNode
     public InArgument<bool> MakeInstanceVisible { get; set; } = new InArgument<bool>(true);
 
     [DisplayName("Word Instance"), Description("The specific Word instance for use with later Word actions. This allows the user to specify which of possibly several Word documents to access.")]
-    public OutArgument<Word.Application> WordInstance { get; set; } = new OutArgument<Word.Application>();
+    public OutArgument<object> WordInstance { get; set; } = new OutArgument<object>();
 
     protected override void Execute(INodeContext context)
     {
@@ -29,13 +28,13 @@ public class LaunchWordNode : BaseNode
             var documentPath = DocumentPath.Get(context);
             var makeInstanceVisible = MakeInstanceVisible.Get(context);
 
-            var wordApp = new Word.Application();
+            var wordApp = OfficeAutomationHelper.CreateApplication(OfficeApplication.Word);
             wordApp.Visible = makeInstanceVisible;
 
             switch (launchMode)
             {
                 case LaunchWordModeEnum.BlankDocument:
-                    Word._Document _ = wordApp.Documents.Add();
+                    wordApp.Documents.Add();
                     break;
 
                 case LaunchWordModeEnum.OpenExistingDocument:

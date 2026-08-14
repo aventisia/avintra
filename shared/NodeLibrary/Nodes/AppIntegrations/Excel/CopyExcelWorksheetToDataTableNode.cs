@@ -1,6 +1,5 @@
-using System.Runtime.InteropServices;
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Copy Range from Excel Worksheet to DataTable"), Description("Copies a specified range of cells from the provided Excel worksheet into a DataTable.")]
@@ -8,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class CopyExcelWorksheetToDataTableNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet object from which the data will be copied.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Range to Copy"), Description("The range of cells to copy (e.g., 'A1:B10').")]
     public required InArgument<string> RangeToCopy { get; set; }
@@ -23,8 +22,8 @@ public class CopyExcelWorksheetToDataTableNode : BaseNode
     {
         var status = "Success";
         DataTable dataTable = new DataTable();
-        Excel.Worksheet worksheet = null;
-        Excel.Range xlRange = null;
+        dynamic worksheet = null;
+        dynamic xlRange = null;
 
         try
         {
@@ -46,7 +45,7 @@ public class CopyExcelWorksheetToDataTableNode : BaseNode
             {
                 for (int j = 1; j <= colCount; j++)
                 {
-                    Excel.Range headerCell = xlRange.Cells[1, j] as Excel.Range;
+                    dynamic headerCell = xlRange.Cells[1, j];
                     string value = GetCellValue(headerCell).Trim();
                     string columnName = string.IsNullOrEmpty(value) ? $"Column{j}" : value;
                     dataTable.Columns.Add(columnName);
@@ -65,7 +64,7 @@ public class CopyExcelWorksheetToDataTableNode : BaseNode
                 DataRow row = dataTable.NewRow();
                 for (int j = 1; j <= colCount; j++)
                 {
-                    Excel.Range cell = xlRange.Cells[i, j] as Excel.Range;
+                    dynamic cell = xlRange.Cells[i, j];
                     row[j - 1] = GetCellValue(cell);
                     ReleaseObject(cell);
                 }
@@ -89,7 +88,7 @@ public class CopyExcelWorksheetToDataTableNode : BaseNode
         }
     }
 
-    private string GetCellValue(Excel.Range cell)
+    private string GetCellValue(dynamic cell)
     {
         if (cell == null) return string.Empty;
         try { return (cell.Text ?? cell.Value2?.ToString() ?? string.Empty).ToString(); }
@@ -98,7 +97,14 @@ public class CopyExcelWorksheetToDataTableNode : BaseNode
 
     private void ReleaseObject(object obj)
     {
-        try { if (obj != null) Marshal.ReleaseComObject(obj); }
+        try { if (obj != null) OfficeAutomationHelper.Release(obj); }
         catch { }
     }
 }
+
+
+
+
+
+
+

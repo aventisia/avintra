@@ -1,6 +1,6 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Delete from Excel Worksheet"), Description("Deletes specified cells, rows, columns, or ranges from an Excel worksheet.")]
@@ -8,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class DeleteFromExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet from which to delete.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Delete Mode"), Description("Specifies what to delete: Single Cell, Range of Cells, Rows, or Columns.")]
     public required InArgument<CellDeletionModeEnum> DeleteMode { get; set; }
@@ -34,16 +34,16 @@ public class DeleteFromExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var deleteMode = DeleteMode.Get(context);
             var shiftDirection = ShiftDirection.Get(context);
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");
 
-            Excel.XlDeleteShiftDirection xlShift = shiftDirection == CellShiftDirectionEnum.Left
-                ? Excel.XlDeleteShiftDirection.xlShiftToLeft
-                : Excel.XlDeleteShiftDirection.xlShiftUp;
+            var xlShift = shiftDirection == CellShiftDirectionEnum.Left
+                ? OfficeConstants.XlShiftToLeft
+                : OfficeConstants.XlShiftUp;
 
             switch (deleteMode)
             {
@@ -52,7 +52,7 @@ public class DeleteFromExcelWorksheetNode : BaseNode
                         var colStr = StartColumn.Get(context);
                         var row = StartRow.Get(context);
                         int colNum = GetColumnIndex(colStr);
-                        var cell = (Excel.Range)worksheet.Cells[row, colNum];
+                        var cell = worksheet.Cells[row, colNum];
                         cell.Delete(xlShift);
                         break;
                     }
@@ -111,3 +111,9 @@ public class DeleteFromExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+
+

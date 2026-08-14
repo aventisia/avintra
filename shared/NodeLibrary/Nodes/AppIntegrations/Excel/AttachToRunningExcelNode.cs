@@ -1,28 +1,25 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
-namespace NodeLibrary.ExcelNodes;
+﻿namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Attach to Running Excel Workbook"), Description("Attaches to a running Excel instance and opens the specified workbook if not already open.")]
 [NodeMetadata(icon: "/assets/Excel.svg")]
 public class AttachToRunningExcelNode : BaseNode
 {
     [DisplayName("Excel Application"), Description("The running Excel Application object to attach to.")]
-    public required InArgument<Excel.Application> ExcelApplication { get; set; }
+    public required InArgument<object> ExcelApplication { get; set; }
 
     [DisplayName("File Path"), Description("The full path of the Excel file to open or attach to in the running Excel instance.")]
     public required InArgument<string> FilePath { get; set; }
 
     [DisplayName("Workbook Instance"), Description("Returns the attached or opened workbook.")]
-    public OutArgument<Excel.Workbook> WorkbookInstance { get; set; } = new OutArgument<Excel.Workbook>();
+    public OutArgument<object> WorkbookInstance { get; set; } = new OutArgument<object>();
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-        Excel.Workbook workbook = null;
+        dynamic? workbook = null;
 
         try
         {
-            var excelApp = ExcelApplication.Get(context);
+            dynamic excelApp = ExcelApplication.Get(context);
             var filePath = FilePath.Get(context);
 
             if (excelApp == null)
@@ -34,10 +31,11 @@ public class AttachToRunningExcelNode : BaseNode
             if (!System.IO.File.Exists(filePath))
                 throw new System.IO.FileNotFoundException($"Excel file not found at: {filePath}");
 
+            dynamic app = excelApp;
             bool alreadyOpen = false;
-            foreach (Excel.Workbook wb in excelApp.Workbooks)
+            foreach (var wb in app.Workbooks)
             {
-                if (string.Equals(wb.FullName, filePath, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals((string)wb.FullName, filePath, StringComparison.OrdinalIgnoreCase))
                 {
                     workbook = wb;
                     alreadyOpen = true;
@@ -46,7 +44,7 @@ public class AttachToRunningExcelNode : BaseNode
             }
 
             if (!alreadyOpen)
-                workbook = excelApp.Workbooks.Open(filePath);
+                workbook = app.Workbooks.Open(filePath);
 
             WorkbookInstance.Set(context, workbook);
             IsSuccess.Set(context, true);
@@ -62,3 +60,7 @@ public class AttachToRunningExcelNode : BaseNode
         }
     }
 }
+
+
+
+

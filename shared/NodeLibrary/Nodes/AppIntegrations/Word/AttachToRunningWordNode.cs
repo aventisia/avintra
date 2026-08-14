@@ -1,6 +1,4 @@
-using System.IO;
-using System.Runtime.InteropServices;
-using Word = Microsoft.Office.Interop.Word;
+using NodeLibrary.Office;
 
 namespace NodeLibrary.WordNodes;
 
@@ -12,13 +10,13 @@ public class AttachToRunningWordNode : BaseNode
     public required InArgument<string> DocumentPath { get; set; }
 
     [DisplayName("Word Instance"), Description("The Word instance for later Word activities.")]
-    public OutArgument<Word.Application> WordInstance { get; set; } = new OutArgument<Word.Application>();
+    public OutArgument<object> WordInstance { get; set; } = new OutArgument<object>();
 
     protected override void Execute(INodeContext context)
     {
         var documentPath = DocumentPath.Get(context);
-        Word.Application wordApp = null;
-        Word._Document targetDocument = null;
+        dynamic? wordApp = null;
+        dynamic? targetDocument = null;
 
         try
         {
@@ -30,31 +28,18 @@ public class AttachToRunningWordNode : BaseNode
             if (!Path.IsPathRooted(documentPath) && File.Exists(documentPath))
                 fullPath = Path.GetFullPath(documentPath);
 
-            // Get running Word
-            try
-            {
-                CLSIDFromProgID("Word.Application", out Guid clsid);
-                int hr = GetActiveObject(ref clsid, IntPtr.Zero, out object obj);
-                if (hr >= 0)
-                    wordApp = obj as Word.Application;
-            }
-            catch
-            {
-                // No running Word found, will create one
-            }
-
+            wordApp = OfficeAutomationHelper.GetActiveApplication(OfficeApplication.Word, createIfMissing: true);
             bool isNewInstance = false;
-            if (wordApp == null)
-            {
-                wordApp = new Word.Application();
-                isNewInstance = true;
-            }
 
             // Check if document is already open
-            targetDocument = wordApp.Documents
-                .Cast<Word._Document>()
-                .FirstOrDefault(doc =>
-                    doc.FullName.Equals(fullPath, StringComparison.OrdinalIgnoreCase));
+            foreach (var doc in wordApp.Documents)
+            {
+                if (string.Equals((string)doc.FullName, fullPath, StringComparison.OrdinalIgnoreCase))
+                {
+                    targetDocument = doc;
+                    break;
+                }
+            }
 
             if (targetDocument == null)
             {
@@ -64,7 +49,7 @@ public class AttachToRunningWordNode : BaseNode
                 }
                 else
                 {
-                    if (isNewInstance)
+                    if (!IsWordVisible(wordApp))
                         wordApp.Quit();
 
                     throw new FileNotFoundException($"Document does not exist at path: {fullPath}");
@@ -88,7 +73,7 @@ public class AttachToRunningWordNode : BaseNode
         }
     }
 
-    private static bool IsWordVisible(Word.Application wordApp)
+    private static bool IsWordVisible(dynamic wordApp)
     {
         try
         {
@@ -99,10 +84,4 @@ public class AttachToRunningWordNode : BaseNode
             return false;
         }
     }
-
-    [DllImport("ole32.dll")]
-    private static extern int CLSIDFromProgID([MarshalAs(UnmanagedType.LPWStr)] string lpszProgID, out Guid pclsid);
-
-    [DllImport("oleaut32.dll")]
-    private static extern int GetActiveObject(ref Guid rclsid, IntPtr pvReserved, [MarshalAs(UnmanagedType.IUnknown)] out object ppunk);
 }

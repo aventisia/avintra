@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Get Table Range from Excel Worksheet"), Description("Gets the range address, row count, and column count of an Excel Table (ListObject) in the specified worksheet.")]
@@ -7,7 +6,7 @@ namespace NodeLibrary.ExcelNodes;
 public class GetTableRangeFromExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet containing the table.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Table Name"), Description("The name of the table (ListObject) to retrieve. If empty, uses the first table found.")]
     public InArgument<string> TableName { get; set; } = new InArgument<string>();
@@ -31,7 +30,7 @@ public class GetTableRangeFromExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var tableName = TableName.Get(context);
 
             if (worksheet == null)
@@ -40,11 +39,11 @@ public class GetTableRangeFromExcelWorksheetNode : BaseNode
             if (worksheet.ListObjects.Count == 0)
                 throw new InvalidOperationException("No tables found in the worksheet.");
 
-            Excel.ListObject table;
+            dynamic table;
             if (!string.IsNullOrWhiteSpace(tableName))
             {
                 table = null;
-                foreach (Excel.ListObject lo in worksheet.ListObjects)
+                foreach (var lo in worksheet.ListObjects)
                 {
                     if (lo.Name.Equals(tableName, StringComparison.OrdinalIgnoreCase))
                     {
@@ -79,3 +78,8 @@ public class GetTableRangeFromExcelWorksheetNode : BaseNode
         }
     }
 }
+
+
+
+
+

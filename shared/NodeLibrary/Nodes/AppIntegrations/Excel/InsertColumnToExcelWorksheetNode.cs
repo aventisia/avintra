@@ -1,5 +1,5 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Insert Column to Excel Worksheet"), Description("Inserts a new column at the specified position in an Excel worksheet.")]
@@ -7,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class InsertColumnToExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet in which to insert the column.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Column"), Description("The column letter or index where the new column will be inserted. Existing columns shift to the right.")]
     public required InArgument<string> Column { get; set; }
@@ -16,7 +16,7 @@ public class InsertColumnToExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var columnStr = Column.Get(context);
 
             if (worksheet == null)
@@ -30,7 +30,7 @@ public class InsertColumnToExcelWorksheetNode : BaseNode
             if (colIndex < 1)
                 throw new ArgumentOutOfRangeException(nameof(Column), "Column index must be >= 1.");
 
-            ((Excel.Range)worksheet.Columns[colIndex]).Insert(Excel.XlInsertShiftDirection.xlShiftToRight);
+            (worksheet.Columns[colIndex]).Insert(OfficeConstants.XlShiftToRight);
 
             IsSuccess.Set(context, true);
             StatusMessage.Set(context, $"Successfully inserted column at position {columnStr} (Index: {colIndex}).");
@@ -49,3 +49,9 @@ public class InsertColumnToExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+
+

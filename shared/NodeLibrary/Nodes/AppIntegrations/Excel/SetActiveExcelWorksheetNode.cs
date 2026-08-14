@@ -1,5 +1,4 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -8,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class SetActiveExcelWorksheetNode : BaseNode
 {
     [DisplayName("Workbook Instance"), Description("The Excel Workbook in which to set the active worksheet.")]
-    public required InArgument<Excel.Workbook> WorkbookInstance { get; set; }
+    public required InArgument<object> WorkbookInstance { get; set; }
 
     [DisplayName("Activate Mode"), Description("Specifies how to identify the worksheet: by Name or by Index.")]
     public required InArgument<WorksheetSelectionTypeEnum> ActivateMode { get; set; }
@@ -22,19 +21,19 @@ public class SetActiveExcelWorksheetNode : BaseNode
     public InArgument<int> WorksheetIndex { get; set; } = new InArgument<int>();
 
     [DisplayName("Activated Worksheet"), Description("The worksheet that was activated.")]
-    public OutArgument<Excel.Worksheet> ActivatedWorksheet { get; set; } = new OutArgument<Excel.Worksheet>();
+    public OutArgument<object> ActivatedWorksheet { get; set; } = new OutArgument<object>();
 
     protected override void Execute(INodeContext context)
     {
         try
         {
-            var workbook = WorkbookInstance.Get(context);
+            dynamic workbook = WorkbookInstance.Get(context);
             var activateMode = ActivateMode.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance cannot be null.");
 
-            Excel.Worksheet targetSheet = null;
+            dynamic targetSheet = null;
 
             switch (activateMode)
             {
@@ -43,7 +42,7 @@ public class SetActiveExcelWorksheetNode : BaseNode
                         var name = WorksheetName.Get(context);
                         if (string.IsNullOrWhiteSpace(name))
                             throw new ArgumentException("Worksheet name cannot be empty.");
-                        foreach (Excel.Worksheet ws in workbook.Worksheets)
+                        foreach (var ws in workbook.Worksheets)
                         {
                             if (ws.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
                             {
@@ -61,7 +60,7 @@ public class SetActiveExcelWorksheetNode : BaseNode
                         var index = WorksheetIndex.Get(context);
                         if (index < 1 || index > workbook.Worksheets.Count)
                             throw new ArgumentOutOfRangeException(nameof(WorksheetIndex), $"Index must be between 1 and {workbook.Worksheets.Count}.");
-                        targetSheet = (Excel.Worksheet)workbook.Worksheets[index];
+                        targetSheet = workbook.Worksheets[index];
                         break;
                     }
 
@@ -82,3 +81,8 @@ public class SetActiveExcelWorksheetNode : BaseNode
         }
     }
 }
+
+
+
+
+

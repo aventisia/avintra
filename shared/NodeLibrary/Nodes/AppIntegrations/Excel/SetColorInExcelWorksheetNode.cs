@@ -1,5 +1,4 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -8,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class SetColorInExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet in which to set color.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Color Target"), Description("Specifies what to color: Background or Font.")]
     public required InArgument<ExcelColorTargetEnum> ColorTarget { get; set; }
@@ -57,7 +56,7 @@ public class SetColorInExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var colorTarget = ColorTarget.Get(context);
             var colorMode = ColorMode.Get(context);
             var red = Red.Get(context);
@@ -71,7 +70,7 @@ public class SetColorInExcelWorksheetNode : BaseNode
             green = Math.Clamp(green, 0, 255);
             blue = Math.Clamp(blue, 0, 255);
 
-            Excel.Range targetRange;
+            dynamic targetRange;
 
             switch (colorMode)
             {
@@ -80,7 +79,7 @@ public class SetColorInExcelWorksheetNode : BaseNode
                         var colStr = Column.Get(context);
                         var row = Row.Get(context);
                         int colNum = int.TryParse(colStr, out int num) ? num : GetColumnIndex(colStr);
-                        targetRange = (Excel.Range)worksheet.Cells[row, colNum];
+                        targetRange = worksheet.Cells[row, colNum];
                         break;
                     }
 
@@ -133,3 +132,8 @@ public class SetColorInExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+

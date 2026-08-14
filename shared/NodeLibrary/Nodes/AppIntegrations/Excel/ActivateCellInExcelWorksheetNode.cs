@@ -1,6 +1,5 @@
-using NodeLibrary.ExcelNodes.Enums;
+﻿using NodeLibrary.ExcelNodes.Enums;
 using NodeLibrary.ExcelNodes.Helpers;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -9,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class ActivateCellInExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The specific worksheet where the cell should be activated.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Activation Mode"), Description("Choose how to activate the cell: absolutely, relatively, or via named range.")]
     public required InArgument<ActivationModeEnum> ActivationMode { get; set; }
@@ -40,13 +39,13 @@ public class ActivateCellInExcelWorksheetNode : BaseNode
 
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var activationMode = ActivationMode.Get(context);
 
             if (worksheet == null)
             {
-                var excelApp = (Excel.Application)ComHelper.GetActiveObject("Excel.Application");
-                worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                dynamic excelApp = ComHelper.GetActiveObject("Excel.Application");
+                worksheet = excelApp?.ActiveSheet;
             }
 
             if (worksheet == null)
@@ -64,7 +63,7 @@ public class ActivateCellInExcelWorksheetNode : BaseNode
                     if (!int.TryParse(colStr, out var colNum))
                         colNum = GetColumnIndex(colStr);
 
-                    ((Excel.Range)worksheet.Cells[row, colNum]).Activate();
+                    (worksheet.Cells[row, colNum]).Activate();
                     status = $"Activated cell at Row {row}, Column {colStr}.";
                     break;
 
@@ -72,10 +71,11 @@ public class ActivateCellInExcelWorksheetNode : BaseNode
                     var direction = Direction.Get(context);
                     var offset = OffsetFromActiveCell.Get(context);
 
-                    if (worksheet.Application.ActiveCell is not Excel.Range activeCell)
+                    var activeCell = worksheet.Application.ActiveCell;
+                    if (activeCell == null)
                         throw new InvalidOperationException("No active cell found to move relative from.");
 
-                    Excel.Range targetCell = direction switch
+                    dynamic targetCell = direction switch
                     {
                         CellMoveDirectionEnum.Up => activeCell.Offset[-offset, 0],
                         CellMoveDirectionEnum.Down => activeCell.Offset[offset, 0],
@@ -124,3 +124,8 @@ public class ActivateCellInExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+

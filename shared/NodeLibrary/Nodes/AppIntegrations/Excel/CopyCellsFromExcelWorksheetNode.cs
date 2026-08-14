@@ -1,7 +1,6 @@
-using NodeLibrary.ExcelNodes.Enums;
-using System.Runtime.InteropServices;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Copy Cells from Excel Worksheet"), Description("Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.")]
@@ -9,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class CopyCellsFromExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet object from which to copy data.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Copy Mode"), Description("Specifies how to copy cells: Single Cell, Named Cells, Selection, or Range of Cells.")]
     public required InArgument<CellCopyModeEnum> CopyMode { get; set; }
@@ -37,7 +36,7 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Success";
-        Excel.Worksheet worksheet = null;
+        dynamic worksheet = null;
 
         try
         {
@@ -54,19 +53,27 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
                         var colStr = StartColumn.Get(context);
                         var row = StartRow.Get(context);
                         int colNum = GetColumnIndex(colStr);
-                        var cell = worksheet.Cells[row, colNum] as Excel.Range;
+                        var cell = worksheet.Cells[row, colNum];
                         if (cell == null)
                             throw new InvalidOperationException($"Cell at Row {row}, Column {colStr} does not exist.");
                         cell.Copy();
                         status = $"Copied cell at Row {row}, Column {colStr}.";
-                        Marshal.ReleaseComObject(cell);
+                        OfficeAutomationHelper.Release(cell);
                         break;
                     }
 
                 case CellCopyModeEnum.NamedCells:
                     {
                         var name = Name.Get(context);
-                        var namedItem = worksheet.Names.Cast<Excel.Name>().FirstOrDefault(n => n.Name == name);
+                        dynamic namedItem = null;
+                        foreach (var n in worksheet.Names)
+                        {
+                            if (n.Name == name)
+                            {
+                                namedItem = n;
+                                break;
+                            }
+                        }
                         if (namedItem == null)
                             throw new InvalidOperationException($"Named range '{name}' not found.");
                         var namedRange = namedItem.RefersToRange;
@@ -74,20 +81,20 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
                         {
                             namedRange.Copy();
                             status = $"Copied named range '{name}'.";
-                            Marshal.ReleaseComObject(namedRange);
+                            OfficeAutomationHelper.Release(namedRange);
                         }
-                        Marshal.ReleaseComObject(namedItem);
+                        OfficeAutomationHelper.Release(namedItem);
                         break;
                     }
 
                 case CellCopyModeEnum.Selection:
                     {
-                        var selection = worksheet.Application.Selection as Excel.Range;
+                        var selection = worksheet.Application.Selection;
                         if (selection != null)
                         {
                             selection.Copy();
                             status = "Copied selected range.";
-                            Marshal.ReleaseComObject(selection);
+                            OfficeAutomationHelper.Release(selection);
                         }
                         else
                         {
@@ -109,9 +116,9 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
                         var range = worksheet.Range[startCell, endCell];
                         range.Copy();
                         status = $"Copied range from Row {startRow}, Column {startColStr} to Row {endRow}, Column {endColStr}.";
-                        Marshal.ReleaseComObject(startCell);
-                        Marshal.ReleaseComObject(endCell);
-                        Marshal.ReleaseComObject(range);
+                        OfficeAutomationHelper.Release(startCell);
+                        OfficeAutomationHelper.Release(endCell);
+                        OfficeAutomationHelper.Release(range);
                         break;
                     }
 
@@ -130,7 +137,7 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
         finally
         {
             if (worksheet != null)
-                Marshal.ReleaseComObject(worksheet);
+                OfficeAutomationHelper.Release(worksheet);
         }
     }
 
@@ -141,3 +148,10 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+
+
+

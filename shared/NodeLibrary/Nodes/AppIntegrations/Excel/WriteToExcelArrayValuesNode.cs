@@ -1,5 +1,4 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -8,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class WriteToExcelArrayValuesNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet where the values will be written.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Values"), Description("The array of values to write to the worksheet.")]
     public required InArgument<List<string>> Values { get; set; }
@@ -26,7 +25,7 @@ public class WriteToExcelArrayValuesNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var values = Values.Get(context);
             var startColStr = StartColumn.Get(context);
             var startRow = StartRow.Get(context);
@@ -46,9 +45,9 @@ public class WriteToExcelArrayValuesNode : BaseNode
             for (int i = 0; i < values.Count; i++)
             {
                 if (direction == ExcelWriteDirectionEnum.Vertical)
-                    ((Excel.Range)worksheet.Cells[startRow + i, startCol]).Value2 = values[i];
+                    (worksheet.Cells[startRow + i, startCol]).Value2 = values[i];
                 else
-                    ((Excel.Range)worksheet.Cells[startRow, startCol + i]).Value2 = values[i];
+                    (worksheet.Cells[startRow, startCol + i]).Value2 = values[i];
             }
 
             IsSuccess.Set(context, true);
@@ -68,3 +67,8 @@ public class WriteToExcelArrayValuesNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+

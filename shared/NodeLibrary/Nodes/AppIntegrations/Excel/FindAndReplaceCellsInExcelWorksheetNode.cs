@@ -1,6 +1,6 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Find and Replace Cells in Excel Worksheet"), Description("Finds and replaces values in a specified range within an Excel worksheet.")]
@@ -8,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class FindAndReplaceCellsInExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet in which to perform find and replace.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Find What"), Description("The text to find in the worksheet.")]
     public required InArgument<string> FindWhat { get; set; }
@@ -48,7 +48,7 @@ public class FindAndReplaceCellsInExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var findWhat = FindWhat.Get(context);
             var replaceWith = ReplaceWith.Get(context);
             var searchMode = SearchMode.Get(context);
@@ -61,7 +61,7 @@ public class FindAndReplaceCellsInExcelWorksheetNode : BaseNode
             if (string.IsNullOrEmpty(findWhat))
                 throw new ArgumentException("Find text cannot be empty.");
 
-            Excel.Range searchRange;
+            dynamic searchRange;
             if (searchMode == ExcelSearchModeEnum.RangeOfCells)
             {
                 var startColStr = StartColumn.Get(context);
@@ -77,7 +77,7 @@ public class FindAndReplaceCellsInExcelWorksheetNode : BaseNode
                 searchRange = worksheet.UsedRange;
             }
 
-            Excel.XlLookAt lookAt = matchEntireCell ? Excel.XlLookAt.xlWhole : Excel.XlLookAt.xlPart;
+            var lookAt = matchEntireCell ? OfficeConstants.XlWhole : OfficeConstants.XlPart;
 
             bool replaced = searchRange.Replace(
                 What: findWhat,
@@ -107,3 +107,9 @@ public class FindAndReplaceCellsInExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+
+

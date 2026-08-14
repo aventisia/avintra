@@ -1,5 +1,4 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -8,7 +7,7 @@ namespace NodeLibrary.ExcelNodes;
 public class SelectCellsInExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet in which to select cells.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Select Mode"), Description("Specifies how to select cells: Single Cell, Named Range, Range of Cells, or All Cells.")]
     public required InArgument<ExcelCellSelectionModeEnum> SelectMode { get; set; }
@@ -45,14 +44,14 @@ public class SelectCellsInExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var selectMode = SelectMode.Get(context);
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");
 
             worksheet.Activate();
-            Excel.Range targetRange;
+            dynamic targetRange;
 
             switch (selectMode)
             {
@@ -61,7 +60,7 @@ public class SelectCellsInExcelWorksheetNode : BaseNode
                         var colStr = Column.Get(context);
                         var row = Row.Get(context);
                         int colNum = int.TryParse(colStr, out int num) ? num : GetColumnIndex(colStr);
-                        targetRange = (Excel.Range)worksheet.Cells[row, colNum];
+                        targetRange = worksheet.Cells[row, colNum];
                         break;
                     }
 
@@ -113,3 +112,8 @@ public class SelectCellsInExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+

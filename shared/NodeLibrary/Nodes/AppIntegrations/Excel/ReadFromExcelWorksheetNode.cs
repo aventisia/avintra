@@ -1,6 +1,5 @@
-using NodeLibrary.ExcelNodes.Enums;
-using NodeLibrary.ExcelNodes.Helpers;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
+using NodeLibrary.Office;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -9,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class ReadFromExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet object from which to read data.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Retrieve Mode"), Description("Specifies how to retrieve data from the worksheet.")]
     public required InArgument<ExcelRetrieveModeEnum> RetrieveMode { get; set; }
@@ -62,13 +61,18 @@ public class ReadFromExcelWorksheetNode : BaseNode
 
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheetArg = WorksheetInstance.Get(context);
             var retrieveMode = RetrieveMode.Get(context);
+            dynamic worksheet;
 
-            if (worksheet == null)
+            if (worksheetArg == null)
             {
-                var excelApp = (Excel.Application)ComHelper.GetActiveObject("Excel.Application");
-                worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                var excelApp = OfficeAutomationHelper.GetActiveApplication(OfficeApplication.Excel);
+                worksheet = excelApp.ActiveSheet;
+            }
+            else
+            {
+                worksheet = worksheetArg;
             }
 
             if (worksheet == null)
@@ -89,16 +93,18 @@ public class ReadFromExcelWorksheetNode : BaseNode
             {
                 case ExcelRetrieveModeEnum.SingleCell:
                     int colIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
-                    var cell = worksheet.Cells[startRow, colIndex] as Excel.Range;
+                    var cell = worksheet.Cells[startRow, colIndex];
                     dataTable = new DataTable();
                     dataTable.Columns.Add("Value");
-                    dataTable.Rows.Add(getContentsAsText ? cell.Text : cell.Value2);
+                    dataTable.Rows.Add(getContentsAsText ? (string)cell.Text : cell.Value2);
                     break;
 
                 case ExcelRetrieveModeEnum.RangeOfCells:
                     int startIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
                     int endIndex = endColIndex > 0 ? endColIndex : GetColumnIndex(endCol);
-                    var range = worksheet.Range[worksheet.Cells[startRow, startIndex], worksheet.Cells[endRow, endIndex]];
+                    var startCell = worksheet.Cells[startRow, startIndex];
+                    var endCell = worksheet.Cells[endRow, endIndex];
+                    var range = worksheet.Range[startCell, endCell];
                     dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
                     break;
 
@@ -130,7 +136,7 @@ public class ReadFromExcelWorksheetNode : BaseNode
         }
     }
 
-    private static DataTable ReadRange(Excel.Range range, bool getContentsAsText, bool firstLineContainsColumnNames, bool trimEmpty)
+    private static DataTable ReadRange(dynamic range, bool getContentsAsText, bool firstLineContainsColumnNames, bool trimEmpty)
     {
         var dataTable = new DataTable();
 
@@ -193,3 +199,7 @@ public class ReadFromExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+

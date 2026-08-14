@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Run Excel Macro"), Description("Runs a specified VBA macro in the provided Excel workbook.")]
@@ -7,7 +6,7 @@ namespace NodeLibrary.ExcelNodes;
 public class RunExcelMacroNode : BaseNode
 {
     [DisplayName("Workbook Instance"), Description("The Excel Workbook containing the macro to run.")]
-    public required InArgument<Excel.Workbook> WorkbookInstance { get; set; }
+    public required InArgument<object> WorkbookInstance { get; set; }
 
     [DisplayName("Macro Name"), Description("The name of the macro to run (e.g., 'Module1.MyMacro').")]
     public required InArgument<string> MacroName { get; set; }
@@ -28,11 +27,11 @@ public class RunExcelMacroNode : BaseNode
     {
         try
         {
-            var workbook = WorkbookInstance.Get(context);
+            dynamic workbook = WorkbookInstance.Get(context);
             var macroName = MacroName.Get(context);
-            var arg1 = Argument1.Get(context);
-            var arg2 = Argument2.Get(context);
-            var arg3 = Argument3.Get(context);
+            dynamic arg1 = Argument1.Get(context);
+            dynamic arg2 = Argument2.Get(context);
+            dynamic arg3 = Argument3.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance cannot be null.");
@@ -67,3 +66,8 @@ public class RunExcelMacroNode : BaseNode
         }
     }
 }
+
+
+
+
+

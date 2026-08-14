@@ -1,6 +1,5 @@
-using System.IO;
+using NodeLibrary.Office;
 using NodeLibrary.WordNodes.Enums;
-using Word = Microsoft.Office.Interop.Word;
 
 namespace NodeLibrary.WordNodes;
 
@@ -9,7 +8,7 @@ namespace NodeLibrary.WordNodes;
 public class CloseWordNode : BaseNode
 {
     [DisplayName("Word Instance"), Description("The specific Word instance to close.")]
-    public required InArgument<Word.Application> WordInstance { get; set; }
+    public required InArgument<object> WordInstance { get; set; }
 
     [DisplayName("Before Closing Word"), Description("Specifies whether to save the document before closing Word.")]
     public InArgument<CloseOptionEnum> BeforeClosingWord { get; set; } = new InArgument<CloseOptionEnum>(CloseOptionEnum.DoNotSaveDocument);
@@ -26,13 +25,15 @@ public class CloseWordNode : BaseNode
     {
         try
         {
-            var wordApp = WordInstance.Get(context);
+            var wordAppArg = WordInstance.Get(context);
             var closeOption = BeforeClosingWord.Get(context);
             var savePath = SavePath.Get(context);
             var saveFormat = SaveFormat.Get(context);
 
-            if (wordApp == null)
+            if (wordAppArg == null)
                 throw new ArgumentNullException(nameof(WordInstance), "WordInstance cannot be null.");
+
+            dynamic wordApp = wordAppArg;
 
             if (wordApp.Documents.Count == 0)
                 throw new InvalidOperationException("No active documents are open in the Word instance.");
@@ -42,31 +43,31 @@ public class CloseWordNode : BaseNode
             switch (closeOption)
             {
                 case CloseOptionEnum.DoNotSaveDocument:
-                    wordApp.Quit(Word.WdSaveOptions.wdDoNotSaveChanges);
+                    wordApp.Quit(OfficeConstants.WdDoNotSaveChanges);
                     break;
 
                 case CloseOptionEnum.SaveDocument:
                     activeDoc.Save();
-                    wordApp.Quit(Word.WdSaveOptions.wdSaveChanges);
+                    wordApp.Quit(OfficeConstants.WdSaveChanges);
                     break;
 
                 case CloseOptionEnum.SaveDocumentAs:
                     if (string.IsNullOrWhiteSpace(savePath))
                         throw new ArgumentException("SavePath must be provided when using 'Save Document As'.");
 
-                    Word.WdSaveFormat wordFormat;
+                    int wordFormat;
                     string finalPath = savePath;
 
                     switch (saveFormat)
                     {
                         case SaveFormatEnum.Docx:
-                            wordFormat = Word.WdSaveFormat.wdFormatDocumentDefault;
+                            wordFormat = OfficeConstants.WdFormatDocumentDefault;
                             if (!finalPath.EndsWith(".docx", StringComparison.OrdinalIgnoreCase))
                                 finalPath = Path.ChangeExtension(finalPath, ".docx");
                             break;
 
                         case SaveFormatEnum.Pdf:
-                            wordFormat = Word.WdSaveFormat.wdFormatPDF;
+                            wordFormat = OfficeConstants.WdFormatPDF;
                             if (!finalPath.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
                                 finalPath = Path.ChangeExtension(finalPath, ".pdf");
                             break;
@@ -76,7 +77,7 @@ public class CloseWordNode : BaseNode
                     }
 
                     activeDoc.SaveAs2(FileName: finalPath, FileFormat: wordFormat);
-                    wordApp.Quit(Word.WdSaveOptions.wdDoNotSaveChanges);
+                    wordApp.Quit(OfficeConstants.WdDoNotSaveChanges);
                     break;
 
                 default:

@@ -78,11 +78,15 @@ echo "Publishing RunnerApp ($RUNTIME, self-contained) v$VERSION ..."
 PUBLISH_DIR="$(mktemp -d)"
 trap 'rm -rf "$PUBLISH_DIR"' EXIT
 
-dotnet publish "$CSPROJ" \
-  -c Release \
-  -r "$RUNTIME" \
-  --self-contained true \
-  -o "$PUBLISH_DIR"
+# On non-Windows build agents (e.g. Ubuntu Jenkins) the Office PIA is not available and is
+# not required for the build. Office is resolved dynamically at runtime on the user's
+# Windows machine via late binding. If OFFICE_PIA_PATH is set, forward it to MSBuild.
+PUBLISH_ARGS=(-c Release -r "$RUNTIME" --self-contained true -o "$PUBLISH_DIR")
+if [[ -n "${OFFICE_PIA_PATH:-}" ]]; then
+  PUBLISH_ARGS+=(/p:OfficePiaPath="$OFFICE_PIA_PATH")
+fi
+
+dotnet publish "$CSPROJ" "${PUBLISH_ARGS[@]}"
 
 mkdir -p "$OUTPUT_DIR"
 

@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Get Selected Cell Range from Excel Worksheet"), Description("Gets the address and details of the currently selected cell range in an Excel worksheet.")]
@@ -7,7 +6,7 @@ namespace NodeLibrary.ExcelNodes;
 public class GetSelectedCellRangeFromExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet from which to get the selected range.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Selected Range Address"), Description("The address of the currently selected range (e.g., '$A$1:$C$5').")]
     public OutArgument<string> SelectedRangeAddress { get; set; } = new OutArgument<string>();
@@ -34,12 +33,12 @@ public class GetSelectedCellRangeFromExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");
 
-            var selection = worksheet.Application.Selection as Excel.Range;
+            var selection = worksheet.Application.Selection;
 
             if (selection == null)
                 throw new InvalidOperationException("No cells are currently selected.");
@@ -62,3 +61,8 @@ public class GetSelectedCellRangeFromExcelWorksheetNode : BaseNode
         }
     }
 }
+
+
+
+
+

@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Get Column Name on Excel Worksheet"), Description("Gets the column letter name for a given column index in the specified Excel worksheet.")]
@@ -7,7 +6,7 @@ namespace NodeLibrary.ExcelNodes;
 public class GetColumnNameOnExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet instance.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Column Index"), Description("The 1-based column index to convert to a column letter name.")]
     public required InArgument<int> ColumnIndex { get; set; }
@@ -19,7 +18,7 @@ public class GetColumnNameOnExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var columnIndex = ColumnIndex.Get(context);
 
             if (worksheet == null)
@@ -54,3 +53,8 @@ public class GetColumnNameOnExcelWorksheetNode : BaseNode
         return result;
     }
 }
+
+
+
+
+

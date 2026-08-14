@@ -1,6 +1,5 @@
-using NodeLibrary.ExcelNodes.Enums;
+﻿using NodeLibrary.ExcelNodes.Enums;
 using NodeLibrary.ExcelNodes.Helpers;
-using Excel = Microsoft.Office.Interop.Excel;
 
 namespace NodeLibrary.ExcelNodes;
 
@@ -9,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class ClearCellsInExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The specific worksheet instance to clear cells from.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Clear Mode"), Description("Specifies how to clear cells: Single Cell, Named Cells, Range of Cells, or Relative to Active Cell.")]
     public required InArgument<CellClearModeEnum> ClearMode { get; set; }
@@ -64,13 +63,13 @@ public class ClearCellsInExcelWorksheetNode : BaseNode
 
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var clearMode = ClearMode.Get(context);
 
             if (worksheet == null)
             {
-                var excelApp = (Excel.Application)ComHelper.GetActiveObject("Excel.Application");
-                worksheet = excelApp?.ActiveSheet as Excel.Worksheet;
+                dynamic excelApp = ComHelper.GetActiveObject("Excel.Application");
+                worksheet = excelApp?.ActiveSheet;
             }
 
             if (worksheet == null)
@@ -84,7 +83,7 @@ public class ClearCellsInExcelWorksheetNode : BaseNode
                         var row = Row.Get(context);
                         if (!int.TryParse(colStr, out var colNum))
                             colNum = GetColumnIndex(colStr);
-                        var targetCell = worksheet.Cells[row, colNum] as Excel.Range;
+                        var targetCell = worksheet.Cells[row, colNum];
                         if (targetCell == null)
                             throw new InvalidOperationException($"Cell at Row {row}, Column {colStr} does not exist.");
                         targetCell.Clear();
@@ -95,7 +94,7 @@ public class ClearCellsInExcelWorksheetNode : BaseNode
                 case CellClearModeEnum.NamedCells:
                     {
                         var name = Name.Get(context);
-                        Excel.Range namedRange = null;
+                        dynamic namedRange = null;
                         try { namedRange = worksheet.Names.Item(name)?.RefersToRange; } catch { }
                         if (namedRange != null)
                         {
@@ -128,11 +127,11 @@ public class ClearCellsInExcelWorksheetNode : BaseNode
                         var xDir = XAxisDirection.Get(context);
                         var yOffset = YOffset.Get(context);
                         var xOffset = XOffset.Get(context);
-                        var activeCell = worksheet.Application.ActiveCell as Excel.Range;
+                        var activeCell = worksheet.Application.ActiveCell;
                         if (activeCell == null)
                             throw new InvalidOperationException("No active cell found in the worksheet.");
 
-                        Excel.Range targetRange = xDir switch
+                        dynamic targetRange = xDir switch
                         {
                             ExcelXAxisDirectionEnum.Left => activeCell.Offset[yOffset, -xOffset],
                             ExcelXAxisDirectionEnum.Right => activeCell.Offset[yOffset, xOffset],
@@ -165,3 +164,8 @@ public class ClearCellsInExcelWorksheetNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+

@@ -1,5 +1,4 @@
-using Excel = Microsoft.Office.Interop.Excel;
-
+﻿
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Get Active Cell on Excel Worksheet"), Description("Retrieves the address and value of the currently active cell in the specified Excel worksheet.")]
@@ -7,7 +6,7 @@ namespace NodeLibrary.ExcelNodes;
 public class GetActiveCellOnExcelWorksheetNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet from which to get the active cell.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Active Cell Column"), Description("The column letter of the active cell.")]
     public OutArgument<string> ActiveCellColumn { get; set; } = new OutArgument<string>();
@@ -25,7 +24,7 @@ public class GetActiveCellOnExcelWorksheetNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");
@@ -62,3 +61,8 @@ public class GetActiveCellOnExcelWorksheetNode : BaseNode
         return result;
     }
 }
+
+
+
+
+

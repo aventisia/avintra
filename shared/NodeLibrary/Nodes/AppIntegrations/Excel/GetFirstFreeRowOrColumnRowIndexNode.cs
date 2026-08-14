@@ -1,6 +1,6 @@
-using NodeLibrary.ExcelNodes.Enums;
-using Excel = Microsoft.Office.Interop.Excel;
+﻿using NodeLibrary.ExcelNodes.Enums;
 
+using NodeLibrary.Office;
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Get First Free Row or Column Row Index"), Description("Gets the first free row or column row index based on the search direction in an Excel worksheet.")]
@@ -8,7 +8,7 @@ namespace NodeLibrary.ExcelNodes;
 public class GetFirstFreeRowOrColumnRowIndexNode : BaseNode
 {
     [DisplayName("Worksheet Instance"), Description("The Excel Worksheet to examine.")]
-    public required InArgument<Excel.Worksheet> WorksheetInstance { get; set; }
+    public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Search Direction"), Description("Specifies whether to search for the first free row or the first free column.")]
     public required InArgument<ExcelSearchByEnum> SearchDirection { get; set; }
@@ -28,7 +28,7 @@ public class GetFirstFreeRowOrColumnRowIndexNode : BaseNode
     {
         try
         {
-            var worksheet = WorksheetInstance.Get(context);
+            dynamic worksheet = WorksheetInstance.Get(context);
             var searchDirection = SearchDirection.Get(context);
 
             if (worksheet == null)
@@ -40,15 +40,15 @@ public class GetFirstFreeRowOrColumnRowIndexNode : BaseNode
             {
                 var columnStr = Column.Get(context);
                 int colIndex = int.TryParse(columnStr, out int num) ? num : GetColumnIndex(columnStr);
-                var lastCell = (Excel.Range)worksheet.Cells[worksheet.Rows.Count, colIndex];
-                var firstFree = lastCell.End[Excel.XlDirection.xlUp];
+                var lastCell = worksheet.Cells[worksheet.Rows.Count, colIndex];
+                var firstFree = lastCell.End[OfficeConstants.XlUp];
                 result = (firstFree.Row == 1 && firstFree.Value2 == null) ? 1 : firstFree.Row + 1;
             }
             else
             {
                 var row = Row.Get(context);
-                var lastCell = (Excel.Range)worksheet.Cells[row, worksheet.Columns.Count];
-                var firstFree = lastCell.End[Excel.XlDirection.xlToLeft];
+                var lastCell = worksheet.Cells[row, worksheet.Columns.Count];
+                var firstFree = lastCell.End[OfficeConstants.XlToLeft];
                 result = (firstFree.Column == 1 && firstFree.Value2 == null) ? 1 : firstFree.Column + 1;
             }
 
@@ -71,3 +71,9 @@ public class GetFirstFreeRowOrColumnRowIndexNode : BaseNode
         return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
+
+
+
+
+
+
