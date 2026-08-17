@@ -103,8 +103,16 @@ def create_openai_model(
                 detail="OpenAI configuration is incomplete.",
             )
 
-    # Create OpenAI model instance
+    # Create OpenAI model instance.
     # Tool binding and structured output are applied later inside LangGraph nodes.
+    # For reasoning models (o1/o3/gpt-5) we pass `reasoning_effort` (when set) so
+    # the model emits reasoning content that can be streamed live. Some providers
+    # expect it via `extra_body` rather than as a top-level ChatOpenAI arg, so we
+    # set it on extra_body to be safe across OpenAI-compatible endpoints.
+    model_kwargs = {}
+    if llm_request.reasoning_effort:
+        model_kwargs["reasoning_effort"] = llm_request.reasoning_effort
+
     return ChatOpenAI(
         model=llm_request.model,
         temperature=llm_request.temperature,
@@ -113,4 +121,5 @@ def create_openai_model(
         stream_usage=True,
         api_key=resolved_api_key,
         base_url=resolved_base_url,
+        extra_body=model_kwargs or None,
     )

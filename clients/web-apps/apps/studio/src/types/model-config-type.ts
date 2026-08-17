@@ -7,6 +7,7 @@ export interface ModelConfigType {
   top_p: number;
   is_json_output: boolean;
   max_output_tokens: number;
+  reasoning_effort?: string;
 }
 
 export interface VoiceConfigType {

@@ -275,10 +275,14 @@ public class StreamingChatService : IStreamingChatService
         var prompt = GetStringProperty(nodeConfig, "__Prompt__Conversation") ?? GetStringProperty(nodeConfig, "__Prompt__");
         var kbConfig = GetObjectProperty(nodeConfig, "__KbConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__KbConfig__");
         var toolsConfig = GetArrayProperty(nodeConfig, "__ToolsConfig__Conversation") ?? GetArrayProperty(nodeConfig, "__ToolsConfig__");
+        var skillsConfig = GetObjectProperty(nodeConfig, "__SkillsConfig__Conversation") ?? GetObjectProperty(nodeConfig, "__SkillsConfig__");
         var actionsConfig = GetObjectProperty(nodeConfig, "__RecommendedActionsConfig__Conversation");
 
         var enableDynamicActions = GetBoolProperty(actionsConfig, "enableDynamicActions") ?? false;
         var followUpMessagePrompt = GetStringProperty(actionsConfig, "followUpMessagePrompt");
+
+        var skillNames = GetStringArrayProperty(skillsConfig, "skills");
+        var hasSkillNames = skillNames is { Count: > 0 };
 
         // Build the ordered input message list: system prompt, follow-up prompt, then chat history.
         var messages = new List<object>();
@@ -336,6 +340,8 @@ public class StreamingChatService : IStreamingChatService
         var kbNames = kbConfig is JsonObject kb && kb.TryGetPropertyValue("knowledgeBase", out var kbNode) && kbNode is JsonArray kbArray
             ? kbArray.Where(x => x is not null).Select(x => x!.ToString()).ToList()
             : null;
+        var hasKbNames = kbNames is { Count: > 0 };
+        var topK = hasKbNames ? (GetIntProperty(kbConfig, "numberOfChunks") ?? 5) : (int?)null;
 
         return new
         {
@@ -351,9 +357,12 @@ public class StreamingChatService : IStreamingChatService
             conversation_id = request.ConversationId?.ToString() ?? (request.IsTempChat ? null : Guid.NewGuid().ToString()),
             temperature = modelConfig?.TryGetPropertyValue("temperature", out var temp) == true ? temp?.GetValue<double>() : 1.0,
             top_p = modelConfig?.TryGetPropertyValue("top_p", out var topP) == true ? topP?.GetValue<double>() : 1.0,
+            reasoning_effort = modelConfig?.TryGetPropertyValue("reasoning_effort", out var reEffort) == true && reEffort?.GetValueKind() == System.Text.Json.JsonValueKind.String ? reEffort?.GetValue<string>() : null,
             is_byok_enabled = modelConfig?.TryGetPropertyValue("is_byok_enabled", out var byok) == true && byok?.GetValue<bool>() == true,
             credential_id = modelConfig?.TryGetPropertyValue("credential_id", out var credId) == true ? credId?.ToString() : null,
             kb_names = kbNames,
+            top_k = topK,
+            skill_names = hasSkillNames ? skillNames : null,
             ref_type = "Agent",
             ref_id = flowVersion.FlowId.ToString(),
             ref_name = flowVersion.Flow?.Name ?? string.Empty,
@@ -378,6 +387,21 @@ public class StreamingChatService : IStreamingChatService
         return arr;
     }
 
+    private static List<string>? GetStringArrayProperty(JsonNode? node, string key)
+    {
+        var arr = GetArrayProperty(node, key);
+        if (arr is null)
+            return null;
+
+        var values = arr
+            .Where(x => x is not null)
+            .Select(x => x!.ToString())
+            .Where(x => !string.IsNullOrWhiteSpace(x))
+            .ToList();
+
+        return values.Count > 0 ? values : null;
+    }
+
     private static string? GetStringProperty(JsonNode? node, string key)
     {
         if (node is not JsonObject obj || !obj.TryGetPropertyValue(key, out var value) || value is null)
@@ -394,6 +418,18 @@ public class StreamingChatService : IStreamingChatService
             System.Text.Json.JsonValueKind.True => true,
             System.Text.Json.JsonValueKind.False => false,
             System.Text.Json.JsonValueKind.String when bool.TryParse(value.GetValue<string>(), out var b) => b,
+            _ => null,
+        };
+    }
+
+    private static int? GetIntProperty(JsonNode? node, string key)
+    {
+        if (node is not JsonObject obj || !obj.TryGetPropertyValue(key, out var value) || value is null)
+            return null;
+        return value.GetValueKind() switch
+        {
+            System.Text.Json.JsonValueKind.Number when value is JsonValue => value.GetValue<int>(),
+            System.Text.Json.JsonValueKind.String when int.TryParse(value.GetValue<string>(), out var parsed) => parsed,
             _ => null,
         };
     }

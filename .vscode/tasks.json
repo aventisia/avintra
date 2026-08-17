@@ -44,6 +44,13 @@
       "options": {
         "cwd": "${workspaceFolder}/apis/WorcBackend-legacy/WorkspaceAPIs"
       },
+      "linux": {
+        "options": {
+          "env": {
+            "OFFICE_PIA_PATH": "/mnt/c/Program Files/Microsoft Office/root/Office16/ADDINS/PowerPivot Excel Add-in/OFFICE.dll"
+          }
+        }
+      },
       "isBackground": true
     },
     {

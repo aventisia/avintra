@@ -233,10 +233,12 @@ export const createAssistantUIModelAdapter = ({
             }
             case "skill": {
               // Surface skill usage as a lightweight system note so the user
-              // can see which skills the agent invoked.
+              // can see which skills the agent invoked. The trailing blank line
+              // is required so the blockquote is terminated and does not absorb
+              // the model's following content (e.g. markdown tables).
               const skillName = frame.output?.name || frame.output;
               if (skillName) {
-                pushText(`\n\n> Using skill: **${skillName}**\n`);
+                pushText(`\n\n> Using skill: **${skillName}**\n\n`);
               }
               break;
             }

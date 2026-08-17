@@ -351,6 +351,34 @@ class ChatService:
                         type="status",
                         conversation_id=conversation_id,
                     )
+
+                # When the "tools" node runs, surface the specific tool names the
+                # model is about to call. Connector-backed tools execute directly
+                # inside the node (bypassing LangGraph's ToolNode), so the
+                # on_tool_start event never fires for them — surface them here
+                # from the pending AIMessage tool_calls in the graph state.
+                if node_name == "tools":
+                    try:
+                        state_data = data.get("input") or {}
+                        messages = state_data.get("messages") or []
+                        last = messages[-1] if messages else None
+                        tool_calls = getattr(last, "tool_calls", None) or []
+                        for tc in tool_calls:
+                            tool_call_name = (
+                                tc.get("name")
+                                if isinstance(tc, dict)
+                                else getattr(tc, "name", None)
+                            )
+                            if tool_call_name:
+                                yield LLMChunkResponse(
+                                    provider=request.provider,
+                                    model=request.model,
+                                    output=f"Running tool: {tool_call_name}",
+                                    type="status",
+                                    conversation_id=conversation_id,
+                                )
+                    except Exception:
+                        pass
                 continue
 
             # Token-level deltas from the chat model.
@@ -450,22 +478,12 @@ class ChatService:
                         output_messages,
                         fallback=graph_response,
                     )
-                    # Surface selected skills when the agent_selector node finishes.
-                    if node_name == "agent_selector":
-                        metadata = output.get("metadata") or {}
-                        selected_skills = metadata.get("selected_skills") or []
-                        for skill in selected_skills:
-                            skill_name = getattr(skill, "name", None) or (
-                                skill.get("name") if isinstance(skill, dict) else None
-                            )
-                            if skill_name:
-                                yield LLMChunkResponse(
-                                    provider=request.provider,
-                                    model=request.model,
-                                    output={"name": skill_name},
-                                    type="skill",
-                                    conversation_id=conversation_id,
-                                )
+                    # NOTE: skills/tools are NOT surfaced here. A skill being
+                    # configured (or selected) does not mean the agent actually
+                    # used it for this request. Only genuine runtime actions
+                    # (e.g. on_tool_start -> "Running tool: X") should appear in
+                    # the reasoning chain, so a simple "Hi" does not claim the
+                    # agent used skills/tools it never invoked.
                     if (
                         not request.is_temp_chat
                         and db_session is not None

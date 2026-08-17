@@ -37,6 +37,7 @@ class LLMRequest(BaseModel):
     credential_id: Optional[str] = None # TODO: Implement BYOK support
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
+    reasoning_effort: Optional[str] = None  # OpenAI reasoning models (e.g. o1/o3/gpt-5): low | medium | high
     stream: Optional[bool] = False
     is_chat_agent: Optional[bool] = False   # Whether the request originates from a chat agent
     generate_followup_messages: Optional[bool] = False  # Indicates whether follow-up messages should be generated for requests originating from a dynamic action or workflow.

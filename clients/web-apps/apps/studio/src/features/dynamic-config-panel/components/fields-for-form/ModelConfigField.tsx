@@ -87,6 +87,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         top_p: `${name}.top_p`,
         is_json_output: `${name}.is_json_output`,
         max_output_tokens: `${name}.max_output_tokens`,
+        reasoning_effort: `${name}.reasoning_effort`,
       }) as const,
     [name],
   );
@@ -384,6 +385,18 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
                 type="number"
                 label="Max Output Token"
                 fieldSize="sm"
+              />
+
+              <SelectField
+                size="sm"
+                name={fieldNames.reasoning_effort}
+                selectOptions={[
+                  { value: "low", label: "Low" },
+                  { value: "medium", label: "Medium" },
+                  { value: "high", label: "High" },
+                ]}
+                label="Reasoning Effort"
+                description="Control how much reasoning the model does (OpenAI reasoning models)."
               />
             </PopoverContent>
           </Popover>

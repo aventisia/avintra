@@ -159,34 +159,35 @@ def _create_agent_selector_node(
                 tenant_id=tenant_id,
             )
 
-        # Use manually provided selections when available
-        if explicit_tool_names or explicit_skill_names:
-            selected_tool_names = list(explicit_tool_names or [])
-            selected_skill_names = list(explicit_skill_names or [])
+        # Explicitly configured tools (via "Configure Tools") are force-bound —
+        # the agent may call any of them. Explicitly attached skills (via
+        # "Configure Skills") are NOT force-injected; the ReAct planner decides
+        # per-message which skill(s) are actually relevant (Path B), so a simple
+        # "Hi" does not apply a skill the user never triggered.
+        selected_tool_names = list(explicit_tool_names or [])
 
-            # Resolve skill configs against the merged tenant + global registry
-            selected_skills = _resolve_skill_configs(
-                skill_registry,
-                selected_skill_names,
-                tenant_id=tenant_id,
-            )
-        else:
-            # Let planner model decide from the tenant-aware catalog
-            selection = await select_tools_and_skills(
-                request=request,
-                user=user,
-                tool_registry=tool_registry,
-                skill_registry=skill_registry,
-                tenant_id=tenant_id,
+        if explicit_skill_names:
+            logger.info(
+                "Attached skills available for planner routing: %s",
+                explicit_skill_names,
             )
 
-            selected_tool_names = selection.tool_names
-            selected_skill_names = selection.skill_names
-            selected_skills = _resolve_skill_configs(
-                skill_registry,
-                selected_skill_names,
-                tenant_id=tenant_id,
-            )
+        # Let the ReAct planner decide which skills are relevant for this
+        # specific user message.
+        selection = await select_tools_and_skills(
+            request=request,
+            user=user,
+            tool_registry=tool_registry,
+            skill_registry=skill_registry,
+            tenant_id=tenant_id,
+        )
+
+        selected_skill_names = selection.skill_names
+        selected_skills = _resolve_skill_configs(
+            skill_registry,
+            selected_skill_names,
+            tenant_id=tenant_id,
+        )
 
         logger.info(
             "Agent identified tools/skills. tools=%s skills=%s",
@@ -241,6 +242,17 @@ def _create_dynamic_model_node(
 
         # Inject selected skill instructions into system prompt
         skill_prompt = _build_skill_prompt(selected_skills)
+
+        # When a knowledge base is configured, add a directive that tells the
+        # model to ground its answer in the injected "[Knowledge Base Context]"
+        # block. This is independent of skill selection so the agent reliably
+        # uses retrieved KB content even when no skill is applied.
+        kb_directive = _build_kb_directive(llm_request)
+        if kb_directive:
+            if skill_prompt:
+                skill_prompt = f"{kb_directive}\n\n{skill_prompt}"
+            else:
+                skill_prompt = kb_directive
 
         # When tools are bound, add a strong instruction that the model must
         # actually call them for matching requests rather than simulating the
@@ -360,6 +372,29 @@ def _build_skill_prompt(skills: list[SkillConfig] | None) -> str | None:
     )
 
     return "\n".join(lines)
+
+
+def _build_kb_directive(llm_request: LLMRequest) -> str | None:
+    """Return a system instruction to ground answers in injected KB context.
+
+    When one or more knowledge bases are configured (``kb_names``), the route
+    injects a ``[Knowledge Base Context]`` block into the request input. This
+    directive tells the model to use that context for fact-based questions.
+    It is applied independently of skill selection so the agent reliably uses
+    retrieved KB content even when no skill is triggered.
+    """
+
+    if not llm_request.kb_names:
+        return None
+
+    return (
+        "A [Knowledge Base Context] block may be present in the conversation. "
+        "Use it as the authoritative source of company-specific facts and policy "
+        "information. When the user asks a factual or policy question, base your "
+        "answer on the retrieved context. If the context does not contain the "
+        "answer, say so rather than inventing information. Keep answers helpful "
+        "and concise."
+    )
 
 
 def _build_tool_instruction(tools: list[BaseTool]) -> str | None:
