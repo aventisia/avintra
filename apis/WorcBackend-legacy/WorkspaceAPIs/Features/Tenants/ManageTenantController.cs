@@ -25,4 +25,18 @@ public class ManageTenantController : BaseApiController
     {
         return ResultHelper(await _manageTenantService.GetTenantJobSummaryAsync(startDate, endDate));
     }
+
+    // Gets the list of published agents for a specific tenant.
+    [HttpGet("tenant/{tenantId}/published-agents")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<TenantPublishedAgentDto>>>> GetTenantPublishedAgents(Guid tenantId)
+    {
+        return ResultHelper(await _manageTenantService.GetTenantPublishedAgentsAsync(tenantId));
+    }
+
+    // Sets the fixed credits limit for a published agent.
+    [HttpPut("agent/{flowVersionId}/fixed-credits")]
+    public async Task<ActionResult<ServiceResponse<bool>>> SetFixedCredits(Guid flowVersionId, [FromBody] int? fixedCredits)
+    {
+        return ResultHelper(await _manageTenantService.SetFixedCreditsAsync(flowVersionId, fixedCredits));
+    }
 }

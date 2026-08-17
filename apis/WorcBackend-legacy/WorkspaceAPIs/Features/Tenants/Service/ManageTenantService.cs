@@ -274,4 +274,137 @@ public class ManageTenantService : IManageTenantService
 
         return serviceResponse;
     }
+
+    // Retrieves the list of published agents for a specific tenant along with usage metrics
+    // (credits consumed and daily average runtime over the last 30 days).
+    public async Task<ServiceResponse<IEnumerable<TenantPublishedAgentDto>>> GetTenantPublishedAgentsAsync(Guid tenantId)
+    {
+        // Initialize default failure response
+        var serviceResponse = new ServiceResponse<IEnumerable<TenantPublishedAgentDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve published agents for the tenant. Please try again later."
+        };
+
+        try
+        {
+            // Last 30 days window (from today in UTC)
+            var startDate = DateTime.UtcNow.Date.AddDays(-29);
+            var endDate = DateTime.UtcNow.Date.AddDays(1);
+
+            // Fetch published, non-archived flow versions for the tenant (across all spaces).
+            var publishedAgents = await _workspaceInternalDbContext.FlowVersions
+                .Where(w =>
+                    w.TenantId == tenantId &&
+                    w.IsPublished &&
+                    !w.IsArchived &&
+                    w.Flow.Type != FlowTypesEnum.Block)
+                .Include(i => i.Flow)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Fetch job usage metrics for the tenant within the last 30 days, grouped by flow version.
+            var jobUsage = await _workspaceInternalDbContext.Jobs
+                .Where(w =>
+                    w.TenantId == tenantId &&
+                    w.FlowVersionId != Guid.Empty &&
+                    w.CreatedOn >= startDate &&
+                    w.CreatedOn < endDate)
+                .GroupBy(g => g.FlowVersionId)
+                .Select(s => new
+                {
+                    FlowVersionId = s.Key,
+                    TotalCredits = s.Sum(sm => (double?)sm.CreditsConsumed) ?? 0,
+                    TotalRuntime = s.Sum(sm =>
+                        sm.EndTime != null && sm.StartTime != null
+                            ? (sm.EndTime.Value - sm.StartTime.Value).TotalSeconds
+                            : 0),
+                    JobCount = s.Count()
+                })
+                .ToListAsync();
+
+            // Build the DTO list
+            var agentDtos = publishedAgents
+                .Select(agent =>
+                {
+                    var usage = jobUsage.FirstOrDefault(x => x.FlowVersionId == agent.Id);
+
+                    // Daily averages over the last 30 days (credits consumed and runtime)
+                    var dailyAverageCredits = usage?.TotalCredits > 0
+                        ? usage.TotalCredits / 30
+                        : 0;
+                    var dailyAverageRuntime = usage?.TotalRuntime > 0
+                        ? usage.TotalRuntime / 30
+                        : 0;
+
+                    return new TenantPublishedAgentDto
+                    {
+                        Id = agent.Id,
+                        RefId = agent.FlowId,
+                        Name = agent.Flow?.Name,
+                        PublishedOn = agent.LastModifiedOn,
+                        DailyAverageCredits = dailyAverageCredits,
+                        DailyAverageRuntime = dailyAverageRuntime,
+                        FixedCredits = agent.FixedCredits
+                    };
+                })
+                .OrderByDescending(o => o.PublishedOn)
+                .ToList();
+
+            // Populate success response
+            serviceResponse.Data = agentDtos;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Published agents retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error retrieving published agents for tenant {TenantId}: {ErrorDetails}", tenantId, ex.ToString());
+        }
+
+        return serviceResponse;
+    }
+
+    // Sets the fixed credits limit for a published agent (flow version).
+    public async Task<ServiceResponse<bool>> SetFixedCreditsAsync(Guid flowVersionId, int? fixedCredits)
+    {
+        // Initialize default failure response
+        var serviceResponse = new ServiceResponse<bool>
+        {
+            Data = false,
+            Message = "Failed to set fixed credits. Please try again later."
+        };
+
+        try
+        {
+            // Fetch the flow version by ID (scoped to the current tenant via query filters)
+            var flowVersion = await _workspaceInternalDbContext.FlowVersions
+                .FirstOrDefaultAsync(w => w.Id == flowVersionId);
+
+            if (flowVersion == null)
+            {
+                serviceResponse.Message = "Agent not found.";
+                return serviceResponse;
+            }
+
+            // Update the fixed credits limit
+            flowVersion.FixedCredits = fixedCredits;
+            flowVersion.LastModifiedOn = DateTimeOffset.UtcNow;
+
+            _workspaceInternalDbContext.FlowVersions.Update(flowVersion);
+            await _workspaceInternalDbContext.SaveChangesAsync();
+
+            // Populate success response
+            serviceResponse.Data = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = fixedCredits.HasValue
+                ? $"Fixed credits set to {fixedCredits.Value}."
+                : "Fixed credits limit cleared.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError("Error setting fixed credits for agent {FlowVersionId}: {ErrorDetails}", flowVersionId, ex.ToString());
+        }
+
+        return serviceResponse;
+    }
 }

@@ -50,6 +50,7 @@ import SaSupportTicketsPage from "./pages/06-super-admin/SaSupportTicketsPage";
 import { SaNotificationsPage } from "./pages/06-super-admin/SaNotificationsPage";
 import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansPage";
 import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
+import { TenantPublishedAgentsPage } from "./pages/06-super-admin/TenantPublishedAgentsPage";
 import { OnPremTenantsPage } from "./pages/07-global-admin/OnPremTenantsPage";
 import { TenantInstanceDataPage } from "./pages/07-global-admin/TenantInstanceDataPage";
 import { TenantInstancePage } from "./pages/07-global-admin/TenantInstancePage";
@@ -309,6 +310,10 @@ const routerConfig: RouteObject[] = [
           {
             path: "tenants",
             element: <TenantsPage />,
+          },
+          {
+            path: "tenants/:tid",
+            element: <TenantPublishedAgentsPage />,
           },
           {
             path: "subscription-plans",
