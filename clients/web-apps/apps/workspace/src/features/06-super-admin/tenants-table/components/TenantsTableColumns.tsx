@@ -3,7 +3,7 @@ import { FALLBACK_VALUE } from "@avplatform/ui/constants";
 import { DTColumnHeader, createDTActionsColumn } from "@avplatform/ui/data-table";
 import { CountriesEnum, CurrenciesEnum } from "@avplatform/ui/enums";
 import { formatDate, getEnumValueByKey } from "@avplatform/ui/utils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, SortingFn } from "@tanstack/react-table";
 
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
@@ -69,6 +69,9 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
       const plan = row.getValue<string>(columnId) ?? "Unknown";
       return filterValue.includes(plan);
     },
+
+    // Always rank Pro customers at the top (then Starter, then the rest).
+    sortingFn: planSortingFn,
 
     cell: ({ row }) => {
       const plan = (row.getValue("activePlan") as string) ?? "Unknown";
@@ -263,3 +266,22 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     renderCell: (row) => <TenantRowActions rowId={row.id ?? "rowId"} />,
   }),
 ];
+
+/**
+ * Plan rank used for sorting. Pro customers always appear at the top,
+ * followed by Starter, then the remaining plans (Unknown last).
+ */
+const PLAN_RANK: Record<string, number> = {
+  pro: 0,
+  starter: 1,
+};
+
+const planSortingFn: SortingFn<TenantsTableDto> = (rowA, rowB) => {
+  const planA = (rowA.getValue<string>("activePlan") ?? "Unknown").toLowerCase();
+  const planB = (rowB.getValue<string>("activePlan") ?? "Unknown").toLowerCase();
+
+  const rankA = PLAN_RANK[planA] ?? 99;
+  const rankB = PLAN_RANK[planB] ?? 99;
+
+  return rankA - rankB;
+};

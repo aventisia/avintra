@@ -20,10 +20,15 @@ export const useFetchUnreadNotifications = () => {
     })),
   );
 
-  // Get unread notifications using react query
+  // Get unread notifications using react query.
+  // Poll periodically so the bell badge stays fresh when new notifications are
+  // sent by other users while this client has the app open. Without this, the
+  // badge only refreshes on mount, on dialog open, or on window focus.
   const { data, isFetching, isLoading, refetch, isError, error } = useQuery({
     queryKey: UN_QUERY_KEY,
     queryFn: getUnreadNotifications,
+    refetchInterval: 30_000, // refetch every 30 seconds
+    refetchIntervalInBackground: true,
   });
 
   // Show toast on fetch error
