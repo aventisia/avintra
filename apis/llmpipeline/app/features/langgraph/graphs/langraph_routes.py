@@ -87,22 +87,16 @@ async def generate_langgraph_response_route(
         # -------------------------------------------------------
         if request.stream:
             async def event_generator():
-                if request.is_temp_chat:
+                async with get_db_session_context(
+                    settings.POSTGRESQL_WORKSPACE_DB_NAME,
+                ) as session:
                     async for chunk in chat_service.stream(
                         request,
                         user,
+                        db_session=session,
                     ):
                         yield _serialize_chunk(chunk)
-                else:
-                    async with get_db_session_context(
-                        settings.POSTGRESQL_WORKSPACE_DB_NAME,
-                    ) as session:
-                        async for chunk in chat_service.stream(
-                            request,
-                            user,
-                            db_session=session,
-                        ):
-                            yield _serialize_chunk(chunk)
+                        if not request.is_temp_chat:
                             await session.commit()
 
             return StreamingResponse(
@@ -117,10 +111,14 @@ async def generate_langgraph_response_route(
         # the completed response once generation finishes.
         # -------------------------------------------------------
         if request.is_temp_chat:
-            response = await chat_service.invoke(
-                request,
-                user,
-            )
+            async with get_db_session_context(
+                settings.POSTGRESQL_WORKSPACE_DB_NAME,
+            ) as session:
+                response = await chat_service.invoke(
+                    request,
+                    user,
+                    db_session=session,
+                )
         else:
             async with get_db_session_context(
                 settings.POSTGRESQL_WORKSPACE_DB_NAME,
@@ -179,13 +177,10 @@ async def generate_langgraph_response_normalized_route(
         await retrieve_and_inject_kb_context(request, user)
 
     async def event_generator():
-        if request.is_temp_chat:
-            async for chunk in chat_service.stream_normalized(request, user):
+        async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
+            async for chunk in chat_service.stream_normalized(request, user, db_session=session):
                 yield _serialize_chunk(chunk)
-        else:
-            async with get_db_session_context(settings.POSTGRESQL_WORKSPACE_DB_NAME) as session:
-                async for chunk in chat_service.stream_normalized(request, user, db_session=session):
-                    yield _serialize_chunk(chunk)
+                if not request.is_temp_chat:
                     await session.commit()
 
     return StreamingResponse(event_generator(), media_type="text/event-stream")

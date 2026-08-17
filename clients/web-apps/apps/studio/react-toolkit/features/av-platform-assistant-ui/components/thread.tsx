@@ -22,6 +22,7 @@ import {
   ChevronUpIcon,
   CopyIcon,
   DownloadIcon,
+  LoaderCircleIcon,
   MoreHorizontalIcon,
   PencilIcon,
   RefreshCwIcon,
@@ -282,6 +283,24 @@ const MessageError: FC = () => {
  */
 const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
   const [open, setOpen] = useState(false);
+  // Animate while the assistant is actively generating. Use both the message
+  // status and the thread-level running flag so the animation reliably appears
+  // for all streaming paths.
+  const isRunning = useAuiState((s) => s.thread.isRunning);
+
+  // Auto-expand while the assistant is processing so the animated action
+  // steps are visible; keep the user's manual toggle otherwise.
+  const isOpen = isRunning || open;
+
+  // Split the chain-of-thought into individual action steps (each prefixed
+  // with a bullet by the adapter). While running, the last step is the one
+  // currently being executed and gets the animated spinner.
+  const steps = text
+    .split("\n")
+    .map((line) => line.replace(/^\u2022\s*/, "").trim())
+    .filter(Boolean);
+
+  const activeStep = isRunning ? steps.length - 1 : -1;
 
   return (
     <div className="aui-assistant-reasoning-block my-2 w-full overflow-hidden rounded-lg border border-border/60 bg-muted/30">
@@ -289,19 +308,50 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-center gap-1.5 px-2.5 py-1.5 text-left text-xs text-muted-foreground transition-colors hover:bg-muted/50"
-        aria-expanded={open}
+        aria-expanded={isOpen}
       >
-        {open ? (
+        {isOpen ? (
           <ChevronUpIcon className="size-3.5 shrink-0" />
         ) : (
           <ChevronDownIcon className="size-3.5 shrink-0" />
         )}
-        <span className="font-medium">Thinking</span>
-        {text && <span className="truncate opacity-70">· {text.replace(/^\u2022 /gm, "").split("\n")[0]}</span>}
+        {isRunning ? (
+          <LoaderCircleIcon className="size-3.5 shrink-0 animate-spin text-primary" />
+        ) : (
+          <CheckIcon className="size-3.5 shrink-0 text-muted-foreground/70" />
+        )}
+        <span
+          className={cn(
+            "font-medium",
+            isRunning && "animate-pulse",
+          )}
+        >
+          {isRunning ? "Processing" : "Thinking"}
+        </span>
+        {steps.length > 0 && (
+          <span className="truncate opacity-70">· {steps[activeStep >= 0 ? activeStep : steps.length - 1]}</span>
+        )}
       </button>
-      {open && (
-        <div className="aui-assistant-reasoning-content border-t border-border/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground whitespace-pre-wrap">
-          {text || "Thinking…"}
+      {isOpen && (
+        <div className="aui-assistant-reasoning-content border-t border-border/60 px-3 py-2 text-xs leading-relaxed text-muted-foreground">
+          {steps.length > 0 ? (
+            <ul className="space-y-1">
+              {steps.map((step, i) => (
+                <li key={i} className="flex items-start gap-1.5">
+                  {i === activeStep ? (
+                    <LoaderCircleIcon className="mt-0.5 size-3 shrink-0 animate-spin text-primary" />
+                  ) : (
+                    <CheckIcon className="mt-0.5 size-3 shrink-0 text-muted-foreground/60" />
+                  )}
+                  <span className={cn("whitespace-pre-wrap", i === activeStep && "text-foreground")}>
+                    {step}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <span className="whitespace-pre-wrap">{text || "Thinking…"}</span>
+          )}
         </div>
       )}
     </div>

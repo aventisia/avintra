@@ -92,6 +92,11 @@ export interface LLMRequestDto {
   top_p?: number;
 
   /**
+   * Reasoning effort for OpenAI reasoning models (e.g. o1/o3/gpt-5): low | medium | high.
+   */
+  reasoning_effort?: string | null;
+
+  /**
    * Flag to indicate whether to stream the response.
    */
   stream?: boolean;

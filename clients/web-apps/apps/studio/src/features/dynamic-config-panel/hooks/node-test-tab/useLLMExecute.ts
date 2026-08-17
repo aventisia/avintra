@@ -131,6 +131,7 @@ export function useLLMExecute(
       credential_id: modelConfig.credential_id || null,
       temperature: modelConfig.temperature,
       top_p: modelConfig.top_p,
+      reasoning_effort: modelConfig.reasoning_effort ?? null,
       kb_names: kbConfigData ? kbConfigData.config.knowledgeBase : null,
       skill_names: skillsConfigData ? skillsConfigData.config.skills : null,
       stream: false,
