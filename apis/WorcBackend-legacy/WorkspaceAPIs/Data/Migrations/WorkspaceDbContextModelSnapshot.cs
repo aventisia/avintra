@@ -533,6 +533,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("FixedCredits")
+                        .HasColumnType("integer");
+
                     b.Property<Guid>("FlowId")
                         .HasColumnType("uuid");
 

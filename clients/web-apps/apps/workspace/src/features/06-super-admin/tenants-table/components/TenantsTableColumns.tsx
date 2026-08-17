@@ -10,6 +10,7 @@ import { getColumnName } from "../constants/column-display-names";
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
 import { formatSecondsToCompactDuration, round2 } from "../utils";
 import { formatBytes } from "../utils/file-uploader-util";
+import { TenantNameCell } from "./tenant-published-agents/TenantNameCell";
 import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
 
 /**
@@ -63,9 +64,7 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("name")} />
     ),
     cell: ({ row }) => (
-      <div className="truncate max-w-72 font-medium" title={row.getValue("name")}>
-        {row.getValue("name")}
-      </div>
+      <TenantNameCell tenantId={row.original.id ?? ""} tenantName={row.getValue("name")} />
     ),
   },
   {

@@ -10,8 +10,10 @@ import { ISelectOption } from "@avplatform/ui/types";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { TenantsTableDto } from "../dtos/tenants-table-dto";
+import { TenantPublishedAgentDto } from "../dtos/tenant-published-agent-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/tenant`;
+const saWorkspaceAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/sa`;
 
 /**
  * Retrieves list of tenants.
@@ -153,6 +155,34 @@ const tenantOptimisticMutationFn = ({
   }
 };
 
+/**
+ * Retrieves the list of published agents for a specific tenant.
+ */
+const getTenantPublishedAgents = (tenantId: string) => {
+  return axiosInstance
+    .get<IHttpResponse<TenantPublishedAgentDto[]>>(
+      `${saWorkspaceAPIURL}/tenant/${tenantId}/published-agents`,
+    )
+    .then((res) => res.data);
+};
+
+/**
+ * Sets the fixed credits limit for a published agent.
+ */
+const setFixedCredits = (flowVersionId: string, fixedCredits: number | null) => {
+  return axiosInstance
+    .put<IHttpResponse<boolean>>(
+      `${saWorkspaceAPIURL}/agent/${flowVersionId}/fixed-credits`,
+      fixedCredits,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    )
+    .then((res) => res.data);
+};
+
 export {
   getTenants,
   isTenantNameAvailable,
@@ -162,4 +192,6 @@ export {
   disableTenants,
   tenantOptimisticMutationFn,
   switchTenant,
+  getTenantPublishedAgents,
+  setFixedCredits,
 };
