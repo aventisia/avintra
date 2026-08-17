@@ -6,5 +6,6 @@ public interface IExecutionEngine
         ExecutionGraphDto graph,
         CancellationToken cancellationToken = default,
         Action<string>? onNodeProgress = null,
-        Action<NodeExecutionLog>? onNodeCompleted = null);
+        Action<NodeExecutionLog>? onNodeCompleted = null,
+        Action<string, string>? onEdgeTraversed = null);
 }

@@ -16,4 +16,5 @@ public class SubFlowGraphDto
 {
     public Guid FlowVersionId { get; set; }
     public string ReactFlowObject { get; set; } = string.Empty;
+    public string? InputOutputObject { get; set; }
 }

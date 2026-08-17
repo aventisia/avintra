@@ -5,6 +5,7 @@ import { memo } from "react";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { NodeDataType } from "@/types/node-data-type";
@@ -26,14 +27,33 @@ export const BranchNode1 = memo(
     const isExecutionLog = useIsExecutionLogsRoute();
 
     const { branchStats, showBranchStats } = useExecutionStore();
+    const liveStatus = useLiveExecutionStore((state) =>
+      nodeData?.isDisabled ? undefined : state.liveExecutionMap[nodeId],
+    );
 
     const totalHits = branchStats[nodeId] || 0;
+
+    const pillBorderClass =
+      !nodeData?.isDisabled && isExecutionLog && branchStats[nodeId]
+        ? "border-green-500"
+        : liveStatus === "running"
+          ? "border-blue-500"
+          : liveStatus === "success"
+            ? "border-green-500"
+            : liveStatus === "failed"
+              ? "border-red-500"
+              : "border-slate-400";
 
     return (
       <>
         <>
           {nodeData?.name === "ConditionalBranchActivity" ? (
-            <OpenNodeLog nodeId={nodeId} showIcon={false} isDisabled={nodeData?.isDisabled}>
+            <OpenNodeLog
+              nodeId={nodeId}
+              showIcon={false}
+              showBorder={false}
+              isDisabled={nodeData?.isDisabled}
+            >
               <OpenNodeConfig {...{ nodeData, nodeId }}>
                 <div
                   className={cn(
@@ -48,9 +68,10 @@ export const BranchNode1 = memo(
                   )}
                   <div
                     className={cn(
-                      "grid h-6 w-12 place-items-center rounded-full border border-slate-400 bg-slate-200  px-2 text-sm hover:ring hover:ring-ring",
-                      selected && "border-primary ",
+                      "grid h-6 w-12 place-items-center rounded-full border bg-slate-200 px-2 text-sm hover:ring hover:ring-ring",
+                      selected && "border-primary",
                       nodeData?.isCut && "border-red-400 opacity-60",
+                      pillBorderClass,
                     )}
                   >
                     <GitBranchIcon className="h-3.5 w-3.5 scale-x-[-1] rotate-180" />{" "}
@@ -74,7 +95,12 @@ export const BranchNode1 = memo(
                   {totalHits}
                 </div>
               )}
-              <div className="grid h-6 w-12 place-items-center rounded-full border border-slate-400 bg-slate-200 px-2 text-sm">
+              <div
+                className={cn(
+                  "grid h-6 w-12 place-items-center rounded-full border bg-slate-200 px-2 text-sm",
+                  pillBorderClass,
+                )}
+              >
                 <InputHandle position={targetPosition} className="rounded-full opacity-0" />
                 <GitBranchIcon className="h-3.5 w-3.5 scale-x-[-1] rotate-180" />{" "}
                 <NodeHeading className="top-8">{nodeData.label}</NodeHeading>

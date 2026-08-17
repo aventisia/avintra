@@ -1,0 +1,31 @@
+meta {
+  name: Close job
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/execution/job/{{JOB_ID}}/close
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "closingStatus": "Completed",
+    "nodeExecutionLogs": [],
+    "remarks": "Closed via execution contract Bruno test"
+  }
+}
+
+vars:pre-request {
+  JOB_ID: f6158c61-8e2e-4238-968a-fb52566abe4d
+}
+
+assert {
+  res.status: in [200, 204, 409]
+}

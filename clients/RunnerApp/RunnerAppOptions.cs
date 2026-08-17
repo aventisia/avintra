@@ -25,12 +25,6 @@ public class RunnerAppOptions
     // When set, the service executes only that job and exits (used for console/manual runs).
     public Guid? JobId { get; set; }
 
-    // TODO: not required since osId can be get by the RunnerApp itself
-    public string OsId { get; set; } = MachineIdentity.OsId;
-
-    // TODO: not required since operating system's Username can be get by the RunnerApp itself
-    public string Username { get; set; } = MachineIdentity.Username;
-
     /// <summary>
     /// True when running as the long-lived Windows service (tenant apiKey + tenantId + linkedUsername present):
     /// machine registration + server SignalR over the backend OrchestratorHub. False for local

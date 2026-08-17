@@ -1,6 +1,7 @@
 import { BaseEdge, EdgeProps, Position, useEdges, useNodes } from "@xyflow/react";
 import { memo } from "react";
 
+import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { findHighestNodePosition } from "@/utils/findHighestNodePosition";
 
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
@@ -9,6 +10,9 @@ export const LoopBackEdge = memo(
   ({ id, sourceX, sourceY, targetX, targetY, sourcePosition, markerEnd, target }: EdgeProps) => {
     const nodes = useNodes();
     const edges = useEdges();
+    const isLiveEdgeActive = useLiveExecutionStore(
+      (state) => state.liveTraversedEdges[id] === true,
+    );
     // Use the new utility to find the highest point
     const posData = findHighestNodePosition(nodes, edges, target);
     const targetXWithSpace = targetX;
@@ -80,8 +84,9 @@ export const LoopBackEdge = memo(
           id={id}
           path={path}
           markerEnd={markerEnd}
+          className={isLiveEdgeActive ? "edge-success" : ""}
           style={{
-            stroke: "#94a3b8",
+            stroke: isLiveEdgeActive ? "#22c55e" : "#94a3b8",
             strokeWidth: 1,
             opacity: 0.8, // slightly softer
             fill: "none",

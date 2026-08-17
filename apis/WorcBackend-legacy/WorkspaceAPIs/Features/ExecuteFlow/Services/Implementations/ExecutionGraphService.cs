@@ -125,6 +125,7 @@ public class ExecutionGraphService : IExecutionGraphService
                 {
                     FlowVersionId = sf.FlowVersionId,
                     ReactFlowObject = sf.ReactFlowObject,
+                    InputOutputObject = sf.InputOutputObject,
                 });
             }
         }

@@ -21,7 +21,10 @@ public class BackendFlowGraphProvider : IFlowGraphProvider
         {
             var subParsed = ReactFlowHelper.Parse(subFlow.ReactFlowObject);
             if (subParsed is not null)
+            {
+                subParsed.InputOutputObject = subFlow.InputOutputObject;
                 _cache[subFlow.FlowVersionId] = subParsed;
+            }
         }
     }
 

@@ -73,7 +73,7 @@ internal static class MessageBoxInteractionHelpers
         }
 
         var result = MessageBoxW(IntPtr.Zero, message, title, type);
-        dialogResult = MapDialogResult(result);
+        dialogResult = MapDialogResult(result, buttons);
         return result != 0;
     }
 
@@ -225,7 +225,52 @@ internal static class MessageBoxInteractionHelpers
         };
     }
 
-    private static DialogResultEnum MapDialogResult(int result)
+    private static DialogResultEnum MapDialogResult(int result, MessageBoxButtonsEnum buttons)
+    {
+        return buttons switch
+        {
+            MessageBoxButtonsEnum.OK => result switch
+            {
+                IDOK => DialogResultEnum.OK,
+                _ => DialogResultEnum.Cancel
+            },
+            MessageBoxButtonsEnum.OKCancel => result switch
+            {
+                IDOK => DialogResultEnum.OK,
+                IDCANCEL => DialogResultEnum.Cancel,
+                _ => DialogResultEnum.Cancel
+            },
+            MessageBoxButtonsEnum.YesNo => result switch
+            {
+                IDYES => DialogResultEnum.Yes,
+                IDNO => DialogResultEnum.No,
+                _ => DialogResultEnum.Cancel
+            },
+            MessageBoxButtonsEnum.YesNoCancel => result switch
+            {
+                IDYES => DialogResultEnum.Yes,
+                IDNO => DialogResultEnum.No,
+                IDCANCEL => DialogResultEnum.Cancel,
+                _ => DialogResultEnum.Cancel
+            },
+            MessageBoxButtonsEnum.AbortRetryIgnore => result switch
+            {
+                IDABORT => DialogResultEnum.Abort,
+                IDRETRY => DialogResultEnum.Retry,
+                IDIGNORE => DialogResultEnum.Ignore,
+                _ => DialogResultEnum.Cancel
+            },
+            MessageBoxButtonsEnum.RetryCancel => result switch
+            {
+                IDRETRY => DialogResultEnum.Retry,
+                IDCANCEL => DialogResultEnum.Cancel,
+                _ => DialogResultEnum.Cancel
+            },
+            _ => MapDialogResultByPosition(result)
+        };
+    }
+
+    private static DialogResultEnum MapDialogResultByPosition(int result)
     {
         return result switch
         {
