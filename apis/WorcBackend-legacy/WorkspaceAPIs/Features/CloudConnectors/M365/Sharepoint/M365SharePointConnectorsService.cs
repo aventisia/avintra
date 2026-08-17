@@ -314,9 +314,6 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
 
             case nameof(M365SharePointActionsEnum.CopyFile):
                 {
-                    _logger.LogInformation(
-                        "Payload: {@Payload}",
-                        payload);
                     // Read inputs from payload
                     var sourceDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "filePath");
                     var destinationDrivePath = CloudConnectionPayloadUtil.GetValue(payload, "drivePath");
