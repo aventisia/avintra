@@ -1,13 +1,13 @@
+import { ViewContainer, ViewInfoRowsCard } from "@avplatform/ui/components/view-record";
+import { FALLBACK_VALUE } from "@avplatform/ui/constants";
+import { JsonViewer, createCopyJsonAction } from "@avplatform/ui/json-viewer";
+import { ScrollArea } from "@avplatform/ui/scroll";
+import { formatDate } from "@avplatform/ui/utils";
+import { LogsIcon, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
-import {
-  Panel,
-  PanelClose,
-  PanelContent,
-  PanelHeader,
-  PanelTitle,
-} from "@/components/panel/components/Panel";
+import { Panel, PanelClose, PanelContent } from "@/components/panel/components/Panel";
 import { usePanelStore } from "@/components/panel/stores/panel-store";
 import { getLocalExecutionLog } from "@/features/execute-flow/apis/get-version-execution-log";
 import { CANVAS_NODE_DETAIL_PANEL_ID } from "@/features/execute-flow/components/ClearRunResultsPanel";
@@ -15,19 +15,46 @@ import { JobStatusEnum } from "@/features/execute-flow/enums/job-status-enum";
 import { useRunResultsQueryParams } from "@/features/execute-flow/hooks/useRunResultsQueryParams";
 import { useJobDataStore } from "@/features/execute-flow/stores/job-data-store";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
-import FELInputOutput from "@/features/execution-logs/components/FELInputOutput/FELInputOutput";
+import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
 import { NodeDataType } from "@/types/node-data-type";
 
-const formatJson = (data: Record<string, unknown> | undefined) => {
-  if (!data) return "{}";
-  try {
-    return JSON.stringify(data, null, 2);
-  } catch {
-    return "{}";
-  }
+type NodeTiming = {
+  startedAt?: Date;
+  endedAt?: Date;
+  duration?: number;
+};
+
+/** Convert key/value pairs from the stored node log into a plain JSON object. */
+const kvArrayToObject = (
+  entries?: { key: string; value: unknown }[],
+): Record<string, unknown> | undefined => {
+  if (!entries || entries.length === 0) return undefined;
+  return Object.fromEntries(entries.map((entry) => [entry.key, entry.value]));
+};
+
+/** Build the full LAST NODE LOG style payload from a node log plus timing data. */
+const buildNodeLogPayload = (
+  nodeLog: NodeExecutionLogType | null,
+  nodeData: NodeDataType,
+  timing: NodeTiming,
+): Record<string, unknown> => {
+  const inputs = kvArrayToObject(nodeLog?.inputs);
+  const outputs = kvArrayToObject(nodeLog?.outputs);
+
+  return {
+    nodeExecutionId: nodeLog?.nodeExecutionId ?? FALLBACK_VALUE,
+    retryAttempt: nodeLog?.retryAttempt ?? 0,
+    nodeId: nodeLog?.nodeId ?? FALLBACK_VALUE,
+    nodeDisplayName: nodeData.label || nodeData.name || nodeLog?.nodeName || FALLBACK_VALUE,
+    nodeUniqueName: nodeLog?.nodeUniqueName ?? nodeData.type ?? FALLBACK_VALUE,
+    isSuccess: nodeLog?.isSuccess ?? false,
+    duration: nodeLog?.duration ?? timing.duration ?? 0,
+    executedAt: timing.endedAt ? formatDate(timing.endedAt, true) : FALLBACK_VALUE,
+    inputs: inputs ?? {},
+    outputs: outputs ?? {},
+  };
 };
 
 export const CanvasNodeDetailPanel = () => {
@@ -44,14 +71,11 @@ export const CanvasNodeDetailPanel = () => {
       multipleNodesSelected: state.multipleNodesSelected,
     })),
   );
-  const { nodes } = useReactFlowExtStore(
-    useShallow((state) => ({
-      nodes: state.nodes,
-    })),
-  );
-  const { liveExecutionMap } = useLiveExecutionStore(
+
+  const { liveExecutionMap, nodeLogsMap } = useLiveExecutionStore(
     useShallow((state) => ({
       liveExecutionMap: state.liveExecutionMap,
+      nodeLogsMap: state.nodeLogsMap,
     })),
   );
   const { currentFlow } = useCurrentFlowStore(
@@ -65,11 +89,10 @@ export const CanvasNodeDetailPanel = () => {
     })),
   );
 
-  const [latestExecutionNodes, setLatestExecutionNodes] = useState<
-    Record<string, { inputs: Record<string, string>; outputs: Record<string, string> }>
-  >({});
+  const [nodeTimingMap, setNodeTimingMap] = useState<Record<string, NodeTiming>>({});
 
-  // Restore colors and job status from IndexedDB when the page refreshes with the flag.
+  // Restore colors, job status and per-node logs from IndexedDB when the page refreshes
+  // with the run-results flag, so the panel still works after a reload.
   useEffect(() => {
     if (!showRunResults || !currentFlow?.versionId) return;
 
@@ -79,27 +102,66 @@ export const CanvasNodeDetailPanel = () => {
 
       const latestExecution = executions[executions.length - 1];
       const map: Record<string, "success" | "failed"> = {};
-      const nodeMap: Record<
-        string,
-        { inputs: Record<string, string>; outputs: Record<string, string> }
-      > = {};
+      const logMap: Record<string, NodeExecutionLogType> = {};
+      const timingMap: Record<string, NodeTiming> = {};
+      const baseExecutedOn = new Date(latestExecution.executedOn);
 
       latestExecution.nodes.forEach((node) => {
         map[node.nodeId] = node.isSuccess ? "success" : "failed";
-        nodeMap[node.nodeId] = { inputs: node.inputs, outputs: node.outputs };
+        logMap[node.nodeId] = {
+          nodeExecutionId: node.nodeExecutionId,
+          retryAttempt: node.retryAttempt,
+          nodeId: node.nodeId,
+          nodeName: node.nodeName,
+          nodeUniqueName: node.nodeUniqueName,
+          isSuccess: node.isSuccess,
+          duration: node.duration,
+          inputs: Object.entries(node.inputs).map(([key, value]) => ({ key, value })),
+          outputs: Object.entries(node.outputs).map(([key, value]) => ({ key, value })),
+        };
+
+        const startedAt = baseExecutedOn;
+        const endedAt = new Date(startedAt.getTime() + Math.max(0, node.duration) * 1000);
+        timingMap[node.nodeId] = { startedAt, endedAt, duration: node.duration };
       });
 
-      useLiveExecutionStore.setState({ liveExecutionMap: map });
-      setLatestExecutionNodes(nodeMap);
+      useLiveExecutionStore.setState({ liveExecutionMap: map, nodeLogsMap: logMap });
+      setNodeTimingMap(timingMap);
       setJob({
         status: latestExecution.isSuccess ? JobStatusEnum.Completed : JobStatusEnum.Failed,
-        startTime: new Date(latestExecution.executedOn),
+        startTime: baseExecutedOn,
         endTime: new Date(),
       });
     };
 
     void restore();
-  }, [showRunResults, currentFlow?.versionId, setJob, setLatestExecutionNodes]);
+  }, [showRunResults, currentFlow?.versionId, setJob]);
+
+  // Track per-node start/end timing as live RunnerApp status updates arrive.
+  useEffect(() => {
+    const now = new Date();
+    setNodeTimingMap((prev) => {
+      const next = { ...prev };
+      let changed = false;
+
+      Object.entries(liveExecutionMap).forEach(([nodeId, status]) => {
+        const existing = next[nodeId] ?? {};
+        if (status === "running" && !existing.startedAt) {
+          next[nodeId] = { ...existing, startedAt: now };
+          changed = true;
+        } else if ((status === "success" || status === "failed") && !existing.endedAt) {
+          const log = nodeLogsMap[nodeId];
+          const duration =
+            log?.duration ??
+            Math.max(0, (now.getTime() - (existing.startedAt?.getTime() ?? now.getTime())) / 1000);
+          next[nodeId] = { ...existing, endedAt: now, duration };
+          changed = true;
+        }
+      });
+
+      return changed ? next : prev;
+    });
+  }, [liveExecutionMap, nodeLogsMap]);
 
   const selectedNode = useMemo(() => {
     if (multipleNodesSelected || selectedNodes.length !== 1) return null;
@@ -110,29 +172,20 @@ export const CanvasNodeDetailPanel = () => {
     return (selectedNode?.data as NodeDataType) || null;
   }, [selectedNode]);
 
-  const nodeExecution = useMemo(() => {
-    if (!selectedNode || !nodeData) return null;
-    const nodeId = selectedNode.id;
-    if (!liveExecutionMap[nodeId]) return null;
+  const nodeLog = useMemo(() => {
+    if (!selectedNode) return null;
+    return nodeLogsMap[selectedNode.id] ?? null;
+  }, [selectedNode, nodeLogsMap]);
 
-    const nodeFromStore = nodes.find((n) => n.id === nodeId)?.data as NodeDataType | undefined;
-    const nodeLog = latestExecutionNodes[nodeId];
+  const nodeTiming = useMemo(() => {
+    if (!selectedNode) return null;
+    return nodeTimingMap[selectedNode.id] ?? {};
+  }, [selectedNode, nodeTimingMap]);
 
-    const inputs = nodeLog
-      ? nodeLog.inputs
-      : nodeFromStore?.inputs
-        ? Object.fromEntries(nodeFromStore.inputs.map((i) => [i.key, i.value]))
-        : undefined;
-    const outputs = nodeLog
-      ? nodeLog.outputs
-      : nodeFromStore?.outputs
-        ? Object.fromEntries(
-            nodeFromStore.outputs.map((o) => [o.key, o.value.enabled ? o.value.value : undefined]),
-          )
-        : undefined;
-
-    return { nodeId, inputs, outputs };
-  }, [selectedNode, nodeData, liveExecutionMap, nodes, latestExecutionNodes]);
+  const nodeLogPayload = useMemo<Record<string, unknown> | undefined>(() => {
+    if (!nodeData || !selectedNode) return undefined;
+    return buildNodeLogPayload(nodeLog, nodeData, nodeTiming ?? {});
+  }, [nodeData, nodeLog, nodeTiming, selectedNode]);
 
   // Auto-open the panel when a single colored node is selected.
   useEffect(() => {
@@ -155,19 +208,47 @@ export const CanvasNodeDetailPanel = () => {
     }
   }, [closePanel, liveExecutionMap, panels, selectedNode]);
 
-  if (!nodeExecution || !nodeData) {
+  if (!nodeData || !selectedNode || !nodeLog) {
     return null;
   }
 
   return (
-    <Panel id={CANVAS_NODE_DETAIL_PANEL_ID} side="right" width="w-[28rem]" closeOnEscape>
-      <PanelHeader className="pl-4 pr-2">
-        <PanelTitle>{nodeData.name || nodeData.label || "Node details"}</PanelTitle>
-        <PanelClose />
-      </PanelHeader>
-      <PanelContent className="space-y-4 p-4">
-        <FELInputOutput jsonData={formatJson(nodeExecution.inputs)} title="Input" />
-        <FELInputOutput jsonData={formatJson(nodeExecution.outputs)} title="Output" />
+    <Panel id={CANVAS_NODE_DETAIL_PANEL_ID} side="right" width="w-[36rem]" closeOnEscape>
+      <PanelContent className="overflow-hidden py-2 pl-2">
+        <ScrollArea className="h-full w-full">
+          <ViewContainer className="pt-1">
+            {/* Full node log JSON — same design as LAST NODE LOG. Only render once the
+                node has actually completed and produced a log; a running node has no log
+                yet and would otherwise show a card full of fallback placeholders. */}
+            {nodeLog && nodeLogPayload && (
+              <ViewInfoRowsCard
+                title="Node Log"
+                icon={<LogsIcon className="size-3.5 text-muted-foreground" />}
+                action={
+                  <div className="flex items-center gap-1 pr-1">
+                    {createCopyJsonAction(JSON.stringify(nodeLogPayload, null, 2))}
+                    <PanelClose
+                      className="h-6 w-6 p-0 -mr-1.5 text-muted-foreground/60 opacity-60 hover:text-primary hover:opacity-100"
+                      aria-label="Close panel"
+                    >
+                      <X className="size-[1.2rem]" />
+                    </PanelClose>
+                  </div>
+                }
+                className="border-0 bg-transparent p-0 pt-0 shadow-none"
+                headerClassName="px-0"
+                bodyClassName="pt-2 px-0 pr-2"
+              >
+                <JsonViewer
+                  jsonData={JSON.stringify(nodeLogPayload, null, 2)}
+                  enableValueClipboard
+                  viewportClassName=""
+                  shortenTextAfterLength={70}
+                />
+              </ViewInfoRowsCard>
+            )}
+          </ViewContainer>
+        </ScrollArea>
       </PanelContent>
     </Panel>
   );

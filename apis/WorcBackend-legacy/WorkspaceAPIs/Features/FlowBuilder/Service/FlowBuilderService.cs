@@ -121,7 +121,8 @@ public class FlowBuilderService : IFlowBuilderService
                 .Select(s => new FetchSubFlowDto
                 {
                     FlowVersionId = s.Id,
-                    ReactFlowObject = s.ReactFlowObject
+                    ReactFlowObject = s.ReactFlowObject,
+                    InputOutputObject = s.InputOutputObject,
                 })
                 .ToListAsync();
 

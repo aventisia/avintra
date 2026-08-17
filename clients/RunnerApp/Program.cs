@@ -91,12 +91,12 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
                     cts.Cancel();
                     break;
                 case LocalControlCommand.Pause:
-                    DebugLog.Info("Received Pause via local WebSocket.");
-                    pauseResume.Reset();
-                    break;
                 case LocalControlCommand.Resume:
-                    DebugLog.Info("Received Resume via local WebSocket.");
-                    pauseResume.Set();
+                    // Local desktop mode intentionally does not support pause/resume in the
+                    // POC: the Tauri WebSocket is a simple broadcast bus and pause coordination
+                    // across the Studio UI + runner process is not yet hardened. Only Abort is
+                    // honored; Pause/Resume are logged and ignored.
+                    DebugLog.Info($"Received {command} via local WebSocket. Ignoring in local mode.");
                     break;
             }
         };
@@ -115,13 +115,13 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         if (options.IsServiceMode)
         {
             registration = await backendClient.RegisterMachineWithApiKeyAsync(
-                "Windows", options.OsId, options.Username, MachineIdentity.Hostname,
+                "Windows", MachineIdentity.OsId, MachineIdentity.Username, MachineIdentity.Hostname,
                 options.TenantId, options.ApiKey, options.LinkedUsername);
         }
         else
         {
             registration = await backendClient.RegisterMachineAsync(
-                "Windows", options.OsId, options.Username, MachineIdentity.Hostname);
+                "Windows", MachineIdentity.OsId, MachineIdentity.Username, MachineIdentity.Hostname);
         }
 
         var accessToken = registration?.Jwt ?? options.AccessToken;
@@ -280,6 +280,16 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
                     ? s
                     : "no status";
                 DebugLog.Warn($"Node '{nodeLog.NodeName}' ({nodeLog.NodeId}) failed after {nodeLog.Duration:F0}ms. Inputs: {inputs}. Status: {status}");
+            }
+        },
+        // Local mode: push exactly which edge was traversed so Studio can highlight the
+        // path taken and avoid coloring unrelated edges.
+        (edgeId, targetNodeId) =>
+        {
+            if (localWs is not null)
+            {
+                DebugLog.Info($"Edge traversed: {edgeId} -> {targetNodeId}");
+                _ = localWs.PushEdgeTraversedAsync(edgeId, targetNodeId);
             }
         });
     }

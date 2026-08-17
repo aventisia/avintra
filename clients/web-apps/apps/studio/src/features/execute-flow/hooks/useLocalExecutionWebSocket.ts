@@ -40,13 +40,20 @@ interface JobCompletedMessage {
   nodeLogs?: IncomingNodeLog[];
 }
 
+interface EdgeTraversedMessage {
+  type: "edgeTraversed";
+  jobId: string;
+  edgeId: string;
+  targetNodeId: string;
+}
+
 interface ControlMessage {
   type: "control";
   jobId: string;
-  command: "abort" | "pause" | "resume";
+  command: "abort";
 }
 
-export type LocalControlCommand = "abort" | "pause" | "resume";
+export type LocalControlCommand = "abort";
 
 /** Maps the RunnerApp's C# node-log payload into the frontend NodeExecutionLogType. */
 const mapIncomingNodeLog = (log: IncomingNodeLog): NodeExecutionLogType => ({
@@ -67,7 +74,7 @@ const mapIncomingNodeLog = (log: IncomingNodeLog): NodeExecutionLogType => ({
  *
  * Outbound: the RunnerApp pushes `nodeProgress` messages, which we dispatch into the
  * live-execution store so the canvas can render running/spinner → success/fail per node.
- * Inbound: we can send `control` messages (abort/pause/resume) to the RunnerApp.
+ * Inbound: we can send `control` messages (abort only) to the RunnerApp.
  *
  * The Tauri WebSocket server is a broadcast echo bus (every peer sees every message),
  * so all incoming messages are filtered strictly by the current job id.
@@ -118,9 +125,10 @@ export const useLocalExecutionWebSocket = () => {
       socketRef.current = socket;
 
       socket.onmessage = (event) => {
-        let message: NodeProgressMessage | JobCompletedMessage;
+        let message: NodeProgressMessage | JobCompletedMessage | EdgeTraversedMessage;
         try {
-          message = JSON.parse(event.data as string) as NodeProgressMessage | JobCompletedMessage;
+          message = JSON.parse(event.data as string) as
+            NodeProgressMessage | JobCompletedMessage | EdgeTraversedMessage;
         } catch {
           return;
         }
@@ -132,8 +140,12 @@ export const useLocalExecutionWebSocket = () => {
           useLiveExecutionStore.getState().setNodeStatus(message.nodeId, message.status);
           // Capture the final outcome + full log (when provided) so we can persist it.
           if (message.status !== "running" && message.nodeLog) {
-            nodeLogsByNodeId.set(message.nodeId, mapIncomingNodeLog(message.nodeLog));
+            const mappedLog = mapIncomingNodeLog(message.nodeLog);
+            nodeLogsByNodeId.set(message.nodeId, mappedLog);
+            useLiveExecutionStore.getState().setNodeLog(message.nodeId, mappedLog);
           }
+        } else if (message.type === "edgeTraversed") {
+          useLiveExecutionStore.getState().markEdgeTraversed(message.edgeId);
         } else if (message.type === "jobCompleted") {
           // Local (desktop) runs do not get a backend SignalR JobCompleted notification
           // (the runner only calls the REST CloseJob endpoint). The runner pushes this
@@ -155,6 +167,12 @@ export const useLocalExecutionWebSocket = () => {
               message.status === "Completed",
             );
           }
+
+          // Ensure the live node-log map contains the final logs even if they were
+          // bundled only in the jobCompleted payload.
+          nodeLogs.forEach((log) => {
+            useLiveExecutionStore.getState().setNodeLog(log.nodeId, log);
+          });
         }
       };
 
@@ -191,7 +209,7 @@ export const useLocalExecutionWebSocket = () => {
     };
   }, [jobId]);
 
-  /** Sends a control message (abort/pause/resume) to the local RunnerApp. */
+  /** Sends an abort control message to the local RunnerApp. */
   const sendControl = (command: LocalControlCommand) => {
     if (!jobId || !socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
       return;

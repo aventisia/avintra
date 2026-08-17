@@ -2,6 +2,10 @@ using ExecutorLibrary.FlowProcessor.Helpers;
 using ExecutorLibrary.FlowProcessor.State;
 using ExecutorLibrary.Helpers;
 using NodeLibrary.Models;
+using System.Data;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ExecutorLibrary.FlowProcessor;
 
@@ -50,7 +54,8 @@ public class FlowProcessor
         Dictionary<string, object?>? initialVariables = null,
         CancellationToken cancellationToken = default,
         Action<string>? onNodeProgress = null,
-        Action<NodeExecutionLog>? onNodeCompleted = null)
+        Action<NodeExecutionLog>? onNodeCompleted = null,
+        Action<string, string>? onEdgeTraversed = null)
     {
         var startTime = DateTimeOffset.UtcNow;
         var flowExecutionContext = new FlowExecutionContext();
@@ -100,7 +105,7 @@ public class FlowProcessor
 
                 onNodeProgress?.Invoke(node.Id);
 
-                var nextNodeId = await ProcessNodeAndGetNextAsync(
+                var (edgeId, nextNodeId) = await ProcessNodeAndGetNextEdgeAsync(
                     node,
                     flow,
                     flowExecutionContext,
@@ -110,6 +115,11 @@ public class FlowProcessor
                     executionStack,
                     cancellationToken,
                     onNodeCompleted);
+
+                if (!string.IsNullOrWhiteSpace(edgeId) && !string.IsNullOrWhiteSpace(nextNodeId))
+                {
+                    onEdgeTraversed?.Invoke(edgeId, nextNodeId);
+                }
 
                 if (nextNodeId is null)
                 {
@@ -141,7 +151,7 @@ public class FlowProcessor
         }
     }
 
-    private async Task<string?> ProcessNodeAndGetNextAsync(
+    private async Task<(string? EdgeId, string? NextNodeId)> ProcessNodeAndGetNextEdgeAsync(
         ReactFlowNodeModel node,
         ReactFlowDataModel flow,
         FlowExecutionContext flowExecutionContext,
@@ -154,7 +164,8 @@ public class FlowProcessor
     {
         if (node.Data?.IsDisabled == true)
         {
-            return FindNextEdgeTarget(flow, node.Id);
+            var disabledEdge = FindNextEdge(flow, node.Id);
+            return (disabledEdge?.Id, disabledEdge?.Target);
         }
 
         switch (node.Type)
@@ -163,75 +174,108 @@ public class FlowProcessor
             case "plusNode":
             case "mergeBranchesNode":
             case "branchStartNode":
-                return FindNextEdgeTarget(flow, node.Id);
+                var supportEdge = FindNextEdge(flow, node.Id);
+                CompleteSupportNode(node, logs, onNodeCompleted);
+                return (supportEdge?.Id, supportEdge?.Target);
 
             case "branchNode1":
-                return await ProcessBranchNode1Async(node, flow, flowExecutionContext, cancellationToken);
+                var (branchNext, branchLog) = await ProcessBranchNode1Async(node, flow, flowExecutionContext, cancellationToken);
+                var branchEdge = FindNextEdge(flow, node.Id, branchNext);
+                CompleteSupportNode(node, logs, onNodeCompleted, branchLog);
+                return (branchEdge?.Id, branchNext);
 
             case "activityNode":
             case "aiNode":
             case "cloudConnectorNode":
-                return await ProcessExecutableNodeAsync(node, flow, flowExecutionContext, logs, cancellationToken, onNodeCompleted);
+                var execNext = await ProcessExecutableNodeAsync(node, flow, flowExecutionContext, logs, cancellationToken, onNodeCompleted);
+                var execEdge = string.IsNullOrWhiteSpace(execNext) ? null : FindNextEdge(flow, node.Id, execNext);
+                return (execEdge?.Id, execNext);
 
             case "flowEndNode":
-                return null;
+                CompleteSupportNode(node, logs, onNodeCompleted);
+                return (null, null);
 
             case "conditionalNode":
-                return ProcessConditionalNode(node, flow, conditionalStates);
+                var (conditionalNext, routerLog) = ProcessConditionalNode(node, flow, flowExecutionContext, conditionalStates);
+                var conditionalEdge = string.IsNullOrWhiteSpace(conditionalNext) ? null : FindNextEdge(flow, node.Id, conditionalNext);
+                CompleteSupportNode(node, logs, onNodeCompleted, routerLog);
+                return (conditionalEdge?.Id, conditionalNext);
 
             case "branchEndNode":
-                return ProcessBranchEndNode(node, flow, flowExecutionContext, conditionalStates, loopStates);
+                var branchEndNext = ProcessBranchEndNode(node, flow, flowExecutionContext, conditionalStates, loopStates);
+                var branchEndEdge = string.IsNullOrWhiteSpace(branchEndNext) ? null : FindNextEdge(flow, node.Id, branchEndNext);
+                CompleteSupportNode(node, logs, onNodeCompleted);
+                return (branchEndEdge?.Id, branchEndNext);
 
             case "forLoopNode":
-                return ProcessForLoopNode(node, flow, flowExecutionContext, loopStates);
+                var loopNext = ProcessForLoopNode(node, flow, flowExecutionContext, loopStates);
+                var loopEdge = string.IsNullOrWhiteSpace(loopNext) ? null : FindNextEdge(flow, node.Id, loopNext);
+                CompleteSupportNode(node, logs, onNodeCompleted);
+                return (loopEdge?.Id, loopNext);
 
             case "callAgentNode":
             case "blockNode":
-                return await ProcessSubFlowNodeAsync(node, flow, flowExecutionContext, logs, conditionalStates, loopStates, executionStack, cancellationToken);
+                var subFlowNext = await ProcessSubFlowNodeAsync(node, flow, flowExecutionContext, logs, conditionalStates, loopStates, executionStack, cancellationToken);
+                var subFlowEdge = string.IsNullOrWhiteSpace(subFlowNext) ? null : FindNextEdge(flow, node.Id, subFlowNext);
+                return (subFlowEdge?.Id, subFlowNext);
 
             default:
                 throw new InvalidOperationException($"Unknown node type: {node.Type}");
         }
     }
 
-    private Task<string?> ProcessBranchNode1Async(
-        ReactFlowNodeModel node,
+    /// <summary>
+    /// Finds the outgoing edge from <paramref name="sourceNodeId"/> to <paramref name="targetNodeId"/>.
+    /// If <paramref name="targetNodeId"/> is null, returns the first eligible outgoing edge.
+    /// Excludes loop-back edges and branch-return edges.
+    /// </summary>
+    private static ReactFlowEdgeModel? FindNextEdge(
         ReactFlowDataModel flow,
-        FlowExecutionContext flowExecutionContext,
-        CancellationToken cancellationToken)
+        string sourceNodeId,
+        string? targetNodeId = null)
     {
-        var conditionsInput = node.Data?.Inputs?.FirstOrDefault(i =>
-            string.Equals(i.Key, "Conditions", StringComparison.OrdinalIgnoreCase));
+        return flow.Edges.FirstOrDefault(e =>
+            e.Source == sourceNodeId &&
+            !string.Equals(e.Type, "loopBack", StringComparison.OrdinalIgnoreCase) &&
+            !string.Equals(e.SourceHandle, "branch-return", StringComparison.OrdinalIgnoreCase) &&
+            (targetNodeId == null || e.Target == targetNodeId));
+    }
 
-        if (conditionsInput?.Value is null)
+    private static string? FindNextEdgeTarget(ReactFlowDataModel flow, string sourceNodeId)
+    {
+        return FindNextEdge(flow, sourceNodeId)?.Target;
+    }
+
+    /// <summary>
+    /// Marks a non-executable (support) node as completed so consumers such as the local
+    /// WebSocket progress bus can flip the node from running/spinner to success. The log
+    /// is also added to the execution log list so it is included in the final job payload.
+    /// </summary>
+    private static void CompleteSupportNode(
+        ReactFlowNodeModel node,
+        List<NodeExecutionLog> logs,
+        Action<NodeExecutionLog>? onNodeCompleted = null,
+        NodeExecutionLog? resultLog = null)
+    {
+        var log = resultLog ?? new NodeExecutionLog
         {
-            return Task.FromResult(FindNextEdgeTarget(flow, node.Id));
-        }
+            NodeId = node.Id,
+            NodeName = string.IsNullOrWhiteSpace(node.Data?.Label) ? node.Type : node.Data.Label,
+            NodeUniqueName = node.Data?.Name ?? node.Type,
+            IsSuccess = true,
+            Duration = 0,
+            Inputs = node.Data?.Inputs?.ToDictionary(i => i.Key, i => i.Value?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            Outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        };
 
-        List<List<ResolvedConditionModel>>? conditionGroups = null;
+        // Ensure the log is stamped with the node's identity even when a caller provides a result log.
+        log.NodeId = node.Id;
+        log.NodeName = string.IsNullOrWhiteSpace(node.Data?.Label) ? node.Type : node.Data.Label;
+        log.NodeUniqueName = node.Data?.Name ?? node.Type;
 
-        if (conditionsInput.Value is JsonElement jsonElement)
-        {
-            conditionGroups = JsonSerializer.Deserialize<List<List<ResolvedConditionModel>>>(jsonElement.GetRawText());
-        }
-        else if (conditionsInput.Value is List<List<ResolvedConditionModel>> typedGroups)
-        {
-            conditionGroups = typedGroups;
-        }
-
-        if (conditionGroups is null || conditionGroups.Count == 0)
-        {
-            return Task.FromResult(FindNextEdgeTarget(flow, node.Id));
-        }
-
-        var isTrue = ConditionEvaluator.Evaluate(conditionGroups);
-
-        if (isTrue)
-        {
-            return Task.FromResult(FindNextEdgeTarget(flow, node.Id));
-        }
-
-        return Task.FromResult<string?>(null);
+        logs.EnqueueBounded(log, DefaultMaxNodeExecutionLogs);
+        onNodeCompleted?.Invoke(log);
     }
 
     private async Task<string?> ProcessSubFlowNodeAsync(
@@ -256,13 +300,7 @@ public class FlowProcessor
             _ => null
         };
 
-        if (string.IsNullOrWhiteSpace(flowVersionIdStr))
-        {
-            throw new InvalidOperationException($"Sub-flow node '{node.Id}' is missing flow reference.");
-        }
-
-        var segments = flowVersionIdStr.Split(',');
-        if (segments.Length < 1 || !Guid.TryParse(segments[0].Trim(), out var flowVersionId))
+        if (!TryParseFlowVersionId(flowVersionIdStr, out var flowVersionId))
         {
             throw new InvalidOperationException($"Sub-flow node '{node.Id}' has invalid flow version id format: '{flowVersionIdStr}'.");
         }
@@ -271,6 +309,60 @@ public class FlowProcessor
         if (subFlow is null)
         {
             throw new InvalidOperationException($"Sub-flow graph not found for flow version id '{flowVersionId}'.");
+        }
+
+        var subFlowTrigger = subFlow.Nodes.FirstOrDefault(n => IsStartNodeType(n.Type));
+        if (subFlowTrigger is null)
+        {
+            throw new InvalidOperationException($"Sub-flow '{flowVersionId}' has no trigger node.");
+        }
+
+        // Map caller-node inputs into the sub-flow execution context. We first seed the
+        // trigger's declared inputs with their default values, then apply caller-provided
+        // overrides. Any declared input that is required and has neither a default nor a
+        // caller value fails the node with a clear message.
+        var declaredTriggerInputs = ParseTriggerInputs(subFlow.InputOutputObject);
+        var callerInputMap = node.Data?.Inputs
+            ?.Where(i => !string.IsNullOrWhiteSpace(i.Key) && !i.Key.StartsWith('_'))
+            .ToDictionary(i => i.Key, i => i.Value, StringComparer.OrdinalIgnoreCase)
+            ?? new Dictionary<string, object?>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var declaredInput in declaredTriggerInputs)
+        {
+            var key = declaredInput.Name;
+
+            if (callerInputMap.TryGetValue(key, out var callerValue) && callerValue is not null)
+            {
+                var resolvedValue = flowExecutionContext.ResolveTemplateObject(callerValue);
+                flowExecutionContext.Set(key, resolvedValue);
+                continue;
+            }
+
+            if (declaredInput.DefaultValue is not null)
+            {
+                var resolvedDefault = flowExecutionContext.ResolveTemplateObject(declaredInput.DefaultValue);
+                flowExecutionContext.Set(key, resolvedDefault);
+                continue;
+            }
+
+            if (declaredInput.Required)
+            {
+                throw new InvalidOperationException(
+                    $"Sub-flow trigger input '{key}' is required but was not provided by caller node '{node.Id}'.");
+            }
+        }
+
+        // Also apply any caller inputs that are not declared on the trigger, so ad-hoc
+        // context variables passed by the caller are still available inside the sub-flow.
+        foreach (var callerInput in callerInputMap)
+        {
+            if (declaredTriggerInputs.Any(i => string.Equals(i.Name, callerInput.Key, StringComparison.OrdinalIgnoreCase)))
+            {
+                continue;
+            }
+
+            var resolvedValue = flowExecutionContext.ResolveTemplateObject(callerInput.Value);
+            flowExecutionContext.Set(callerInput.Key, resolvedValue);
         }
 
         var frame = new FlowExecutionFrame
@@ -282,14 +374,156 @@ public class FlowProcessor
         };
         executionStack.Push(frame);
 
-        var subFlowTrigger = subFlow.Nodes.FirstOrDefault(n => IsStartNodeType(n.Type));
-        if (subFlowTrigger is null)
-        {
-            throw new InvalidOperationException($"Sub-flow '{flowVersionId}' has no trigger node.");
-        }
-
         return subFlowTrigger.Id;
     }
+
+    private static bool TryParseFlowVersionId(string? raw, out Guid flowVersionId)
+    {
+        flowVersionId = Guid.Empty;
+
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return false;
+        }
+
+        var trimmed = raw.Trim();
+
+        // Modern frontend stores selectedAgent/selectedBlock as a JSON object: { "id": "...", "flowId": "..." }
+        if (trimmed.StartsWith('{') && trimmed.EndsWith('}'))
+        {
+            try
+            {
+                using var document = JsonDocument.Parse(trimmed);
+                if (document.RootElement.TryGetProperty("id", out var idProperty) &&
+                    idProperty.ValueKind == JsonValueKind.String &&
+                    Guid.TryParse(idProperty.GetString(), out var id))
+                {
+                    flowVersionId = id;
+                    return true;
+                }
+
+                // Fallback: some payloads may use flowVersionId as the key.
+                if (document.RootElement.TryGetProperty("flowVersionId", out var flowVersionIdProperty) &&
+                    flowVersionIdProperty.ValueKind == JsonValueKind.String &&
+                    Guid.TryParse(flowVersionIdProperty.GetString(), out var flowVersionIdValue))
+                {
+                    flowVersionId = flowVersionIdValue;
+                    return true;
+                }
+            }
+            catch
+            {
+                // Fall through to legacy parsing.
+            }
+        }
+
+        // Legacy format stored by the backend normalization: "flowId,flowVersionId"
+        var segments = trimmed.Split(',');
+        if (segments.Length >= 1 && Guid.TryParse(segments[0].Trim(), out var legacyId))
+        {
+            flowVersionId = legacyId;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static readonly JsonSerializerOptions s_caseInsensitiveConditionOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: true) }
+    };
+
+    private Task<(string? NextNodeId, NodeExecutionLog Log)> ProcessBranchNode1Async(
+        ReactFlowNodeModel node,
+        ReactFlowDataModel flow,
+        FlowExecutionContext flowExecutionContext,
+        CancellationToken cancellationToken)
+    {
+        var conditionsInput = node.Data?.Inputs?.FirstOrDefault(i =>
+            string.Equals(i.Key, "Conditions", StringComparison.OrdinalIgnoreCase));
+
+        if (conditionsInput?.Value is null)
+        {
+            var passthroughLog = CreateBranchLog(node, null, null);
+            return Task.FromResult((FindNextEdgeTarget(flow, node.Id), passthroughLog));
+        }
+
+        List<List<ResolvedConditionModel>>? conditionGroups = null;
+        string? rawConditionsJson = null;
+
+        if (conditionsInput.Value is JsonElement jsonElement)
+        {
+            rawConditionsJson = jsonElement.GetRawText();
+            conditionGroups = JsonSerializer.Deserialize<List<List<ResolvedConditionModel>>>(rawConditionsJson, s_caseInsensitiveConditionOptions);
+        }
+        else if (conditionsInput.Value is List<List<ResolvedConditionModel>> typedGroups)
+        {
+            conditionGroups = typedGroups;
+        }
+
+        if (conditionGroups is null || conditionGroups.Count == 0)
+        {
+            var passthroughLog = CreateBranchLog(node, null, rawConditionsJson);
+            return Task.FromResult((FindNextEdgeTarget(flow, node.Id), passthroughLog));
+        }
+
+        // Resolve any template placeholders (e.g. {{ButtonPressed}}) in the condition values
+        // so comparisons are made against the actual runtime values rather than raw strings.
+        foreach (var group in conditionGroups)
+        {
+            foreach (var condition in group)
+            {
+                condition.FirstValue = flowExecutionContext.ResolveTemplateObject(condition.FirstValue);
+                condition.SecondValue = flowExecutionContext.ResolveTemplateObject(condition.SecondValue);
+            }
+        }
+
+        var isTrue = ConditionEvaluator.Evaluate(conditionGroups);
+        var resolvedConditionsJson = JsonSerializer.Serialize(conditionGroups, s_caseInsensitiveConditionOptions);
+
+        var log = CreateBranchLog(node, isTrue, rawConditionsJson ?? resolvedConditionsJson, resolvedConditionsJson);
+
+        if (isTrue)
+        {
+            return Task.FromResult((FindNextEdgeTarget(flow, node.Id), log));
+        }
+
+        return Task.FromResult<(string? NextNodeId, NodeExecutionLog Log)>((null, log));
+    }
+
+    private static NodeExecutionLog CreateBranchLog(
+        ReactFlowNodeModel node,
+        bool? conditionResult,
+        string? rawConditions,
+        string? resolvedConditions = null)
+    {
+        var outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        if (conditionResult.HasValue)
+        {
+            outputs["BranchMatched"] = conditionResult.Value.ToString();
+        }
+        if (!string.IsNullOrWhiteSpace(resolvedConditions))
+        {
+            outputs["ResolvedConditions"] = resolvedConditions;
+        }
+
+        return new NodeExecutionLog
+        {
+            NodeId = node.Id,
+            NodeName = string.IsNullOrWhiteSpace(node.Data?.Label) ? node.Type : node.Data.Label,
+            NodeUniqueName = node.Data?.Name ?? node.Type,
+            IsSuccess = true,
+            Duration = 0,
+            Inputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Conditions"] = rawConditions ?? JsonSerializer.Serialize(node.Data?.Inputs?.FirstOrDefault(i =>
+                    string.Equals(i.Key, "Conditions", StringComparison.OrdinalIgnoreCase))?.Value)
+            },
+            Outputs = outputs
+        };
+    }
+
 
     private async Task<string?> ProcessExecutableNodeAsync(
         ReactFlowNodeModel node,
@@ -340,19 +574,10 @@ public class FlowProcessor
         return FindNextEdgeTarget(flow, node.Id);
     }
 
-    private static string? FindNextEdgeTarget(ReactFlowDataModel flow, string sourceNodeId)
-    {
-        var edge = flow.Edges.FirstOrDefault(e =>
-            e.Source == sourceNodeId &&
-            !string.Equals(e.Type, "loopBack", StringComparison.OrdinalIgnoreCase) &&
-            !string.Equals(e.SourceHandle, "branch-return", StringComparison.OrdinalIgnoreCase));
-
-        return edge?.Target;
-    }
-
-    private string? ProcessConditionalNode(
+    private (string? NextNodeId, NodeExecutionLog Log) ProcessConditionalNode(
         ReactFlowNodeModel node,
         ReactFlowDataModel flow,
+        FlowExecutionContext flowExecutionContext,
         Dictionary<string, ConditionalBranchState> conditionalStates)
     {
         if (!conditionalStates.TryGetValue(node.Id, out var state))
@@ -363,24 +588,175 @@ public class FlowProcessor
                 throw new InvalidOperationException($"Conditional node '{node.Id}' is missing merge node id.");
             }
 
-            var branches = ResolveConditionalBranches(node, flow, mergeNodeId);
+            var conditionalMode = GetConditionalMode(node);
+            var allBranches = ResolveConditionalBranches(node, flow, mergeNodeId);
+            var branchStartNodes = allBranches
+                .Select(b => flow.Nodes.FirstOrDefault(n => n.Id == b))
+                .Where(n => n is not null)
+                .ToList();
+
+            // Evaluate each case branch in order and record the result so the router log is
+            // useful for debugging.
+            string? defaultBranchId = null;
+            var matchingBranchIds = new List<string>();
+            var branchEvaluations = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var branchNode in branchStartNodes)
+            {
+                var branchId = branchNode!.Id;
+                var isDefault = string.Equals(branchNode.Data.Name, "DefaultBranch", StringComparison.OrdinalIgnoreCase);
+                if (isDefault)
+                {
+                    defaultBranchId ??= branchId;
+                    branchEvaluations[branchId] = "default";
+                    continue;
+                }
+
+                var matched = EvaluateBranchConditions(branchNode, flowExecutionContext);
+                branchEvaluations[branchId] = matched.ToString();
+                if (matched)
+                {
+                    matchingBranchIds.Add(branchId);
+                }
+            }
+
+            // Determine which branches to execute based on the configured mode.
+            // SwitchCase: first matching case branch, or the default if none matched.
+            // NestedIfElse: every matching case branch in order, plus the default branch
+            // regardless of whether any case matched.
+            var selectedBranches = new Queue<string>();
+            var isNestedIfElse = string.Equals(conditionalMode, "NestedIfElse", StringComparison.OrdinalIgnoreCase);
+            if (matchingBranchIds.Count > 0)
+            {
+                foreach (var branchId in matchingBranchIds)
+                {
+                    selectedBranches.Enqueue(branchId);
+                    if (!isNestedIfElse)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (isNestedIfElse && !string.IsNullOrWhiteSpace(defaultBranchId))
+            {
+                selectedBranches.Enqueue(defaultBranchId);
+            }
+            else if (matchingBranchIds.Count == 0 && !string.IsNullOrWhiteSpace(defaultBranchId))
+            {
+                selectedBranches.Enqueue(defaultBranchId);
+            }
+
+            var selectedBranchId = selectedBranches.Count > 0 ? selectedBranches.Peek() : null;
+            var conditionalModeForLog = string.IsNullOrWhiteSpace(conditionalMode) ? "SwitchCase" : conditionalMode;
+
             state = new ConditionalBranchState
             {
                 Id = node.Id,
                 MergeBranchesNodeId = mergeNodeId,
-                RemainingBranches = new Queue<string>(branches)
+                ConditionalMode = conditionalModeForLog,
+                SelectedBranchId = selectedBranchId,
+                BranchEvaluations = branchEvaluations,
+                RemainingBranches = selectedBranches
             };
             conditionalStates[node.Id] = state;
         }
 
+        var routerLog = CreateRouterLog(node, state);
+
         if (state.RemainingBranches.Count == 0)
         {
             conditionalStates.Remove(node.Id);
-            return state.MergeBranchesNodeId;
+            return (state.MergeBranchesNodeId, routerLog);
         }
 
         state.ExecutedBranchesCount++;
-        return state.RemainingBranches.Dequeue();
+        var nextNodeId = state.RemainingBranches.Dequeue();
+        return (nextNodeId, routerLog);
+    }
+
+    private static string GetConditionalMode(ReactFlowNodeModel node)
+    {
+        var modeInput = node.Data?.Inputs?.FirstOrDefault(i =>
+            string.Equals(i.Key, "ConditionalMode", StringComparison.OrdinalIgnoreCase));
+        if (modeInput?.Value is null)
+        {
+            return "SwitchCase";
+        }
+
+        if (modeInput.Value is JsonElement jsonElement)
+        {
+            return jsonElement.ValueKind == JsonValueKind.String
+                ? jsonElement.GetString() ?? "SwitchCase"
+                : jsonElement.ToString() ?? "SwitchCase";
+        }
+
+        return modeInput.Value.ToString() ?? "SwitchCase";
+    }
+
+    private static NodeExecutionLog CreateRouterLog(ReactFlowNodeModel node, ConditionalBranchState state)
+    {
+        var outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["SelectedBranchId"] = state.SelectedBranchId ?? "none",
+            ["ExecutedBranchesCount"] = state.ExecutedBranchesCount.ToString()
+        };
+
+        foreach (var evaluation in state.BranchEvaluations)
+        {
+            outputs[$"Branch_{evaluation.Key}_Matched"] = evaluation.Value;
+        }
+
+        return new NodeExecutionLog
+        {
+            NodeId = node.Id,
+            NodeName = string.IsNullOrWhiteSpace(node.Data?.Label) ? node.Type : node.Data.Label,
+            NodeUniqueName = node.Data?.Name ?? node.Type,
+            IsSuccess = true,
+            Duration = 0,
+            Inputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["ConditionalMode"] = state.ConditionalMode
+            },
+            Outputs = outputs
+        };
+    }
+
+    private static bool EvaluateBranchConditions(ReactFlowNodeModel branchNode, FlowExecutionContext context)
+    {
+        var conditionsInput = branchNode.Data?.Inputs?.FirstOrDefault(i =>
+            string.Equals(i.Key, "Conditions", StringComparison.OrdinalIgnoreCase));
+
+        if (conditionsInput?.Value is null)
+        {
+            return false;
+        }
+
+        List<List<ResolvedConditionModel>>? conditionGroups = null;
+
+        if (conditionsInput.Value is JsonElement jsonElement)
+        {
+            conditionGroups = JsonSerializer.Deserialize<List<List<ResolvedConditionModel>>>(jsonElement.GetRawText(), s_caseInsensitiveConditionOptions);
+        }
+        else if (conditionsInput.Value is List<List<ResolvedConditionModel>> typedGroups)
+        {
+            conditionGroups = typedGroups;
+        }
+
+        if (conditionGroups is null || conditionGroups.Count == 0)
+        {
+            return false;
+        }
+
+        foreach (var group in conditionGroups)
+        {
+            foreach (var condition in group)
+            {
+                condition.FirstValue = context.ResolveTemplateObject(condition.FirstValue);
+                condition.SecondValue = context.ResolveTemplateObject(condition.SecondValue);
+            }
+        }
+
+        return ConditionEvaluator.Evaluate(conditionGroups);
     }
 
     private string? ProcessBranchEndNode(
@@ -428,21 +804,16 @@ public class FlowProcessor
                 loopState.CurrentIndex++;
                 if (loopState.CurrentIndex < loopState.TotalCount)
                 {
-                    var listVar = loopState.ListVariableName;
-                    if (!string.IsNullOrWhiteSpace(listVar) && flowExecutionContext.TryGet<object?>(listVar, out var listObj) && listObj is System.Collections.IEnumerable enumerable)
+                    if (TryResolveForEachList(flowExecutionContext, loopState.ListVariableName, out var list))
                     {
-                        var index = 0;
-                        foreach (var item in enumerable)
+                        var typedList = list.Cast<object?>().ToList();
+                        if (loopState.CurrentIndex < typedList.Count)
                         {
-                            if (index == loopState.CurrentIndex)
-                            {
-                                if (!string.IsNullOrWhiteSpace(loopState.ItemVariableName))
-                                    flowExecutionContext.Set(loopState.ItemVariableName, item);
-                                if (!string.IsNullOrWhiteSpace(loopState.ItemIndexVariableName))
-                                    flowExecutionContext.Set(loopState.ItemIndexVariableName, loopState.CurrentIndex);
-                                break;
-                            }
-                            index++;
+                            var item = typedList[loopState.CurrentIndex];
+                            if (!string.IsNullOrWhiteSpace(loopState.ItemVariableName))
+                                flowExecutionContext.Set(loopState.ItemVariableName, item);
+                            if (!string.IsNullOrWhiteSpace(loopState.ItemIndexVariableName))
+                                flowExecutionContext.Set(loopState.ItemIndexVariableName, loopState.CurrentIndex);
                         }
                     }
                     return loopState.LoopBodyStartNodeId;
@@ -494,14 +865,14 @@ public class FlowProcessor
                 var listVarName = node.Data?.Inputs?.FirstOrDefault(i =>
                     string.Equals(i.Key, "ListVariableName", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? string.Empty;
 
-                var itemVarName = node.Data?.Inputs?.FirstOrDefault(i =>
-                    string.Equals(i.Key, "ItemVariableName", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? string.Empty;
+                // ItemVariableName / ItemIndexVariableName are declared on the loop node's
+                // outputs (each output.Value.Value holds the variable alias, e.g. "CurrentItem").
+                var itemVarName = GetLoopOutputAlias(node, "ItemVariableName");
 
-                var indexVarName = node.Data?.Inputs?.FirstOrDefault(i =>
-                    string.Equals(i.Key, "ItemIndexVariableName", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? string.Empty;
+                var indexVarName = GetLoopOutputAlias(node, "ItemIndexVariableName");
 
                 var totalCount = 0;
-                if (!string.IsNullOrWhiteSpace(listVarName) && flowExecutionContext.TryGet<object?>(listVarName, out var listObj) && listObj is System.Collections.IEnumerable enumerable)
+                if (TryResolveForEachList(flowExecutionContext, listVarName, out var enumerable))
                 {
                     var list = enumerable.Cast<object?>().ToList();
                     totalCount = list.Count;
@@ -566,6 +937,21 @@ public class FlowProcessor
         return loopState.LoopBodyStartNodeId;
     }
 
+    /// <summary>
+    /// Reads a loop output variable alias from the loop node's declared outputs. The frontend
+    /// stores variable aliases such as ItemVariableName/ItemIndexVariableName on the loop node's
+    /// outputs collection, where the alias is carried by each output's Value.Value (e.g. "CurrentItem").
+    /// Falls back to the output key itself when the value is empty.
+    /// </summary>
+    private static string GetLoopOutputAlias(ReactFlowNodeModel node, string outputKey)
+    {
+        var output = node.Data?.Outputs?.FirstOrDefault(o =>
+            string.Equals(o.Key, outputKey, StringComparison.OrdinalIgnoreCase));
+
+        var alias = output?.Value?.Value?.Replace("{{", string.Empty).Replace("}}", string.Empty).Trim();
+        return string.IsNullOrWhiteSpace(alias) ? output?.Key ?? string.Empty : alias;
+    }
+
     private static IReadOnlyList<string> ResolveConditionalBranches(
         ReactFlowNodeModel conditionalNode,
         ReactFlowDataModel flow,
@@ -604,6 +990,60 @@ public class FlowProcessor
         }
 
         return edge.Target;
+    }
+
+    /// <summary>
+    /// Resolves a ForEach list reference. The value may be a literal list object, a template
+    /// expression like <tt>{{RandomNumbers}}</tt>, or a variable name. Returns true when an
+    /// enumerable collection (other than a string) is found.
+    /// </summary>
+    private static bool TryResolveForEachList(
+        FlowExecutionContext flowExecutionContext,
+        string listVarName,
+        out System.Collections.IEnumerable enumerable)
+    {
+        enumerable = Array.Empty<object?>();
+
+        if (string.IsNullOrWhiteSpace(listVarName))
+        {
+            return false;
+        }
+
+        var resolved = flowExecutionContext.ResolveTemplateObject(listVarName);
+        var listObj = resolved;
+
+        if (resolved is string key && !string.IsNullOrWhiteSpace(key))
+        {
+            if (!flowExecutionContext.TryGet(key, out listObj) || listObj is null)
+            {
+                return false;
+            }
+        }
+
+        if (listObj is null)
+        {
+            return false;
+        }
+
+        if (listObj is System.Data.DataTable dt)
+        {
+            enumerable = dt.Rows;
+            return true;
+        }
+
+        if (listObj is System.Data.DataRowCollection rowCollection)
+        {
+            enumerable = rowCollection;
+            return true;
+        }
+
+        if (listObj is System.Collections.IEnumerable en && listObj is not string)
+        {
+            enumerable = en;
+            return true;
+        }
+
+        return false;
     }
 
     private static bool IsStartNodeType(string? nodeType)
@@ -671,4 +1111,42 @@ public class FlowProcessor
 
         return snapshot.Count > 0 ? snapshot : null;
     }
+
+    private static List<TriggerInputSchema> ParseTriggerInputs(string? inputOutputObjectJson)
+    {
+        if (string.IsNullOrWhiteSpace(inputOutputObjectJson))
+        {
+            return [];
+        }
+
+        try
+        {
+            var entries = JsonSerializer.Deserialize<List<InputOutputSchemaEntry>>(inputOutputObjectJson, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+            });
+
+            if (entries is null)
+            {
+                return [];
+            }
+
+            return entries
+                .Where(e => string.Equals(e.Direction, "Input", StringComparison.OrdinalIgnoreCase))
+                .Select(e => new TriggerInputSchema(e.Name, e.DefaultValue, e.Required))
+                .ToList();
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
+    }
+
+    private sealed record InputOutputSchemaEntry(
+        [property: JsonPropertyName("name")] string Name,
+        [property: JsonPropertyName("direction")] string Direction,
+        [property: JsonPropertyName("defaultValue")] object? DefaultValue = null,
+        [property: JsonPropertyName("required")] bool Required = false);
+
+    private sealed record TriggerInputSchema(string Name, object? DefaultValue, bool Required);
 }

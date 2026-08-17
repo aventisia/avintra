@@ -144,12 +144,12 @@ public class RunnerAppService : BackgroundService
         {
             // Long-lived registration using the tenant API key. Refreshed each cycle.
             return await registerClient.RegisterMachineWithApiKeyAsync(
-                "Windows", _options.OsId, _options.Username, MachineIdentity.Hostname,
+                "Windows", MachineIdentity.OsId, MachineIdentity.Username, MachineIdentity.Hostname,
                 _options.TenantId, _options.ApiKey, _options.LinkedUsername, cancellationToken);
         }
 
         return await registerClient.RegisterMachineAsync(
-            "Windows", _options.OsId, _options.Username, MachineIdentity.Hostname, cancellationToken);
+            "Windows", MachineIdentity.OsId, MachineIdentity.Username, MachineIdentity.Hostname, cancellationToken);
     }
 
     private async Task ConnectHubWithRetryAsync(IOrchestratorHubClient hubClient, CancellationToken cancellationToken)

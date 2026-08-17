@@ -24,5 +24,11 @@ public enum DialogResultEnum
     Retry,
 
     [Display(Name = "Ignore", Description = "Represents the Ignore button in a dialog.")]
-    Ignore
+    Ignore,
+
+    [Display(Name = "Yes", Description = "Represents the Yes button in a dialog.")]
+    Yes,
+
+    [Display(Name = "No", Description = "Represents the No button in a dialog.")]
+    No
 }

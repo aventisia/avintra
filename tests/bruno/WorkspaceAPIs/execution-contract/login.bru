@@ -1,0 +1,29 @@
+meta {
+  name: Login and obtain access token
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/auth/login
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+      "email": "{{MY_EMAIL}}",
+      "pwd": "{{MY_PWD}}"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() == 200 && res.getBody()?.data?.accessToken) {
+      bru.setGlobalEnvVar("ACCESS_TOKEN", res.getBody().data.accessToken);
+  }
+}
+
+docs {
+  > This request must run first to populate `ACCESS_TOKEN` for the rest of the folder.
+  > Set `MY_EMAIL` and `MY_PWD` via a Bruno environment or collection secret. Do not commit real credentials.
+}

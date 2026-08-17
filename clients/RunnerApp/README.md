@@ -5,18 +5,36 @@
 ## Architecture
 
 ```
-┌─────────────────┐      ┌──────────────────────────────┐      ┌──────────────────────┐
-│   React UI      │      │     WorkspaceAPIs (.NET 8)    │      │   RunnerApp        │
-│ (viewer / ctrl) │◄────►│  - job state machine          │◄────►│  (.NET 8 console)    │
-│                 │      │  - execution graph endpoint    │      │                      │
-│                 │      │  - log ingestion endpoint      │      │  - fetches graph     │
-│                 │      │  - SignalR command routing     │      │  - runs flow         │
-│                 │      │  - real-time notifications     │      │  - holds COM state   │
-└─────────────────┘      └──────────────────────────────┘      │  - reports logs      │
-                                                                 └──────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│                              Desktop app (Tauri + React)                                 │
+│  ┌────────────────────────┐    ┌──────────────────────────┐    ┌─────────────────────┐ │
+│  │ Studio React UI        │    │ Tauri in-process WS bus  │    │ launch_runner_app   │ │
+│  │ - execute button       │◄──►│ 127.0.0.1:0 broadcast/echo│───►│ - spawns RunnerApp   │ │
+│  │ - abort button         │    │ - node progress           │    │ - passes jobId/token│ │
+│  │ - per-node live status │    │ - abort control           │    │ - passes WS port    │ │
+│  └────────────────────────┘    └──────────────────────────┘    └─────────────────────┘ │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
+                                          │
+                                          ▼
+┌──────────────────────────────┐      ┌──────────────────────┐      ┌─────────────────┐
+│     WorkspaceAPIs (.NET 8)    │◄────►│   RunnerApp (.NET 8)  │      │  Office / UI    │
+│  - execution graph endpoint    │      │  - fetches graph      │◄────►│  automation     │
+│  - job start/close             │      │  - runs flow          │      │  (Excel, etc.)  │
+│  - log ingestion endpoint      │      │  - pushes WS progress │      │                 │
+│  - SignalR command routing*     │      │  - closes job         │      │                 │
+│  - real-time notifications*     │      │                       │      │                 │
+└──────────────────────────────┘      └──────────────────────┘      └─────────────────┘
 ```
 
-The executor connects to the backend's `OrchestratorHub` (SignalR) to receive commands (`Initiate`, `Abort`, `Pause`, `Resume`, `Killed`). If SignalR is unavailable, it falls back to HTTP polling with a 30-second timeout.
+\* SignalR / server-mode command routing is present in the codebase but is **not used by the
+local desktop flow**. For local desktop runs, the Tauri app launches RunnerApp in local mode
+(`--jobId`, `--accessToken`, `--websocketPort`) and all control/progress messages travel over
+the in-process Tauri WebSocket. Server mode remains available for future long-lived Windows
+service deployments.
+
+The executor supports backend `OrchestratorHub` (SignalR) commands (`Initiate`, `Abort`, `Pause`,
+`Resume`, `Killed`) in server/service mode. If SignalR is unavailable, it falls back to HTTP
+polling with a 30-second timeout.
 
 ## Prerequisites
 
@@ -42,28 +60,30 @@ dotnet build clients/RunnerApp/RunnerApp.csproj
 
 The CI/CD pipeline uploads the zip to `/var/www/aventisia.com/files/binaries/` and the scripts to `/var/www/aventisia.com/files/scripts/` on each target server.
 
-## Run (Console Mode)
+## Run (Local Desktop Mode)
+
+For local development and desktop-app flows, launch RunnerApp from the Tauri desktop app
+or manually with the local WebSocket port:
 
 ```sh
 dotnet run --project clients/RunnerApp/RunnerApp.csproj -- \
   --appBaseUrl https://your-backend \
   --accessToken <jwt-token> \
   --jobId <job-guid> \
-  [--osId <machine-id>] \
-  [--username <user>] \
-  [--appVersion <version>]
+  --websocketPort <tauri-ws-port>
 ```
 
 ### Arguments
 
-| Argument        | Required | Description                                                |
-| --------------- | -------- | ---------------------------------------------------------- |
-| `--appBaseUrl`  | Yes      | Backend API base URL (e.g. `https://avdev.aventisia.com`)  |
-| `--accessToken` | Yes      | JWT access token for authentication                        |
-| `--jobId`       | Yes      | Job ID to execute                                          |
-| `--osId`        | No       | Machine OS identifier (default: `Environment.MachineName`) |
-| `--username`    | No       | Machine username (default: `Environment.UserName`)         |
-| `--appVersion`  | No       | App version (default: `1.0.0`)                             |
+| Argument          | Required | Description                                               |
+| ----------------- | -------- | --------------------------------------------------------- |
+| `--appBaseUrl`    | Yes      | Backend API base URL (e.g. `https://avdev.aventisia.com`) |
+| `--accessToken`   | Yes      | JWT access token for authentication                       |
+| `--jobId`         | Yes      | Job ID to execute                                         |
+| `--websocketPort` | No       | Local Tauri WebSocket port for progress + abort control   |
+
+`osId`, `username`, and `hostname` are detected at runtime from the local machine and are no
+longer accepted as CLI arguments.
 
 ## Run as Windows Service
 
@@ -205,12 +225,6 @@ clients/RunnerApp/
 - **Windows** — Full support including COM interop (Excel, Word) and UI automation (FlaUI)
 - **Linux / Mac** — Cross-platform nodes only; Windows-only nodes are skipped at runtime
 
-## Related
-
-- `RUNNER_APP_PLAN.md` — Full migration plan and phase breakdown
-- `apis/WorcBackend-legacy/WorkspaceAPIs/Features/ExecuteFlow/` — Backend execution APIs
-- `apis/WorcBackend-legacy/WorkspaceAPIs/Hubs/OrchestratorHub.cs` — SignalR hub for machine communication
-
 ## Usage
 
 ```powershell
@@ -229,18 +243,8 @@ AvintraRunnerService.exe --run --service --appBaseUrl <url> --apiKey <key> --ten
 AvintraRunnerApp.exe --run --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> --persist [options]
 ```
 
-# Single job (console)
+## Related
 
-RunnerApp --run --appBaseUrl <url> --accessToken <token> --jobId <guid> [options]
-
-# Windows service
-
-RunnerApp --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> [options]
-
-# Desktop App sidecar (bundled with the builder app)
-
-RunnerApp --run --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> --persist [options]
-
-```
-
-```
+- `RUNNER_APP_PLAN.md` — Full migration plan and phase breakdown
+- `apis/WorcBackend-legacy/WorkspaceAPIs/Features/ExecuteFlow/` — Backend execution APIs
+- `apis/WorcBackend-legacy/WorkspaceAPIs/Hubs/OrchestratorHub.cs` — SignalR hub for machine communication

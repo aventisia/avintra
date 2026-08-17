@@ -31,8 +31,8 @@ public class DisplayMessageNode : BaseNode
     [RenderIfCondition(nameof(AutoClose), true)]
     public InArgument<int> Timeout { get; set; } = new InArgument<int>(0);
 
-    [DisplayName("Button Pressed"), Description("True if a button was pressed.")]
-    public OutArgument<bool> ButtonPressed { get; set; } = new OutArgument<bool>();
+    [DisplayName("Button Pressed"), Description("The result indicating which button was pressed by the user.")]
+    public OutArgument<DialogResultEnum> ButtonPressed { get; set; } = new OutArgument<DialogResultEnum>();
 
     protected override void Execute(INodeContext context)
     {
@@ -71,8 +71,7 @@ public class DisplayMessageNode : BaseNode
                 result = DialogResultEnum.OK;
             }
 
-            bool buttonPressed = result != DialogResultEnum.Cancel;
-            ButtonPressed.Set(context, buttonPressed);
+            ButtonPressed.Set(context, result);
             status = autoClose && timeout > 0
                 ? $"Message box closed with result: {result}. AutoClose ({timeout}s) is not supported in .NET 8 native mode."
                 : $"Message box closed with result: {result}";

@@ -1,7 +1,9 @@
 // import { EDGE_BORDER_RADIUS } from "@/constants";
+import { cn } from "@avplatform/ui/lib";
 import { BaseEdge, EdgeProps, getBezierPath, useReactFlow } from "@xyflow/react";
 import { memo } from "react";
 
+import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
 
 import { ChevronMarkerEnd } from "./ChevronMarkerEnd";
@@ -24,6 +26,10 @@ export const CustomStepEdge = memo(
     const { getNode, getEdge } = useReactFlow();
     const nodeType = getNode(getEdge(id)?.target ?? "")?.type;
 
+    const isLiveEdgeActive = useLiveExecutionStore(
+      (state) => state.liveTraversedEdges[id] === true,
+    );
+
     const [edgePath, labelX, labelY] = getBezierPath({
       sourceX,
       sourceY,
@@ -37,17 +43,20 @@ export const CustomStepEdge = memo(
 
     const isAgentHistory = useIsVersionHistoryRoute();
 
+    const stroke = isLiveEdgeActive ? "#22c55e" : "#94a3b8";
+    const statusClass = isLiveEdgeActive ? "edge-success" : "";
+
     return (
       <>
         {markerEnd && nodeType !== "flowEndNode" ? (
-          <ChevronMarkerEnd edgeId={id} stroke="#94a3b8" />
+          <ChevronMarkerEnd edgeId={id} stroke={stroke} />
         ) : null}
         <BaseEdge
           id={id}
           path={edgePath}
           markerEnd={markerEnd}
           style={style}
-          className="stroke-1"
+          className={cn("stroke-1 ", statusClass)}
         />
         {label && !isAgentHistory ? (
           <EdgeLabelContainer

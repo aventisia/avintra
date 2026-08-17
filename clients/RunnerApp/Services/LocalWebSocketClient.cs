@@ -74,6 +74,22 @@ public sealed class LocalWebSocketClient : IAsyncDisposable
         return SendAsync(payload, ct);
     }
 
+    /// <summary>Pushes an edge-traversed message so Studio can highlight exactly the path taken.</summary>
+    public Task PushEdgeTraversedAsync(
+        string edgeId,
+        string targetNodeId,
+        CancellationToken ct = default)
+    {
+        var payload = JsonSerializer.Serialize(new
+        {
+            type = "edgeTraversed",
+            jobId = _jobId,
+            edgeId,
+            targetNodeId
+        });
+        return SendAsync(payload, ct);
+    }
+
     /// <summary>
     /// Pushes a terminal job-status message to the Studio app over the local WS so it can
     /// reset its UI (e.g. return the execute button to its play state). Unlike the per-node

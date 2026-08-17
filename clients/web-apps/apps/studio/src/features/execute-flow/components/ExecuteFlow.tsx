@@ -33,6 +33,7 @@ import { useLocalExecutionWebSocket } from "../hooks/useLocalExecutionWebSocket"
 import { useRunResultsQueryParams } from "../hooks/useRunResultsQueryParams";
 import { useJobDataStore } from "../stores/job-data-store";
 import { useLiveExecutionStore } from "../stores/live-execution-store";
+import { clearExecutionLogForVersion } from "../utils/save-node-execution-log";
 
 const ExecuteFlow = () => {
   const [isStarting, setIsStarting] = useState<boolean>(false);
@@ -200,12 +201,18 @@ const ExecuteFlow = () => {
           isPublished: false,
         });
 
+        // Reset the live-execution map and wipe the previous run's persisted logs for
+        // this flow BEFORE showing the run-results panel, so CanvasNodeDetailPanel's
+        // restore effect does not immediately re-apply stale green/failed colors.
+        useLiveExecutionStore.getState().resetLiveExecution();
+        if (currentFlow.versionId) {
+          await clearExecutionLogForVersion(currentFlow.versionId);
+        }
+
         setCurrentFlow({ ...currentFlow, jobId: jobRes.data.id });
         setJobId(jobRes.data.id);
         setShowRunResults(true);
         updateField("startTime", executionStartTime);
-        // Clear any stale live node statuses before the new run begins.
-        useLiveExecutionStore.getState().resetLiveExecution();
 
         // Launch the runner app as a sidecar to run the flow on this machine.
         // The runner is provisioned (downloaded/updated) when the desktop app

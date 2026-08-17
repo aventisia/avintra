@@ -5,4 +5,6 @@ public class FetchSubFlowDto
     public Guid FlowVersionId { get; set; }
 
     public string? ReactFlowObject { get; set; }
+
+    public string? InputOutputObject { get; set; }
 }

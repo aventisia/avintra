@@ -1,7 +1,15 @@
 use serde::Serialize;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
-use std::process::{Command, Stdio};
+use std::process::{Child, Command, Stdio};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
+use std::time::Duration;
+
+static RUNNER_ACTIVE: AtomicBool = AtomicBool::new(false);
+static LAST_RUNNER_CHILD: std::sync::LazyLock<Arc<Mutex<Option<Child>>>> =
+    std::sync::LazyLock::new(|| Arc::new(Mutex::new(None)));
+static RUNNER_EXIT_HANDLE: Mutex<Option<std::thread::JoinHandle<()>>> = Mutex::new(None);
 
 #[tauri::command]
 pub fn launch_runner_app(
@@ -21,9 +29,24 @@ pub fn launch_runner_app(
     // server (websocket::get_websocket_port) rather than passed through the frontend,
     // and forwarded so the runner can push node progress and receive abort/pause/resume
     // control messages.
+
+    // Guard against concurrent local executions from the same desktop session.
+    // The Tauri local WS server is a broadcast bus; running two jobs at once makes
+    // progress/control messages ambiguous. This flag resets if the desktop app restarts.
+    if RUNNER_ACTIVE
+        .compare_exchange(false, true, Ordering::SeqCst, Ordering::SeqCst)
+        .is_err()
+    {
+        return Err(
+            "A local runner is already active. Wait for it to finish or restart the desktop app."
+                .to_string(),
+        );
+    }
+
     let runner_app_path = crate::runner_management::runner_exe_path()?;
 
     if !runner_app_path.exists() {
+        RUNNER_ACTIVE.store(false, Ordering::SeqCst);
         return Err(format!(
             "Runner is not installed at: {}",
             runner_app_path.display()
@@ -34,7 +57,7 @@ pub fn launch_runner_app(
     cmd.arg("--appBaseUrl")
         .arg(app_base_url)
         .arg("--jobId")
-        .arg(job_id)
+        .arg(&job_id)
         .arg("--accessToken")
         .arg(access_token);
 
@@ -50,9 +73,45 @@ pub fn launch_runner_app(
     cmd.stdout(Stdio::from(open_runner_log()?))
         .stderr(Stdio::from(open_runner_log()?));
 
-    cmd.spawn()
-        .map_err(|e| format!("Failed to start the runner: {}", e))?;
-    Ok(())
+    // Spawn and clear the guard if the process fails to start. If it succeeds,
+    // spawn a background thread that waits for the child to exit and then clears
+    // RUNNER_ACTIVE so the next run can be launched without restarting the desktop app.
+    match cmd.spawn() {
+        Ok(child) => {
+            // The reaper thread owns waiting. We move the Child handle into a static
+            // mutex so a single long-lived thread can wait for the process to exit.
+            // Do NOT call wait() on the main thread; we must return to the frontend
+            // immediately after spawning.
+            let mut child_guard = LAST_RUNNER_CHILD.lock().map_err(|e| e.to_string())?;
+            *child_guard = Some(child);
+            drop(child_guard);
+
+            let mut handle_guard = RUNNER_EXIT_HANDLE.lock().map_err(|e| e.to_string())?;
+            if handle_guard.is_none() {
+                let child_arc = Arc::clone(&LAST_RUNNER_CHILD);
+                *handle_guard = Some(std::thread::spawn(move || {
+                    loop {
+                        let mut child_guard = child_arc.lock().unwrap();
+                        if let Some(mut child) = child_guard.take() {
+                            drop(child_guard); // release lock while blocking on wait()
+                            let _ = child.wait();
+                            RUNNER_ACTIVE.store(false, Ordering::SeqCst);
+                        } else {
+                            // No child currently stored; idle until next spawn. Keep the
+                            // thread alive with a brief sleep to avoid busy-waiting.
+                            drop(child_guard);
+                            std::thread::sleep(Duration::from_millis(100));
+                        }
+                    }
+                }));
+            }
+            Ok(())
+        }
+        Err(e) => {
+            RUNNER_ACTIVE.store(false, Ordering::SeqCst);
+            Err(format!("Failed to start the runner: {}", e))
+        }
+    }
 }
 
 /// Opens (creates/append) the runner debug log file used by the runner itself

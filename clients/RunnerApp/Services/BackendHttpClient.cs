@@ -23,14 +23,6 @@ public class BackendHttpClient : IBackendClient
         return wrapper?.Data;
     }
 
-    public async Task ReportLogsAsync(Guid jobId, List<NodeExecutionLog> logs, CancellationToken ct = default)
-    {
-        var dtos = MapLogsToDtos(logs);
-
-        var response = await _httpClient.PostAsJsonAsync($"workspace/api/execution/logs/{jobId}", dtos, ct);
-        await EnsureServiceSuccessAsync<bool>(response, ct);
-    }
-
     public async Task StartJobAsync(Guid jobId, CancellationToken ct = default)
     {
         var response = await _httpClient.PostAsJsonAsync($"workspace/api/execution/job/{jobId}/start", new { }, ct);
