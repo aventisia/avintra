@@ -37,6 +37,7 @@ export const buildColumns = (
   inputSchema: InputSchemaField[],
   isFifo = false,
   tabValue?: string,
+  viewOnly = false,
 ): ColumnDef<WorkItemRow>[] => {
   const isHistory = tabValue === "History";
 
@@ -47,7 +48,7 @@ export const buildColumns = (
         <DTColumnHeader tableKey={TABLE_KEY} column={column} title="WorkItem" />
       ),
       cell: ({ row }) => (
-        <WorkItemsTableCellLink rowId={row.original.rowId}>
+        <WorkItemsTableCellLink rowId={row.original.rowId} viewOnly={viewOnly}>
           {row.original.rowId}
         </WorkItemsTableCellLink>
       ),
@@ -115,15 +116,20 @@ export const buildColumns = (
         </Badge>
       ),
     },
-    {
-      id: "actions",
-      cell: ({ row }) => (
-        <WorkItemActions
-          rowId={row.original.rowId}
-          status={row.original.status ?? ""}
-          isFifo={isFifo}
-        />
-      ),
-    },
+    // Actions column (Open/route etc.) is omitted entirely for view-only queues.
+    ...(viewOnly
+      ? []
+      : [
+          {
+            id: "actions",
+            cell: ({ row }: { row: { original: WorkItemRow } }) => (
+              <WorkItemActions
+                rowId={row.original.rowId}
+                status={row.original.status ?? ""}
+                isFifo={isFifo}
+              />
+            ),
+          },
+        ]),
   ];
 };

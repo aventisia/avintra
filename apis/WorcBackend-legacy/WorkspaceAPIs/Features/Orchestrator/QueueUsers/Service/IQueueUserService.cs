@@ -12,6 +12,14 @@ public interface IQueueUserService
     Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetMyQueuesAsync(DateTimeOffset? from = null, DateTimeOffset? to = null);
 
     /// <summary>
+    /// Fetches the Agent-type queues the user has access to.
+    /// </summary>
+    /// <param name="from">Optional start of the closed-item date range.</param>
+    /// <param name="to">Optional end of the closed-item date range.</param>
+    /// <returns>A task representing the service response containing a list of accessible agent queues.</returns>
+    Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetMyAgentQueuesAsync(DateTimeOffset? from = null, DateTimeOffset? to = null);
+
+    /// <summary>
     /// Retrieves all queue users associated with a specific queue.
     /// </summary>
     /// <param name="queueId">The identifier of the queue to fetch associated queue users.</param>

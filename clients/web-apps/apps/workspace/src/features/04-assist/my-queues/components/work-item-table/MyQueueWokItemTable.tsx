@@ -14,6 +14,7 @@ import { SearchableSelect } from "@/components/searchable-select/SearchableSelec
 
 import { TABLE_HEADING } from "../../constants";
 import { QueueProcessingModeEnum } from "../../enums/queue-processing-mode-enum";
+import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
 import { useGetNextItemMutation } from "../../hooks/useGetNextItemMutation";
 import { useMyQueueData } from "../../hooks/useMyQueueData";
 import { useMyQueueParams } from "../../hooks/useMyQueueParams";
@@ -25,8 +26,15 @@ import HistoryDateRangeFilter, { DateRange } from "../history/HistoryDateRangeFi
 export const MyQueueWokItemTable = () => {
   useDocumentTitle(TABLE_HEADING);
 
-  const { tabValue, setTabValue, queueId, setQueueName, setQueueId, updateParams } =
-    useMyQueueParams();
+  const {
+    tabValue,
+    setTabValue,
+    queueId,
+    setQueueName,
+    setQueueId,
+    updateParams,
+    queueType,
+  } = useMyQueueParams();
 
   // History date range. Defaults to today only.
   const today = useMemo(() => new Date(), []);
@@ -39,8 +47,12 @@ export const MyQueueWokItemTable = () => {
     queueId,
     tabValue,
     tabValue === "History" ? dateRange : undefined,
+    queueType,
   );
   const { mutate: getNextItem, isPending: isClaiming } = useGetNextItemMutation();
+
+  // Agent queue work items are view-only: no claim, no actions, no navigation.
+  const isAgent = queueType === QueueTypesEnum.Agent;
 
   const tabs = useMemo(() => buildTabs(), []);
 
@@ -57,13 +69,13 @@ export const MyQueueWokItemTable = () => {
 
       setQueueId(firstQueue.id);
       setQueueName(firstQueue.name);
-      updateParams({ qid: firstQueue.id, qn: firstQueue.name });
+      updateParams({ qid: firstQueue.id, qn: firstQueue.name, qt: queueType });
     }
-  }, [queueId, queues, setQueueId, setQueueName, updateParams]);
+  }, [queueId, queues, setQueueId, setQueueName, updateParams, queueType]);
 
   const columns = useMemo(
-    () => buildColumns(inputSchema, isFifo, tabValue),
-    [inputSchema, isFifo, tabValue],
+    () => buildColumns(inputSchema, isFifo, tabValue, isAgent),
+    [inputSchema, isFifo, tabValue, isAgent],
   );
   const columnsDisplayName = useMemo(() => generateColumnsDisplayName(inputSchema), [inputSchema]);
 
@@ -94,12 +106,12 @@ export const MyQueueWokItemTable = () => {
               const qn = queues.find((q) => value == q.id)?.name ?? "";
               setQueueId(value);
               setQueueName(qn);
-              updateParams({ qid: value ?? "", qn });
+              updateParams({ qid: value ?? "", qn, qt: queueType });
             }}
             className="min-w-60"
             size="sm"
           />
-          {isFifo && tabValue === "Current" && (
+          {isFifo && !isAgent && tabValue === "Current" && (
             <Button
               size="xs"
               onClick={() => getNextItem()}

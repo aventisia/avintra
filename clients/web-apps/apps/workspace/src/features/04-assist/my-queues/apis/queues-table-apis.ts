@@ -37,6 +37,23 @@ const getMyQueues = (dateRange?: { from?: Date; to?: Date }) => {
 };
 
 /**
+ * Retrieves list of my agent queues.
+ */
+const getMyAgentQueues = (dateRange?: { from?: Date; to?: Date }) => {
+  const params = new URLSearchParams();
+  if (dateRange?.from) params.set("from", dateRange.from.toISOString());
+  if (dateRange?.to) params.set("to", dateRange.to.toISOString());
+  const qs = params.toString();
+
+  return axiosInstance
+    .get<IHttpResponse<QueuesTableDto[]>>(
+      `${baseAPIURL}/queue-user/my-agent-queues${qs ? `?${qs}` : ""}`,
+      { headers: getSpaceHeaders() },
+    )
+    .then((res) => res.data);
+};
+
+/**
  * Retrieves list of queues work items.
  */
 const getQueuesWorkItemsList = (id: string) => {
@@ -93,6 +110,7 @@ const getNextQueuesWorkItem = (queueId: string) => {
 export {
   getQueues,
   getMyQueues,
+  getMyAgentQueues,
   getQueuesWorkItemsList,
   getQueueWorkItemById,
   updateQueuesWorkItem,
