@@ -67,6 +67,24 @@ public class FlowProcessor
                 flowExecutionContext.Set(kvp.Key, kvp.Value);
             }
         }
+
+        // Seed the top-level flow's declared trigger inputs with their default values,
+        // mirroring the sub-flow input seeding logic. This restores the legacy NodeExecutor
+        // behavior where a flow input such as "var1" (default 150) was available as a live
+        // context variable. Explicitly-provided initial variables win over defaults.
+        foreach (var declaredInput in ParseTriggerInputs(flow.InputOutputObject))
+        {
+            if (flowExecutionContext.TryGet(declaredInput.Name, out _))
+            {
+                continue;
+            }
+
+            if (declaredInput.DefaultValue is not null)
+            {
+                flowExecutionContext.Set(declaredInput.Name, flowExecutionContext.ResolveTemplateObject(declaredInput.DefaultValue));
+            }
+        }
+
         var logs = new List<NodeExecutionLog>();
         var conditionalStates = new Dictionary<string, ConditionalBranchState>(StringComparer.OrdinalIgnoreCase);
         var loopStates = new Dictionary<string, LoopState>(StringComparer.OrdinalIgnoreCase);

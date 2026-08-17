@@ -17,6 +17,12 @@ public static class NodeArgumentHelper
         if (targetType.IsInstanceOfType(value))
             return value;
 
+        // Preserve COM objects as-is. JSON round-tripping an RCW destroys its
+        // interface mapping and leaves a plain System.__ComObject that cannot be
+        // late-bound by downstream dynamic calls.
+        if (value.GetType().IsCOMObject)
+            return value;
+
         // Handle string target
         if (targetType == typeof(string))
             return value.ToString();

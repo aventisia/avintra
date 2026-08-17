@@ -207,7 +207,7 @@ public static class NodeToJsonHelper
         Console.WriteLine($"CloudConnectorActionSelectorMappingFile mapping JSON copied to local app data");
 
         // Save the CloudConnectorActionSelectorMappingFile.json JSON file to desktop-app\config-files\action-selector
-        var winRepoActionSelectorOutputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "desktop-app", "src-tauri", "config-files", "action-selector");
+        var winRepoActionSelectorOutputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "desktop-app", "src-tauri", "config-files", "action-selector");
         Directory.CreateDirectory(winRepoActionSelectorOutputDir);
         var winRepoActionSelectorOutputFilePath = Path.Combine(winRepoActionSelectorOutputDir, "CloudConnectorActionSelectorMappingFile.json");
         File.Copy(mappingFileSourcePath, winRepoActionSelectorOutputFilePath, overwrite: true);
@@ -216,7 +216,7 @@ public static class NodeToJsonHelper
         // --- Copy all cloud connectors config files to cloud-connectors folder
         var localAppDataConfigFileOutputDir = Path.Combine(localAppDataPath, "AvintraDesktopApp", "config-files", "cloud-connectors");
         Directory.CreateDirectory(localAppDataConfigFileOutputDir);
-        var winRepoConfigFileOutputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "desktop-app", "src-tauri", "config-files", "cloud-connectors");
+        var winRepoConfigFileOutputDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "desktop-app", "src-tauri", "config-files", "cloud-connectors");
         Directory.CreateDirectory(winRepoConfigFileOutputDir);
 
         // Copy only .json files from the source folder and all sub folders to the target folders. Keep the same file name and sub folder structure

@@ -161,7 +161,7 @@ internal class Program
                     }
 
                     // Save node json to worc-platform repo. TODO: Till the time whole migration from .net framework to .net core is done, we are keeping the file name nodeType.Name.Replace("Node", "Activity") as is to avoid breaking changes 
-                    var nodeJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "web-apps", "apps", "studio", "src", "features", "dynamic-config-panel", "constants", "config-json", nodeType.Name.Replace("Node", "Activity") + ".json"));
+                    var nodeJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "studio", "src", "features", "dynamic-config-panel", "constants", "config-json", nodeType.Name.Replace("Node", "Activity") + ".json"));
                     WriteJsonToFile(nodeJsonFilePath, nodeJson, jsonSerializerOptions);
 
                     // Save the same file in LocalAppData/AvintraDesktopApp (if applicable)
@@ -181,7 +181,7 @@ internal class Program
         }
 
         // Save _NodeSelectorData.json to the worc-platform repo. TODO: Till the time whole migration from .net framework to .net core is done, we are keeping the file name as _ActionSelectorData.json as is to avoid breaking changes
-        var nodeSelectorJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "web-apps", "apps", "studio", "src", "features", "action-selector", "constants", "_ActionSelectorData.json"));
+        var nodeSelectorJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "studio", "src", "features", "action-selector", "constants", "_ActionSelectorData.json"));
         WriteJsonToFile(nodeSelectorJsonFilePath, nodeMappingObject, jsonSerializerOptions, "Nodes mapping JSON saved to worc-platform repo");
 
         // Save same file _NodeSelectorData.json to LocalAppData/AvintraDesktopApp (if applicable)
