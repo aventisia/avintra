@@ -5,7 +5,7 @@
     "name": "Url",
     "label": "Url",
     "description": "Ollama Cloud base URL (static).",
-    "defaultValue": "https://ollama.com/v1",
+    "defaultValue": "https://ollama.com",
     "required": true,
     "readonly": true
   },

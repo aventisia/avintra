@@ -1375,7 +1375,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1391,7 +1391,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1407,7 +1407,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1423,7 +1423,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1439,7 +1439,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1457,7 +1457,7 @@ public class AppSecretService : IAppSecretService
                         dto.SecretAccessKey = string.Empty;
                         validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
                         dto.SessionToken = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1473,7 +1473,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1489,7 +1489,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1505,7 +1505,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1521,7 +1521,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1539,7 +1539,7 @@ public class AppSecretService : IAppSecretService
                         dto.SecretAccessKey = string.Empty;
                         validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
                         dto.SessionToken = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1555,7 +1555,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1571,7 +1571,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1587,7 +1587,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1603,7 +1603,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1621,7 +1621,7 @@ public class AppSecretService : IAppSecretService
                         dto.SecretAccessKey = string.Empty;
                         validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
                         dto.SessionToken = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1637,7 +1637,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1653,7 +1653,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1669,7 +1669,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1685,7 +1685,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1701,7 +1701,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1717,7 +1717,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1733,7 +1733,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1749,7 +1749,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1765,7 +1765,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1781,7 +1781,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1797,7 +1797,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1813,7 +1813,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1829,7 +1829,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1845,7 +1845,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1861,7 +1861,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1877,7 +1877,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1893,7 +1893,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1909,7 +1909,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1925,7 +1925,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1941,7 +1941,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1957,7 +1957,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1973,7 +1973,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -1989,7 +1989,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2003,7 +2003,7 @@ public class AppSecretService : IAppSecretService
                     var dto = System.Text.Json.JsonSerializer.Deserialize<DockerModelRunnerCredentialsDto>(rawJson, jsonOptions);
                     if (dto != null)
                     {
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2019,7 +2019,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2035,7 +2035,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2051,7 +2051,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2067,7 +2067,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2083,7 +2083,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2099,7 +2099,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2115,7 +2115,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2131,7 +2131,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2147,7 +2147,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2163,7 +2163,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2179,7 +2179,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2195,7 +2195,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2211,7 +2211,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2227,7 +2227,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2241,7 +2241,7 @@ public class AppSecretService : IAppSecretService
                     var dto = System.Text.Json.JsonSerializer.Deserialize<HostedVllmCredentialsDto>(rawJson, jsonOptions);
                     if (dto != null)
                     {
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2257,7 +2257,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2273,7 +2273,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2289,7 +2289,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2305,7 +2305,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2321,7 +2321,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2337,7 +2337,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2353,7 +2353,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2369,7 +2369,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2385,7 +2385,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2401,7 +2401,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2417,7 +2417,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2433,7 +2433,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2449,7 +2449,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2463,7 +2463,7 @@ public class AppSecretService : IAppSecretService
                     var dto = System.Text.Json.JsonSerializer.Deserialize<LitellmProxyCredentialsDto>(rawJson, jsonOptions);
                     if (dto != null)
                     {
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2477,7 +2477,7 @@ public class AppSecretService : IAppSecretService
                     var dto = System.Text.Json.JsonSerializer.Deserialize<LlamafileCredentialsDto>(rawJson, jsonOptions);
                     if (dto != null)
                     {
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2491,7 +2491,7 @@ public class AppSecretService : IAppSecretService
                     var dto = System.Text.Json.JsonSerializer.Deserialize<LmStudioCredentialsDto>(rawJson, jsonOptions);
                     if (dto != null)
                     {
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2507,7 +2507,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2523,7 +2523,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2539,7 +2539,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2555,7 +2555,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2571,7 +2571,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2587,7 +2587,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2603,7 +2603,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2619,7 +2619,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2635,7 +2635,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2651,7 +2651,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2667,7 +2667,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2683,7 +2683,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2699,7 +2699,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2715,7 +2715,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2731,7 +2731,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2747,7 +2747,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2763,7 +2763,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2779,7 +2779,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2793,7 +2793,9 @@ public class AppSecretService : IAppSecretService
                     var dto = System.Text.Json.JsonSerializer.Deserialize<OllamaChatCredentialsDto>(rawJson, jsonOptions);
                     if (dto != null)
                     {
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
+                        dto.ApiKey = string.Empty;
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2807,7 +2809,7 @@ public class AppSecretService : IAppSecretService
                     var dto = System.Text.Json.JsonSerializer.Deserialize<OobaboogaCredentialsDto>(rawJson, jsonOptions);
                     if (dto != null)
                     {
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2823,7 +2825,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2839,7 +2841,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2855,7 +2857,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2871,7 +2873,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2887,7 +2889,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2903,7 +2905,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2919,7 +2921,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2935,7 +2937,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2951,7 +2953,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2967,7 +2969,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2983,7 +2985,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -2999,7 +3001,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3015,7 +3017,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3031,7 +3033,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3047,7 +3049,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3063,7 +3065,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3081,7 +3083,7 @@ public class AppSecretService : IAppSecretService
                         dto.SecretAccessKey = string.Empty;
                         validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
                         dto.SessionToken = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3099,7 +3101,7 @@ public class AppSecretService : IAppSecretService
                         dto.SecretAccessKey = string.Empty;
                         validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
                         dto.SessionToken = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3117,7 +3119,7 @@ public class AppSecretService : IAppSecretService
                         dto.SecretAccessKey = string.Empty;
                         validationResult.EncryptedValues["SessionToken"] = _encryptionService.EncryptString(dto.SessionToken);
                         dto.SessionToken = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3133,7 +3135,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3149,7 +3151,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3165,7 +3167,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3181,7 +3183,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3197,7 +3199,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3213,7 +3215,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3229,7 +3231,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3245,7 +3247,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3261,7 +3263,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3277,7 +3279,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3293,7 +3295,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3309,7 +3311,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3325,7 +3327,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3341,7 +3343,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3355,7 +3357,7 @@ public class AppSecretService : IAppSecretService
                     var dto = System.Text.Json.JsonSerializer.Deserialize<TritonCredentialsDto>(rawJson, jsonOptions);
                     if (dto != null)
                     {
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3371,7 +3373,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3387,7 +3389,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3403,7 +3405,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ServiceAccountJson"] = _encryptionService.EncryptString(dto.ServiceAccountJson);
                         dto.ServiceAccountJson = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3419,7 +3421,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ServiceAccountJson"] = _encryptionService.EncryptString(dto.ServiceAccountJson);
                         dto.ServiceAccountJson = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3433,7 +3435,7 @@ public class AppSecretService : IAppSecretService
                     var dto = System.Text.Json.JsonSerializer.Deserialize<VllmCredentialsDto>(rawJson, jsonOptions);
                     if (dto != null)
                     {
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3449,7 +3451,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3465,7 +3467,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3481,7 +3483,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3497,7 +3499,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3513,7 +3515,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3529,7 +3531,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3545,7 +3547,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3559,7 +3561,7 @@ public class AppSecretService : IAppSecretService
                     var dto = System.Text.Json.JsonSerializer.Deserialize<XinferenceCredentialsDto>(rawJson, jsonOptions);
                     if (dto != null)
                     {
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else
@@ -3575,7 +3577,7 @@ public class AppSecretService : IAppSecretService
                     {
                         validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
                         dto.ApiKey = string.Empty;
-                                                sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
+                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
 
                     }
                     else

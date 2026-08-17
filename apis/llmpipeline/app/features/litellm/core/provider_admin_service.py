@@ -27,7 +27,6 @@ class ProviderAdminService:
         self,
         provider: str,
         capability: str | None = None,
-        *,
         credential_id: str | None = None,
         user: User | None = None,
     ) -> ModelsResponse:

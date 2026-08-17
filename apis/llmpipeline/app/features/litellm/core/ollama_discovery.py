@@ -21,7 +21,7 @@ from .schemas import ModelInfo
 # Ollama providers that discover models from a live `/api/tags` endpoint.
 # These are the on-prem LiteLLM prefixes. Cloud Ollama (ollama.com) uses the
 # OpenAI-compatible API and is handled by the backend's `OllamaCloud` flow.
-OLLAMA_PROVIDERS = {"ollama", "ollama_chat"}
+OLLAMA_PROVIDERS = {"ollama", "ollamachat", "ollamacloud"}
 
 # Reasonable timeout for a tag listing on a remote on-prem server.
 _OLLAMA_TAGS_TIMEOUT = httpx.Timeout(30.0)
