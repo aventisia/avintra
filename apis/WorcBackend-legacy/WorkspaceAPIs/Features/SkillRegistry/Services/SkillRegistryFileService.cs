@@ -58,26 +58,28 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                 return serviceResponse;
             }
 
-            // Verify the current user has view access to the skill.
-            var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
-                _userId,
-                skill.Id,
-                ResourceTypeEnum.Skill,
-                skill.CreatedByUserId,
-                skill.IsTenantWideAccess,
-                new[]
-                {
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.View,
-                    ResourceAccessTypeEnum.Edit,
-                }
-            );
-
-            // Return forbidden when user lacks view permission.
-            if (!canView)
+            // Platform skills are viewable by all users, so skip the access check.
+            // For other skill types, verify the current user has view access.
+            if (skill.Type != ComponentTypeEnum.Platform)
             {
-                serviceResponse.Message = "You do not have permission to view this skill";
-                return serviceResponse;
+                var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+                    _userId,
+                    skill.Id,
+                    ResourceTypeEnum.Skill,
+                    skill.CreatedByUserId,
+                    skill.IsTenantWideAccess,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                    });
+
+                if (!canView)
+                {
+                    serviceResponse.Message = "You do not have permission to view this skill";
+                    return serviceResponse;
+                }
             }
 
             // Load files belonging to the skill, including creator information.
@@ -339,26 +341,30 @@ public class SkillRegistryFileService : ISkillRegistryFileService
                 return serviceResponse;
             }
 
-            // Verify the current user has view access to the skill.
-            var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
-                _userId,
-                skill.Id,
-                ResourceTypeEnum.Skill,
-                skill.CreatedByUserId,
-                skill.IsTenantWideAccess,
-                new[]
-                {
-                    ResourceAccessTypeEnum.Owner,
-                    ResourceAccessTypeEnum.View,
-                    ResourceAccessTypeEnum.Edit,
-                }
-            );
-
-            // Return forbidden when user lacks view permission.
-            if (!canView)
+            // Platform skills are downloadable by all users, so skip the access check.
+            // For other skill types, verify the current user has view access.
+            if (skill.Type != ComponentTypeEnum.Platform)
             {
-                serviceResponse.Message = "You do not have permission to download this skill";
-                return serviceResponse;
+                var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+                    _userId,
+                    skill.Id,
+                    ResourceTypeEnum.Skill,
+                    skill.CreatedByUserId,
+                    skill.IsTenantWideAccess,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                    }
+                );
+
+                // Return forbidden when user lacks view permission.
+                if (!canView)
+                {
+                    serviceResponse.Message = "You do not have permission to download this skill";
+                    return serviceResponse;
+                }
             }
 
             // Ensure the skill has files to download.
