@@ -6,7 +6,6 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "requestType", value: "Type" },
   { key: "title", value: "Title" },
   { key: "status", value: "Status" },
-  { key: "agentName", value: "Agent" },
   { key: "createdBy", value: "Created By" },
   { key: "createdOn", value: "Created On" },
   { key: "commentCount", value: "Total Comments" },

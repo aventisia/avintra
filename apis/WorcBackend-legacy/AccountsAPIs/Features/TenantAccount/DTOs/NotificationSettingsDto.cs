@@ -54,7 +54,7 @@ public class NotificationSettingsDto
 
     /// <summary>
     /// Gets or sets the delivery channel used for automatic notifications.
-    /// Supported values: Platform, Email, or Both. Defaults to Platform.
+    /// Supported values: Platform, Email, or Both. Defaults to Both.
     /// </summary>
-    public DeliveryChannelEnum DeliveryChannel { get; set; } = DeliveryChannelEnum.Platform;
+    public DeliveryChannelEnum DeliveryChannel { get; set; } = DeliveryChannelEnum.Both;
 }

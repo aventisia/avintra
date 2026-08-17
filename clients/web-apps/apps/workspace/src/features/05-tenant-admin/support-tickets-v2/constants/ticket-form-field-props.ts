@@ -40,6 +40,8 @@ export const requiredByProps: InputFieldProps = {
   name: "requiredBy",
   label: "Required By",
   type: "date",
+  // Disable selection of dates before today (the current date).
+  min: new Date().toISOString().slice(0, 10),
 };
 
 export const agentRefIdProps: SelectFieldProps = {
@@ -74,6 +76,8 @@ export const requestedTimelineProps: InputFieldProps = {
   name: "requestedTimeline",
   label: "Requested Timeline",
   type: "date",
+  // Disable selection of dates before today (the current date).
+  min: new Date().toISOString().slice(0, 10),
 };
 
 export const isDisabledProps: SwitchFieldProps = {

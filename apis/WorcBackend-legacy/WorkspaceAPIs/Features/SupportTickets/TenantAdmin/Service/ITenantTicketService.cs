@@ -33,4 +33,6 @@ public interface ITenantTicketService
     Task<ServiceResponse<bool>> DeleteAttachmentAsync(Guid attachmentId);
 
     Task<ServiceResponse<IEnumerable<TicketHistoryDto>>> GetHistoryAsync(Guid ticketId);
+
+    Task<ServiceResponse<TenantSupportConfigDto>> GetSupportConfigAsync();
 }

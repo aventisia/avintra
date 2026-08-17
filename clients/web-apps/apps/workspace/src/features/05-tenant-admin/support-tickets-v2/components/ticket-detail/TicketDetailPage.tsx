@@ -43,7 +43,6 @@ const metadataRows = (ticket: TicketDto) => [
       ? { text: ticket.status, className: TICKET_STATUS_COLOR[ticket.status] }
       : undefined,
   },
-  { label: "Agent", value: ticket.agentName || "-" },
   { label: "Required By", value: ticket.requiredBy ? formatDate(ticket.requiredBy) : "-" },
   { label: "Created By", value: ticket.createdBy || "-" },
   { label: "Created On", value: ticket.createdOn ? formatDate(ticket.createdOn) : "-" },
@@ -55,6 +54,7 @@ const metadataRows = (ticket: TicketDto) => [
 ];
 
 const changeRequestRows = (ticket: TicketDto) => [
+  ...(ticket.agentName ? [{ label: "Agent", value: ticket.agentName }] : []),
   ...(ticket.changeSummary ? [{ label: "Change Summary", value: ticket.changeSummary }] : []),
   ...(ticket.changeReason ? [{ label: "Change Reason", value: ticket.changeReason }] : []),
   ...(ticket.expectedBehavior

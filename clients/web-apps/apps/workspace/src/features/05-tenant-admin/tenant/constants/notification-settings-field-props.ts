@@ -41,7 +41,7 @@ const publishAgentProps: SwitchFieldProps = {
 const deliveryChannelProps: Omit<SelectFieldProps, "selectOptions"> = {
   name: "deliveryChannel",
   label: "Delivery Channel",
-  description: "How notifications are delivered. Defaults to Platform.",
+  description: "How notifications are delivered. Defaults to Both.",
   placeholder: "Select delivery channel",
 };
 

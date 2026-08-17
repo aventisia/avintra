@@ -13,8 +13,8 @@ const notificationSettingsSchema = z.object({
   lowCreditThreshold: z.coerce
     .number()
     .min(1, "Low credit threshold cannot be less than 1."),
-  // Optional delivery channel; defaults to Platform when not specified.
-  deliveryChannel: z.nativeEnum(DeliveryChannelEnum).default(DeliveryChannelEnum.Platform),
+  // Optional delivery channel; defaults to Both when not specified.
+  deliveryChannel: z.nativeEnum(DeliveryChannelEnum).default(DeliveryChannelEnum.Both),
 });
 
 export { notificationSettingsSchema };

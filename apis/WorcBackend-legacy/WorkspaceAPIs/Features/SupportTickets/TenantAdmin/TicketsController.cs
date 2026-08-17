@@ -26,6 +26,14 @@ public class TicketsController : BaseApiController
         return ResultHelper(await _tenantTicketService.GetTicketsAsync());
     }
 
+    // Retrieves the support configuration for the current tenant (e.g. whether Change
+    // Requests are enabled). Used by the UI to conditionally show the Change Request option.
+    [HttpGet("support-config")]
+    public async Task<ActionResult<ServiceResponse<TenantSupportConfigDto>>> GetSupportConfig()
+    {
+        return ResultHelper(await _tenantTicketService.GetSupportConfigAsync());
+    }
+
     // Insert a new ticket.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<TicketDto>>> CreateTicket([FromBody] TicketTableDto ticketDto)

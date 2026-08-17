@@ -94,7 +94,13 @@ export const TriagePanel = ({ ticket, api }: TriagePanelProps) => {
             selectOptions={RISK_OPTIONS.map((o) => ({ value: o.value, label: o.label }))}
           />
           <InputField name="estimatedEffortHours" label="Estimated Effort (hours)" type="number" />
-          <InputField name="estimatedCompletionDate" label="Estimated Completion" type="date" />
+          <InputField
+            name="estimatedCompletionDate"
+            label="Estimated Completion"
+            type="date"
+            // Disable selection of dates before today (the current date).
+            min={new Date().toISOString().slice(0, 10)}
+          />
           <div className="flex gap-4 items-end">
             <SwitchField name="isBillable" label="Billable" description="Mark as billable" />
             <SwitchField
