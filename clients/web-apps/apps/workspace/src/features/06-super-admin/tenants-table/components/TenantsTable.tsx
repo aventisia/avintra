@@ -32,6 +32,11 @@ export const TenantsTable = () => {
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
+  // Default to sorting by Plan ascending (Pro customers at the top) unless the
+  // user has previously saved an explicit sort preference.
+  const initialSort =
+    sortState.length > 0 ? sortState : [{ id: "activePlan", desc: false }];
+
   // Fetch tenants data
   const { data } = useFetchTenants();
 
@@ -40,7 +45,7 @@ export const TenantsTable = () => {
     tenantsTableColumns,
     data?.data || [],
     columnVisibility,
-    sortState,
+    initialSort,
     true,
   );
 
