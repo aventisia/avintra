@@ -13,6 +13,25 @@ import { formatBytes } from "../utils/file-uploader-util";
 import { TenantRowActions } from "./tenant-row-actions/TenantRowActions";
 
 /**
+ * Plan rank used for sorting. Pro customers always appear at the top,
+ * followed by Starter, then the remaining plans (Unknown last).
+ */
+const PLAN_RANK: Record<string, number> = {
+  pro: 0,
+  starter: 1,
+};
+
+const planSortingFn: SortingFn<TenantsTableDto> = (rowA, rowB) => {
+  const planA = (rowA.getValue<string>("activePlan") ?? "Unknown").toLowerCase();
+  const planB = (rowB.getValue<string>("activePlan") ?? "Unknown").toLowerCase();
+
+  const rankA = PLAN_RANK[planA] ?? 99;
+  const rankB = PLAN_RANK[planB] ?? 99;
+
+  return rankA - rankB;
+};
+
+/**
  * Array of table columns for the tenants table.
  * Each column object contains an accessorKey, header component, and cell component.
  */
@@ -266,22 +285,3 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     renderCell: (row) => <TenantRowActions rowId={row.id ?? "rowId"} />,
   }),
 ];
-
-/**
- * Plan rank used for sorting. Pro customers always appear at the top,
- * followed by Starter, then the remaining plans (Unknown last).
- */
-const PLAN_RANK: Record<string, number> = {
-  pro: 0,
-  starter: 1,
-};
-
-const planSortingFn: SortingFn<TenantsTableDto> = (rowA, rowB) => {
-  const planA = (rowA.getValue<string>("activePlan") ?? "Unknown").toLowerCase();
-  const planB = (rowB.getValue<string>("activePlan") ?? "Unknown").toLowerCase();
-
-  const rankA = PLAN_RANK[planA] ?? 99;
-  const rankB = PLAN_RANK[planB] ?? 99;
-
-  return rankA - rankB;
-};
