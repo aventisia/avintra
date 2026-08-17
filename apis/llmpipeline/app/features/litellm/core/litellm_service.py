@@ -18,6 +18,7 @@ from app.features.auth.authenticated_user import User
 from app.utils.errors import friendly_error
 
 from .credentials import resolve_credentials
+from .ollama_discovery import OLLAMA_PROVIDERS, discover_ollama_models
 from .provider_registry import (
     build_litellm_model,
     capability_for_model,
@@ -299,14 +300,35 @@ class LiteLLMService:
             log_exception(logger, e, "[LLM-V2] list_providers error: ")
             raise HTTPException(status_code=500, detail="Error listing providers.")
 
-    async def list_models(self, provider: str, capability: str | None = None) -> list[ModelInfo]:
+    async def list_models(
+        self,
+        provider: str,
+        capability: str | None = None,
+        *,
+        credential_id: str | None = None,
+        user: User | None = None,
+    ) -> list[ModelInfo]:
         """Return per-model metadata for a provider via LiteLLM (dynamic).
 
         When `capability` is provided, only models whose capability matches are
         returned. Provider aliases (e.g. 'google' -> 'gemini') are normalized.
+
+        For on-prem Ollama (`ollama` / `ollama_chat`), when a `credential_id` is
+        supplied the model list is discovered live from the Ollama server via
+        `GET {base_url}/api/tags` instead of LiteLLM's static catalog. `user` is
+        required in that case to resolve the credential from the vault.
         """
         try:
             provider = normalize_provider(provider)
+
+            if provider in OLLAMA_PROVIDERS and credential_id:
+                if user is None:
+                    raise HTTPException(
+                        status_code=400,
+                        detail="An authenticated user is required to resolve the Ollama credential.",
+                    )
+                return await discover_ollama_models(provider, credential_id, user)
+
             models = litellm.models_by_provider.get(provider, set())
             models = {m for m in models if isinstance(m, str)}
             if capability is not None:
@@ -315,19 +337,31 @@ class LiteLLMService:
                 ModelInfo(**model_metadata(provider, m, capability))
                 for m in sorted(models)
             ]
+        except HTTPException:
+            raise
         except Exception as e:
             log_exception(logger, e, f"[LLM-V2] list_models error for {provider}: ")
             raise HTTPException(status_code=500, detail="Error listing models.")
 
     async def get_models(
-        self, provider: str, capability: str | None = None
+        self,
+        provider: str,
+        capability: str | None = None,
+        *,
+        credential_id: str | None = None,
+        user: User | None = None,
     ) -> list[ModelInfo]:
         """Public capability-aware model listing for a provider.
 
         Mirrors the requested interface `get_models(provider='openai',
         capability='embedding')`. Delegates to `list_models`.
         """
-        return await self.list_models(provider, capability)
+        return await self.list_models(
+            provider,
+            capability,
+            credential_id=credential_id,
+            user=user,
+        )
 
 
 litellm_service = LiteLLMService()
