@@ -3,20 +3,24 @@ import { Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { TABLE_HEADING } from "../../constants";
+import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
 import { useFetchQueues } from "../../hooks/useFetchQueues";
 import { useMyQueueParams } from "../../hooks/useMyQueueParams";
 import HistoryDateRangeFilter, { DateRange } from "../history/HistoryDateRangeFilter";
 import { QueueSummaryCard } from "./QueueSummaryCard";
+import { QueueTypeSwitch } from "./QueueTypeSwitch";
 
 /**
  * Renders the overview screen for the Assist > Queues section. Summarizes all
- * queues the user has access to, showing the total item count for each. Clicking
- * a queue navigates to the work-item list screen with that queue pre-selected.
+ * queues the user has access to, showing the total item count for each. A switch
+ * toggles between the user's own queues and the agent queues they can view.
+ * Clicking a queue navigates to the work-item list screen with that queue
+ * pre-selected.
  */
 export const QueueOverview = () => {
   useDocumentTitle(TABLE_HEADING);
 
-  const { setQueueId, setQueueName, updateParams } = useMyQueueParams();
+  const { setQueueId, setQueueName, updateParams, queueType, setQueueType } = useMyQueueParams();
 
   // Date range for the "Completed" metrics. Defaults to today only.
   const today = useMemo(() => new Date(), []);
@@ -25,9 +29,11 @@ export const QueueOverview = () => {
     to: today,
   });
 
-  const { data, isLoading } = useFetchQueues({ onlyUserQueues: true, dateRange });
+  const { data, isLoading } = useFetchQueues({ onlyUserQueues: true, queueType, dateRange });
 
   const queues = data?.data ?? [];
+
+  const isAgent = queueType === QueueTypesEnum.Agent;
 
   if (isLoading) {
     return (
@@ -39,11 +45,18 @@ export const QueueOverview = () => {
 
   if (queues.length === 0) {
     return (
-      <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border text-center">
-        <p className="text-sm font-medium text-accent-foreground">No queues available</p>
-        <p className="text-xs text-muted-foreground">
-          You don&apos;t have access to any queues yet.
-        </p>
+      <div className="space-y-4 pb-4 pt-[17px]">
+        <div className="flex items-start justify-between gap-2">
+          <QueueTypeSwitch value={queueType} onChange={setQueueType} />
+        </div>
+        <div className="flex h-64 flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border text-center">
+          <p className="text-sm font-medium text-accent-foreground">No queues available</p>
+          <p className="text-xs text-muted-foreground">
+            {isAgent
+              ? "You don't have access to any agent queues yet."
+              : "You don't have access to any queues yet."}
+          </p>
+        </div>
       </div>
     );
   }
@@ -51,19 +64,29 @@ export const QueueOverview = () => {
   const openQueue = (queue: (typeof queues)[number]) => {
     setQueueId(queue.id);
     setQueueName(queue.name);
-    updateParams({ qid: queue.id, qn: queue.name, t: "Current" });
+    updateParams({ qid: queue.id, qn: queue.name, t: "Current", qt: queueType });
+  };
+
+  const handleQueueTypeChange = (value: QueueTypesEnum) => {
+    setQueueType(value);
+    updateParams({ qt: value });
   };
 
   return (
     <div className="space-y-4 pb-4 pt-[17px]">
-      <div className="flex items-start justify-between">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-lg font-bold text-accent-foreground">{TABLE_HEADING} Overview</h1>
           <p className="text-sm text-muted-foreground">
-            A summary of the queues you have access to. Click a queue to view its work items.
+            {isAgent
+              ? "A summary of the agent queues you have access to. Click a queue to view its work items."
+              : "A summary of the queues you have access to. Click a queue to view its work items."}
           </p>
         </div>
-        <HistoryDateRangeFilter value={dateRange} onChange={setDateRange} />
+        <div className="flex items-center gap-3">
+          <QueueTypeSwitch value={queueType} onChange={handleQueueTypeChange} />
+          <HistoryDateRangeFilter value={dateRange} onChange={setDateRange} />
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

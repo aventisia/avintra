@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 
+import { QueueTypesEnum } from "../enums/queue-instance-type-enum";
 import { TabValue, WorkItemRow } from "../types/my-queue-types";
 import { filterByTabStatus } from "../utils/my-queue-utils";
 import { useFetchQueues } from "./useFetchQueues";
@@ -9,8 +10,9 @@ export const useMyQueueData = (
   queueId: string | null,
   tabValue: TabValue,
   dateRange?: { from?: Date; to?: Date },
+  queueType: QueueTypesEnum = QueueTypesEnum.User,
 ) => {
-  const { data: queuesRes } = useFetchQueues({ onlyUserQueues: true });
+  const { data: queuesRes } = useFetchQueues({ onlyUserQueues: true, queueType });
   const { data: workItemsRes } = useFetchQueuesWorkItems(queueId ?? "");
 
   const inputSchema = useMemo(() => {

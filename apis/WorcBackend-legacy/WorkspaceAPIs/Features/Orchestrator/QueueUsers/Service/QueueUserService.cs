@@ -105,6 +105,87 @@ public class QueueUserService : IQueueUserService
         return serviceResponse;
     }
 
+    // Retrieves the Agent-type queues that the user has access to.
+    // A user can access an agent queue via a legacy QueueUser record or a
+    // ResourceShare record, mirroring GetMyQueuesAsync but for Agent queues.
+    public async Task<ServiceResponse<IEnumerable<QueuesTableDto>>> GetMyAgentQueuesAsync(DateTimeOffset? from = null, DateTimeOffset? to = null)
+    {
+        // Initialize the response with a default failure message
+        var serviceResponse = new ServiceResponse<IEnumerable<QueuesTableDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve your agent queues. Please try again later."
+        };
+
+        try
+        {
+            // A user can be associated with an agent queue in the same two ways
+            // as user queues: a legacy QueueUser record or a ResourceShare record.
+            var sharedQueueIds = await _unitOfWork.ResourceShareRepo
+                .GetByConditionAsync(w =>
+                    w.UserId == _userId &&
+                    w.ResourceType == ResourceTypeEnum.Queue)
+                .Select(s => s.ResourceId)
+                .ToListAsync();
+
+            var queues = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w =>
+                    w.Type == QueueTypesEnum.Agent &&
+                    (
+                        (w.QueueUsers != null && w.QueueUsers.Any(a => a.UserId == _userId)) ||
+                        sharedQueueIds.Contains(w.Id)
+                    ))
+                .Include(i => i.QueueTransactions)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .ToListAsync();
+
+            // Map to DTOs, then override the completed count and average processing
+            // time to reflect only items closed within the requested date range.
+            var queueDtoList = queues.Adapt<List<QueuesTableDto>>();
+
+            // Normalize the range to whole days (UTC). When not provided, default
+            // to today. The frontend sends full timestamps, so we snap `from` to
+            // the start of its day and `to` to the end of its day.
+            var rangeFrom = (from ?? DateTimeOffset.UtcNow).Date;
+            var rangeTo = (to ?? DateTimeOffset.UtcNow).Date.AddDays(1).AddTicks(-1);
+
+            foreach (var dto in queueDtoList)
+            {
+                var queue = queues.FirstOrDefault(q => q.Id == dto.Id);
+                if (queue?.QueueTransactions == null) continue;
+
+                // A "closed" item is one that is no longer active: Completed, Failed,
+                // or any disposition status (e.g. Approved, Contracted, Meetings).
+                var closedInRange = queue.QueueTransactions
+                    .Where(c =>
+                        c.Status != QueueTransactionStatusTypesEnum.Pending.ToString() &&
+                        c.Status != QueueTransactionStatusTypesEnum.InProgress.ToString() &&
+                        c.LastModifiedOn >= rangeFrom &&
+                        c.LastModifiedOn <= rangeTo)
+                    .ToList();
+
+                dto.Completed = closedInRange.Count;
+                dto.AverageProcessingTimeSeconds = closedInRange.Count > 0
+                    ? closedInRange.Average(c => (c.LastModifiedOn - c.CreatedOn).TotalSeconds)
+                    : 0;
+            }
+
+            // On successful retrieval
+            serviceResponse.Data = queueDtoList;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Agent queues retrieved successfully.";
+            _logger.LogInformation($"Fetched {queues.Count} agent queues for User ID: {_userId}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"An error occurred while retrieving your agent queues for User ID: {_userId}. Exception: {ex.Message}");
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Fetches all queue users for a specific Queue
     public async Task<ServiceResponse<IEnumerable<QueueUserDto>>> GetQueueUsersAsync(Guid queueId)
     {
