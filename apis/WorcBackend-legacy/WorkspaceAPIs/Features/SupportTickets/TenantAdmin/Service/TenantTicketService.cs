@@ -79,4 +79,43 @@ public class TenantTicketService : TicketServiceBase, ITenantTicketService
 
     // Retrieves the history of a ticket.
     public override async Task<ServiceResponse<IEnumerable<TicketHistoryDto>>> GetHistoryAsync(Guid ticketId) => await base.GetHistoryAsync(ticketId);
+
+    // Retrieves the support configuration for the current tenant (e.g. whether Change
+    // Requests are enabled). Used by the UI to conditionally show the Change Request option.
+    public async Task<ServiceResponse<TenantSupportConfigDto>> GetSupportConfigAsync()
+    {
+        var serviceResponse = new ServiceResponse<TenantSupportConfigDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve support configuration. Please try again."
+        };
+
+        try
+        {
+            var tenant = await TenantDbContext.ReadOnlyTenants
+                .AsNoTracking()
+                .Where(w => w.Id == UserTenantId)
+                .SingleOrDefaultAsync();
+
+            if (tenant == null)
+            {
+                serviceResponse.Message = "Tenant not found.";
+                serviceResponse.StatusCode = 404;
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = new TenantSupportConfigDto
+            {
+                IsChangeRequestEnabled = tenant.IsChangeRequestEnabled
+            };
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Support configuration retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error occurred while retrieving support configuration for TenantId: {TenantId}", UserTenantId);
+        }
+
+        return serviceResponse;
+    }
 }

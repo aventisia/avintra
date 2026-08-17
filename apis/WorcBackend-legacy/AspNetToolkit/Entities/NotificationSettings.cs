@@ -8,9 +8,9 @@ using System.ComponentModel.DataAnnotations;
 /// </summary>
 /// <remarks>
 /// Each property maps to a single controllable automatic notification type. Properties
-/// default to <see langword="false"/> so that a missing key in the stored JSON falls back
-/// to the per-type default (FR-6, FR-6a). Adding a new notification type requires only
-/// adding a property here (and a UI row) — no schema migration (FR-11).
+/// default to <see langword="true"/> so that all notification types are enabled by default
+/// (FR-6, FR-6a). Adding a new notification type requires only adding a property here
+/// (and a UI row) — no schema migration (FR-11).
 /// </remarks>
 public class NotificationSettings
 {
@@ -19,21 +19,21 @@ public class NotificationSettings
     /// enabled for the tenant. When enabled, tenant admins are notified when the credit
     /// balance falls below the configured threshold.
     /// </summary>
-    public bool LowCredits { get; set; } = false;
+    public bool LowCredits { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether the "Subscription" automatic notification is
     /// enabled for the tenant. When enabled, tenant admins are notified of an upcoming
     /// subscription renewal.
     /// </summary>
-    public bool Subscription { get; set; } = false;
+    public bool Subscription { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether the "Publish Agent" automatic notification is
     /// enabled for the tenant. When enabled, orchestrator managers are notified when an agent
     /// is published and ready for use.
     /// </summary>
-    public bool PublishAgent { get; set; } = false;
+    public bool PublishAgent { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the number of days before the subscription renewal date at which the
@@ -54,7 +54,7 @@ public class NotificationSettings
     /// Gets or sets the delivery channel used for automatic notifications.
     /// Supported values: <see cref="DeliveryChannelEnum.Platform"/>,
     /// <see cref="DeliveryChannelEnum.Email"/>, or <see cref="DeliveryChannelEnum.Both"/>.
-    /// Defaults to <see cref="DeliveryChannelEnum.Platform"/>.
+    /// Defaults to <see cref="DeliveryChannelEnum.Both"/>.
     /// </summary>
-    public DeliveryChannelEnum DeliveryChannel { get; set; } = DeliveryChannelEnum.Platform;
+    public DeliveryChannelEnum DeliveryChannel { get; set; } = DeliveryChannelEnum.Both;
 }

@@ -8,7 +8,7 @@ import { z } from "zod";
 
 import { getPublishedAgents } from "@/features/03-orchestrator/agents-table/apis/agents-table-apis";
 
-import { ticketOptimisticMutationFn } from "../../apis/ticket-apis";
+import { getCurrentTenantSupportConfig, ticketOptimisticMutationFn } from "../../apis/ticket-apis";
 import { DATA_QUERY_KEY } from "../../constants";
 import {
   agentRefIdProps,
@@ -42,6 +42,15 @@ export const TicketCrudForm = ({ rowId, crudAction }: TicketCrudFormProps) => {
     queryFn: getPublishedAgents,
   });
 
+  // Fetch the tenant's support configuration so the "Change Request" option is only
+  // shown when the tenant has Change Requests enabled by the Super Admin.
+  const { data: supportConfigData } = useQuery({
+    queryKey: ["tenant-support-config"],
+    queryFn: getCurrentTenantSupportConfig,
+  });
+
+  const isChangeRequestEnabled = supportConfigData?.data?.isChangeRequestEnabled ?? false;
+
   const agentOptions =
     agentsData?.data?.map((a) => ({
       value: a.id,
@@ -72,6 +81,13 @@ export const TicketCrudForm = ({ rowId, crudAction }: TicketCrudFormProps) => {
   const isReadMode = crudAction === "read";
   const requestType = form.watch("requestType");
 
+  // Only include the "Change Request" option when the tenant has it enabled. When
+  // viewing/editing an existing Change Request ticket, keep the option so the current
+  // value still displays correctly even if the tenant has since disabled the feature.
+  const requestTypeOptions = isChangeRequestEnabled || requestType === "ChangeRequest"
+    ? requestTypeProps.selectOptions
+    : requestTypeProps.selectOptions.filter((option) => option.value !== "ChangeRequest");
+
   return (
     <Form
       methods={form}
@@ -81,9 +97,9 @@ export const TicketCrudForm = ({ rowId, crudAction }: TicketCrudFormProps) => {
     >
       {isReadMode && <InputField {...idProps} />}
       {crudAction === "create" ? (
-        <SelectField {...requestTypeProps} />
+        <SelectField {...requestTypeProps} selectOptions={requestTypeOptions} />
       ) : (
-        <SelectField {...requestTypeProps} disabled={isReadMode} />
+        <SelectField {...requestTypeProps} selectOptions={requestTypeOptions} disabled={isReadMode} />
       )}
       <InputField {...titleProps} autoFocus={crudAction === "create"} />
       <TextareaField {...descriptionProps} />

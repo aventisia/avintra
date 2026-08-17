@@ -83,42 +83,61 @@ public class TenantsTableService : ITenantsTableService
                 .Select(s => new { TenantId = s.Key, TotalCredits = s.Sum(x => x.CreditsUsed) })
                 .ToDictionaryAsync(td => td.TenantId, td => td.TotalCredits);
 
-            // This one is safe to run separately (not EF)
-            var tenantContainerSizes = await _azureBlobStorageService
-                .GetAllContainersWithSizeAsync(tenants.Select(s => s.ContainerName).ToList());
+            // This one is safe to run separately (not EF). Wrap it in its own try/catch so a
+            // transient Azure Blob Storage failure (e.g. network issue) does not fail the whole
+            // tenants list. When it fails, storage sizes simply default to 0.
+            Dictionary<string, long> tenantContainerSizes;
+            try
+            {
+                tenantContainerSizes = await _azureBlobStorageService
+                    .GetAllContainersWithSizeAsync(tenants.Select(s => s.ContainerName).ToList());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to retrieve container sizes for tenants; continuing with default sizes.");
+                tenantContainerSizes = new Dictionary<string, long>();
+            }
 
             // Create a dictionary for tenant managers' names (CreatedBy and LastModifiedBy)
             var tenantManagers = accountUsers
                 .Where(w => userIds.Contains(w.Id))
                 .ToDictionary(td => td.Id, td => td.FirstName + " " + td.LastName);
 
-            var tenantSummaries = new Dictionary<Guid, TenantTableSummaryDto>();
-
             // Build query string with dynamic date filters
             var url = $"{_environmentConfig.WorkspaceApiBaseUrl}/sa/tenant/summary" +
                 $"?startDate={tenantFilterQuery.StartDate.Value.UtcDateTime:O}" +
                 $"&endDate={tenantFilterQuery.EndDate.Value.UtcDateTime:O}";
 
-            // Call external API with query parameters
-            HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(
-                CrudTypesEnum.Read,
-                url,
-                _jwt);
-
-            // Proceed only if API call was successful (status code 2xx)
-            if (response.IsSuccessStatusCode)
+            // Call external API with query parameters. Wrap in its own try/catch so a transient
+            // failure (e.g. SSL/network issue to the Workspace API) does not fail the whole
+            // tenants list. When it fails, the summary metrics simply default to 0.
+            var tenantSummaries = new Dictionary<Guid, TenantTableSummaryDto>();
+            try
             {
-                // Read response content as JSON string
-                var content = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage response = await RequestExternalAPIUtil.RequestExternalAPI(
+                    CrudTypesEnum.Read,
+                    url,
+                    _jwt);
 
-                // Deserialize JSON into ServiceResponse DTO (case-insensitive mapping)
-                var result = JsonSerializer.Deserialize<ServiceResponse<IEnumerable<TenantTableSummaryDto>>>(
-                    content,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                // Proceed only if API call was successful (status code 2xx)
+                if (response.IsSuccessStatusCode)
+                {
+                    // Read response content as JSON string
+                    var content = await response.Content.ReadAsStringAsync();
 
-                // Convert list into dictionary for faster lookup by TenantId
-                if (result?.Data != null)
-                    tenantSummaries = result.Data.ToDictionary(td => td.TenantId, td => td);
+                    // Deserialize JSON into ServiceResponse DTO (case-insensitive mapping)
+                    var result = JsonSerializer.Deserialize<ServiceResponse<IEnumerable<TenantTableSummaryDto>>>(
+                        content,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    // Convert list into dictionary for faster lookup by TenantId
+                    if (result?.Data != null)
+                        tenantSummaries = result.Data.ToDictionary(td => td.TenantId, td => td);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to retrieve tenant job summary from Workspace API; continuing with default summary metrics.");
             }
 
             // Map the retrieved data into a list of TenantsTableDto objects

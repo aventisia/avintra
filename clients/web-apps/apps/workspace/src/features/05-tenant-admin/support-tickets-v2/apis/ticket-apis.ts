@@ -105,6 +105,12 @@ export const getTenantSupportConfig = (tenantId: string) =>
     )
     .then((res) => res.data);
 
+/** Retrieves the current tenant's support configuration (e.g. whether Change Requests are enabled). */
+export const getCurrentTenantSupportConfig = () =>
+  axiosInstance
+    .get<IHttpResponse<TenantSupportConfigDto>>(`${baseAPIURL}/support-config`)
+    .then((res) => res.data);
+
 export const updateTenantSupportConfig = (tenantId: string, dto: TenantSupportConfigDto) =>
   axiosInstance
     .put<IHttpResponse<TenantSupportConfigDto>>(

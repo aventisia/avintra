@@ -228,17 +228,17 @@ public class NotificationEventService : INotificationEventService
 
     /// <summary>
     /// Resolves the delivery channel for a tenant's automatic notifications. Reads the
-    /// tenant's notification settings and falls back to <see cref="DeliveryChannelEnum.Platform"/>
+    /// tenant's notification settings and falls back to <see cref="DeliveryChannelEnum.Both"/>
     /// when no settings are stored.
     /// </summary>
     /// <param name="tenantId">The tenant whose delivery channel is being resolved.</param>
-    /// <returns>The configured delivery channel, defaulting to <see cref="DeliveryChannelEnum.Platform"/>.</returns>
+    /// <returns>The configured delivery channel, defaulting to <see cref="DeliveryChannelEnum.Both"/>.</returns>
     private async Task<DeliveryChannelEnum> GetDeliveryChannelAsync(Guid tenantId)
     {
         var tenant = await _tenantDbContext.ReadOnlyTenants
             .AsNoTracking()
             .FirstOrDefaultAsync(t => t.Id == tenantId);
 
-        return tenant?.NotificationSettings?.DeliveryChannel ?? DeliveryChannelEnum.Platform;
+        return tenant?.NotificationSettings?.DeliveryChannel ?? DeliveryChannelEnum.Both;
     }
 }

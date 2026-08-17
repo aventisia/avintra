@@ -21,12 +21,12 @@ export const useDefineNotificationSettingsForm = () => {
   const form = useForm<z.infer<typeof notificationSettingsSchema>>({
     resolver: zodResolver(notificationSettingsSchema),
     defaultValues: {
-      lowCredits: false,
-      subscription: false,
-      publishAgent: false,
+      lowCredits: true,
+      subscription: true,
+      publishAgent: true,
       subscriptionRenewalReminderDays: 7,
       lowCreditThreshold: 1000,
-      deliveryChannel: DeliveryChannelEnum.Platform,
+      deliveryChannel: DeliveryChannelEnum.Both,
     },
   });
 

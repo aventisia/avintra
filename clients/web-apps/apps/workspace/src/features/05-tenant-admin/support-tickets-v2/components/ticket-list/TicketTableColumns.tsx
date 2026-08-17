@@ -98,13 +98,6 @@ export const ticketTableColumns: ColumnDef<TicketTableDto>[] = [
     },
   },
   {
-    accessorKey: "agentName",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Agent" />
-    ),
-    cell: ({ row }) => <div>{row.getValue("agentName") || "-"}</div>,
-  },
-  {
     accessorKey: "createdBy",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TICKET_TABLE_KEY} column={column} title="Created By" />
