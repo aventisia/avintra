@@ -86,13 +86,20 @@ export const getLlmProvidersV2 = (capability?: string) => {
 /**
  * Retrieves the list of models for a given provider from the LLM pipeline API.
  * Returns raw JSON (not wrapped in IHttpResponse).
+ *
+ * When a `credentialId` is supplied it is forwarded to the pipeline as
+ * `credentialId`, which is echoed back on each model for ollama providers.
  */
-export const getLlmModelsV2 = (provider: string, capability?: string) => {
-  const params = capability
-    ? `?provider=${encodeURIComponent(provider)}&capability=${encodeURIComponent(capability)}`
-    : `?provider=${encodeURIComponent(provider)}`;
+export const getLlmModelsV2 = (
+  provider: string,
+  capability?: string,
+  credentialId?: string,
+) => {
+  const params = new URLSearchParams({ provider });
+  if (capability) params.set("capability", capability);
+  if (credentialId) params.set("credentialId", credentialId);
   return axiosInstance
-    .get<LlmModelsResponseDto>(`${llmPipelineBaseURL}/models${params}`, {
+    .get<LlmModelsResponseDto>(`${llmPipelineBaseURL}/models?${params.toString()}`, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);

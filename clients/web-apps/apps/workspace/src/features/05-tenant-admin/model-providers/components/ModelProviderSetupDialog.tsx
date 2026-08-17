@@ -154,13 +154,19 @@ export const ModelProviderSetupDialog = () => {
 
   // Fetch the models for the selected provider from the LLM pipeline API
   // (`/v2/llm/models?provider=X`). The provider name is sent in lowercase.
+  // For ollama providers the selected credential id is forwarded so the pipeline
+  // echoes it back on each returned model.
   const loadProviderModels = async () => {
     if (!provider) return;
     setIsProvidersLoading(true);
     setProviderModels([]);
     setModelSearch("");
     try {
-      const modelsRes = await getLlmModelsV2(provider.value.toLowerCase());
+      const modelsRes = await getLlmModelsV2(
+        provider.value.toLowerCase(),
+        undefined,
+        selectedCredentialId,
+      );
       setProviderModels(modelsRes?.models ?? []);
     } catch (err) {
       console.error("Failed to fetch models", err);

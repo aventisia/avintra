@@ -5,6 +5,8 @@
 #   - listing models for a provider from LiteLLM (dynamic)
 from __future__ import annotations
 
+from app.features.auth.authenticated_user import User
+
 from .litellm_service import litellm_service
 from .schemas import ModelsResponse, ProvidersResponse
 
@@ -20,8 +22,21 @@ class ProviderAdminService:
             provider=provider,
         )
         return ProvidersResponse(providers=providers, count=len(providers))
-    async def list_models(self, provider: str, capability: str | None = None) -> ModelsResponse:
-        models = await litellm_service.list_models(provider, capability)
+
+    async def list_models(
+        self,
+        provider: str,
+        capability: str | None = None,
+        *,
+        credential_id: str | None = None,
+        user: User | None = None,
+    ) -> ModelsResponse:
+        models = await litellm_service.list_models(
+            provider,
+            capability,
+            credential_id=credential_id,
+            user=user,
+        )
         return ModelsResponse(provider=provider, models=models, count=len(models))
 
 
