@@ -15,7 +15,10 @@ public class BackendFlowGraphProvider : IFlowGraphProvider
     {
         var parsed = ReactFlowHelper.Parse(graph.ReactFlowObject);
         if (parsed is not null)
+        {
+            parsed.InputOutputObject = graph.InputOutputObject;
             _cache[graph.FlowVersionId] = parsed;
+        }
 
         foreach (var subFlow in graph.SubFlows)
         {

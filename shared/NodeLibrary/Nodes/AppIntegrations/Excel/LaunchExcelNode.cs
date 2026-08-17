@@ -39,6 +39,15 @@ public class LaunchExcelNode : BaseNode
     {
         try
         {
+            // When the flow is already running on a persistent STA thread (DesktopExecutionEngine),
+            // execute directly on it so the created COM objects live in that apartment and remain
+            // usable by downstream nodes. Otherwise fall back to a transient STA thread (server mode).
+            if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
+            {
+                ExecuteSta(context);
+                return;
+            }
+
             var tcs = new TaskCompletionSource();
             var staThread = new Thread(() =>
             {
@@ -70,9 +79,7 @@ public class LaunchExcelNode : BaseNode
     private void ExecuteSta(INodeContext context)
     {
         dynamic? excelApp = null;
-        dynamic? workbooks = null;
         dynamic? workbook = null;
-        var comObjectsToRelease = new List<object>();
 
         try
         {
@@ -107,11 +114,10 @@ public class LaunchExcelNode : BaseNode
                         var readPassword = ReadProtectionPassword.Get(context);
                         var writePassword = WriteProtectionPassword.Get(context);
 
-                        workbooks = excelApp.Workbooks;
+                        dynamic workbooks = excelApp.Workbooks;
                         bool workbookAlreadyOpen = false;
                         foreach (var wb in workbooks)
                         {
-                            comObjectsToRelease.Add(wb);
                             var openWorkbookName = System.IO.Path.GetFileName((string)wb.FullName);
                             var targetWorkbookName = System.IO.Path.GetFileName(documentPath);
 
@@ -137,8 +143,7 @@ public class LaunchExcelNode : BaseNode
                     }
 
                 case ExcelLaunchModeEnum.NewWorkbook:
-                    workbooks = excelApp.Workbooks;
-                    workbook = workbooks.Add();
+                    workbook = excelApp.Workbooks.Add();
                     break;
 
                 default:
@@ -156,18 +161,6 @@ public class LaunchExcelNode : BaseNode
             try { workbook?.Close(SaveChanges: false); } catch { /* ignore */ }
             try { excelApp?.Quit(); } catch { /* ignore */ }
             throw;
-        }
-        finally
-        {
-            foreach (var obj in comObjectsToRelease)
-            {
-                OfficeAutomationHelper.Release(obj);
-            }
-
-            if (workbooks is not null && !ReferenceEquals(workbooks, workbook))
-            {
-                OfficeAutomationHelper.Release(workbooks);
-            }
         }
     }
 }
