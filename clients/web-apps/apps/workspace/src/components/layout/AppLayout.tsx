@@ -30,6 +30,9 @@ import { PreventNavigationBlocker } from "./PreventNavigationBlocker";
 import { Sidebar } from "./Sidebar";
 import { getSidebarMenuBasedOnPermissions } from "./sidebar-menu-sections";
 
+/** localStorage key used to persist the user's selected sidebar roles across sessions. */
+export const SELECTED_ROLES_STORAGE_KEY = "workspace_selected_roles";
+
 export const AppLayout = () => {
   const [connectWebsocket, setConnectWebsocket] = useState<boolean>(false);
   const [landingUrl, setLandingUrl] = useState<string>("");
@@ -38,13 +41,16 @@ export const AppLayout = () => {
   const location = useLocation();
 
   // Get the state and actions from the base layout store
-  const { sidebarExpand, setViteEnvVars, setSidebarMenuSections } = useBaseLayoutStore(
-    useShallow((state) => ({
-      sidebarExpand: state.sidebarExpand,
-      setViteEnvVars: state.setViteEnvVars,
-      setSidebarMenuSections: state.setSidebarMenuSections,
-    })),
-  );
+  const { sidebarExpand, setViteEnvVars, setSidebarMenuSections, selectedRoles, setSelectedRoles } =
+    useBaseLayoutStore(
+      useShallow((state) => ({
+        sidebarExpand: state.sidebarExpand,
+        setViteEnvVars: state.setViteEnvVars,
+        setSidebarMenuSections: state.setSidebarMenuSections,
+        selectedRoles: state.selectedRoles,
+        setSelectedRoles: state.setSelectedRoles,
+      })),
+    );
   const { isLoading: isAppLoading } = useAppLoaderStore(
     useShallow((state) => ({ isLoading: state.isLoading })),
   );
@@ -100,7 +106,7 @@ export const AppLayout = () => {
   // Execute agent based on websocket command
   useCheckJobTrigger(isReady ? connection : null);
 
-  // Set environment variables and sidebar menu sections only once
+  // Set environment variables and initialize the selected roles on login
   useEffect(() => {
     // If the user session is still pending, do not proceed
     if (isPending || !userSession) return;
@@ -112,8 +118,27 @@ export const AppLayout = () => {
       COMPANY_NAME: import.meta.env.VITE_COMPANY_NAME,
     });
 
+    // Initialize the selected roles from localStorage, falling back to all of the
+    // user's roles on first login. Only set the store if it hasn't been initialized
+    // yet for this session to avoid clobbering a user's in-session selection.
+    if (selectedRoles.length === 0) {
+      const storedRoles = localStorage.getItem(SELECTED_ROLES_STORAGE_KEY);
+      const initialRoles =
+        storedRoles && storedRoles.length > 0
+          ? storedRoles.split(",")
+          : (userSession?.userRoles ?? []);
+      setSelectedRoles(initialRoles);
+    }
+  }, [isPending, selectedRoles.length, setSelectedRoles, setViteEnvVars, userSession]);
+
+  // Recompute the sidebar menu sections and allowed routes whenever the selected
+  // roles change.
+  useEffect(() => {
+    // If the user session is still pending or no roles are selected yet, do not proceed
+    if (isPending || !userSession || selectedRoles.length === 0) return;
+
     const filteredSidebarMenu = getSidebarMenuBasedOnPermissions(
-      userSession?.userRoles || [],
+      selectedRoles,
       userSession?.deploymentType,
     );
     // Set the sidebar menu sections
@@ -130,7 +155,7 @@ export const AppLayout = () => {
     setAllowedRoutes([...allowedRoutes, "/account"]);
 
     setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
-  }, [isPending, setAllowedRoutes, setSidebarMenuSections, setViteEnvVars, userSession]);
+  }, [isPending, selectedRoles, setAllowedRoutes, setSidebarMenuSections, setLandingUrl, userSession]);
 
   useEffect(() => {
     //Navigate user to first option of filteredSidebarMenu

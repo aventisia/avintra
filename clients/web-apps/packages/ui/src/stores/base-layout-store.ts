@@ -45,10 +45,22 @@ interface BaseLayoutStore {
   viteEnvVars: ViteEnvVarType;
 
   /**
+   * The subset of the user's roles that are currently active for filtering the sidebar menu.
+   * Defaults to all of the user's roles on login.
+   */
+  selectedRoles: string[];
+
+  /**
    * Updates the sections of the sidebar menu.
    * @param sidebarMenuSections - An array of SidebarMenuSectionType representing the new sections.
    */
   setSidebarMenuSections: (sidebarMenuSections: SidebarMenuSectionType[]) => void;
+
+  /**
+   * Updates the subset of roles used to filter the sidebar menu.
+   * @param selectedRoles - An array of role codes that should be active.
+   */
+  setSelectedRoles: (selectedRoles: string[]) => void;
 
   /**
    * Updates the state of the sidebar expansion.
@@ -99,10 +111,13 @@ const useBaseLayoutStore = create<BaseLayoutStore>((set) => ({
     APP_NAME: "",
     COMPANY_NAME: "",
   },
+  selectedRoles: [],
 
   // Methods for manipulating state
   setSidebarMenuSections: (newValue: SidebarMenuSectionType[]) =>
     set((state) => ({ ...state, sidebarMenuSections: newValue })),
+
+  setSelectedRoles: (newValue: string[]) => set((state) => ({ ...state, selectedRoles: newValue })),
 
   setSidebarExpand: (newValue: boolean) => set((state) => ({ ...state, sidebarExpand: newValue })),
 

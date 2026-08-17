@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { logOffFromCurrentSession } from "@/react-toolkit/apis/accounts-me-apis";
+import { RoleSelector } from "./RoleSelector";
 
 interface UserAccountModalProps {
   /** Additional class name to override popover content container style */
@@ -99,6 +100,9 @@ const UserAccountModal = ({ className, sizeClassName = "h-8 w-8" }: UserAccountM
           <Lucide icon="User" className="h-4 w-4" />
           My Account
         </Button>
+        <Separator className="my-1 h-[0.5px]" />
+        {/* Role selector for filtering the sidebar menu */}
+        <RoleSelector />
         <Separator className="my-1 h-[0.5px]" />
         {/* Logout */}
         <Button
