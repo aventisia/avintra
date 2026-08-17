@@ -36,6 +36,7 @@ async def list_models_route(
     credential_id: str | None = None,
     _user: User = Depends(authorize()),
 ):
+    print("id",credential_id)
     return await provider_admin_service.list_models(
         provider,
         capability=capability.value if capability else None,

@@ -97,7 +97,7 @@ export const getLlmModelsV2 = (
 ) => {
   const params = new URLSearchParams({ provider });
   if (capability) params.set("capability", capability);
-  if (credentialId) params.set("credentialId", credentialId);
+  if (credentialId) params.set("credential_id", credentialId);
   return axiosInstance
     .get<LlmModelsResponseDto>(`${llmPipelineBaseURL}/models?${params.toString()}`, {
       headers: getSpaceHeaders(),

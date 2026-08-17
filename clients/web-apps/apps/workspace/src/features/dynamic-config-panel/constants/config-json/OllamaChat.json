@@ -7,5 +7,14 @@
     "defaultValue": "",
     "required": false,
     "description": ""
+  },
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "ApiKey",
+    "label": "API Key",
+    "description": "The API key for Ollama Chat.",
+    "defaultValue": "",
+    "required": true
   }
 ]
