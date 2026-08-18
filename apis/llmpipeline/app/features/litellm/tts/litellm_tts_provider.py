@@ -17,11 +17,15 @@ from app.features.auth.authenticated_user import User
 from app.utils.errors import friendly_error
 
 from ..core.credit_utils import (
+    build_byok_entry,
     has_sufficient_platform_credits,
+    post_byok_usage,
     post_credit_usage,
+    should_record_byok,
 )
+from ..core.credentials import resolve_credential_name
 from ..core.litellm_service import litellm_service
-from ..core.provider_registry import should_post_usage, validate_model, validate_provider
+from ..core.provider_registry import get_credit_service_type, should_post_usage, validate_model, validate_provider
 from ..core.schemas import TTSRequest, TTSResponse
 from .tts_base import BaseTextToSpeechProvider
 
@@ -125,4 +129,29 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
             except Exception as exc:
                 logger.error(f"Failed to post TTS credit usage | error={exc}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {exc}")
+        # Post BYOK usage for caller's own key requests.
+        if should_record_byok(tts_request.is_byok_enabled, tts_request.credentials_id):
+            try:
+                # Resolve the vault credential name for attribution.
+                tts_request.credential_name = resolve_credential_name(tts_request.credentials_id, user)
+                service = get_credit_service_type(tts_request.provider, tts_request.model, "service")
+                if service:
+                    entry = build_byok_entry(
+                        service,
+                        tts_request.provider,
+                        tts_request.model,
+                        len(tts_request.input),
+                        "Characters",
+                        tts_request.credentials_id,
+                        tts_request.credential_name,
+                        tts_request.ref_type,
+                        tts_request.ref_id,
+                        tts_request.ref_name,
+                        tts_request.action,
+                        tts_request.agent_name,
+                        user.space_id,
+                    )
+                    post_byok_usage(tts_request.provider, [entry], user.access_token)
+            except Exception as exc:
+                logger.error(f"Failed to post TTS BYOK usage | error={exc}")
         return response

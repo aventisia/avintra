@@ -33,6 +33,7 @@ public class UnitOfWork : IUnitOfWork
     public ITenantCreditRepo TenantCreditRepo => new TenantCreditRepo(_accountsDbContext);
     public ICreditPlanRepo CreditPlanRepo => new CreditPlanRepo(_accountsDbContext);
     public ICreditUsageRepo CreditUsageRepo => new CreditUsageRepo(_accountsDbContext);
+    public IByokUsageRepo ByokUsageRepo => new ByokUsageRepo(_accountsDbContext);
     public IAITaskRepo AITaskRepo => new AITaskRepo(_accountsDbContext);
 
     public async Task<bool> SaveAsync(bool checkHasChanges = false) => checkHasChanges && (!_accountsDbContext.ChangeTracker.HasChanges() || await _accountsDbContext.SaveChangesAsync() > 0) || await _accountsDbContext.SaveChangesAsync() > 0;

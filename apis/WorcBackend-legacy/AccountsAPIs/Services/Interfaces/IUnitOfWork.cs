@@ -50,6 +50,8 @@ public interface IUnitOfWork
 
     ICreditUsageRepo CreditUsageRepo { get; }
 
+    IByokUsageRepo ByokUsageRepo { get; }
+
     IAITaskRepo AITaskRepo { get; }
 
     /// <summary>

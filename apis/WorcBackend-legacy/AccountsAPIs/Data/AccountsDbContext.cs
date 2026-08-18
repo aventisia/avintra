@@ -41,6 +41,7 @@ public partial class AccountsDbContext : IdentityDbContext<
         {
             builder.Entity<AppIntegration>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             builder.Entity<CreditUsage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+            builder.Entity<ByokUsage>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             builder.Entity<BillingDetail>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             builder.Entity<BillingHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
             builder.Entity<TenantSubscription>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -79,6 +80,10 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<CreditUsage>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServicesEnum>());
         builder.Entity<CreditUsage>().Property(e => e.RefType).HasConversion(new EnumToStringConverter<UsageSourceTypesEnum>());
         builder.Entity<CreditUsage>().Property(e => e.Action).HasConversion(new EnumToStringConverter<ActionTypesEnum>());
+        builder.Entity<ByokUsage>().Property(e => e.ServiceType).HasConversion(new EnumToStringConverter<CreditServicesEnum>());
+        builder.Entity<ByokUsage>().Property(e => e.UnitType).HasConversion(new EnumToStringConverter<UnitTypesEnum>());
+        builder.Entity<ByokUsage>().Property(e => e.RefType).HasConversion(new EnumToStringConverter<UsageSourceTypesEnum>());
+        builder.Entity<ByokUsage>().Property(e => e.Action).HasConversion(new EnumToStringConverter<ActionTypesEnum>());
         builder.Entity<TenantSubscription>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<SubscriptionFrequenciesEnum>());
         builder.Entity<BillingDetail>().Property(e => e.Country).HasConversion(new EnumToStringConverter<CountriesEnum>());
         builder.Entity<BillingHistory>().Property(e => e.PaymentStatus).HasConversion(new EnumToStringConverter<PaymentStatusTypesEnum>());

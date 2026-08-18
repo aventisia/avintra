@@ -25,9 +25,14 @@ class CredentialResolution:
         uses_platform_credentials: True when the request runs on the platform's
             environment credentials (non-BYOK), so platform credits apply.
             False when the caller supplied their own (BYOK) credentials.
+        credential_id: The BYOK vault credential id (None when not BYOK).
+        credential_name: The display name of the BYOK vault credential
+            (None when not BYOK).
     """
     kwargs: dict = field(default_factory=dict)
     uses_platform_credentials: bool = True
+    credential_id: str | None = None
+    credential_name: str | None = None
 
 
 def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None, user: User) -> CredentialResolution:
@@ -69,6 +74,9 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
         raise HTTPException(status_code=400, detail="No valid credentials found.")
 
     credential_data = credential.get("data") or credential
+    # The vault secret carries a display Name at the top level; fall back to the
+    # credential id when it is not present so BYOK usage can still be attributed.
+    credential_name = credential.get("Name") or credential_data.get("Name")
 
     # AWS-style providers authenticate via AWS credentials, not an api_key.
     if provider in _AWS_PROVIDERS:
@@ -83,6 +91,8 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
         return CredentialResolution(
             kwargs={k: v for k, v in kwargs.items() if v is not None},
             uses_platform_credentials=False,
+            credential_id=credential_id,
+            credential_name=credential_name,
         )
 
     # Google Vertex AI uses a service-account JSON + project + location.
@@ -95,6 +105,8 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
         return CredentialResolution(
             kwargs={k: v for k, v in kwargs.items() if v is not None},
             uses_platform_credentials=False,
+            credential_id=credential_id,
+            credential_name=credential_name,
         )
 
     # Azure OpenAI uses a key + endpoint + version.
@@ -107,6 +119,8 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
         return CredentialResolution(
             kwargs={k: v for k, v in kwargs.items() if v is not None},
             uses_platform_credentials=False,
+            credential_id=credential_id,
+            credential_name=credential_name,
         )
 
     # IBM WatsonX uses a key + project id + region.
@@ -119,6 +133,8 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
         return CredentialResolution(
             kwargs={k: v for k, v in kwargs.items() if v is not None},
             uses_platform_credentials=False,
+            credential_id=credential_id,
+            credential_name=credential_name,
         )
 
     # Key-based providers: api_key + optional api_base/api_version.
@@ -130,6 +146,8 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
     return CredentialResolution(
         kwargs={k: v for k, v in kwargs.items() if v is not None},
         uses_platform_credentials=False,
+        credential_id=credential_id,
+        credential_name=credential_name,
     )
 
 
@@ -139,6 +157,40 @@ def _is_real_credential(credential_id: str | None) -> bool:
         return False
     cleaned = str(credential_id).strip()
     return cleaned not in ("", "00000000-0000-0000-0000-000000000000")
+
+
+def resolve_credential_name(credential_id: str | None, user: User | None = None, jwt: str | None = None) -> str | None:
+    """Resolve the display name of a BYOK vault credential for usage attribution.
+
+    Returns None when the credential is not real or cannot be resolved, so
+    callers can fall back to the credential id for attribution.
+
+    Args:
+        credential_id: The BYOK vault credential id.
+        user: The authenticated user (used to authorize the vault lookup).
+            Either ``user`` or ``jwt`` must be provided.
+        jwt: An optional raw JWT to authorize the vault lookup when a full
+            ``User`` object is not available.
+
+    Returns:
+        The credential display name, or None when unavailable.
+    """
+    if not _is_real_credential(credential_id):
+        return None
+    access_token = jwt or (user.access_token if user else None)
+    try:
+        vault = VaultManager()
+        credential = vault.get_vault_secret_by_id(
+            vault_secret_id=credential_id,
+            jwt=access_token,
+        )
+        if not credential:
+            return None
+        credential_data = credential.get("data") or credential
+        return credential.get("Name") or credential_data.get("Name")
+    except Exception as e:
+        logger.error(f"[LLM-V2] Failed to resolve credential name for {credential_id}: {e}")
+        return None
 
 
 # Providers that authenticate via AWS credentials.

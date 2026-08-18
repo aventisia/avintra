@@ -1,0 +1,26 @@
+meta {
+  name: Insert BYOK usage record
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/byok-usage
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "serviceType": "Gpt4oMiniInput",
+    "consumedUnit": 42,
+    "unitType": "Tokens",
+    "credentialId": "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
+    "credentialName": "My BYOK Key",
+    "refType": "Agent",
+    "refId": "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
+    "refName": "my_new_agent",
+    "action": "AgentExecution",
+    "triggeredByAgent": "Test"
+  }
+}

@@ -3,6 +3,7 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
 
 import { AvailableCreditDto } from "../dtos/available-credits-dto";
+import { ByokUsageDTO } from "../dtos/byok-usage-dto";
 import { CreditUsageDTO } from "../dtos/credits-usage-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/credit-usage`;
@@ -36,4 +37,28 @@ const getAvailableCredits = () => {
     .then((res) => res.data);
 };
 
-export { getCreditUsageSummary, getAvailableCredits };
+/** Get the BYOK usage summary for the user */
+const getByokUsageSummary = (
+  startDate: string = "",
+  endDate: string = "",
+  filterBySpaces = false,
+  spaceIds: string[] = [],
+  includeCentral = true,
+) => {
+  const params = new URLSearchParams({
+    startDate,
+    endDate,
+    filterBySpaces: String(filterBySpaces),
+    includeCentral: String(includeCentral),
+  });
+  if (filterBySpaces && spaceIds.length > 0) {
+    params.set("spaceIds", spaceIds.join(","));
+  }
+
+  const byokBaseAPIURL = `${import.meta.env.VITE_ACCOUNTS_API_PATH}/byok-usage`;
+  return axiosInstance
+    .get<IHttpResponse<ByokUsageDTO>>(`${byokBaseAPIURL}/summary?${params.toString()}`)
+    .then((res) => res.data);
+};
+
+export { getCreditUsageSummary, getAvailableCredits, getByokUsageSummary };

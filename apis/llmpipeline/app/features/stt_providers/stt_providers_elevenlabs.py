@@ -13,6 +13,8 @@ from app.core.config import settings
 from app.core.logger import logger, log_exception
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
+from app.core.byok_usage_manager import ByokUsageManager
+from app.features.litellm.core.credentials import resolve_credential_name
 from app.utils.file_converter_utils import file_to_base64
 from app.features.auth.authenticated_user import User
 from app.features.stt_providers.stt_providers_schema import (
@@ -402,6 +404,55 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     status_code=500,
                     detail=f"Failed to post credit usage: {str(e)}"
                 )
+
+        # BYOK USAGE (caller's own key)
+        elif req.is_byok_enabled and req.credentials_id:
+            try:
+                byok_manager = ByokUsageManager()
+
+                # Mapping of request model names to internal service type identifiers
+                STT_MODEL_MAP = {
+                    "scribe_v2": "ElevenLabsScribeV2",
+                    "scribe_v2_realtime": "ElevenLabsScribeV2Realtime",
+                    "scribe_v1": "ElevenLabsScribeV1",
+                }
+
+                # Resolve the internal service type based on requested model
+                service_type = STT_MODEL_MAP.get(req.model)
+
+                # Validate model support to avoid silent recording errors
+                if not service_type:
+                    raise ValueError(f"Unsupported STT model: {req.model}")
+
+                # Resolve the vault credential name for attribution
+                credential_name = resolve_credential_name(req.credentials_id, jwt=jwt)
+
+                byok_usage = {
+                    "ServiceType": service_type,
+                    "Provider": req.provider,
+                    "Model": req.model,
+                    "ConsumedUnit": base_response.token_count,
+                    "UnitType": "Seconds",
+                    "CredentialId": req.credentials_id,
+                    "CredentialName": credential_name,
+                    "RefType": req.ref_type,
+                    "RefId": req.ref_id,
+                    "RefName": req.ref_name,
+                    "Action": req.action,
+                    "TriggeredByAgent": req.agent_name,
+                    "SpaceId": space_id,
+                }
+
+                byok_manager.post_byok_usage(
+                    task="elevenlabs",
+                    request=byok_usage,
+                    jwt=jwt
+                )
+
+                logger.info(f"STT BYOK usage posted | ref_id={req.ref_id}")
+
+            except Exception as e:
+                logger.error(f"Failed to post STT BYOK usage | error={str(e)}")
 
         return base_response
 
