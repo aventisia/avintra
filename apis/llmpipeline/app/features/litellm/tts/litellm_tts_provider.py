@@ -77,7 +77,7 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
             tts_request,
             start_time,
             audio_bytes,
-            user.access_token,
+            user,
         )
 
     def _check_credits(self, tts_request: TTSRequest, user: User) -> None:
@@ -94,7 +94,7 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
         tts_request: TTSRequest,
         start_time: float,
         audio_bytes: bytes,
-        access_token: str,
+        user: User,
     ) -> TTSResponse:
         """Build the completed TTS response and post credit usage.
 
@@ -121,7 +121,7 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
         if should_post_usage(tts_request.is_byok_enabled, tts_request.credentials_id):
             try:
                 # Bill based on the number of characters synthesized.
-                post_credit_usage(tts_request, tts_request.provider, "service", len(tts_request.input), access_token)
+                post_credit_usage(tts_request, tts_request.provider, "service", len(tts_request.input), user.access_token, user.space_id)
             except Exception as exc:
                 logger.error(f"Failed to post TTS credit usage | error={exc}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {exc}")

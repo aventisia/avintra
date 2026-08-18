@@ -108,6 +108,7 @@ export const useFetchFlowToLoad = () => {
       description: flowData.description || "",
       accessType: flowData.accessLevel,
       inputOutputObject: flowData.inputOutputObject || "",
+      spaceId: flowData.spaceId ?? null,
     });
 
     setIsPublished(flowData.isPublished || false);

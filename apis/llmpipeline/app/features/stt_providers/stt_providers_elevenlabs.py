@@ -70,7 +70,8 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                 start_time=start_time,
                 transcript=transcript,
                 raw_response=response_json,
-                jwt=user.access_token
+                jwt=user.access_token,
+                space_id=user.space_id,
             )
 
         except Exception as e:
@@ -233,7 +234,8 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     base_response=base_response,
                     start_time=start_time,
                     transcript=full_text,
-                    jwt=user.access_token
+                    jwt=user.access_token,
+                    space_id=user.space_id,
                 )
                 
                 yield final_response.model_dump_json() + "\n"
@@ -343,7 +345,8 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
         start_time: float,
         transcript: str,
         raw_response: dict = None,
-        jwt: str = None
+        jwt: str = None,
+        space_id: str = None
     ) -> STTProviderResponse:
 
         end_time = time.perf_counter()
@@ -382,6 +385,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     "RefName": req.ref_name,
                     "Action": req.action,
                     "TriggeredByAgent": req.agent_name,
+                    "SpaceId": space_id,
                 }
 
                 credit_manager.post_credit_usage(

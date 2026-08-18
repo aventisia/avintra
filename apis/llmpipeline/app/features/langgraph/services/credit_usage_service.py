@@ -175,6 +175,7 @@ def _build_credit_usage_entries(
     request: LLMRequest,
     service_map: CreditServiceMap,
     usage: TokenUsage,
+    space_id: str | None = None,
 ) -> list[dict]:
     """Create credit-usage entries for consumed tokens."""
 
@@ -193,6 +194,7 @@ def _build_credit_usage_entries(
                 "RefName": request.ref_name,
                 "Action": request.action,
                 "TriggeredByAgent": request.agent_name,
+                "SpaceId": space_id,
             }
         )
 
@@ -220,6 +222,7 @@ class CreditUsageService:
         request: LLMRequest,
         response: LLMResponse,
         jwt: str,
+        space_id: str | None = None,
     ) -> None:
         """
         Build a credit-usage payload from the request/response and post it.
@@ -244,6 +247,7 @@ class CreditUsageService:
                 request,
                 service_map,
                 usage,
+                space_id,
             )
 
             if not credit_usage:

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@avplatform/ui/cards";
 import { cn } from "@avplatform/ui/lib";
 import { useState } from "react";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis } from "recharts";
 
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "./Chart";
 
@@ -54,6 +54,8 @@ interface ChartLineInteractiveProps {
   chartConfig?: ChartConfig;
   valueKey: string;
   className?: string;
+  /** Optional average value to render as a dashed reference line on the chart. */
+  average?: number;
 }
 
 export function ChartLineInteractive({
@@ -63,20 +65,11 @@ export function ChartLineInteractive({
   chartConfig = {},
   valueKey,
   className,
+  average,
 }: ChartLineInteractiveProps) {
   const [activeChart] = useState<keyof typeof chartConfig>(valueKey);
-  // const total = React.useMemo(
-  //   () =>
-  //     data?.reduce(
-  //       (acc, curr) =>
-  //         acc +
-  //         (valueKey == "totalCredits"
-  //           ? curr.totalCredits
-  //           : curr.totalTransactions),
-  //       0,
-  //     ),
-  //   [data, valueKey],
-  // );
+
+  const showAverage = typeof average === "number" && !Number.isNaN(average);
 
   return (
     <Card className={cn("py-4 sm:py-0", className)}>
@@ -86,6 +79,14 @@ export function ChartLineInteractive({
           {total.toLocaleString("en-US", {
             maximumFractionDigits: 2,
           })}
+          {showAverage && (
+            <span className="ml-3 text-sm font-normal text-muted-foreground">
+              Avg / day:{" "}
+              {average.toLocaleString("en-US", {
+                maximumFractionDigits: 2,
+              })}
+            </span>
+          )}
         </CardTitle>
       </CardHeader>
 
@@ -142,6 +143,14 @@ export function ChartLineInteractive({
               strokeWidth={2.5}
               dot={false}
             />
+            {showAverage && (
+              <ReferenceLine
+                y={average}
+                stroke="var(--muted-foreground)"
+                strokeDasharray="6 4"
+                strokeWidth={1.5}
+              />
+            )}
           </LineChart>
         </ChartContainer>
       </CardContent>

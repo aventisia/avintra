@@ -18,6 +18,12 @@ public class CreditUsage : IMustHaveTenant
     public Guid TenantId { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the space this credit usage belongs to.
+    /// Null indicates the default "Central" space (shared across the tenant).
+    /// </summary>
+    public Guid? SpaceId { get; set; }
+
+    /// <summary>
     /// Gets or sets the timestamp when the credits were used.
     /// </summary>
     public DateTimeOffset UsedAt { get; set; } = DateTimeOffset.UtcNow;

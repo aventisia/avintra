@@ -99,6 +99,14 @@ public class StreamingChatService : IStreamingChatService
         httpClient.Timeout = Timeout.InfiniteTimeSpan;
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/event-stream"));
 
+        // Forward the flow's space to llmpipeline so Chat Agent LLM credit usage
+        // is attributed to the correct space (rather than defaulting to Central).
+        var flowSpaceId = flowVersion.Flow?.SpaceId;
+        if (flowSpaceId.HasValue && flowSpaceId.Value != Guid.Empty)
+        {
+            httpClient.DefaultRequestHeaders.Add("X-Space-Id", flowSpaceId.Value.ToString());
+        }
+
         using var httpRequest = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {
             Content = jsonContent,
@@ -162,6 +170,10 @@ public class StreamingChatService : IStreamingChatService
         // applied after the DB query so it can vary between temporary (Studio
         // test panel, draft allowed) and persisted (Assist, published required)
         // chats without building a dynamic expression tree.
+        //
+        // A flow version ID is globally unique within a tenant, so the lookup is
+        // intentionally NOT scoped to the current space query filter. The caller's
+        // access is enforced separately via GetResourceAccessAsync below.
         var flowVersion = await _unitOfWork.FlowVersionRepo
             .GetByConditionAsync(w =>
                 w.Id == request.FlowVersionId &&
@@ -169,6 +181,7 @@ public class StreamingChatService : IStreamingChatService
             .Include(w => w.Flow)
                 .ThenInclude(f => f!.FlowUsers)
             .Include(w => w.FlowVersionUsers)
+            .IgnoreQueryFilters()
             .AsNoTracking()
             .SingleOrDefaultAsync(cancellationToken);
 

@@ -18,7 +18,8 @@ public class FlowBuilderMappingProfile : IRegister
                     }))
             .Map(dest => dest.Name, src => src.Flow != null ? src.Flow.Name : null)
             .Map(dest => dest.Description, src => src.Flow != null ? src.Flow.Description : null)
-            .Map(dest => dest.Type, src => src.Flow != null ? src.Flow.Type.ToString() : null);
+            .Map(dest => dest.Type, src => src.Flow != null ? src.Flow.Type.ToString() : null)
+            .Map(dest => dest.SpaceId, src => src.Flow != null ? src.Flow.SpaceId : null);
 
         // To Update flow's node, edges etc silently in the background
         config.NewConfig<FlowSilentUpdateDto, FlowVersion>()

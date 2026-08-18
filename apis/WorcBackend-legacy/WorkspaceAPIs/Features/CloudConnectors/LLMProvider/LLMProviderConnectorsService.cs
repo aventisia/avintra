@@ -7,6 +7,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
     private readonly ILogger<LLMProviderConnectorsService> _logger;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly string _jwt;
 
     public LLMProviderConnectorsService(
@@ -18,6 +19,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
         _logger = logger;
         _environmentConfig = environmentConfig;
         _cloudConnectorsVaultService = cloudConnectorsVaultService;
+        _httpContextAccessor = httpContextAccessor;
 
         _jwt = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] ?? httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? "";
 
@@ -152,7 +154,13 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             // call open AI Api 
             using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jwt);
-
+            // Forward the current space so llmpipeline attributes LLM credit usage
+            // to the correct space instead of defaulting to Central.
+            var spaceIdHeader = _httpContextAccessor.HttpContext?.Request.Headers["X-Space-Id"];
+            if (Guid.TryParse(spaceIdHeader.ToString(), out var spaceId) && spaceId != Guid.Empty)
+            {
+                httpClient.DefaultRequestHeaders.Add("X-Space-Id", spaceId.ToString());
+            }
             string endpoint = $"{_environmentConfig.LlmPipelineApiBaseUrl}/api/v2/llm/generate";
 
             var jsonContent = new StringContent(

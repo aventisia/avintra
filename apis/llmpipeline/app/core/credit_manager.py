@@ -84,6 +84,7 @@ class CreditManagerService:
         for item in payload:
             sanitized = dict(item)
             sanitized["RefId"] = self._sanitize_guid(sanitized.get("RefId"))
+            sanitized["SpaceId"] = self._sanitize_guid(sanitized.get("SpaceId"))
             sanitized["RefName"] = self._sanitize_optional_text(sanitized.get("RefName"))
             sanitized["TriggeredByAgent"] = self._sanitize_optional_text(sanitized.get("TriggeredByAgent"))
             sanitized["RefType"] = self._sanitize_ref_type(sanitized.get("RefType"))

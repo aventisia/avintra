@@ -40,6 +40,9 @@ export interface LoadFlowDto {
   /** Gets or sets the type of the flow.  c*/
   type: FlowTypesEnum;
 
+  /** Gets or sets the ID of the space this flow belongs to (null = Central). */
+  spaceId?: string | null;
+
   /** Gets or sets the description of the flow */
   description?: string;
 

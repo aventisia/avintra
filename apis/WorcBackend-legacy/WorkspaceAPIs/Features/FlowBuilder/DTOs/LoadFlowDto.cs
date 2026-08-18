@@ -67,6 +67,12 @@ public class LoadFlowDto
     public FlowTypesEnum Type { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the space this flow belongs to.
+    /// Null indicates the default "Central" space.
+    /// </summary>
+    public Guid? SpaceId { get; set; }
+
+    /// <summary>
     /// Gets or sets the description of the flow
     /// </summary>
     public string? Description { get; set; }

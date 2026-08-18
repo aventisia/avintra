@@ -17,6 +17,8 @@ interface ICurrentFlowDetails {
   accessType?: string;
   inputOutputObject?: string;
   jobId?: string;
+  /** ID of the space this flow belongs to (null/undefined = Central). */
+  spaceId?: string | null;
 }
 
 interface ConditionalExecutionGroup {
@@ -87,6 +89,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     description: "",
     inputOutputObject: "",
     jobId: "",
+    spaceId: null,
   },
 
   isChatAgent: false,

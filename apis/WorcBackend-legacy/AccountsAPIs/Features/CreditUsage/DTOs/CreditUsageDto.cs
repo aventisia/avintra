@@ -11,6 +11,12 @@ public class CreditsUsageDto
     public CreditServicesEnum ServiceType { get; set; }
 
     /// <summary>
+    /// Gets or sets the ID of the space this credit usage belongs to.
+    /// Null indicates the default "Central" space.
+    /// </summary>
+    public Guid? SpaceId { get; set; }
+
+    /// <summary>
     /// Gets or sets the number of unit consumed for the specified service. 
     /// </summary>
     public double ConsumedUnit { get; set; }
@@ -63,14 +69,14 @@ public class CreditsUsageSummaryDto
     public List<DataUsageDataPointDto>? CreditUsages { get; set; }
 
     /// <summary>
-    /// Gets or sets the time-series data for agent transaction usage, used for charting transaction trends.
+    /// Gets or sets the time-series data for execution-time credit usage, used for charting execution credit trends.
     /// </summary>
-    public List<DataUsageDataPointDto>? AgentCreditUsages { get; set; }
+    public List<DataUsageDataPointDto>? ExecutionCreditUsages { get; set; }
 
     /// <summary>
-    /// Gets or sets the time-series data for agent evaluations, used for charting evaluation trends.
+    /// Gets or sets the time-series data for LLM/model credit usage, used for charting model credit trends.
     /// </summary>
-    public List<DataUsageDataPointDto>? AgentTransactionUsages { get; set; }
+    public List<DataUsageDataPointDto>? LlmCreditUsages { get; set; }
 
 
     /// <summary>
@@ -100,9 +106,14 @@ public class UsageSummaryDto
     public double TotalCredits { get; set; }
 
     /// <summary>
-    /// Gets or sets the total count of transactions processed within the selected period.
+    /// Gets or sets the total number of credits consumed by execution time within the selected period.
     /// </summary>
-    public int TotalAgentTransactions { get; set; }
+    public double TotalExecutionCredits { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of credits consumed by LLM/model services within the selected period.
+    /// </summary>
+    public double TotalLlmCredits { get; set; }
 
     /// <summary>
     /// Gets or sets the total number of credits consumed by the agent within the selected period.
@@ -158,9 +169,10 @@ public class ResourceUsageDetailDto
     public double TotalCredits { get; set; }
 
     /// <summary>
-    /// Gets or sets the total number of credits used by the service.
+    /// Gets or sets a value indicating whether this service is an execution-time service.
+    /// Non-execution services (LLM models, embeddings, ElevenLabs) are shown in the model charts.
     /// </summary>
-    public int TotalTransactions { get; set; }
+    public bool IsExecution { get; set; }
 
     /// <summary>
     /// Gets or sets the historical usage data points for this resource.
@@ -205,9 +217,14 @@ public class UserUsageDto
     public string? Username { get; set; }
 
     /// <summary>
-    /// Gets or sets the total number of transactions performed by the user.
+    /// Gets or sets the total number of credits used by the user for execution time.
     /// </summary>
-    public int TotalTransactions { get; set; }
+    public double TotalExecutionCredits { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of credits used by the user for LLM/model services.
+    /// </summary>
+    public double TotalLlmCredits { get; set; }
 
     /// <summary>
     /// Gets or sets the total number of credits used by the user.
@@ -226,9 +243,14 @@ public class AgentUsageDto
     public string? AgentName { get; set; }
 
     /// <summary>
-    /// Gets or sets the total number of transactions performed by the agent.
+    /// Gets or sets the total number of credits used by the agent for execution time.
     /// </summary>
-    public int TotalTransactions { get; set; }
+    public double TotalExecutionCredits { get; set; }
+
+    /// <summary>
+    /// Gets or sets the total number of credits used by the agent for LLM/model services.
+    /// </summary>
+    public double TotalLlmCredits { get; set; }
 
     /// <summary>
     /// Gets or sets the total number of credits used by the user.

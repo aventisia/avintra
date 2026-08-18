@@ -102,10 +102,17 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                     return serviceResponse.Update($"Flow graph is invalid: {flowGraphValidationError}", 400);
             }
 
-            // Insert a new job for the flow execution
+            // Insert a new job for the flow execution.
+            // Attribute the job (and the credit usage derived from it) to the space
+            // the flow belongs to, since a flow unambiguously lives in one space.
+            // Guid.Empty (CurrentSpaceId) maps to Central (SpaceId == null).
+            var currentSpaceId = _currentTenantService.CurrentSpaceId;
+            var flowSpaceId = flowVersion.Flow?.SpaceId;
+            var resolvedSpaceId = flowSpaceId ?? (currentSpaceId == Guid.Empty ? (Guid?)null : currentSpaceId);
             var newJob = new Job
             {
                 TenantId = _currentTenantService.CurrentTenantId,
+                SpaceId = resolvedSpaceId,
                 FlowVersionId = flowVersion.Id,
                 TriggerType = triggerType,
                 Priority = JobPriorityEnum.Normal,

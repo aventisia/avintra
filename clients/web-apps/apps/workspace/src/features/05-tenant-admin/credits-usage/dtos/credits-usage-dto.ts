@@ -1,6 +1,7 @@
 interface IUsageSummary {
   totalCredits: number;
-  totalAgentTransactions: number;
+  totalExecutionCredits: number;
+  totalLlmCredits: number;
   totalAgentCredits: number;
 }
 
@@ -14,30 +15,32 @@ export interface IResourceUsages {
   unitType: string;
   oneUnit: number;
   credits: number;
-  totalTransactions: number;
+  isExecution: boolean;
   totalCredits: number;
   usageTimeline: IGraphData[];
 }
 
-interface IUsers {
+export interface IUsers {
   firstName: string;
   lastName: string;
   username: string;
-  totalTransactions: number;
+  totalExecutionCredits: number;
+  totalLlmCredits: number;
   totalCredits: number;
 }
 
-interface IAgents {
+export interface IAgents {
   agentName: string;
-  totalTransactions: number;
+  totalExecutionCredits: number;
+  totalLlmCredits: number;
   totalCredits: number;
 }
 
 export interface CreditUsageDTO {
   usageSummary: IUsageSummary;
   creditUsages: IGraphData[];
-  agentCreditUsages: IGraphData[];
-  agentTransactionUsages: IGraphData[];
+  executionCreditUsages: IGraphData[];
+  llmCreditUsages: IGraphData[];
   resourceUsages: IResourceUsages[];
   users: IUsers[];
   agents: IAgents[];

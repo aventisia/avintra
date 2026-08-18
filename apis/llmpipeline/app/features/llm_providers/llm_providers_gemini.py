@@ -93,7 +93,7 @@ class GeminiProvider(BaseLLMProvider):
                     output = text_output
 
                 # Return standardized LLM response
-                return self._create_final_llm_response(llm_request, default_response, start_time, output, user.access_token, response_data)
+                return self._create_final_llm_response(llm_request, default_response, start_time, output, user.access_token, response_data, user.space_id)
 
         except Exception as e:
             error_context = ""
@@ -241,6 +241,7 @@ class GeminiProvider(BaseLLMProvider):
                         final_output,
                         user.access_token,
                         final_response_data,
+                        user.space_id,
                     )
 
                     yield final_response.model_dump_json() + "\n"
@@ -417,7 +418,7 @@ class GeminiProvider(BaseLLMProvider):
         )
 
     # Helper: Create final LLM response with metadata, token usage, and credit posting
-    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse:
+    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data, space_id: str = None) -> LLMResponse:
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj
         
@@ -462,7 +463,7 @@ class GeminiProvider(BaseLLMProvider):
         # Post credit usage only when BYOK is disabled and no credential is provided
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
             # Prepare the credit usage data
-            credit_usage_data = self._build_gemini_credit_usage(llm_request, llm_response)
+            credit_usage_data = self._build_gemini_credit_usage(llm_request, llm_response, space_id)
 
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
@@ -543,7 +544,7 @@ class GeminiProvider(BaseLLMProvider):
         return mapping.get(finish_reason, None)
     
     # Helper: Build Gemini credit usage
-    def _build_gemini_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
+    def _build_gemini_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse, space_id: str = None):
         """
         Build credit usage specifically for Gemini models.
 
@@ -602,6 +603,7 @@ class GeminiProvider(BaseLLMProvider):
                 "RefName": llm_request.ref_name,
                 "Action": llm_request.action,
                 "TriggeredByAgent": llm_request.agent_name,
+                "SpaceId": space_id,
             }
 
         credit_usage = []
@@ -725,7 +727,8 @@ class GeminiProvider(BaseLLMProvider):
                 if not embedding_request.is_byok_enabled and not embedding_request.credential_id:
                     credit_usage = self._build_gemini_embedding_credit_usage(
                         embedding_request,
-                        embedding_response
+                        embedding_response,
+                        user.space_id
                     )
 
                     credit_manager = CreditManagerService()
@@ -756,7 +759,8 @@ class GeminiProvider(BaseLLMProvider):
     def _build_gemini_embedding_credit_usage(
         self,
         embedding_request: EmbeddingRequest,
-        embedding_response: EmbeddingResponse
+        embedding_response: EmbeddingResponse,
+        space_id: str = None,
     ):
         """
         Construct credit usage payload for Gemini embedding requests.
@@ -788,5 +792,6 @@ class GeminiProvider(BaseLLMProvider):
             "RefId": embedding_request.reference_id,
             "RefName": embedding_request.reference_name,
             "Action": embedding_request.action,
-            "TriggeredByAgent": None
+            "TriggeredByAgent": None,
+            "SpaceId": space_id,
         }]

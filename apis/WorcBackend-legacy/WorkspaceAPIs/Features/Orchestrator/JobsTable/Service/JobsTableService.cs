@@ -861,6 +861,7 @@ public class JobsTableService : IJobsTableService
                 RefId = job.FlowVersionId,
                 RefName = flowName,
                 UsedByUserId = _userId,
+                SpaceId = job.SpaceId,
                 Action = ActionTypesEnum.AgentExecution,
                 TriggeredByAgent = flowName
             };

@@ -108,6 +108,7 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
             start_time,
             transcript_text,
             user.access_token,
+            user.space_id,
         )
 
     def _check_credits(self, stt_request: STTRequest, user: User) -> None:
@@ -125,6 +126,7 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
         start_time: float,
         transcript_text: str,
         access_token: str,
+        space_id: str = None,
     ) -> STTResponse:
         """Build the completed STT response and post credit usage.
 
@@ -154,7 +156,7 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
         # Post credit usage only for platform (non-BYOK) requests.
         if should_post_usage(stt_request.is_byok_enabled, stt_request.credentials_id):
             try:
-                post_credit_usage(stt_request, stt_request.provider, "service", audio_duration_seconds, access_token)
+                post_credit_usage(stt_request, stt_request.provider, "service", audio_duration_seconds, access_token, space_id)
             except Exception as exc:
                 logger.error(f"Failed to post STT credit usage | error={exc}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {exc}")

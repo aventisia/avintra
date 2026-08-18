@@ -4,9 +4,9 @@ import LoaderTemplate from "@/components/templates/LoaderTemplate";
 
 import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
 import ChartsHeader from "./ChartsHeader";
-import ServiceCharts from "./ServiceCharts";
+import ModelCharts from "./ModelCharts";
 import UsageCharts from "./UsageCharts";
-import UsageTabs from "./UsageTabs";
+import UsageTables from "./UsageTables";
 import ExportDialog from "./export dialog/ExportDialog";
 
 export const CreditsUsage = () => {
@@ -28,11 +28,14 @@ export const CreditsUsage = () => {
             {/* Usage Charts */}
             <UsageCharts />
 
-            {/* Service charts */}
-            <div className="grid grid-cols-[3fr_1fr] rounded-lg border">
-              <ServiceCharts />
-              <UsageTabs />
+            {/* LLM / model credits by service */}
+            <div className="rounded-lg border bg-white px-6 py-4">
+              <p className="mb-4 text-base font-medium">LLM Credits by Model</p>
+              <ModelCharts />
             </div>
+
+            {/* Users and Agents breakdown */}
+            <UsageTables />
           </>
         )}
       </div>

@@ -152,13 +152,17 @@ public class ConversationService : IConversationService
 
         try
         {
-            // Validate FlowVersion exists and is accessible
+            // Validate FlowVersion exists and is accessible.
+            // A flow version ID is globally unique within a tenant, so the lookup
+            // is intentionally NOT scoped to the current space query filter. Access
+            // is enforced separately below via IsPublished + FlowVersionUsers.
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     w.Id == conversationDto.FlowVersionId &&
                     w.Flow.Type == FlowTypesEnum.ChatAgent &&
                     w.IsPublished)
                 .Include(w => w.FlowVersionUsers)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             // Validate FlowVersion existence
