@@ -1,4 +1,4 @@
-using NodeLibrary.SystemNodes.Enums;
+﻿using NodeLibrary.SystemNodes.Enums;
 using System.Security.Principal;
 
 namespace NodeLibrary.SystemNodes;
@@ -8,7 +8,7 @@ namespace NodeLibrary.SystemNodes;
 public class SetWindowsEnvironmentVariableNode : BaseNode
 {
     [DisplayName("Environment variable name"), Description("The name of the environment variable to set.")]
-    public required InArgument<EnvVarNameEnum> EnvironmentVariableName { get; set; }
+    public required InArgument<EnvVarNameEnum> EnvironmentVariableName { get; set; } = new InArgument<EnvVarNameEnum>(EnvVarNameEnum.NUMBER_OF_PROCESSORS);
 
     [DisplayName("New environment variable value"), Description("The new value to set for the environment variable.")]
     public required InArgument<string> NewEnvironmentVariableValue { get; set; }

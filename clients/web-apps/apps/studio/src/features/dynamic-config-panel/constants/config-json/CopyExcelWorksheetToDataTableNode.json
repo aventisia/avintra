@@ -1,0 +1,51 @@
+{
+  "name": "CopyExcelWorksheetToDataTableNode",
+  "label": "Copy Range from Excel Worksheet to DataTable",
+  "description": "Copies a specified range of cells from the provided Excel worksheet into a DataTable.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet object from which the data will be copied.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RangeToCopy",
+      "label": "Range to Copy",
+      "description": "The range of cells to copy (e.g., \u0027A1:B10\u0027).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "HasHeaders",
+      "label": "Has Headers",
+      "description": "Indicates whether the first row contains column headers.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CopiedData",
+      "label": "Copied Data",
+      "description": "Returns the copied data as a DataTable for further processing.",
+      "defaultValue": {
+        "value": "CopiedData",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

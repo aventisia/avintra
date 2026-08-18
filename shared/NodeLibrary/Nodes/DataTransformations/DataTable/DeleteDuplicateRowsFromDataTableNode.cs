@@ -15,7 +15,7 @@ public sealed class DeleteDuplicateRowsFromDataTableNode : BaseNode
 
     [DisplayName("Column Names To Compare"), Description("List of column names to compare when 'Compare Mode' is 'Selected Columns'.")]
     [RenderIfCondition(nameof(CompareMode), DataTableColumnCompareModeEnum.SelectedColumns)]
-    public InArgument<List<string>> ColumnNamesToCompare { get; set; }
+    public InArgument<List<string>> ColumnNamesToCompare { get; set; } = new InArgument<List<string>>();
 
     [DisplayName("Modified Data Table"), Description("Returns the updated data table with duplicate rows removed.")]
     public OutArgument<DataTable> ModifiedDataTable { get; set; } = new OutArgument<DataTable>();

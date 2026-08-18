@@ -1,6 +1,6 @@
-using NodeLibrary.WorkflowLogics.QueueManagement.Helpers;
+using NodeLibrary.QueueManagementNodes.Helpers;
 
-namespace NodeLibrary.WorkflowLogics.QueueManagement;
+namespace NodeLibrary.QueueManagementNodes;
 
 [DisplayName("Create Work Item")]
 [Description("Creates a new work item in the specified queue.")]

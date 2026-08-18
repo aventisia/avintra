@@ -1,4 +1,4 @@
-using NodeLibrary.MouseAndKeyboardNodes.Helpers;
+﻿using NodeLibrary.MouseAndKeyboardNodes.Helpers;
 using System.Runtime.InteropServices;
 
 namespace NodeLibrary.MouseAndKeyboardNodes;
@@ -8,9 +8,9 @@ namespace NodeLibrary.MouseAndKeyboardNodes;
 public class SetKeyStateNode : BaseNode
 {
     [DisplayName("Key"), Description("The key to modify (e.g., 'CapsLock', 'NumLock', 'ScrollLock').")]
-    public required InArgument<KeyEnum> Key { get; set; }
+    public required InArgument<KeyEnum> Key { get; set; } = new InArgument<KeyEnum>(KeyEnum.CapsLock);
     [DisplayName("State"), Description("Whether to enable (On) or disable (Off) the key state.")]
-    public required InArgument<StateEnum> State { get; set; }
+    public required InArgument<StateEnum> State { get; set; } = new InArgument<StateEnum>(StateEnum.On);
 
     protected override void Execute(INodeContext context)
     {

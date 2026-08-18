@@ -1,0 +1,94 @@
+{
+  "name": "MoveMouseNode",
+  "label": "Move Mouse",
+  "description": "Moves the mouse cursor to a specific position on the screen.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PositionX",
+      "label": "Position X",
+      "description": "Specifies the X coordinate on the screen where the mouse should be moved.",
+      "defaultValue": 0,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PositionY",
+      "label": "Position Y",
+      "description": "Specifies the Y coordinate on the screen where the mouse should be moved.",
+      "defaultValue": 0,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "RelativeTo",
+      "label": "Relative To",
+      "description": "Determines the reference point for the mouse movement. Can be relative to the screen or a specific window.",
+      "defaultValue": "Screen",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Screen",
+          "value": "Screen",
+          "description": "Captures the entire screen."
+        },
+        {
+          "label": "Foreground Window",
+          "value": "ForegroundWindow",
+          "description": "Captures the currently active window."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "MoveMouseFromPreviousPosition",
+      "label": "Move Mouse From Previous Position",
+      "description": "Specifies whether to move the mouse from its current location using an animated effect, and sets the speed of the animation.",
+      "defaultValue": "Instant",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Instant",
+          "value": "Instant",
+          "description": "Animation runs instantly without delay."
+        },
+        {
+          "label": "Low Speed",
+          "value": "LowSpeed",
+          "description": "Animation runs at a slow speed."
+        },
+        {
+          "label": "Normal Speed",
+          "value": "NormalSpeed",
+          "description": "Animation runs at normal speed."
+        },
+        {
+          "label": "High Speed",
+          "value": "HighSpeed",
+          "description": "Animation runs at a fast speed."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CurrentCursorPosition",
+      "label": "Current Cursor Position",
+      "description": "Returns the cursor\u0027s final position on the screen after the mouse operation completes.",
+      "defaultValue": {
+        "value": "CurrentCursorPosition",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

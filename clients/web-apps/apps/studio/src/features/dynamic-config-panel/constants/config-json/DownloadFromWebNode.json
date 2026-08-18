@@ -1,0 +1,68 @@
+{
+  "name": "DownloadFromWebNode",
+  "label": "Download from Web",
+  "description": "Downloads text or a file from the web and stores it in memory or saves it to a file.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Url",
+      "label": "URL",
+      "description": "The URL of the resource to download (e.g., text, HTML, JSON, PDF).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "SaveToFile",
+      "label": "Save To File",
+      "description": "If true, downloads and saves the content to a local file instead of returning as string.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "Full path where the downloaded file should be saved. Required if \u0027Save To File\u0027 is true.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SaveToFile",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TimeoutSeconds",
+      "label": "Timeout Seconds",
+      "description": "Maximum time in seconds to wait before failing due to timeout.",
+      "defaultValue": 60,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the downloaded content as string or file path depending on mode.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

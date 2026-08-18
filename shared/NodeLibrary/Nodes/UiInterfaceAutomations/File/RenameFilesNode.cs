@@ -20,7 +20,7 @@ public class RenameFileNode : BaseNode
 
     [DisplayName("New file name"), Description("The new name for the file (without extension if 'Keep original extension' is true). Example: 'monthly_report'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.SetNewName)]
-    public InArgument<string> NewFileName { get; set; }
+    public InArgument<string> NewFileName { get; set; } = new InArgument<string>();
 
     [DisplayName("Text to add"), Description("The text to prepend or append to the existing filename. Example: '_backup'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddText)]
@@ -32,7 +32,7 @@ public class RenameFileNode : BaseNode
 
     [DisplayName("Text to remove"), Description("The exact text to remove from the filename. Example: '_draft' removes '_draft' from 'report_draft.txt'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.RemoveText)]
-    public InArgument<string> TextToRemove { get; set; }
+    public InArgument<string> TextToRemove { get; set; } = new InArgument<string>();
 
     [DisplayName("Text to find"), Description("The exact text in the filename to be replaced. Example: 'old' in 'old_report.txt'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.ReplaceText)]
@@ -48,7 +48,7 @@ public class RenameFileNode : BaseNode
 
     [DisplayName("Use custom datetime"), Description("When true, allows selecting a custom datetime source instead of the current system time.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddDateTime)]
-    public InArgument<bool> UseCustomDateTime { get; set; }
+    public InArgument<bool> UseCustomDateTime { get; set; } = new InArgument<bool>(false);
 
     [DisplayName("Datetime source"), Description("Choose between current system time or a custom datetime value. Default: Current datetime.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddDateTime)]
@@ -69,7 +69,7 @@ public class RenameFileNode : BaseNode
 
     [DisplayName("Base file name"), Description("The base name used for sequential renaming. If empty, the original filename is used. Example: 'Invoice'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.MakeSequential)]
-    public InArgument<string> BaseFileName { get; set; }
+    public InArgument<string> BaseFileName { get; set; } = new InArgument<string>();
 
     [DisplayName("Number position"), Description("Whether to place the sequential number before or after the base name. Default: After name.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.MakeSequential)]

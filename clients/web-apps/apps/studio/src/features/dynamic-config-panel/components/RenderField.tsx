@@ -17,8 +17,8 @@ import { KnowledgeBaseConfigField } from "./fields-for-form/KnowledgeBaseConfigF
 import { MemoryConfigField } from "./fields-for-form/MemoryConfigField";
 import { ModelConfigField } from "./fields-for-form/ModelConfigField";
 import { QueueSelectorField } from "./fields-for-form/QueueSelectorField";
-import { StatusSelectorField } from "./fields-for-form/StatusSelectorField";
 import { SkillsConfigField } from "./fields-for-form/SkillsConfigField";
+import { StatusSelectorField } from "./fields-for-form/StatusSelectorField";
 import { StringArrayField } from "./fields-for-form/StringArrayField";
 import { SuggestionsField } from "./fields-for-form/SuggestionsField";
 import { ToolsConfigField } from "./fields-for-form/ToolsConfigField";

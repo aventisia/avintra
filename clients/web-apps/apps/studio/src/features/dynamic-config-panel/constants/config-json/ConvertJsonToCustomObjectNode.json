@@ -1,0 +1,33 @@
+{
+  "name": "ConvertJsonToCustomObjectNode",
+  "label": "Convert JSON to Custom Object",
+  "description": "Converts a JSON string into a strongly-typed custom object.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "JsonData",
+      "label": "JSON Data",
+      "description": "The JSON string that will be converted to a custom object.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CustomObject",
+      "label": "Custom Object",
+      "description": "Returns the resulting custom object after JSON deserialization.",
+      "defaultValue": {
+        "value": "CustomObject",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

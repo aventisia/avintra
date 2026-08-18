@@ -1,6 +1,6 @@
-using NodeLibrary.WorkflowLogics.QueueManagement.Helpers;
+using NodeLibrary.QueueManagementNodes.Helpers;
 
-namespace NodeLibrary.WorkflowLogics.QueueManagement;
+namespace NodeLibrary.QueueManagementNodes;
 
 [DisplayName("Route Work Item")]
 [Description("Routes a work item from one queue to another.")]

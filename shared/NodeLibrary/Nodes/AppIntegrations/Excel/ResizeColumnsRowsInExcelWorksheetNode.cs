@@ -10,7 +10,7 @@ public class ResizeColumnsRowsInExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Resize Mode"), Description("Specifies what to resize: Columns, Rows, or Both.")]
-    public required InArgument<ExcelColumnResizeTargetEnum> ResizeMode { get; set; }
+    public required InArgument<ExcelColumnResizeTargetEnum> ResizeMode { get; set; } = new InArgument<ExcelColumnResizeTargetEnum>(ExcelColumnResizeTargetEnum.Columns);
 
     [DisplayName("Resize Type"), Description("Specifies how to resize: AutoFit or Fixed Size.")]
     public InArgument<ExcelColumnResizeTypeEnum> ResizeType { get; set; } = new InArgument<ExcelColumnResizeTypeEnum>(ExcelColumnResizeTypeEnum.Autofit);

@@ -1,0 +1,76 @@
+{
+  "name": "ExtractTextFromDocxFileNode",
+  "label": "Extract Text From DOCX File",
+  "description": "Reads text content from a .docx document using Open XML SDK.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DocumentPath",
+      "label": "Document Path",
+      "description": "The full file path to the .docx document to read from.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Retrieve",
+      "label": "Retrieve",
+      "description": "Specifies the portion of the document to retrieve.",
+      "defaultValue": "WholeDocument",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Whole Document",
+          "value": "WholeDocument",
+          "description": "Retrieves the entire content of the document."
+        },
+        {
+          "label": "Pages",
+          "value": "Pages",
+          "description": "Retrieves content based on specified page numbers."
+        },
+        {
+          "label": "Bookmark",
+          "value": "Bookmark",
+          "description": "Retrieves content located within a specific bookmark."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "BookmarkName",
+      "label": "Bookmark Name",
+      "description": "The name of the bookmark to retrieve content from.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "Retrieve",
+            "equals": "Bookmark"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WordData",
+      "label": "Word Data",
+      "description": "The value of the retrieved content.",
+      "defaultValue": {
+        "value": "WordData",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

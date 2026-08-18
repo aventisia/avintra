@@ -1,4 +1,4 @@
-using NodeLibrary.TextNodes.Enums;
+﻿using NodeLibrary.TextNodes.Enums;
 
 namespace NodeLibrary.TextNodes;
 
@@ -10,7 +10,7 @@ public class CropTextNode : BaseNode
     public required InArgument<string> OriginalText { get; set; }
 
     [DisplayName("Mode"), Description("Specifies how to crop the text relative to the flag(s).")]
-    public required InArgument<CropModeEnum> Mode { get; set; }
+    public required InArgument<CropModeEnum> Mode { get; set; } = new InArgument<CropModeEnum>(CropModeEnum.BeforeFlag);
 
     [DisplayName("Flag"), Description("The flag used to locate the text to extract. Required in 'Before Flag' and 'After Flag' modes.")]
     public required InArgument<string> Flag { get; set; }

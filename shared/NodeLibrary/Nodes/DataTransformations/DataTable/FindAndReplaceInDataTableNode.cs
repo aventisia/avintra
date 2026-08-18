@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using System.Text.RegularExpressions;
 using NodeLibrary.DataTableNodes.Enums;
 
@@ -12,10 +12,10 @@ public sealed class FindAndReplaceInDataTableNode : BaseNode
     public required InArgument<DataTable> DataTable { get; set; }
 
     [DisplayName("Search Mode"), Description("Specifies whether to find or find and replace values.")]
-    public required InArgument<DataTableFindOrReplaceModeEnum> SearchMode { get; set; }
+    public required InArgument<DataTableFindOrReplaceModeEnum> SearchMode { get; set; } = new InArgument<DataTableFindOrReplaceModeEnum>(DataTableFindOrReplaceModeEnum.Find);
 
     [DisplayName("Text to Find"), Description("The value to find in the data table.")]
-    public InArgument<string> TextToFind { get; set; }
+    public InArgument<string> TextToFind { get; set; } = new InArgument<string>();
 
     [DisplayName("Text to Replace With"), Description("The value to replace with (required if 'Search Mode' is 'Find and Replace').")]
     [RenderIfCondition(nameof(SearchMode), DataTableFindOrReplaceModeEnum.FindAndReplace)]
@@ -38,7 +38,7 @@ public sealed class FindAndReplaceInDataTableNode : BaseNode
 
     [DisplayName("Column Index or Name"), Description("The column index or name to search within (required if 'Search By' is 'On Column').")]
     [RenderIfCondition(nameof(SearchBy), DataTableSearchByEnum.OnColumn)]
-    public InArgument<string> ColumnIndexOrName { get; set; }
+    public InArgument<string> ColumnIndexOrName { get; set; } = new InArgument<string>();
 
     [DisplayName("Matched Rows"), Description("Returns the rows that match the search criteria.")]
     public OutArgument<List<DataRow>> MatchedRows { get; set; } = new OutArgument<List<DataRow>>();

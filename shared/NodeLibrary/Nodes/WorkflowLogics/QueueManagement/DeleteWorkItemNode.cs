@@ -1,6 +1,6 @@
-using NodeLibrary.WorkflowLogics.QueueManagement.Helpers;
+using NodeLibrary.QueueManagementNodes.Helpers;
 
-namespace NodeLibrary.WorkflowLogics.QueueManagement;
+namespace NodeLibrary.QueueManagementNodes;
 
 [DisplayName("Delete Work Item")]
 [Description("Deletes a work item permanently from the queue.")]

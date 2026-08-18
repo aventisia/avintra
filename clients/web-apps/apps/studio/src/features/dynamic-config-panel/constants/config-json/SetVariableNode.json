@@ -1,0 +1,30 @@
+{
+  "name": "SetVariableNode",
+  "label": "Set Variable",
+  "description": "Sets the value of a named variable within the workflow context. Supports arithmetic expressions for ValueToSet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "VariableName",
+      "label": "Variable Name",
+      "description": "The name of the variable to set.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ValueToSet",
+      "label": "Value To Set",
+      "description": "The value (text, number, list, object, or arithmetic expression) to assign to the variable.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

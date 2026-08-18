@@ -1,6 +1,6 @@
-using NodeLibrary.WorkflowLogics.QueueManagement.Helpers;
+using NodeLibrary.QueueManagementNodes.Helpers;
 
-namespace NodeLibrary.WorkflowLogics.QueueManagement;
+namespace NodeLibrary.QueueManagementNodes;
 
 [DisplayName("Get Work Item By ID")]
 [Description("Retrieves the details of a work item by its unique identifier.")]

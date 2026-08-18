@@ -1,0 +1,106 @@
+{
+  "name": "OpenCmdSessionNode",
+  "label": "Open CMD Session",
+  "description": "Opens a new CMD session with optional encoding settings.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkingFolder",
+      "label": "Working Folder",
+      "description": "The directory where the CMD session should start.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "ChangeCodePage",
+      "label": "Change Code Page",
+      "description": "Specifies whether to change the code page in the CMD session.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "TextEncoding",
+      "label": "Encoding",
+      "description": "The encoding to use if \u0027Change Code Page\u0027 is enabled.",
+      "defaultValue": "UTF8",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "UTF-8",
+          "value": "UTF8",
+          "description": "UTF-8 : Unicode (UTF-8)"
+        },
+        {
+          "label": "UTF-7",
+          "value": "UTF7",
+          "description": "UTF-7 : Unicode (UTF-7)"
+        },
+        {
+          "label": "ASCII",
+          "value": "ASCII",
+          "description": "ASCII : US-ASCII"
+        },
+        {
+          "label": "Windows-1252",
+          "value": "Windows1252",
+          "description": "Windows-1252 : Western European (Windows)"
+        },
+        {
+          "label": "ISO-8859-1",
+          "value": "ISO8859_1",
+          "description": "ISO-8859-1 : Latin-1"
+        },
+        {
+          "label": "x-iscii-as",
+          "value": "ISCIIAssamese",
+          "description": "x-iscii-as : ISCII Assamese"
+        },
+        {
+          "label": "x-iscii-or",
+          "value": "ISCIIOriya",
+          "description": "x-iscii-or : ISCII Oriya"
+        },
+        {
+          "label": "x-iscii-ma",
+          "value": "ISCIIMalayalam",
+          "description": "x-iscii-ma : ISCII Malayalam"
+        },
+        {
+          "label": "x-iscii-ka",
+          "value": "ISCIIKannada",
+          "description": "x-iscii-ka : ISCII Kannada"
+        }
+      ],
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ChangeCodePage",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CmdSession",
+      "label": "CMD Session",
+      "description": "Holds the CMD process instance for reuse in subsequent activities.",
+      "defaultValue": {
+        "value": "CmdSession",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

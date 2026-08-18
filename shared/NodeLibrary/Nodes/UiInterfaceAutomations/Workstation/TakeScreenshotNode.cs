@@ -1,4 +1,4 @@
-using System.Drawing;
+﻿using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace NodeLibrary.WorkstationNodes;
@@ -8,7 +8,7 @@ namespace NodeLibrary.WorkstationNodes;
 public class TakeScreenshotNode : BaseNode
 {
     [DisplayName("Capture"), Description("Specifies which part of the screen to capture.")]
-    public required InArgument<CaptureModeEnum> CaptureMode { get; set; }
+    public required InArgument<CaptureModeEnum> CaptureMode { get; set; } = new InArgument<CaptureModeEnum>(CaptureModeEnum.AllScreens);
 
     [DisplayName("Screen to Capture"), Description("The handle of the screen/window to capture (required if 'Capture' is 'Select screen').")]
     [RenderIfCondition(nameof(CaptureMode), CaptureModeEnum.SelectScreen)]

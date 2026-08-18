@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace NodeLibrary.AppIntegrations.CloudConnectors;
+namespace NodeLibrary.CloudConnectorNodes;
 
 // This node is not visible in the node selector
 public class ProcessConnectorRequestNode : BaseNode

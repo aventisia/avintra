@@ -10,7 +10,7 @@ public class DeleteExcelWorksheetNode : BaseNode
     public required InArgument<object> WorkbookInstance { get; set; }
 
     [DisplayName("Delete Mode"), Description("Specifies how to identify the worksheet to delete (by Name or by Index).")]
-    public required InArgument<WorksheetDeleteByModeEnum> DeleteMode { get; set; }
+    public required InArgument<WorksheetDeleteByModeEnum> DeleteMode { get; set; } = new InArgument<WorksheetDeleteByModeEnum>(WorksheetDeleteByModeEnum.Name);
 
     [DisplayName("Worksheet Name"), Description("The name of the worksheet to delete.")]
     [RenderIfCondition(nameof(DeleteMode), WorksheetDeleteByModeEnum.Name)]

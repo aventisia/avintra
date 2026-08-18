@@ -1,0 +1,54 @@
+{
+  "name": "PingNode",
+  "label": "Ping",
+  "description": "Sends a message to determine whether a remote computer is accessible over the network.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "HostName",
+      "label": "Host name",
+      "description": "The host name or IP address to ping.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Timeout",
+      "label": "Timeout",
+      "description": "The maximum time (in milliseconds) to wait for a response.",
+      "defaultValue": 5000,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "PingResult",
+      "label": "Ping Result",
+      "description": "The status of the ping message (success or failure).",
+      "defaultValue": {
+        "value": "PingResult",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "RoundTripTime",
+      "label": "Round Trip Time",
+      "description": "The number of milliseconds taken for the Ping to complete.",
+      "defaultValue": {
+        "value": "RoundTripTime",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

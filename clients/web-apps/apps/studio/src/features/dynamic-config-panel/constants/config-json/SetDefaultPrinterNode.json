@@ -1,0 +1,21 @@
+{
+  "name": "SetDefaultPrinterNode",
+  "label": "Set Default Printer",
+  "description": "Sets a printer as the default printer.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PrinterName",
+      "label": "Printer Name",
+      "description": "The name of the printer to set as default.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

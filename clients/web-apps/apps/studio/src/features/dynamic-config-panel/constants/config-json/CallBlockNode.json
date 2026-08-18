@@ -1,0 +1,11 @@
+{
+  "name": "CallBlockNode",
+  "label": "Call Block",
+  "description": "Use to add custom block",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": []
+}

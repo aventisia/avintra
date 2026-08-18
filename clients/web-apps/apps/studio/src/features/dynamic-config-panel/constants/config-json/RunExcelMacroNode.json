@@ -1,0 +1,69 @@
+{
+  "name": "RunExcelMacroNode",
+  "label": "Run Excel Macro",
+  "description": "Runs a specified VBA macro in the provided Excel workbook.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkbookInstance",
+      "label": "Workbook Instance",
+      "description": "The Excel Workbook containing the macro to run.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MacroName",
+      "label": "Macro Name",
+      "description": "The name of the macro to run (e.g., \u0027Module1.MyMacro\u0027).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Argument1",
+      "label": "Argument 1",
+      "description": "Optional first argument to pass to the macro.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Argument2",
+      "label": "Argument 2",
+      "description": "Optional second argument to pass to the macro.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Argument3",
+      "label": "Argument 3",
+      "description": "Optional third argument to pass to the macro.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "MacroResult",
+      "label": "Macro Result",
+      "description": "The result returned by the macro, if any.",
+      "defaultValue": {
+        "value": "MacroResult",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

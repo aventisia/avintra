@@ -1,0 +1,51 @@
+{
+  "name": "ConvertBase64ToFileNode",
+  "label": "Convert Base64 to File",
+  "description": "Converts a Base64 encoded string to a file and saves it at the specified path.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Base64Text",
+      "label": "Base64 Encoded Text",
+      "description": "The Base64 encoded string to be converted into a file.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The destination file path where the decoded content will be saved.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "IfExistsAction",
+      "label": "If File Exists",
+      "description": "Specifies the behavior when a file already exists in the destination folder.",
+      "defaultValue": "DoNothing",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Do nothing",
+          "value": "DoNothing",
+          "description": "Skips the file if it already exists."
+        },
+        {
+          "label": "Overwrite",
+          "value": "Overwrite",
+          "description": "Deletes the existing file and moves the new file."
+        }
+      ]
+    }
+  ]
+}

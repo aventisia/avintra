@@ -1,4 +1,4 @@
-namespace NodeLibrary.DateTimeNodes;
+﻿namespace NodeLibrary.DateTimeNodes;
 
 [DisplayName("Add Time to DateTime"), Description("Adds a specified time value to the given DateTime based on the selected time unit.")]
 [NodeMetadata(icon: "/assets/DateTime.svg")]
@@ -11,7 +11,7 @@ public class AddToDateTimeNode : BaseNode
     public required InArgument<int> ValueToAdd { get; set; }
 
     [DisplayName("Time Unit"), Description("Specifies the unit of time (e.g., Seconds, Minutes, Hours, Days, Months, Years).")]
-    public required InArgument<TimeUnitEnum> TimeUnit { get; set; }
+    public required InArgument<TimeUnitEnum> TimeUnit { get; set; } = new InArgument<TimeUnitEnum>(TimeUnitEnum.Seconds);
 
     [DisplayName("Updated DateTime"), Description("The resulting DateTime after the specified value has been added.")]
     public OutArgument<DateTime> ResultDateTime { get; set; } = new OutArgument<DateTime>();

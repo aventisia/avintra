@@ -11,7 +11,7 @@ public class PasteCellsToExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Paste Mode"), Description("Specifies where to paste: to a specific cell, named range, or active cell.")]
-    public required InArgument<CellPasteModeEnum> PasteMode { get; set; }
+    public required InArgument<CellPasteModeEnum> PasteMode { get; set; } = new InArgument<CellPasteModeEnum>(CellPasteModeEnum.OnNamedCells);
 
     [DisplayName("Column"), Description("The column letter or number of the target cell for pasting.")]
     [RenderIfCondition(nameof(PasteMode), CellPasteModeEnum.OnSpecifiedCell)]

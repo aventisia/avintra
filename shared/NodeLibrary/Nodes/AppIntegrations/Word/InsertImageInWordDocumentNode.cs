@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using NodeLibrary.Office;
 using NodeLibrary.WordNodes.Enums;
 
@@ -12,10 +12,10 @@ public class InsertImageInWordDocumentNode : BaseNode
     public required InArgument<object> WordInstance { get; set; }
 
     [DisplayName("Insert Image To"), Description("Specifies where in the document to insert the image.")]
-    public required InArgument<InsertLocationEnum> InsertImageTo { get; set; }
+    public required InArgument<InsertLocationEnum> InsertImageTo { get; set; } = new InArgument<InsertLocationEnum>(InsertLocationEnum.BeginningOfWordFile);
 
     [DisplayName("Image Source"), Description("Specifies whether the image is inserted from a file or clipboard.")]
-    public required InArgument<ImageSourceEnum> InsertImageFrom { get; set; }
+    public required InArgument<ImageSourceEnum> InsertImageFrom { get; set; } = new InArgument<ImageSourceEnum>(ImageSourceEnum.File);
 
     [DisplayName("Image Path"), Description("The file path of the image to insert (if source is File).")]
     public required InArgument<string> ImagePath { get; set; }

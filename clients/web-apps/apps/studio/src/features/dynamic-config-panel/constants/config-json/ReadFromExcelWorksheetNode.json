@@ -1,0 +1,223 @@
+{
+  "name": "ReadFromExcelWorksheetNode",
+  "label": "Read from Excel Worksheet",
+  "description": "Reads values from a specified cell range in the given Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet object from which to read data.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "RetrieveMode",
+      "label": "Retrieve Mode",
+      "description": "Specifies how to retrieve data from the worksheet.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "The value of a single cell",
+          "value": "SingleCell",
+          "description": "Reads a single cell by column and row."
+        },
+        {
+          "label": "Values from a range of cells",
+          "value": "RangeOfCells",
+          "description": "Reads a specified range (e.g., \u0027A1:B10\u0027)."
+        },
+        {
+          "label": "Values from selection",
+          "value": "Selection",
+          "description": "Reads the currently selected cells."
+        },
+        {
+          "label": "All available values from worksheet",
+          "value": "AllAvailableValues",
+          "description": "Reads the entire used range."
+        },
+        {
+          "label": "Values of named cells",
+          "value": "ValuesOfNamedCells",
+          "description": "Reads values from named ranges."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartColumn",
+      "label": "Start Column",
+      "description": "The starting column letter (e.g., \u0027A\u0027).",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "RetrieveMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartColumnIndex",
+      "label": "Start Column Index",
+      "description": "The starting column index (e.g., 1 for \u0027A\u0027). Takes precedence if greater than 0.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "RetrieveMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row of the range to read.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "RetrieveMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndColumn",
+      "label": "End Column",
+      "description": "The ending column of the range to read.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "RetrieveMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndColumnIndex",
+      "label": "End Column Index",
+      "description": "The ending column index (e.g., 4 for \u0027D\u0027). Takes precedence if greater than 0.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "RetrieveMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndRow",
+      "label": "End Row",
+      "description": "The ending row of the range to read.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "RetrieveMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Name",
+      "label": "Name",
+      "description": "The name of the named range to read.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "RetrieveMode",
+            "equals": "ValuesOfNamedCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "GetContentsAsText",
+      "label": "Get Cell Contents as Text",
+      "description": "If true, retrieves cell contents as text; otherwise, retrieves raw values.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "FirstLineContainsColumnNames",
+      "label": "First Line of Range Contains Column Names",
+      "description": "If true, treats the first row as column names.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "OmitEmptyColumnsAndRows",
+      "label": "Omit Empty Columns and Rows",
+      "description": "If true, omits empty columns to the right and empty rows at the bottom.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "RetrieveMode",
+            "equals": "ValuesOfNamedCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ExcelData",
+      "label": "Excel Data",
+      "description": "Returns the data read from the specified range as a DataTable.",
+      "defaultValue": {
+        "value": "ExcelData",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

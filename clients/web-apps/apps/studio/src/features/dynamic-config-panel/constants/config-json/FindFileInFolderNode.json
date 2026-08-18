@@ -1,0 +1,102 @@
+{
+  "name": "FindFileInFolderNode",
+  "label": "Find File in Folder",
+  "description": "Finds a single file in a folder based on criteria such as largest, smallest, newest, or oldest. Optionally searches subfolders.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FolderPath",
+      "label": "Folder path",
+      "description": "The absolute path of the folder to search in (e.g., \u0027C:\\Documents\\Reports\u0027).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SearchOption",
+      "label": "Search criteria",
+      "description": "The criterion used to select the file. Default: Largest.",
+      "defaultValue": "Largest",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Largest",
+          "value": "Largest",
+          "description": "Find the largest file by size."
+        },
+        {
+          "label": "Smallest",
+          "value": "Smallest",
+          "description": "Find the smallest file by size."
+        },
+        {
+          "label": "Newest modified",
+          "value": "Newest",
+          "description": "Find the most recently modified file."
+        },
+        {
+          "label": "Oldest modified",
+          "value": "Oldest",
+          "description": "Find the least recently modified file."
+        },
+        {
+          "label": "Newest created",
+          "value": "NewestCreated",
+          "description": "Find the most recently created file."
+        },
+        {
+          "label": "Oldest created",
+          "value": "OldestCreated",
+          "description": "Find the earliest created file."
+        },
+        {
+          "label": "First alphabetical",
+          "value": "FirstAlphabetical",
+          "description": "Find the first file when sorted alphabetically by name."
+        },
+        {
+          "label": "Last alphabetical",
+          "value": "LastAlphabetical",
+          "description": "Find the last file when sorted alphabetically by name."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FileFilter",
+      "label": "File filter",
+      "description": "One or more file patterns separated by semicolons (e.g., \u0027*.txt\u0027 or \u0027*.jpg;*.png\u0027). Default: \u0027*\u0027 (all files).",
+      "defaultValue": "*",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "IncludeSubfolders",
+      "label": "Include subfolders",
+      "description": "When true, searches all subfolders recursively. Default: true.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultFilePath",
+      "label": "Result file path",
+      "description": "The full path of the file that matched the search criteria, or empty if no match was found.",
+      "defaultValue": {
+        "value": "ResultFilePath",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

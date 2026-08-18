@@ -1,0 +1,105 @@
+{
+  "name": "GetSelectedCellRangeFromExcelWorksheetNode",
+  "label": "Get Selected Cell Range from Excel Worksheet",
+  "description": "Gets the address and details of the currently selected cell range in an Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet from which to get the selected range.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SelectedRangeAddress",
+      "label": "Selected Range Address",
+      "description": "The address of the currently selected range (e.g., \u0027$A$1:$C$5\u0027).",
+      "defaultValue": {
+        "value": "SelectedRangeAddress",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row of the selection.",
+      "defaultValue": {
+        "value": "StartRow",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "StartColumn",
+      "label": "Start Column",
+      "description": "The starting column number of the selection.",
+      "defaultValue": {
+        "value": "StartColumn",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "EndRow",
+      "label": "End Row",
+      "description": "The ending row of the selection.",
+      "defaultValue": {
+        "value": "EndRow",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "EndColumn",
+      "label": "End Column",
+      "description": "The ending column number of the selection.",
+      "defaultValue": {
+        "value": "EndColumn",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "RowCount",
+      "label": "Row Count",
+      "description": "The number of rows in the selection.",
+      "defaultValue": {
+        "value": "RowCount",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ColumnCount",
+      "label": "Column Count",
+      "description": "The number of columns in the selection.",
+      "defaultValue": {
+        "value": "ColumnCount",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

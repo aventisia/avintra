@@ -1,0 +1,134 @@
+{
+  "name": "PasteCellsToExcelWorksheetNode",
+  "label": "Paste Cells to Excel Worksheet",
+  "description": "Pastes previously copied cells to a specified location in an Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet where cells will be pasted.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "PasteMode",
+      "label": "Paste Mode",
+      "description": "Specifies where to paste: to a specific cell, named range, or active cell.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "On Named Cells",
+          "value": "OnNamedCells",
+          "description": "Pastes data into a named range."
+        },
+        {
+          "label": "On Currently Active Cell",
+          "value": "OnCurrentlyActiveCell",
+          "description": "Pastes data starting from the currently active cell."
+        },
+        {
+          "label": "On Specified Cell",
+          "value": "OnSpecifiedCell",
+          "description": "Pastes data starting from a specific column and row."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Column",
+      "label": "Column",
+      "description": "The column letter or number of the target cell for pasting.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "PasteMode",
+            "equals": "OnSpecifiedCell"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Row",
+      "label": "Row",
+      "description": "The row number of the target cell for pasting.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "PasteMode",
+            "equals": "OnSpecifiedCell"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Name",
+      "label": "Name",
+      "description": "The name of the target named range.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "PasteMode",
+            "equals": "OnNamedCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "PasteType",
+      "label": "Paste Type",
+      "description": "The type of paste operation to perform.",
+      "defaultValue": "All",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "All",
+          "value": "All",
+          "description": "Pastes all content including values, formulas, and formatting."
+        },
+        {
+          "label": "Values",
+          "value": "Values",
+          "description": "Pastes only cell values."
+        },
+        {
+          "label": "Formulas",
+          "value": "Formulas",
+          "description": "Pastes only formulas."
+        },
+        {
+          "label": "Formats",
+          "value": "Formats",
+          "description": "Pastes only cell formatting."
+        },
+        {
+          "label": "Comments",
+          "value": "Comments",
+          "description": "Pastes only cell comments."
+        }
+      ]
+    }
+  ]
+}

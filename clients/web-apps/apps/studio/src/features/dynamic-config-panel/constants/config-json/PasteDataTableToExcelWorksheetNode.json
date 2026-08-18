@@ -1,0 +1,57 @@
+{
+  "name": "PasteDataTableToExcelWorksheetNode",
+  "label": "Paste DataTable to Excel Worksheet",
+  "description": "Pastes the contents of a DataTable into the specified Excel worksheet at a given location.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet where the DataTable will be pasted.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTableInput",
+      "label": "Data Table",
+      "description": "The DataTable containing the data to paste.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartColumn",
+      "label": "Start Column",
+      "description": "The starting column where data will be pasted (letter or number).",
+      "defaultValue": "A",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row where data will be pasted.",
+      "defaultValue": 1,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "IncludeHeaders",
+      "label": "Include Headers",
+      "description": "Whether to include the DataTable column headers in the output.",
+      "defaultValue": true,
+      "required": false
+    }
+  ]
+}

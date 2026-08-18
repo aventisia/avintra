@@ -1,0 +1,158 @@
+{
+  "name": "PlaySoundNode",
+  "label": "Play Sound",
+  "description": "Plays a sound from a WAV file or system sound with options for sync/async playback and volume control.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SoundSource",
+      "label": "Play Sound From",
+      "description": "Specifies whether to play a system sound or a custom WAV file.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "System",
+          "value": "System",
+          "description": "Plays a predefined system sound."
+        },
+        {
+          "label": "WAV file",
+          "value": "WavFile",
+          "description": "Plays a custom WAV file."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SystemSoundName",
+      "label": "System Sound",
+      "description": "The name of the system sound to play (e.g., Asterisk, Beep, Exclamation).",
+      "defaultValue": "Default",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Default",
+          "value": "Default",
+          "description": "Default system sound."
+        },
+        {
+          "label": "Beep",
+          "value": "Beep",
+          "description": "Standard beep sound."
+        },
+        {
+          "label": "Asterisk",
+          "value": "Asterisk",
+          "description": "Asterisk sound (used for warnings)."
+        },
+        {
+          "label": "Exclamation",
+          "value": "Exclamation",
+          "description": "Exclamation sound (used for errors)."
+        },
+        {
+          "label": "Question",
+          "value": "Question",
+          "description": "Question sound (used for prompts)."
+        },
+        {
+          "label": "Critical Alert (Hand)",
+          "value": "Hand",
+          "description": "Hand sound (used for critical alerts)."
+        }
+      ],
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SoundSource",
+            "equals": "System"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WavFilePath",
+      "label": "WAV File Path",
+      "description": "The full path to the WAV file to play.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SoundSource",
+            "equals": "WavFile"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Mode",
+      "label": "Play Mode",
+      "description": "Whether to play synchronously (blocking) or asynchronously (non-blocking).",
+      "defaultValue": "Sync",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Synchronous",
+          "value": "Sync",
+          "description": "Plays the sound synchronously (blocking)."
+        },
+        {
+          "label": "Asynchronous",
+          "value": "Async",
+          "description": "Plays the sound asynchronously (non-blocking)."
+        },
+        {
+          "label": "Repeat",
+          "value": "Repeat",
+          "description": "Plays the sound repeatedly."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Volume",
+      "label": "Volume",
+      "description": "Volume level (0-100) - only works with system sounds.",
+      "defaultValue": 100,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Played",
+      "label": "Played",
+      "description": "Indicates whether the sound was played successfully.",
+      "defaultValue": {
+        "value": "Played",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Duration",
+      "label": "Duration",
+      "description": "Returns the duration of the sound in milliseconds (if available).",
+      "defaultValue": {
+        "value": "Duration",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

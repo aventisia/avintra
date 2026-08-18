@@ -1,4 +1,4 @@
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 
 namespace NodeLibrary.BrowserAutomationNodes;
@@ -11,7 +11,7 @@ public sealed class SwitchToIframeNode : BaseNode
     public required InArgument<IWebDriver> WebBrowserInstance { get; set; }
 
     [DisplayName("Iframe Locator Type"), Description("The type of locator used to identify the iframe. Supported values: Id, Name, XPath, Css, or Index.")]
-    public required InArgument<LocatorTypeEnum> IframeLocatorType { get; set; }
+    public required InArgument<LocatorTypeEnum> IframeLocatorType { get; set; } = new InArgument<LocatorTypeEnum>(LocatorTypeEnum.Id);
 
     [DisplayName("Iframe Locator Value"), Description("The value corresponding to the locator type (e.g., the iframe's ID, name, XPath expression, CSS selector, or zero-based index).")]
     public required InArgument<string> IframeLocatorValue { get; set; }

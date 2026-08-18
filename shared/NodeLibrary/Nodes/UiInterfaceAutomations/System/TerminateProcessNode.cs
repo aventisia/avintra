@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Management;
 
 namespace NodeLibrary.SystemNodes;
@@ -8,7 +8,7 @@ namespace NodeLibrary.SystemNodes;
 public class TerminateProcessNode : BaseNode
 {
     [DisplayName("Specify process by"), Description("Specifies whether to terminate the process by name or ID.")]
-    public required InArgument<SpecifyProcessByEnum> SpecifyProcessBy { get; set; }
+    public required InArgument<SpecifyProcessByEnum> SpecifyProcessBy { get; set; } = new InArgument<SpecifyProcessByEnum>(SpecifyProcessByEnum.ProcessName);
 
     [DisplayName("Process name"), Description("The name of the process to terminate (only applicable if 'Specify process by' is set to 'Process name').")]
     [RenderIfCondition(nameof(SpecifyProcessBy), SpecifyProcessByEnum.ProcessName)]

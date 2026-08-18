@@ -1,0 +1,157 @@
+{
+  "name": "WriteToCsvFileNode",
+  "label": "Write to CSV File",
+  "description": "Writes a data table, data row, or list to a CSV file.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "VariableToWrite",
+      "label": "Variable to Write",
+      "description": "The data to write to the CSV file (DataTable, DataRow, or List).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The full path of the CSV file to write.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "EncodingOption",
+      "label": "Encoding",
+      "description": "The encoding of the CSV file.",
+      "defaultValue": "UTF8",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "System Default",
+          "value": "SystemDefault",
+          "description": "Uses the system\u0027s default encoding."
+        },
+        {
+          "label": "UTF-8",
+          "value": "UTF8",
+          "description": "UTF-8 encoding with byte order mark."
+        },
+        {
+          "label": "Unicode",
+          "value": "Unicode",
+          "description": "UTF-16 encoding (little-endian)."
+        },
+        {
+          "label": "Unicode (big-endian)",
+          "value": "BigEndianUnicode",
+          "description": "UTF-16 encoding (big-endian)."
+        },
+        {
+          "label": "UTF-8 (no byte order mark)",
+          "value": "UTF8NoBOM",
+          "description": "UTF-8 encoding without byte order mark."
+        },
+        {
+          "label": "ASCII",
+          "value": "ASCII",
+          "description": "7-bit ASCII encoding."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "UseCustomColumnSeparator",
+      "label": "Use Custom Column Separator",
+      "description": "Specifies whether to use a custom column separator.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "CustomColumnSeparator",
+      "label": "Custom Column Separator",
+      "description": "The custom delimiter used in the CSV file.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "UseCustomColumnSeparator",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "PredefinedSeparator",
+      "label": "Predefined Separator",
+      "description": "The predefined separator used in the CSV file (e.g., Comma, Tab).",
+      "defaultValue": "Comma",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "System Default",
+          "value": "SystemDefault",
+          "description": "Uses a System Default as the separator."
+        },
+        {
+          "label": "Comma",
+          "value": "Comma",
+          "description": "Uses a comma (,) as the separator."
+        },
+        {
+          "label": "Tab",
+          "value": "Tab",
+          "description": "Uses a tab character as the separator."
+        },
+        {
+          "label": "Semicolon",
+          "value": "Semicolon",
+          "description": "Uses a semicolon (;) as the separator."
+        }
+      ],
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "UseCustomColumnSeparator",
+            "equals": false
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "IfFileExists",
+      "label": "If File Exists",
+      "description": "Specifies how to handle existing files.",
+      "defaultValue": "Overwrite",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Overwrite Existing Content",
+          "value": "Overwrite",
+          "description": "Overwrites the existing content of the file."
+        },
+        {
+          "label": "Append Content",
+          "value": "Append",
+          "description": "Appends content to the end of the existing file."
+        }
+      ]
+    }
+  ]
+}

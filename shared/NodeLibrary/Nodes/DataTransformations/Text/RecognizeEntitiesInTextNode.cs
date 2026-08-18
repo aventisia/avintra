@@ -1,4 +1,4 @@
-using NodeLibrary.TextNodes.Enums;
+﻿using NodeLibrary.TextNodes.Enums;
 
 namespace NodeLibrary.TextNodes;
 
@@ -10,10 +10,10 @@ public class RecognizeEntitiesInTextNode : BaseNode
     public required InArgument<string> TextToAnalyze { get; set; }
 
     [DisplayName("Entity Type"), Description("Specifies the type of entities to recognize (e.g., Date, Number, Email).")]
-    public required InArgument<EntityTypeEnum> EntityType { get; set; }
+    public required InArgument<EntityTypeEnum> EntityType { get; set; } = new InArgument<EntityTypeEnum>(EntityTypeEnum.DateTime);
 
     [DisplayName("Language"), Description("The language of the text. Optional, but can improve recognition accuracy.")]
-    public InArgument<LanguageEnum> Language { get; set; }
+    public InArgument<LanguageEnum> Language { get; set; } = new InArgument<LanguageEnum>(LanguageEnum.English);
 
     [DisplayName("Recognized Entities"), Description("Returns the list of recognized entities based on the specified entity type.")]
     public OutArgument<IEnumerable<string>> RecognizedEntities { get; set; } = new OutArgument<IEnumerable<string>>();

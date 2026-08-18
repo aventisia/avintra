@@ -1,0 +1,71 @@
+{
+  "name": "LaunchWordNode",
+  "label": "Launch Word",
+  "description": "Launches a new Word instance or opens a Word document.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "LaunchMode",
+      "label": "Launch Mode",
+      "description": "Select how to launch Word: \u0027Blank Document\u0027 or \u0027Open Existing Document\u0027.",
+      "defaultValue": "BlankDocument",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Blank Document",
+          "value": "BlankDocument",
+          "description": "Launches Word with a blank document."
+        },
+        {
+          "label": "Open Existing Document",
+          "value": "OpenExistingDocument",
+          "description": "Launches Word and opens the specified document."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DocumentPath",
+      "label": "Document Path",
+      "description": "The file path of the document to open. Required if \u0027Launch Mode\u0027 is \u0027Open Existing Document\u0027.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "LaunchMode",
+            "equals": "OpenExistingDocument"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "MakeInstanceVisible",
+      "label": "Make Instance Visible",
+      "description": "Specifies whether the Word application window should be visible.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WordInstance",
+      "label": "Word Instance",
+      "description": "The specific Word instance for use with later Word actions. This allows the user to specify which of possibly several Word documents to access.",
+      "defaultValue": {
+        "value": "WordInstance",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

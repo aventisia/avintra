@@ -1,0 +1,30 @@
+{
+  "name": "InsertRowToExcelWorksheetNode",
+  "label": "Insert Row to Excel Worksheet",
+  "description": "Inserts a new row at the specified position in an Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet in which to insert the row.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RowIndex",
+      "label": "Row Index",
+      "description": "The row number where the new row will be inserted. Existing rows shift down.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

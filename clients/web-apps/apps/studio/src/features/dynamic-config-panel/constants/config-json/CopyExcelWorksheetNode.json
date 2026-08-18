@@ -1,0 +1,118 @@
+{
+  "name": "CopyExcelWorksheetNode",
+  "label": "Copy Excel Worksheet",
+  "description": "Copies a worksheet to another workbook or within the same workbook, preserving data, formatting, and structure.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceWorkbook",
+      "label": "Source Workbook",
+      "description": "The Excel Workbook object containing the worksheet to copy.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "CopyMode",
+      "label": "Copy Mode",
+      "description": "Specifies how to identify the worksheet to copy (by Name or by Index).",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Name",
+          "value": "Name",
+          "description": "Copies the worksheet by its name."
+        },
+        {
+          "label": "Index",
+          "value": "Index",
+          "description": "Copies the worksheet by its index."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetName",
+      "label": "Worksheet Name",
+      "description": "The name of the worksheet to copy (required if \u0027Copy Mode\u0027 is \u0027Name\u0027).",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "CopyMode",
+            "equals": "Name"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetIndex",
+      "label": "Worksheet Index",
+      "description": "The index of the worksheet to copy (required if \u0027Copy Mode\u0027 is \u0027Index\u0027).",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "CopyMode",
+            "equals": "Index"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TargetWorkbook",
+      "label": "Target Workbook",
+      "description": "The Excel Workbook where the worksheet will be copied. If not provided, the copy will be made within the same workbook.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "PastePosition",
+      "label": "Paste Position",
+      "description": "Specifies where to paste the copied worksheet in the target workbook.",
+      "defaultValue": "LastWorksheet",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "First worksheet",
+          "value": "FirstWorksheet",
+          "description": "Pastes the worksheet as the first sheet in the target workbook."
+        },
+        {
+          "label": "Last worksheet",
+          "value": "LastWorksheet",
+          "description": "Pastes the worksheet as the last sheet in the target workbook."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CopiedWorksheet",
+      "label": "Copied Worksheet",
+      "description": "The new worksheet created as a result of the copy operation.",
+      "defaultValue": {
+        "value": "CopiedWorksheet",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

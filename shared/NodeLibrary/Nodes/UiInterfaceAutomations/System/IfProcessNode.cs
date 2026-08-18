@@ -1,4 +1,4 @@
-using NodeLibrary.SystemNodes.Enums;
+﻿using NodeLibrary.SystemNodes.Enums;
 using System.Diagnostics;
 using System.Management;
 
@@ -9,10 +9,10 @@ namespace NodeLibrary.SystemNodes;
 public class IfProcessNode : BaseNode
 {
     [DisplayName("If process"), Description("Specifies the condition to check (e.g., IsRunning, Isn't Running).")]
-    public required InArgument<IfProcessConditionEnum> Condition { get; set; }
+    public required InArgument<IfProcessConditionEnum> Condition { get; set; } = new InArgument<IfProcessConditionEnum>(IfProcessConditionEnum.IsRunning);
 
     [DisplayName("Process name"), Description("The name of the process to check.")]
-    public required InArgument<ProcessNameEnum> ProcessName { get; set; }
+    public required InArgument<ProcessNameEnum> ProcessName { get; set; } = new InArgument<ProcessNameEnum>(ProcessNameEnum.AggregatorHost);
 
     [DisplayName("From User"), Description("Indicates whether to check if the process is running under a specific user.")]
     public InArgument<bool> FromUser { get; set; } = new InArgument<bool>(false);

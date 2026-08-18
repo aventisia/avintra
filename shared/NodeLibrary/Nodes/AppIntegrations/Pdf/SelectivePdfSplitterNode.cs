@@ -1,4 +1,4 @@
-using UglyToad.PdfPig;
+﻿using UglyToad.PdfPig;
 using UglyToad.PdfPig.Writer;
 
 namespace NodeLibrary.PdfNodes;
@@ -14,7 +14,7 @@ public class SelectivePdfSplitterNode : BaseNode
     public required InArgument<string> OutputDirectory { get; set; }
 
     [DisplayName("Selection Mode"), Description("Choose how to select pages: All, Odd, Even, Range, Specific Pages, or By Specified Page Size.")]
-    public required InArgument<SelectionModeEnum> SelectionMode { get; set; }
+    public required InArgument<SelectionModeEnum> SelectionMode { get; set; } = new InArgument<SelectionModeEnum>(SelectionModeEnum.All);
 
     [DisplayName("Page Range"), Description("For 'Custom Range' mode, specify pages like '1-3,5,7-9'. Ignored for other modes.")]
     [RenderIfCondition(nameof(SelectionMode), SelectionModeEnum.Range)]

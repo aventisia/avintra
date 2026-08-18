@@ -11,7 +11,7 @@ public class ClearCellsInExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Clear Mode"), Description("Specifies how to clear cells: Single Cell, Named Cells, Range of Cells, or Relative to Active Cell.")]
-    public required InArgument<CellClearModeEnum> ClearMode { get; set; }
+    public required InArgument<CellClearModeEnum> ClearMode { get; set; } = new InArgument<CellClearModeEnum>(CellClearModeEnum.SingleCell);
 
     [DisplayName("Column"), Description("The column letter or number of the target cell.")]
     [RenderIfCondition(nameof(ClearMode), CellClearModeEnum.SingleCell)]

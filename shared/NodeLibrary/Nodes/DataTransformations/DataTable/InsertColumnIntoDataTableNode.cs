@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using NodeLibrary.DataTableNodes.Enums;
 
 namespace NodeLibrary.DataTableNodes;
@@ -14,7 +14,7 @@ public sealed class InsertColumnIntoDataTableNode : BaseNode
     public required InArgument<string> ColumnName { get; set; }
 
     [DisplayName("Data Type"), Description("Data type of the new column (e.g., String, Int, Decimal, etc).")]
-    public required InArgument<DataTableColumnTypeEnum> DataType { get; set; }
+    public required InArgument<DataTableColumnTypeEnum> DataType { get; set; } = new InArgument<DataTableColumnTypeEnum>(DataTableColumnTypeEnum.String);
 
     [DisplayName("Insert Location"), Description("Position where the new column will be inserted.")]
     public InArgument<DataTableInsertLocationEnum> InsertLocation { get; set; } = new InArgument<DataTableInsertLocationEnum>(DataTableInsertLocationEnum.EndOfDataTable);

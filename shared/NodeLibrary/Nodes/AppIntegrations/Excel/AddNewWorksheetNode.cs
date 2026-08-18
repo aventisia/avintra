@@ -13,7 +13,7 @@ public class AddNewWorksheetNode : BaseNode
     public InArgument<string> NewWorksheetName { get; set; } = new InArgument<string>();
 
     [DisplayName("Add Worksheet As"), Description("Specifies whether to add the worksheet as the first or last sheet.")]
-    public required InArgument<ExcelWorksheetPositionEnum> AddWorksheetAs { get; set; }
+    public required InArgument<ExcelWorksheetPositionEnum> AddWorksheetAs { get; set; } = new InArgument<ExcelWorksheetPositionEnum>(ExcelWorksheetPositionEnum.First);
 
     protected override void Execute(INodeContext context)
     {

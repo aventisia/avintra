@@ -1,0 +1,176 @@
+{
+  "name": "SelectCellsInExcelWorksheetNode",
+  "label": "Select Cells in Excel Worksheet",
+  "description": "Selects a specified range of cells in an Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet in which to select cells.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SelectMode",
+      "label": "Select Mode",
+      "description": "Specifies how to select cells: Single Cell, Named Range, Range of Cells, or All Cells.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Single Cell",
+          "value": "SingleCell",
+          "description": "Selects a single cell by column and row."
+        },
+        {
+          "label": "Named Cells",
+          "value": "NamedCells",
+          "description": "Selects a named range of cells."
+        },
+        {
+          "label": "Range of Cells",
+          "value": "RangeOfCells",
+          "description": "Selects a specific range of cells (e.g., \u0027A1:B10\u0027)."
+        },
+        {
+          "label": "All Cells",
+          "value": "AllCells",
+          "description": "Selects all cells in the worksheet."
+        },
+        {
+          "label": "Relative to Active Cell",
+          "value": "RelativeToActiveCell",
+          "description": "Selects a range relative to the active cell."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Column",
+      "label": "Column",
+      "description": "The column letter or number of the cell to select.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SelectMode",
+            "equals": "SingleCell"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Row",
+      "label": "Row",
+      "description": "The row number of the cell to select.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SelectMode",
+            "equals": "SingleCell"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Name",
+      "label": "Name",
+      "description": "The name of the named range to select.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SelectMode",
+            "equals": "NamedCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartColumn",
+      "label": "Start Column",
+      "description": "The starting column of the range to select.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SelectMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row of the range to select.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SelectMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndColumn",
+      "label": "End Column",
+      "description": "The ending column of the range to select.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SelectMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndRow",
+      "label": "End Row",
+      "description": "The ending row of the range to select.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SelectMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    }
+  ]
+}

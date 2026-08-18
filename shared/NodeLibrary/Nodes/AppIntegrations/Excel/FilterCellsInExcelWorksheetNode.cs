@@ -11,7 +11,7 @@ public class FilterCellsInExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Filter Mode"), Description("The filter mode to apply.")]
-    public required InArgument<ExcelFilterOperatorEnum> FilterMode { get; set; }
+    public required InArgument<ExcelFilterOperatorEnum> FilterMode { get; set; } = new InArgument<ExcelFilterOperatorEnum>(ExcelFilterOperatorEnum.IsEqualTo);
 
     [DisplayName("Column"), Description("The column letter or number on which to apply the filter.")]
     public required InArgument<string> Column { get; set; }

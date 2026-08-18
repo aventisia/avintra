@@ -1,0 +1,88 @@
+{
+  "name": "GetFirstFreeRowOrColumnRowIndexNode",
+  "label": "Get First Free Row or Column Row Index",
+  "description": "Gets the first free row or column row index based on the search direction in an Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet to examine.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SearchDirection",
+      "label": "Search Direction",
+      "description": "Specifies whether to search for the first free row or the first free column.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Rows",
+          "value": "Rows",
+          "description": "Searches by rows."
+        },
+        {
+          "label": "Columns",
+          "value": "Columns",
+          "description": "Searches by columns."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Column",
+      "label": "Column",
+      "description": "The column to search in when looking for the first free row.",
+      "defaultValue": "A",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SearchDirection",
+            "equals": "Rows"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Row",
+      "label": "Row",
+      "description": "The row to search in when looking for the first free column.",
+      "defaultValue": 1,
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SearchDirection",
+            "equals": "Columns"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultIndex",
+      "label": "Result Index",
+      "description": "The index of the first free row or column.",
+      "defaultValue": {
+        "value": "ResultIndex",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

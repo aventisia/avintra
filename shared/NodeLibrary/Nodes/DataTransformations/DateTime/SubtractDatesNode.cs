@@ -1,4 +1,4 @@
-namespace NodeLibrary.DateTimeNodes;
+﻿namespace NodeLibrary.DateTimeNodes;
 
 [DisplayName("Subtract Dates"), Description("Computes the time difference between two DateTime values in the selected unit (Seconds, Minutes, Hours, or Days).")]
 [NodeMetadata(icon: "/assets/DateTime.svg")]
@@ -11,7 +11,7 @@ public class SubtractDatesNode : BaseNode
     public required InArgument<DateTime> EndDateTime { get; set; }
 
     [DisplayName("Difference Unit"), Description("Specifies the unit in which to return the time difference.")]
-    public required InArgument<DateDifferenceUnit> GetDifferenceIn { get; set; }
+    public required InArgument<DateDifferenceUnit> GetDifferenceIn { get; set; } = new InArgument<DateDifferenceUnit>(DateDifferenceUnit.Seconds);
 
     [DisplayName("Time Difference"), Description("The calculated time difference in the specified unit.")]
     public OutArgument<double> DifferenceValue { get; set; } = new OutArgument<double>();

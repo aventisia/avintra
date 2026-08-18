@@ -1,0 +1,120 @@
+{
+  "name": "DisplaySelectFromListDialogNode",
+  "label": "Display Select From List Dialog",
+  "description": "Displays a dialog box with options that lets the user select from a list.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DialogTitle",
+      "label": "Dialog Title",
+      "description": "The title text displayed at the top of the dialog window.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DialogMessage",
+      "label": "Dialog Message",
+      "description": "The message or prompt shown inside the dialog to guide the user.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ListToChooseFrom",
+      "label": "List to Choose From",
+      "description": "A list of items from which the user can select one or more options.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "KeepOnTop",
+      "label": "Keep Select Dialog Always On Top",
+      "description": "If true, keeps the dialog window always on top of other windows.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "LimitToList",
+      "label": "Limit to List",
+      "description": "If true, limits user input to only the items in the provided list.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "AllowEmptySelection",
+      "label": "Allow Empty Selection",
+      "description": "If true, allows the user to make no selection (optional choice).",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "AllowMultipleSelection",
+      "label": "Allow Multiple Selection",
+      "description": "If true, allows the user to select multiple items from the list.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "PreselectItemsStartingWithPlus",
+      "label": "Preselect Items Starting With \u0027\u002B\u0027",
+      "description": "If true, preselects all items in the list that start with a \u0027\u002B\u0027 character.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SelectedItem",
+      "label": "Selected Item(s)",
+      "description": "Returns the selected item(s) from the dialog as a string. For multiple selections, items are separated by commas.",
+      "defaultValue": {
+        "value": "SelectedItem",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SelectedIndex",
+      "label": "Selected Index(es)",
+      "description": "Returns the index or indices of the selected item(s) in the list.",
+      "defaultValue": {
+        "value": "SelectedIndex",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ButtonPressed",
+      "label": "Button Pressed",
+      "description": "Returns true if the user pressed the OK button; false if Cancel or closed the dialog.",
+      "defaultValue": {
+        "value": "ButtonPressed",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

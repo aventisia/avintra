@@ -1,0 +1,59 @@
+{
+  "name": "LogOffUserNode",
+  "label": "Log Off User",
+  "description": "Logs off the current user with various methods and options.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Method",
+      "label": "Logoff Method",
+      "description": "Method to use for logging off",
+      "defaultValue": "ShutdownCommand",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Shutdown Command",
+          "value": "ShutdownCommand",
+          "description": "Uses shutdown.exe command line tool"
+        },
+        {
+          "label": "Windows API",
+          "value": "WindowsAPI",
+          "description": "Uses ExitWindowsEx Windows API"
+        },
+        {
+          "label": "WTS API",
+          "value": "WTSAPI",
+          "description": "Uses Terminal Services API"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "Force",
+      "label": "Force Logoff",
+      "description": "Force logoff if applications don\u0027t respond",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Success",
+      "label": "Success",
+      "description": "True if the logoff was initiated successfully",
+      "defaultValue": {
+        "value": "Success",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

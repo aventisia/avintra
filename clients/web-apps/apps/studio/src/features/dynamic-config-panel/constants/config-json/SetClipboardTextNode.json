@@ -1,0 +1,21 @@
+{
+  "name": "SetClipboardTextNode",
+  "label": "Set Clipboard Text",
+  "description": "Sets the specified text to the system clipboard.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ClipboardText",
+      "label": "Clipboard Text",
+      "description": "The text to set to the clipboard.",
+      "defaultValue": "",
+      "required": false
+    }
+  ]
+}

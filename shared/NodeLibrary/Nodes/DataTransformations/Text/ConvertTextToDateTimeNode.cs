@@ -12,7 +12,7 @@ public class ConvertTextToDateTimeNode : BaseNode
 
     [DisplayName("Format String"), Description("The format string to use for parsing the date/time (e.g., 'yyyy-MM-dd').")]
     [RenderIfCondition(nameof(UseCustomFormat), true)]
-    public InArgument<string> Format { get; set; }
+    public InArgument<string> Format { get; set; } = new InArgument<string>();
 
     [DisplayName("Result DateTime"), Description("Returns the resulting DateTime value after conversion.")]
     public OutArgument<DateTime> ResultDateTime { get; set; } = new OutArgument<DateTime>();

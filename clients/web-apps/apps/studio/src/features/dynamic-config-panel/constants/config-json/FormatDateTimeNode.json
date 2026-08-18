@@ -1,0 +1,135 @@
+{
+  "name": "FormatDateTimeNode",
+  "label": "Format DateTime",
+  "description": "Formats a DateTime value into a standard or custom string format.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DatetimeToConvert",
+      "label": "DateTime Value",
+      "description": "The DateTime value to format.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "FormatToUse",
+      "label": "Format Option",
+      "description": "Choose whether to use a standard or custom DateTime format.",
+      "defaultValue": "Standard",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Standard",
+          "value": "Standard",
+          "description": ""
+        },
+        {
+          "label": "Custom",
+          "value": "Custom",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "StandardFormat",
+      "label": "Standard Format",
+      "description": "The standard DateTime format to use.",
+      "defaultValue": "ShortDate",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "ShortDate",
+          "value": "ShortDate",
+          "description": ""
+        },
+        {
+          "label": "LongDate",
+          "value": "LongDate",
+          "description": ""
+        },
+        {
+          "label": "ShortTime",
+          "value": "ShortTime",
+          "description": ""
+        },
+        {
+          "label": "LongTime",
+          "value": "LongTime",
+          "description": ""
+        },
+        {
+          "label": "FullDatetimeLongTime",
+          "value": "FullDatetimeLongTime",
+          "description": ""
+        },
+        {
+          "label": "FullDatetimeShortTime",
+          "value": "FullDatetimeShortTime",
+          "description": ""
+        },
+        {
+          "label": "GeneralDatetimeShortTime",
+          "value": "GeneralDatetimeShortTime",
+          "description": ""
+        },
+        {
+          "label": "GeneralDatetimeLongTime",
+          "value": "GeneralDatetimeLongTime",
+          "description": ""
+        },
+        {
+          "label": "SortableDatetime",
+          "value": "SortableDatetime",
+          "description": ""
+        }
+      ],
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "FormatToUse",
+            "equals": "Standard"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "CustomFormat",
+      "label": "Custom Format String",
+      "description": "A custom format string for the DateTime value (e.g., yyyyMMdd). For more info on custom format strings, see: https://www.c-sharpcorner.com/blogs/date-and-time-format-in-c-sharp-programming1",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "FormatToUse",
+            "equals": "Custom"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "FormattedDateTime",
+      "label": "Formatted DateTime String",
+      "description": "The formatted DateTime as a string.",
+      "defaultValue": {
+        "value": "FormattedDateTime",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

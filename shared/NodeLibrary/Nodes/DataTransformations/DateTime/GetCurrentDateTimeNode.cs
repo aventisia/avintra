@@ -1,14 +1,14 @@
-namespace NodeLibrary.DateTimeNodes;
+﻿namespace NodeLibrary.DateTimeNodes;
 
 [DisplayName("Get Current Date and Time"), Description("This activity retrieves the current date and time based on the specified retrieval type and time zone.")]
 [NodeMetadata(icon: "/assets/DateTime.svg")]
 public class GetCurrentDateTimeNode : BaseNode
 {
     [DisplayName("Retrieve Type"), Description("Select the type of datetime information to retrieve (e.g., Current date and time, Current date only).")]
-    public required InArgument<RetrieveTypeEnum> RetrieveType { get; set; }
+    public required InArgument<RetrieveTypeEnum> RetrieveType { get; set; } = new InArgument<RetrieveTypeEnum>(RetrieveTypeEnum.CurrentDateTime);
 
     [DisplayName("Time Zone"), Description("Select the time zone to use for retrieving the datetime (e.g., System time zone, Windows time zone).")]
-    public required InArgument<TimezoneTypeEnum> TimezoneType { get; set; }
+    public required InArgument<TimezoneTypeEnum> TimezoneType { get; set; } = new InArgument<TimezoneTypeEnum>(TimezoneTypeEnum.SystemTimeZone);
 
     [DisplayName("Result"), Description("The retrieved date and time based on the specified options.")]
     public OutArgument<DateTime> Result { get; set; } = new OutArgument<DateTime>();

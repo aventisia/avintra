@@ -1,0 +1,39 @@
+{
+  "name": "WriteValuesToSpecificColumnsNode",
+  "label": "Write Values to Specific Columns",
+  "description": "Writes values to specific columns in a row of an Excel worksheet, useful for populating multiple columns at once.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet where the values will be written.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Row",
+      "label": "Row",
+      "description": "The row number where the values will be written.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnValuePairs",
+      "label": "Column-Value Pairs",
+      "description": "A dictionary mapping column letters/numbers to the values to write (e.g., { \u0022A\u0022: \u0022Hello\u0022, \u0022B\u0022: \u0022World\u0022 }).",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

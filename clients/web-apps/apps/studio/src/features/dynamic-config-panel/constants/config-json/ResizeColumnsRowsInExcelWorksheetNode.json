@@ -1,0 +1,138 @@
+{
+  "name": "ResizeColumnsRowsInExcelWorksheetNode",
+  "label": "Resize Columns/Rows in Excel Worksheet",
+  "description": "Resizes (auto-fits or sets specific dimensions for) columns and/or rows in an Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet in which to resize columns or rows.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ResizeMode",
+      "label": "Resize Mode",
+      "description": "Specifies what to resize: Columns, Rows, or Both.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Columns",
+          "value": "Columns",
+          "description": "Resizes columns."
+        },
+        {
+          "label": "Rows",
+          "value": "Rows",
+          "description": "Resizes rows."
+        },
+        {
+          "label": "Both",
+          "value": "Both",
+          "description": "Resizes both columns and rows."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ResizeType",
+      "label": "Resize Type",
+      "description": "Specifies how to resize: AutoFit or Fixed Size.",
+      "defaultValue": "Autofit",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Autofit",
+          "value": "Autofit",
+          "description": "Automatically adjusts the size based on content."
+        },
+        {
+          "label": "Custom size",
+          "value": "CustomSize",
+          "description": "Sets a custom width or height."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartColumn",
+      "label": "Start Column",
+      "description": "The starting column of the range to resize.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndColumn",
+      "label": "End Column",
+      "description": "The ending column of the range to resize.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row of the range to resize.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndRow",
+      "label": "End Row",
+      "description": "The ending row of the range to resize.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnWidth",
+      "label": "Column Width",
+      "description": "The specific column width to set (used when ResizeType is FixedSize).",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ResizeType",
+            "equals": "CustomSize"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RowHeight",
+      "label": "Row Height",
+      "description": "The specific row height to set (used when ResizeType is FixedSize).",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ResizeType",
+            "equals": "CustomSize"
+          }
+        ]
+      }
+    }
+  ]
+}

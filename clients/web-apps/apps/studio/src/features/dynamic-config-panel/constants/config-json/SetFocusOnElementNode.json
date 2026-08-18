@@ -1,0 +1,42 @@
+{
+  "name": "SetFocusOnElementNode",
+  "label": "Set Focus on UI Element",
+  "description": "Brings the specified UI element into focus, allowing further interaction.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "IdentificationObjectPath",
+      "label": "UI Element",
+      "description": "The UI element to bring into focus.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MaxWaitTime",
+      "label": "Max Wait Time (seconds)",
+      "description": "Maximum time to wait to find the UI element (in seconds).",
+      "defaultValue": 5,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "IsFocused",
+      "label": "Is Focus Set Successfully",
+      "description": "True if the focus was set successfully, otherwise false.",
+      "defaultValue": {
+        "value": "IsFocused",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

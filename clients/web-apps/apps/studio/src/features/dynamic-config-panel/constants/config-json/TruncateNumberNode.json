@@ -1,0 +1,105 @@
+{
+  "name": "TruncateNumberNode",
+  "label": "Truncate Number",
+  "description": "Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "NumberToTruncate",
+      "label": "Number to Truncate",
+      "description": "The numeric value to truncate or round.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Operation",
+      "label": "Operation",
+      "description": "Specifies how to truncate or round the number.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Get Integer Part",
+          "value": "GetIntegerPart",
+          "description": "Retrieves only the integer portion of the number."
+        },
+        {
+          "label": "Get Fractional Part",
+          "value": "GetFractionalPart",
+          "description": "Retrieves only the fractional portion of the number."
+        },
+        {
+          "label": "Round",
+          "value": "Round",
+          "description": "Rounds the number specified number of decimal places."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DecimalPlaces",
+      "label": "Decimal Places",
+      "description": "The number of decimal places to round to. Only applicable for rounding operations.",
+      "defaultValue": 2,
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "Operation",
+            "equals": "Round"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "RoundOperation",
+      "label": "Round Operation",
+      "description": "Specifies round up or round down the number.",
+      "defaultValue": "RoundUp",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Round Up",
+          "value": "RoundUp",
+          "description": "Rounds the number up to the specified number of decimal places."
+        },
+        {
+          "label": "Round Down",
+          "value": "RoundDown",
+          "description": "Rounds the number down to the specified number of decimal places."
+        }
+      ],
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "Operation",
+            "equals": "Round"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "TruncatedValue",
+      "label": "Truncated Value",
+      "description": "Returns the truncated or rounded numeric value.",
+      "defaultValue": {
+        "value": "TruncatedValue",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

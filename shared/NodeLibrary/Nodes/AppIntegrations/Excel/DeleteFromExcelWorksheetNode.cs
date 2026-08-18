@@ -11,7 +11,7 @@ public class DeleteFromExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Delete Mode"), Description("Specifies what to delete: Single Cell, Range of Cells, Rows, or Columns.")]
-    public required InArgument<CellDeletionModeEnum> DeleteMode { get; set; }
+    public required InArgument<CellDeletionModeEnum> DeleteMode { get; set; } = new InArgument<CellDeletionModeEnum>(CellDeletionModeEnum.SingleCell);
 
     [DisplayName("Start Column"), Description("The starting column of the range.")]
     public InArgument<string> StartColumn { get; set; } = new InArgument<string>();

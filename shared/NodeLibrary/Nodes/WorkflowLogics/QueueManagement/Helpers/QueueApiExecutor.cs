@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace NodeLibrary.WorkflowLogics.QueueManagement.Helpers;
+namespace NodeLibrary.QueueManagementNodes.Helpers;
 
 /// <summary>
 /// Utility class for executing HTTP requests against Queue Management APIs.

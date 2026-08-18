@@ -1,4 +1,4 @@
-using NodeLibrary.CryptographyNodes.Enums;
+﻿using NodeLibrary.CryptographyNodes.Enums;
 using System.Security.Cryptography;
 
 namespace NodeLibrary.CryptographyNodes;
@@ -17,7 +17,7 @@ public class EncryptTextWithAesNode : BaseNode
     public required InArgument<string> IV { get; set; }
 
     [DisplayName("Encoding Format"), Description("Encoding used for the encrypted output: Base64 or Hex.")]
-    public required InArgument<EncodingFormatEnum> EncodingFormat { get; set; }
+    public required InArgument<EncodingFormatEnum> EncodingFormat { get; set; } = new InArgument<EncodingFormatEnum>(EncodingFormatEnum.Base64);
 
     [DisplayName("Encrypted Text Result"), Description("Returns the encrypted text based on selected encoding format.")]
     public OutArgument<string> EncryptedText { get; set; } = new OutArgument<string>();

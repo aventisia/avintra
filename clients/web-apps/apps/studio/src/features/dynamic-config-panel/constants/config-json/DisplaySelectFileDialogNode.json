@@ -1,0 +1,90 @@
+{
+  "name": "DisplaySelectFileDialogNode",
+  "label": "Display Select File Dialog",
+  "description": "Displays a file selection dialog to let users choose one or more files.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DialogTitle",
+      "label": "Dialog Title",
+      "description": "The title of the file selection dialog window.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "InitialFolder",
+      "label": "Initial Folder",
+      "description": "The folder path where the dialog starts. If empty, defaults to Desktop.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FileFilter",
+      "label": "File Filter",
+      "description": "Filter for file types (e.g., \u0022Text Files (*.txt)|*.txt\u0022). Defaults to All Files.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "KeepFileDialogOnTop",
+      "label": "Keep Dialog On Top",
+      "description": "If true, keeps the dialog on top of all other windows.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "AllowMultipleSelection",
+      "label": "Allow Multiple Selection",
+      "description": "Allows user to select multiple files if set to true.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "CheckIfFileExists",
+      "label": "Check If File Exists",
+      "description": "Validates that the selected file(s) exist before returning.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SelectedFiles",
+      "label": "Selected Files",
+      "description": "A collection of full paths for the selected files.",
+      "defaultValue": {
+        "value": "SelectedFiles",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ButtonPressed",
+      "label": "Button Pressed",
+      "description": "True if user clicked OK; False if Cancel was clicked or dialog closed.",
+      "defaultValue": {
+        "value": "ButtonPressed",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

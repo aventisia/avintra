@@ -1,0 +1,45 @@
+{
+  "name": "LockWorkstationNode",
+  "label": "Lock Workstation",
+  "description": "Locks the workstation\u0027s display to protect it from unauthorized use. Optionally forces lock even if workstation doesn\u0027t support it.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "ForceLock",
+      "label": "Force Lock",
+      "description": "When true, will attempt alternative methods if standard lock fails",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Success",
+      "label": "Success",
+      "description": "Indicates whether the workstation was successfully locked",
+      "defaultValue": {
+        "value": "Success",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "MethodUsed",
+      "label": "Method Used",
+      "description": "Describes which locking method was successful",
+      "defaultValue": {
+        "value": "MethodUsed",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

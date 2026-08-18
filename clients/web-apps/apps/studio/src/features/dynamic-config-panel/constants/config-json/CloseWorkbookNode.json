@@ -1,0 +1,56 @@
+{
+  "name": "CloseWorkbookNode",
+  "label": "Close Excel Workbook",
+  "description": "Closes the specified Excel workbook and optionally quits the Excel application.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkbookInstance",
+      "label": "Workbook Instance",
+      "description": "The Excel Workbook instance to be closed.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ExcelApp",
+      "label": "Excel Application Instance",
+      "description": "The Excel Application instance to optionally quit after closing the workbook.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "QuitExcelApp",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "SaveBeforeClose",
+      "label": "Save Before Closing",
+      "description": "Whether to save the workbook before closing.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "QuitExcelApp",
+      "label": "Quit Excel Application",
+      "description": "Whether to quit the Excel Application after closing the workbook.",
+      "defaultValue": true,
+      "required": false
+    }
+  ]
+}

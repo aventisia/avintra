@@ -1,0 +1,66 @@
+{
+  "name": "FindAndReplaceInDocxFileNode",
+  "label": "Find And Replace In DOCX File",
+  "description": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DocumentPath",
+      "label": "Document Path",
+      "description": "The full file path to the .docx document.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "AllMatches",
+      "label": "All Matches",
+      "description": "Specifies whether to replace all occurrences or just the first one.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TextToFind",
+      "label": "Text to Find",
+      "description": "The text to search for in the document.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TextToReplaceWith",
+      "label": "Text to Replace With",
+      "description": "The text to replace the found text with.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "UseRegex",
+      "label": "Use Regular Expressions",
+      "description": "If enabled, \u0027Text to Find\u0027 is treated as a .NET regular expression.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "SaveDocument",
+      "label": "Save Document",
+      "description": "Automatically saves the Word document after replacement.",
+      "defaultValue": "",
+      "required": false
+    }
+  ]
+}

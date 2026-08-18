@@ -3,7 +3,8 @@
 [NodeL2CategoryMetadata(
     label: "Excel",
     description: "Automate Excel file operations.",
-    icon: "/assets/Excel.svg")]
+    icon: "/assets/Excel.svg",
+    supportedPlatforms: "windows")]
 internal sealed class _ExcelL2CategoryMetadata { }
 
 

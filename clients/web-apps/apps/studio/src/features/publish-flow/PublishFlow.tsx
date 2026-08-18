@@ -94,7 +94,7 @@ const PublishFlow = () => {
       ) : (
         <RocketIcon className="h-4 w-4 shrink-0" />
       )}
-        <span className="text-sm font-bold">Publish</span>
+      <span className="text-sm font-bold">Publish</span>
     </Button>
   );
 };

@@ -1,11 +1,11 @@
-namespace NodeLibrary.FolderNodes;
+﻿namespace NodeLibrary.FolderNodes;
 
 [DisplayName("Wait for File"), Description("Suspends running the flow until a file is created or deleted.")]
 [NodeMetadata(icon: "/assets/Folder.svg")]
 public class WaitForFileNode : BaseNode
 {
     [DisplayName("Wait for file to be"), Description("Specifies whether to wait for the file to be Created or Deleted.")]
-    public required InArgument<WaitForFileAction> Action { get; set; }
+    public required InArgument<WaitForFileAction> Action { get; set; } = new InArgument<WaitForFileAction>(WaitForFileAction.Created);
 
     [DisplayName("File path"), Description("The path to the file to monitor.")]
     public required InArgument<string> FilePath { get; set; }

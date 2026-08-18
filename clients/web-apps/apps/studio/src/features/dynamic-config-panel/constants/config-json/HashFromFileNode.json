@@ -1,0 +1,59 @@
+{
+  "name": "HashFromFileNode",
+  "label": "Hash from File",
+  "description": "Hash the contents of a file, using a specified algorithm",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path to Hash",
+      "description": "The path to the file you want to hash",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Algorithm",
+      "label": "Hashing Algorithm",
+      "description": "The algorithm to use for hashing (SHA256, SHA512, or MD5)",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "MD5",
+          "value": "Md5",
+          "description": "MD5 hashing algorithm"
+        },
+        {
+          "label": "SHA256",
+          "value": "Sha256",
+          "description": "SHA-256 hashing algorithm"
+        },
+        {
+          "label": "SHA512",
+          "value": "Sha512",
+          "description": "SHA-512 hashing algorithm"
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "HashedContent",
+      "label": "Hashed File Content",
+      "description": "The hashed content of the file",
+      "defaultValue": {
+        "value": "HashedContent",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

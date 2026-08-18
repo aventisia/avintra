@@ -1,4 +1,4 @@
-using NodeLibrary.MouseAndKeyboardNodes.Helpers;
+﻿using NodeLibrary.MouseAndKeyboardNodes.Helpers;
 using System.Runtime.InteropServices;
 
 namespace NodeLibrary.MouseAndKeyboardNodes;
@@ -9,7 +9,7 @@ public class SendKeysNode : BaseNode
 {
     // Input Arguments
     [DisplayName("Send Keys To"), Description("Specifies where to send the keys.")]
-    public required InArgument<SendKeysTargetEnum> Target { get; set; }
+    public required InArgument<SendKeysTargetEnum> Target { get; set; } = new InArgument<SendKeysTargetEnum>(SendKeysTargetEnum.ForegroundWindow);
 
 
     [DisplayName("UI Element"), Description("The UI element to send keys to (used when 'Send Keys To' is 'UI element').")]

@@ -6,8 +6,10 @@ internal class NodeMetadataModel
     public required string Name { get; set; }
     public required string Label { get; set; }
     public required string Description { get; set; }
-    public required string Icon { get; set; }
-    public required string DocsLink { get; set; }
+    // TODO: Keep only Icon instead of Icon and Img once migration from NodeExecutor to RunnerApp is complete
+    public string? Icon { get; set; }
+    public string? Img { get; set; }
+    public string? DocsLink { get; set; }
     public List<string>? SupportedPlatforms { get; set; }
     public List<string>? DoNotRenderIf { get; set; }
 }

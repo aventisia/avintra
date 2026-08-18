@@ -10,7 +10,7 @@ public class SetActiveExcelWorksheetNode : BaseNode
     public required InArgument<object> WorkbookInstance { get; set; }
 
     [DisplayName("Selection Type"), Description("Specifies how to identify the worksheet: by Name or by Index.")]
-    public required InArgument<WorksheetSelectionTypeEnum> SelectionType { get; set; }
+    public required InArgument<WorksheetSelectionTypeEnum> SelectionType { get; set; } = new InArgument<WorksheetSelectionTypeEnum>(WorksheetSelectionTypeEnum.Name);
 
     [DisplayName("Search Value"), Description("The worksheet name (if selection type is 'Name') or 1-based index (if selection type is 'Index').")]
     public InArgument<string> SearchValue { get; set; } = new InArgument<string>();

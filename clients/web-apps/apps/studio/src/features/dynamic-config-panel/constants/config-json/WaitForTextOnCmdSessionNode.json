@@ -1,0 +1,51 @@
+{
+  "name": "WaitForTextOnCmdSessionNode",
+  "label": "Wait for Text on CMD Session",
+  "description": "Waits for a specific text on a previously opened CMD session.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "CmdSession",
+      "label": "CMD Session",
+      "description": "The process representing the open CMD session.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TextToWaitFor",
+      "label": "Text to Wait For",
+      "description": "The text or regular expression to wait for in the CMD session output.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TimeoutMs",
+      "label": "Timeout (ms)",
+      "description": "Maximum time to wait in milliseconds. Default: 5000.",
+      "defaultValue": 5000,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Found",
+      "label": "Found",
+      "description": "Test the result, wait for text is true or false",
+      "defaultValue": {
+        "value": "Found",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

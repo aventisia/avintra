@@ -1,0 +1,90 @@
+{
+  "name": "GetTableRangeFromExcelWorksheetNode",
+  "label": "Get Table Range from Excel Worksheet",
+  "description": "Gets the range address, row count, and column count of an Excel Table (ListObject) in the specified worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet containing the table.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TableName",
+      "label": "Table Name",
+      "description": "The name of the table (ListObject) to retrieve. If empty, uses the first table found.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "TableRangeAddress",
+      "label": "Table Range Address",
+      "description": "The address of the table range.",
+      "defaultValue": {
+        "value": "TableRangeAddress",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "RowCount",
+      "label": "Row Count",
+      "description": "The number of data rows in the table.",
+      "defaultValue": {
+        "value": "RowCount",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ColumnCount",
+      "label": "Column Count",
+      "description": "The number of columns in the table.",
+      "defaultValue": {
+        "value": "ColumnCount",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row of the table data (excluding header).",
+      "defaultValue": {
+        "value": "StartRow",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "StartColumn",
+      "label": "Start Column",
+      "description": "The starting column of the table.",
+      "defaultValue": {
+        "value": "StartColumn",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

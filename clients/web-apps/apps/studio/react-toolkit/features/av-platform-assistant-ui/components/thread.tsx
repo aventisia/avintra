@@ -320,16 +320,13 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
         ) : (
           <CheckIcon className="size-3.5 shrink-0 text-muted-foreground/70" />
         )}
-        <span
-          className={cn(
-            "font-medium",
-            isRunning && "animate-pulse",
-          )}
-        >
+        <span className={cn("font-medium", isRunning && "animate-pulse")}>
           {isRunning ? "Processing" : "Thinking"}
         </span>
         {steps.length > 0 && (
-          <span className="truncate opacity-70">· {steps[activeStep >= 0 ? activeStep : steps.length - 1]}</span>
+          <span className="truncate opacity-70">
+            · {steps[activeStep >= 0 ? activeStep : steps.length - 1]}
+          </span>
         )}
       </button>
       {isOpen && (
@@ -343,7 +340,9 @@ const ReasoningBlock: FC<{ text: string }> = ({ text }) => {
                   ) : (
                     <CheckIcon className="mt-0.5 size-3 shrink-0 text-muted-foreground/60" />
                   )}
-                  <span className={cn("whitespace-pre-wrap", i === activeStep && "text-foreground")}>
+                  <span
+                    className={cn("whitespace-pre-wrap", i === activeStep && "text-foreground")}
+                  >
                     {step}
                   </span>
                 </li>

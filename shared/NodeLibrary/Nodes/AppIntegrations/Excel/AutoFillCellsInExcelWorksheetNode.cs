@@ -11,7 +11,7 @@ public class AutoFillCellsInExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Ranges Format"), Description("Specifies how ranges are defined: by specific ranges or named cells.")]
-    public required InArgument<ExcelRangesFormatEnum> RangesFormat { get; set; }
+    public required InArgument<ExcelRangesFormatEnum> RangesFormat { get; set; } = new InArgument<ExcelRangesFormatEnum>(ExcelRangesFormatEnum.SpecificRanges);
 
     [DisplayName("Start Column"), Description("The starting column of the source range (e.g., 'A').")]
     [RenderIfCondition(nameof(RangesFormat), ExcelRangesFormatEnum.SpecificRanges)]

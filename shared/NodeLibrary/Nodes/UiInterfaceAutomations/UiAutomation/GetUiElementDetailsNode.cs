@@ -1,4 +1,4 @@
-using NodeLibrary.UiAutomationNodes.Enums;
+﻿using NodeLibrary.UiAutomationNodes.Enums;
 using NodeLibrary.UiAutomationNodes.Helpers;
 
 namespace NodeLibrary.UiAutomationNodes;
@@ -11,7 +11,7 @@ public class GetUiElementDetailsNode : BaseNode
     public required InArgument<string> IdentificationObjectPath { get; set; }
 
     [DisplayName("Detail Type"), Description("Choose what information you want to get from the UI element.")]
-    public required InArgument<UiElementDetailTypeEnum> DetailType { get; set; }
+    public required InArgument<UiElementDetailTypeEnum> DetailType { get; set; } = new InArgument<UiElementDetailTypeEnum>(UiElementDetailTypeEnum.BoundingRectangle);
 
     [DisplayName("Max Wait Time (seconds)"), Description("Maximum time to wait to find the UI element (in seconds).")]
     public InArgument<int> MaxWaitTime { get; set; } = new InArgument<int>(5);

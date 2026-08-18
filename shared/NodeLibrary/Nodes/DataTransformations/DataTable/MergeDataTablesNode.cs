@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 
 namespace NodeLibrary.DataTableNodes;
 
@@ -13,7 +13,7 @@ public class MergeDataTablesNode : BaseNode
     public required InArgument<DataTable> SecondDataTable { get; set; }
 
     [DisplayName("Merge Mode"), Description("Specifies how to handle columns that are present in the second table but not in the first table.")]
-    public required InArgument<DataTableMergeModeEnum> MergeMode { get; set; }
+    public required InArgument<DataTableMergeModeEnum> MergeMode { get; set; } = new InArgument<DataTableMergeModeEnum>(DataTableMergeModeEnum.AddExtraColumns);
 
     [DisplayName("Merged Data Table"), Description("The resulting DataTable after merging the two input Data Tables.")]
     public OutArgument<DataTable> MergedDataTable { get; set; } = new OutArgument<DataTable>();

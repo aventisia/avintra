@@ -1,4 +1,4 @@
-using NodeLibrary.TextNodes.Enums;
+﻿using NodeLibrary.TextNodes.Enums;
 
 namespace NodeLibrary.TextNodes;
 
@@ -10,11 +10,11 @@ public class SplitTextNode : BaseNode
     public required InArgument<string> TextToSplit { get; set; }
 
     [DisplayName("Delimiter Type"), Description("Specifies how to split the text.")]
-    public required InArgument<DelimiterTypeEnum> DelimiterType { get; set; }
+    public required InArgument<DelimiterTypeEnum> DelimiterType { get; set; } = new InArgument<DelimiterTypeEnum>(DelimiterTypeEnum.Standard);
 
     [DisplayName("Standard Delimiter"), Description("The standard delimiter to use when 'Delimiter Type' is 'Standard'.")]
     [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Standard)]
-    public InArgument<StandardDelimiterEnum> StandardDelimiter { get; set; }
+    public InArgument<StandardDelimiterEnum> StandardDelimiter { get; set; } = new InArgument<StandardDelimiterEnum>(StandardDelimiterEnum.Tab);
 
     [DisplayName("Times"), Description("The number of times to split the text using the standard delimiter.")]
     [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Standard)]
@@ -22,7 +22,7 @@ public class SplitTextNode : BaseNode
 
     [DisplayName("Split Width"), Description("The width of each substring when 'Delimiter Type' is 'Number of Characters'.")]
     [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.NumberOfCharacters)]
-    public InArgument<int> SplitWidth { get; set; }
+    public InArgument<int> SplitWidth { get; set; } = new InArgument<int>(0);
 
     [DisplayName("Custom Delimiter"), Description("The custom delimiter to use when 'Delimiter Type' is 'Custom'.")]
     [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Custom)]
@@ -30,7 +30,7 @@ public class SplitTextNode : BaseNode
 
     [DisplayName("Is Regular Expression"), Description("Indicates whether the custom delimiter is a regular expression pattern.")]
     [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Custom)]
-    public InArgument<bool> IsRegularExpression { get; set; }
+    public InArgument<bool> IsRegularExpression { get; set; } = new InArgument<bool>(false);
 
     [DisplayName("Text List"), Description("Returns the list of substrings after splitting the original text.")]
     public OutArgument<IList> TextList { get; set; } = new OutArgument<IList>();

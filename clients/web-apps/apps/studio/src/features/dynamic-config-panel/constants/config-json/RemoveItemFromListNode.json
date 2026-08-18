@@ -1,0 +1,88 @@
+{
+  "name": "RemoveItemFromListNode",
+  "label": "Remove Item From List",
+  "description": "Removes an item from a list by index or value.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "RemoveMode",
+      "label": "Remove Mode",
+      "description": "Specifies whether to remove by Index or Value.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Index",
+          "value": "Index",
+          "description": "Removes an item based on its position in the list."
+        },
+        {
+          "label": "Value",
+          "value": "Value",
+          "description": "Removes an item based on its value."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "IndexToRemove",
+      "label": "Index To Remove",
+      "description": "The zero-based index of the item to remove.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "RemoveMode",
+            "equals": "Index"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ValueToRemove",
+      "label": "Value To Remove",
+      "description": "The value of the item to remove from the list.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "RemoveMode",
+            "equals": "Value"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceList",
+      "label": "Source List",
+      "description": "The list from which the item will be removed.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ModifiedList",
+      "label": "Modified List",
+      "description": "Returns the updated list after removing the item(s).",
+      "defaultValue": {
+        "value": "ModifiedList",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

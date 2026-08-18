@@ -1,0 +1,30 @@
+{
+  "name": "WriteToCmdSessionNode",
+  "label": "Write to CMD Session",
+  "description": "Executes a command on an open CMD session.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "CmdSession",
+      "label": "CMD Session",
+      "description": "The process representing the open CMD session.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Command",
+      "label": "Command",
+      "description": "The command to execute in the CMD session.ex:dir \u003E",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

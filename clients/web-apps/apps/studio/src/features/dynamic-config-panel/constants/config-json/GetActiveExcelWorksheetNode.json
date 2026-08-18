@@ -1,0 +1,57 @@
+{
+  "name": "GetActiveExcelWorksheetNode",
+  "label": "Get Active Excel Worksheet",
+  "description": "Gets the currently active worksheet from the specified Excel workbook instance.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkbookInstance",
+      "label": "Workbook Instance",
+      "description": "The Excel Workbook from which to get the active worksheet.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ActiveWorksheet",
+      "label": "Active Worksheet",
+      "description": "The currently active worksheet in the workbook.",
+      "defaultValue": {
+        "value": "ActiveWorksheet",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WorksheetName",
+      "label": "Worksheet Name",
+      "description": "The name of the active worksheet.",
+      "defaultValue": {
+        "value": "WorksheetName",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WorksheetIndex",
+      "label": "Worksheet Index",
+      "description": "The index of the active worksheet.",
+      "defaultValue": {
+        "value": "WorksheetIndex",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-using NodeLibrary.SystemNodes.Enums;
+﻿using NodeLibrary.SystemNodes.Enums;
 using System.Diagnostics;
 using System.Management;
 
@@ -9,7 +9,7 @@ namespace NodeLibrary.SystemNodes;
 public class WaitForProcessNode : BaseNode
 {
     [DisplayName("Process Name"), Description("The name of the process to monitor.")]
-    public required InArgument<ProcessNameEnum> ProcessName { get; set; }
+    public required InArgument<ProcessNameEnum> ProcessName { get; set; } = new InArgument<ProcessNameEnum>(ProcessNameEnum.AggregatorHost);
 
     [DisplayName("From User"), Description("Indicates whether the process should be triggered by a specific user.")]
     public InArgument<bool> FromUser { get; set; } = new InArgument<bool>(false);

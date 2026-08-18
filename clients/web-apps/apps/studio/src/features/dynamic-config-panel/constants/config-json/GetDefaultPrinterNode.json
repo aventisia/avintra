@@ -1,0 +1,55 @@
+{
+  "name": "GetDefaultPrinterNode",
+  "label": "Get Default Printer",
+  "description": "Gets the name of the default printer using multiple methods.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Method",
+      "label": "Retrieval Method",
+      "description": "Method to use for retrieving the default printer (Auto will try all methods)",
+      "defaultValue": "Auto",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Auto",
+          "value": "Auto",
+          "description": "Automatically tries all methods in order of preference."
+        },
+        {
+          "label": "Registry",
+          "value": "Registry",
+          "description": "Retrieves the default printer from the Windows Registry."
+        },
+        {
+          "label": "Win32 API",
+          "value": "Win32Api",
+          "description": "Retrieves the default printer using Win32 API calls."
+        },
+        {
+          "label": "WMI",
+          "value": "WMI",
+          "description": "Retrieves the default printer using WMI queries."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "DefaultPrinterName",
+      "label": "Default Printer Name",
+      "description": "Returns the name of the default printer.",
+      "defaultValue": {
+        "value": "DefaultPrinterName",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

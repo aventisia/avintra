@@ -1,0 +1,30 @@
+{
+  "name": "WriteTextToJSONFileNode",
+  "label": "Write Text to JSON File",
+  "description": "Writes the provided content as JSON to the specified file path.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "JsonContent",
+      "label": "JSON Content",
+      "description": "The content to write as JSON. Can be a string, object, array, JsonObject, JsonArray, List, Dictionary, etc.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The full path to the file where the JSON content will be written.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

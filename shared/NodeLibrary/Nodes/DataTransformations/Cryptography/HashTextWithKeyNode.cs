@@ -1,4 +1,4 @@
-using NodeLibrary.CryptographyNodes.Enums;
+﻿using NodeLibrary.CryptographyNodes.Enums;
 using System.Security.Cryptography;
 
 namespace NodeLibrary.CryptographyNodes;
@@ -14,7 +14,7 @@ public class HashTextWithKeyNode : BaseNode
     public required InArgument<string> Key { get; set; }
 
     [DisplayName("Hashing Algorithm"), Description("The algorithm to use for hashing (SHA256, SHA512, or MD5)")]
-    public required InArgument<HashAlgorithmEnum> Algorithm { get; set; }
+    public required InArgument<HashAlgorithmEnum> Algorithm { get; set; } = new InArgument<HashAlgorithmEnum>(HashAlgorithmEnum.Md5);
 
     [DisplayName("Hashed Text"), Description("The hashed text")]
     public OutArgument<string> HashedText { get; set; } = new OutArgument<string>();
