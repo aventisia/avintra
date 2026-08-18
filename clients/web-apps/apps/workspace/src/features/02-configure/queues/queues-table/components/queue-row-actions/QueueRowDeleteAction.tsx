@@ -1,8 +1,5 @@
 import { DeleteDDMenuItem } from "@avplatform/ui/dropdown-menu";
 import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/hooks";
-import { useShallow } from "zustand/react/shallow";
-
-import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
@@ -17,22 +14,15 @@ export const QueueRowDeleteAction = ({ rowId }: QueueRowDeleteActionProps) => {
   const { showDefaultAlertDialog } = useShowAlertHandler();
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  // queryKey already includes the current space id.
   const { queryKey } = useTableTab();
-
-  // Get the currently selected space so the mutation targets the same
-  // query cache key that useFetchQueues writes to (which includes the space id).
-  const { currentSpace } = useCurrentSpaceStore(
-    useShallow((state) => ({
-      currentSpace: state.currentSpace,
-    })),
-  );
 
   // Get mutation function to delete the queue
   const { mutate: deleteQueue } = useListOptimisticMutation<
     string,
     boolean | QueuesTableDto,
     QueuesTableDto
-  >([rowId], queueOptimisticMutationFn, [...queryKey, currentSpace?.id] as string[]);
+  >([rowId], queueOptimisticMutationFn, queryKey);
 
   // Return Delete alert dialog trigger
   return (

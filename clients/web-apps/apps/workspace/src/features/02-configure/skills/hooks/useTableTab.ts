@@ -1,13 +1,26 @@
 import { useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useShallow } from "zustand/react/shallow";
+
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { DATA_QUERY_KEY, TABLE_TAB_QUERY_PARAM } from "../constants";
 
 /**
  * Returns tab state and query key derived from URL search params.
+ *
+ * The returned query key is the single source of truth for the table list
+ * query: it always includes the current space id so fetches and mutations
+ * resolve the same cache entry.
  */
 export const useTableTab = () => {
   const [searchParams] = useSearchParams();
+
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
 
   const currentTab = (searchParams.get(TABLE_TAB_QUERY_PARAM) ?? "personal") as
     "personal" | "shared" | "library";
@@ -18,10 +31,10 @@ export const useTableTab = () => {
   const isReadOnly = isLibrary;
 
   const queryKey = useMemo(() => {
-    if (isShared) return [...DATA_QUERY_KEY, "SHARED"];
-    if (isLibrary) return [...DATA_QUERY_KEY, "LIBRARY"];
-    return DATA_QUERY_KEY;
-  }, [isShared, isLibrary]);
+    if (isShared) return [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? ""];
+    if (isLibrary) return [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? ""];
+    return [...DATA_QUERY_KEY, currentSpace?.id ?? ""];
+  }, [isShared, isLibrary, currentSpace?.id]);
 
   return {
     currentTab,
