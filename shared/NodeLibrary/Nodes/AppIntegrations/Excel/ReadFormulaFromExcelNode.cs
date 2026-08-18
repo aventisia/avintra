@@ -1,4 +1,6 @@
 ﻿
+using NodeLibrary.ExcelNodes.Helpers;
+
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Read Formula from Excel"), Description("Reads the formula (not the calculated value) from a specified cell in an Excel worksheet.")]
@@ -31,7 +33,7 @@ public class ReadFormulaFromExcelNode : BaseNode
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");
 
-            int colIndex = int.TryParse(columnStr, out int num) ? num : GetColumnIndex(columnStr);
+            int colIndex = int.TryParse(columnStr, out int num) ? num : ExcelColumnHelper.GetColumnIndex(columnStr);
 
             if (colIndex < 1)
                 throw new ArgumentException($"Invalid column: '{columnStr}'.");
@@ -60,13 +62,6 @@ public class ReadFormulaFromExcelNode : BaseNode
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error reading formula: {ex.Message}");
         }
-    }
-
-    private static int GetColumnIndex(string columnName)
-    {
-        if (string.IsNullOrEmpty(columnName)) return -1;
-        columnName = columnName.ToUpperInvariant();
-        return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
     }
 }
 

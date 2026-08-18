@@ -32,7 +32,7 @@
       "name": "TimeUnit",
       "label": "Time Unit",
       "description": "Specifies the unit of time (e.g., Seconds, Minutes, Hours, Days, Months, Years).",
-      "defaultValue": "",
+      "defaultValue": "Seconds",
       "required": true,
       "selectOptions": [
         {

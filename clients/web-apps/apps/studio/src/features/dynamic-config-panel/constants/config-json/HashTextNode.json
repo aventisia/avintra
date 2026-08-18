@@ -23,7 +23,7 @@
       "name": "Algorithm",
       "label": "Hashing Algorithm",
       "description": "The algorithm to use for hashing (SHA256, SHA512, or MD5)",
-      "defaultValue": "",
+      "defaultValue": "Md5",
       "required": true,
       "selectOptions": [
         {

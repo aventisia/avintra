@@ -23,7 +23,7 @@
       "name": "Operation",
       "label": "Operation",
       "description": "Specifies how to truncate or round the number.",
-      "defaultValue": "",
+      "defaultValue": "GetIntegerPart",
       "required": true,
       "selectOptions": [
         {

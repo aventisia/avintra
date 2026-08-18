@@ -243,6 +243,7 @@ export const CanvasNodeDetailPanel = () => {
                   jsonData={JSON.stringify(nodeLogPayload, null, 2)}
                   enableValueClipboard
                   viewportClassName=""
+                  parseNestedStrings
                   shortenTextAfterLength={70}
                 />
               </ViewInfoRowsCard>

@@ -23,7 +23,7 @@
       "name": "DeleteMode",
       "label": "Delete Mode",
       "description": "Specifies what to delete: Single Cell, Range of Cells, Rows, or Columns.",
-      "defaultValue": "",
+      "defaultValue": "SingleCell",
       "required": true,
       "selectOptions": [
         {

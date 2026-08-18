@@ -14,7 +14,7 @@
       "name": "Key",
       "label": "Key",
       "description": "The key to modify (e.g., \u0027CapsLock\u0027, \u0027NumLock\u0027, \u0027ScrollLock\u0027).",
-      "defaultValue": "",
+      "defaultValue": "CapsLock",
       "required": true,
       "selectOptions": [
         {
@@ -40,7 +40,7 @@
       "name": "State",
       "label": "State",
       "description": "Whether to enable (On) or disable (Off) the key state.",
-      "defaultValue": "",
+      "defaultValue": "On",
       "required": true,
       "selectOptions": [
         {

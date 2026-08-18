@@ -41,7 +41,7 @@
       "name": "EncodingFormat",
       "label": "Encoding Format",
       "description": "Encoding used for the encrypted output: Base64 or Hex.",
-      "defaultValue": "",
+      "defaultValue": "Base64",
       "required": true,
       "selectOptions": [
         {

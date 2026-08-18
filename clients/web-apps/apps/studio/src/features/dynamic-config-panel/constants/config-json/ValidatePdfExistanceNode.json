@@ -23,7 +23,7 @@
       "name": "ContentType",
       "label": "Pdf Content Type",
       "description": "Select whether to check for Text or Image content in the Pdf.",
-      "defaultValue": "",
+      "defaultValue": "Text",
       "required": true,
       "selectOptions": [
         {

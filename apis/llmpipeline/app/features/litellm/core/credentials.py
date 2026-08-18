@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 
 from fastapi import HTTPException
 
+from app.core.config import settings
 from app.core.logger import logger
 from app.core.vault_manager import VaultManager
 from app.features.auth.authenticated_user import User
@@ -51,9 +52,10 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
     single source of truth for authentication and billing across text
     generation, streaming, STT and TTS.
     """
-    # Non-BYOK: use environment credentials (platform credit tracking applies).
+    # Non-BYOK: use platform credentials from settings (platform credit tracking applies).
     if not is_byok and not credential_id:
-        return CredentialResolution(kwargs={}, uses_platform_credentials=True)
+        kwargs = _platform_credentials_kwargs(provider)
+        return CredentialResolution(kwargs=kwargs, uses_platform_credentials=True)
 
     # BYOK must always carry a real credential id; never fall back to the env.
     if not _is_real_credential(credential_id):
@@ -151,6 +153,51 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
     )
 
 
+def resolve_credential_name(
+    credential_id: str | None,
+    user: User | None = None,
+    *,
+    jwt: str | None = None,
+) -> str | None:
+    """Resolve the display name for a vault credential id.
+
+    Used for BYOK usage attribution. Returns the credential's `Name` if the
+    secret is found, otherwise falls back to the credential id itself.
+    Accepts either a `User` instance (from which the access token is read) or
+    a raw `jwt` keyword argument.
+    """
+    if not _is_real_credential(credential_id):
+        return None
+
+    access_token = jwt
+    if access_token is None and user is not None:
+        access_token = user.access_token
+
+    if not access_token:
+        logger.warning(
+            f"[LLM-V2] resolve_credential_name called without an access token for credential {credential_id}"
+        )
+        return str(credential_id)
+
+    try:
+        vault = VaultManager()
+        credential = vault.get_vault_secret_by_id(
+            vault_secret_id=credential_id,
+            jwt=access_token,
+        )
+        if not credential:
+            return str(credential_id)
+
+        credential_data = credential.get("data") or credential
+        name = credential.get("Name") or credential_data.get("Name")
+        return name if name else str(credential_id)
+    except Exception as exc:
+        logger.warning(
+            f"[LLM-V2] Failed to resolve credential name for {credential_id}: {exc}"
+        )
+        return str(credential_id)
+
+
 def _is_real_credential(credential_id: str | None) -> bool:
     """True when a real (non-null / non-empty / non-default-GUID) credential id is supplied."""
     if not credential_id:
@@ -159,38 +206,65 @@ def _is_real_credential(credential_id: str | None) -> bool:
     return cleaned not in ("", "00000000-0000-0000-0000-000000000000")
 
 
-def resolve_credential_name(credential_id: str | None, user: User | None = None, jwt: str | None = None) -> str | None:
-    """Resolve the display name of a BYOK vault credential for usage attribution.
+def _platform_credentials_kwargs(provider: str) -> dict:
+    """Build LiteLLM kwargs from platform settings for the given provider.
 
-    Returns None when the credential is not real or cannot be resolved, so
-    callers can fall back to the credential id for attribution.
-
-    Args:
-        credential_id: The BYOK vault credential id.
-        user: The authenticated user (used to authorize the vault lookup).
-            Either ``user`` or ``jwt`` must be provided.
-        jwt: An optional raw JWT to authorize the vault lookup when a full
-            ``User`` object is not available.
-
-    Returns:
-        The credential display name, or None when unavailable.
+    pydantic_settings loads .env/.env.local into `settings` but does not export
+    them back into os.environ. LiteLLM reads API keys from os.environ, so we
+    must pass the platform credentials explicitly for non-BYOK requests.
     """
-    if not _is_real_credential(credential_id):
-        return None
-    access_token = jwt or (user.access_token if user else None)
-    try:
-        vault = VaultManager()
-        credential = vault.get_vault_secret_by_id(
-            vault_secret_id=credential_id,
-            jwt=access_token,
+    provider = provider.lower()
+
+    if provider == "openai":
+        return _drop_empty(
+            api_key=settings.OPENAI_API_KEY,
+            api_base=settings.OPENAI_API_URL,
         )
-        if not credential:
-            return None
-        credential_data = credential.get("data") or credential
-        return credential.get("Name") or credential_data.get("Name")
-    except Exception as e:
-        logger.error(f"[LLM-V2] Failed to resolve credential name for {credential_id}: {e}")
-        return None
+
+    if provider == "anthropic":
+        return _drop_empty(
+            api_key=settings.CLAUDE_API_KEY,
+            api_base=settings.CLAUDE_API_URL,
+        )
+
+    if provider == "gemini":
+        return _drop_empty(
+            api_key=settings.GEMINI_API_KEY,
+            api_base=settings.GEMINI_API_URL,
+        )
+
+    if provider == "openrouter":
+        return _drop_empty(
+            api_key=settings.OPENROUTER_API_KEY,
+            api_base=settings.OPENROUTER_API_URL,
+        )
+
+    if provider == "deepinfra":
+        return _drop_empty(
+            api_key=settings.DEEPINFRA_API_KEY,
+            api_base=settings.DEEPINFRA_API_URL,
+        )
+
+    if provider == "ollama":
+        return _drop_empty(
+            api_base=settings.OLLAMA_API_URL,
+            api_key=settings.OLLAMA_API_KEY or None,
+        )
+
+    if provider == "elevenlabs":
+        return _drop_empty(
+            api_key=settings.ELEVENLABS_API_KEY,
+            api_base=settings.ELEVENLABS_API_URL,
+        )
+
+    # Unknown / unsupported provider: fall back to environment variables so we
+    # don't break providers that rely on process-level env configuration.
+    return {}
+
+
+def _drop_empty(**kwargs) -> dict:
+    """Return a dict with only truthy values, filtering out empty strings."""
+    return {k: v for k, v in kwargs.items() if v}
 
 
 # Providers that authenticate via AWS credentials.

@@ -23,7 +23,7 @@
       "name": "PasteMode",
       "label": "Paste Mode",
       "description": "Specifies where to paste: to a specific cell, named range, or active cell.",
-      "defaultValue": "",
+      "defaultValue": "OnNamedCells",
       "required": true,
       "selectOptions": [
         {

@@ -16,6 +16,7 @@ const FELInputOutput = ({ jsonData, title }: FELInputOutputProps) => {
         jsonData={jsonData}
         enableValueClipboard
         wrapLongValues={false}
+        parseNestedStrings
         className="h-[15rem] w-[27rem] max-w-[27rem] p-1"
       />
     </div>

@@ -49,7 +49,7 @@ export const FlowVersionNavLink = ({
 
   const content = (
     <>
-      <span className="inline-flex items-center gap-1 border-b-[0.1rem] border-transparent group-hover:border-primary">
+      <span className="inline-flex font-medium items-center gap-1 border-b-[0.1rem] border-transparent group-hover:border-primary">
         <span className="truncate max-w-72">{flowName}</span>
         <span className="bg-slate-100 border group-hover:border-primary-100 group-hover:text-primary text-2xs rounded-xl h-[1.1rem] px-1.5 text-muted-foreground">
           {flowVersionNumber}

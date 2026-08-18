@@ -32,7 +32,7 @@
       "name": "PageSelection",
       "label": "Page Selection Mode",
       "description": "The mode for selecting pages to extract: All, Single, or Range.",
-      "defaultValue": "",
+      "defaultValue": "All",
       "required": true,
       "selectOptions": [
         {

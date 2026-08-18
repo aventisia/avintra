@@ -23,7 +23,7 @@
       "name": "DeleteMode",
       "label": "Delete Mode",
       "description": "Specifies how to identify the worksheet to delete (by Name or by Index).",
-      "defaultValue": "",
+      "defaultValue": "Name",
       "required": true,
       "selectOptions": [
         {

@@ -13,7 +13,7 @@
       "type": "text",
       "name": "WorksheetInstance",
       "label": "Worksheet Instance",
-      "description": "The Excel Worksheet object from which to read data.",
+      "description": "The Excel Worksheet object from which to read data. If omitted, the active worksheet of the running Excel instance is used.",
       "defaultValue": "",
       "required": true
     },
@@ -23,7 +23,7 @@
       "name": "RetrieveMode",
       "label": "Retrieve Mode",
       "description": "Specifies how to retrieve data from the worksheet.",
-      "defaultValue": "",
+      "defaultValue": "SingleCell",
       "required": true,
       "selectOptions": [
         {
@@ -58,28 +58,16 @@
       "type": "text",
       "name": "StartColumn",
       "label": "Start Column",
-      "description": "The starting column letter (e.g., \u0027A\u0027).",
+      "description": "The starting column, as a letter (e.g., \u0027A\u0027) or a 1-based index (e.g., \u00271\u0027).",
       "defaultValue": "",
       "required": false,
       "renderIf": {
+        "op": 1,
         "conditions": [
           {
             "field": "RetrieveMode",
-            "equals": "RangeOfCells"
-          }
-        ]
-      }
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "StartColumnIndex",
-      "label": "Start Column Index",
-      "description": "The starting column index (e.g., 1 for \u0027A\u0027). Takes precedence if greater than 0.",
-      "defaultValue": "",
-      "required": false,
-      "renderIf": {
-        "conditions": [
+            "equals": "SingleCell"
+          },
           {
             "field": "RetrieveMode",
             "equals": "RangeOfCells"
@@ -96,7 +84,12 @@
       "defaultValue": "",
       "required": false,
       "renderIf": {
+        "op": 1,
         "conditions": [
+          {
+            "field": "RetrieveMode",
+            "equals": "SingleCell"
+          },
           {
             "field": "RetrieveMode",
             "equals": "RangeOfCells"
@@ -109,24 +102,7 @@
       "type": "text",
       "name": "EndColumn",
       "label": "End Column",
-      "description": "The ending column of the range to read.",
-      "defaultValue": "",
-      "required": false,
-      "renderIf": {
-        "conditions": [
-          {
-            "field": "RetrieveMode",
-            "equals": "RangeOfCells"
-          }
-        ]
-      }
-    },
-    {
-      "direction": "Input",
-      "type": "text",
-      "name": "EndColumnIndex",
-      "label": "End Column Index",
-      "description": "The ending column index (e.g., 4 for \u0027D\u0027). Takes precedence if greater than 0.",
+      "description": "The ending column, as a letter (e.g., \u0027D\u0027) or a 1-based index (e.g., \u00274\u0027).",
       "defaultValue": "",
       "required": false,
       "renderIf": {
@@ -188,24 +164,37 @@
       "label": "First Line of Range Contains Column Names",
       "description": "If true, treats the first row as column names.",
       "defaultValue": "",
-      "required": false
-    },
-    {
-      "direction": "Input",
-      "type": "switch",
-      "name": "OmitEmptyColumnsAndRows",
-      "label": "Omit Empty Columns and Rows",
-      "description": "If true, omits empty columns to the right and empty rows at the bottom.",
-      "defaultValue": "",
       "required": false,
       "renderIf": {
+        "op": 1,
         "conditions": [
+          {
+            "field": "RetrieveMode",
+            "equals": "RangeOfCells"
+          },
+          {
+            "field": "RetrieveMode",
+            "equals": "AllAvailableValues"
+          },
+          {
+            "field": "RetrieveMode",
+            "equals": "Selection"
+          },
           {
             "field": "RetrieveMode",
             "equals": "ValuesOfNamedCells"
           }
         ]
       }
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "TrimTrailingEmptyRowsAndColumns",
+      "label": "Trim Trailing Empty Columns and Rows",
+      "description": "If true, omits empty columns to the right and empty rows at the bottom of the range.",
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Output",

@@ -23,7 +23,7 @@
       "name": "SearchDirection",
       "label": "Search Direction",
       "description": "Specifies whether to search for the first free row or the first free column.",
-      "defaultValue": "",
+      "defaultValue": "Rows",
       "required": true,
       "selectOptions": [
         {

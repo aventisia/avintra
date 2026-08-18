@@ -1,4 +1,6 @@
 using DynamicExpresso;
+using System.Collections;
+using System.Dynamic;
 
 namespace ExecutorLibrary.FlowProcessor;
 
@@ -25,7 +27,7 @@ public class FlowExecutionContext
         }
 
         _variables[key] = value;
-        Interpreter.SetVariable(key, value);
+        Interpreter.SetVariable(key, ConvertForInterpreter(value));
     }
 
     public T? Get<T>(string key)
@@ -95,18 +97,11 @@ public class FlowExecutionContext
     /// </summary>
     public object? ResolveTemplateObject(object? value)
     {
-        // Unwrap JsonElement to its underlying value so template resolution works correctly
+        // Convert JsonElement into an interpreter-friendly dynamic structure
+        // (ExpandoObject / List<object?>) so dot-notation and indexing work.
         if (value is JsonElement jsonElement)
         {
-            value = jsonElement.ValueKind switch
-            {
-                JsonValueKind.String => jsonElement.GetString(),
-                JsonValueKind.Number => jsonElement.TryGetInt64(out var l) ? l : jsonElement.GetDouble(),
-                JsonValueKind.True => true,
-                JsonValueKind.False => false,
-                JsonValueKind.Null or JsonValueKind.Undefined => null,
-                _ => jsonElement.GetRawText(),
-            };
+            value = ConvertJsonElement(jsonElement);
         }
 
         if (value is string stringValue && stringValue.Contains("{{") && stringValue.Contains("}}"))
@@ -173,5 +168,79 @@ public class FlowExecutionContext
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Recursively converts values into forms that DynamicExpresso can evaluate
+    /// with dot-notation and indexing. JsonElements become ExpandoObjects or lists,
+    /// and nested dictionaries/enumerables are flattened the same way.
+    /// </summary>
+    private static object? ConvertForInterpreter(object? value)
+    {
+        if (value is null)
+            return null;
+
+        if (value is JsonElement element)
+            return ConvertJsonElement(element);
+
+        if (value is string)
+            return value;
+
+        if (value is IDictionary dictionary)
+        {
+            var expando = new ExpandoObject() as IDictionary<string, object?>;
+            foreach (var key in dictionary.Keys)
+            {
+                var keyString = key?.ToString();
+                if (!string.IsNullOrWhiteSpace(keyString) && key is not null)
+                {
+                    expando[keyString] = ConvertForInterpreter(dictionary[key]);
+                }
+            }
+            return expando;
+        }
+
+        if (value is IEnumerable enumerable)
+        {
+            return enumerable.Cast<object?>().Select(ConvertForInterpreter).ToList();
+        }
+
+        return value;
+    }
+
+    private static object? ConvertJsonElement(JsonElement element)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.Object:
+                var expando = new ExpandoObject() as IDictionary<string, object?>;
+                foreach (var property in element.EnumerateObject())
+                {
+                    expando[property.Name] = ConvertJsonElement(property.Value);
+                }
+                return expando;
+
+            case JsonValueKind.Array:
+                return element.EnumerateArray().Select(ConvertJsonElement).ToList();
+
+            case JsonValueKind.String:
+                return element.GetString();
+
+            case JsonValueKind.Number:
+                return element.TryGetInt64(out var longValue) ? longValue : element.GetDouble();
+
+            case JsonValueKind.True:
+                return true;
+
+            case JsonValueKind.False:
+                return false;
+
+            case JsonValueKind.Null:
+            case JsonValueKind.Undefined:
+                return null;
+
+            default:
+                return element.GetRawText();
+        }
     }
 }

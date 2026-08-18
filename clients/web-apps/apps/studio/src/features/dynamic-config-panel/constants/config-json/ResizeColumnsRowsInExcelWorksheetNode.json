@@ -23,7 +23,7 @@
       "name": "ResizeMode",
       "label": "Resize Mode",
       "description": "Specifies what to resize: Columns, Rows, or Both.",
-      "defaultValue": "",
+      "defaultValue": "Columns",
       "required": true,
       "selectOptions": [
         {

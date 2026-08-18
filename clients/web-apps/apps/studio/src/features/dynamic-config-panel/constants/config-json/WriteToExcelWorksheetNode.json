@@ -32,7 +32,7 @@
       "name": "WriteMode",
       "label": "Write Mode",
       "description": "Specifies how to determine the target cell(s) for writing.",
-      "defaultValue": "",
+      "defaultValue": "OnSpecifiedCell",
       "required": true,
       "selectOptions": [
         {

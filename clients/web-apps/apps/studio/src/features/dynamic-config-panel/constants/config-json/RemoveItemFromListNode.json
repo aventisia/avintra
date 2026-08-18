@@ -14,7 +14,7 @@
       "name": "RemoveMode",
       "label": "Remove Mode",
       "description": "Specifies whether to remove by Index or Value.",
-      "defaultValue": "",
+      "defaultValue": "Index",
       "required": true,
       "selectOptions": [
         {

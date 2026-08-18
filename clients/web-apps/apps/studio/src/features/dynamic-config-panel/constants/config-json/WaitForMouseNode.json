@@ -14,7 +14,7 @@
       "name": "WaitAction",
       "label": "Wait for Mouse Pointer To",
       "description": "Specifies whether to wait until the mouse pointer becomes or stops being the specified type.",
-      "defaultValue": "",
+      "defaultValue": "Become",
       "required": true,
       "selectOptions": [
         {
@@ -35,7 +35,7 @@
       "name": "CursorType",
       "label": "Mouse Pointer",
       "description": "The type of mouse pointer to wait for (e.g., Arrow, Hourglass).",
-      "defaultValue": "",
+      "defaultValue": "Arrow",
       "required": true,
       "selectOptions": [
         {

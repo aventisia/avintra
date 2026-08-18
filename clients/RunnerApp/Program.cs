@@ -586,9 +586,12 @@ static bool IsElevated()
 
 static RunnerAppOptions? ParseRunArguments(string[] args)
 {
-    string? appBaseUrl = null;
-    string? accessToken = null;
-    Guid? jobId = null;
+    string? appBaseUrl = "https://local-avintra.aventisia.com/";
+    string? accessToken = "***REMOVED***";
+    Guid? jobId = new Guid("eced3324-75d8-4a5f-9292-8e5e7c0ce20e");
+    //string? appBaseUrl = null;
+    //string? accessToken = null;
+    //Guid? jobId = null;
     string? apiKey = null;
     string? tenantId = null;
     string? linkedUsername = null;

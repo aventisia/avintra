@@ -14,7 +14,7 @@
       "name": "SpecifyProcessBy",
       "label": "Specify process by",
       "description": "Specifies whether to terminate the process by name or ID.",
-      "defaultValue": "",
+      "defaultValue": "ProcessName",
       "required": true,
       "selectOptions": [
         {

@@ -14,6 +14,26 @@ const modules = {
 const nodeConfigCache: Record<string, DCPFieldSchemaType[] | undefined> = {};
 
 /**
+ * Computes the static JSON file path for a given node unique name.
+ * Keeps the existing routing logic for special/custom folders.
+ */
+const getJsonFilepath = (nodeUniqueName: string): string => {
+  if (
+    nodeUniqueName === "ConditionalActivity" ||
+    nodeUniqueName === "ConditionalBranchActivity" ||
+    nodeUniqueName === "LoopActivity"
+  ) {
+    return `../constants/custom-config-json/${nodeUniqueName}.json`;
+  }
+
+  if (nodeUniqueName.includes("AIAgent")) {
+    return `../constants/custom-config-json/ai-config-json/${nodeUniqueName}.json`;
+  }
+
+  return `../constants/config-json/${nodeUniqueName}.json`;
+};
+
+/**
  * Gets the node config JSON for a given nodeUniqueName/activityName.
  * For now, loads the JSON statically from the constants/config-json folder.
  * @param nodeUniqueName The node Unique name/activity name (e.g., "WriteTextToFileActivity")
@@ -58,21 +78,8 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
     }
   }
 
-  // Get the path to the JSON file based on the nodeUniqueName
-  let jsonFilepath = "";
-
-  if (
-    nodeUniqueName === "ConditionalActivity" ||
-    nodeUniqueName === "ConditionalBranchActivity" ||
-    nodeUniqueName === "LoopActivity"
-  ) {
-    jsonFilepath = `../constants/custom-config-json/${nodeUniqueName}.json`;
-  } else if (nodeUniqueName.includes("AIAgent")) {
-    jsonFilepath = `../constants/custom-config-json/ai-config-json/${nodeUniqueName}.json`;
-  }
-
   // For regular desktop nodes in Tauri, load from bundled resources
-  if (!jsonFilepath && IS_TAURI) {
+  if (IS_TAURI) {
     try {
       return await loadJsonFromTauriResources<DCPFieldSchemaType[]>(
         `desktop-nodes/${nodeUniqueName}.json`,
@@ -82,20 +89,28 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
     }
   }
 
-  // Default path for web module loading
-  if (!jsonFilepath) {
-    jsonFilepath = `../constants/config-json/${nodeUniqueName}.json`;
+  // Try the original nodeUniqueName first
+  const namesToTry = [nodeUniqueName];
+
+  // TODO: Remove this fallback once all legacy flows using the "Activity"
+  // suffix have been migrated to the "Node" suffix.
+  // Fallback: some legacy nodes were saved with an "Activity" suffix,
+  // but their config files have been renamed with a "Node" suffix.
+  if (nodeUniqueName.endsWith("Activity")) {
+    namesToTry.push(`${nodeUniqueName.slice(0, -"Activity".length)}Node`);
   }
 
-  // Set the path to the JSON file
-  const loader = modules[jsonFilepath];
+  for (const name of namesToTry) {
+    const jsonFilepath = getJsonFilepath(name);
+    const loader = modules[jsonFilepath];
 
-  // Check if config file exists
-  if (!loader) throw new Error(`No config found for node: ${nodeUniqueName}`);
+    if (loader) {
+      const module = (await loader()) as { default: DCPFieldSchemaType[] };
+      // Cache under the requested name so subsequent lookups are fast
+      nodeConfigCache[nodeUniqueName] = module.default;
+      return module.default;
+    }
+  }
 
-  // Load the JSON file
-  const module = (await loader()) as { default: DCPFieldSchemaType[] };
-
-  // Return the default export of the module
-  return module.default;
+  throw new Error(`No config found for node: ${nodeUniqueName}`);
 };

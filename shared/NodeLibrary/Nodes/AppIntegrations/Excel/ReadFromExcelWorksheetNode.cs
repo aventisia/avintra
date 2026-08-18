@@ -1,4 +1,5 @@
 ﻿using NodeLibrary.ExcelNodes.Enums;
+using NodeLibrary.ExcelNodes.Helpers;
 using NodeLibrary.Office;
 
 namespace NodeLibrary.ExcelNodes;
@@ -7,31 +8,27 @@ namespace NodeLibrary.ExcelNodes;
 [NodeMetadata(icon: "/assets/Excel.svg")]
 public class ReadFromExcelWorksheetNode : BaseNode
 {
-    [DisplayName("Worksheet Instance"), Description("The Excel Worksheet object from which to read data.")]
+    [DisplayName("Worksheet Instance"), Description("The Excel Worksheet object from which to read data. If omitted, the active worksheet of the running Excel instance is used.")]
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Retrieve Mode"), Description("Specifies how to retrieve data from the worksheet.")]
     public required InArgument<ExcelRetrieveModeEnum> RetrieveMode { get; set; } = new InArgument<ExcelRetrieveModeEnum>(ExcelRetrieveModeEnum.SingleCell);
 
-    [DisplayName("Start Column"), Description("The starting column letter (e.g., 'A').")]
+    [DisplayName("Start Column"), Description("The starting column, as a letter (e.g., 'A') or a 1-based index (e.g., '1').")]
+    [RenderIfOperator(LogicalOperatorEnum.OR)]
+    [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.SingleCell)]
     [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
     public InArgument<string> StartColumn { get; set; } = new InArgument<string>();
 
-    [DisplayName("Start Column Index"), Description("The starting column index (e.g., 1 for 'A'). Takes precedence if greater than 0.")]
-    [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
-    public InArgument<int> StartColumnIndex { get; set; } = new InArgument<int>();
-
     [DisplayName("Start Row"), Description("The starting row of the range to read.")]
+    [RenderIfOperator(LogicalOperatorEnum.OR)]
+    [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.SingleCell)]
     [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
     public InArgument<int> StartRow { get; set; } = new InArgument<int>();
 
-    [DisplayName("End Column"), Description("The ending column of the range to read.")]
+    [DisplayName("End Column"), Description("The ending column, as a letter (e.g., 'D') or a 1-based index (e.g., '4').")]
     [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
     public InArgument<string> EndColumn { get; set; } = new InArgument<string>();
-
-    [DisplayName("End Column Index"), Description("The ending column index (e.g., 4 for 'D'). Takes precedence if greater than 0.")]
-    [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
-    public InArgument<int> EndColumnIndex { get; set; } = new InArgument<int>();
 
     [DisplayName("End Row"), Description("The ending row of the range to read.")]
     [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
@@ -45,11 +42,15 @@ public class ReadFromExcelWorksheetNode : BaseNode
     public InArgument<bool> GetContentsAsText { get; set; } = new InArgument<bool>();
 
     [DisplayName("First Line of Range Contains Column Names"), Description("If true, treats the first row as column names.")]
+    [RenderIfOperator(LogicalOperatorEnum.OR)]
+    [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]
+    [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.AllAvailableValues)]
+    [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.Selection)]
+    [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.ValuesOfNamedCells)]
     public InArgument<bool> FirstLineContainsColumnNames { get; set; } = new InArgument<bool>();
 
-    [DisplayName("Omit Empty Columns and Rows"), Description("If true, omits empty columns to the right and empty rows at the bottom.")]
-    [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.ValuesOfNamedCells)]
-    public InArgument<bool> OmitEmptyColumnsAndRows { get; set; } = new InArgument<bool>();
+    [DisplayName("Trim Trailing Empty Columns and Rows"), Description("If true, omits empty columns to the right and empty rows at the bottom of the range.")]
+    public InArgument<bool> TrimTrailingEmptyRowsAndColumns { get; set; } = new InArgument<bool>();
 
     [DisplayName("Excel Data"), Description("Returns the data read from the specified range as a DataTable.")]
     public OutArgument<DataTable> ExcelData { get; set; } = new OutArgument<DataTable>();
@@ -58,17 +59,18 @@ public class ReadFromExcelWorksheetNode : BaseNode
     {
         var status = "Starting Excel read...";
         DataTable dataTable = null;
+        dynamic worksheet = null;
+        dynamic range = null;
 
         try
         {
             dynamic worksheetArg = WorksheetInstance.Get(context);
             var retrieveMode = RetrieveMode.Get(context);
-            dynamic worksheet;
 
             if (worksheetArg == null)
             {
-                var excelApp = OfficeAutomationHelper.GetActiveApplication(OfficeApplication.Excel);
-                worksheet = excelApp.ActiveSheet;
+                var excelApp = OfficeAutomationHelper.GetActiveApplication(OfficeApplication.Excel, createIfMissing: false);
+                worksheet = excelApp?.ActiveSheet;
             }
             else
             {
@@ -79,45 +81,61 @@ public class ReadFromExcelWorksheetNode : BaseNode
                 throw new InvalidOperationException("No valid worksheet found to read from.");
 
             var startCol = StartColumn.Get(context);
-            var startColIndex = StartColumnIndex.Get(context);
             var startRow = StartRow.Get(context);
             var endCol = EndColumn.Get(context);
-            var endColIndex = EndColumnIndex.Get(context);
             var endRow = EndRow.Get(context);
             var name = Name.Get(context);
             var getContentsAsText = GetContentsAsText.Get(context);
             var firstLineContainsColumnNames = FirstLineContainsColumnNames.Get(context);
-            var omitEmptyColumnsAndRows = OmitEmptyColumnsAndRows.Get(context);
+            var trimEmpty = TrimTrailingEmptyRowsAndColumns.Get(context);
 
             switch (retrieveMode)
             {
                 case ExcelRetrieveModeEnum.SingleCell:
-                    int colIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
+                    int colIndex = ResolveColumnIndex(startCol);
+                    ValidateRow(startRow, nameof(StartRow));
                     var cell = worksheet.Cells[startRow, colIndex];
                     dataTable = new DataTable();
                     dataTable.Columns.Add("Value");
-                    dataTable.Rows.Add(getContentsAsText ? (string)cell.Text : cell.Value2);
+                    dataTable.Rows.Add(GetCellValue(cell, getContentsAsText));
                     break;
 
                 case ExcelRetrieveModeEnum.RangeOfCells:
-                    int startIndex = startColIndex > 0 ? startColIndex : GetColumnIndex(startCol);
-                    int endIndex = endColIndex > 0 ? endColIndex : GetColumnIndex(endCol);
+                    int startIndex = ResolveColumnIndex(startCol);
+                    int endIndex = ResolveColumnIndex(endCol);
+                    ValidateRow(startRow, nameof(StartRow));
+                    ValidateRow(endRow, nameof(EndRow));
+                    if (endRow < startRow)
+                        throw new ArgumentException($"End Row ({endRow}) must be greater than or equal to Start Row ({startRow}).");
+                    if (endIndex < startIndex)
+                        throw new ArgumentException("End Column must be greater than or equal to Start Column.");
                     var startCell = worksheet.Cells[startRow, startIndex];
                     var endCell = worksheet.Cells[endRow, endIndex];
-                    var range = worksheet.Range[startCell, endCell];
-                    dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
+                    range = worksheet.Range[startCell, endCell];
+                    dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames, trimEmpty);
                     break;
 
                 case ExcelRetrieveModeEnum.AllAvailableValues:
-                    var usedRange = worksheet.UsedRange;
-                    dataTable = ReadRange(usedRange, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
+                    range = worksheet.UsedRange;
+                    dataTable = range == null
+                        ? new DataTable()
+                        : ReadRange(range, getContentsAsText, firstLineContainsColumnNames, trimEmpty);
+                    break;
+
+                case ExcelRetrieveModeEnum.Selection:
+                    range = worksheet.Application.Selection;
+                    if (range == null)
+                        throw new InvalidOperationException("No cells are currently selected in the worksheet.");
+                    dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames, trimEmpty);
                     break;
 
                 case ExcelRetrieveModeEnum.ValuesOfNamedCells:
-                    var namedRange = worksheet.Names.Item(name)?.RefersToRange;
-                    if (namedRange == null)
+                    if (string.IsNullOrWhiteSpace(name))
+                        throw new ArgumentException("Name is required when retrieving values of named cells.");
+                    range = worksheet.Names.Item(name)?.RefersToRange;
+                    if (range == null)
                         throw new ArgumentException($"Named range '{name}' not found.");
-                    dataTable = ReadRange(namedRange, getContentsAsText, firstLineContainsColumnNames, omitEmptyColumnsAndRows);
+                    dataTable = ReadRange(range, getContentsAsText, firstLineContainsColumnNames, trimEmpty);
                     break;
 
                 default:
@@ -126,19 +144,68 @@ public class ReadFromExcelWorksheetNode : BaseNode
 
             ExcelData.Set(context, dataTable);
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, "Excel data read successfully.");
+            status = $"Read {dataTable?.Rows.Count} row(s) and {dataTable?.Columns.Count} column(s) from '{worksheet.Name}'.";
+            StatusMessage.Set(context, status);
         }
         catch (Exception ex)
         {
             ExcelData.Set(context, null);
             IsSuccess.Set(context, false);
-            StatusMessage.Set(context, $"Error reading from Excel: {ex.Message}");
+            status = $"Error reading from Excel: {ex.Message}";
+            StatusMessage.Set(context, status);
         }
+        finally
+        {
+            ReleaseObject(range);
+            ReleaseObject(worksheet);
+        }
+    }
+
+    private static int ResolveColumnIndex(string column)
+    {
+        if (string.IsNullOrWhiteSpace(column))
+            throw new ArgumentException("Column cannot be empty.", nameof(column));
+
+        column = column.Trim();
+
+        // Accept a numeric index (e.g., "1") or a letter (e.g., "A").
+        if (int.TryParse(column, out int numericIndex))
+        {
+            if (numericIndex < 1)
+                throw new ArgumentOutOfRangeException(nameof(column), "Column index must be >= 1.");
+            return numericIndex;
+        }
+
+        return ExcelColumnHelper.GetColumnIndex(column);
+    }
+
+    private static void ValidateRow(int row, string paramName)
+    {
+        if (row < 1)
+            throw new ArgumentOutOfRangeException(paramName, "Row must be >= 1.");
+    }
+
+    private static object GetCellValue(dynamic cell, bool getContentsAsText)
+    {
+        if (cell == null)
+            return DBNull.Value;
+
+        if (getContentsAsText)
+        {
+            object text = cell.Text;
+            return text ?? DBNull.Value;
+        }
+
+        object value = cell.Value2;
+        return value ?? DBNull.Value;
     }
 
     private static DataTable ReadRange(dynamic range, bool getContentsAsText, bool firstLineContainsColumnNames, bool trimEmpty)
     {
         var dataTable = new DataTable();
+
+        if (range == null)
+            return dataTable;
 
         int rowCount = range.Rows.Count;
         int colCount = range.Columns.Count;
@@ -146,12 +213,24 @@ public class ReadFromExcelWorksheetNode : BaseNode
         if (rowCount == 0 || colCount == 0)
             return dataTable;
 
-        object[,] values = range.Value2 as object[,];
-        if (values == null)
+        // Value2 is usually object[,], but for a single cell it returns a scalar.
+        object rawValue2 = range.Value2;
+        if (rawValue2 is null)
             return dataTable;
+
+        if (rawValue2 is not object[,] values)
+        {
+            // Single-cell range: return a one-cell table honoring the text flag.
+            dataTable.Columns.Add("Value");
+            dataTable.Rows.Add(getContentsAsText ? (range.Text ?? DBNull.Value) : (rawValue2 ?? DBNull.Value));
+            return dataTable;
+        }
 
         int maxRow = values.GetLength(0);
         int maxCol = values.GetLength(1);
+
+        if (maxRow == 0 || maxCol == 0)
+            return dataTable;
 
         if (trimEmpty)
         {
@@ -164,6 +243,7 @@ public class ReadFromExcelWorksheetNode : BaseNode
 
         int startRow = firstLineContainsColumnNames ? 2 : 1;
 
+        var usedNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         for (int j = 1; j <= maxCol; j++)
         {
             string columnName = $"Column{j}";
@@ -173,6 +253,8 @@ public class ReadFromExcelWorksheetNode : BaseNode
                 if (!string.IsNullOrWhiteSpace(header))
                     columnName = header;
             }
+
+            columnName = MakeUniqueColumnName(columnName, usedNames);
             dataTable.Columns.Add(columnName);
         }
 
@@ -190,13 +272,22 @@ public class ReadFromExcelWorksheetNode : BaseNode
         return dataTable;
     }
 
-    private static int GetColumnIndex(string columnName)
+    private static string MakeUniqueColumnName(string baseName, HashSet<string> usedNames)
     {
-        if (string.IsNullOrWhiteSpace(columnName))
-            throw new ArgumentException("Column name cannot be empty.", nameof(columnName));
+        string candidate = baseName;
+        int suffix = 2;
+        while (!usedNames.Add(candidate))
+        {
+            candidate = $"{baseName}_{suffix}";
+            suffix++;
+        }
+        return candidate;
+    }
 
-        columnName = columnName.ToUpperInvariant();
-        return columnName.Aggregate(0, (current, c) => current * 26 + (c - 'A') + 1);
+    private static void ReleaseObject(object obj)
+    {
+        try { if (obj != null) OfficeAutomationHelper.Release(obj); }
+        catch { }
     }
 }
 

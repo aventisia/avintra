@@ -23,7 +23,7 @@
       "name": "ColorTarget",
       "label": "Color Target",
       "description": "Specifies what to color: Background or Font.",
-      "defaultValue": "",
+      "defaultValue": "Background",
       "required": true,
       "selectOptions": [
         {
@@ -44,7 +44,7 @@
       "name": "ColorMode",
       "label": "Color Mode",
       "description": "Specifies how to select cells to color: Single Cell, Range of Cells, or Named Range.",
-      "defaultValue": "",
+      "defaultValue": "SingleCell",
       "required": true,
       "selectOptions": [
         {

@@ -33,8 +33,19 @@ public class NodeProcessor : INodeProcessor
         {
             cancellationToken.ThrowIfCancellationRequested();
 
+            var debugLogPath = Path.Combine(Path.GetTempPath(), "NodeProcessor_debug.log");
+            void DebugLog(string message)
+            {
+                try
+                {
+                    File.AppendAllText(debugLogPath, $"{DateTimeOffset.Now:HH:mm:ss.fff} [NodeProcessor] {message}{Environment.NewLine}");
+                }
+                catch { /* best-effort */ }
+            }
+
             // 1. Preprocess special node types (cloudConnectorNode, aiNode) — remaps inputs and resolves the correct class name
             var (preprocessedName, preprocessedInputs) = PreprocessNode(node, context);
+            DebugLog($"Preprocessed node name: {preprocessedName}");
 
             // Resolve node class from the type cache. Replace suffix "Activity" with "Node" to get the BaseNode class name (e.g. "GenerateRandomNumberActivity" → "GenerateRandomNumberNode")
             // Need to remove the Activity from the last part of the name only, to support cases like "MyCustomActivityNode". This is only to support older flows that were created before we standardized on the "Node" suffix, and can be removed in the future once all flows have been updated to use the "Node" suffix.
@@ -65,17 +76,22 @@ public class NodeProcessor : INodeProcessor
 
             // 4. Map inputs from ReactFlow node data to InArgument properties
             var inputLogs = new Dictionary<string, string>();
+            DebugLog($"About to map {preprocessedInputs?.Count ?? 0} inputs for {nodeClassName}");
             if (preprocessedInputs is { Count: > 0 })
             {
                 MapInputs(baseNode, nodeType, preprocessedInputs, context, inputLogs);
             }
+            DebugLog($"Mapped inputs for {nodeClassName}. Keys: {string.Join(", ", inputLogs.Keys)}");
 
             // 5. Initialize any remaining OutArgument properties that are still null
             InitializeOutArguments(baseNode, nodeType);
+            DebugLog($"Initialized out arguments for {nodeClassName}");
 
             // 6. Execute the node
             var nodeContext = new NodeContext();
+            DebugLog($"Calling InternalExecuteAsync on {nodeClassName}");
             await baseNode.InternalExecuteAsync(nodeContext);
+            DebugLog($"InternalExecuteAsync completed on {nodeClassName}");
 
             sw.Stop();
 

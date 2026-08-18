@@ -210,7 +210,8 @@ public class FlowProcessor
                 return (execEdge?.Id, execNext);
 
             case "flowEndNode":
-                CompleteSupportNode(node, logs, onNodeCompleted);
+                // End node is visual/terminator only: signal completion without logging
+                // a per-node entry so the last meaningful executed node remains visible.
                 return (null, null);
 
             case "conditionalNode":

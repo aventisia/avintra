@@ -14,7 +14,7 @@
       "name": "CaptureMode",
       "label": "Capture",
       "description": "Specifies which part of the screen to capture.",
-      "defaultValue": "",
+      "defaultValue": "AllScreens",
       "required": true,
       "selectOptions": [
         {
