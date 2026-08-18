@@ -29,6 +29,19 @@ namespace WorkspaceAPIs.Jobs
             var currentDateTime = DateTimeOffset.UtcNow;
             _logger.LogInformation("Low credit balance job started at {Time:O}.", currentDateTime);
 
+            // Automatic notifications are sent only in the Production environment,
+            // so skip the database reads entirely elsewhere to avoid unnecessary work.
+            var isProduction = string.Equals(
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+                "Production",
+                StringComparison.OrdinalIgnoreCase);
+
+            if (!isProduction)
+            {
+                _logger.LogInformation("Low credit balance job skipped: automatic notifications are only sent in Production.");
+                return;
+            }
+
             try
             {
                 // Enumerate all enabled tenants along with their notification settings

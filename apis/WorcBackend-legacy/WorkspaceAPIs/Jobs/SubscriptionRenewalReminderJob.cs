@@ -31,6 +31,19 @@ namespace WorkspaceAPIs.Jobs
             var currentDateTime = DateTimeOffset.UtcNow;
             _logger.LogInformation("Subscription renewal reminder job started at {Time:O}.", currentDateTime);
 
+            // Automatic notifications are sent only in the Production environment,
+            // so skip the database reads entirely elsewhere to avoid unnecessary work.
+            var isProduction = string.Equals(
+                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+                "Production",
+                StringComparison.OrdinalIgnoreCase);
+
+            if (!isProduction)
+            {
+                _logger.LogInformation("Subscription renewal reminder job skipped: automatic notifications are only sent in Production.");
+                return;
+            }
+
             try
             {
                 // Active subscriptions whose next billing date is today or later. Per-tenant

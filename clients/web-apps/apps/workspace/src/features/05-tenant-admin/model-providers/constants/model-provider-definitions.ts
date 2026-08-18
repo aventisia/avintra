@@ -8,20 +8,13 @@ export interface ModelProviderDefinition {
   label: string;
   vaultType: VaultAppsEnum;
   description: string;
-  isUrlBased?: boolean;
 }
 
 const basePath = import.meta.env.VITE_WORKSPACE_PATH.replace(/\/$/, "");
 
 export const getProviderIcon = (provider: ModelProviderDefinition): string => {
-  if (provider.isUrlBased) {
-    return `${basePath}/brand-img/${provider.value.toLowerCase()}.webp`;
-  }
   return `${basePath}${vaultAppIconMapper[provider.vaultType]}`;
 };
-
-export const isUrlBasedProvider = (providerType: ModelProviderEnum): boolean =>
-  modelProviderDefinitions.find((p) => p.value === providerType)?.isUrlBased ?? false;
 
 export const modelProviderDefinitions: ModelProviderDefinition[] = [
   {
@@ -59,7 +52,6 @@ export const modelProviderDefinitions: ModelProviderDefinition[] = [
     label: "Ollama On-prem",
     vaultType: VaultAppsEnum.Ollama,
     description: "Connect to a self-hosted Ollama server to use its local models.",
-    isUrlBased: true,
   },
   {
     value: ModelProviderEnum.OllamaCloud,
