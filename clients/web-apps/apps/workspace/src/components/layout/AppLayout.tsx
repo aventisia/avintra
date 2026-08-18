@@ -175,9 +175,11 @@ export const AppLayout = () => {
     );
 
     if (!hasAccess) {
-      navigate("/page-not-found", { replace: true });
+      // Navigate to the first available page in the left menu bar instead of
+      // showing a 404 when the current page's role is no longer selected.
+      navigate(landingUrl || "/page-not-found", { replace: true });
     }
-  }, [allowedRoutes, location.pathname, navigate]);
+  }, [allowedRoutes, landingUrl, location.pathname, navigate]);
 
   useEffect(() => {
     // If the user session is still pending, do not proceed
