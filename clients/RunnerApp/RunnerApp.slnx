@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="../../shared/ExecutorLibrary/ExecutorLibrary.csproj" />
+  <Project Path="../../shared/NodeLibrary/NodeLibrary.csproj" />
+  <Project Path="RunnerApp.csproj" />
+</Solution>

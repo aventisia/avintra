@@ -29,14 +29,42 @@ git stash push -u -m "commit auto-stash"
 
 - Do not skip this step if `git status` shows any local changes.
 - If there are no changes, `git stash` will report "No local changes to save"; that is safe to ignore.
+- **If this git command fails for any reason, stop immediately and do not proceed to the next steps.**
 
 ### 2. Pull remote updates
 
+Attempt the pull up to 3 times before giving up.
+
+**Bash / WSL / Git Bash**
+
 ```sh
-git pull
+for i in 1 2 3; do
+  git pull && break
+  echo "git pull attempt $i failed"
+  if [ "$i" -eq 3 ]; then
+    echo "git pull failed after 3 attempts; stopping."
+    exit 1
+  fi
+done
+```
+
+**PowerShell (Windows)**
+
+```powershell
+$maxAttempts = 3
+for ($i = 1; $i -le $maxAttempts; $i++) {
+    git pull
+    if ($LASTEXITCODE -eq 0) { break }
+    Write-Host "git pull attempt $i failed"
+    if ($i -eq $maxAttempts) {
+        Write-Host "git pull failed after $maxAttempts attempts; stopping."
+        exit 1
+    }
+}
 ```
 
 - If the pull reports "Already up to date", proceed to the next step.
+- **If `git pull` ultimately fails after 3 attempts, stop immediately and do not proceed to the next steps.**
 
 ### 3. Pop the stash
 
@@ -45,6 +73,7 @@ git stash pop
 ```
 
 - If `git stash pop` reports conflicts, proceed to the conflict gate below.
+- **If this git command fails for any reason, stop immediately and do not proceed to the next steps.**
 
 ### 4. Resolve conflicts (gate)
 
@@ -137,6 +166,7 @@ Other unrelated changes:
 - **Strict Stash/Pull/Pop Sequence**: Never skip the stash step if there are modified tracked files.
 - **Conflict Gate**: Halt and ensure clean resolution before analyzing files for the commit message.
 - **Single Commit**: All changes, regardless of domain, must be grouped into exactly one commit.
+- **Git Command Failure Policy**: If any git command fails for any reason, stop immediately and do not proceed to the next steps.
 - **Weighted Messaging**: The commit subject line and primary body must only reference the Main Change.
 - **Conditional Footer**: Append the `Unrelated:` footer only if distinct, unrelated changes are present. If all files belong to the Main Change, omit the footer entirely.
 - **Automated Execution**: Execute standard git and npx commands autonomously. Pause for user input only if a conflict requires human domain knowledge to resolve safely.

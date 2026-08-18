@@ -14,7 +14,7 @@
       "name": "Target",
       "label": "Send Keys To",
       "description": "Specifies where to send the keys.",
-      "defaultValue": "",
+      "defaultValue": "ForegroundWindow",
       "required": true,
       "selectOptions": [
         {

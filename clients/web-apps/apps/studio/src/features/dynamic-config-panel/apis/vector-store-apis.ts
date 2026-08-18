@@ -38,12 +38,12 @@ export const queryVectorStore = (
   return axiosInstance
     .post(`${vectorStoreApiBaseUrl}/query`, dto, { headers: getStudioSpaceHeaders() })
     .then((res) => {
-    const payload = res.data as
-      | {
-          data?: VectorStoreQueryResponseDto;
-        }
-      | VectorStoreQueryResponseDto;
-    return ((payload as { data?: VectorStoreQueryResponseDto })?.data ??
-      payload) as VectorStoreQueryResponseDto;
-  });
+      const payload = res.data as
+        | {
+            data?: VectorStoreQueryResponseDto;
+          }
+        | VectorStoreQueryResponseDto;
+      return ((payload as { data?: VectorStoreQueryResponseDto })?.data ??
+        payload) as VectorStoreQueryResponseDto;
+    });
 };

@@ -32,7 +32,7 @@
       "name": "GetDifferenceIn",
       "label": "Difference Unit",
       "description": "Specifies the unit in which to return the time difference.",
-      "defaultValue": "",
+      "defaultValue": "Seconds",
       "required": true,
       "selectOptions": [
         {

@@ -23,7 +23,7 @@
       "name": "ClearMode",
       "label": "Clear Mode",
       "description": "Specifies how to clear cells: Single Cell, Named Cells, Range of Cells, or Relative to Active Cell.",
-      "defaultValue": "",
+      "defaultValue": "SingleCell",
       "required": true,
       "selectOptions": [
         {

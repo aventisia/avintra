@@ -1,4 +1,6 @@
 ﻿
+using NodeLibrary.ExcelNodes.Helpers;
+
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Get Column Name on Excel Worksheet"), Description("Gets the column letter name for a given column index in the specified Excel worksheet.")]
@@ -27,7 +29,7 @@ public class GetColumnNameOnExcelWorksheetNode : BaseNode
             if (columnIndex < 1)
                 throw new ArgumentOutOfRangeException(nameof(ColumnIndex), "Column index must be >= 1.");
 
-            string columnName = GetColumnLetter(columnIndex);
+            string columnName = ExcelColumnHelper.GetColumnLetter(columnIndex);
 
             ColumnName.Set(context, columnName);
             IsSuccess.Set(context, true);
@@ -39,18 +41,6 @@ public class GetColumnNameOnExcelWorksheetNode : BaseNode
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error getting column name: {ex.Message}");
         }
-    }
-
-    private static string GetColumnLetter(int columnNumber)
-    {
-        string result = string.Empty;
-        while (columnNumber > 0)
-        {
-            columnNumber--;
-            result = (char)('A' + columnNumber % 26) + result;
-            columnNumber /= 26;
-        }
-        return result;
     }
 }
 

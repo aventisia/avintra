@@ -32,7 +32,7 @@
       "name": "SelectionMode",
       "label": "Selection Mode",
       "description": "Choose how to select pages: All, Odd, Even, Range, Specific Pages, or By Specified Page Size.",
-      "defaultValue": "",
+      "defaultValue": "All",
       "required": true,
       "selectOptions": [
         {

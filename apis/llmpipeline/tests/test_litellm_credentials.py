@@ -25,10 +25,11 @@ def _credential_data(payload: dict) -> dict:
     return {"data": payload}
 
 
-def test_non_byok_returns_empty_dict():
-    """BYOK disabled must return empty kwargs so LiteLLM uses env credentials."""
+def test_non_byok_returns_platform_credentials():
+    """BYOK disabled must return platform credentials from settings."""
     result = resolve_credentials("openai", False, None, _FakeUser())
-    assert result.kwargs == {}
+    assert result.kwargs.get("api_key") == settings.OPENAI_API_KEY
+    assert result.kwargs.get("api_base") == settings.OPENAI_API_URL
     assert result.uses_platform_credentials is True
 
 

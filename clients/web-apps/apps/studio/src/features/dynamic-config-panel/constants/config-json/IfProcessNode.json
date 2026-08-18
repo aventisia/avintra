@@ -14,7 +14,7 @@
       "name": "Condition",
       "label": "If process",
       "description": "Specifies the condition to check (e.g., IsRunning, Isn\u0027t Running).",
-      "defaultValue": "",
+      "defaultValue": "IsRunning",
       "required": true,
       "selectOptions": [
         {
@@ -35,7 +35,7 @@
       "name": "ProcessName",
       "label": "Process name",
       "description": "The name of the process to check.",
-      "defaultValue": "",
+      "defaultValue": "AggregatorHost",
       "required": true,
       "selectOptions": [
         {

@@ -14,7 +14,7 @@
       "name": "RetrieveType",
       "label": "Retrieve Type",
       "description": "Select the type of datetime information to retrieve (e.g., Current date and time, Current date only).",
-      "defaultValue": "",
+      "defaultValue": "CurrentDateTime",
       "required": true,
       "selectOptions": [
         {
@@ -35,7 +35,7 @@
       "name": "TimezoneType",
       "label": "Time Zone",
       "description": "Select the time zone to use for retrieving the datetime (e.g., System time zone, Windows time zone).",
-      "defaultValue": "",
+      "defaultValue": "SystemTimeZone",
       "required": true,
       "selectOptions": [
         {

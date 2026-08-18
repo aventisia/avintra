@@ -23,7 +23,7 @@
       "name": "PageSelection",
       "label": "Page Selection Mode",
       "description": "Select how to choose pages for extraction: All, Single, or Range.",
-      "defaultValue": "",
+      "defaultValue": "All",
       "required": true,
       "selectOptions": [
         {
@@ -49,7 +49,7 @@
       "name": "ExtractionType",
       "label": "Extraction Type",
       "description": "Select the type of extraction: Text, Images, or Both.",
-      "defaultValue": "",
+      "defaultValue": "Text",
       "required": true,
       "selectOptions": [
         {

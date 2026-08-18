@@ -14,7 +14,7 @@
       "name": "MouseEvent",
       "label": "Mouse Event to Send",
       "description": "The type of mouse event to send (e.g., Left Click, Right Click).",
-      "defaultValue": "",
+      "defaultValue": "LeftClick",
       "required": true,
       "selectOptions": [
         {

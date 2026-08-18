@@ -23,7 +23,7 @@
       "name": "FilterMode",
       "label": "Filter Mode",
       "description": "The filter mode to apply.",
-      "defaultValue": "",
+      "defaultValue": "IsEqualTo",
       "required": true,
       "selectOptions": [
         {

@@ -23,7 +23,7 @@
       "name": "DetailType",
       "label": "Detail Type",
       "description": "Choose what information you want to get from the UI element.",
-      "defaultValue": "",
+      "defaultValue": "BoundingRectangle",
       "required": true,
       "selectOptions": [
         {

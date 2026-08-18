@@ -70,9 +70,30 @@ public static class NodeLogHelper
         {
             try
             {
-                // Limit to 100 rows but return complete valid JSON with truncated field values
-                var limitedRows = dt.AsEnumerable().Take(100).CopyToDataTable();
-                return JsonSerializer.Serialize(limitedRows, GetTruncatingSerializerOptions());
+                var rows = new List<Dictionary<string, object?>>();
+                var rowCount = 0;
+                foreach (DataRow row in dt.Rows.Cast<DataRow>())
+                {
+                    if (rowCount++ >= 100)
+                        break;
+
+                    var dict = new Dictionary<string, object?>();
+                    foreach (DataColumn column in dt.Columns)
+                    {
+                        var cellValue = row[column];
+                        dict[column.ColumnName] = cellValue is DBNull ? null : cellValue;
+                    }
+                    rows.Add(dict);
+                }
+
+                var summary = new
+                {
+                    Columns = dt.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToList(),
+                    RowCount = dt.Rows.Count,
+                    Rows = rows,
+                };
+
+                return JsonSerializer.Serialize(summary, GetTruncatingSerializerOptions());
             }
             catch
             {

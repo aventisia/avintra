@@ -23,7 +23,7 @@
       "name": "ActivationMode",
       "label": "Activation Mode",
       "description": "Choose how to activate the cell: absolutely, relatively, or via named range.",
-      "defaultValue": "",
+      "defaultValue": "Absolute",
       "required": true,
       "selectOptions": [
         {

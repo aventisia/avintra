@@ -23,7 +23,7 @@
       "name": "RangesFormat",
       "label": "Ranges Format",
       "description": "Specifies how ranges are defined: by specific ranges or named cells.",
-      "defaultValue": "",
+      "defaultValue": "SpecificRanges",
       "required": true,
       "selectOptions": [
         {

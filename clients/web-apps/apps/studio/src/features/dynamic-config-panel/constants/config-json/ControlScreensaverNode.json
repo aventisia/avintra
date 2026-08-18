@@ -14,7 +14,7 @@
       "name": "Action",
       "label": "Action",
       "description": "The action to perform on the screensaver.",
-      "defaultValue": "",
+      "defaultValue": "Enable",
       "required": true,
       "selectOptions": [
         {

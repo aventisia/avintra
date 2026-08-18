@@ -32,7 +32,7 @@
       "name": "AddWorksheetAs",
       "label": "Add Worksheet As",
       "description": "Specifies whether to add the worksheet as the first or last sheet.",
-      "defaultValue": "",
+      "defaultValue": "First",
       "required": true,
       "selectOptions": [
         {

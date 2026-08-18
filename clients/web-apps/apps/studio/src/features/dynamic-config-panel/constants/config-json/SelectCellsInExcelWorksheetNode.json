@@ -23,7 +23,7 @@
       "name": "SelectMode",
       "label": "Select Mode",
       "description": "Specifies how to select cells: Single Cell, Named Range, Range of Cells, or All Cells.",
-      "defaultValue": "",
+      "defaultValue": "SingleCell",
       "required": true,
       "selectOptions": [
         {

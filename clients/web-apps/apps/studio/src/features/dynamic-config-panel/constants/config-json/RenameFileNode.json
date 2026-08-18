@@ -230,7 +230,7 @@
       "name": "UseCustomDateTime",
       "label": "Use custom datetime",
       "description": "When true, allows selecting a custom datetime source instead of the current system time.",
-      "defaultValue": "",
+      "defaultValue": false,
       "required": false,
       "renderIf": {
         "conditions": [

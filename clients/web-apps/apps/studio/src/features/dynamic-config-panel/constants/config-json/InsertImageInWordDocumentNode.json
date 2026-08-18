@@ -23,7 +23,7 @@
       "name": "InsertImageTo",
       "label": "Insert Image To",
       "description": "Specifies where in the document to insert the image.",
-      "defaultValue": "",
+      "defaultValue": "BeginningOfWordFile",
       "required": true,
       "selectOptions": [
         {
@@ -64,7 +64,7 @@
       "name": "InsertImageFrom",
       "label": "Image Source",
       "description": "Specifies whether the image is inserted from a file or clipboard.",
-      "defaultValue": "",
+      "defaultValue": "File",
       "required": true,
       "selectOptions": [
         {

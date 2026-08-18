@@ -14,7 +14,7 @@
       "name": "SoundSource",
       "label": "Play Sound From",
       "description": "Specifies whether to play a system sound or a custom WAV file.",
-      "defaultValue": "",
+      "defaultValue": "System",
       "required": true,
       "selectOptions": [
         {

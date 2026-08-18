@@ -23,7 +23,7 @@
       "name": "CopyMode",
       "label": "Copy Mode",
       "description": "Specifies how to copy cells: Single Cell, Named Cells, Selection, or Range of Cells.",
-      "defaultValue": "",
+      "defaultValue": "SingleCell",
       "required": true,
       "selectOptions": [
         {

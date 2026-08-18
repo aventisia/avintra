@@ -14,7 +14,7 @@
       "name": "Mode",
       "label": "Shutdown Mode",
       "description": "The shutdown mode (e.g., power off, restart, sleep, hibernate).",
-      "defaultValue": "",
+      "defaultValue": "PowerOff",
       "required": true,
       "selectOptions": [
         {

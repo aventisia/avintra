@@ -23,7 +23,7 @@
       "name": "CopyMode",
       "label": "Copy Mode",
       "description": "Specifies how to identify the worksheet to copy (by Name or by Index).",
-      "defaultValue": "",
+      "defaultValue": "Name",
       "required": true,
       "selectOptions": [
         {

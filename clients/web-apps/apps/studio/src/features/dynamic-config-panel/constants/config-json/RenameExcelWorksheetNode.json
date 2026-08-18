@@ -23,7 +23,7 @@
       "name": "SelectionType",
       "label": "Selection Type",
       "description": "Specifies how to identify the worksheet: by Name or by Index.",
-      "defaultValue": "",
+      "defaultValue": "Name",
       "required": true,
       "selectOptions": [
         {

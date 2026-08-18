@@ -14,7 +14,7 @@
       "name": "ProcessName",
       "label": "Process Name",
       "description": "The name of the process to monitor.",
-      "defaultValue": "",
+      "defaultValue": "AggregatorHost",
       "required": true,
       "selectOptions": [
         {
