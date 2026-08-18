@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from fastapi import HTTPException
 
+from app.core.byok_usage_manager import ByokUsageManager
 from app.core.credit_manager import CreditManagerService
 from app.core.logger import logger
 
@@ -135,3 +136,97 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
     credit_manager = CreditManagerService()
     credit_manager.post_credit_usage(task=provider, request=[credit_usage_entry], jwt=access_token)
     logger.info(f"Credit usage posted | task={provider} ref_id={request.ref_id}")
+
+
+def should_record_byok(is_byok: bool, credential_id: str | None) -> bool:
+    """True when a request used the caller's own (BYOK) credentials.
+
+    BYOK consumption is recorded against the user's own key (not platform
+    credits). A null/empty/default-GUID credential counts as "no real
+    credential" and therefore not BYOK.
+
+    Args:
+        is_byok: Whether the request is flagged as BYOK.
+        credential_id: The BYOK vault credential id (None when not BYOK).
+
+    Returns:
+        True when BYOK is enabled AND a real credential is supplied.
+    """
+    if not is_byok:
+        return False
+    if not credential_id:
+        return False
+    cleaned = str(credential_id).strip()
+    return cleaned not in ("", "00000000-0000-0000-0000-000000000000")
+
+
+def build_byok_entry(
+    service_type: str,
+    provider: str,
+    model: str,
+    consumed_units: float,
+    unit_type: str | None,
+    credential_id: str | None,
+    credential_name: str | None,
+    ref_type: str,
+    ref_id: str,
+    ref_name: str,
+    action: str,
+    agent_name: str | None,
+    space_id: str | None = None,
+) -> dict:
+    """Build a single BYOK usage payload entry (PascalCase fields).
+
+    Mirrors `build_credit_entry` but carries the vault credential attribution,
+    the provider/model names, and the provider's unit type instead of platform
+    credit math.
+
+    Args:
+        service_type: The backend `CreditServicesEnum` name.
+        provider: The model provider name (e.g. "openai", "gemini").
+        model: The model name (e.g. "gpt-4o-mini").
+        consumed_units: Number of provider units consumed (tokens/seconds/chars).
+        unit_type: The provider unit type (e.g. "Tokens", "Seconds", "Characters").
+        credential_id: The BYOK vault credential id.
+        credential_name: The display name of the BYOK vault credential.
+        ref_type: The reference type (e.g. "Agent").
+        ref_id: The reference id (e.g. AgentId).
+        ref_name: The reference display name.
+        action: The action type (e.g. "AgentExecution").
+        agent_name: The triggering agent name.
+        space_id: The current space id (None = Central).
+
+    Returns:
+        A dict payload ready for the Accounts API `ByokUsageDto`.
+    """
+    return {
+        "ServiceType": service_type,
+        "Provider": provider,
+        "Model": model,
+        "ConsumedUnit": max(consumed_units or 0, 0),
+        "UnitType": unit_type,
+        "CredentialId": credential_id,
+        "CredentialName": credential_name,
+        "RefType": ref_type,
+        "RefId": ref_id,
+        "RefName": ref_name,
+        "Action": action or "AgentExecution",
+        "TriggeredByAgent": agent_name,
+        "SpaceId": space_id,
+    }
+
+
+def post_byok_usage(provider: str, entries: list[dict], access_token: str) -> None:
+    """Post BYOK usage entries to the backend byok-usage endpoint.
+
+    Args:
+        provider: The provider name used as the billing task label.
+        entries: A list of payload entries (see `build_byok_entry`).
+        access_token: The authenticated user's JWT.
+    """
+    # Nothing to record when no usage was produced.
+    if not entries:
+        return
+    byok_manager = ByokUsageManager()
+    byok_manager.post_byok_usage(task=provider, request=entries, jwt=access_token)
+

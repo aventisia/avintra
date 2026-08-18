@@ -1,8 +1,11 @@
 import { useDocumentTitle } from "@avplatform/ui/hooks";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 
 import LoaderTemplate from "@/components/templates/LoaderTemplate";
 
 import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
+import ByokModelCharts from "./ByokModelCharts";
+import ByokUsageTables from "./ByokUsageTables";
 import ChartsHeader from "./ChartsHeader";
 import ModelCharts from "./ModelCharts";
 import UsageCharts from "./UsageCharts";
@@ -21,23 +24,55 @@ export const CreditsUsage = () => {
         {/* Header */}
         <ChartsHeader />
 
-        {isLoading ? (
-          <LoaderTemplate />
-        ) : (
-          <>
-            {/* Usage Charts */}
-            <UsageCharts />
+        <Tabs defaultValue="credits">
+          <TabsList className="grid w-full max-w-md grid-cols-2 rounded-none border-b bg-white px-3 text-base">
+            <TabsTrigger
+              value="credits"
+              className="rounded-none data-[state=active]:border-b-black"
+            >
+              Platform Credits
+            </TabsTrigger>
+            <TabsTrigger
+              value="byok"
+              className="rounded-none data-[state=active]:border-b-black"
+            >
+              BYOK Consumption
+            </TabsTrigger>
+          </TabsList>
 
-            {/* LLM / model credits by service */}
-            <div className="rounded-lg border bg-white px-6 py-4">
-              <p className="mb-4 text-base font-medium">LLM Credits by Model</p>
-              <ModelCharts />
-            </div>
+          <TabsContent value="credits" className="space-y-6 pt-4">
+            {isLoading ? (
+              <LoaderTemplate />
+            ) : (
+              <>
+                {/* Usage Charts */}
+                <UsageCharts />
 
-            {/* Users and Agents breakdown */}
-            <UsageTables />
-          </>
-        )}
+                {/* LLM / model credits by service */}
+                <div className="rounded-lg border bg-white px-6 py-4">
+                  <p className="mb-4 text-base font-medium">LLM Credits by Model</p>
+                  <ModelCharts />
+                </div>
+
+                {/* Users and Agents breakdown */}
+                <UsageTables />
+              </>
+            )}
+          </TabsContent>
+
+          <TabsContent value="byok" className="space-y-6 pt-4">
+            <>
+              {/* BYOK consumption by model provider */}
+              <div className="rounded-lg border bg-white px-6 py-4">
+                <p className="mb-4 text-base font-medium">BYOK Consumption by Model</p>
+                <ByokModelCharts />
+              </div>
+
+              {/* Users and Agents breakdown */}
+              <ByokUsageTables />
+            </>
+          </TabsContent>
+        </Tabs>
       </div>
       <ExportDialog />
     </>

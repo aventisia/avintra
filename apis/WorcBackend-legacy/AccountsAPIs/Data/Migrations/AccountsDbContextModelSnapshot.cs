@@ -601,6 +601,68 @@ namespace AccountsAPIs.Data.Migrations
                     b.ToTable("BillingHistories");
                 });
 
+            modelBuilder.Entity("AccountsAPIs.Entities.ByokUsage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Action")
+                        .HasColumnType("text");
+
+                    b.Property<double>("ConsumedUnit")
+                        .HasColumnType("double precision");
+
+                    b.Property<Guid?>("CredentialId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CredentialName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Model")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Provider")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("RefId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("RefName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RefType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ServiceType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("TriggeredByAgent")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UnitType")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("UsedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UsedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsedByUserId");
+
+                    b.ToTable("ByokUsages");
+                });
+
             modelBuilder.Entity("AccountsAPIs.Entities.ContactUs", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1831,6 +1893,15 @@ namespace AccountsAPIs.Data.Migrations
                     b.Navigation("CreatedByUser");
 
                     b.Navigation("LastModifiedByUser");
+                });
+
+            modelBuilder.Entity("AccountsAPIs.Entities.ByokUsage", b =>
+                {
+                    b.HasOne("AccountsAPIs.Entities.AccountUser", "UsedByUser")
+                        .WithMany()
+                        .HasForeignKey("UsedByUserId");
+
+                    b.Navigation("UsedByUser");
                 });
 
             modelBuilder.Entity("AccountsAPIs.Entities.CreditPlan", b =>

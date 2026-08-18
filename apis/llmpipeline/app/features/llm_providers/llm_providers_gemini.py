@@ -8,6 +8,8 @@ from app.core.config import settings
 from app.core.logger import log_exception, logger
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
+from app.core.byok_usage_manager import ByokUsageManager
+from app.features.litellm.core.credentials import resolve_credential_name
 from app.features.llm_providers.llm_providers_schemas import (
     EmbeddingRequest,
     EmbeddingResponse,
@@ -476,6 +478,20 @@ class GeminiProvider(BaseLLMProvider):
                 logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
 
+        # Post BYOK usage when the caller supplied their own key
+        elif llm_request.is_byok_enabled and llm_request.credential_id:
+            try:
+                byok_usage_data = self._build_gemini_byok_usage(llm_request, llm_response, space_id, jwt)
+
+                # Initialize the ByokUsageManager
+                byok_manager = ByokUsageManager()
+
+                # Post the BYOK usage data
+                byok_manager.post_byok_usage(task="gemini", request=byok_usage_data, jwt=jwt)
+                logger.info(f"Successfully posted BYOK usage data for request ID {llm_request.ref_id}.")
+            except Exception as e:
+                logger.error(f"Failed to post BYOK usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
+
         # Return the final llm_response
         return llm_response
     
@@ -619,6 +635,91 @@ class GeminiProvider(BaseLLMProvider):
             credit_usage.append(build_entry(service_map["output"], output_tokens))
 
         return credit_usage
+
+    # Helper: Build Gemini BYOK usage
+    def _build_gemini_byok_usage(self, llm_request: LLMRequest, llm_response: LLMResponse, space_id: str = None, jwt: str = None):
+        """
+        Build BYOK usage specifically for Gemini models.
+
+        - Maps model → CreditServicesEnum
+        - Handles missing/invalid token values safely
+        - Carries the vault credential attribution
+        """
+
+        # Normalize model name
+        model_name = (llm_request.model or "").strip().lower()
+
+        # Safe token extraction
+        input_tokens = max(getattr(llm_response, "input_tokens", 0) or 0, 0)
+        output_tokens = max(getattr(llm_response, "output_tokens", 0) or 0, 0)
+        cached_tokens = max(getattr(llm_response, "input_cached_tokens", 0) or 0, 0)
+
+        # Gemini Model → Enum Mapping
+        GEMINI_MODEL_MAP = {
+            "gemini-2.5-flash": {
+                "input": "Gemini25FlashInput",
+                "output": "Gemini25FlashOutput",
+                "cache": "Gemini25FlashCached",
+            },
+            "gemini-2.5-flash-lite": {
+                "input": "Gemini25FlashLiteInput",
+                "output": "Gemini25FlashLiteOutput",
+                "cache": "Gemini25FlashLiteCached",
+            },
+        }
+
+        # Resolve service mapping
+        service_map = GEMINI_MODEL_MAP.get(model_name)
+
+        if not service_map:
+            for key, value in GEMINI_MODEL_MAP.items():
+                if model_name.startswith(key):
+                    service_map = value
+                    break
+
+        # Fallback (future-proof)
+        if not service_map:
+            normalized = "".join(part.capitalize() for part in model_name.split("-"))
+            service_map = {
+                "input": f"{normalized}Input",
+                "output": f"{normalized}Output",
+                "cache": f"{normalized}Cached",
+            }
+
+        # Resolve the vault credential name for attribution
+        credential_name = resolve_credential_name(llm_request.credential_id, jwt=jwt)
+
+        # Helper to build entry
+        def build_entry(service_type, tokens):
+            return {
+                "ServiceType": service_type,
+                "Provider": llm_request.provider,
+                "Model": llm_request.model,
+                "ConsumedUnit": tokens,
+                "UnitType": "Tokens",
+                "CredentialId": llm_request.credential_id,
+                "CredentialName": credential_name,
+                "RefType": llm_request.ref_type,
+                "RefId": llm_request.ref_id,
+                "RefName": llm_request.ref_name,
+                "Action": llm_request.action,
+                "TriggeredByAgent": llm_request.agent_name,
+                "SpaceId": space_id,
+            }
+
+        byok_usage = []
+
+        # Add token usage entries
+        if input_tokens > 0:
+            byok_usage.append(build_entry(service_map["input"], input_tokens))
+
+        if cached_tokens > 0:
+            byok_usage.append(build_entry(service_map["cache"], cached_tokens))
+
+        if output_tokens > 0:
+            byok_usage.append(build_entry(service_map["output"], output_tokens))
+
+        return byok_usage
    
    # Method: Generate embeddings using Gemini
     async def generate_embeddings(self, embedding_request: EmbeddingRequest, user: User):
@@ -743,6 +844,26 @@ class GeminiProvider(BaseLLMProvider):
                         logger.error(f"Failed to post embedding credit usage: {str(e)}")
                         raise HTTPException(status_code=500, detail="Credit usage failed")
 
+                # BYOK usage when the caller supplied their own key
+                elif embedding_request.is_byok_enabled and embedding_request.credential_id:
+                    byok_usage = self._build_gemini_embedding_byok_usage(
+                        embedding_request,
+                        embedding_response,
+                        user.space_id,
+                        user.access_token
+                    )
+
+                    byok_manager = ByokUsageManager()
+                    try:
+                        byok_manager.post_byok_usage(
+                            task="gemini",
+                            request=byok_usage,
+                            jwt=user.access_token
+                        )
+                        logger.info("Gemini embedding BYOK usage posted successfully.")
+                    except Exception as e:
+                        logger.error(f"Failed to post embedding BYOK usage: {str(e)}")
+
                 return embedding_response
 
         except Exception as e:
@@ -788,6 +909,56 @@ class GeminiProvider(BaseLLMProvider):
         return [{
             "ServiceType": service_type,
             "ConsumedUnit": input_tokens,
+            "RefType": embedding_request.reference_type,
+            "RefId": embedding_request.reference_id,
+            "RefName": embedding_request.reference_name,
+            "Action": embedding_request.action,
+            "TriggeredByAgent": None,
+            "SpaceId": space_id,
+        }]
+
+    def _build_gemini_embedding_byok_usage(
+        self,
+        embedding_request: EmbeddingRequest,
+        embedding_response: EmbeddingResponse,
+        space_id: str = None,
+        jwt: str = None,
+    ):
+        """
+        Construct BYOK usage payload for Gemini embedding requests.
+
+        - Resolves the model name to an internal ServiceType
+        - Uses input token count as the consumed unit
+        - Carries the vault credential attribution
+        """
+
+        # Normalize model name (handles None, casing, and extra spaces)
+        model_name = (embedding_request.model or "").strip().lower()
+
+        # Ensure token usage is always non-negative
+        input_tokens = max(embedding_response.input_tokens or 0, 0)
+
+        # Mapping of Gemini embedding models to internal service identifiers
+        GEMINI_EMBEDDING_MODEL_MAP = {
+            "gemini-embedding-001": "GeminiEmbeddingV1",
+            "gemini-embedding-2-preview": "GeminiEmbeddingV2Preview",
+        }
+
+        # Resolve service type based on model name
+        service_type = GEMINI_EMBEDDING_MODEL_MAP.get(model_name)
+
+        # Resolve the vault credential name for attribution
+        credential_name = resolve_credential_name(embedding_request.credential_id, jwt=jwt)
+
+        # Build and return usage payload
+        return [{
+            "ServiceType": service_type,
+            "Provider": embedding_request.provider,
+            "Model": embedding_request.model,
+            "ConsumedUnit": input_tokens,
+            "UnitType": "Tokens",
+            "CredentialId": embedding_request.credential_id,
+            "CredentialName": credential_name,
             "RefType": embedding_request.reference_type,
             "RefId": embedding_request.reference_id,
             "RefName": embedding_request.reference_name,

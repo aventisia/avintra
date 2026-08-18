@@ -1,0 +1,40 @@
+meta {
+  name: Insert multiple BYOK usage records
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{ACCOUNTS_APIS_BASE_URL}}/byok-usage/bulk
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    {
+      "serviceType": "Gpt4oMiniInput",
+      "consumedUnit": 31,
+      "unitType": "Tokens",
+      "credentialId": "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
+      "credentialName": "My BYOK Key",
+      "refType": "Agent",
+      "refId": "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
+      "refName": "my_new_agent",
+      "action": "AgentExecution",
+      "triggeredByAgent": "Test"
+    },
+    {
+      "serviceType": "Gpt4oMiniOutput",
+      "consumedUnit": 15,
+      "unitType": "Tokens",
+      "credentialId": "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
+      "credentialName": "My BYOK Key",
+      "refType": "Agent",
+      "refId": "bd48c1fe-dca2-4523-ac65-650dcbad49a2",
+      "refName": "my_new_agent",
+      "action": "AgentExecution",
+      "triggeredByAgent": "Test"
+    }
+  ]
+}

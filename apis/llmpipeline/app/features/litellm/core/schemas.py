@@ -75,6 +75,8 @@ class LLMGenerationRequest(BaseModel):
     # BYOK
     is_byok_enabled: Optional[bool] = False
     credential_id: Optional[str] = None
+    # Resolved server-side from the vault credential; used for BYOK usage attribution.
+    credential_name: Optional[str] = None
     # KB augmentation
     kb_names: Optional[list[str]] = None
     top_k: Optional[int] = Field(default=5, ge=1, le=100)
@@ -144,6 +146,8 @@ class EmbeddingRequest(BaseModel):
     encoding_format: Literal["float", "base64"] = "float"
     is_byok_enabled: bool = False
     credential_id: Optional[str] = None
+    # Resolved server-side from the vault credential; used for BYOK usage attribution.
+    credential_name: Optional[str] = None
     # Credit / reference metadata
     reference_id: Optional[str] = None
     reference_type: Optional[str] = None
@@ -228,6 +232,8 @@ class STTRequest(BaseModel):
     stream: bool = False
     credentials_id: Optional[str] = None
     is_byok_enabled: bool = False
+    # Resolved server-side from the vault credential; used for BYOK usage attribution.
+    credential_name: Optional[str] = None
     ref_type: str = ""
     ref_id: str = ""
     ref_name: str = ""
@@ -271,6 +277,8 @@ class TTSRequest(BaseModel):
     stream: bool = False
     credentials_id: Optional[str] = None
     is_byok_enabled: bool = False
+    # Resolved server-side from the vault credential; used for BYOK usage attribution.
+    credential_name: Optional[str] = None
     ref_type: str = ""
     ref_id: str = ""
     ref_name: str = ""

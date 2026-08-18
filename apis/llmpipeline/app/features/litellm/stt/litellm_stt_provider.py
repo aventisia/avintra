@@ -20,11 +20,15 @@ from app.utils.errors import friendly_error
 from app.utils.file_converter_utils import file_to_base64
 
 from ..core.credit_utils import (
+    build_byok_entry,
     has_sufficient_platform_credits,
+    post_byok_usage,
     post_credit_usage,
+    should_record_byok,
 )
+from ..core.credentials import resolve_credential_name
 from ..core.litellm_service import litellm_service
-from ..core.provider_registry import should_post_usage, validate_model, validate_provider
+from ..core.provider_registry import get_credit_service_type, should_post_usage, validate_model, validate_provider
 from ..core.schemas import STTRequest, STTResponse
 from .stt_base import BaseSpeechToTextProvider
 
@@ -107,8 +111,7 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
             stt_request,
             start_time,
             transcript_text,
-            user.access_token,
-            user.space_id,
+            user,
         )
 
     def _check_credits(self, stt_request: STTRequest, user: User) -> None:
@@ -125,14 +128,15 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
         stt_request: STTRequest,
         start_time: float,
         transcript_text: str,
-        access_token: str,
-        space_id: str = None,
+        user: User,
     ) -> STTResponse:
         """Build the completed STT response and post credit usage.
 
         The audio duration is used both for the response metadata and as the
         billable unit count sent to the credit service.
         """
+        access_token = user.access_token
+        space_id = user.space_id
         response = STTResponse(
             provider=stt_request.provider,
             model=stt_request.model,
@@ -160,4 +164,29 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
             except Exception as exc:
                 logger.error(f"Failed to post STT credit usage | error={exc}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {exc}")
+        # Post BYOK usage for caller's own key requests.
+        if should_record_byok(stt_request.is_byok_enabled, stt_request.credentials_id):
+            try:
+                # Resolve the vault credential name for attribution.
+                stt_request.credential_name = resolve_credential_name(stt_request.credentials_id, user)
+                service = get_credit_service_type(stt_request.provider, stt_request.model, "service")
+                if service:
+                    entry = build_byok_entry(
+                        service,
+                        stt_request.provider,
+                        stt_request.model,
+                        audio_duration_seconds,
+                        "Seconds",
+                        stt_request.credentials_id,
+                        stt_request.credential_name,
+                        stt_request.ref_type,
+                        stt_request.ref_id,
+                        stt_request.ref_name,
+                        stt_request.action,
+                        stt_request.agent_name,
+                        space_id,
+                    )
+                    post_byok_usage(stt_request.provider, [entry], access_token)
+            except Exception as exc:
+                logger.error(f"Failed to post STT BYOK usage | error={exc}")
         return response

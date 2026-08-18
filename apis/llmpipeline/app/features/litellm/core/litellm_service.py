@@ -45,6 +45,8 @@ class LiteLLMService:
             request.credential_id,
             user,
         )
+        # Carry the resolved vault credential name for BYOK usage attribution.
+        request.credential_name = credential_resolution.credential_name
         kwargs: dict = dict(credential_resolution.kwargs)
 
         kwargs.update(
@@ -103,6 +105,8 @@ class LiteLLMService:
             request.credential_id,
             user,
         )
+        # Carry the resolved vault credential name for BYOK usage attribution.
+        request.credential_name = credential_resolution.credential_name
         kwargs: dict = dict(credential_resolution.kwargs)
 
         kwargs.update(

@@ -117,6 +117,7 @@ public static class AppServicesExtension
         services.AddScoped<ITenantSubscriptionService, TenantSubscriptionService>();
         services.AddScoped<ICreditPlanService, CreditPlanService>();
         services.AddScoped<ICreditUsageService, CreditUsageService>();
+        services.AddScoped<IByokUsageService, ByokUsageService>();
         services.AddScoped<ITopUpService, TopUpService>();
         services.AddScoped<IPaymentTrackerService, PaymentTrackerService>();
         services.AddScoped<IAITaskService, AITaskService>();

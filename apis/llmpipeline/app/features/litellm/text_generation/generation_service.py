@@ -17,9 +17,12 @@ from app.utils.file_converter_utils import (
 
 from .kb_integration import augment_with_kb_context
 from ..core.credit_utils import (
+    build_byok_entry,
     build_credit_entry,
     check_sufficient_credits,
+    post_byok_usage,
     post_platform_credit_usage,
+    should_record_byok,
 )
 from ..core.litellm_service import litellm_service
 from ..core.provider_registry import (
@@ -211,6 +214,33 @@ def _post_credit_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, u
         logger.warning(f"[LLM-V2] Failed to post credit usage: {e}")
 
 
+def _post_byok_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, user: User) -> None:
+    # Only post usage for BYOK requests (caller's own key).
+    if not should_record_byok(req.is_byok_enabled, req.credential_id):
+        return
+    try:
+        entries = []
+        if (resp.input_tokens or 0) > 0:
+            service = get_credit_service_type(req.provider, req.model, "input")
+            if service:
+                entries.append(build_byok_entry(
+                    service, req.provider, req.model, resp.input_tokens, "Tokens",
+                    req.credential_id, req.credential_name,
+                    req.ref_type, req.ref_id, req.ref_name, req.action, req.agent_name, user.space_id,
+                ))
+        if (resp.output_tokens or 0) > 0:
+            service = get_credit_service_type(req.provider, req.model, "output")
+            if service:
+                entries.append(build_byok_entry(
+                    service, req.provider, req.model, resp.output_tokens, "Tokens",
+                    req.credential_id, req.credential_name,
+                    req.ref_type, req.ref_id, req.ref_name, req.action, req.agent_name, user.space_id,
+                ))
+        post_byok_usage(req.provider, entries, user.access_token)
+    except Exception as e:
+        logger.warning(f"[LLM-V2] Failed to post BYOK usage: {e}")
+
+
 class GenerationService:
     def __init__(self) -> None:
         self._litellm = litellm_service
@@ -266,6 +296,7 @@ class GenerationService:
             is_temp_chat=req.is_temp_chat,
         )
         _post_credit_usage(req, response, user)
+        _post_byok_usage(req, response, user)
         return response
 
     async def start_streaming(self, req: LLMGenerationRequest, user: User):
@@ -289,6 +320,10 @@ class GenerationService:
             # and billed once the provider finishes streaming.
             streamed_text: list[str] = []
             finish_reason: str | None = None
+            # Token usage is only present on the final stream chunk; capture it
+            # so the response carries accurate input/output token counts.
+            input_tokens = 0
+            output_tokens = 0
             start = time.perf_counter()
             try:
                 # chat_completion is an async method: await it to obtain the
@@ -305,6 +340,12 @@ class GenerationService:
                     if delta and delta[0].delta:
                         text = delta[0].delta.content or ""
                         finish_reason = getattr(delta[0], "finish_reason", None) or finish_reason
+                    # Providers emit a final chunk carrying a `usage` object
+                    # (prompt_tokens / completion_tokens). Capture it when present.
+                    usage = getattr(chunk, "usage", None)
+                    if usage:
+                        input_tokens = usage.get("prompt_tokens", 0) or 0
+                        output_tokens = usage.get("completion_tokens", 0) or 0
                     if text:
                         streamed_text.append(text)
                         chunk_dto = LLMGenerationChunk(
@@ -337,8 +378,8 @@ class GenerationService:
                 finish_reason=finish_reason,
                 stream=True,
                 time_taken=round(time.perf_counter() - start, 2),
-                input_tokens=0,
-                output_tokens=0,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
                 is_json_output=req.is_json_output,
                 is_byok_enabled=req.is_byok_enabled,
                 credential_id=req.credential_id,
@@ -348,9 +389,10 @@ class GenerationService:
             yield response.model_dump_json()
 
             # Post credit usage only for platform (non-BYOK) requests.
-            if not should_post_usage(req.is_byok_enabled, req.credential_id):
-                return
-            _post_credit_usage(req, response, user)
+            if should_post_usage(req.is_byok_enabled, req.credential_id):
+                _post_credit_usage(req, response, user)
+            # Post BYOK usage for caller's own key requests.
+            _post_byok_usage(req, response, user)
 
         job_id = v2_job_manager.register(event_stream)
         return job_id, event_stream()

@@ -9,9 +9,12 @@ from app.core.logger import log_exception, logger
 from app.features.auth.authenticated_user import User
 
 from ..core.credit_utils import (
+    build_byok_entry,
     build_credit_entry,
     check_sufficient_credits,
+    post_byok_usage,
     post_platform_credit_usage,
+    should_record_byok,
 )
 from ..core.litellm_service import litellm_service
 from ..core.provider_registry import get_credit_service_type, should_post_usage, validate_model, validate_provider
@@ -82,6 +85,7 @@ class EmbeddingService:
         )
 
         self._post_credit_usage(req, response, user)
+        self._post_byok_usage(req, response, user)
         return response
 
     def _post_credit_usage(self, req: EmbeddingRequest, resp: EmbeddingResponse, user: User) -> None:
@@ -105,6 +109,33 @@ class EmbeddingService:
             post_platform_credit_usage(req.provider, [entry], user.access_token)
         except Exception as e:
             logger.warning(f"[LLM-V2] Failed to post embedding credit usage: {e}")
+
+    def _post_byok_usage(self, req: EmbeddingRequest, resp: EmbeddingResponse, user: User) -> None:
+        # Only post usage for BYOK requests (caller's own key).
+        if not should_record_byok(req.is_byok_enabled, req.credential_id):
+            return
+        try:
+            service = get_credit_service_type(req.provider, req.model, "service")
+            if not service:
+                return
+            entry = build_byok_entry(
+                service,
+                req.provider,
+                req.model,
+                resp.input_tokens or 0,
+                "Tokens",
+                req.credential_id,
+                req.credential_name,
+                req.reference_type,
+                req.reference_id,
+                req.reference_name,
+                req.action,
+                None,
+                user.space_id,
+            )
+            post_byok_usage(req.provider, [entry], user.access_token)
+        except Exception as e:
+            logger.warning(f"[LLM-V2] Failed to post embedding BYOK usage: {e}")
 
 
 embedding_service = EmbeddingService()
