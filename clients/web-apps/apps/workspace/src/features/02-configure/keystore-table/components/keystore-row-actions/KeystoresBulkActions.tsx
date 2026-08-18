@@ -4,8 +4,8 @@ import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/h
 import { Table } from "@tanstack/react-table";
 
 import { keystoreOptimisticMutationFn } from "../../apis/keystores-table-apis";
-import { DATA_QUERY_KEY } from "../../constants";
 import { KeystoresTableDto } from "../../dtos/keystores-table-dto";
+import { useTableTab } from "../../hooks/useTableTab";
 
 interface KeystoresBulkActionsProps {
   table: Table<KeystoresTableDto>;
@@ -14,6 +14,9 @@ interface KeystoresBulkActionsProps {
 export function KeystoresBulkActions({ table }: Readonly<KeystoresBulkActionsProps>) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+
+  // queryKey already includes the current space id and tab segment
+  const { queryKey } = useTableTab();
 
   // Get rowIds of selected rows
   const selectedRowIds = table
@@ -26,7 +29,7 @@ export function KeystoresBulkActions({ table }: Readonly<KeystoresBulkActionsPro
     string[],
     KeystoresTableDto | boolean,
     KeystoresTableDto
-  >(selectedRowIds, keystoreOptimisticMutationFn, DATA_QUERY_KEY);
+  >(selectedRowIds, keystoreOptimisticMutationFn, queryKey);
 
   // TODO: Rollback selection if there is an error
 

@@ -15,10 +15,8 @@ import { ISelectOption } from "@avplatform/ui/types";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
-import { useShallow } from "zustand/react/shallow";
 
 import { JsonEditorField } from "@/components/json-editor/JsonEditorField";
-import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getCredSelectOptions } from "../../apis/app-secret-apis";
 import { queueOptimisticMutationFn } from "../../apis/queues-table-apis";
@@ -117,15 +115,8 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
   };
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  // queryKey already includes the current space id.
   const { queryKey } = useTableTab();
-
-  // Get the currently selected space so the mutation targets the same
-  // query cache key that useFetchQueues writes to (which includes the space id).
-  const { currentSpace } = useCurrentSpaceStore(
-    useShallow((state) => ({
-      currentSpace: state.currentSpace,
-    })),
-  );
 
   // Define optimistic mutation to crete or update the queue
   const {
@@ -135,7 +126,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
   } = useListOptimisticMutation<QueuesTableDto, QueuesTableDto | boolean, QueuesTableDto>(
     [rowId],
     queueOptimisticMutationFn,
-    [...queryKey, currentSpace?.id] as string[],
+    queryKey,
   );
 
   // Define submit handler

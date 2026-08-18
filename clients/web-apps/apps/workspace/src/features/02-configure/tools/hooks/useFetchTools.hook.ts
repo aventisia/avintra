@@ -23,19 +23,19 @@ export const useFetchTools = () => {
   const { currentTab, isPersonal, isShared, isLibrary, queryKey } = useTableTab();
 
   const personalQuery = useQuery({
-    queryKey: [...queryKey, currentSpace?.id],
+    queryKey,
     queryFn: () => getTools({ isPersonal: true }),
     enabled: isPersonal,
   });
 
   const sharedQuery = useQuery({
-    queryKey: [...DATA_QUERY_KEY, "SHARED", currentSpace?.id],
+    queryKey: [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? ""],
     queryFn: () => getTools({ isPersonal: false }),
     enabled: isShared,
   });
 
   const libraryQuery = useQuery({
-    queryKey: [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id],
+    queryKey: [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? ""],
     queryFn: () => getLibraryTools(),
     enabled: isLibrary,
   });

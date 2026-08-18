@@ -22,31 +22,35 @@ export const useFetchSkills = (tab: "current" | "all" = "current") => {
   );
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared/Library tabs list
+  // queryKey already includes the current space id.
   const { isPersonal, isShared, isLibrary, queryKey } = useTableTab();
 
   const shouldFetchBoth = tab === "all";
 
   // When fetching both lists (e.g. detail page lookup), use stable distinct keys
   // so the queries never collide. For the current tab view, use the tab-derived key.
-  const personalQueryKey = shouldFetchBoth ? DATA_QUERY_KEY : queryKey;
-  const sharedQueryKey = [...DATA_QUERY_KEY, "SHARED"];
-  const libraryQueryKey = [...DATA_QUERY_KEY, "LIBRARY"];
+  // All keys include the current space id to match mutation invalidation.
+  const personalQueryKey = shouldFetchBoth
+    ? [...DATA_QUERY_KEY, currentSpace?.id ?? ""]
+    : queryKey;
+  const sharedQueryKey = [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? ""];
+  const libraryQueryKey = [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? ""];
 
   // Get skills using react query
   const personalQuery = useQuery({
-    queryKey: [...personalQueryKey, currentSpace?.id],
+    queryKey: personalQueryKey,
     queryFn: () => getSkills({ isPersonal: true }),
     enabled: shouldFetchBoth || isPersonal,
   });
 
   const sharedQuery = useQuery({
-    queryKey: [...sharedQueryKey, currentSpace?.id],
+    queryKey: sharedQueryKey,
     queryFn: () => getSkills({ isPersonal: false }),
     enabled: shouldFetchBoth || isShared,
   });
 
   const libraryQuery = useQuery({
-    queryKey: [...libraryQueryKey, currentSpace?.id],
+    queryKey: libraryQueryKey,
     queryFn: () => getLibrarySkills(),
     enabled: isLibrary,
   });

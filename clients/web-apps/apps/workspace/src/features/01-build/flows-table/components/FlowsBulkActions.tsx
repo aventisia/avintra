@@ -4,8 +4,8 @@ import { useListOptimisticMutation, useShowAlertHandler } from "@avplatform/ui/h
 import { Table } from "@tanstack/react-table";
 
 import { flowOptimisticMutationFn } from "../apis/flows-table-apis";
-import { FLOWS_QUERY_KEY } from "../constants";
 import { FlowsTableDto } from "../dtos/flows-table-dto";
+import { useTableTab } from "../hooks/useTableTab";
 
 interface FlowsBulkActionsProps {
   table: Table<FlowsTableDto>;
@@ -14,6 +14,9 @@ interface FlowsBulkActionsProps {
 export function FlowsBulkActions({ table }: FlowsBulkActionsProps) {
   // Get showAlert handler
   const { showDefaultAlertDialog } = useShowAlertHandler();
+
+  // queryKey already includes the current space id and tab segment
+  const { queryKey } = useTableTab();
 
   // Get rowIds of selected rows
   const selectedRowIds = table
@@ -26,7 +29,7 @@ export function FlowsBulkActions({ table }: FlowsBulkActionsProps) {
     string[],
     FlowsTableDto | boolean,
     FlowsTableDto
-  >(selectedRowIds, flowOptimisticMutationFn, FLOWS_QUERY_KEY);
+  >(selectedRowIds, flowOptimisticMutationFn, queryKey);
 
   // TODO: Rollback selection if there is an error
 

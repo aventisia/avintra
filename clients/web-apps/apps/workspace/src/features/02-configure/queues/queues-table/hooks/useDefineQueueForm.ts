@@ -10,7 +10,6 @@ import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
 import { CrudActionTypeConverter } from "@/react-toolkit/utils";
-import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { isNameAvailable } from "../apis/queues-table-apis";
 import { queueNameSchema, queueZodSchema } from "../constants/queue-zod-schema";
@@ -35,14 +34,6 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
       userSession: state.userSession,
-    })),
-  );
-
-  // Get the currently selected space so the form reads from the same
-  // query cache key that useFetchQueues writes to (which includes the space id).
-  const { currentSpace } = useCurrentSpaceStore(
-    useShallow((state) => ({
-      currentSpace: state.currentSpace,
     })),
   );
 
@@ -151,18 +142,15 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
   } = form;
 
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  // queryKey already includes the current space id.
   const { queryKey } = useTableTab();
 
   // Fetch queue data when rowId changes
   useEffect(() => {
-    // The cache key must match the one used by useFetchQueues, which appends
-    // the current space id to the base tab query key.
-    const fullQueryKey = [...queryKey, currentSpace?.id];
-
     // Get queues data from query client
     const queuesData = queryClient.getQueryData<{
       data: QueuesTableDto[];
-    }>(fullQueryKey);
+    }>(queryKey);
 
     // Get queue data by id
     const queueData = queuesData?.data.find((item) => item.id === rowId);
@@ -197,7 +185,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
         queueData?.lastModifiedBy ?? userSession?.firstName + " " + userSession?.lastName,
       lastModifiedOn: queueData?.lastModifiedOn ? new Date(queueData?.lastModifiedOn) : new Date(),
     });
-  }, [rowId, form, queryClient, userSession, crudAction, currentSpace?.id]);
+  }, [rowId, form, queryClient, userSession, crudAction, queryKey]);
 
   // Get check availability state and methods
   const {

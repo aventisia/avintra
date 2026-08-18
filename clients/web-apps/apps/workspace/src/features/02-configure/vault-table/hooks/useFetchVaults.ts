@@ -1,9 +1,6 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useShallow } from "zustand/react/shallow";
-
-import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getVaults } from "../apis/vaults-table-apis";
 import { useTableTab } from "./useTableTab";
@@ -13,19 +10,13 @@ import { useTableTab } from "./useTableTab";
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchVaults = () => {
-  // Get the currently selected space so the query refetches when the space changes
-  const { currentSpace } = useCurrentSpaceStore(
-    useShallow((state) => ({
-      currentSpace: state.currentSpace,
-    })),
-  );
-
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared tabs list
+  // queryKey already includes the current space id.
   const { isPersonal, queryKey } = useTableTab();
 
   // Get configs using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: [...queryKey, currentSpace?.id],
+    queryKey,
     queryFn: () => getVaults({ isPersonal }),
   });
 
