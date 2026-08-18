@@ -17,9 +17,21 @@ public class CreditUsageController : BaseApiController
     [HttpGet("summary")]
     public async Task<ActionResult<ServiceResponse<CreditsUsageSummaryDto>>> GetCreditUsageSummary(
             [FromQuery] DateTimeOffset? startDate,
-            [FromQuery] DateTimeOffset? endDate)
+            [FromQuery] DateTimeOffset? endDate,
+            [FromQuery] bool filterBySpaces = false,
+            [FromQuery] string? spaceIds = null,
+            [FromQuery] bool includeCentral = true)
     {
-        return ResultHelper(await _creditUsageService.GetCreditUsageAsync(startDate, endDate));
+        var parsedSpaceIds = string.IsNullOrWhiteSpace(spaceIds)
+            ? new List<Guid>()
+            : spaceIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(s => Guid.TryParse(s, out _))
+                .Select(Guid.Parse)
+                .ToList();
+
+        return ResultHelper(await _creditUsageService.GetCreditUsageAsync(
+            startDate, endDate, filterBySpaces, parsedSpaceIds, includeCentral));
     }
 
     // Records a single credit usage entry and returns the calculated credits used.

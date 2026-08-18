@@ -89,6 +89,7 @@ class OpenRouterProvider(BaseLLMProvider):
                     output,
                     user.access_token,
                     response_data,
+                    user.space_id,
                 )
 
         except Exception as e:
@@ -216,7 +217,8 @@ class OpenRouterProvider(BaseLLMProvider):
                         start_time,
                         final_output,
                         user.access_token,
-                        usage_response
+                        usage_response,
+                        user.space_id,
                     )
 
                     # Send final response (important for frontend completion state)
@@ -418,7 +420,7 @@ class OpenRouterProvider(BaseLLMProvider):
         )
 
     # Helper: Create final LLMResponse with actual values and handle credit usage posting
-    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data) -> LLMResponse: 
+    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str, jwt: str, response_data, space_id: str = None) -> LLMResponse: 
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj   
 
@@ -442,7 +444,7 @@ class OpenRouterProvider(BaseLLMProvider):
         # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
             # Prepare the credit usage data
-            credit_usage_data = self._build_openrouter_credit_usage(llm_request, llm_response)
+            credit_usage_data = self._build_openrouter_credit_usage(llm_request, llm_response, space_id)
 
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
@@ -495,7 +497,7 @@ class OpenRouterProvider(BaseLLMProvider):
         return "unknown"
 
     # Helper: Build credit usage data for OpenRouter models based on token usage and model mapping
-    def _build_openrouter_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
+    def _build_openrouter_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse, space_id: str = None):
         """
         Build credit usage for OpenRouter models (Claude, Grok, Qwen, etc.)
         """
@@ -661,7 +663,8 @@ class OpenRouterProvider(BaseLLMProvider):
                 if not embedding_request.is_byok_enabled and not embedding_request.credential_id:
                     credit_usage = self._build_openrouter_embedding_credit_usage(
                         embedding_request,
-                        embedding_response
+                        embedding_response,
+                        user.space_id
                     )
 
                     credit_manager = CreditManagerService()
@@ -692,7 +695,8 @@ class OpenRouterProvider(BaseLLMProvider):
     def _build_openrouter_embedding_credit_usage(
         self,
         embedding_request: EmbeddingRequest,
-        embedding_response: EmbeddingResponse
+        embedding_response: EmbeddingResponse,
+        space_id: str = None,
     ):
         """
         Construct credit usage payload for OpenRouter embedding requests.
@@ -733,6 +737,7 @@ class OpenRouterProvider(BaseLLMProvider):
             "RefId": embedding_request.reference_id,
             "RefName": embedding_request.reference_name,
             "Action": embedding_request.action,
-            "TriggeredByAgent": None
+            "TriggeredByAgent": None,
+            "SpaceId": space_id,
         }]
     

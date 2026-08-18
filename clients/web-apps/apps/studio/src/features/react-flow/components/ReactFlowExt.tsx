@@ -9,12 +9,14 @@ import {
   useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { useQueryClient } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
+import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
 import { CanvasNodeDetailPanel } from "@/features/execute-flow/components/CanvasNodeDetailPanel";
 import { ClearRunResultsPanel } from "@/features/execute-flow/components/ClearRunResultsPanel";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
@@ -79,6 +81,14 @@ export const ReactFlowExt = () => {
       currentFlow: state.currentFlow,
     })),
   );
+
+  const queryClient = useQueryClient();
+
+  // Chat Agent streaming consumes credits per message; refresh the header
+  // balance the moment a chat request completes so it updates without reload.
+  const handleChatRequestComplete = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
+  }, [queryClient]);
 
   // Memoize the custom node, edges types
   const customNodeTypeObjMemo = useMemo(() => CustomNodeTypeObj, []);
@@ -254,6 +264,7 @@ export const ReactFlowExt = () => {
             <AvPlatformAssistantUI
               flowVersionId={currentFlow.versionId}
               mode="temporary"
+              onRequestComplete={handleChatRequestComplete}
               defaultActions={
                 recommendActions?.defaultActions ? recommendActions?.defaultActions : []
               }

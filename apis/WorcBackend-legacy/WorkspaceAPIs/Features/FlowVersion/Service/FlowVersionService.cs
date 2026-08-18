@@ -36,9 +36,13 @@ public class FlowVersionService : IFlowVersionService
 
         try
         {
-            // Retrieve the flow and ensure it exists
+            // Retrieve the flow and ensure it exists.
+            // A flow ID is globally unique within a tenant, so the lookup is
+            // intentionally NOT scoped to the current space query filter. Space
+            // access is enforced separately via GetResourceAccessAsync below.
             var flow = await _unitOfWork.FlowRepo
                 .GetByConditionAsync(w => w.Id == flowId)
+                .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
             if (flow == null)
@@ -69,6 +73,8 @@ public class FlowVersionService : IFlowVersionService
 
 
             //Try to get flow versions
+            // Like the flow, the version lookup is not scoped to the current
+            // space query filter because access has already been validated above.
             var flowVersions = await _unitOfWork.FlowVersionRepo
             .GetByConditionAsync(w =>
                 w.FlowId == flowId &&
@@ -82,6 +88,7 @@ public class FlowVersionService : IFlowVersionService
             )
             .Include(i => i.Flow)
             .Include(i => i.CreatedByUser)
+            .IgnoreQueryFilters()
             .OrderByDescending(o => o.VersionNumber)
             .ToListAsync();
 

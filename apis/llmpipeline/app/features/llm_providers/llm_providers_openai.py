@@ -136,7 +136,7 @@ class OpenAIProvider(BaseLLMProvider):
                 output = extract_json_from_llm_response(raw_output) if llm_request.is_json_output else raw_output
                 
                 # Return final llm response
-                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data)
+                return self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, response_data, user.space_id)
         except Exception as e:
             error_context = ""
             if "response_data" in locals() and isinstance(response_data, dict):
@@ -247,7 +247,7 @@ class OpenAIProvider(BaseLLMProvider):
                                 # Handle is_json_output if requested
                                 output = extract_json_from_llm_response(raw_output) if llm_request.is_json_output else raw_output
                                 
-                                final_llm_response = self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, full_response)
+                                final_llm_response = self._create_final_llm_response(llm_request, default_llm_response_obj, start_time, output, user.access_token, full_response, user.space_id)
                                 yield final_llm_response.model_dump_json() + "\n"
                                 break
                             
@@ -452,7 +452,7 @@ class OpenAIProvider(BaseLLMProvider):
         )
      
     # Helper: Create final llm_response object with actual values
-    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str,jwt: str, response_data) -> LLMResponse: 
+    def _create_final_llm_response(self, llm_request: LLMRequest, default_llm_response_obj: LLMResponse, start_time: float, output: str,jwt: str, response_data, space_id: str = None) -> LLMResponse: 
         # Create a copy of the default llm_response_obj
         llm_response = default_llm_response_obj   
         
@@ -526,7 +526,7 @@ class OpenAIProvider(BaseLLMProvider):
         
         # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
-            credit_usage_data = self._build_gpt_credit_usage(llm_request, llm_response)
+            credit_usage_data = self._build_gpt_credit_usage(llm_request, llm_response, space_id)
 
             # Initialize the CreditManagerService
             credit_manager = CreditManagerService()
@@ -542,7 +542,7 @@ class OpenAIProvider(BaseLLMProvider):
         # Return the final llm_response
         return llm_response
     
-    def _build_gpt_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse):
+    def _build_gpt_credit_usage(self, llm_request: LLMRequest, llm_response: LLMResponse, space_id: str = None):
         """
         Build credit usage specifically for GPT models.
 
@@ -618,6 +618,7 @@ class OpenAIProvider(BaseLLMProvider):
                 "RefName": llm_request.ref_name,
                 "Action": llm_request.action,
                 "TriggeredByAgent": llm_request.agent_name,
+                "SpaceId": space_id,
             }
 
         credit_usage = []
@@ -718,7 +719,8 @@ class OpenAIProvider(BaseLLMProvider):
                 if not embedding_request.is_byok_enabled and not embedding_request.credential_id:
                     credit_usage = self._build_embedding_credit_usage(
                         embedding_request,
-                        embedding_response
+                        embedding_response,
+                        user.space_id
                     )
 
                     credit_manager = CreditManagerService()
@@ -749,7 +751,8 @@ class OpenAIProvider(BaseLLMProvider):
     def _build_embedding_credit_usage(
         self,
         embedding_request: EmbeddingRequest,
-        embedding_response: EmbeddingResponse
+        embedding_response: EmbeddingResponse,
+        space_id: str = None,
     ):
         """
         Build credit usage payload for embedding requests.
@@ -784,7 +787,8 @@ class OpenAIProvider(BaseLLMProvider):
             "RefId": embedding_request.reference_id,
             "RefName": embedding_request.reference_name,
             "Action": embedding_request.action,
-            "TriggeredByAgent": None
+            "TriggeredByAgent": None,
+            "SpaceId": space_id,
         }]
 
     def _build_chat_agent_output(

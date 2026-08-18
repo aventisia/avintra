@@ -27,6 +27,8 @@ const ChartsHeaderDateRangeFilter = () => {
     { label: "Last 7 days", value: 7 },
     { label: "Last 15 days", value: 15 },
     { label: "Last 30 days", value: 30 },
+    { label: "Last 90 days", value: 90 },
+    { label: "Last 365 days", value: 365 },
   ];
 
   const getPresetRange = (preset: (typeof presets)[number]) => {

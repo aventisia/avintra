@@ -436,7 +436,8 @@ class OllamaProvider(BaseLLMProvider):
                 if not embedding_request.is_byok_enabled and not embedding_request.credential_id:
                     credit_usage = self._build_ollama_embedding_credit_usage(
                         embedding_request,
-                        embedding_response
+                        embedding_response,
+                        user.space_id
                     )
 
                     credit_manager = CreditManagerService()
@@ -462,7 +463,8 @@ class OllamaProvider(BaseLLMProvider):
     def _build_ollama_embedding_credit_usage(
         self,
         embedding_request: EmbeddingRequest,
-        embedding_response: EmbeddingResponse
+        embedding_response: EmbeddingResponse,
+        space_id: str = None,
     ):
         model_name = (embedding_request.model or "").strip().lower()
 
@@ -487,5 +489,6 @@ class OllamaProvider(BaseLLMProvider):
             "RefId": embedding_request.reference_id,
             "RefName": embedding_request.reference_name,
             "Action": "embedding",
-            "TriggeredByAgent": None
+            "TriggeredByAgent": None,
+            "SpaceId": space_id,
         }]

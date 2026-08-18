@@ -30,6 +30,10 @@ def authorize(required_roles: list[str] | None = None):
             logger.warning(f"Authentication failed: {error}")
             raise auth_error
 
+        # Resolve the current space from the "X-Space-Id" request header, mirroring
+        # the backend middleware. Empty means the default "Central" space.
+        user.space_id = request.headers.get("X-Space-Id") or None
+
         # Return user if no specific roles are required
         if not normalized_required_roles:
             return user

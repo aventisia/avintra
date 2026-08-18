@@ -1,5 +1,7 @@
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 export interface VectorStoreQueryRequestDto {
   vector_store: string;
   embedding_provider: string;
@@ -33,7 +35,9 @@ const vectorStoreApiBaseUrl: string = `${import.meta.env.VITE_LLMPIPELINE_API_PA
 export const queryVectorStore = (
   dto: VectorStoreQueryRequestDto,
 ): Promise<VectorStoreQueryResponseDto> => {
-  return axiosInstance.post(`${vectorStoreApiBaseUrl}/query`, dto).then((res) => {
+  return axiosInstance
+    .post(`${vectorStoreApiBaseUrl}/query`, dto, { headers: getStudioSpaceHeaders() })
+    .then((res) => {
     const payload = res.data as
       | {
           data?: VectorStoreQueryResponseDto;

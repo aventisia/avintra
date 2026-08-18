@@ -10,10 +10,18 @@ public interface ICreditUsageService
     /// </summary>
     /// <param name="startDate">The optional start date for the usage period.</param>
     /// <param name="endDate">The optional end date for the usage period.</param>
+    /// <param name="filterBySpaces">When true, restricts results to the given spaces.</param>
+    /// <param name="spaceIds">The set of space GUIDs to include when filtering.</param>
+    /// <param name="includeCentral">When filtering, whether Central-space usage (null SpaceId) is included.</param>
     /// <returns>
     /// A task representing the asynchronous operation. The result contains a <see cref="CreditsUsageSummaryDto"/> with aggregated usage insights.
     /// </returns>
-    Task<ServiceResponse<CreditsUsageSummaryDto>> GetCreditUsageAsync(DateTimeOffset? startDate, DateTimeOffset? endDate);
+    Task<ServiceResponse<CreditsUsageSummaryDto>> GetCreditUsageAsync(
+        DateTimeOffset? startDate,
+        DateTimeOffset? endDate,
+        bool filterBySpaces = false,
+        List<Guid>? spaceIds = null,
+        bool includeCentral = true);
 
     /// <summary>
     /// Records a single credit usage entry into the system.

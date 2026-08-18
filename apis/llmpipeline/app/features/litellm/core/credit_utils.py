@@ -61,6 +61,7 @@ def build_credit_entry(
     ref_name: str,
     action: str,
     agent_name: str | None,
+    space_id: str | None = None,
 ) -> dict:
     """Build a single credit-usage payload entry (PascalCase fields).
 
@@ -74,6 +75,7 @@ def build_credit_entry(
         "RefName": ref_name,
         "Action": action or "AgentExecution",
         "TriggeredByAgent": agent_name,
+        "SpaceId": space_id,
     }
 
 
@@ -92,7 +94,7 @@ def post_platform_credit_usage(provider: str, entries: list[dict], access_token:
     credit_manager.post_credit_usage(task=provider, request=entries, jwt=access_token)
 
 
-def post_credit_usage(request, provider: str, kind: str, consumed_units: float, access_token: str) -> None:
+def post_credit_usage(request, provider: str, kind: str, consumed_units: float, access_token: str, space_id: str | None = None) -> None:
     """Resolve the backend service name for a model and post usage.
 
     Shared by STT and TTS. The provider+model are translated to the backend
@@ -104,6 +106,7 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
         kind: The usage kind passed to `get_credit_service_type` (e.g. "service").
         consumed_units: Number of billable units consumed (audio seconds / chars).
         access_token: The authenticated user's JWT.
+        space_id: The current space id to attribute credit usage to (None = Central).
 
     Raises:
         ValueError: When the model has no mapped backend service, so silent
@@ -125,6 +128,7 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
         "RefName": request.ref_name,
         "Action": request.action,
         "TriggeredByAgent": request.agent_name,
+        "SpaceId": space_id,
     }
 
     # Post a single-entry bulk request to the credit-usage endpoint.

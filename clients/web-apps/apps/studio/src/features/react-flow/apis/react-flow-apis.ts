@@ -2,6 +2,8 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { FlowSilentUpdateDto } from "../dtos/flow-silent-update-dto";
 import { LoadFlowDto } from "../dtos/load-flow-dto";
 import { PublishFlowDto } from "../dtos/publish-flow";
@@ -19,7 +21,7 @@ const getFlowToLoad = (id: string, versionId?: string) => {
     : `${baseAPIURL}/load/${id}`;
 
   return axiosInstance
-    .get<IHttpResponse<LoadFlowDto>>(url)
+    .get<IHttpResponse<LoadFlowDto>>(url, { headers: getStudioSpaceHeaders() })
     .then((res) => res.data)
     .catch(() => {
       toast.error("Unable to load flow. Please try again.");
@@ -34,13 +36,17 @@ const getFlowToLoad = (id: string, versionId?: string) => {
  */
 const updateFlowSilently = (putObj: FlowSilentUpdateDto) => {
   return axiosInstance
-    .put<IHttpResponse<boolean>>(`${baseAPIURL}/save`, putObj)
+    .put<IHttpResponse<boolean>>(`${baseAPIURL}/save`, putObj, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
 const publishFlow = (putObj: PublishFlowDto) => {
   return axiosInstance
-    .put<IHttpResponse<boolean>>(`${baseAPIURL}/publish`, putObj)
+    .put<IHttpResponse<boolean>>(`${baseAPIURL}/publish`, putObj, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

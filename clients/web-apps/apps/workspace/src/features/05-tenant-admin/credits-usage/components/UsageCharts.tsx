@@ -1,6 +1,7 @@
 import { useFetchCreditUsageSummary } from "../hooks/useFetchCreditUsageSummary";
 import { ChartConfig } from "../shared/charts/Chart";
 import { ChartLineInteractive } from "../shared/charts/LineChart";
+import { useDateRangePickerStore } from "../store/date-range-store";
 
 const totalCreditsChartConfig = {
   views: {
@@ -8,41 +9,50 @@ const totalCreditsChartConfig = {
   },
 } satisfies ChartConfig;
 
-const totalTransactionsChartConfig = {
-  views: {
-    label: "Executions",
-  },
-} satisfies ChartConfig;
+/** Number of days spanned by the selected date range (inclusive). */
+const getDaysInRange = (from?: Date, to?: Date) => {
+  if (!from || !to) return 0;
+  const ms = to.getTime() - from.getTime();
+  const days = Math.floor(ms / (1000 * 60 * 60 * 24)) + 1;
+  return Math.max(days, 0);
+};
 
 const UsageCharts = () => {
   const { data } = useFetchCreditUsageSummary();
+  const { dateRange } = useDateRangePickerStore();
+
   const creditChartData = data?.data.creditUsages || [];
-  const agentCreditChartData = data?.data.agentCreditUsages || [];
-  const agentTransactionChartData = data?.data.agentTransactionUsages || [];
+  const executionCreditChartData = data?.data.executionCreditUsages || [];
+  const llmCreditChartData = data?.data.llmCreditUsages || [];
+
+  const daysInRange = getDaysInRange(dateRange?.from, dateRange?.to);
+  const totalCredits = data?.data.usageSummary.totalCredits || 0;
+  const averageDaily = daysInRange > 0 ? totalCredits / daysInRange : Number.NaN;
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       <ChartLineInteractive
         title="Total Credits Used"
-        total={data?.data.usageSummary.totalCredits || 0}
+        total={totalCredits}
         data={creditChartData}
         chartConfig={totalCreditsChartConfig}
         valueKey="totalCount"
+        average={averageDaily}
         className="col-span-2"
       />
       <ChartLineInteractive
-        title="Total Agent Credits"
-        total={data?.data.usageSummary.totalAgentCredits || 0}
-        data={agentCreditChartData}
+        title="Total Execution Time Credits"
+        total={data?.data.usageSummary.totalExecutionCredits || 0}
+        data={executionCreditChartData}
         chartConfig={totalCreditsChartConfig}
         valueKey="totalCount"
         className="col-span-1"
       />
       <ChartLineInteractive
-        title="Total Agent Executions"
-        total={data?.data.usageSummary.totalAgentTransactions || 0}
-        data={agentTransactionChartData}
-        chartConfig={totalTransactionsChartConfig}
+        title="Total LLM Credits"
+        total={data?.data.usageSummary.totalLlmCredits || 0}
+        data={llmCreditChartData}
+        chartConfig={totalCreditsChartConfig}
         valueKey="totalCount"
         className="col-span-1"
       />

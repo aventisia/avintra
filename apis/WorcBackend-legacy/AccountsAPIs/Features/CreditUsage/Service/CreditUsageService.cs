@@ -26,7 +26,15 @@ public class CreditUsageService : ICreditUsageService
     }
 
     // Retrieves the credit usage for a given user or service.
-    public async Task<ServiceResponse<CreditsUsageSummaryDto>> GetCreditUsageAsync(DateTimeOffset? startDate, DateTimeOffset? endDate)
+    // filterBySpaces: when false, no space filtering is applied (all spaces).
+    // spaceIds: the set of space GUIDs to include when filterBySpaces is true.
+    // includeCentral: when filterBySpaces is true, whether null-SpaceId (Central) usage is included.
+    public async Task<ServiceResponse<CreditsUsageSummaryDto>> GetCreditUsageAsync(
+        DateTimeOffset? startDate,
+        DateTimeOffset? endDate,
+        bool filterBySpaces = false,
+        List<Guid>? spaceIds = null,
+        bool includeCentral = true)
     {
         // Initialize the default service response in case of failure
         var serviceResponse = new ServiceResponse<CreditsUsageSummaryDto>
@@ -53,11 +61,18 @@ public class CreditUsageService : ICreditUsageService
                 return serviceResponse;
             }
 
-            // Build the query for CreditUsage with optional filters
+            // Build the query for CreditUsage with optional filters.
+            // When filterBySpaces is false, include all spaces. When true, only
+            // include the selected spaces plus Central (SpaceId == null) if includeCentral is set.
             var creditUsageQuery = _unitOfWork.CreditUsageRepo
                     .GetByConditionAsync(w =>
                         w.UsedAt.Date >= startDate.Value && w.UsedAt.Date <= endDate.Value &&
-                        w.TenantId == _tenantId
+                        w.TenantId == _tenantId &&
+                        (
+                            !filterBySpaces ||
+                            (includeCentral && w.SpaceId == null) ||
+                            (w.SpaceId != null && spaceIds.Contains(w.SpaceId.Value))
+                        )
                     )
                     .Include(i => i.UsedByUser)
                     .AsQueryable();
@@ -82,13 +97,16 @@ public class CreditUsageService : ICreditUsageService
             // Build the credit usage summary DTO to return
             var creditUsageDto = new CreditsUsageSummaryDto
             {
-                // Summary metrics: total credits and total transactions
+                // Summary metrics: total credits and credits split by execution vs LLM/model
                 UsageSummary = new UsageSummaryDto
                 {
                     TotalCredits = creditUsages.Sum(c => c.CreditsUsed),
-                    TotalAgentTransactions = creditUsages
-                            .Where(w => w.ServiceType == CreditServicesEnum.AgentExecutionTime && !string.IsNullOrEmpty(w.TriggeredByAgent))
-                            .Count(),
+                    TotalExecutionCredits = creditUsages
+                            .Where(w => w.ServiceType == CreditServicesEnum.AgentExecutionTime)
+                            .Sum(sm => sm.CreditsUsed),
+                    TotalLlmCredits = creditUsages
+                            .Where(w => w.ServiceType != CreditServicesEnum.AgentExecutionTime)
+                            .Sum(sm => sm.CreditsUsed),
                     TotalAgentCredits = creditUsages
                             .Where(w => !string.IsNullOrEmpty(w.TriggeredByAgent))
                             .GroupBy(g => g.TriggeredByAgent)
@@ -105,29 +123,26 @@ public class CreditUsageService : ICreditUsageService
                     .OrderBy(o => o.Date)
                     .ToList(),
 
-                // Grouped transaction counts per day
-                AgentTransactionUsages = allDatesInRange
+                // Grouped execution-time credits per day
+                ExecutionCreditUsages = allDatesInRange
                     .Select(s => new DataUsageDataPointDto
                     {
                         Date = s,
                         TotalCount = creditUsages
-                            .Where(w =>
-                                w.UsedAt.Date == s &&
-                                w.ServiceType == CreditServicesEnum.AgentExecutionTime &&
-                                !string.IsNullOrEmpty(w.TriggeredByAgent))
-                            .Count()
+                            .Where(w => w.UsedAt.Date == s && w.ServiceType == CreditServicesEnum.AgentExecutionTime)
+                            .Sum(sm => sm.CreditsUsed),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
 
-                AgentCreditUsages = allDatesInRange
+                // Grouped LLM/model credits per day (all non-execution services)
+                LlmCreditUsages = allDatesInRange
                     .Select(s => new DataUsageDataPointDto
                     {
                         Date = s,
                         TotalCount = creditUsages
-                            .Where(w => w.UsedAt.Date == s && !string.IsNullOrEmpty(w.TriggeredByAgent))
-                            .GroupBy(g => g.TriggeredByAgent)
-                            .Sum(sm => sm.Sum(sum => sum.CreditsUsed)),
+                            .Where(w => w.UsedAt.Date == s && w.ServiceType != CreditServicesEnum.AgentExecutionTime)
+                            .Sum(sm => sm.CreditsUsed),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
@@ -149,7 +164,7 @@ public class CreditUsageService : ICreditUsageService
                             //UnitType = matchingPlan.UnitType,
                             //Credits = matchingPlan.Credits,
                             TotalCredits = s.Sum(sm => sm.CreditsUsed),
-                            TotalTransactions = s.Count(),
+                            IsExecution = s.Key == CreditServicesEnum.AgentExecutionTime,
                             UsageTimeline = s
                                 .GroupBy(g1 => g1.UsedAt.Date)
                                 .Select(s1 => new DataUsageDataPointDto
@@ -175,13 +190,18 @@ public class CreditUsageService : ICreditUsageService
                             Username = user.UserName,
                             FirstName = user.FirstName,
                             LastName = user.LastName,
-                            TotalTransactions = creditUsages
+                            TotalExecutionCredits = creditUsages
                                 .Where(w =>
                                     w.UsedByUserId == user.Id &&
-                                    (
-                                        w.ServiceType == CreditServicesEnum.AgentExecutionTime
-                                    )
-                                ).Count(),
+                                    w.ServiceType == CreditServicesEnum.AgentExecutionTime
+                                )
+                                .Sum(sm => sm.CreditsUsed),
+                            TotalLlmCredits = creditUsages
+                                .Where(w =>
+                                    w.UsedByUserId == user.Id &&
+                                    w.ServiceType != CreditServicesEnum.AgentExecutionTime
+                                )
+                                .Sum(sm => sm.CreditsUsed),
                             TotalCredits = s.Sum(sm => sm.CreditsUsed)
                         };
                     })
@@ -194,10 +214,16 @@ public class CreditUsageService : ICreditUsageService
                     )
                     .GroupBy(g => g.RefId).Select(s =>
                     {
+                        var agentGroup = s.ToList();
                         return new AgentUsageDto
                         {
                             AgentName = s.First().RefName,
-                            TotalTransactions = creditUsages.Where(w => w.ServiceType == CreditServicesEnum.AgentExecutionTime && w.RefType == UsageSourceTypesEnum.Agent && w.RefId == s.First().RefId).Count(),
+                            TotalExecutionCredits = agentGroup
+                                .Where(w => w.ServiceType == CreditServicesEnum.AgentExecutionTime)
+                                .Sum(sm => sm.CreditsUsed),
+                            TotalLlmCredits = agentGroup
+                                .Where(w => w.ServiceType != CreditServicesEnum.AgentExecutionTime)
+                                .Sum(sm => sm.CreditsUsed),
                             TotalCredits = s.Sum(sm => sm.CreditsUsed)
                         };
                     })
@@ -331,6 +357,7 @@ public class CreditUsageService : ICreditUsageService
             creditUsage.CreditsUsed = creditUsed;
             creditUsage.UnitUsed = creditUsageDto.ConsumedUnit;
             creditUsage.UsedByUserId = creditUsageDto.UsedByUserId.HasValue ? creditUsageDto.UsedByUserId : _userId;
+            creditUsage.SpaceId = creditUsageDto.SpaceId;
 
             // Insert the new credit usage record into the database
             await _unitOfWork.CreditUsageRepo.InsertAsync(creditUsage);
@@ -474,6 +501,7 @@ public class CreditUsageService : ICreditUsageService
                 creditUsage.CreditsUsed = creditUsed;
                 creditUsage.UnitUsed = creditUsageDto.ConsumedUnit;
                 creditUsage.UsedByUserId = creditUsageDto.UsedByUserId.HasValue ? creditUsageDto.UsedByUserId : _userId;
+                creditUsage.SpaceId = creditUsageDto.SpaceId;
 
                 // Add the credit usage to the list for batch insertion
                 creditUsages.Add(creditUsage);

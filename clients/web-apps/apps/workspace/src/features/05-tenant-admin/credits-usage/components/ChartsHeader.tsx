@@ -1,20 +1,10 @@
 import { Button } from "@avplatform/ui/buttons";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@avplatform/ui/select";
-import { enumToArray } from "@avplatform/ui/utils";
 import { Download } from "lucide-react";
-
-import { ServiceTypeEnum } from "@/features/06-super-admin/credit-plans-table/enums/service-type-enum";
 
 import { useExportDialogStore } from "../store/export-dialog-store";
 import { AvailableCredits } from "./AvailableCredits";
 import ChartsHeaderDateRangeFilter from "./ChartsHeaderDateRangeFilter";
+import { SpaceFilterSelect } from "./SpaceFilterSelect";
 
 const ChartsHeader = () => {
   const { setOpen } = useExportDialogStore();
@@ -27,21 +17,8 @@ const ChartsHeader = () => {
       </div>
 
       <div className="flex items-center gap-4">
-        {/* Select Services */}
-        {/* To be removed/replaced later */}
-        <Select>
-          <SelectTrigger className="hidden w-[180px]">
-            <SelectValue placeholder="All Service" />
-          </SelectTrigger>
-
-          <SelectContent>
-            <SelectGroup>
-              {enumToArray(ServiceTypeEnum).map((item) => {
-                return <SelectItem value={item.value}>{item.label}</SelectItem>;
-              })}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        {/* Space Filter */}
+        <SpaceFilterSelect />
 
         {/* Calendar */}
         <ChartsHeaderDateRangeFilter />

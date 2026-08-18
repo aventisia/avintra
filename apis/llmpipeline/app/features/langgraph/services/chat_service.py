@@ -124,6 +124,7 @@ class ChatService:
             graph_response=graph_response,
             start_time=start_time,
             jwt=user.access_token,
+            space_id=user.space_id,
         )
 
     async def stream(
@@ -259,6 +260,7 @@ class ChatService:
             graph_response=graph_response,
             start_time=start_time,
             jwt=user.access_token,
+            space_id=user.space_id,
         )
 
     async def stream_normalized(
@@ -525,6 +527,7 @@ class ChatService:
             graph_response=graph_response,
             start_time=start_time,
             jwt=user.access_token,
+            space_id=user.space_id,
         )
 
         final_output = final_response.output
@@ -877,6 +880,7 @@ class ChatService:
         graph_response: AIMessage,
         start_time: float,
         jwt: str,
+        space_id: str | None = None,
     ) -> LLMResponse:
         """Populate an ``LLMResponse`` from the final LangGraph ``AIMessage``."""
 
@@ -928,6 +932,7 @@ class ChatService:
                 request=request,
                 response=response,
                 jwt=jwt,
+                space_id=space_id,
             )
 
         return response

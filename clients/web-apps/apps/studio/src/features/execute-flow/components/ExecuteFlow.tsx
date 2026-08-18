@@ -14,6 +14,7 @@ import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { getAvailableCredits } from "@/features/available-credits/available-credits-apis";
+import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
 import { useSaveFlow } from "@/features/react-flow/hooks/useSaveFlow";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
@@ -96,6 +97,9 @@ const ExecuteFlow = () => {
         setShowRunResults(true);
       }
       queryClient.invalidateQueries({ queryKey: ["AGENT_JOB_EXECUTION"] });
+      // Credits are consumed server-side when the job finishes; refresh the
+      // header balance so it updates without needing a manual page reload.
+      queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
     },
     (notification) => {
       console.log("Job progress:", notification);

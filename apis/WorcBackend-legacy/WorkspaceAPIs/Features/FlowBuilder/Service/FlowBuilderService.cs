@@ -151,9 +151,13 @@ public class FlowBuilderService : IFlowBuilderService
 
         try
         {
-            // Retrieve the flow and ensure it exists
+            // Retrieve the flow and ensure it exists.
+            // A flow ID is globally unique within a tenant, so the lookup is
+            // intentionally NOT scoped to the current space query filter. Space
+            // access is enforced separately via GetResourceAccessAsync below.
             var flow = await _unitOfWork.FlowRepo
                 .GetByConditionAsync(w => w.Id == flowId)
+                .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
             if (flow == null)
@@ -182,7 +186,9 @@ public class FlowBuilderService : IFlowBuilderService
                 return serviceResponse;
             }
 
-            // Attempt to retrieve the latest flow version based on provided conditions
+            // Attempt to retrieve the latest flow version based on provided conditions.
+            // Like the flow, the version lookup is not scoped to the current space
+            // query filter because access has already been validated above.
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w =>
                     (!versionId.HasValue || w.Id == versionId) &&
@@ -198,6 +204,7 @@ public class FlowBuilderService : IFlowBuilderService
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.Flow)
+                .IgnoreQueryFilters()
                 .OrderByDescending(o => o.CreatedOn) // Ensure the latest version is retrieved
                 .FirstOrDefaultAsync();
 
