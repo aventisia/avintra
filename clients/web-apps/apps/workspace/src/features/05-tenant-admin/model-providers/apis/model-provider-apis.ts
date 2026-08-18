@@ -49,28 +49,6 @@ export const getProviderModels = (providerType: string, credentialId: string) =>
 };
 
 /**
- * Ollama model as returned by the on-prem Ollama endpoint.
- */
-export interface OllamaModelDto {
-  name: string;
-  model?: string | null;
-  modifiedAt?: string;
-  size?: number;
-  digest?: string;
-}
-
-/**
- * Retrieves the list of models available from an Ollama server at the given URL.
- */
-export const getOllamaModels = (providerUrl: string) => {
-  return axiosInstance
-    .get<IHttpResponse<OllamaModelDto[]>>(
-      `${import.meta.env.VITE_WORKSPACE_API_PATH}/onprem-model/ollama/models?providerUrl=${encodeURIComponent(providerUrl)}`,
-    )
-    .then((res) => res.data);
-};
-
-/**
  * Retrieves the list of providers supported by LiteLLM (dynamic) from the LLM
  * pipeline API. Returns raw JSON (not wrapped in IHttpResponse).
  */

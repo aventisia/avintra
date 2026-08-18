@@ -11,10 +11,10 @@ export interface TenantModelProviderDto {
   /** The type of the external model provider. */
   providerType: ModelProviderEnum;
 
-  /** The identifier of the vault credential associated with the provider. Null for URL-based providers (e.g. Ollama). */
+  /** The identifier of the vault credential associated with the provider. */
   credentialId: string | null;
 
-  /** The base URL for self-hosted providers (e.g. Ollama). Null/empty for credential-based providers. */
+  /** Deprecated. Base URL for self-hosted providers. Retained for backwards compatibility. */
   providerUrl?: string | null;
 
   /** The list of model identifiers enabled for this provider. */

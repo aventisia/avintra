@@ -14,7 +14,6 @@ import { useMemo, useState } from "react";
 
 import {
   getProviderIcon,
-  isUrlBasedProvider,
   modelProviderDefinitions,
 } from "../constants/model-provider-definitions";
 import { useFetchModelProviders } from "../hooks/useFetchModelProviders";
@@ -113,11 +112,6 @@ export const ModelProviders = () => {
 
                 {/* Fixed-height content: models are constrained to a single line */}
                 <CardContent className="mt-3 h-14 flex-1 p-0">
-                  {isUrlBasedProvider(provider.value) && config?.providerUrl ? (
-                    <p className="mb-1 truncate text-xs text-muted-foreground">
-                      {config.providerUrl}
-                    </p>
-                  ) : null}
                   {enabledCount > 0 ? (
                     <div className="flex h-6 items-center gap-1.5">
                       {enabledModelIds.slice(0, 3).map((modelId) => (

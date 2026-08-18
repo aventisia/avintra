@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Hosting;
+
 namespace WorkspaceAPIs.Services;
 
 /// <summary>
@@ -29,11 +31,38 @@ public class NotificationEventService : INotificationEventService
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
 
+    /// <summary>
+    /// Determines whether automatic notifications may be sent for the current environment.
+    /// Automatic notifications (Low Credit, Subscription renewal, and Agent published) are
+    /// sent only in the Production environment. The environment is derived from the
+    /// <c>ASPNETCORE_ENVIRONMENT</c> environment variable.
+    /// </summary>
+    private bool CanSendAutomaticNotifications()
+    {
+        var isProduction = string.Equals(
+            Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            "Production",
+            StringComparison.OrdinalIgnoreCase);
+
+        if (isProduction)
+        {
+            return true;
+        }
+
+        _logger.LogInformation("Automatic notifications are suppressed outside the Production environment.");
+        return false;
+    }
+
     /// <inheritdoc />
     public async Task NotifyAgentPublishedAsync(Guid tenantId, Guid agentId, string agentName)
     {
         try
         {
+            if (!CanSendAutomaticNotifications())
+            {
+                return;
+            }
+
             if (!await IsNotificationEnabledAsync(tenantId, s => s.PublishAgent))
             {
                 _logger.LogInformation("PublishAgent notifications are disabled for tenant {TenantId}; skipping.", tenantId);
@@ -90,6 +119,11 @@ public class NotificationEventService : INotificationEventService
     {
         try
         {
+            if (!CanSendAutomaticNotifications())
+            {
+                return;
+            }
+
             if (!await IsNotificationEnabledAsync(tenantId, s => s.LowCredits))
             {
                 _logger.LogInformation("LowCredit notifications are disabled for tenant {TenantId}; skipping.", tenantId);
@@ -128,6 +162,11 @@ public class NotificationEventService : INotificationEventService
     {
         try
         {
+            if (!CanSendAutomaticNotifications())
+            {
+                return;
+            }
+
             if (!await IsNotificationEnabledAsync(tenantId, s => s.Subscription))
             {
                 _logger.LogInformation("Subscription notifications are disabled for tenant {TenantId}; skipping.", tenantId);
