@@ -56,10 +56,14 @@ const UsersList = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-2xs text-muted-foreground">
-                    {" "}
-                    {val.accessLevel?.replace(/([A-Z])/g, " $1")}
-                  </span>
+                  {/* The access level is not meaningful for Space resources (a user
+                      is simply a member of the space), so hide it for them. */}
+                  {!isSpaceResource && (
+                    <span className="text-2xs text-muted-foreground">
+                      {" "}
+                      {val.accessLevel?.replace(/([A-Z])/g, " $1")}
+                    </span>
+                  )}
                   {isSpaceResource ? (
                     <RemoveUserIconButton id={val.id || ""} />
                   ) : (
