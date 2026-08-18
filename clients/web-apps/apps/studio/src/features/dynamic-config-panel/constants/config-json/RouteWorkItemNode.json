@@ -1,0 +1,42 @@
+{
+  "name": "RouteWorkItemNode",
+  "label": "Route Work Item",
+  "description": "Routes a work item from one queue to another.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkItemId",
+      "label": "WorkItem ID",
+      "description": "Enter the unique identifier of the work item to route.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "queue-select",
+      "name": "QueueName",
+      "label": "Select Queue",
+      "description": "Select the destination queue to which the work item will be routed.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns whether the work item was routed successfully.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

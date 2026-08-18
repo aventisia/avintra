@@ -1,0 +1,180 @@
+{
+  "name": "ExtractTextFromPdfNode",
+  "label": "Extract Text from Pdf",
+  "description": "Extracts text or images from a Pdf file based on selection.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourcePdfPath",
+      "label": "Pdf File",
+      "description": "The path to the source Pdf file.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "PageSelection",
+      "label": "Page Selection Mode",
+      "description": "Select how to choose pages for extraction: All, Single, or Range.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "All",
+          "value": "All",
+          "description": "Extract text and images from all pages."
+        },
+        {
+          "label": "Single",
+          "value": "Single",
+          "description": "Extract text and images from a single page."
+        },
+        {
+          "label": "Range",
+          "value": "Range",
+          "description": "Extract text and images from a range of pages."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ExtractionType",
+      "label": "Extraction Type",
+      "description": "Select the type of extraction: Text, Images, or Both.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Text",
+          "value": "Text",
+          "description": "Extract only text from the Pdf."
+        },
+        {
+          "label": "Images",
+          "value": "Images",
+          "description": "Extract only images from the Pdf."
+        },
+        {
+          "label": "Both",
+          "value": "Both",
+          "description": "Extract both text and images from the Pdf."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PageNumber",
+      "label": "Page Number (for Single)",
+      "description": "The specific page number to extract from. Only used if Page Selection is set to Single.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "PageSelection",
+            "equals": "Single"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FromPageNumber",
+      "label": "From Page Number (for Range)",
+      "description": "The starting page number for extraction. Only used if Page Selection is set to Range.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "PageSelection",
+            "equals": "Range"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ToPageNumber",
+      "label": "To Page Number (for Range)",
+      "description": "The ending page number for extraction. Only used if Page Selection is set to Range.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "PageSelection",
+            "equals": "Range"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "password",
+      "name": "Password",
+      "label": "Password",
+      "description": "Optional password for encrypted Pdf files. Leave empty if not required.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OutputFolderPath",
+      "label": "Output Folder Path",
+      "description": "The folder where extracted images will be saved.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "op": 1,
+        "conditions": [
+          {
+            "field": "ExtractionType",
+            "equals": "Images"
+          },
+          {
+            "field": "ExtractionType",
+            "equals": "Both"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ExtractedText",
+      "label": "Extracted Text",
+      "description": "Returns the extracted text from the Pdf.",
+      "defaultValue": {
+        "value": "ExtractedText",
+        "enabled": true
+      },
+      "required": false,
+      "renderIf": {
+        "op": 1,
+        "conditions": [
+          {
+            "field": "ExtractionType",
+            "equals": "Text"
+          },
+          {
+            "field": "ExtractionType",
+            "equals": "Both"
+          }
+        ]
+      }
+    }
+  ]
+}

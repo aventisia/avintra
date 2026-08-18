@@ -1,4 +1,4 @@
-using System.Media;
+﻿using System.Media;
 
 namespace NodeLibrary.WorkstationNodes;
 
@@ -7,7 +7,7 @@ namespace NodeLibrary.WorkstationNodes;
 public class PlaySoundNode : BaseNode
 {
     [DisplayName("Play Sound From"), Description("Specifies whether to play a system sound or a custom WAV file.")]
-    public required InArgument<SoundSourceEnum> SoundSource { get; set; }
+    public required InArgument<SoundSourceEnum> SoundSource { get; set; } = new InArgument<SoundSourceEnum>(SoundSourceEnum.System);
 
     [DisplayName("System Sound"), Description("The name of the system sound to play (e.g., Asterisk, Beep, Exclamation).")]
     [RenderIfCondition(nameof(SoundSource), SoundSourceEnum.System)]

@@ -1,0 +1,123 @@
+{
+  "name": "LookupRangeInExcelWorksheetNode",
+  "label": "Lookup Range in Excel Worksheet",
+  "description": "Looks up a value in a specified range and returns the corresponding value from another column or the cell address.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet in which to perform the lookup.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "LookupValue",
+      "label": "Lookup Value",
+      "description": "The value to look for in the search column.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SearchColumn",
+      "label": "Search Column",
+      "description": "The column letter or number to search in.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row of the range to search.",
+      "defaultValue": 1,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndRow",
+      "label": "End Row",
+      "description": "The ending row of the range to search. If 0, uses the last row with data.",
+      "defaultValue": 0,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumn",
+      "label": "Result Column",
+      "description": "The column from which to return the result value. If empty, returns the found cell address.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "MatchCase",
+      "label": "Match Case",
+      "description": "Whether the lookup should be case-sensitive.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "FoundValue",
+      "label": "Found Value",
+      "description": "The value found in the result column corresponding to the lookup value.",
+      "defaultValue": {
+        "value": "FoundValue",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "FoundRow",
+      "label": "Found Row",
+      "description": "The row number where the lookup value was found.",
+      "defaultValue": {
+        "value": "FoundRow",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "FoundCellAddress",
+      "label": "Found Cell Address",
+      "description": "The cell address where the lookup value was found.",
+      "defaultValue": {
+        "value": "FoundCellAddress",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ValueFound",
+      "label": "Value Found",
+      "description": "Indicates whether the lookup value was found.",
+      "defaultValue": {
+        "value": "ValueFound",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-using NodeLibrary.CryptographyNodes.Enums;
+﻿using NodeLibrary.CryptographyNodes.Enums;
 using System.Security.Cryptography;
 
 namespace NodeLibrary.CryptographyNodes;
@@ -14,7 +14,7 @@ public class EncryptFromFileWithAesNode : BaseNode
     public required InArgument<string> Key { get; set; }
 
     [DisplayName("Encoding Format"), Description("Encoding used for the encrypted content: Base64 or Hex.")]
-    public required InArgument<EncodingFormatEnum> EncodingFormat { get; set; }
+    public required InArgument<EncodingFormatEnum> EncodingFormat { get; set; } = new InArgument<EncodingFormatEnum>(EncodingFormatEnum.Base64);
 
     [DisplayName("Output File Path"), Description("The path where the encrypted file should be saved.")]
     public required InArgument<string> OutputFilePath { get; set; }

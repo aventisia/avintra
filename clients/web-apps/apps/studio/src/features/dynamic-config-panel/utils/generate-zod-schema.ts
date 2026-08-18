@@ -323,7 +323,11 @@ function getSkillsConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     return [];
   }, z.array(z.string()));
 
-  if (field.defaultValue && typeof field.defaultValue === "object" && "skills" in field.defaultValue) {
+  if (
+    field.defaultValue &&
+    typeof field.defaultValue === "object" &&
+    "skills" in field.defaultValue
+  ) {
     const defaultSkills = field?.defaultValue?.skills;
     const normalizedSkills = Array.isArray(defaultSkills)
       ? defaultSkills
@@ -341,7 +345,6 @@ function getSkillsConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
     skills: skillsSchema,
   });
 }
-
 
 function getMemoryConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   // Start by defining the schema without default values

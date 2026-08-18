@@ -11,7 +11,7 @@ public class CopyExcelWorksheetNode : BaseNode
     public required InArgument<object> SourceWorkbook { get; set; }
 
     [DisplayName("Copy Mode"), Description("Specifies how to identify the worksheet to copy (by Name or by Index).")]
-    public required InArgument<WorksheetCopyModeEnum> CopyMode { get; set; }
+    public required InArgument<WorksheetCopyModeEnum> CopyMode { get; set; } = new InArgument<WorksheetCopyModeEnum>(WorksheetCopyModeEnum.Name);
 
     [DisplayName("Worksheet Name"), Description("The name of the worksheet to copy (required if 'Copy Mode' is 'Name').")]
     [RenderIfCondition(nameof(CopyMode), WorksheetCopyModeEnum.Name)]

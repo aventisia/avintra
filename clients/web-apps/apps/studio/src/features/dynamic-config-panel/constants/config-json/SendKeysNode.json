@@ -1,0 +1,106 @@
+{
+  "name": "SendKeysNode",
+  "label": "Send Keys",
+  "description": "Sends keys to the specified target (foreground window, UI element, window handle, or title/class).",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Target",
+      "label": "Send Keys To",
+      "description": "Specifies where to send the keys.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Foreground window",
+          "value": "ForegroundWindow",
+          "description": "Sends keys to the currently active window."
+        },
+        {
+          "label": "UI element",
+          "value": "UiElement",
+          "description": "Sends keys to a specific UI element."
+        },
+        {
+          "label": "Window instance/handle",
+          "value": "WindowInstanceHandle",
+          "description": "Sends keys to a window by its handle."
+        },
+        {
+          "label": "Title and/or class",
+          "value": "TitleAndOrClass",
+          "description": "Sends keys to a window by its title and/or class."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "UiElement",
+      "label": "UI Element",
+      "description": "The UI element to send keys to (used when \u0027Send Keys To\u0027 is \u0027UI element\u0027).",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WindowHandle",
+      "label": "Window Handle",
+      "description": "The window handle to send keys to (used when \u0027Send Keys To\u0027 is \u0027Window instance/handle\u0027).",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WindowTitle",
+      "label": "Window Title",
+      "description": "The title of the window to send keys to (used when \u0027Send Keys To\u0027 is \u0027Title and/or class\u0027).",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WindowClass",
+      "label": "Window Class",
+      "description": "The class name of the window to send keys to (used when \u0027Send Keys To\u0027 is \u0027Title and/or class\u0027).",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TextToSend",
+      "label": "Text to Send",
+      "description": "The text or special keys to send.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DelayBetweenKeystrokes",
+      "label": "Delay Between Keystrokes",
+      "description": "Milliseconds to wait between each keystroke.",
+      "defaultValue": 0,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "SendAsHardwareKeys",
+      "label": "Send Text as Hardware Keys",
+      "description": "If true, sends keys using hardware key codes instead of virtual key codes.",
+      "defaultValue": false,
+      "required": false
+    }
+  ]
+}

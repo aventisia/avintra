@@ -1,4 +1,4 @@
-using NodeLibrary.TextNodes.Enums;
+﻿using NodeLibrary.TextNodes.Enums;
 
 namespace NodeLibrary.TextNodes;
 
@@ -10,7 +10,7 @@ public class TrimTextNode : BaseNode
     public required InArgument<string> OriginalText { get; set; }
 
     [DisplayName("Trim Mode"), Description("Specifies whether to trim characters from the beginning, end, or both sides of the text.")]
-    public required InArgument<TrimModeEnum> TrimMode { get; set; }
+    public required InArgument<TrimModeEnum> TrimMode { get; set; } = new InArgument<TrimModeEnum>(TrimModeEnum.TrimStart);
 
     [DisplayName("What to Trim"), Description("A string containing the characters to remove. Leave empty to trim only whitespace (space, tab, newline).")]
     public required InArgument<string> CharactersToTrim { get; set; }

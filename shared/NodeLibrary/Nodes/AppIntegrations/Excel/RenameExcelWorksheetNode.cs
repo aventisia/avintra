@@ -7,10 +7,10 @@ namespace NodeLibrary.ExcelNodes;
 public class RenameExcelWorksheetNode : BaseNode
 {
     [DisplayName("Workbook Instance"), Description("The Excel Workbook containing the worksheet to rename.")]
-    public required InArgument<object> WorksheetInstance { get; set; }
+    public required InArgument<object> WorkbookInstance { get; set; }
 
     [DisplayName("Selection Type"), Description("Specifies how to identify the worksheet: by Name or by Index.")]
-    public required InArgument<WorksheetSelectionTypeEnum> SelectionType { get; set; }
+    public required InArgument<WorksheetSelectionTypeEnum> SelectionType { get; set; } = new InArgument<WorksheetSelectionTypeEnum>(WorksheetSelectionTypeEnum.Name);
 
     [DisplayName("Search Value"), Description("The worksheet name (if selection type is 'Name') or 1-based index (if selection type is 'Index').")]
     public InArgument<string> SearchValue { get; set; } = new InArgument<string>();
@@ -22,7 +22,7 @@ public class RenameExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic workbook = WorksheetInstance.Get(context);
+            dynamic workbook = WorkbookInstance.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance cannot be null.");

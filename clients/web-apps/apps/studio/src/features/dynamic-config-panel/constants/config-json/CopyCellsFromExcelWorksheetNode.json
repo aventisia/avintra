@@ -1,0 +1,137 @@
+{
+  "name": "CopyCellsFromExcelWorksheetNode",
+  "label": "Copy Cells from Excel Worksheet",
+  "description": "Copies a specified range of cells from an Excel worksheet for later use or pasting into another worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet object from which to copy data.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "CopyMode",
+      "label": "Copy Mode",
+      "description": "Specifies how to copy cells: Single Cell, Named Cells, Selection, or Range of Cells.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Single Cell",
+          "value": "SingleCell",
+          "description": "Copies a specific cell by column and row."
+        },
+        {
+          "label": "Named Cells",
+          "value": "NamedCells",
+          "description": "Copies values from named ranges."
+        },
+        {
+          "label": "Selection",
+          "value": "Selection",
+          "description": "Copies the currently selected range."
+        },
+        {
+          "label": "Range of Cells",
+          "value": "RangeOfCells",
+          "description": "Copies a specified range (e.g., A1:B10)."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartColumn",
+      "label": "Start Column",
+      "description": "The starting column of the range to copy.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "CopyMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row of the range to copy.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "CopyMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndColumn",
+      "label": "End Column",
+      "description": "The ending column of the range to copy.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "CopyMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndRow",
+      "label": "End Row",
+      "description": "The ending row of the range to copy.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "CopyMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Name",
+      "label": "Name",
+      "description": "The name of the named range to copy.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "CopyMode",
+            "equals": "NamedCells"
+          }
+        ]
+      }
+    }
+  ]
+}

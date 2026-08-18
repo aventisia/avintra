@@ -1,0 +1,21 @@
+{
+  "name": "DeleteFolderNode",
+  "label": "Delete Folder",
+  "description": "Removes the specified folder and its contents from the file system.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FolderPath",
+      "label": "Folder to Delete",
+      "description": "Full path of the folder that you want to delete.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

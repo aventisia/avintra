@@ -1,0 +1,63 @@
+{
+  "name": "QueryExcelWorksheetNode",
+  "label": "Query Excel Worksheet",
+  "description": "Executes a SQL query against an Excel worksheet using OLE DB and returns the result as a DataTable.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkbookPath",
+      "label": "Workbook Path",
+      "description": "The file path of the Excel workbook to query.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SqlQuery",
+      "label": "SQL Query",
+      "description": "The SQL query to execute against the Excel file. Use worksheet names like [Sheet1$] as table names.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "HasHeaders",
+      "label": "Has Headers",
+      "description": "Whether the first row contains column headers.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "QueryResult",
+      "label": "Query Result",
+      "description": "The result of the query as a DataTable.",
+      "defaultValue": {
+        "value": "QueryResult",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "RowCount",
+      "label": "Row Count",
+      "description": "The number of rows returned by the query.",
+      "defaultValue": {
+        "value": "RowCount",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

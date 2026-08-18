@@ -263,6 +263,12 @@ public static class NodeToJsonHelper
                     return enumValue.ToString();
                 }
 
+                // IntPtr cannot be serialized by System.Text.Json; represent as a string
+                if (argumentValue is IntPtr ptr)
+                {
+                    return ptr == IntPtr.Zero ? "" : ptr.ToString();
+                }
+
                 return argumentValue;
             }
         }

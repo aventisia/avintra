@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using NodeLibrary.DataTableNodes.Enums;
 
 namespace NodeLibrary.DataTableNodes;
@@ -11,7 +11,7 @@ public sealed class DeleteEmptyRowsFromDataTableNode : BaseNode
     public required InArgument<DataTable> DataTable { get; set; }
 
     [DisplayName("Empty Row Mode"), Description("Specifies how to detect empty rows.")]
-    public required InArgument<DataTableEmptyRowModeEnum> EmptyRowMode { get; set; }
+    public required InArgument<DataTableEmptyRowModeEnum> EmptyRowMode { get; set; } = new InArgument<DataTableEmptyRowModeEnum>(DataTableEmptyRowModeEnum.AllEmpty);
 
     [DisplayName("Column Names To Check"), Description("List of column names to check for emptiness (required if 'Empty Row Mode' is 'Based on Specific Columns').")]
     [RenderIfCondition(nameof(EmptyRowMode), DataTableEmptyRowModeEnum.SpecificColumns)]

@@ -1,0 +1,68 @@
+{
+  "name": "GetWindowNode",
+  "label": "Get Window",
+  "description": "Finds a desktop window by name using UI Automation.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WindowName",
+      "label": "Window Name",
+      "description": "The name (title) of the window to find.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "MatchMode",
+      "label": "Name Match Mode",
+      "description": "How to match the window name. Options: Equals, Contains, Starts With.",
+      "defaultValue": "Equals",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Equals",
+          "value": "Equals",
+          "description": "Match the name exactly."
+        },
+        {
+          "label": "Contains",
+          "value": "Contains",
+          "description": "Match if the name contains the specified text."
+        },
+        {
+          "label": "Starts With",
+          "value": "StartsWith",
+          "description": "Match if the name starts with the specified text."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MaxWaitTime",
+      "label": "Max Wait Time (seconds)",
+      "description": "Maximum time to wait for the window (in seconds).",
+      "defaultValue": 5,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WindowElement",
+      "label": "Automation Element",
+      "description": "The found AutomationElement for the window.",
+      "defaultValue": {
+        "value": "WindowElement",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

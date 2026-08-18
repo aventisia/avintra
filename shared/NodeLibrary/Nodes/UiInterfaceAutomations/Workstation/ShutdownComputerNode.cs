@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace NodeLibrary.WorkstationNodes;
 
@@ -7,7 +7,7 @@ namespace NodeLibrary.WorkstationNodes;
 public class ShutdownComputerNode : BaseNode
 {
     [DisplayName("Shutdown Mode"), Description("The shutdown mode (e.g., power off, restart, sleep, hibernate).")]
-    public required InArgument<ShutdownModeEnum> Mode { get; set; }
+    public required InArgument<ShutdownModeEnum> Mode { get; set; } = new InArgument<ShutdownModeEnum>(ShutdownModeEnum.PowerOff);
 
     protected override void Execute(INodeContext context)
     {

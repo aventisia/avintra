@@ -1,0 +1,33 @@
+{
+  "name": "RunJavaScriptNode",
+  "label": "Run JavaScript",
+  "description": "Executes some custom JavaScript code and retrieves its output into a variable.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "code-editor",
+      "name": "ScriptCode_javascript",
+      "label": "JavaScript Code",
+      "description": "The JavaScript code to execute. Can be inline code, a file path, a URL, or a Base64 data URI.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ScriptOutput",
+      "label": "Script Output",
+      "description": "Returns the output of the script.",
+      "defaultValue": {
+        "value": "ScriptOutput",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

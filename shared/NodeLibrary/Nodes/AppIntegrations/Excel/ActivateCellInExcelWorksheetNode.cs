@@ -11,7 +11,7 @@ public class ActivateCellInExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Activation Mode"), Description("Choose how to activate the cell: absolutely, relatively, or via named range.")]
-    public required InArgument<ActivationModeEnum> ActivationMode { get; set; }
+    public required InArgument<ActivationModeEnum> ActivationMode { get; set; } = new InArgument<ActivationModeEnum>(ActivationModeEnum.Absolute);
 
     [DisplayName("Column"), Description("The column letter (e.g., 'A', 'B') or number of the target cell.")]
     [RenderIfCondition(nameof(ActivationMode), ActivationModeEnum.Absolute)]

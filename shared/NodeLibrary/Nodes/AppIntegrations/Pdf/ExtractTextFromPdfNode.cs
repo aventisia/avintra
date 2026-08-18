@@ -1,4 +1,4 @@
-using UglyToad.PdfPig;
+﻿using UglyToad.PdfPig;
 using Page = UglyToad.PdfPig.Content.Page;
 
 namespace NodeLibrary.PdfNodes;
@@ -11,10 +11,10 @@ public class ExtractTextFromPdfNode : BaseNode
     public required InArgument<string> SourcePdfPath { get; set; }
 
     [DisplayName("Page Selection Mode"), Description("Select how to choose pages for extraction: All, Single, or Range.")]
-    public required InArgument<PdfPageSelectionModeEnum> PageSelection { get; set; }
+    public required InArgument<PdfPageSelectionModeEnum> PageSelection { get; set; } = new InArgument<PdfPageSelectionModeEnum>(PdfPageSelectionModeEnum.All);
 
     [DisplayName("Extraction Type"), Description("Select the type of extraction: Text, Images, or Both.")]
-    public required InArgument<PdfExtractionTypeEnum> ExtractionType { get; set; }
+    public required InArgument<PdfExtractionTypeEnum> ExtractionType { get; set; } = new InArgument<PdfExtractionTypeEnum>(PdfExtractionTypeEnum.Text);
 
     [DisplayName("Page Number (for Single)"), Description("The specific page number to extract from. Only used if Page Selection is set to Single.")]
     [RenderIfCondition(nameof(PageSelection), PdfPageSelectionModeEnum.Single)]

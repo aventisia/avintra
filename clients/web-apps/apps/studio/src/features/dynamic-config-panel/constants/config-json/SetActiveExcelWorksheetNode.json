@@ -1,0 +1,63 @@
+{
+  "name": "SetActiveExcelWorksheetNode",
+  "label": "Set Active Excel Worksheet",
+  "description": "Sets the active (selected) worksheet in an Excel workbook by name or index.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkbookInstance",
+      "label": "Workbook Instance",
+      "description": "The Excel Workbook in which to set the active worksheet.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SelectionType",
+      "label": "Selection Type",
+      "description": "Specifies how to identify the worksheet: by Name or by Index.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Name",
+          "value": "Name",
+          "description": "Select worksheet by its name."
+        },
+        {
+          "label": "Index",
+          "value": "Index",
+          "description": "Select worksheet by its 1-based index."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SearchValue",
+      "label": "Search Value",
+      "description": "The worksheet name (if selection type is \u0027Name\u0027) or 1-based index (if selection type is \u0027Index\u0027).",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The worksheet that was activated.",
+      "defaultValue": {
+        "value": "WorksheetInstance",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

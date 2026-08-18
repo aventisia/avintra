@@ -1,4 +1,4 @@
-using NodeLibrary.CryptographyNodes.Enums;
+﻿using NodeLibrary.CryptographyNodes.Enums;
 using System.Security.Cryptography;
 
 namespace NodeLibrary.CryptographyNodes;
@@ -11,7 +11,7 @@ public class HashFromFileNode : BaseNode
     public required InArgument<string> FilePath { get; set; }
 
     [DisplayName("Hashing Algorithm"), Description("The algorithm to use for hashing (SHA256, SHA512, or MD5)")]
-    public required InArgument<HashAlgorithmEnum> Algorithm { get; set; }
+    public required InArgument<HashAlgorithmEnum> Algorithm { get; set; } = new InArgument<HashAlgorithmEnum>(HashAlgorithmEnum.Md5);
 
     [DisplayName("Hashed File Content"), Description("The hashed content of the file")]
     public OutArgument<string> HashedContent { get; set; } = new OutArgument<string>();

@@ -1,0 +1,30 @@
+{
+  "name": "InsertColumnToExcelWorksheetNode",
+  "label": "Insert Column to Excel Worksheet",
+  "description": "Inserts a new column at the specified position in an Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet in which to insert the column.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Column",
+      "label": "Column",
+      "description": "The column letter or index where the new column will be inserted. Existing columns shift to the right.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

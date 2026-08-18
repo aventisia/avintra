@@ -1,4 +1,4 @@
-using UglyToad.PdfPig;
+﻿using UglyToad.PdfPig;
 using UglyToad.PdfPig.Writer;
 
 namespace NodeLibrary.PdfNodes;
@@ -14,7 +14,7 @@ public class ExtractPdfPagesFromOldToNewPdfNode : BaseNode
     public required InArgument<string> NewPdfPath { get; set; }
 
     [DisplayName("Page Selection Mode"), Description("The mode for selecting pages to extract: All, Single, or Range.")]
-    public required InArgument<PageSelectionModeEnum> PageSelection { get; set; }
+    public required InArgument<PageSelectionModeEnum> PageSelection { get; set; } = new InArgument<PageSelectionModeEnum>(PageSelectionModeEnum.All);
 
     [DisplayName("Password"), Description("The password for the source Pdf file, if it is encrypted. Leave empty if not applicable.")]
     public InArgument<SecureString> Password { get; set; } = new InArgument<SecureString>();

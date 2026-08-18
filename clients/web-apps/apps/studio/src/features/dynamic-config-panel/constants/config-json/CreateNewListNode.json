@@ -1,0 +1,33 @@
+{
+  "name": "CreateNewListNode",
+  "label": "Create New List",
+  "description": "Creates a new empty list to be used in other activities.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ItemToAdd",
+      "label": "Item To Add",
+      "description": "A single item or comma-separated values to add to the list.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "NewList",
+      "label": "New List",
+      "description": "The newly created empty list.",
+      "defaultValue": {
+        "value": "NewList",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

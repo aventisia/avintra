@@ -1,0 +1,54 @@
+{
+  "name": "ValidatePdfExistanceNode",
+  "label": "Validate Pdf Content",
+  "description": "Validates whether a Pdf file contains text or images based on the selected content type.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "Pdf File Path",
+      "description": "Full file path of the Pdf document to validate.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ContentType",
+      "label": "Pdf Content Type",
+      "description": "Select whether to check for Text or Image content in the Pdf.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Text",
+          "value": "Text",
+          "description": "Validate text from the Pdf."
+        },
+        {
+          "label": "Images",
+          "value": "Image",
+          "description": "Validate image from the Pdf."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Does Pdf Contain",
+      "description": "Returns true if the selected content type exists in the Pdf; otherwise false.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

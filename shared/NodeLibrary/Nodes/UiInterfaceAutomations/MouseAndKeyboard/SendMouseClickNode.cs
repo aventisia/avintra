@@ -1,4 +1,4 @@
-using NodeLibrary.MouseAndKeyboardNodes.Helpers;
+﻿using NodeLibrary.MouseAndKeyboardNodes.Helpers;
 
 namespace NodeLibrary.MouseAndKeyboardNodes;
 
@@ -7,7 +7,7 @@ namespace NodeLibrary.MouseAndKeyboardNodes;
 public class SendMouseClickNode : BaseNode
 {
     [DisplayName("Mouse Event to Send"), Description("The type of mouse event to send (e.g., Left Click, Right Click).")]
-    public required InArgument<MouseEventEnum> MouseEvent { get; set; }
+    public required InArgument<MouseEventEnum> MouseEvent { get; set; } = new InArgument<MouseEventEnum>(MouseEventEnum.LeftClick);
 
     [DisplayName("Wait"), Description("Milliseconds to wait before sending the mouse event.")]
     public InArgument<int> WaitBeforeSending { get; set; } = new InArgument<int>(0);

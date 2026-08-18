@@ -1,0 +1,33 @@
+{
+  "name": "ConvertBase64ToTextNode",
+  "label": "Convert Base64 to Text",
+  "description": "Converts a Base64-encoded string to plain text.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Base64String",
+      "label": "Base64 String",
+      "description": "The Base64-encoded string to convert.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "PlainText",
+      "label": "Plain Text",
+      "description": "Returns the converted plain text.",
+      "defaultValue": {
+        "value": "PlainText",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

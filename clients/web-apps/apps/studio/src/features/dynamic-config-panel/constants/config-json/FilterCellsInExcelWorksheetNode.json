@@ -1,0 +1,145 @@
+{
+  "name": "FilterCellsInExcelWorksheetNode",
+  "label": "Filter Cells in Excel Worksheet",
+  "description": "Applies a filter to a specified range of cells in the provided Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet on which to apply the filter.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "FilterMode",
+      "label": "Filter Mode",
+      "description": "The filter mode to apply.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Equals",
+          "value": "IsEqualTo",
+          "description": "Filters cells that equal the specified value."
+        },
+        {
+          "label": "Does Not Equal",
+          "value": "DoesNotEqual",
+          "description": "Filters cells that do not equal the specified value."
+        },
+        {
+          "label": "Greater Than",
+          "value": "GreaterThan",
+          "description": "Filters cells greater than the specified value."
+        },
+        {
+          "label": "Greater Than or Equal To",
+          "value": "GreaterThanOrEqualTo",
+          "description": "Filters cells greater than or equal to the specified value."
+        },
+        {
+          "label": "Less Than",
+          "value": "LessThan",
+          "description": "Filters cells less than the specified value."
+        },
+        {
+          "label": "Less Than or Equal To",
+          "value": "LessThanOrEqualTo",
+          "description": "Filters cells less than or equal to the specified value."
+        },
+        {
+          "label": "Contains",
+          "value": "Contains",
+          "description": "Filters cells containing the specified text."
+        },
+        {
+          "label": "Does Not Contain",
+          "value": "DoesNotContain",
+          "description": "Filters cells not containing the specified text."
+        },
+        {
+          "label": "Is Between",
+          "value": "IsBetween",
+          "description": "Filters cells between two specified values."
+        },
+        {
+          "label": "Clear Filter",
+          "value": "ClearFilter",
+          "description": "Clears the existing filter from the range."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Column",
+      "label": "Column",
+      "description": "The column letter or number on which to apply the filter.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row of the range to filter.",
+      "defaultValue": 1,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndRow",
+      "label": "End Row",
+      "description": "The ending row of the range to filter. If 0, uses the last row with data.",
+      "defaultValue": 0,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartColumn",
+      "label": "Start Column",
+      "description": "The starting column of the range.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndColumn",
+      "label": "End Column",
+      "description": "The ending column of the range.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilterValue",
+      "label": "Filter Value",
+      "description": "The value to filter by.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilterValue2",
+      "label": "Filter Value 2",
+      "description": "The second value for range filters (between two values).",
+      "defaultValue": "",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "name": "WaitForMouseNode",
+  "label": "Wait for Mouse",
+  "description": "Suspends the execution of the flow until the mouse pointer changes to or from the specified cursor.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "WaitAction",
+      "label": "Wait for Mouse Pointer To",
+      "description": "Specifies whether to wait until the mouse pointer becomes or stops being the specified type.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Become",
+          "value": "Become",
+          "description": "Waits until the mouse pointer becomes the specified type."
+        },
+        {
+          "label": "Become Not",
+          "value": "BecomeNot",
+          "description": "Waits until the mouse pointer stops being the specified type."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "CursorType",
+      "label": "Mouse Pointer",
+      "description": "The type of mouse pointer to wait for (e.g., Arrow, Hourglass).",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Arrow",
+          "value": "Arrow",
+          "description": "Standard arrow cursor."
+        },
+        {
+          "label": "App starting",
+          "value": "AppStarting",
+          "description": "Hourglass cursor indicating application startup."
+        },
+        {
+          "label": "Cross",
+          "value": "Cross",
+          "description": "Crosshair cursor."
+        },
+        {
+          "label": "Hand",
+          "value": "Hand",
+          "description": "Hand cursor typically used for links."
+        },
+        {
+          "label": "Help",
+          "value": "Help",
+          "description": "Help cursor often used for tooltips."
+        },
+        {
+          "label": "I-Beam",
+          "value": "IBeam",
+          "description": "Vertical bar cursor used in text fields."
+        },
+        {
+          "label": "Wait cursor",
+          "value": "WaitCursor",
+          "description": "Hourglass cursor indicating a process is ongoing."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "FailWithTimeoutError",
+      "label": "Fail with Timeout Error",
+      "description": "If true, throws an error if the timeout is reached without the expected cursor change.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TimeoutSeconds",
+      "label": "Duration",
+      "description": "Maximum time in seconds to wait for the cursor change.",
+      "defaultValue": 5,
+      "required": false
+    }
+  ]
+}

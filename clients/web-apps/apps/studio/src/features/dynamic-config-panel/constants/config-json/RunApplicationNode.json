@@ -1,0 +1,140 @@
+{
+  "name": "RunApplicationNode",
+  "label": "Run Application",
+  "description": "Executes an application or opens a document by executing the associated application.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ApplicationPath",
+      "label": "Application path",
+      "description": "The path to the application or document to execute.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "CommandLineArguments",
+      "label": "Command line arguments",
+      "description": "Optional parameters to control how the application starts (e.g., a file to open or a silent mode flag). Example: \u0022C:\\report.xlsx\u0022 or \u0022--input=data.csv --quiet\u0022.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkingDirectory",
+      "label": "Working Directory",
+      "description": "The folder the application uses as its \u0027current location\u0027 when running. If left empty, it defaults to the application\u0027s own folder. Required only if the app needs to access files like config.json or data.csv relative to a specific path.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "WindowStyle",
+      "label": "Window style",
+      "description": "Specifies how the application window should be displayed.",
+      "defaultValue": "Normal",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Hidden",
+          "value": "Hidden",
+          "description": "The window is hidden (not visible)."
+        },
+        {
+          "label": "Normal",
+          "value": "Normal",
+          "description": "The window is shown in normal size and position."
+        },
+        {
+          "label": "Minimized",
+          "value": "Minimized",
+          "description": "The window is displayed as a minimized window."
+        },
+        {
+          "label": "Maximized",
+          "value": "Maximized",
+          "description": "The window is displayed as a maximized window."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "AfterApplicationLaunch",
+      "label": "After application launch",
+      "description": "Specifies the behavior after launching the application.",
+      "defaultValue": "ContinueImmediately",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Continue Immediately",
+          "value": "ContinueImmediately",
+          "description": "Continue workflow execution immediately after launching the application."
+        },
+        {
+          "label": "Wait for Application to Load",
+          "value": "WaitForApplicationToLoad",
+          "description": "Wait until the launched application has fully loaded before continuing."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Timeout",
+      "label": "Timeout",
+      "description": "The maximum time (in seconds) to wait for the application to complete.",
+      "defaultValue": 0,
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "AfterApplicationLaunch",
+            "equals": "ContinueImmediately"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "AppProcessId",
+      "label": "AppProcessId",
+      "description": "The process ID of the launched application.",
+      "defaultValue": {
+        "value": "AppProcessId",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "AppExitCode",
+      "label": "AppExitCode",
+      "description": "The exit code of the application if it completes.",
+      "defaultValue": {
+        "value": "AppExitCode",
+        "enabled": true
+      },
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "AfterApplicationLaunch",
+            "equals": "ContinueImmediately"
+          }
+        ]
+      }
+    }
+  ]
+}

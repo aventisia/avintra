@@ -8,14 +8,14 @@ namespace NodeLibrary.DataTableNodes;
 public sealed class DeleteColumnFromDataTableNode : BaseNode
 {
     [DisplayName("Data Table"), Description("The data table to modify.")]
-    public InArgument<DataTable> DataTable { get; set; }
+    public InArgument<DataTable> DataTable { get; set; } = new InArgument<DataTable>();
 
     [DisplayName("Specify Column With"), Description("Specifies whether to delete the column by name or index.")]
     public InArgument<DataTableDeleteColumnByEnum> SpecifyColumnWith { get; set; } = new InArgument<DataTableDeleteColumnByEnum>(DataTableDeleteColumnByEnum.Name);
 
     [DisplayName("Column Name"), Description("The name of the column to delete (required if 'Specify Column With' is 'Name').")]
     [RenderIfCondition(nameof(SpecifyColumnWith), DataTableDeleteColumnByEnum.Name)]
-    public InArgument<string> ColumnName { get; set; }
+    public InArgument<string> ColumnName { get; set; } = new InArgument<string>();
 
     [DisplayName("Column Index"), Description("The zero-based index of the column to delete (required if 'Specify Column With' is 'Index').")]
     [RenderIfCondition(nameof(SpecifyColumnWith), DataTableDeleteColumnByEnum.Index)]

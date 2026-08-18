@@ -11,7 +11,7 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Copy Mode"), Description("Specifies how to copy cells: Single Cell, Named Cells, Selection, or Range of Cells.")]
-    public required InArgument<CellCopyModeEnum> CopyMode { get; set; }
+    public required InArgument<CellCopyModeEnum> CopyMode { get; set; } = new InArgument<CellCopyModeEnum>(CellCopyModeEnum.SingleCell);
 
     [DisplayName("Start Column"), Description("The starting column of the range to copy.")]
     [RenderIfCondition(nameof(CopyMode), CellCopyModeEnum.RangeOfCells)]

@@ -1,4 +1,4 @@
-using NodeLibrary.VariablesNodes.Enums;
+﻿using NodeLibrary.VariablesNodes.Enums;
 
 namespace NodeLibrary.VariablesNodes;
 
@@ -7,7 +7,7 @@ namespace NodeLibrary.VariablesNodes;
 public class RemoveItemFromListNode : BaseNode
 {
     [DisplayName("Remove Mode"), Description("Specifies whether to remove by Index or Value.")]
-    public required InArgument<RemoveModeEnum> RemoveMode { get; set; }
+    public required InArgument<RemoveModeEnum> RemoveMode { get; set; } = new InArgument<RemoveModeEnum>(RemoveModeEnum.Index);
 
     [DisplayName("Index To Remove"), Description("The zero-based index of the item to remove.")]
     [RenderIfCondition(nameof(RemoveMode), RemoveModeEnum.Index)]

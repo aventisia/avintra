@@ -1,4 +1,4 @@
-using NodeLibrary.TextNodes.Enums;
+﻿using NodeLibrary.TextNodes.Enums;
 
 namespace NodeLibrary.TextNodes;
 
@@ -10,18 +10,18 @@ public class GetSubtextNode : BaseNode
     public required InArgument<string> OriginalText { get; set; }
 
     [DisplayName("Start Index Type"), Description("Specifies whether to start from the beginning of the text or at a specific character position.")]
-    public required InArgument<StartIndexTypeEnum> StartIndexType { get; set; }
+    public required InArgument<StartIndexTypeEnum> StartIndexType { get; set; } = new InArgument<StartIndexTypeEnum>(StartIndexTypeEnum.StartOfText);
 
     [DisplayName("Start Index"), Description("The zero-based starting position of the substring. Only used if 'Start Index Type' is 'Character Position'.")]
     [RenderIfCondition(nameof(StartIndexType), StartIndexTypeEnum.CharacterPosition)]
-    public InArgument<int> StartIndex { get; set; }
+    public InArgument<int> StartIndex { get; set; } = new InArgument<int>(0);
 
     [DisplayName("Length Type"), Description("Specifies whether to extract a specific number of characters or until the end of the string.")]
     public InArgument<LengthTypeEnum> LengthType { get; set; } = new InArgument<LengthTypeEnum>(LengthTypeEnum.SpecificLength);
 
     [DisplayName("Number of Characters"), Description("The number of characters to extract. Only used if 'Length Type' is 'Specific Length'.")]
     [RenderIfCondition(nameof(LengthType), LengthTypeEnum.SpecificLength)]
-    public InArgument<int> NumberOfCharacters { get; set; }
+    public InArgument<int> NumberOfCharacters { get; set; } = new InArgument<int>(0);
 
     [DisplayName("Substring Result"), Description("Returns the extracted substring.")]
     public OutArgument<string> SubstringResult { get; set; } = new OutArgument<string>();

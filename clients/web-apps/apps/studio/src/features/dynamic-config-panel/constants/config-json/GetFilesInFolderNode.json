@@ -1,0 +1,171 @@
+{
+  "name": "GetFilesInFolderNode",
+  "label": "Retrieve Files in Folder",
+  "description": "Retrieves a list of files from a specified folder with optional filtering, subfolder inclusion, and multi-level sorting.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FolderPath",
+      "label": "Folder path",
+      "description": "The absolute path of the folder to retrieve files from (e.g., \u0027C:\\Documents\\Reports\u0027).",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FileFilter",
+      "label": "File filter",
+      "description": "One or more file patterns separated by semicolons (;). Examples: *.txt;*.pdf;*.docx;invoice_*.xlsx. Default: * (all files).",
+      "defaultValue": "*",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "IncludeSubfolders",
+      "label": "Include subfolders",
+      "description": "When true, includes files from all subdirectories recursively. Default: true.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "FailUponDeniedAccess",
+      "label": "Fail on access denied",
+      "description": "When true, the activity fails if access to any subfolder is denied. When false, inaccessible folders are skipped. Default: true.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SortBy",
+      "label": "Sort by",
+      "description": "Primary sort criterion for the file list. Default: No sort.",
+      "defaultValue": "NoSort",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "No sort",
+          "value": "NoSort",
+          "description": "No sorting applied; files returned in file-system order."
+        },
+        {
+          "label": "Full path",
+          "value": "FullName",
+          "description": "Sort by the complete file path."
+        },
+        {
+          "label": "Root path",
+          "value": "RootPath",
+          "description": "Sort by the root directory (e.g., \u0027C:\\\u0027)."
+        },
+        {
+          "label": "Directory",
+          "value": "Directory",
+          "description": "Sort by the parent directory path."
+        },
+        {
+          "label": "File name",
+          "value": "Name",
+          "description": "Sort by the file name including extension."
+        },
+        {
+          "label": "Name without extension",
+          "value": "NameWithoutExtension",
+          "description": "Sort by the file name excluding the extension."
+        },
+        {
+          "label": "Extension",
+          "value": "Extension",
+          "description": "Sort by the file extension (e.g., \u0027.txt\u0027, \u0027.pdf\u0027)."
+        },
+        {
+          "label": "Size",
+          "value": "Size",
+          "description": "Sort by the file size in bytes."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "Descending",
+      "label": "Descending order",
+      "description": "When true, sorts files in descending order. Default: false (ascending).",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ThenBy",
+      "label": "Then sort by",
+      "description": "Secondary sort criterion applied after the primary sort. Default: No sort.",
+      "defaultValue": "NoSort",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "No sort",
+          "value": "NoSort",
+          "description": "No sorting applied; files returned in file-system order."
+        },
+        {
+          "label": "Full path",
+          "value": "FullName",
+          "description": "Sort by the complete file path."
+        },
+        {
+          "label": "Root path",
+          "value": "RootPath",
+          "description": "Sort by the root directory (e.g., \u0027C:\\\u0027)."
+        },
+        {
+          "label": "Directory",
+          "value": "Directory",
+          "description": "Sort by the parent directory path."
+        },
+        {
+          "label": "File name",
+          "value": "Name",
+          "description": "Sort by the file name including extension."
+        },
+        {
+          "label": "Name without extension",
+          "value": "NameWithoutExtension",
+          "description": "Sort by the file name excluding the extension."
+        },
+        {
+          "label": "Extension",
+          "value": "Extension",
+          "description": "Sort by the file extension (e.g., \u0027.txt\u0027, \u0027.pdf\u0027)."
+        },
+        {
+          "label": "Size",
+          "value": "Size",
+          "description": "Sort by the file size in bytes."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "RetrievedFiles",
+      "label": "Retrieved files",
+      "description": "The list of full file paths that matched the filter and sort criteria.",
+      "defaultValue": {
+        "value": "RetrievedFiles",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

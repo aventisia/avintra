@@ -1,0 +1,168 @@
+{
+  "name": "FindAndReplaceCellsInExcelWorksheetNode",
+  "label": "Find and Replace Cells in Excel Worksheet",
+  "description": "Finds and replaces values in a specified range within an Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet in which to perform find and replace.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FindWhat",
+      "label": "Find What",
+      "description": "The text to find in the worksheet.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ReplaceWith",
+      "label": "Replace With",
+      "description": "The text to replace found values with.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SearchMode",
+      "label": "Search Mode",
+      "description": "Specifies where to search: All Cells, or Range of Cells.",
+      "defaultValue": "AllCells",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Find",
+          "value": "Find",
+          "description": "Locates text in the worksheet."
+        },
+        {
+          "label": "Find and Replace",
+          "value": "FindAndReplace",
+          "description": "Locates and replaces text in the worksheet."
+        },
+        {
+          "label": "All Cells",
+          "value": "AllCells",
+          "description": "Searches all cells in the used range."
+        },
+        {
+          "label": "Range of Cells",
+          "value": "RangeOfCells",
+          "description": "Searches a specified range of cells."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartColumn",
+      "label": "Start Column",
+      "description": "The starting column of the range to search.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SearchMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row of the range to search.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SearchMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndColumn",
+      "label": "End Column",
+      "description": "The ending column of the range to search.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SearchMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndRow",
+      "label": "End Row",
+      "description": "The ending row of the range to search.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SearchMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "MatchCase",
+      "label": "Match Case",
+      "description": "Whether the search should be case-sensitive.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "MatchEntireCell",
+      "label": "Match Entire Cell",
+      "description": "Whether to match the entire cell contents.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ReplacedCount",
+      "label": "Replaced Count",
+      "description": "The number of replacements made.",
+      "defaultValue": {
+        "value": "ReplacedCount",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

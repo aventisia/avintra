@@ -1,4 +1,4 @@
-using NodeLibrary.CryptographyNodes.Enums;
+﻿using NodeLibrary.CryptographyNodes.Enums;
 using System.Security.Cryptography;
 
 namespace NodeLibrary.CryptographyNodes;
@@ -14,7 +14,7 @@ public class DecryptToFileWithAesNode : BaseNode
     public required InArgument<string> Key { get; set; }
 
     [DisplayName("Encoding Format"), Description("Encoding used for the encrypted content: Base64, Hex, or UTF8.")]
-    public required InArgument<EncodingFormatEnum> EncodingFormat { get; set; }
+    public required InArgument<EncodingFormatEnum> EncodingFormat { get; set; } = new InArgument<EncodingFormatEnum>(EncodingFormatEnum.Base64);
 
     [DisplayName("Initialization Vector (IV)"), Description("16-character IV used during encryption. Must match the one used during encryption.")]
     public required InArgument<string> Iv { get; set; }

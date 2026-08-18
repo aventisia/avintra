@@ -1,4 +1,4 @@
-namespace NodeLibrary.VariablesNodes;
+﻿namespace NodeLibrary.VariablesNodes;
 
 [DisplayName("Truncate Number"), Description("Gets the integral or fractional digits of a numeric value, or rounds up/down the value to a specified number of decimal places.")]
 [NodeMetadata(icon: "/assets/Variables.svg")]
@@ -8,7 +8,7 @@ public class TruncateNumberNode : BaseNode
     public required InArgument<double> NumberToTruncate { get; set; }
 
     [DisplayName("Operation"), Description("Specifies how to truncate or round the number.")]
-    public required InArgument<TruncateOperationEnum> Operation { get; set; }
+    public required InArgument<TruncateOperationEnum> Operation { get; set; } = new InArgument<TruncateOperationEnum>(TruncateOperationEnum.GetIntegerPart);
 
     [DisplayName("Decimal Places"), Description("The number of decimal places to round to. Only applicable for rounding operations.")]
     [RenderIfCondition(nameof(Operation), TruncateOperationEnum.Round)]

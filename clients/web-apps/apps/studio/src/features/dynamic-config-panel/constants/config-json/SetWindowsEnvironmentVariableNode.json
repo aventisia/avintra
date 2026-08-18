@@ -1,0 +1,143 @@
+{
+  "name": "SetWindowsEnvironmentVariableNode",
+  "label": "Set windows environment variable",
+  "description": "Sets an environment variable to a given value.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "EnvironmentVariableName",
+      "label": "Environment variable name",
+      "description": "The name of the environment variable to set.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Number of Processors",
+          "value": "NUMBER_OF_PROCESSORS",
+          "description": "Number of Processors"
+        },
+        {
+          "label": "Operating System",
+          "value": "OS",
+          "description": "Operating System"
+        },
+        {
+          "label": "Path",
+          "value": "PATH",
+          "description": "System Path"
+        },
+        {
+          "label": "Path Extensions",
+          "value": "PATHEXT",
+          "description": "Path Extensions"
+        },
+        {
+          "label": "Processor Architecture",
+          "value": "PROCESSOR_ARCHITECTURE",
+          "description": "Processor Architecture"
+        },
+        {
+          "label": "Processor Identifier",
+          "value": "PROCESSOR_IDENTIFIER",
+          "description": "Processor Identifier"
+        },
+        {
+          "label": "Processor Level",
+          "value": "PROCESSOR_LEVEL",
+          "description": "Processor Level"
+        },
+        {
+          "label": "Processor Revision",
+          "value": "PROCESSOR_REVISION",
+          "description": "Processor Revision"
+        },
+        {
+          "label": "PowerShell Module Path",
+          "value": "PSMODULEPATH",
+          "description": "PowerShell Module Path"
+        },
+        {
+          "label": "Temporary Directory",
+          "value": "TEMP",
+          "description": "Temporary Directory"
+        },
+        {
+          "label": "TMP Directory",
+          "value": "TMP",
+          "description": "TMP Directory"
+        },
+        {
+          "label": "Username",
+          "value": "USERNAME",
+          "description": "Current User\u0027s Username"
+        },
+        {
+          "label": "Windows Directory",
+          "value": "WINDIR",
+          "description": "Windows Directory"
+        },
+        {
+          "label": "ZES Enable Sysman",
+          "value": "ZES_ENABLE_SYSMAN",
+          "description": "ZES Enable Sysman"
+        },
+        {
+          "label": "Unknown",
+          "value": "None",
+          "description": "Unknown Environment Variable"
+        },
+        {
+          "label": "OneDrive",
+          "value": "OneDrive",
+          "description": "OneDrive environment variable"
+        },
+        {
+          "label": "OneDrive Commercial",
+          "value": "OneDriveCommercial",
+          "description": "OneDrive Commercial environment variable"
+        },
+        {
+          "label": "OneDrive Consumer",
+          "value": "OneDriveConsumer",
+          "description": "OneDrive Consumer environment variable"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "NewEnvironmentVariableValue",
+      "label": "New environment variable value",
+      "description": "The new value to set for the environment variable.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Type",
+      "label": "Type",
+      "description": "Specifies whether to set the environment variable at the User or System level.",
+      "defaultValue": "User",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "User",
+          "value": "User",
+          "description": "Environment variables specific to the current user."
+        },
+        {
+          "label": "System",
+          "value": "System",
+          "description": "Environment variables for the entire system (machine-level)."
+        }
+      ]
+    }
+  ]
+}

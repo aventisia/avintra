@@ -1,0 +1,51 @@
+{
+  "name": "AddNewWorksheetNode",
+  "label": "Add New Worksheet",
+  "description": "Adds a new worksheet to the specified Excel workbook.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkbookInstance",
+      "label": "Workbook Instance",
+      "description": "The Excel Workbook object where the new worksheet will be added.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "NewWorksheetName",
+      "label": "New Worksheet Name",
+      "description": "The name of the new worksheet to be created.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "AddWorksheetAs",
+      "label": "Add Worksheet As",
+      "description": "Specifies whether to add the worksheet as the first or last sheet.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "First worksheet",
+          "value": "First",
+          "description": "First worksheet"
+        },
+        {
+          "label": "Last worksheet",
+          "value": "Last",
+          "description": "Last worksheet"
+        }
+      ]
+    }
+  ]
+}

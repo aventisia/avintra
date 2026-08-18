@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace NodeLibrary.AppIntegrations.CloudConnectors;
+namespace NodeLibrary.CloudConnectorNodes;
 
 // Internal workflow node responsible for processing Speech-to-Text (STT) transcription requests. This node is intentionally hidden from the node selector.
 public class ProcessSTTRequestNode : BaseNode

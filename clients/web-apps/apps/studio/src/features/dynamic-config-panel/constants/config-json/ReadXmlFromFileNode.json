@@ -1,0 +1,74 @@
+{
+  "name": "ReadXmlFromFileNode",
+  "label": "Read XML from File",
+  "description": "Reads the contents of an XML file into a variable.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The path to the XML file.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "EncodingType",
+      "label": "Encoding Type",
+      "description": "Specifies the encoding to use for reading the XML file.",
+      "defaultValue": "SystemDefault",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "System Default",
+          "value": "SystemDefault",
+          "description": "Uses the system\u0027s default encoding."
+        },
+        {
+          "label": "UTF-8",
+          "value": "UTF8",
+          "description": "Uses UTF-8 encoding."
+        },
+        {
+          "label": "Unicode (UTF-16)",
+          "value": "Unicode",
+          "description": "Uses UTF-16 encoding with a BOM (Byte Order Mark)."
+        },
+        {
+          "label": "Big Endian Unicode",
+          "value": "BigEndianUnicode",
+          "description": "Uses UTF-16 encoding without a BOM."
+        },
+        {
+          "label": "UTF-8 (No BOM)",
+          "value": "UTF8NoBOM",
+          "description": "Uses UTF-8 encoding without a BOM."
+        },
+        {
+          "label": "ASCII",
+          "value": "ASCII",
+          "description": "Uses ASCII encoding."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "XmlDocument",
+      "label": "XML Document Loaded",
+      "description": "Returns the parsed XmlDocument object if the XML file was successfully read and parsed.",
+      "defaultValue": {
+        "value": "XmlDocument",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

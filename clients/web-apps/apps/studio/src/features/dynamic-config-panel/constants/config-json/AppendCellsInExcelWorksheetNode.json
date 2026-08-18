@@ -1,0 +1,94 @@
+{
+  "name": "AppendCellsInExcelWorksheetNode",
+  "label": "Append Range to Excel Worksheet",
+  "description": "Appends a range of data (e.g., from a DataTable) to the active worksheet of an Excel.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet where data will be appended.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The DataTable containing the data to be appended to the worksheet.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "AppendMode",
+      "label": "Append Mode",
+      "description": "Specifies how to append data: To Named Cells or To Active Sheet.",
+      "defaultValue": "ToActiveSheet",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "To Named Cells",
+          "value": "ToNamedCells",
+          "description": "Appends data to a named range."
+        },
+        {
+          "label": "To Active Sheet",
+          "value": "ToActiveSheet",
+          "description": "Appends data to the active worksheet."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Name",
+      "label": "Name",
+      "description": "The name of the named range to which data should be appended.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "AppendMode",
+            "equals": "ToNamedCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "FirstRowHasHeaders",
+      "label": "First Row Has Headers",
+      "description": "If true, skips the first row of the DataTable as it contains headers.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartingColumn",
+      "label": "Starting Column",
+      "description": "The starting column letter where appending should begin (e.g., \u0027A\u0027, \u0027B\u0027, \u0027AA\u0027).",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "AppendMode",
+            "equals": "ToActiveSheet"
+          }
+        ]
+      }
+    }
+  ]
+}

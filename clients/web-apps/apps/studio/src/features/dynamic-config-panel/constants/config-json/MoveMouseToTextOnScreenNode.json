@@ -1,0 +1,11 @@
+{
+  "name": "MoveMouseToTextOnScreenNode",
+  "label": "Move Mouse to Text on Screen (OCR)",
+  "description": "Moves the mouse over text found on the screen using OCR.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": []
+}

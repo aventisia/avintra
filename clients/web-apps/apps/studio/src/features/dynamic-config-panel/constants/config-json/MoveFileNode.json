@@ -1,0 +1,63 @@
+{
+  "name": "MoveFileNode",
+  "label": "Move File(s)",
+  "description": "Moves one or more files into a destination folder. Supports wildcard patterns and multiple paths separated by semicolons.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceFiles",
+      "label": "Source file path(s)",
+      "description": "One or more file paths to move, separated by semicolons. Supports wildcards (e.g., \u0027C:\\Inbox\\*.pdf;C:\\Inbox\\report.docx\u0027).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DestinationFolder",
+      "label": "Destination folder",
+      "description": "The folder where files will be moved to (e.g., \u0027C:\\Archive\\Reports\u0027). Created automatically if it does not exist.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "IfExistsAction",
+      "label": "If file exists",
+      "description": "Action to take when a file with the same name already exists in the destination. Default: Do nothing (skip).",
+      "defaultValue": "DoNothing",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Do nothing",
+          "value": "DoNothing",
+          "description": "Skips the file if it already exists."
+        },
+        {
+          "label": "Overwrite",
+          "value": "Overwrite",
+          "description": "Deletes the existing file and moves the new file."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "MovedFiles",
+      "label": "Moved files",
+      "description": "Returns the list of full paths of all successfully moved files in the destination folder.",
+      "defaultValue": {
+        "value": "MovedFiles",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

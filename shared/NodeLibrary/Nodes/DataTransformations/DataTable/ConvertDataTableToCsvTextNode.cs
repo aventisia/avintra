@@ -20,7 +20,7 @@ public class ConvertDataTableToCsvTextNode : BaseNode
 
     [DisplayName("Custom Columns Separator"), Description("A custom string used to separate columns in the CSV output.")]
     [RenderIfCondition(nameof(UseCustomColumnsSeparator), true)]
-    public InArgument<string> CustomColumnsSeparator { get; set; }
+    public InArgument<string> CustomColumnsSeparator { get; set; } = new InArgument<string>();
 
     [DisplayName("CSV Text Output"), Description("The CSV text representation of the data table.")]
     public OutArgument<string> CsvTextOutput { get; set; } = new OutArgument<string>();

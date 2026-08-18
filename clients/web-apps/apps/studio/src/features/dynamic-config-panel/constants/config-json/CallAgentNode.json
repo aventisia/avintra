@@ -1,0 +1,11 @@
+{
+  "name": "CallAgentNode",
+  "label": "Call Agent",
+  "description": "Use this to call another agent within the current agent",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": []
+}

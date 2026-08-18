@@ -1,0 +1,68 @@
+{
+  "name": "WaitForFileNode",
+  "label": "Wait For File",
+  "description": "Suspends running the flow until a file is created or deleted.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilePath",
+      "label": "File Path",
+      "description": "The full path of the file to wait for.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Mode",
+      "label": "Wait for File to be",
+      "description": "Specifies whether to wait for file creation or deletion.",
+      "defaultValue": "Create",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Created",
+          "value": "Create",
+          "description": "Waits until the file is created."
+        },
+        {
+          "label": "Deleted",
+          "value": "Delete",
+          "description": "Waits until the file is deleted."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "FailWithTimeoutError",
+      "label": "Fail with Timeout Error",
+      "description": "Enable this to fail the activity if the file does not appear within the specified duration.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Duration",
+      "label": "Duration (seconds)",
+      "description": "The maximum time to wait for the file before timing out.",
+      "defaultValue": 5,
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "FailWithTimeoutError",
+            "equals": true
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "name": "GetSpecialFolderPathNode",
+  "label": "Get Special Folder Path",
+  "description": "This activity retrieves the path of a Windows special folder, such as Desktop, My Pictures, Internet Cache, etc.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SpecialFolderName",
+      "label": "Special Folder Name",
+      "description": "Select the name of the special folder whose path you want to retrieve.",
+      "defaultValue": "Desktop",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Desktop",
+          "value": "Desktop",
+          "description": "The desktop directory for the current user."
+        },
+        {
+          "label": "Music",
+          "value": "Music",
+          "description": "The directory containing music files."
+        },
+        {
+          "label": "Templates",
+          "value": "Templates",
+          "description": "The directory containing template files."
+        },
+        {
+          "label": "Application Data",
+          "value": "ApplicationData",
+          "description": "The directory containing application data for all users."
+        },
+        {
+          "label": "Local Application Data",
+          "value": "LocalApplicationData",
+          "description": "The directory containing application data for the current user."
+        },
+        {
+          "label": "Internet Cache",
+          "value": "InternetCache",
+          "description": "The directory containing Internet cache files."
+        },
+        {
+          "label": "Cookies",
+          "value": "Cookies",
+          "description": "The directory containing cookies."
+        },
+        {
+          "label": "History",
+          "value": "History",
+          "description": "The directory containing browsing history."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SpecialFolderPath",
+      "label": "Special Folder Path",
+      "description": "The retrieved path of the special folder.",
+      "defaultValue": {
+        "value": "SpecialFolderPath",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

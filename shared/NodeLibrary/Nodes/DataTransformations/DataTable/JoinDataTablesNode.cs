@@ -1,4 +1,4 @@
-using System.Data;
+﻿using System.Data;
 using NodeLibrary.DataTableNodes.Enums;
 
 namespace NodeLibrary.DataTableNodes;
@@ -14,7 +14,7 @@ public class JoinDataTablesNode : BaseNode
     public required InArgument<DataTable> SecondDataTable { get; set; }
 
     [DisplayName("Join Operation"), Description("Specifies the type of join operation (Inner, Left, Full).")]
-    public required InArgument<DataTableJoinOperationEnum> JoinOperation { get; set; }
+    public required InArgument<DataTableJoinOperationEnum> JoinOperation { get; set; } = new InArgument<DataTableJoinOperationEnum>(DataTableJoinOperationEnum.Inner);
 
     [DisplayName("Join Rules"), Description("Specifies the join condition (e.g., 'FirstTable.ID = SecondTable.ID').")]
     public required InArgument<string> JoinRules { get; set; }

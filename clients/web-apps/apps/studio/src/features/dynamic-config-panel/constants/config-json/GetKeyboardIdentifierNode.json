@@ -1,0 +1,24 @@
+{
+  "name": "GetKeyboardIdentifierNode",
+  "label": "Get Keyboard Identifier",
+  "description": "Retrieves the active keyboard identifier from the machine\u0027s registry.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "KeyboardLayoutId",
+      "label": "Keyboard Layout ID",
+      "description": "The registry key of the active keyboard identifier.",
+      "defaultValue": {
+        "value": "KeyboardLayoutId",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

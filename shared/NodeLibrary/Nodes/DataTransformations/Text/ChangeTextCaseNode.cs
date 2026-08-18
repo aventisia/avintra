@@ -7,10 +7,10 @@ namespace NodeLibrary.TextNodes;
 public class ChangeTextCaseNode : BaseNode
 {
     [DisplayName("Text to Convert"), Description("The text to convert.")]
-    public InArgument<string> TextToConvert { get; set; }
+    public InArgument<string> TextToConvert { get; set; } = new InArgument<string>();
 
     [DisplayName("Convert To"), Description("Specify the target case style: Upper, Lower, Title, or Sentence.")]
-    public InArgument<TextCaseEnum> ConvertTo { get; set; }
+    public InArgument<TextCaseEnum> ConvertTo { get; set; } = new InArgument<TextCaseEnum>(TextCaseEnum.Uppercase);
 
     [DisplayName("Result"), Description("The converted text based on selected case style.")]
     public OutArgument<string> Result { get; set; } = new OutArgument<string>();

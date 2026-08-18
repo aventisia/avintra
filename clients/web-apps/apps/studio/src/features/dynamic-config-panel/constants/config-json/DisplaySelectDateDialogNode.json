@@ -1,0 +1,114 @@
+{
+  "name": "DisplaySelectDateDialogNode",
+  "label": "Display Select Date Dialog",
+  "description": "Displays a dialog box that prompts the user to enter a date or date range.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DialogTitle",
+      "label": "Dialog Title",
+      "description": "The title text displayed at the top of the date dialog.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DialogMessage",
+      "label": "Dialog Message",
+      "description": "The message displayed in the date dialog.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "DialogType",
+      "label": "Dialog Type",
+      "description": "Specifies whether the dialog prompts for a single date or a date range.",
+      "defaultValue": "",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Single Date",
+          "value": "SingleDate",
+          "description": "Allows selection of a single date."
+        },
+        {
+          "label": "Date Range",
+          "value": "DateRange",
+          "description": "Allows selection of a start and end date."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "PromptFor",
+      "label": "Prompt For",
+      "description": "Specifies whether to prompt for date only or date and time.",
+      "defaultValue": "",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Date Only",
+          "value": "DateOnly",
+          "description": "Prompts the user to select a date only."
+        },
+        {
+          "label": "Date and Time",
+          "value": "DateAndTime",
+          "description": "Prompts the user to select both date and time."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DefaultValue",
+      "label": "Default Value",
+      "description": "The default date value displayed.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "KeepOnTop",
+      "label": "Keep Date Selection Dialog Always On Top",
+      "description": "If true, the dialog stays on top of other windows.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SelectedDate",
+      "label": "Selected Date",
+      "description": "The date or date range selected by the user.",
+      "defaultValue": {
+        "value": "SelectedDate",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ButtonPressed",
+      "label": "Button Pressed",
+      "description": "Indicates whether the OK or Cancel button was pressed.",
+      "defaultValue": {
+        "value": "ButtonPressed",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

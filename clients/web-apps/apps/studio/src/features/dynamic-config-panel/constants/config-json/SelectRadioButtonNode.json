@@ -1,0 +1,51 @@
+{
+  "name": "SelectRadioButtonNode",
+  "label": "Select Radio Button",
+  "description": "Selects a radio button in a group by its name or zero-based index.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "IdentificationObjectPath",
+      "label": "UI Element",
+      "description": "The radio button group you want to select from.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RadioButtonIdentifier",
+      "label": "Radio Button Identifier",
+      "description": "The name or zero-based index of the radio button to select.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MaxWaitTime",
+      "label": "Max Wait Time (seconds)",
+      "description": "Maximum time to wait to find the UI element (in seconds).",
+      "defaultValue": 5,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WasSelected",
+      "label": "Was Selected",
+      "description": "True if the radio button was selected successfully, otherwise false.",
+      "defaultValue": {
+        "value": "WasSelected",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

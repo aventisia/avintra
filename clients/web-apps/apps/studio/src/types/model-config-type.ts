@@ -27,4 +27,3 @@ export interface KBConfigType {
 export interface SkillsConfigType {
   skills: string[];
 }
-

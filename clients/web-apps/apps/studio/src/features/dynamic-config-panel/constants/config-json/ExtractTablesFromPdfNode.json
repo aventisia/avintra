@@ -1,0 +1,33 @@
+{
+  "name": "ExtractTablesFromPdfNode",
+  "label": "Extract Tables From Pdf",
+  "description": "Extracts tabular text from all pages of a Pdf file.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PdfFilePath",
+      "label": "Pdf File Path",
+      "description": "Path of the Pdf file.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ExtractedTables",
+      "label": "Extracted Tables",
+      "description": "List of extracted DataTables.",
+      "defaultValue": {
+        "value": "ExtractedTables",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

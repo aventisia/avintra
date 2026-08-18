@@ -15,7 +15,7 @@ public class SortDataTableNode : BaseNode
 
     [DisplayName("Column Name"), Description("The name of the column to sort by (used when 'Specify Column With' is set to 'Name').")]
     [RenderIfCondition(nameof(SpecifyColumnWith), DataTableSortColumnByEnum.Name)]
-    public InArgument<string> ColumnName { get; set; }
+    public InArgument<string> ColumnName { get; set; } = new InArgument<string>();
 
     [DisplayName("Column Index"), Description("The index of the column to sort by (used when 'Specify Column With' is set to 'Index').")]
     [RenderIfCondition(nameof(SpecifyColumnWith), DataTableSortColumnByEnum.Index)]

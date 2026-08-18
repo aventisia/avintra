@@ -1,0 +1,30 @@
+{
+  "name": "MergePdfFilesNode",
+  "label": "Merge Pdf Files",
+  "description": "Merges multiple Pdf files into a new one.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PdfFilePaths",
+      "label": "Pdf File Paths",
+      "description": "The paths of the Pdf files to merge.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OutputPdfPath",
+      "label": "Output Pdf Path",
+      "description": "The full file path where the merged Pdf will be saved. Include the complete path with the new Pdf filename and .pdf extension (e.g., C:\\Documents\\MergedFile.pdf)",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

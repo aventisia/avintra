@@ -1,0 +1,214 @@
+{
+  "name": "SetColorInExcelWorksheetNode",
+  "label": "Set Color in Excel Worksheet",
+  "description": "Sets the background color or font color of a specified range of cells in an Excel worksheet.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetInstance",
+      "label": "Worksheet Instance",
+      "description": "The Excel Worksheet in which to set color.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ColorTarget",
+      "label": "Color Target",
+      "description": "Specifies what to color: Background or Font.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Background",
+          "value": "Background",
+          "description": "Sets the background (fill) color of cells."
+        },
+        {
+          "label": "Font",
+          "value": "Font",
+          "description": "Sets the font color of cells."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ColorMode",
+      "label": "Color Mode",
+      "description": "Specifies how to select cells to color: Single Cell, Range of Cells, or Named Range.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Single Cell",
+          "value": "SingleCell",
+          "description": "Colors a single cell by column and row."
+        },
+        {
+          "label": "Range of Cells",
+          "value": "RangeOfCells",
+          "description": "Colors a specified range (e.g., \u0027A1:B10\u0027)."
+        },
+        {
+          "label": "Named Cells",
+          "value": "NamedCells",
+          "description": "Colors cells based on named ranges."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Column",
+      "label": "Column",
+      "description": "The column of the cell to color.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ColorMode",
+            "equals": "SingleCell"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Row",
+      "label": "Row",
+      "description": "The row of the cell to color.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ColorMode",
+            "equals": "SingleCell"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartColumn",
+      "label": "Start Column",
+      "description": "The starting column of the range.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ColorMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartRow",
+      "label": "Start Row",
+      "description": "The starting row of the range.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ColorMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndColumn",
+      "label": "End Column",
+      "description": "The ending column of the range.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ColorMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "EndRow",
+      "label": "End Row",
+      "description": "The ending row of the range.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ColorMode",
+            "equals": "RangeOfCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "NamedRange",
+      "label": "Named Range",
+      "description": "The named range to color.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "ColorMode",
+            "equals": "NamedCells"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Red",
+      "label": "Red",
+      "description": "Red component of the color (0-255).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Green",
+      "label": "Green",
+      "description": "Green component of the color (0-255).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Blue",
+      "label": "Blue",
+      "description": "Blue component of the color (0-255).",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

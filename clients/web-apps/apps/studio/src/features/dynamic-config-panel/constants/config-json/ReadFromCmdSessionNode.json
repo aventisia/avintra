@@ -1,0 +1,33 @@
+{
+  "name": "ReadFromCmdSessionNode",
+  "label": "Read from CMD Session",
+  "description": "Reads the output of a CMD session.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "CmdSession",
+      "label": "CMD Session",
+      "description": "The process representing the CMD session.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CmdOutput",
+      "label": "CmdOutput",
+      "description": "The CMD session\u0027s standard output.",
+      "defaultValue": {
+        "value": "CmdOutput",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

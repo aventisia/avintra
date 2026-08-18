@@ -1,0 +1,63 @@
+{
+  "name": "DisplaySelectFolderDialogNode",
+  "label": "Display Select Folder Dialog",
+  "description": "Displays a folder selection dialog to let users choose a folder.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DialogDescription",
+      "label": "Dialog Description",
+      "description": "The description or title of the folder selection dialog window.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "InitialFolder",
+      "label": "Initial Folder",
+      "description": "The folder path where the dialog starts. If empty, defaults to Desktop.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "KeepDialogOnTop",
+      "label": "Keep Dialog On Top",
+      "description": "If true, keeps the dialog on top of all other windows.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SelectedFolder",
+      "label": "Selected Folder",
+      "description": "The full path of the folder selected by the user.",
+      "defaultValue": {
+        "value": "SelectedFolder",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ButtonPressed",
+      "label": "Button Pressed",
+      "description": "True if user clicked OK; False if Cancel was clicked or dialog closed.",
+      "defaultValue": {
+        "value": "ButtonPressed",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

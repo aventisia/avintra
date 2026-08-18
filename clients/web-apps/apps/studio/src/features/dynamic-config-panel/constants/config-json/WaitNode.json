@@ -1,0 +1,21 @@
+{
+  "name": "WaitNode",
+  "label": "Wait",
+  "description": "Pauses the workflow execution for a specified number of seconds.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Seconds",
+      "label": "Duration (Seconds)",
+      "description": "The number of seconds to pause workflow execution.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

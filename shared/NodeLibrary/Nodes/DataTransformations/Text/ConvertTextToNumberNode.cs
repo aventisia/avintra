@@ -1,4 +1,4 @@
-using NodeLibrary.TextNodes.Enums;
+﻿using NodeLibrary.TextNodes.Enums;
 
 namespace NodeLibrary.TextNodes;
 
@@ -10,7 +10,7 @@ public class ConvertTextToNumberNode : BaseNode
     public required InArgument<string> TextToConvert { get; set; }
 
     [DisplayName("Output Type"), Description("Specifies the numeric type to which the text should be converted.")]
-    public required InArgument<OutputTypeEnum> OutputType { get; set; }
+    public required InArgument<OutputTypeEnum> OutputType { get; set; } = new InArgument<OutputTypeEnum>(OutputTypeEnum.Integer);
 
     [DisplayName("Converted Value"), Description("Returns the resulting numeric value after conversion.")]
     public OutArgument<object> ConvertedValue { get; set; } = new OutArgument<object>();

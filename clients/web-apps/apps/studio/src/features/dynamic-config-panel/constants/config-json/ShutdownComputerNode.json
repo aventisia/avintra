@@ -1,0 +1,48 @@
+{
+  "name": "ShutdownComputerNode",
+  "label": "Shutdown Computer",
+  "description": "Shuts down, restarts, sleeps, or hibernates the computer.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Mode",
+      "label": "Shutdown Mode",
+      "description": "The shutdown mode (e.g., power off, restart, sleep, hibernate).",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Power Off",
+          "value": "PowerOff",
+          "description": "Turns off the computer."
+        },
+        {
+          "label": "Restart",
+          "value": "Restart",
+          "description": "Restarts the computer."
+        },
+        {
+          "label": "Logoff",
+          "value": "Logoff",
+          "description": "Logs off the current user."
+        },
+        {
+          "label": "Sleep",
+          "value": "Sleep",
+          "description": "Puts the computer to sleep."
+        },
+        {
+          "label": "Hibernate",
+          "value": "Hibernate",
+          "description": "Hibernates the computer."
+        }
+      ]
+    }
+  ]
+}

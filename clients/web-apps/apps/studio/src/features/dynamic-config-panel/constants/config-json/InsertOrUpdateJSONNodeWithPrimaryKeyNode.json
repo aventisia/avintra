@@ -1,0 +1,69 @@
+{
+  "name": "InsertOrUpdateJSONNodeWithPrimaryKeyNode",
+  "label": "Insert or Update JSON Node by Primary Key",
+  "description": "Searches recursively through a JSON structure to find an object where a primary key matches a given value. If found, inserts or updates a specified key-value pair.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "JsonContent",
+      "label": "JSON Content",
+      "description": "The root JSON token to begin searching. This can be a JSON string or a JsonNode.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PrimaryKeyName",
+      "label": "Primary Key Name",
+      "description": "The name of the property used to identify the target object (e.g., \u0027id\u0027, \u0027name\u0027).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PrimaryKeyValue",
+      "label": "Primary Key Value",
+      "description": "The value of the primary key used to locate the target object.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TargetKeyName",
+      "label": "Target Key Name",
+      "description": "The name of the key to insert or update in the matched object.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TargetKeyValue",
+      "label": "Target Key Value",
+      "description": "The value to assign to the target key in the matched object.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "UpdatedJsonContent",
+      "label": "Updated JSON Content",
+      "description": "The updated JSON content after inserting or updating the node.",
+      "defaultValue": {
+        "value": "UpdatedJsonContent",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-using NodeLibrary.TextNodes.Enums;
+﻿using NodeLibrary.TextNodes.Enums;
 
 namespace NodeLibrary.TextNodes;
 
@@ -10,7 +10,7 @@ public class PadTextNode : BaseNode
     public required InArgument<string> OriginalText { get; set; }
 
     [DisplayName("Padding Direction"), Description("Specifies whether to pad the text on the left or right side.")]
-    public required InArgument<PadDirection> PaddingDirection { get; set; }
+    public required InArgument<PadDirection> PaddingDirection { get; set; } = new InArgument<PadDirection>(PadDirection.Left);
 
     [DisplayName("Padding Character"), Description("The character(s) to use for padding.")]
     public required InArgument<string> PaddingCharacter { get; set; }

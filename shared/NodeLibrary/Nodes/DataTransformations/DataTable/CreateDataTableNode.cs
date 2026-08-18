@@ -7,21 +7,21 @@ namespace NodeLibrary.DataTableNodes;
 public class CreateDataTableNode : BaseNode
 {
     [DisplayName("Data Table (Optional)"), Description("An optional input data table to clone or use as a template.")]
-    public InArgument<DataTable> DataTable { get; set; }
+    public InArgument<DataTable> DataTable { get; set; } = new InArgument<DataTable>();
 
     [DisplayName("Initial Columns (Optional)"), Description("An optional input to add initial columns in data table.")]
     public InArgument<bool> HasInitialColumns { get; set; } = new InArgument<bool>(false);
 
     [DisplayName("Data Table columns either number or comma seperated columns (Optional)"), Description("An optional input data table columns to add in data table.")]
     [RenderIfCondition(nameof(HasInitialColumns), true)]
-    public InArgument<object> Columns { get; set; }
+    public InArgument<object> Columns { get; set; } = new InArgument<object>();
 
     [DisplayName("Empty Rows (Optional)"), Description("An optional input to add empty rows in data table.")]
     public InArgument<bool> HasEmptyRows { get; set; } = new InArgument<bool>(false);
 
     [DisplayName("Data Table rows (Optional)"), Description("An optional input empty rows to add in data table.")]
     [RenderIfCondition(nameof(HasEmptyRows), true)]
-    public InArgument<int> EmptyRows { get; set; }
+    public InArgument<int> EmptyRows { get; set; } = new InArgument<int>(1);
 
     [DisplayName("New Data Table"), Description("The newly created or cloned data table.")]
     public OutArgument<DataTable> NewDataTable { get; set; } = new OutArgument<DataTable>();

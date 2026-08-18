@@ -1,0 +1,59 @@
+{
+  "name": "SetWindowStateNode",
+  "label": "Set Window State",
+  "description": "Change the window to normal, maximized, or minimized state.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WindowElement",
+      "label": "Window",
+      "description": "Select the window you want to change.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "DesiredState",
+      "label": "Window State",
+      "description": "Choose how you want the window to appear (Normal, Maximized, or Minimized).",
+      "defaultValue": "Normal",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Normal",
+          "value": "Normal",
+          "description": "Show the window in its normal state."
+        },
+        {
+          "label": "Maximized",
+          "value": "Maximized",
+          "description": "Show the window maximized."
+        },
+        {
+          "label": "Minimized",
+          "value": "Minimized",
+          "description": "Show the window minimized."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "IsWindowStateChanged",
+      "label": "Is Window State Changed Successfully",
+      "description": "Indicates whether the window state was changed successfully.",
+      "defaultValue": {
+        "value": "IsWindowStateChanged",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

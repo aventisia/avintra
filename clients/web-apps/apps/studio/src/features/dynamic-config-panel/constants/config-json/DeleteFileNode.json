@@ -1,0 +1,21 @@
+{
+  "name": "DeleteFileNode",
+  "label": "Delete File(s)",
+  "description": "Permanently deletes one or more files. Supports wildcard patterns and multiple paths separated by semicolons.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilesToDelete",
+      "label": "File path(s) to delete",
+      "description": "One or more file paths to delete, separated by semicolons. Supports wildcards (e.g., \u0027C:\\Temp\\*.log;C:\\Temp\\old_report.csv\u0027).",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

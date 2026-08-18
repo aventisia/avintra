@@ -1,4 +1,4 @@
-namespace NodeLibrary.WorkflowLogics.QueueManagement;
+namespace NodeLibrary.QueueManagementNodes;
 
 [NodeL2CategoryMetadata(
     label: "Queue Management",

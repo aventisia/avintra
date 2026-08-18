@@ -1,0 +1,45 @@
+{
+  "name": "GetAllExcelWorksheetsNode",
+  "label": "Get All Excel Worksheets",
+  "description": "Gets the list of all worksheet names and their indices from the specified Excel workbook.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkbookInstance",
+      "label": "Workbook Instance",
+      "description": "The Excel Workbook from which to retrieve all worksheets.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WorksheetNames",
+      "label": "Worksheet Names",
+      "description": "A list of all worksheet names in the workbook.",
+      "defaultValue": {
+        "value": "WorksheetNames",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WorksheetCount",
+      "label": "Worksheet Count",
+      "description": "The total number of worksheets in the workbook.",
+      "defaultValue": {
+        "value": "WorksheetCount",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

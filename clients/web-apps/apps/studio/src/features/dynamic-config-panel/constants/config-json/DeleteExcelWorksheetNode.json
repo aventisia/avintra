@@ -1,0 +1,76 @@
+{
+  "name": "DeleteExcelWorksheetNode",
+  "label": "Delete Excel Worksheet",
+  "description": "Deletes a specific worksheet from the specified Excel Workbook.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkbookInstance",
+      "label": "Workbook Instance",
+      "description": "The Excel Workbook from which the worksheet will be deleted.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "DeleteMode",
+      "label": "Delete Mode",
+      "description": "Specifies how to identify the worksheet to delete (by Name or by Index).",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Name",
+          "value": "Name",
+          "description": "Deletes the worksheet by its name."
+        },
+        {
+          "label": "Index",
+          "value": "Index",
+          "description": "Deletes the worksheet by its index."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetName",
+      "label": "Worksheet Name",
+      "description": "The name of the worksheet to delete.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "DeleteMode",
+            "equals": "Name"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorksheetIndex",
+      "label": "Worksheet Index",
+      "description": "The index of the worksheet to delete (1-based).",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "DeleteMode",
+            "equals": "Index"
+          }
+        ]
+      }
+    }
+  ]
+}

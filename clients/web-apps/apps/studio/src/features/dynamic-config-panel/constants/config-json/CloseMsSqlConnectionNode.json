@@ -1,0 +1,21 @@
+{
+  "name": "CloseMsSqlConnectionNode",
+  "label": "Close MS SQL Connection",
+  "description": "Closes an open Microsoft SQL Server database connection",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SqlConnection",
+      "label": "MS SQL Connection",
+      "description": "The MS SQL Server connection returned from Open MS SQL Connection node.",
+      "defaultValue": "",
+      "required": true
+    }
+  ]
+}

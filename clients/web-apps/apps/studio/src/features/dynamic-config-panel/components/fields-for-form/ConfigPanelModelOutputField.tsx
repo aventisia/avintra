@@ -105,7 +105,7 @@ const ConfigPanelModelOutputField = ({
                 >
                   <VariableIcon className="h-4 w-4" />
                 </PopoverTrigger>
-                  {/* TODO: not sure if JsonViewer is required here or not */}
+                {/* TODO: not sure if JsonViewer is required here or not */}
                 {description ? (
                   <Tooltip
                     className="max-w-[50vw] bg-white"

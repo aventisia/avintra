@@ -35,7 +35,7 @@ public class ReadFromCsvFileNode : BaseNode
 
     [DisplayName("Custom Separator"), Description("The custom delimiter used in the CSV file.")]
     [RenderIfCondition(nameof(ColumnsSeparatorType), SeparatorTypeEnum.Custom)]
-    public InArgument<string> CustomSeparator { get; set; }
+    public InArgument<string> CustomSeparator { get; set; } = new InArgument<string>();
 
     [DisplayName("CSV Table"), Description("The contents of the CSV file as a DataTable.")]
     public OutArgument<DataTable> CsvTable { get; set; } = new OutArgument<DataTable>();

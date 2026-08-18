@@ -1,0 +1,24 @@
+{
+  "name": "GetClipboardTextNode",
+  "label": "Get Clipboard Text",
+  "description": "Retrieves the text currently stored in the system clipboard.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ClipboardTextOutput",
+      "label": "Clipboard Text Output",
+      "description": "The text retrieved from the clipboard.",
+      "defaultValue": {
+        "value": "ClipboardTextOutput",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

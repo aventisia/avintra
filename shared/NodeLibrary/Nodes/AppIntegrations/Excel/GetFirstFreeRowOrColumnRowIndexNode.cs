@@ -11,7 +11,7 @@ public class GetFirstFreeRowOrColumnRowIndexNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Search Direction"), Description("Specifies whether to search for the first free row or the first free column.")]
-    public required InArgument<ExcelSearchByEnum> SearchDirection { get; set; }
+    public required InArgument<ExcelSearchByEnum> SearchDirection { get; set; } = new InArgument<ExcelSearchByEnum>(ExcelSearchByEnum.Rows);
 
     [DisplayName("Column"), Description("The column to search in when looking for the first free row.")]
     [RenderIfCondition(nameof(SearchDirection), ExcelSearchByEnum.Rows)]

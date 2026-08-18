@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace NodeLibrary.MouseAndKeyboardNodes;
 
@@ -7,10 +7,10 @@ namespace NodeLibrary.MouseAndKeyboardNodes;
 public class WaitForMouseNode : BaseNode
 {
     [DisplayName("Wait for Mouse Pointer To"), Description("Specifies whether to wait until the mouse pointer becomes or stops being the specified type.")]
-    public required InArgument<WaitActionEnum> WaitAction { get; set; }
+    public required InArgument<WaitActionEnum> WaitAction { get; set; } = new InArgument<WaitActionEnum>(WaitActionEnum.Become);
 
     [DisplayName("Mouse Pointer"), Description("The type of mouse pointer to wait for (e.g., Arrow, Hourglass).")]
-    public required InArgument<CursorTypeEnum> CursorType { get; set; }
+    public required InArgument<CursorTypeEnum> CursorType { get; set; } = new InArgument<CursorTypeEnum>(CursorTypeEnum.Arrow);
 
     [DisplayName("Fail with Timeout Error"), Description("If true, throws an error if the timeout is reached without the expected cursor change.")]
     public InArgument<bool> FailWithTimeoutError { get; set; } = new InArgument<bool>(false);

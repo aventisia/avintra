@@ -1,0 +1,63 @@
+{
+  "name": "CopyFolderNode",
+  "label": "Folder to Copy",
+  "description": "The path of the source folder that you want to copy the folder",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceFolder",
+      "label": "Folder to Copy",
+      "description": "The path of the source folder that you want to duplicate.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DestinationFolder",
+      "label": "Destination Folder",
+      "description": "The path where the folder should be copied.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "IfExistsAction",
+      "label": "If Folder Exists",
+      "description": "Specifies what action to take if the destination folder already exists.",
+      "defaultValue": "DoNothing",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Do nothing",
+          "value": "DoNothing",
+          "description": "Skips the file if it already exists."
+        },
+        {
+          "label": "Overwrite",
+          "value": "Overwrite",
+          "description": "Deletes the existing file and moves the new file."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CopiedFolder",
+      "label": "Copied Folder",
+      "description": "The copied folder path as a confirmation output.",
+      "defaultValue": {
+        "value": "CopiedFolder",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

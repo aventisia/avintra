@@ -10,10 +10,10 @@ public class SetColorInExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Color Target"), Description("Specifies what to color: Background or Font.")]
-    public required InArgument<ExcelColorTargetEnum> ColorTarget { get; set; }
+    public required InArgument<ExcelColorTargetEnum> ColorTarget { get; set; } = new InArgument<ExcelColorTargetEnum>(ExcelColorTargetEnum.Background);
 
     [DisplayName("Color Mode"), Description("Specifies how to select cells to color: Single Cell, Range of Cells, or Named Range.")]
-    public required InArgument<ExcelSelectionModeForColorEnum> ColorMode { get; set; }
+    public required InArgument<ExcelSelectionModeForColorEnum> ColorMode { get; set; } = new InArgument<ExcelSelectionModeForColorEnum>(ExcelSelectionModeForColorEnum.SingleCell);
 
     [DisplayName("Column"), Description("The column of the cell to color.")]
     [RenderIfCondition(nameof(ColorMode), ExcelSelectionModeForColorEnum.SingleCell)]

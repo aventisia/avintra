@@ -1,0 +1,73 @@
+{
+  "name": "ZipFilesNode",
+  "label": "Zip Files",
+  "description": "Compress one or more files or folders into a zip archive.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourcePaths",
+      "label": "Source Paths",
+      "description": "Accepts: string[], List\u003Cstring\u003E, or comma-separated string of file/folder paths.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "CompressionLevelType",
+      "label": "Compression Level",
+      "description": "The compression level to use: Optimal, Fastest, or NoCompression.",
+      "defaultValue": "Optimal",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Optimal",
+          "value": "Optimal",
+          "description": ""
+        },
+        {
+          "label": "Fastest",
+          "value": "Fastest",
+          "description": ""
+        },
+        {
+          "label": "NoCompression",
+          "value": "NoCompression",
+          "description": ""
+        },
+        {
+          "label": "SmallestSize",
+          "value": "SmallestSize",
+          "description": ""
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OutputZipPath",
+      "label": "Output Zip Path",
+      "description": "Full path where the ZIP file will be saved (e.g., C:\\temp\\archive.zip).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "OutputZipFullPath",
+      "label": "Output Zip Full Path",
+      "description": "Returns the full path of the created ZIP file.",
+      "defaultValue": {
+        "value": "OutputZipFullPath",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "name": "GetCurrentDateTimeNode",
+  "label": "Get Current Date and Time",
+  "description": "This activity retrieves the current date and time based on the specified retrieval type and time zone.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "RetrieveType",
+      "label": "Retrieve Type",
+      "description": "Select the type of datetime information to retrieve (e.g., Current date and time, Current date only).",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Current Date and Time",
+          "value": "CurrentDateTime",
+          "description": "Retrieves the current date and time."
+        },
+        {
+          "label": "Current Date Only",
+          "value": "CurrentDateOnly",
+          "description": "Retrieves the current date only."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "TimezoneType",
+      "label": "Time Zone",
+      "description": "Select the time zone to use for retrieving the datetime (e.g., System time zone, Windows time zone).",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "System Time Zone",
+          "value": "SystemTimeZone",
+          "description": "Uses the system\u0027s local time zone."
+        },
+        {
+          "label": "Specific Time Zone",
+          "value": "SpecificTimeZone",
+          "description": "Uses a specific time zone (to be deprecated)."
+        },
+        {
+          "label": "Windows Time Zone",
+          "value": "WindowsTimeZone",
+          "description": "Uses the Windows time zone settings."
+        },
+        {
+          "label": "Custom Input",
+          "value": "CustomInput",
+          "description": "Allows custom input for the time zone."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The retrieved date and time based on the specified options.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

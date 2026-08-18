@@ -14,7 +14,7 @@ public class WriteToExcelWorksheetNode : BaseNode
     public required InArgument<object> ValueToWrite { get; set; }
 
     [DisplayName("Write Mode"), Description("Specifies how to determine the target cell(s) for writing.")]
-    public required InArgument<ExcelCellWriteModeEnum> WriteMode { get; set; }
+    public required InArgument<ExcelCellWriteModeEnum> WriteMode { get; set; } = new InArgument<ExcelCellWriteModeEnum>(ExcelCellWriteModeEnum.OnSpecifiedCell);
 
     [DisplayName("Column Index"), Description("The index of the column (1 for 'A'). Takes precedence if greater than 0.")]
     [RenderIfCondition(nameof(WriteMode), ExcelCellWriteModeEnum.OnSpecifiedCell)]

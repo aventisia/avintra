@@ -4,7 +4,10 @@ internal class NodeL2CategoryModel
 {
     public required string Label { get; set; }
     public required string Description { get; set; }
-    public required string Icon { get; set; }
+    // TODO: Keep only Icon instead of Icon and Img once migration from NodeExecutor to RunnerApp is complete
+    public string? Img { get; set; }
+    public string? Icon { get; set; }
     public List<string>? DoNotRenderIf { get; set; }
-    public List<NodeMetadataModel> Nodes { get; set; } = [];
+    // TODO: Rename to Nodes once migration from NodeExecutor to RunnerApp is complete
+    public List<NodeMetadataModel>? Actions { get; set; } = [];
 }

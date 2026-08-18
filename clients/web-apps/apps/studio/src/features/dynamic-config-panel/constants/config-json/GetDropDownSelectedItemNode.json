@@ -1,0 +1,42 @@
+{
+  "name": "GetDropDownSelectedItemNode",
+  "label": "Get Selected Item from Drop-Down List",
+  "description": "Reads and returns the selected item from a drop-down list in a window using the property you choose.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "IdentificationObjectPath",
+      "label": "UI Element",
+      "description": "The UI element which you would like to read the selected item from.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "MaxWaitTime",
+      "label": "Max Wait Time (seconds)",
+      "description": "Maximum time to wait to find the UI element (in seconds).",
+      "defaultValue": 5,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SelectedItem",
+      "label": "Selected Item",
+      "description": "The selected item found in the drop-down list.",
+      "defaultValue": {
+        "value": "SelectedItem",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

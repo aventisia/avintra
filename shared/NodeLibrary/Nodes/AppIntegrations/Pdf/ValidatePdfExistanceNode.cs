@@ -1,4 +1,4 @@
-using UglyToad.PdfPig;
+﻿using UglyToad.PdfPig;
 
 namespace NodeLibrary.PdfNodes;
 
@@ -10,7 +10,7 @@ public class ValidatePdfExistanceNode : BaseNode
     public required InArgument<string> FilePath { get; set; }
 
     [DisplayName("Pdf Content Type"), Description("Select whether to check for Text or Image content in the Pdf.")]
-    public required InArgument<PdfContentType> ContentType { get; set; }
+    public required InArgument<PdfContentType> ContentType { get; set; } = new InArgument<PdfContentType>(PdfContentType.Text);
 
     [DisplayName("Does Pdf Contain"), Description("Returns true if the selected content type exists in the Pdf; otherwise false.")]
     public OutArgument<bool> Result { get; set; } = new OutArgument<bool>();

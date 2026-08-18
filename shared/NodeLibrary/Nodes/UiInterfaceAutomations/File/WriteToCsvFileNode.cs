@@ -20,7 +20,7 @@ public class WriteToCsvFileNode : BaseNode
 
     [DisplayName("Custom Column Separator"), Description("The custom delimiter used in the CSV file.")]
     [RenderIfCondition(nameof(UseCustomColumnSeparator), true)]
-    public InArgument<string> CustomColumnSeparator { get; set; }
+    public InArgument<string> CustomColumnSeparator { get; set; } = new InArgument<string>();
 
     [DisplayName("Predefined Separator"), Description("The predefined separator used in the CSV file (e.g., Comma, Tab).")]
     [RenderIfCondition(nameof(UseCustomColumnSeparator), false)]

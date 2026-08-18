@@ -1,0 +1,91 @@
+{
+  "name": "FindAndReplaceWordsInWordDocumentNode",
+  "label": "Find And Replace Words In Word Document",
+  "description": "Finds text and replaces it with another in the active document of a Word instance.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WordInstance",
+      "label": "Word Instance",
+      "description": "The specific Word instance to use.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "AllMatches",
+      "label": "All Matches",
+      "description": "Specifies whether to replace all occurrences or just the first one.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TextToFind",
+      "label": "Text to Find",
+      "description": "The text to search for in the document.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TextToReplaceWith",
+      "label": "Text to Replace With",
+      "description": "The text to replace the found text with.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "UseWildcards",
+      "label": "Use Wildcards",
+      "description": "Specifies whether to use wildcard patterns for the search.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "MatchCase",
+      "label": "Match Case",
+      "description": "Specifies whether the search should be case-sensitive.",
+      "defaultValue": true,
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "UseWildcards",
+            "equals": true
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "MatchWholeWordsOnly",
+      "label": "Match Whole Words Only",
+      "description": "Specifies whether to match whole words only.",
+      "defaultValue": true,
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "UseWildcards",
+            "equals": true
+          }
+        ]
+      }
+    }
+  ]
+}

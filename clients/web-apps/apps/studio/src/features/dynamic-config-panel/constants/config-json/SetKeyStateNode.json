@@ -1,0 +1,59 @@
+{
+  "name": "SetKeyStateNode",
+  "label": "Set Key State",
+  "description": "Sets the state (on or off) for the keys Caps Lock, Num Lock, or Scroll Lock.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Key",
+      "label": "Key",
+      "description": "The key to modify (e.g., \u0027CapsLock\u0027, \u0027NumLock\u0027, \u0027ScrollLock\u0027).",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Caps Lock",
+          "value": "CapsLock",
+          "description": "Toggles the Caps Lock state."
+        },
+        {
+          "label": "Num Lock",
+          "value": "NumLock",
+          "description": "Toggles the Num Lock state."
+        },
+        {
+          "label": "Scroll Lock",
+          "value": "ScrollLock",
+          "description": "Toggles the Scroll Lock state."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "State",
+      "label": "State",
+      "description": "Whether to enable (On) or disable (Off) the key state.",
+      "defaultValue": "",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "On",
+          "value": "On",
+          "description": "Enables the key state."
+        },
+        {
+          "label": "Off",
+          "value": "Off",
+          "description": "Disables the key state."
+        }
+      ]
+    }
+  ]
+}

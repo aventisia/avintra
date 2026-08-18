@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 
 namespace NodeLibrary.WorkstationNodes;
 
@@ -7,7 +7,7 @@ namespace NodeLibrary.WorkstationNodes;
 public class ControlScreensaverNode : BaseNode
 {
     [DisplayName("Action"), Description("The action to perform on the screensaver.")]
-    public required InArgument<ScreensaverActionEnum> Action { get; set; }
+    public required InArgument<ScreensaverActionEnum> Action { get; set; } = new InArgument<ScreensaverActionEnum>(ScreensaverActionEnum.Enable);
 
     [DisplayName("Time Out Seconds"), Description("Timeout in seconds (only used when enabling screensaver).")]
     public InArgument<int> TimeoutSeconds { get; set; } = new InArgument<int>(0);

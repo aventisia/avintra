@@ -11,7 +11,7 @@ public class ReadFromExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Retrieve Mode"), Description("Specifies how to retrieve data from the worksheet.")]
-    public required InArgument<ExcelRetrieveModeEnum> RetrieveMode { get; set; }
+    public required InArgument<ExcelRetrieveModeEnum> RetrieveMode { get; set; } = new InArgument<ExcelRetrieveModeEnum>(ExcelRetrieveModeEnum.SingleCell);
 
     [DisplayName("Start Column"), Description("The starting column letter (e.g., 'A').")]
     [RenderIfCondition(nameof(RetrieveMode), ExcelRetrieveModeEnum.RangeOfCells)]

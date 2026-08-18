@@ -1,0 +1,21 @@
+{
+  "name": "BlockInputNode",
+  "label": "Block Input",
+  "description": "Blocks user mouse and keyboard input, so that the flow can perform mouse and keyboard actions without interference from the user.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "BlockIt",
+      "label": "Block It",
+      "description": "Toggle to enable or disable blocking of user input.",
+      "defaultValue": false,
+      "required": false
+    }
+  ]
+}

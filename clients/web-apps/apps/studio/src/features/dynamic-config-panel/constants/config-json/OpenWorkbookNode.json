@@ -1,0 +1,60 @@
+{
+  "name": "OpenWorkbookNode",
+  "label": "Open Excel Workbook",
+  "description": "Opens or reuses an Excel workbook in an existing Excel instance by workbook name.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ExcelInstance",
+      "label": "Excel Instance",
+      "description": "Existing Excel application instance.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "WorkbookName",
+      "label": "Workbook Name",
+      "description": "Workbook file name to open (example: Report.xlsx).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "OpenAsReadOnly",
+      "label": "Open as ReadOnly",
+      "description": "If set to true, the workbook will be opened in read-only mode, preventing any changes from being saved.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "password",
+      "name": "ReadProtectionPassword",
+      "label": "Read Protection Password",
+      "description": "Password required to open the workbook if it is protected with a read password.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WorkbookInstance",
+      "label": "Workbook Instance",
+      "description": "The Excel workbook instance that is opened or reused.",
+      "defaultValue": {
+        "value": "WorkbookInstance",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

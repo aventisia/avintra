@@ -1,0 +1,93 @@
+{
+  "name": "DisplayInputDialogNode",
+  "label": "Display Input Dialog",
+  "description": "Displays a dialog box that prompts the user to enter text.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "InputDialogTitle",
+      "label": "Input Dialog Title",
+      "description": "The title text displayed at the top of the input dialog.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "InputDialogMessage",
+      "label": "Input Dialog Message",
+      "description": "The main text content of the input dialog.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DefaultValue",
+      "label": "Default Value",
+      "description": "The default text pre-filled in the input field.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "InputType",
+      "label": "Input Type",
+      "description": "The type of input field (Text or Password).",
+      "defaultValue": "",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "Text",
+          "value": "Text",
+          "description": "Plain text input type."
+        },
+        {
+          "label": "Password",
+          "value": "Password",
+          "description": "Password input type (masked input)."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "KeepOnTop",
+      "label": "Keep Input Dialog Always on Top",
+      "description": "If true, the input dialog will stay on top of other windows.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "UserInput",
+      "label": "User Input",
+      "description": "The text entered by the user.",
+      "defaultValue": {
+        "value": "UserInput",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ButtonPressed",
+      "label": "Button Pressed",
+      "description": "The result indicating which button was pressed by the user.",
+      "defaultValue": {
+        "value": "ButtonPressed",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

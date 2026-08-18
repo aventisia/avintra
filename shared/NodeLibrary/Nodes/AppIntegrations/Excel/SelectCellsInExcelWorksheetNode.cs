@@ -10,7 +10,7 @@ public class SelectCellsInExcelWorksheetNode : BaseNode
     public required InArgument<object> WorksheetInstance { get; set; }
 
     [DisplayName("Select Mode"), Description("Specifies how to select cells: Single Cell, Named Range, Range of Cells, or All Cells.")]
-    public required InArgument<ExcelCellSelectionModeEnum> SelectMode { get; set; }
+    public required InArgument<ExcelCellSelectionModeEnum> SelectMode { get; set; } = new InArgument<ExcelCellSelectionModeEnum>(ExcelCellSelectionModeEnum.SingleCell);
 
     [DisplayName("Column"), Description("The column letter or number of the cell to select.")]
     [RenderIfCondition(nameof(SelectMode), ExcelCellSelectionModeEnum.SingleCell)]

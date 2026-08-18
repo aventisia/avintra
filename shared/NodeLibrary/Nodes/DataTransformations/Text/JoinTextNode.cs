@@ -1,4 +1,4 @@
-using NodeLibrary.TextNodes.Enums;
+﻿using NodeLibrary.TextNodes.Enums;
 
 namespace NodeLibrary.TextNodes;
 
@@ -10,15 +10,15 @@ public class JoinTextNode : BaseNode
     public required InArgument<IEnumerable<string>> TextList { get; set; }
 
     [DisplayName("Delimiter Type"), Description("Specifies how to separate the items in the list.")]
-    public required InArgument<StringJoinDelimiterTypeEnum> DelimiterType { get; set; }
+    public required InArgument<StringJoinDelimiterTypeEnum> DelimiterType { get; set; } = new InArgument<StringJoinDelimiterTypeEnum>(StringJoinDelimiterTypeEnum.Standard);
 
     [DisplayName("Standard Delimiter"), Description("The standard delimiter to use when 'Delimiter Type' is 'Standard'.")]
     [RenderIfCondition(nameof(DelimiterType), StringJoinDelimiterTypeEnum.Standard)]
-    public InArgument<StandardStringJoinDelimiterEnum> StandardDelimiter { get; set; }
+    public InArgument<StandardStringJoinDelimiterEnum> StandardDelimiter { get; set; } = new InArgument<StandardStringJoinDelimiterEnum>(StandardStringJoinDelimiterEnum.None);
 
     [DisplayName("Custom Delimiter"), Description("The custom delimiter to use when 'Delimiter Type' is 'Custom'.")]
     [RenderIfCondition(nameof(DelimiterType), StringJoinDelimiterTypeEnum.Custom)]
-    public InArgument<string> CustomDelimiter { get; set; }
+    public InArgument<string> CustomDelimiter { get; set; } = new InArgument<string>();
 
     [DisplayName("Joined Text"), Description("Returns the resulting joined text after applying the delimiter.")]
     public OutArgument<string> JoinedText { get; set; } = new OutArgument<string>();
