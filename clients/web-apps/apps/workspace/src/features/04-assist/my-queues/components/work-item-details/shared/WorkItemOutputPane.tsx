@@ -18,15 +18,18 @@ export const WorkItemOutputPane = ({
   extractedData,
   setExtractedData,
   inputSchema,
+  readOnly = false,
 }: {
   data?: QueueWorkItemDto;
   extractedData: string | undefined;
   setExtractedData: Dispatch<SetStateAction<string | undefined>>;
   inputSchema?: InputSchemaField[] | null;
+  readOnly?: boolean;
 }) => {
   const [viewMode, setViewMode] = useState<"json" | "form">("json");
 
   const isCompleted = data?.status == QueueTransactionStatusTypesEnum.Completed;
+  const isReadOnly = readOnly || isCompleted;
 
   // Parse the extracted JSON data into a record of field name -> value.
   const parsedData = useMemo<Record<string, unknown>>(() => {
@@ -58,7 +61,7 @@ export const WorkItemOutputPane = ({
                 size="sm"
                 checked={viewMode === "form"}
                 onCheckedChange={(checked) => setViewMode(checked ? "form" : "json")}
-                disabled={isCompleted}
+                disabled={isReadOnly}
               />
               <span>Form</span>
             </label>
@@ -68,7 +71,7 @@ export const WorkItemOutputPane = ({
             <JsonEditor
               onChange={setExtractedData}
               value={extractedData}
-              disabled={isCompleted}
+              disabled={isReadOnly}
             />
           ) : (
             <div className="rounded-lg border border-input bg-background p-3">
@@ -93,7 +96,7 @@ export const WorkItemOutputPane = ({
                           <Input
                             type="date"
                             value={displayValue}
-                            disabled={isCompleted}
+                            disabled={isReadOnly}
                             onChange={(e) => handleFieldChange(field.name, e.target.value)}
                             className="h-8 flex-1 text-xs"
                           />
@@ -101,14 +104,14 @@ export const WorkItemOutputPane = ({
                           <Input
                             type="number"
                             value={displayValue}
-                            disabled={isCompleted}
+                            disabled={isReadOnly}
                             onChange={(e) => handleFieldChange(field.name, e.target.value)}
                             className="h-8 flex-1 text-xs"
                           />
                         ) : (
                           <AutosizeTextarea
                             value={displayValue}
-                            disabled={isCompleted}
+                            disabled={isReadOnly}
                             onChange={(e) => handleFieldChange(field.name, e.target.value)}
                             minHeight={32}
                             size="sm"
@@ -132,6 +135,7 @@ export const WorkItemOutputPane = ({
           <WorkflowTimeline
             workItemId={data.id}
             isCompleted={data.status == QueueTransactionStatusTypesEnum.Completed}
+            readOnly={isReadOnly}
           />
         )}
       </div>

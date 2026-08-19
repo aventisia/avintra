@@ -8,19 +8,12 @@ interface WorkItemsTableCellLinkProps {
   /** The ID of the work items to open. */
   rowId: string;
 
-  /** When true, the work item is shown as plain text (not a clickable link). */
-  viewOnly?: boolean;
-
   /** The cell value to display. */
   children: React.ReactNode;
 }
 
-export const WorkItemsTableCellLink = ({ rowId, viewOnly = false, children }: WorkItemsTableCellLinkProps) => {
+export const WorkItemsTableCellLink = ({ rowId, children }: WorkItemsTableCellLinkProps) => {
   const { getWorkItemUrl } = useOpenWorkItem();
-
-  if (viewOnly) {
-    return <div className="w-40 truncate font-medium text-foreground">{children}</div>;
-  }
 
   // Return the component
   return (

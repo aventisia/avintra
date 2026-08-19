@@ -210,9 +210,11 @@ const TimelineEvent = ({ item }: { item: QueueTransactionEventDto }) => {
 export default function WorkflowTimeline({
   workItemId,
   isCompleted,
+  readOnly = false,
 }: {
   workItemId?: string;
   isCompleted?: boolean;
+  readOnly?: boolean;
 }) {
   const [commentText, setCommentText] = useState("");
 
@@ -237,6 +239,8 @@ export default function WorkflowTimeline({
       { onSuccess: () => setCommentText("") },
     );
   };
+
+  const canComment = !readOnly && !isCompleted;
 
   return (
     <div className="w-full max-w-4xl space-y-2">
@@ -271,7 +275,7 @@ export default function WorkflowTimeline({
         )}
 
         {/* INPUT SECTION */}
-        {!isCompleted && (
+        {canComment && (
           <div className="relative flex gap-x-5 pl-2 pt-2">
             <div className="flex-none">
               <TimelineIcon type={QueueTransactionEventEnum.CommentAdded} />

@@ -18,6 +18,7 @@ import { QueuesTableDto } from "../../dtos/queues-table-dto";
 import { QueueProcessingModeEnum } from "../../enums/queue-processing-mode-enum";
 import { QueueTransactionEventEnum } from "../../enums/queue-transaction-event-enum";
 import { QueueTransactionStatusTypesEnum } from "../../enums/queue-work-item-status-enum";
+import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
 import { useFetchQueues } from "../../hooks/useFetchQueues";
 import { useFetchQueuesWorkItemData } from "../../hooks/useFetchQueuesWorkItemData";
 import { useGetNextItemMutation } from "../../hooks/useGetNextItemMutation";
@@ -38,7 +39,7 @@ const buildDispositionOptions = (queue?: QueuesTableDto) => {
 };
 
 export const WorkItemDetails = () => {
-  const { queueName, workItemId, queueId } = useMyQueueParams();
+  const { queueName, workItemId, queueId, queueType } = useMyQueueParams();
   const navigate = useNavigate();
   const [myCurrentQueue, setMyCurrentQueue] = useState<QueuesTableDto>();
   const [extractedData, setExtractedData] = useState<string>();
@@ -64,6 +65,9 @@ export const WorkItemDetails = () => {
   const { mutate: getNextItem, isPending: isClaimingNext } = useGetNextItemMutation();
 
   const workItemIdFull = workItemData?.data.id ?? workItemId ?? "";
+
+  // Agent-queue work items are view-only: no claim/close controls and no comments.
+  const isViewOnly = queueType === QueueTypesEnum.Agent;
 
   const handleCopyWorkItemId = () => {
     if (!workItemIdFull) return;
@@ -133,6 +137,7 @@ export const WorkItemDetails = () => {
     if (!workItemId) return;
     if (!myCurrentQueue) return;
     if (isFifo) return;
+    if (isViewOnly) return;
 
     if (workItemData?.data.status !== QueueTransactionStatusTypesEnum.Pending) return;
     else {
@@ -150,6 +155,7 @@ export const WorkItemDetails = () => {
   }, [
     addEvent,
     isFifo,
+    isViewOnly,
     myCurrentQueue,
     workItemData?.data.status,
     userSession?.firstName,
@@ -168,6 +174,7 @@ export const WorkItemDetails = () => {
         setExtractedData={setExtractedData}
         credentialId={myCurrentQueue?.credentialId}
         inputSchema={myCurrentQueue?.inputSchema}
+        readOnly={isViewOnly}
       />
     );
   };
@@ -207,7 +214,7 @@ export const WorkItemDetails = () => {
         </h2>
 
         <div className="flex items-center gap-2">
-          {workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
+          {!isViewOnly && workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
             <SearchableSelect
               options={buildDispositionOptions(myCurrentQueue)}
               placeholder="Disposition Status"
@@ -218,7 +225,7 @@ export const WorkItemDetails = () => {
               disabled={!canClose}
             />
           )}
-          {workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
+          {!isViewOnly && workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
             <Button
               size="xs"
               onClick={handleClose}

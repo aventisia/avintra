@@ -1,4 +1,12 @@
 import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@avplatform/ui/breadcrumb";
+import {
   DTHeading,
   DTPagination,
   DTSearchBox,
@@ -9,6 +17,7 @@ import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 import { Button } from "@avplatform/ui/buttons";
 import { useEffect, useMemo, useState } from "react";
+import { NavLink } from "react-router-dom";
 
 import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
 
@@ -30,6 +39,7 @@ export const MyQueueWokItemTable = () => {
     tabValue,
     setTabValue,
     queueId,
+    queueName,
     setQueueName,
     setQueueId,
     updateParams,
@@ -93,6 +103,23 @@ export const MyQueueWokItemTable = () => {
 
   return (
     <div className="space-y-4 pb-4 pt-[17px]">
+      {/* Breadcrumb to navigate back to the Queues overview screen. */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <NavLink to="/assist/queues">Queues</NavLink>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="max-w-64 truncate capitalize">
+              {queueName ?? currentQueue?.name ?? TABLE_HEADING}
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <DTHeading heading={TABLE_HEADING} />

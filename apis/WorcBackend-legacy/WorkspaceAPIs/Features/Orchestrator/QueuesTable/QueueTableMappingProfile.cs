@@ -28,7 +28,14 @@ public class QueueTableMappingProfile : IRegister
             .Map(dest => dest.InputSchema, src => System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(src.InputSchema ?? "[]", new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
             .Map(dest => dest.Statuses, src => System.Text.Json.JsonSerializer.Deserialize<List<QueueStatusDefinitionDto>>(src.Statuses ?? "[]", new JsonSerializerOptions { PropertyNameCaseInsensitive = true }))
             .Map(dest => dest.CreatedBy, src => src.CreatedByUser != null ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName : null)
-            .Map(dest => dest.LastModifiedBy, src => src.LastModifiedByUser != null ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName : null);
+            .Map(dest => dest.LastModifiedBy, src => src.LastModifiedByUser != null ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName : null)
+            .Map(dest => dest.AgentsNames, src => src.QueueFlowVersions != null
+                ? src.QueueFlowVersions
+                    .Where(qf => qf.FlowVersion != null && qf.FlowVersion.Flow != null && !string.IsNullOrWhiteSpace(qf.FlowVersion.Flow.Name))
+                    .Select(qf => qf.FlowVersion!.Flow!.Name)
+                    .Distinct()
+                    .ToList()
+                : null);
 
         // Mapping for inserting or updating a queue record.
         config.NewConfig<QueuesTableDto, Queue>()

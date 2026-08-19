@@ -1,15 +1,14 @@
-import { QueueTypesEnum } from "../enums/queue-instance-type-enum";
 import { useMyQueueParams } from "../hooks/useMyQueueParams";
 import { QueueOverview } from "./queue-overview/QueueOverview";
 import { WorkItemDetails } from "./work-item-details/WorkItemDetails";
 import { MyQueueWokItemTable } from "./work-item-table/MyQueueWokItemTable";
 
 export const MyQueue = () => {
-  const { workItemId, queueId, queueType } = useMyQueueParams();
+  const { workItemId, queueId } = useMyQueueParams();
 
-  // In agent-queue mode work items are view-only and opened from the table
-  // itself; a `wid` in the URL is ignored to keep the table as the entry point.
-  if (workItemId && queueType === QueueTypesEnum.User) return <WorkItemDetails />;
+  // When a work item is selected (from either a user queue or an agent queue),
+  // show its details. Agent-queue work items are rendered in view-only mode.
+  if (workItemId) return <WorkItemDetails />;
   // No queue selected yet -> show the overview summary of all accessible queues.
   if (!queueId) return <QueueOverview />;
   return <MyQueueWokItemTable />;

@@ -165,4 +165,10 @@ public class QueuesTableDto
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the names of the agents (flow versions) assigned to the queue.
+    /// Only populated on read responses; ignored when writing queue data.
+    /// </summary>
+    public List<string>? AgentsNames { get; set; }
 }

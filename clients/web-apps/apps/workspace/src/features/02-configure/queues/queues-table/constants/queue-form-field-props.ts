@@ -1,6 +1,5 @@
 import type { SelectFieldProps, TextareaFieldProps } from "@avplatform/ui/form";
 import { InputFieldProps, SwitchFieldProps } from "@avplatform/ui/form";
-import { enumToArray } from "@avplatform/ui/utils";
 
 import { QueueProcessingModeEnum } from "../enums/queue-processing-mode-enum";
 
@@ -40,8 +39,11 @@ export const processingModeProps: SelectFieldProps = {
   name: "processingMode",
   label: "Processing Mode",
   isRequired: true,
-  selectOptions: enumToArray(QueueProcessingModeEnum),
-  defaultValue: "Manual",
+  selectOptions: [
+    { label: "Flexible", value: QueueProcessingModeEnum.Manual },
+    { label: "Fifo", value: QueueProcessingModeEnum.Fifo },
+  ],
+  defaultValue: QueueProcessingModeEnum.Manual,
 };
 
 // Description

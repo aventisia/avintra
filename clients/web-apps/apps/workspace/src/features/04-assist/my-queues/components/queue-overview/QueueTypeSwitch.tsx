@@ -16,14 +16,19 @@ const OPTIONS: { value: QueueTypesEnum; label: string }[] = [
 
 /**
  * Segmented control to switch the Assist > Queues overview between the user's
- * own queues and the agent queues they have access to.
+ * own queues and the agent queues they have access to. Uses the same tabbed
+ * style as the Usage screen's Platform Credits / BYOK Consumption switch.
  */
 export const QueueTypeSwitch: React.FC<QueueTypeSwitchProps> = ({ value, onChange }) => {
   return (
     <Tabs value={value} onValueChange={(v) => onChange(v as QueueTypesEnum)}>
-      <TabsList className="h-fit rounded-lg px-1.5 py-1">
+      <TabsList className="grid grid-cols-2 rounded-none border-b bg-white px-3 text-base">
         {OPTIONS.map((option) => (
-          <TabsTrigger key={option.value} value={option.value} className="rounded-lg px-3 py-0.5">
+          <TabsTrigger
+            key={option.value}
+            value={option.value}
+            className="rounded-none data-[state=active]:border-b-black"
+          >
             {option.label}
           </TabsTrigger>
         ))}

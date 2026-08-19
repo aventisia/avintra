@@ -16,6 +16,8 @@ interface QueueSummaryCardProps {
   queueName: string;
   /** How work items in this queue are claimed for processing. */
   processingMode?: QueueProcessingModeEnum;
+  /** Names of the agents assigned to this queue. */
+  agentsNames?: string[] | null;
   /** Count of pending items. */
   pending: number;
   /** Count of items currently in progress. */
@@ -50,6 +52,7 @@ const processingModeBadge: Record<QueueProcessingModeEnum, string> = {
 export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
   queueName,
   processingMode,
+  agentsNames,
   pending,
   inProgress,
   completed,
@@ -104,6 +107,22 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
           total items
         </span>
       </div>
+
+      {/* Assigned agent(s) tag */}
+      {agentsNames && agentsNames.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="text-xs text-muted-foreground">Agent:</span>
+          {agentsNames.map((agent) => (
+            <Badge
+              key={agent}
+              variant="outline"
+              className="rounded-full px-2 py-0 text-2xs font-medium text-primary"
+            >
+              {agent}
+            </Badge>
+          ))}
+        </div>
+      )}
 
       <div className="grid grid-cols-3 gap-2">
         {counts.map((count) => (

@@ -87,6 +87,7 @@ public class QueueTableService : IQueueTableService
                     .GetByConditionAsync(w => w.CreatedByUserId == _userId)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.QueueTransactions)
+                    .Include(i => i.QueueFlowVersions).ThenInclude(qf => qf.FlowVersion).ThenInclude(fv => fv.Flow)
                     .Include(i => i.CreatedByUser)
                     .ToListAsync();
             }
@@ -120,6 +121,7 @@ public class QueueTableService : IQueueTableService
                         )
                     )
                     .Include(i => i.QueueTransactions)
+                    .Include(i => i.QueueFlowVersions).ThenInclude(qf => qf.FlowVersion).ThenInclude(fv => fv.Flow)
                     .Include(i => i.CreatedByUser)
                     .OrderByDescending(o => o.CreatedOn)
                     .ToListAsync();
