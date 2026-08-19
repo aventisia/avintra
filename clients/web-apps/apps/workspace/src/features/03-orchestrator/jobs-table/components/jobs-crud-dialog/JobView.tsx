@@ -188,7 +188,7 @@ export const JobView = ({ rowId }: JobViewProps) => {
           label="Credits Consumed"
           value={
             typeof job.creditsConsumed === "number"
-              ? job.creditsConsumed.toLocaleString()
+              ? job.creditsConsumed.toLocaleString(undefined, { maximumFractionDigits: 2 })
               : FALLBACK_VALUE
           }
         />

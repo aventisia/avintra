@@ -1,3 +1,5 @@
+using AccountsAPIs.Helpers;
+
 namespace AccountsAPIs.Services;
 
 public class CreditUsageService : ICreditUsageService
@@ -100,17 +102,17 @@ public class CreditUsageService : ICreditUsageService
                 // Summary metrics: total credits and credits split by execution vs LLM/model
                 UsageSummary = new UsageSummaryDto
                 {
-                    TotalCredits = creditUsages.Sum(c => c.CreditsUsed),
-                    TotalExecutionCredits = creditUsages
+                    TotalCredits = CreditRoundingHelper.RoundToTwo(creditUsages.Sum(c => c.CreditsUsed)),
+                    TotalExecutionCredits = CreditRoundingHelper.RoundToTwo(creditUsages
                             .Where(w => w.ServiceType == CreditServicesEnum.AgentExecutionTime)
-                            .Sum(sm => sm.CreditsUsed),
-                    TotalLlmCredits = creditUsages
+                            .Sum(sm => sm.CreditsUsed)),
+                    TotalLlmCredits = CreditRoundingHelper.RoundToTwo(creditUsages
                             .Where(w => w.ServiceType != CreditServicesEnum.AgentExecutionTime)
-                            .Sum(sm => sm.CreditsUsed),
-                    TotalAgentCredits = creditUsages
+                            .Sum(sm => sm.CreditsUsed)),
+                    TotalAgentCredits = CreditRoundingHelper.RoundToTwo(creditUsages
                             .Where(w => !string.IsNullOrEmpty(w.TriggeredByAgent))
                             .GroupBy(g => g.TriggeredByAgent)
-                            .Sum(sm => sm.Sum(sum => sum.CreditsUsed)),
+                            .Sum(sm => sm.Sum(sum => sum.CreditsUsed))),
                 },
 
                 // Grouped credits usage per day (for usage trends)
@@ -118,7 +120,7 @@ public class CreditUsageService : ICreditUsageService
                     .Select(s => new DataUsageDataPointDto
                     {
                         Date = s,
-                        TotalCount = creditUsages.Where(w => w.UsedAt.Date == s).Sum(sm => sm.CreditsUsed),
+                        TotalCount = CreditRoundingHelper.RoundToTwo(creditUsages.Where(w => w.UsedAt.Date == s).Sum(sm => sm.CreditsUsed)),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
@@ -128,9 +130,9 @@ public class CreditUsageService : ICreditUsageService
                     .Select(s => new DataUsageDataPointDto
                     {
                         Date = s,
-                        TotalCount = creditUsages
+                        TotalCount = CreditRoundingHelper.RoundToTwo(creditUsages
                             .Where(w => w.UsedAt.Date == s && w.ServiceType == CreditServicesEnum.AgentExecutionTime)
-                            .Sum(sm => sm.CreditsUsed),
+                            .Sum(sm => sm.CreditsUsed)),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
@@ -140,9 +142,9 @@ public class CreditUsageService : ICreditUsageService
                     .Select(s => new DataUsageDataPointDto
                     {
                         Date = s,
-                        TotalCount = creditUsages
+                        TotalCount = CreditRoundingHelper.RoundToTwo(creditUsages
                             .Where(w => w.UsedAt.Date == s && w.ServiceType != CreditServicesEnum.AgentExecutionTime)
-                            .Sum(sm => sm.CreditsUsed),
+                            .Sum(sm => sm.CreditsUsed)),
                     })
                     .OrderBy(o => o.Date)
                     .ToList(),
@@ -163,14 +165,14 @@ public class CreditUsageService : ICreditUsageService
                             //OneUnit = matchingPlan.OneUnit,
                             //UnitType = matchingPlan.UnitType,
                             //Credits = matchingPlan.Credits,
-                            TotalCredits = s.Sum(sm => sm.CreditsUsed),
+                            TotalCredits = CreditRoundingHelper.RoundToTwo(s.Sum(sm => sm.CreditsUsed)),
                             IsExecution = s.Key == CreditServicesEnum.AgentExecutionTime,
                             UsageTimeline = s
                                 .GroupBy(g1 => g1.UsedAt.Date)
                                 .Select(s1 => new DataUsageDataPointDto
                                 {
                                     Date = s1.Key,
-                                    TotalCount = s1.Sum(x => x.CreditsUsed),
+                                    TotalCount = CreditRoundingHelper.RoundToTwo(s1.Sum(x => x.CreditsUsed)),
                                 })
                                 .OrderBy(o => o.Date)
                                 .ToList()
@@ -190,19 +192,19 @@ public class CreditUsageService : ICreditUsageService
                             Username = user.UserName,
                             FirstName = user.FirstName,
                             LastName = user.LastName,
-                            TotalExecutionCredits = creditUsages
+                            TotalExecutionCredits = CreditRoundingHelper.RoundToTwo(creditUsages
                                 .Where(w =>
                                     w.UsedByUserId == user.Id &&
                                     w.ServiceType == CreditServicesEnum.AgentExecutionTime
                                 )
-                                .Sum(sm => sm.CreditsUsed),
-                            TotalLlmCredits = creditUsages
+                                .Sum(sm => sm.CreditsUsed)),
+                            TotalLlmCredits = CreditRoundingHelper.RoundToTwo(creditUsages
                                 .Where(w =>
                                     w.UsedByUserId == user.Id &&
                                     w.ServiceType != CreditServicesEnum.AgentExecutionTime
                                 )
-                                .Sum(sm => sm.CreditsUsed),
-                            TotalCredits = s.Sum(sm => sm.CreditsUsed)
+                                .Sum(sm => sm.CreditsUsed)),
+                            TotalCredits = CreditRoundingHelper.RoundToTwo(s.Sum(sm => sm.CreditsUsed))
                         };
                     })
                     .ToList(),
@@ -218,13 +220,13 @@ public class CreditUsageService : ICreditUsageService
                         return new AgentUsageDto
                         {
                             AgentName = s.First().RefName,
-                            TotalExecutionCredits = agentGroup
+                            TotalExecutionCredits = CreditRoundingHelper.RoundToTwo(agentGroup
                                 .Where(w => w.ServiceType == CreditServicesEnum.AgentExecutionTime)
-                                .Sum(sm => sm.CreditsUsed),
-                            TotalLlmCredits = agentGroup
+                                .Sum(sm => sm.CreditsUsed)),
+                            TotalLlmCredits = CreditRoundingHelper.RoundToTwo(agentGroup
                                 .Where(w => w.ServiceType != CreditServicesEnum.AgentExecutionTime)
-                                .Sum(sm => sm.CreditsUsed),
-                            TotalCredits = s.Sum(sm => sm.CreditsUsed)
+                                .Sum(sm => sm.CreditsUsed)),
+                            TotalCredits = CreditRoundingHelper.RoundToTwo(s.Sum(sm => sm.CreditsUsed))
                         };
                     })
                     .ToList()
@@ -321,19 +323,24 @@ public class CreditUsageService : ICreditUsageService
                 if (creditUsageDto.IsFixedCredits)
                 {
                     // Fixed credits: deduct the configured amount directly, bypassing
-                    // the unit-based credit plan conversion.
-                    creditUsed = creditUsageDto.ConsumedUnit;
+                    // the unit-based credit plan conversion. Round to two decimals so
+                    // fractional fixed credits are stored and deducted consistently.
+                    creditUsed = CreditRoundingHelper.RoundToTwo(creditUsageDto.ConsumedUnit);
                 }
                 else
                 {
-                    // Round up the consumed units to the nearest whole number
-                    creditUsageDto.ConsumedUnit = Math.Ceiling(creditUsageDto.ConsumedUnit);
+                    // Round consumed units to two decimal places instead of up to the
+                    // nearest whole number, so fractional usage is retained accurately.
+                    creditUsageDto.ConsumedUnit = CreditRoundingHelper.RoundToTwo(creditUsageDto.ConsumedUnit);
 
                     // Calculate the credit used based on the consumed units, the credit plan's unit value, and the number of credits per unit
                     creditUsed = creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit * existingCreditPlan.Credits;
 
                     // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
                     creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
+
+                    // Round the final calculated credits to two decimals before subtracting from balance.
+                    creditUsed = CreditRoundingHelper.RoundToTwo(creditUsed);
                 }
 
                 // Attempt to find the first available credit that has enough available credits to cover the usage
@@ -363,8 +370,8 @@ public class CreditUsageService : ICreditUsageService
 
             // Map the DTO to the entity model and set the user ID
             var creditUsage = creditUsageDto.Adapt<CreditUsage>();
-            creditUsage.CreditsUsed = creditUsed;
-            creditUsage.UnitUsed = creditUsageDto.ConsumedUnit;
+            creditUsage.CreditsUsed = CreditRoundingHelper.RoundToTwo(creditUsed);
+            creditUsage.UnitUsed = CreditRoundingHelper.RoundToTwo(creditUsageDto.ConsumedUnit);
             creditUsage.UsedByUserId = creditUsageDto.UsedByUserId.HasValue ? creditUsageDto.UsedByUserId : _userId;
             creditUsage.SpaceId = creditUsageDto.SpaceId;
 
@@ -383,7 +390,7 @@ public class CreditUsageService : ICreditUsageService
             var recordedCreditUsage = new RecordedCreditUsageDto
             {
                 ServiceType = creditUsageDto.ServiceType,
-                CreditsUsed = creditUsed
+                CreditsUsed = CreditRoundingHelper.RoundToTwo(creditUsed)
             };
 
             // Set the service response to indicate successful credit usage insertion
@@ -483,19 +490,24 @@ public class CreditUsageService : ICreditUsageService
                     if (creditUsageDto.IsFixedCredits)
                     {
                         // Fixed credits: deduct the configured amount directly, bypassing
-                        // the unit-based credit plan conversion.
-                        creditUsed = creditUsageDto.ConsumedUnit;
+                        // the unit-based credit plan conversion. Round to two decimals so
+                        // fractional fixed credits are stored and deducted consistently.
+                        creditUsed = CreditRoundingHelper.RoundToTwo(creditUsageDto.ConsumedUnit);
                     }
                     else
                     {
-                        // Round up the consumed units to the nearest whole number
-                        creditUsageDto.ConsumedUnit = Math.Ceiling(creditUsageDto.ConsumedUnit);
+                        // Round consumed units to two decimal places instead of up to the
+                        // nearest whole number, so fractional usage is retained accurately.
+                        creditUsageDto.ConsumedUnit = CreditRoundingHelper.RoundToTwo(creditUsageDto.ConsumedUnit);
 
                         // Calculate the credit used based on the consumed units, the credit plan's unit value, and the number of credits per unit
                         creditUsed = creditUsageDto.ConsumedUnit / creditPlan.OneUnit * creditPlan.Credits;
 
                         // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
                         creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
+
+                        // Round the final calculated credits to two decimals before subtracting from balance.
+                        creditUsed = CreditRoundingHelper.RoundToTwo(creditUsed);
                     }
 
                     // Attempt to find the first available credit that has enough available credits to cover the usage
@@ -516,10 +528,8 @@ public class CreditUsageService : ICreditUsageService
 
                 // Map the DTO to the entity model and set the user ID
                 var creditUsage = creditUsageDto.Adapt<CreditUsage>();
-                creditUsage.CreditsUsed = creditUsed;
-                creditUsage.UnitUsed = creditUsageDto.ConsumedUnit;
-                creditUsage.UsedByUserId = creditUsageDto.UsedByUserId.HasValue ? creditUsageDto.UsedByUserId : _userId;
-                creditUsage.SpaceId = creditUsageDto.SpaceId;
+                creditUsage.CreditsUsed = CreditRoundingHelper.RoundToTwo(creditUsed);
+                creditUsage.UnitUsed = CreditRoundingHelper.RoundToTwo(creditUsageDto.ConsumedUnit);
 
                 // Add the credit usage to the list for batch insertion
                 creditUsages.Add(creditUsage);
@@ -540,7 +550,7 @@ public class CreditUsageService : ICreditUsageService
                 .Select(cu => new RecordedCreditUsageDto
                 {
                     ServiceType = cu.ServiceType,
-                    CreditsUsed = cu.CreditsUsed
+                    CreditsUsed = CreditRoundingHelper.RoundToTwo(cu.CreditsUsed)
                 })
                 .ToList();
 
@@ -726,7 +736,7 @@ public class CreditUsageService : ICreditUsageService
                 // Aggregate available credit data into the DTO
                 serviceResponse.Data = new AvailableCreditDto
                 {
-                    AvailableCredits = await availableCreditsQuery.SumAsync(s => s.AvailableCredits),
+                    AvailableCredits = CreditRoundingHelper.RoundToTwo(await availableCreditsQuery.SumAsync(s => s.AvailableCredits)),
                 };
             }
             else
@@ -772,10 +782,10 @@ public class CreditUsageService : ICreditUsageService
             // Construct the credit summary DTO with monthly breakdown
             var availableCreditDto = new AvailableCreditSummaryDto
             {
-                AvailableCredits = availableCreditsQuery.Sum(s => s.AvailableCredits),
+                AvailableCredits = CreditRoundingHelper.RoundToTwo(availableCreditsQuery.Sum(s => s.AvailableCredits)),
                 MonthlyCredits = await availableCreditsQuery.Select(s => new MonthlyCreditDetailsDto
                 {
-                    AvailableCredits = s.AvailableCredits,
+                    AvailableCredits = CreditRoundingHelper.RoundToTwo(s.AvailableCredits),
                     ExpiredOn = s.ExpiredOn.Date,
                     Status = s.ExpiredOn.Date < DateTimeOffset.UtcNow.Date
                         ? CreditStatusesEnum.Expired

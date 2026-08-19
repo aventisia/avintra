@@ -137,7 +137,9 @@ export const jobsTableColumns: ColumnDef<JobsTableRowDto>[] = [
       const value = row.getValue("creditsConsumed");
       return (
         <div className="w-auto truncate font-medium">
-          {typeof value === "number" ? value.toLocaleString() : FALLBACK_VALUE}
+          {typeof value === "number"
+            ? value.toLocaleString(undefined, { maximumFractionDigits: 2 })
+            : FALLBACK_VALUE}
         </div>
       );
     },

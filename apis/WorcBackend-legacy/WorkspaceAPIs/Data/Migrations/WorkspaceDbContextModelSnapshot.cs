@@ -533,8 +533,8 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("FixedCredits")
-                        .HasColumnType("integer");
+                    b.Property<double?>("FixedCredits")
+                        .HasColumnType("double precision");
 
                     b.Property<Guid>("FlowId")
                         .HasColumnType("uuid");
@@ -729,8 +729,8 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int?>("CreditsConsumed")
-                        .HasColumnType("integer");
+                    b.Property<double?>("CreditsConsumed")
+                        .HasColumnType("double precision");
 
                     b.Property<DateTimeOffset?>("EndTime")
                         .HasColumnType("timestamp with time zone");

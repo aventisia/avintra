@@ -365,7 +365,7 @@ public class ManageTenantService : IManageTenantService
     }
 
     // Sets the fixed credits limit for a published agent (flow version).
-    public async Task<ServiceResponse<bool>> SetFixedCreditsAsync(Guid flowVersionId, int? fixedCredits)
+    public async Task<ServiceResponse<bool>> SetFixedCreditsAsync(Guid flowVersionId, double? fixedCredits)
     {
         // Initialize default failure response
         var serviceResponse = new ServiceResponse<bool>

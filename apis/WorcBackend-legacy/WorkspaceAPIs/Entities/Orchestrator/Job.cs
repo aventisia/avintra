@@ -68,7 +68,7 @@ public class Job
     /// <summary>
     /// Gets or sets the credits consumed for the job execution, if credit tracking is enabled.
     /// </summary>
-    public int? CreditsConsumed { get; set; }
+    public double? CreditsConsumed { get; set; }
 
     /// <summary>
     /// Gets or sets the current status of the job (e.g., Running, Completed, Failed, Canceled).

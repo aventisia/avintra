@@ -87,7 +87,7 @@ public interface IJobsTableService
     /// </summary>
     /// <param name="flowVersionId">The flow version (agent) ID to look up.</param>
     /// <returns>A service response containing the fixed credits amount, if configured.</returns>
-    Task<ServiceResponse<int?>> GetAgentFixedCreditsAsync(Guid flowVersionId);
+    Task<ServiceResponse<double?>> GetAgentFixedCreditsAsync(Guid flowVersionId);
 
     // TODO: Need to check this
     // /// <summary>
