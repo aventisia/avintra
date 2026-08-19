@@ -3,7 +3,6 @@ import { Button } from "@avplatform/ui/buttons";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
-import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
@@ -39,9 +38,6 @@ const AppHeader: React.FC = () => {
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
 
-  const [searchParams] = useSearchParams();
-  const showBackButton = searchParams.get("return") === "1";
-
   const goBack = () => {
     window.location.href = import.meta.env.VITE_WORKSPACE_PATH;
   };
@@ -51,18 +47,16 @@ const AppHeader: React.FC = () => {
       <Header className="grid p-0 grid-cols-[1fr_auto_1fr]">
         <div className="flex items-center gap-3 min-w-0 text-white">
           {/* Back Button */}
-          {showBackButton && (
-            <Tooltip content="Back to Avintra">
-              <Button
-                size="icon8"
-                variant="ghost"
-                className="hover:bg-white/10"
-                onClick={() => goBack()}
-              >
-                <ArrowLeftIcon className="h-4 w-4 text-white/80" />
-              </Button>
-            </Tooltip>
-          )}
+          <Tooltip content="Back to Workspace">
+            <Button
+              size="icon8"
+              variant="ghost"
+              className="hover:bg-white/10"
+              onClick={() => goBack()}
+            >
+              <ArrowLeftIcon className="h-4 w-4 text-white/80" />
+            </Button>
+          </Tooltip>
 
           {/* App Logo */}
           <AppLogo />
