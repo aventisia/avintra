@@ -4,4 +4,4 @@ namespace NodeLibrary.DataTableNodes;
     label: "Data Table",
     description: "Manipulate and transform data tables.",
     icon: "/assets/DataTable.svg")]
-internal sealed class _DataTableCategoryL2Metadata { }
+internal sealed class _DataTableL2CategoryMetadata { }

@@ -39,6 +39,7 @@ type NodeDataType = {
   disabled?: boolean;
   hidden?: boolean;
   doNotRenderIf?: DoNotRenderIfType;
+  badge?: string;
   formType?: "custom" | "dynamic";
   isGroupHead?: boolean;
   groupId?: string;

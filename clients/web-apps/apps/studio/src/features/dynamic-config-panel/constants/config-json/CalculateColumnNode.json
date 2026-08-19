@@ -1,0 +1,51 @@
+{
+  "name": "CalculateColumnNode",
+  "label": "Calculate Column",
+  "description": "Adds a computed column to a data table by evaluating a formula expression that references other columns.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to which the computed column will be added.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnName",
+      "label": "Column Name",
+      "description": "The name of the new computed column.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Expression",
+      "label": "Expression",
+      "description": "The expression to evaluate per row. Column names are referenced directly, e.g., \u0027Price * Quantity\u0027 or \u0027UPPER(Name)\u0027.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "UpdatedDataTable",
+      "label": "Updated Data Table",
+      "description": "The data table with the computed column appended.",
+      "defaultValue": {
+        "value": "UpdatedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

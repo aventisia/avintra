@@ -337,7 +337,17 @@
         "actions": [
           {
             "type": "activityNode",
-            "name": "AppendLineToTextActivity",
+            "name": "AddPrefixSuffixToTextNode",
+            "label": "Add Prefix or Suffix to Text",
+            "description": "Adds a prefix and/or suffix to a text value.",
+            "img": "/assets/Text.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "AppendLineToTextNode",
             "label": "Append Line to Text",
             "description": "Appends a new line of text to the original text.",
             "img": "/assets/Text.svg",
@@ -346,7 +356,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ChangeTextCaseActivity",
+            "name": "ChangeTextCaseNode",
             "label": "Change Text Case",
             "description": "Converts the input text to the specified case format.",
             "img": "/assets/Text.svg",
@@ -355,7 +365,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ConvertNumberToTextActivity",
+            "name": "ConvertNumberToTextNode",
             "label": "Convert Number to Text",
             "description": "Converts a numeric value into text with specified formatting options.",
             "img": "/assets/Text.svg",
@@ -364,7 +374,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ConvertTextToDateTimeActivity",
+            "name": "ConvertTextToDateTimeNode",
             "label": "Convert Text to DateTime",
             "description": "Converts a text representation of a date and/or time value to a DateTime value.",
             "img": "/assets/Text.svg",
@@ -373,7 +383,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ConvertTextToNumberActivity",
+            "name": "ConvertTextToNumberNode",
             "label": "Convert Text to Number",
             "description": "Converts a text representation of a number to a numeric value.",
             "img": "/assets/Text.svg",
@@ -382,7 +392,7 @@
           },
           {
             "type": "activityNode",
-            "name": "CreateHtmlContentActivity",
+            "name": "CreateHtmlContentNode",
             "label": "Create HTML Content",
             "description": "Generates rich HTML content and stores it in a variable.",
             "img": "/assets/Text.svg",
@@ -391,7 +401,7 @@
           },
           {
             "type": "activityNode",
-            "name": "CreateRandomTextActivity",
+            "name": "CreateRandomTextNode",
             "label": "Create Random Text",
             "description": "Generates a text of specified length consisting of random characters.",
             "img": "/assets/Text.svg",
@@ -400,7 +410,16 @@
           },
           {
             "type": "activityNode",
-            "name": "EscapeTextForRegularExpressionActivity",
+            "name": "CropTextNode",
+            "label": "Crop Text",
+            "description": "Extracts text before, after, or between specified flags.",
+            "img": "/assets/Text.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "EscapeTextForRegularExpressionNode",
             "label": "Escape Text for Regular Expression",
             "description": "Escapes a minimal set of characters for use in regular expressions by replacing them with their escape codes.",
             "img": "/assets/Text.svg",
@@ -409,7 +428,7 @@
           },
           {
             "type": "activityNode",
-            "name": "GetSubtextActivity",
+            "name": "GetSubtextNode",
             "label": "Extract Substring from Text",
             "description": "Retrieves a substring from the original text based on start index and length.",
             "img": "/assets/Text.svg",
@@ -418,7 +437,7 @@
           },
           {
             "type": "activityNode",
-            "name": "JoinTextActivity",
+            "name": "JoinTextNode",
             "label": "Join Text",
             "description": "Converts a list into a text value by separating its items with a specified delimiter.",
             "img": "/assets/Text.svg",
@@ -427,7 +446,17 @@
           },
           {
             "type": "activityNode",
-            "name": "PadTextActivity",
+            "name": "NormalizeTextNode",
+            "label": "Normalize Text",
+            "description": "Normalizes a text by removing accents, collapsing whitespace, and converting the case.",
+            "img": "/assets/Text.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "PadTextNode",
             "label": "Pad Text",
             "description": "Creates a fixed-length text by adding characters to the left or right of an existing text.",
             "img": "/assets/Text.svg",
@@ -436,7 +465,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ParseTextActivity",
+            "name": "ParseTextNode",
             "label": "Parse Text",
             "description": "Parses a text to find the first or all occurrences of a specified subtext or regular expression pattern.",
             "img": "/assets/Text.svg",
@@ -445,7 +474,7 @@
           },
           {
             "type": "activityNode",
-            "name": "RecognizeEntitiesInTextActivity",
+            "name": "RecognizeEntitiesInTextNode",
             "label": "Recognize Entities in Text",
             "description": "Identifies specific entities in text, such as dates, numbers, emails, URLs, etc., across multiple languages.",
             "img": "/assets/Text.svg",
@@ -454,7 +483,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ReplaceTextActivity",
+            "name": "ReplaceTextNode",
             "label": "Replace Text",
             "description": "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.",
             "img": "/assets/Text.svg",
@@ -463,7 +492,7 @@
           },
           {
             "type": "activityNode",
-            "name": "ReverseTextActivity",
+            "name": "ReverseTextNode",
             "label": "Reverse Text",
             "description": "Reverses the order of characters in a given text string.",
             "img": "/assets/Text.svg",
@@ -472,7 +501,7 @@
           },
           {
             "type": "activityNode",
-            "name": "SplitTextActivity",
+            "name": "SplitTextNode",
             "label": "Split Text",
             "description": "Creates a list containing the substrings of a text that is separated by a specified delimiter or regular expression.",
             "img": "/assets/Text.svg",
@@ -481,7 +510,17 @@
           },
           {
             "type": "activityNode",
-            "name": "TrimTextActivity",
+            "name": "TokenizeTextNode",
+            "label": "Tokenize Text",
+            "description": "Splits text into a list of word tokens, optionally removing punctuation and stop words.",
+            "img": "/assets/Text.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "TrimTextNode",
             "label": "Trim Text",
             "description": "Removes specified characters from the start, end, or both ends of a text string.",
             "img": "/assets/Text.svg",
@@ -513,6 +552,16 @@
         "actions": [
           {
             "type": "activityNode",
+            "name": "ConvertJsonArrayToDataTableNode",
+            "label": "Convert JSON Array to Data Table",
+            "description": "Converts a JSON array of objects into a data table, using the keys as columns.",
+            "img": "/assets/JSON.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
             "name": "DeleteJSONNodeWithPrimaryKeyNode",
             "label": "Delete JSON Node by Primary Key",
             "description": "Recursively searches for an object with a matching primary key-value pair and deletes it from the structure.",
@@ -528,6 +577,16 @@
             "img": "/assets/JSON.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "FlattenJsonNode",
+            "label": "Flatten JSON",
+            "description": "Flattens a nested JSON structure into a single-level object whose keys represent the full path to each leaf value.",
+            "img": "/assets/JSON.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
           },
           {
             "type": "activityNode",
@@ -598,6 +657,16 @@
             "img": "/assets/DateTime.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractDateTimePartsNode",
+            "label": "Extract DateTime Parts",
+            "description": "Extracts individual date and time components (year, month, day, hour, weekday, etc.) from a DateTime value.",
+            "img": "/assets/DateTime.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
           },
           {
             "type": "activityNode",
@@ -678,7 +747,37 @@
         "actions": [
           {
             "type": "activityNode",
-            "name": "ClearDataTableActivity",
+            "name": "AddRecordIdNode",
+            "label": "Add Record ID",
+            "description": "Adds a sequential record ID column to a data table, starting at a configurable value with a configurable increment.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "CalculateColumnNode",
+            "label": "Calculate Column",
+            "description": "Adds a computed column to a data table by evaluating a formula expression that references other columns.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ChangeColumnDataTypeNode",
+            "label": "Change Column Data Type",
+            "description": "Casts one or more columns of a data table to a target data type.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ClearDataTableNode",
             "label": "Clear Data Table",
             "description": "Removes all rows from a data table while preserving its structure.",
             "img": "/assets/DataTable.svg",
@@ -687,7 +786,17 @@
           },
           {
             "type": "activityNode",
-            "name": "ConvertDataTableToCsvTextActivity",
+            "name": "ConcatenateDataTablesNode",
+            "label": "Concatenate Data Tables",
+            "description": "Stacks two data tables vertically, aligning columns by name. Missing columns are filled with null.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConvertDataTableToCsvTextNode",
             "label": "Convert Data Table to CSV Text",
             "description": "Converts a data table into a CSV (comma-separated values) text representation.",
             "img": "/assets/DataTable.svg",
@@ -696,7 +805,7 @@
           },
           {
             "type": "activityNode",
-            "name": "CreateDataTableActivity",
+            "name": "CreateDataTableNode",
             "label": "Create Data Table",
             "description": "Creates a new data table. If an existing data table is provided, it will be cloned.",
             "img": "/assets/DataTable.svg",
@@ -705,7 +814,27 @@
           },
           {
             "type": "activityNode",
-            "name": "DeleteColumnFromDataTableActivity",
+            "name": "CrossTabDataTableNode",
+            "label": "Cross Tab Data Table",
+            "description": "Pivots a data table so that values in a column become new columns (wide format), with an aggregation applied per group.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "DataCleansingNode",
+            "label": "Data Cleansing",
+            "description": "Cleans text columns by trimming whitespace, collapsing spaces, removing special characters, and normalizing casing.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "DeleteColumnFromDataTableNode",
             "label": "Delete Column From Data Table",
             "description": "Deletes a data table column at the specified column index or column name.",
             "img": "/assets/DataTable.svg",
@@ -714,7 +843,7 @@
           },
           {
             "type": "activityNode",
-            "name": "DeleteDuplicateRowsFromDataTable",
+            "name": "DeleteDuplicateRowsFromDataTableNode",
             "label": "Delete Duplicate Rows From Data Table",
             "description": "Deletes all rows that are exact duplicates from the data table.",
             "img": "/assets/DataTable.svg",
@@ -723,7 +852,7 @@
           },
           {
             "type": "activityNode",
-            "name": "DeleteEmptyRowsFromDataTableActivity",
+            "name": "DeleteEmptyRowsFromDataTableNode",
             "label": "Delete Empty Rows From Data Table",
             "description": "Deletes rows from a data table where one or more cells are empty.",
             "img": "/assets/DataTable.svg",
@@ -732,7 +861,7 @@
           },
           {
             "type": "activityNode",
-            "name": "DeleteRowFromDataTableActivity",
+            "name": "DeleteRowFromDataTableNode",
             "label": "Delete Row From Data Table",
             "description": "Deletes a row from a data table based on its zero-based index.",
             "img": "/assets/DataTable.svg",
@@ -741,7 +870,27 @@
           },
           {
             "type": "activityNode",
-            "name": "FilterDataTableActivity",
+            "name": "ExtractRegexToColumnsNode",
+            "label": "Extract Regex to Columns",
+            "description": "Applies a regular expression with capture groups to a column; each capture group becomes a new column.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "FillMissingValuesNode",
+            "label": "Fill Missing Values",
+            "description": "Fills missing (null) values in a column using a constant, the previous or next value, or the group mean.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "FilterDataTableNode",
             "label": "Filter Data Table",
             "description": "Filters the data table rows based on the applied rules.",
             "img": "/assets/DataTable.svg",
@@ -750,7 +899,7 @@
           },
           {
             "type": "activityNode",
-            "name": "FindAndReplaceInDataTableActivity",
+            "name": "FindAndReplaceInDataTableNode",
             "label": "Find or Replace in Data Table",
             "description": "Finds and/or replaces data table values.",
             "img": "/assets/DataTable.svg",
@@ -759,7 +908,7 @@
           },
           {
             "type": "activityNode",
-            "name": "InsertColumnIntoDataTable",
+            "name": "InsertColumnIntoDataTableNode",
             "label": "Insert Column Into Data Table",
             "description": "Inserts a new column into the data table either at the end or before a specific column index.",
             "img": "/assets/DataTable.svg",
@@ -768,7 +917,7 @@
           },
           {
             "type": "activityNode",
-            "name": "InsertRowIntoDataTableActivity",
+            "name": "InsertRowIntoDataTableNode",
             "label": "Insert Row Into Data Table",
             "description": "Inserts a new row into the data table at the specified location.",
             "img": "/assets/DataTable.svg",
@@ -777,7 +926,7 @@
           },
           {
             "type": "activityNode",
-            "name": "JoinDataTablesActivity",
+            "name": "JoinDataTablesNode",
             "label": "Join Data Tables",
             "description": "Joins two data tables based on the specified join rule.",
             "img": "/assets/DataTable.svg",
@@ -786,7 +935,17 @@
           },
           {
             "type": "activityNode",
-            "name": "MergeDataTablesActivity",
+            "name": "MapColumnValuesNode",
+            "label": "Map Column Values",
+            "description": "Replaces values in a column using a lookup dictionary of \u0027from:to\u0027 pairs.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "MergeDataTablesNode",
             "label": "Merge Data Tables",
             "description": "Merges two data tables together, specifying the merging behavior in case their columns are different.",
             "img": "/assets/DataTable.svg",
@@ -795,7 +954,27 @@
           },
           {
             "type": "activityNode",
-            "name": "ReadFromCsvTextActivity",
+            "name": "MultiRowFormulaNode",
+            "label": "Multi-Row Formula",
+            "description": "Computes a new column by referencing rows before or after the current row, e.g., running totals or moving averages.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ProfileDataTableNode",
+            "label": "Profile Data Table",
+            "description": "Generates a data-quality summary per column, including row count, null count, distinct count, and min/max values.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReadFromCsvTextNode",
             "label": "Read From CSV Text",
             "description": "Generates a data table from a CSV text.",
             "img": "/assets/DataTable.svg",
@@ -804,16 +983,96 @@
           },
           {
             "type": "activityNode",
-            "name": "SortDataTableActivity",
+            "name": "RenameColumnsNode",
+            "label": "Rename Columns",
+            "description": "Renames one or more columns of a data table using a list of \u0027oldName:newName\u0027 pairs.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "RoundNumbersInColumnNode",
+            "label": "Round Numbers in Column",
+            "description": "Rounds the numeric values of a column to a fixed number of decimal places, significant digits, or to whole numbers.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "SampleDataTableNode",
+            "label": "Sample Data Table",
+            "description": "Returns a subset of rows from a data table, selected by count or percentage.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "SelectColumnsNode",
+            "label": "Select Columns",
+            "description": "Keeps only the specified columns of a data table, preserving their order.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "SortDataTableNode",
             "label": "Sort Data Table",
-            "description": "Sorts the data table rows in ascending or descending order by the specified column, provided that all its values have the same data type.",
+            "description": "Sorts the data table rows in ascending or descending order by the specified column.",
             "img": "/assets/DataTable.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
-            "name": "UpdateDataTableItemActivity",
+            "name": "SplitTextToColumnsNode",
+            "label": "Split Text to Columns",
+            "description": "Splits the values of a single text column into multiple columns using a delimiter or fixed-length chunks.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "SummarizeDataTableNode",
+            "label": "Summarize Data Table",
+            "description": "Groups rows by one or more columns and applies aggregation functions such as Sum, Count, Minimum, Maximum, or Average.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "TransposeDataTableNode",
+            "label": "Transpose Data Table",
+            "description": "Rotates a data table so that columns become rows (long format). Optionally groups data by key columns.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "UniqueRowsByKeyNode",
+            "label": "Unique Rows by Key",
+            "description": "Removes rows that share the same value in one or more key columns, keeping either the first or last occurrence.",
+            "img": "/assets/DataTable.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud", "windows"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "UpdateDataTableItemNode",
             "label": "Update Data Table Item",
             "description": "Updates a specific cell in a DataTable by specifying the column, row, and new value.",
             "img": "/assets/DataTable.svg",

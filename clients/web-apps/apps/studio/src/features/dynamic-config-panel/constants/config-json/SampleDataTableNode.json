@@ -1,0 +1,82 @@
+{
+  "name": "SampleDataTableNode",
+  "label": "Sample Data Table",
+  "description": "Returns a subset of rows from a data table, selected by count or percentage.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to sample.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SampleMode",
+      "label": "Sample Mode",
+      "description": "How the rows are selected (first N, last N, percentage, or random N).",
+      "defaultValue": "FirstNRows",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "First N Rows",
+          "value": "FirstNRows",
+          "description": "Keeps the first N rows of the data table."
+        },
+        {
+          "label": "Last N Rows",
+          "value": "LastNRows",
+          "description": "Keeps the last N rows of the data table."
+        },
+        {
+          "label": "Percentage",
+          "value": "Percentage",
+          "description": "Keeps a percentage of the rows (randomly selected)."
+        },
+        {
+          "label": "Random N Rows",
+          "value": "RandomNRows",
+          "description": "Keeps N rows selected at random."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RowCount",
+      "label": "Row Count",
+      "description": "The number of rows to keep (used by First N, Last N, and Random N).",
+      "defaultValue": 10,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Percentage",
+      "label": "Percentage",
+      "description": "The percentage of rows to keep (used by Percentage mode).",
+      "defaultValue": 50,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SampledDataTable",
+      "label": "Sampled Data Table",
+      "description": "The resulting data table containing the sampled rows.",
+      "defaultValue": {
+        "value": "SampledDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

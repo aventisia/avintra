@@ -1,0 +1,121 @@
+{
+  "name": "SummarizeDataTableNode",
+  "label": "Summarize Data Table",
+  "description": "Groups rows by one or more columns and applies aggregation functions such as Sum, Count, Minimum, Maximum, or Average.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to summarize.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "GroupByColumns",
+      "label": "Group By Columns",
+      "description": "Comma-separated column names used to group rows.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ValueColumn",
+      "label": "Value Column",
+      "description": "The column on which the aggregation is performed.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Aggregation",
+      "label": "Aggregation",
+      "description": "The aggregation function to apply to the value column.",
+      "defaultValue": "Sum",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Sum",
+          "value": "Sum",
+          "description": "Returns the sum of the numeric values."
+        },
+        {
+          "label": "Count",
+          "value": "Count",
+          "description": "Returns the number of non-null rows."
+        },
+        {
+          "label": "Count Distinct",
+          "value": "CountDistinct",
+          "description": "Returns the number of distinct non-null values."
+        },
+        {
+          "label": "Minimum",
+          "value": "Min",
+          "description": "Returns the smallest value."
+        },
+        {
+          "label": "Maximum",
+          "value": "Max",
+          "description": "Returns the largest value."
+        },
+        {
+          "label": "Average",
+          "value": "Average",
+          "description": "Returns the arithmetic mean of the numeric values."
+        },
+        {
+          "label": "Median",
+          "value": "Median",
+          "description": "Returns the median of the numeric values."
+        },
+        {
+          "label": "Standard Deviation",
+          "value": "StandardDeviation",
+          "description": "Returns the sample standard deviation of the numeric values."
+        },
+        {
+          "label": "First",
+          "value": "First",
+          "description": "Returns the first non-null value."
+        },
+        {
+          "label": "Last",
+          "value": "Last",
+          "description": "Returns the last non-null value."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumnName",
+      "label": "Result Column Name",
+      "description": "The name of the column that will hold the aggregated result. Defaults to the value column name.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SummarizedDataTable",
+      "label": "Summarized Data Table",
+      "description": "The resulting grouped and aggregated data table.",
+      "defaultValue": {
+        "value": "SummarizedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

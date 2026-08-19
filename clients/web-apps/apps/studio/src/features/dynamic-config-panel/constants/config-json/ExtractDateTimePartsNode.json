@@ -1,0 +1,141 @@
+{
+  "name": "ExtractDateTimePartsNode",
+  "label": "Extract DateTime Parts",
+  "description": "Extracts individual date and time components (year, month, day, hour, weekday, etc.) from a DateTime value.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DateTimeValue",
+      "label": "DateTime Value",
+      "description": "The DateTime value from which to extract components.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Year",
+      "label": "Year",
+      "description": "The four-digit year component.",
+      "defaultValue": {
+        "value": "Year",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Month",
+      "label": "Month",
+      "description": "The numeric month component (1-12).",
+      "defaultValue": {
+        "value": "Month",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Day",
+      "label": "Day",
+      "description": "The day-of-month component (1-31).",
+      "defaultValue": {
+        "value": "Day",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Hour",
+      "label": "Hour",
+      "description": "The hour component (0-23).",
+      "defaultValue": {
+        "value": "Hour",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Minute",
+      "label": "Minute",
+      "description": "The minute component (0-59).",
+      "defaultValue": {
+        "value": "Minute",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Second",
+      "label": "Second",
+      "description": "The second component (0-59).",
+      "defaultValue": {
+        "value": "Second",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Weekday",
+      "label": "Weekday",
+      "description": "The name of the day of the week (e.g., Monday).",
+      "defaultValue": {
+        "value": "Weekday",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "DayOfYear",
+      "label": "Day of Year",
+      "description": "The day-of-year component (1-366).",
+      "defaultValue": {
+        "value": "DayOfYear",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "WeekNumber",
+      "label": "Week Number",
+      "description": "The ISO 8601 week number of the year (1-53).",
+      "defaultValue": {
+        "value": "WeekNumber",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Quarter",
+      "label": "Quarter",
+      "description": "The quarter of the year (1-4).",
+      "defaultValue": {
+        "value": "Quarter",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

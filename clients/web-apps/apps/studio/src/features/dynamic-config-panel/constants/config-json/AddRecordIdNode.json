@@ -1,0 +1,60 @@
+{
+  "name": "AddRecordIdNode",
+  "label": "Add Record ID",
+  "description": "Adds a sequential record ID column to a data table, starting at a configurable value with a configurable increment.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to which the record ID column will be added.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnName",
+      "label": "Column Name",
+      "description": "The name of the new record ID column. Defaults to \u0027RecordID\u0027.",
+      "defaultValue": "RecordID",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StartAt",
+      "label": "Start At",
+      "description": "The value of the first record ID. Defaults to 1.",
+      "defaultValue": 1,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Increment",
+      "label": "Increment",
+      "description": "The amount to increment each record ID by. Defaults to 1.",
+      "defaultValue": 1,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "UpdatedDataTable",
+      "label": "Updated Data Table",
+      "description": "The data table with the added record ID column.",
+      "defaultValue": {
+        "value": "UpdatedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

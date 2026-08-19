@@ -1,0 +1,42 @@
+{
+  "name": "RenameColumnsNode",
+  "label": "Rename Columns",
+  "description": "Renames one or more columns of a data table using a list of \u0027oldName:newName\u0027 pairs.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table whose columns will be renamed.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Renames",
+      "label": "Renames",
+      "description": "Comma-separated \u0027oldName:newName\u0027 pairs, e.g., \u0027ID:OrderId,Total:Amount\u0027.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "RenamedDataTable",
+      "label": "Renamed Data Table",
+      "description": "The data table with the renamed columns.",
+      "defaultValue": {
+        "value": "RenamedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

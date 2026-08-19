@@ -53,6 +53,11 @@ public class NodeMetadataAttribute : Attribute
     /// </summary>
     public string? DoNotRenderIf { get; }
 
+    /// <summary>
+    /// Optional badge to display next to the node label (e.g., "Beta"). Null or empty means no badge.
+    /// </summary>
+    public string? Badge { get; }
+
     public NodeMetadataAttribute(
         string nodeType = "activityNode",
         string version = "1.0.0",
@@ -62,7 +67,8 @@ public class NodeMetadataAttribute : Attribute
         string icon = "/function.png",
         string docsLink = "https://docs.aventisia.com",
         string? supportedPlatforms = null,
-        string? doNotRenderIf = null)
+        string? doNotRenderIf = null,
+        string? badge = null)
     {
         NodeType = nodeType;
         Version = version;
@@ -73,5 +79,6 @@ public class NodeMetadataAttribute : Attribute
         DocsLink = docsLink;
         SupportedPlatforms = supportedPlatforms;
         DoNotRenderIf = doNotRenderIf;
+        Badge = badge;
     }
 }

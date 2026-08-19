@@ -1,0 +1,42 @@
+{
+  "name": "FlattenJsonNode",
+  "label": "Flatten JSON",
+  "description": "Flattens a nested JSON structure into a single-level object whose keys represent the full path to each leaf value.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "JsonNode",
+      "label": "JSON Node",
+      "description": "The JSON node or object to flatten.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Separator",
+      "label": "Separator",
+      "description": "The separator used between path segments. Defaults to \u0027.\u0027.",
+      "defaultValue": ".",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "FlattenedJson",
+      "label": "Flattened JSON",
+      "description": "The flattened JSON object as a string.",
+      "defaultValue": {
+        "value": "FlattenedJson",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "name": "MultiRowFormulaNode",
+  "label": "Multi-Row Formula",
+  "description": "Computes a new column by referencing rows before or after the current row, e.g., running totals or moving averages.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table on which the multi-row formula is applied.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceColumn",
+      "label": "Source Column",
+      "description": "The name of the column used as input for the formula.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "FormulaType",
+      "label": "Formula Type",
+      "description": "The type of multi-row computation to perform.",
+      "defaultValue": "RunningTotal",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Running Total",
+          "value": "RunningTotal",
+          "description": "Cumulative sum of the column up to and including the current row."
+        },
+        {
+          "label": "Previous Value",
+          "value": "PreviousValue",
+          "description": "Uses the value from a row that is N rows before the current row."
+        },
+        {
+          "label": "Next Value",
+          "value": "NextValue",
+          "description": "Uses the value from a row that is N rows after the current row."
+        },
+        {
+          "label": "Difference From Previous",
+          "value": "DifferenceFromPrevious",
+          "description": "Computes the current value minus the value from N rows before."
+        },
+        {
+          "label": "Moving Average",
+          "value": "MovingAverage",
+          "description": "Computes the average of the current row and N preceding rows."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Rows",
+      "label": "Rows",
+      "description": "The number of rows to look back (or forward) for Previous/Next/Difference/Moving Average.",
+      "defaultValue": 1,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumnName",
+      "label": "Result Column Name",
+      "description": "The name of the output column. Defaults to the source column name.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "UpdatedDataTable",
+      "label": "Updated Data Table",
+      "description": "The data table with the multi-row formula column appended.",
+      "defaultValue": {
+        "value": "UpdatedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}
