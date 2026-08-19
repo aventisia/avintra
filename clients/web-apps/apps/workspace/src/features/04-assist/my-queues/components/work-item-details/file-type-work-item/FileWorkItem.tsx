@@ -45,8 +45,12 @@ export default function FileWorkItem({
       clearAllFiles();
     };
 
+    // `credentialId` is resolved asynchronously from the queue (`myCurrentQueue`),
+    // so it can be undefined when the file first renders. Include it in the deps
+    // so that once it arrives the file is re-registered with the correct
+    // credential (SharePoint downloads otherwise 400 with "CredentialId required").
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data?.fileUrls]);
+  }, [data?.fileUrls, credentialId]);
 
   useEffect(() => {
     if (!data?.workItemData) return;

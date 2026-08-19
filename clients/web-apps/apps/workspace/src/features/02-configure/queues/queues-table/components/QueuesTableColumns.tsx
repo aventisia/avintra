@@ -7,7 +7,18 @@ import { format } from "date-fns";
 import { TABLE_KEY } from "../constants";
 import { getColumnName } from "../constants/column-display-names";
 import { QueuesTableDto } from "../dtos/queues-table-dto";
+import { QueueProcessingModeEnum } from "../enums/queue-processing-mode-enum";
 import { QueueRowActions } from "./queue-row-actions/QueueRowActions";
+
+/**
+ * User-facing label for a queue's processing mode. The stored enum value for the
+ * non-FIFO mode is "Manual", but it is branded as "Flexible" in the UI, so map it
+ * to the display label instead of showing the raw stored value.
+ */
+const processingModeLabel: Record<QueueProcessingModeEnum, string> = {
+  [QueueProcessingModeEnum.Fifo]: "Fifo",
+  [QueueProcessingModeEnum.Manual]: "Flexible",
+};
 
 /**
  * Array of table columns for the queues table.
@@ -66,9 +77,14 @@ export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableD
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("processingMode")} />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("processingMode") ?? "--"}</div>
-    ),
+    cell: ({ row }) => {
+      const value = row.getValue<QueueProcessingModeEnum | null>("processingMode");
+      return (
+        <div className="w-auto truncate font-medium">
+          {value ? processingModeLabel[value] ?? value : "--"}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "agentsNames",

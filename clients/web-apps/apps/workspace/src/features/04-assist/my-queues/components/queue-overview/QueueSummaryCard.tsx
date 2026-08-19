@@ -45,6 +45,16 @@ const processingModeBadge: Record<QueueProcessingModeEnum, string> = {
 };
 
 /**
+ * User-facing label for a queue's processing mode. The stored enum value for the
+ * non-FIFO mode is "Manual", but it is branded as "Flexible" in the UI, so map it
+ * to the display label instead of showing the raw stored value.
+ */
+const processingModeLabel: Record<QueueProcessingModeEnum, string> = {
+  [QueueProcessingModeEnum.Fifo]: "Fifo",
+  [QueueProcessingModeEnum.Manual]: "Flexible",
+};
+
+/**
  * Renders a clickable summary card for a queue showing its name, the
  * color-coded count of Pending (Pending + In-progress combined) and Completed
  * items, plus the average age of active items and the average processing time
@@ -92,7 +102,7 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
                 processingModeBadge[processingMode],
               )}
             >
-              {processingMode}
+              {processingModeLabel[processingMode] ?? processingMode}
             </Badge>
           )}
         </div>

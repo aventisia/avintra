@@ -43,10 +43,157 @@ export const WorkItemOutputPane = ({
     }
   }, [extractedData]);
 
-  // Update a single field in the JSON data and propagate the change.
+  /**
+   * Resolve a value from the parsed data using a dot-notation path.
+   * Handles nested JSON (e.g. schema field name "parent.child" -> data.parent.child).
+   */
+  const getFieldValue = (data: Record<string, unknown>, path: string): unknown =>
+    path.split(".").reduce<unknown>((acc, key) => {
+      if (acc == null || typeof acc !== "object") return undefined;
+      return (acc as Record<string, unknown>)[key];
+    }, data);
+
+  /**
+   * Set a value in the parsed data using a dot-notation path, creating any
+   * intermediate nested objects (or array elements) as needed.
+   * Numeric path segments index into arrays (e.g. "lineitems.0.partnumber").
+   */
+  const setFieldValue = (
+    data: Record<string, unknown>,
+    path: string,
+    value: unknown,
+  ): Record<string, unknown> => {
+    const parts = path.split(".").filter(Boolean);
+    const lastKey = parts.pop()!;
+    const node = data as Record<string | number, unknown>;
+
+    let current = node;
+    for (const key of parts) {
+      const existing = current[key];
+      if (existing == null || typeof existing !== "object") {
+        current[key] = {};
+      }
+      current = current[key] as Record<string | number, unknown>;
+    }
+
+    current[lastKey] = value;
+    return data;
+  };
+
+  // Update a single field (possibly nested) in the JSON data and propagate the change.
   const handleFieldChange = (name: string, value: string) => {
-    const next = { ...parsedData, [name]: value };
+    const next = { ...parsedData };
+    setFieldValue(next, name, value);
     setExtractedData(JSON.stringify(next, null, 2));
+  };
+
+  // Render a scalar (leaf) field as a labeled input.
+  const renderScalarField = (
+    path: string,
+    label: string,
+    value: unknown,
+    type: string | undefined,
+    required: boolean,
+    depth: number,
+  ) => {
+    const displayValue = value == null ? "" : String(value);
+    const typeKey = type?.toLowerCase();
+
+    return (
+      <div key={path} className="flex items-start gap-2">
+        <label
+          className={`shrink-0 truncate pt-2 text-right text-xs font-medium text-foreground ${
+            depth > 0 ? "w-24" : "w-32"
+          }`}
+        >
+          {label}
+          {required && <span className="text-destructive"> *</span>}
+        </label>
+        {typeKey === "date" ? (
+          <Input
+            type="date"
+            value={displayValue}
+            disabled={isReadOnly}
+            onChange={(e) => handleFieldChange(path, e.target.value)}
+            className="h-8 flex-1 text-xs"
+          />
+        ) : typeKey === "int" ? (
+          <Input
+            type="number"
+            value={displayValue}
+            disabled={isReadOnly}
+            onChange={(e) => handleFieldChange(path, e.target.value)}
+            className="h-8 flex-1 text-xs"
+          />
+        ) : (
+          <AutosizeTextarea
+            value={displayValue}
+            disabled={isReadOnly}
+            onChange={(e) => handleFieldChange(path, e.target.value)}
+            minHeight={32}
+            size="sm"
+            className="flex-1 text-xs"
+          />
+        )}
+      </div>
+    );
+  };
+
+  // Recursively render a field value. Scalars render as inputs; objects and
+  // arrays render as nested groups so nested JSON is populated in the form.
+  const renderNode = (
+    path: string,
+    label: string,
+    value: unknown,
+    type: string | undefined,
+    required: boolean,
+    depth: number,
+  ) => {
+    if (value == null || typeof value !== "object") {
+      return renderScalarField(path, label, value, type, required, depth);
+    }
+
+    if (Array.isArray(value)) {
+      return (
+        <div key={path} className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-semibold text-foreground">{label}</span>
+            <span className="text-xs text-muted-foreground">
+              ({value.length} item{value.length === 1 ? "" : "s"})
+            </span>
+          </div>
+          {value.length === 0 ? (
+            <p className="text-xs text-muted-foreground">No items</p>
+          ) : (
+            value.map((item, i) =>
+              renderNode(`${path}.${i}`, `Item ${i + 1}`, item, undefined, false, depth + 1),
+            )
+          )}
+        </div>
+      );
+    }
+
+    // Plain object: render each key as a nested field.
+    return (
+      <div
+        key={path}
+        className="space-y-2 rounded-lg border border-input/60 bg-muted/30 p-2"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-foreground">{label}</span>
+        </div>
+        {Object.entries(value as Record<string, unknown>).map(([key, child]) =>
+          renderNode(
+            `${path}.${key}`,
+            key.charAt(0).toUpperCase() + key.slice(1),
+            child,
+            undefined,
+            false,
+            depth + 1,
+          ),
+        )}
+      </div>
+    );
   };
 
   return (
@@ -77,50 +224,16 @@ export const WorkItemOutputPane = ({
             <div className="rounded-lg border border-input bg-background p-3">
               {(inputSchema ?? []).length > 0 ? (
                 <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
-                  {inputSchema?.map((field) => {
-                    const value = parsedData[field.name];
-                    const displayValue =
-                      value == null
-                        ? ""
-                        : typeof value === "object"
-                          ? JSON.stringify(value)
-                          : String(value);
-
-                    return (
-                      <div key={field.name} className="flex items-start gap-2">
-                        <label className="w-32 shrink-0 truncate pt-2 text-right text-xs font-medium text-foreground">
-                          {field.label || field.name}
-                          {field.isRequired && <span className="text-destructive"> *</span>}
-                        </label>
-                        {field.type === "Date" ? (
-                          <Input
-                            type="date"
-                            value={displayValue}
-                            disabled={isReadOnly}
-                            onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                            className="h-8 flex-1 text-xs"
-                          />
-                        ) : field.type === "int" ? (
-                          <Input
-                            type="number"
-                            value={displayValue}
-                            disabled={isReadOnly}
-                            onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                            className="h-8 flex-1 text-xs"
-                          />
-                        ) : (
-                          <AutosizeTextarea
-                            value={displayValue}
-                            disabled={isReadOnly}
-                            onChange={(e) => handleFieldChange(field.name, e.target.value)}
-                            minHeight={32}
-                            size="sm"
-                            className="flex-1 text-xs"
-                          />
-                        )}
-                      </div>
-                    );
-                  })}
+                  {inputSchema?.map((field) =>
+                    renderNode(
+                      field.name,
+                      field.label || field.name,
+                      getFieldValue(parsedData, field.name),
+                      field.type,
+                      field.isRequired,
+                      0,
+                    ),
+                  )}
                 </div>
               ) : (
                 <p className="text-xs text-muted-foreground">
