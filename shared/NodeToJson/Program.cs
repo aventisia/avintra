@@ -195,6 +195,11 @@ internal class Program
                     DeleteLegacyActivityJsonIfExists(nodeJsonFilePath, nodeType.Name);
                     WriteJsonToFile(nodeJsonFilePath, nodeJson, jsonSerializerOptions);
 
+                    // Save node json to desktop-app/config-files/desktop-nodes folder
+                    nodeJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "desktop-app", "src-tauri", "config-files", "desktop-nodes", nodeType.Name + ".json"));
+                    DeleteLegacyActivityJsonIfExists(nodeJsonFilePath, nodeType.Name);
+                    WriteJsonToFile(nodeJsonFilePath, nodeJson, jsonSerializerOptions);
+
                     // Save the same file in LocalAppData/AvintraDesktopApp (if applicable)
                     if (OperatingSystem.IsWindows())
                     {
@@ -216,6 +221,11 @@ internal class Program
         var nodeSelectorJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "studio", "src", "features", "action-selector", "constants", "_ActionSelectorData.json"));
         var mergedMappingObject = LoadAndMergeActionSelectorData(nodeSelectorJsonFilePath, nodeMappingObject, jsonSerializerOptions);
         WriteJsonToFile(nodeSelectorJsonFilePath, mergedMappingObject, jsonSerializerOptions, "Nodes mapping JSON saved to worc-platform repo");
+
+        // Save _NodeSelectorData.json to the desktop-app. Merge with existing data so legacy categories are preserved.
+        nodeSelectorJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "desktop-app", "src-tauri", "config-files", "action-selector", "_ActionSelectorData.json"));
+        mergedMappingObject = LoadAndMergeActionSelectorData(nodeSelectorJsonFilePath, nodeMappingObject, jsonSerializerOptions);
+        WriteJsonToFile(nodeSelectorJsonFilePath, mergedMappingObject, jsonSerializerOptions, "Nodes mapping JSON saved to desktop-app repo");
 
         // Save same file _NodeSelectorData.json to LocalAppData/AvintraDesktopApp (if applicable). Merge with existing data so legacy categories are preserved.
         if (OperatingSystem.IsWindows())

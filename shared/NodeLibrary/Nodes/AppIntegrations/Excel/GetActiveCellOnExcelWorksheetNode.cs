@@ -1,4 +1,6 @@
 ﻿
+using NodeLibrary.ExcelNodes.Helpers;
+
 namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Get Active Cell on Excel Worksheet"), Description("Retrieves the address and value of the currently active cell in the specified Excel worksheet.")]
@@ -34,7 +36,7 @@ public class GetActiveCellOnExcelWorksheetNode : BaseNode
             if (activeCell == null)
                 throw new InvalidOperationException("No active cell found.");
 
-            ActiveCellColumn.Set(context, GetColumnLetter(activeCell.Column));
+            ActiveCellColumn.Set(context, ExcelColumnHelper.GetColumnLetter(activeCell.Column));
             ActiveCellRow.Set(context, activeCell.Row);
             ActiveCellValue.Set(context, activeCell.Value2?.ToString() ?? string.Empty);
             ActiveCellAddress.Set(context, activeCell.Address);
@@ -47,18 +49,6 @@ public class GetActiveCellOnExcelWorksheetNode : BaseNode
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error getting active cell: {ex.Message}");
         }
-    }
-
-    private static string GetColumnLetter(int columnNumber)
-    {
-        string result = string.Empty;
-        while (columnNumber > 0)
-        {
-            columnNumber--;
-            result = (char)('A' + columnNumber % 26) + result;
-            columnNumber /= 26;
-        }
-        return result;
     }
 }
 

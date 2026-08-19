@@ -4348,27 +4348,9 @@
           },
           {
             "type": "activityNode",
-            "name": "GetFirstFreeColumnRowFromExcelWorksheetNode",
-            "label": "Get First Free Column/Row from Excel Worksheet",
-            "description": "Gets the first free column and row in the used range of the specified Excel worksheet.",
-            "img": "/assets/Excel.svg",
-            "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "GetFirstFreeRowOnColumnFromExcelWorksheetNode",
-            "label": "Get First Free Row on Column from Excel Worksheet",
-            "description": "Gets the first free (empty) row in a specified column of the Excel worksheet.",
-            "img": "/assets/Excel.svg",
-            "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "GetFirstFreeRowOrColumnRowIndexNode",
-            "label": "Get First Free Row or Column Row Index",
-            "description": "Gets the first free row or column row index based on the search direction in an Excel worksheet.",
+            "name": "GetFirstFreeRowOrColumnIndexNode",
+            "label": "Get First Free Row or Column Index",
+            "description": "Gets the first free row or column index based on the search direction in an Excel worksheet.",
             "img": "/assets/Excel.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["windows"]

@@ -1,7 +1,7 @@
 {
-  "name": "GetFirstFreeRowOrColumnRowIndexNode",
-  "label": "Get First Free Row or Column Row Index",
-  "description": "Gets the first free row or column row index based on the search direction in an Excel worksheet.",
+  "name": "GetFirstFreeRowOrColumnIndexNode",
+  "label": "Get First Free Row or Column Index",
+  "description": "Gets the first free row or column index based on the search direction in an Excel worksheet.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": ["windows"],
@@ -43,7 +43,7 @@
       "type": "text",
       "name": "Column",
       "label": "Column",
-      "description": "The column to search in when looking for the first free row.",
+      "description": "The column to search in when looking for the first free row. Accepts a column letter (e.g., \u0027A\u0027) or a 1-based index (e.g., \u00271\u0027).",
       "defaultValue": "A",
       "required": false,
       "renderIf": {
@@ -57,7 +57,7 @@
     },
     {
       "direction": "Input",
-      "type": "text",
+      "type": "number",
       "name": "Row",
       "label": "Row",
       "description": "The row to search in when looking for the first free column.",
@@ -75,14 +75,34 @@
     {
       "direction": "Output",
       "type": "config-panel-output",
-      "name": "ResultIndex",
-      "label": "Result Index",
+      "name": "FirstFreeIndex",
+      "label": "First Free Index",
       "description": "The index of the first free row or column.",
       "defaultValue": {
-        "value": "ResultIndex",
+        "value": "FirstFreeIndex",
         "enabled": true
       },
       "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "FirstFreeColumnName",
+      "label": "First Free Column Name",
+      "description": "The letter name of the first free column when searching by columns; otherwise empty.",
+      "defaultValue": {
+        "value": "FirstFreeColumnName",
+        "enabled": true
+      },
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "SearchDirection",
+            "equals": "Columns"
+          }
+        ]
+      }
     }
   ]
 }
