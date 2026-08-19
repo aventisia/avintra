@@ -46,8 +46,9 @@ const processingModeBadge: Record<QueueProcessingModeEnum, string> = {
 
 /**
  * Renders a clickable summary card for a queue showing its name, the
- * color-coded count of Pending, In-progress and Completed items, plus the
- * average age of active items and the average processing time of completed ones.
+ * color-coded count of Pending (Pending + In-progress combined) and Completed
+ * items, plus the average age of active items and the average processing time
+ * of completed ones.
  */
 export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
   queueName,
@@ -63,13 +64,8 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
   const counts: QueueSummaryCount[] = [
     {
       label: "Pending",
-      value: pending,
+      value: pending + inProgress,
       status: QueueTransactionStatusTypesEnum.Pending,
-    },
-    {
-      label: "In-progress",
-      value: inProgress,
-      status: QueueTransactionStatusTypesEnum.InProgress,
     },
     {
       label: "Completed",
@@ -100,19 +96,13 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
             </Badge>
           )}
         </div>
-        <span className="text-xs text-muted-foreground">
-          <span className="text-sm font-semibold text-accent-foreground">
-            {pending + inProgress + completed}
-          </span>{" "}
-          total items
-        </span>
       </div>
 
       {/* Assigned agent(s) tag */}
-      {agentsNames && agentsNames.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="text-xs text-muted-foreground">Agent:</span>
-          {agentsNames.map((agent) => (
+      <div className="flex min-h-[26px] flex-wrap items-center gap-1.5">
+        <span className="text-xs text-muted-foreground">Agents:</span>
+        {agentsNames && agentsNames.length > 0 ? (
+          agentsNames.map((agent) => (
             <Badge
               key={agent}
               variant="outline"
@@ -120,11 +110,13 @@ export const QueueSummaryCard: React.FC<QueueSummaryCardProps> = ({
             >
               {agent}
             </Badge>
-          ))}
-        </div>
-      )}
+          ))
+        ) : (
+          <span className="text-xs text-muted-foreground">None</span>
+        )}
+      </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {counts.map((count) => (
           <div
             key={count.label}
