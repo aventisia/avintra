@@ -136,8 +136,8 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
         }
         finally
         {
-            if (worksheet != null)
-                OfficeAutomationHelper.Release(worksheet);
+            // Do not release the input worksheet here; it is shared with
+            // downstream nodes and must remain valid for the rest of the flow.
         }
     }
 

@@ -156,8 +156,11 @@ public class ReadFromExcelWorksheetNode : BaseNode
         }
         finally
         {
+            // Only release temporary COM objects created inside this node.
+            // The worksheet is an input shared with downstream nodes; releasing
+            // its RCW here causes "COM object separated from its underlying RCW"
+            // errors for any later node that still needs it.
             ReleaseObject(range);
-            ReleaseObject(worksheet);
         }
     }
 
