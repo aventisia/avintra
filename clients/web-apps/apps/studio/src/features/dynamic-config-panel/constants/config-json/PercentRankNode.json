@@ -1,0 +1,70 @@
+{
+  "name": "PercentRankNode",
+  "label": "Percent Rank",
+  "description": "Adds a column with the relative rank (0 to 1) of each row within a partition, based on an ordering column.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to compute percent rank for.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OrderByColumn",
+      "label": "Order By Column",
+      "description": "The column used to determine the ordering.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "Ascending",
+      "label": "Ascending",
+      "description": "True to order in ascending order, false for descending. Defaults to true.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PartitionByColumns",
+      "label": "Partition By Columns",
+      "description": "Optional comma-separated columns that define partitions. Percent rank restarts per partition.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumnName",
+      "label": "Result Column Name",
+      "description": "The name of the percent rank column. Defaults to 'PercentRank'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultDataTable",
+      "label": "Result Data Table",
+      "description": "The resulting data table.",
+      "defaultValue": {
+        "value": "ResultDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

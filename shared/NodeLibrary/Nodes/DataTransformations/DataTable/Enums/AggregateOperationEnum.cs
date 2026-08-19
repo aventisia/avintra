@@ -33,5 +33,32 @@ public enum AggregateOperationEnum
     First = 8,
 
     [Display(Name = "Last", Description = "Returns the last non-null value.")]
-    Last = 9
+    Last = 9,
+
+    [Display(Name = "Mode", Description = "Returns the most frequently occurring value.")]
+    Mode = 10,
+
+    [Display(Name = "Percentile", Description = "Returns the value below which a given percentage of the data falls.")]
+    Percentile = 11,
+
+    [Display(Name = "Weighted Average", Description = "Returns the weighted arithmetic mean of the numeric values.")]
+    WeightedAverage = 12,
+
+    [Display(Name = "Geometric Mean", Description = "Returns the geometric mean of the numeric values.")]
+    GeometricMean = 13,
+
+    [Display(Name = "Harmonic Mean", Description = "Returns the harmonic mean of the numeric values.")]
+    HarmonicMean = 14,
+
+    [Display(Name = "Variance", Description = "Returns the sample variance of the numeric values.")]
+    Variance = 15,
+
+    [Display(Name = "Population Standard Deviation", Description = "Returns the population standard deviation of the numeric values.")]
+    PopulationStandardDeviation = 16,
+
+    [Display(Name = "Skewness", Description = "Returns the sample skewness of the numeric values.")]
+    Skewness = 17,
+
+    [Display(Name = "Kurtosis", Description = "Returns the sample excess kurtosis of the numeric values.")]
+    Kurtosis = 18
 }

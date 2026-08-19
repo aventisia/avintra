@@ -1,0 +1,79 @@
+{
+  "name": "CollapseRowsToDelimitedNode",
+  "label": "Collapse Rows to Delimited",
+  "description": "Groups rows and concatenates the values of a target column into a single delimited string per group, producing one row per group.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to collapse.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "GroupByColumns",
+      "label": "Group By Columns",
+      "description": "Comma-separated columns that define the groups to collapse.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TargetColumn",
+      "label": "Target Column",
+      "description": "The column whose values are concatenated within each group.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Delimiter",
+      "label": "Delimiter",
+      "description": "The delimiter between concatenated values. Defaults to a comma.",
+      "defaultValue": ",",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "DistinctValuesOnly",
+      "label": "Distinct Values Only",
+      "description": "True to only include distinct values per group. Defaults to false.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumnName",
+      "label": "Result Column Name",
+      "description": "The name of the concatenated column. Defaults to '<TargetColumn>_Collapsed'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CollapsedDataTable",
+      "label": "Collapsed Data Table",
+      "description": "The resulting collapsed data table.",
+      "defaultValue": {
+        "value": "CollapsedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

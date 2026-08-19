@@ -1,0 +1,61 @@
+{
+  "name": "CountRowsPerGroupNode",
+  "label": "Count Rows Per Group",
+  "description": "Adds a column with the number of rows in each group, optionally counting distinct values of a column.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to count rows for.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "GroupByColumns",
+      "label": "Group By Columns",
+      "description": "Optional comma-separated columns to group by. Leave empty to count the whole table.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DistinctColumn",
+      "label": "Distinct Column",
+      "description": "Optional column to count distinct values of instead of counting all rows. Leave empty to count all rows.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumnName",
+      "label": "Result Column Name",
+      "description": "The name of the result column. Defaults to 'RowCount'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultDataTable",
+      "label": "Result Data Table",
+      "description": "The resulting data table.",
+      "defaultValue": {
+        "value": "ResultDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

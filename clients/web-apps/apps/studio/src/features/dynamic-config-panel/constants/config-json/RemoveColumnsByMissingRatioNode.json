@@ -1,0 +1,57 @@
+{
+  "name": "RemoveColumnsByMissingRatioNode",
+  "label": "Remove Columns by Missing Ratio",
+  "description": "Removes columns whose proportion of missing (null/empty) values exceeds a configurable threshold. The threshold is expressed as a decimal between 0 and 1.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to clean.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "MaxMissingRatio",
+      "label": "Max Missing Ratio",
+      "description": "Columns with a missing-value ratio greater than this threshold are removed. Defaults to 0.8 (removes columns >80% missing).",
+      "defaultValue": 0.8,
+      "required": false,
+      "min": 0,
+      "max": 1
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CleanedDataTable",
+      "label": "Cleaned Data Table",
+      "description": "The resulting data table with high-missing columns removed.",
+      "defaultValue": {
+        "value": "CleanedDataTable",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "RemovedColumns",
+      "label": "Removed Columns",
+      "description": "A comma-separated list of the names of columns that were removed.",
+      "defaultValue": {
+        "value": "RemovedColumns",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

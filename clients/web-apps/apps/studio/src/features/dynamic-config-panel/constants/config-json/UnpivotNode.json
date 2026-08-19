@@ -1,0 +1,61 @@
+{
+  "name": "UnpivotNode",
+  "label": "Unpivot",
+  "description": "Melts a wide data table into a long format. Designated value columns are turned into two columns: one holding the column name and one holding the value, with the remaining columns kept per row.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The wide data table to unpivot.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnsToUnpivot",
+      "label": "Columns To Unpivot",
+      "description": "Comma-separated column names to melt into name/value pairs. Leave empty to unpivot all columns.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "NameColumn",
+      "label": "Name Column",
+      "description": "The name of the column that will hold the original column names. Defaults to 'Column'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ValueColumn",
+      "label": "Value Column",
+      "description": "The name of the column that will hold the cell values. Defaults to 'Value'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "UnpivotedDataTable",
+      "label": "Unpivoted Data Table",
+      "description": "The resulting long-format data table.",
+      "defaultValue": {
+        "value": "UnpivotedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

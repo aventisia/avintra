@@ -1,0 +1,61 @@
+{
+  "name": "StackColumnsNode",
+  "label": "Stack Columns",
+  "description": "Stacks the values of multiple columns vertically into a single column. Each source column's values become additional rows, keeping the remaining (identifier) columns.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to stack columns from.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnsToStack",
+      "label": "Columns To Stack",
+      "description": "Comma-separated column names to stack into a single column.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumn",
+      "label": "Result Column",
+      "description": "The name of the column that holds the stacked values. Defaults to 'StackedValue'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceColumnColumn",
+      "label": "Source Column Column",
+      "description": "Optional name for a column that records which source column each value came from. Leave empty to omit it.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "StackedDataTable",
+      "label": "Stacked Data Table",
+      "description": "The resulting stacked data table.",
+      "defaultValue": {
+        "value": "StackedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

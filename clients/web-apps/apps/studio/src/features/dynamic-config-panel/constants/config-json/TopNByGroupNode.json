@@ -1,0 +1,71 @@
+{
+  "name": "TopNByGroupNode",
+  "label": "Top N By Group",
+  "description": "Filters the data table to keep only the top N rows (by an ordering column) within each group.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to filter.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "GroupByColumns",
+      "label": "Group By Columns",
+      "description": "Comma-separated columns that define the groups.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OrderByColumn",
+      "label": "Order By Column",
+      "description": "The column used to determine which rows are the top N.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "Ascending",
+      "label": "Ascending",
+      "description": "True to keep the smallest N values, false for the largest N. Defaults to false (largest).",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "N",
+      "label": "N",
+      "description": "The number of top rows to keep per group. Defaults to 1.",
+      "defaultValue": 1,
+      "required": false,
+      "min": 1
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultDataTable",
+      "label": "Result Data Table",
+      "description": "The filtered data table.",
+      "defaultValue": {
+        "value": "ResultDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

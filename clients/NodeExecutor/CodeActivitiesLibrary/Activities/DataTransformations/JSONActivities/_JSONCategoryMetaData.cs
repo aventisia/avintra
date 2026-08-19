@@ -8,7 +8,7 @@ using CodeActivitiesLibrary.Extensions;
 namespace CodeActivitiesLibrary.DataTransformations.JSONActivities
 {
     [ActivityCategoryMetadata(
-        primaryCategory: "Data Transformations",
+        primaryCategory: "Data Engineering",
         label: "JSON",
         description: "Transform data to and from JSON format, including parsing, serialization, and deserialization.",
         img: "/assets/JSON.svg")]

@@ -7,8 +7,8 @@ const meta: MetaRecord = {
   "workflow-logics": {
     title: "Workflow Logics",
   },
-  "data-transformations": {
-    title: "Data Transformations",
+  "data-engineering": {
+    title: "Data Engineering",
   },
   "ui-interface-automations": {
     title: "UI Interface Automations",

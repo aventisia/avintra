@@ -1,0 +1,61 @@
+{
+  "name": "ConditionalSplitNode",
+  "label": "Conditional Split",
+  "description": "Routes each row of a data table into one of several output data tables based on a semicolon-separated list of DataTable row filter expressions. The first matching condition wins per row; rows matching no condition go to a default output.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to route rows from.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilterExpressions",
+      "label": "Filter Expressions",
+      "description": "Semicolon-separated row filter expressions, e.g. \"Age > 18; Age <= 18\". The first matching condition wins per row.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OutputNames",
+      "label": "Output Names",
+      "description": "Semicolon-separated names for each output data table, e.g. \"Adults;Minors\". Must match the number of filter expressions.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DefaultOutputName",
+      "label": "Default Output Name",
+      "description": "The name of the output that receives rows matching no condition. Defaults to 'Default'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Outputs",
+      "label": "Outputs",
+      "description": "A dictionary mapping output names to the routed DataTable instances.",
+      "defaultValue": {
+        "value": "Outputs",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

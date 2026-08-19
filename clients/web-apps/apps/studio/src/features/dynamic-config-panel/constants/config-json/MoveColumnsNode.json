@@ -1,0 +1,43 @@
+{
+  "name": "MoveColumnsNode",
+  "label": "Move Columns",
+  "description": "Reorders columns in a data table. Specify the desired column order as a comma-separated list; any columns not listed are appended at the end in their original order.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table whose columns to reorder.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnOrder",
+      "label": "Column Order",
+      "description": "Comma-separated column names in the desired order.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultDataTable",
+      "label": "Result Data Table",
+      "description": "The resulting data table.",
+      "defaultValue": {
+        "value": "ResultDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

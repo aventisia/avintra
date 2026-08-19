@@ -1,0 +1,90 @@
+{
+  "name": "FuzzyMatchNode",
+  "label": "Fuzzy Match",
+  "description": "Matches rows between a primary data table and a reference data table using fuzzy string similarity on one column each. Outputs the primary rows enriched with the matched reference columns, plus the similarity score.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PrimaryDataTable",
+      "label": "Primary Data Table",
+      "description": "The data table whose rows are enriched with the best reference match.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ReferenceDataTable",
+      "label": "Reference Data Table",
+      "description": "The data table used to look up matches.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PrimaryMatchColumn",
+      "label": "Primary Match Column",
+      "description": "The column in the primary table to match on.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ReferenceMatchColumn",
+      "label": "Reference Match Column",
+      "description": "The column in the reference table to match against.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Threshold",
+      "label": "Threshold",
+      "description": "The minimum similarity score (0-1) to accept a match. Defaults to 0.7.",
+      "defaultValue": 0.7,
+      "required": false,
+      "min": 0,
+      "max": 1
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ReferenceColumnsToInclude",
+      "label": "Reference Columns To Include",
+      "description": "Optional comma-separated reference columns to include in the output. Leave empty to include all reference columns except the match column.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ScoreColumnName",
+      "label": "Score Column Name",
+      "description": "The name of the similarity score column. Defaults to 'MatchScore'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "MatchedDataTable",
+      "label": "Matched Data Table",
+      "description": "The resulting enriched data table. Unmatched rows include the score column set to 0.",
+      "defaultValue": {
+        "value": "MatchedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

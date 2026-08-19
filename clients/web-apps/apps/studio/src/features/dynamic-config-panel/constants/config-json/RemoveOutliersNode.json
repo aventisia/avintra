@@ -1,0 +1,83 @@
+{
+  "name": "RemoveOutliersNode",
+  "label": "Remove Outliers",
+  "description": "Removes rows whose value in a numeric column is flagged as an outlier using the IQR or Z-score method. Computed per optional group columns.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the numeric column to analyze.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ValueColumn",
+      "label": "Value Column",
+      "description": "The numeric column used to determine outliers.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Method",
+      "label": "Method",
+      "description": "The detection method: 'IQR' or 'ZScore'. Defaults to 'IQR'.",
+      "defaultValue": "IQR",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "IQR",
+          "value": "IQR",
+          "description": "Uses the interquartile range with a configurable multiplier."
+        },
+        {
+          "label": "ZScore",
+          "value": "ZScore",
+          "description": "Uses the Z-score with a configurable cutoff."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Threshold",
+      "label": "Threshold",
+      "description": "The IQR multiplier (e.g. 1.5) or Z-score cutoff (e.g. 3) depending on method. Defaults to 1.5.",
+      "defaultValue": 1.5,
+      "required": false,
+      "min": 0
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "GroupByColumns",
+      "label": "Group By Columns",
+      "description": "Optional comma-separated columns to compute outlier statistics within. Leave empty to use the whole table.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CleanedDataTable",
+      "label": "Cleaned Data Table",
+      "description": "The resulting data table with outlier rows removed.",
+      "defaultValue": {
+        "value": "CleanedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

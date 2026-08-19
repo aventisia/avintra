@@ -1,0 +1,61 @@
+{
+  "name": "MinMaxScaleNode",
+  "label": "Min-Max Scale",
+  "description": "Scales the values of one or more numeric columns to a target range (default 0 to 1) using the global min/max of each column.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the numeric columns to scale.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnsToScale",
+      "label": "Columns To Scale",
+      "description": "Comma-separated numeric column names to scale.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Minimum",
+      "label": "Minimum",
+      "description": "The lower bound of the target range. Defaults to 0.",
+      "defaultValue": 0,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Maximum",
+      "label": "Maximum",
+      "description": "The upper bound of the target range. Defaults to 1.",
+      "defaultValue": 1,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ScaledDataTable",
+      "label": "Scaled Data Table",
+      "description": "The resulting data table with scaled columns.",
+      "defaultValue": {
+        "value": "ScaledDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "CopyColumnNode",
+  "label": "Copy Column",
+  "description": "Duplicates an existing column into a new column with the same values. If the target column already exists, it is overwritten.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the column to copy.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceColumn",
+      "label": "Source Column",
+      "description": "The name of the column to copy.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "NewColumnName",
+      "label": "New Column Name",
+      "description": "The name of the new copied column.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultDataTable",
+      "label": "Result Data Table",
+      "description": "The resulting data table.",
+      "defaultValue": {
+        "value": "ResultDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

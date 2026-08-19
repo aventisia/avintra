@@ -1,0 +1,83 @@
+{
+  "name": "StandardizeColumnNamesNode",
+  "label": "Standardize Column Names",
+  "description": "Renames all (or selected) columns to a consistent format. Options include snake_case, camelCase, PascalCase, or Title Case, with optional removal of special characters and duplicate suffixes.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table whose columns to rename.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "CaseStyle",
+      "label": "Case Style",
+      "description": "The target case style: 'snake', 'camel', 'pascal', or 'title'. Defaults to 'snake'.",
+      "defaultValue": "snake",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "snake_case",
+          "value": "snake",
+          "description": "lowercase words separated by underscores."
+        },
+        {
+          "label": "camelCase",
+          "value": "camel",
+          "description": "lowercase first word, capitalized subsequent words."
+        },
+        {
+          "label": "PascalCase",
+          "value": "pascal",
+          "description": "every word capitalized with no separators."
+        },
+        {
+          "label": "Title Case",
+          "value": "title",
+          "description": "every word capitalized with spaces."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnsToRename",
+      "label": "Columns To Rename",
+      "description": "Optional comma-separated columns to rename. Leave empty to rename all columns.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "EnsureUniqueNames",
+      "label": "Ensure Unique Names",
+      "description": "True to ensure all resulting column names are unique by appending suffixes. Defaults to true.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultDataTable",
+      "label": "Result Data Table",
+      "description": "The resulting data table with standardized column names.",
+      "defaultValue": {
+        "value": "ResultDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

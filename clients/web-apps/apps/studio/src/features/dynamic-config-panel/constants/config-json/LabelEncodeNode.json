@@ -1,0 +1,61 @@
+{
+  "name": "LabelEncodeNode",
+  "label": "Label Encode",
+  "description": "Converts a categorical column into integer labels (0-based). Distinct values are assigned integers sorted alphabetically. Optionally replaces the source column or adds a new column.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the categorical column to encode.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnToEncode",
+      "label": "Column To Encode",
+      "description": "The categorical column to label encode.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumnName",
+      "label": "Result Column Name",
+      "description": "The name of the new encoded column. Defaults to '<Column>_Label'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "ReplaceSourceColumn",
+      "label": "Replace Source Column",
+      "description": "True to replace the source column with the labels. Defaults to false (adds a new column).",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "EncodedDataTable",
+      "label": "Encoded Data Table",
+      "description": "The resulting data table with the encoded column.",
+      "defaultValue": {
+        "value": "EncodedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}
