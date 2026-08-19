@@ -1,0 +1,61 @@
+{
+  "name": "OneHotEncodeNode",
+  "label": "One-Hot Encode",
+  "description": "Creates one new binary (0/1) column for each distinct value in the source column. Optionally drops the original column.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the categorical column to encode.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnToEncode",
+      "label": "Column To Encode",
+      "description": "The categorical column to one-hot encode.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnPrefix",
+      "label": "Column Prefix",
+      "description": "Optional prefix for the generated columns. Defaults to the source column name.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "DropSourceColumn",
+      "label": "Drop Source Column",
+      "description": "True to remove the original column from the result. Defaults to false.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "EncodedDataTable",
+      "label": "Encoded Data Table",
+      "description": "The resulting data table with the one-hot encoded columns.",
+      "defaultValue": {
+        "value": "EncodedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

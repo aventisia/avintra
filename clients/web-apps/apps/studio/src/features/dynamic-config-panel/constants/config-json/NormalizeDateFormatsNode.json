@@ -1,0 +1,52 @@
+{
+  "name": "NormalizeDateFormatsNode",
+  "label": "Normalize Date Formats",
+  "description": "Parses date values (strings or DateTime) from one or more columns using multiple common formats and rewrites them to a single target output format. Unparseable values are left unchanged.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the date columns to normalize.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnsToNormalize",
+      "label": "Columns To Normalize",
+      "description": "Comma-separated column names whose date values are normalized.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OutputFormat",
+      "label": "Output Format",
+      "description": "The .NET date format string for the output, e.g. 'yyyy-MM-dd' or 'MM/dd/yyyy'. Defaults to 'yyyy-MM-dd'.",
+      "defaultValue": "yyyy-MM-dd",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "NormalizedDataTable",
+      "label": "Normalized Data Table",
+      "description": "The resulting data table with normalized date columns.",
+      "defaultValue": {
+        "value": "NormalizedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

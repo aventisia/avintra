@@ -1,0 +1,70 @@
+{
+  "name": "ExpandDelimitedCellToRowsNode",
+  "label": "Expand Delimited Cell to Rows",
+  "description": "Explodes cells of a target column by a delimiter, producing one row per delimited value. Other columns are replicated across the expanded rows.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to expand.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TargetColumn",
+      "label": "Target Column",
+      "description": "The column whose delimited values are expanded into separate rows.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Delimiter",
+      "label": "Delimiter",
+      "description": "The delimiter separating values in the target column. Defaults to a comma.",
+      "defaultValue": ",",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "TrimValues",
+      "label": "Trim Values",
+      "description": "True to trim whitespace around expanded values. Defaults to true.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "SkipEmptyValues",
+      "label": "Skip Empty Values",
+      "description": "True to drop empty expanded values. Defaults to true.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ExpandedDataTable",
+      "label": "Expanded Data Table",
+      "description": "The resulting expanded data table.",
+      "defaultValue": {
+        "value": "ExpandedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "name": "BinValuesNode",
+  "label": "Bin Values",
+  "description": "Bins numeric values into equal-width buckets. Adds a column containing the bin label (e.g. '1', '2') and optionally the lower bound of each bin.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the numeric column to bin.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ValueColumn",
+      "label": "Value Column",
+      "description": "The numeric column to bin.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "NumberOfBins",
+      "label": "Number Of Bins",
+      "description": "The number of equal-width bins. Defaults to 4.",
+      "defaultValue": 4,
+      "required": false,
+      "min": 1
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumnName",
+      "label": "Result Column Name",
+      "description": "The name of the bin column. Defaults to '<ValueColumn>_Bin'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "BinnedDataTable",
+      "label": "Binned Data Table",
+      "description": "The resulting data table with the bin column.",
+      "defaultValue": {
+        "value": "BinnedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

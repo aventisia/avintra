@@ -1,0 +1,79 @@
+{
+  "name": "CombineColumnsNode",
+  "label": "Combine Columns",
+  "description": "Merges the values of multiple columns into a single column, separated by a delimiter. The original columns can be removed or kept.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to combine columns from.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnsToCombine",
+      "label": "Columns To Combine",
+      "description": "Comma-separated column names to merge into one column, in order.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Delimiter",
+      "label": "Delimiter",
+      "description": "The separator placed between combined values. Defaults to a single space.",
+      "defaultValue": " ",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumnName",
+      "label": "Result Column Name",
+      "description": "The name of the combined column. Defaults to 'Combined'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "RemoveSourceColumns",
+      "label": "Remove Source Columns",
+      "description": "True to remove the source columns after combining. Defaults to false.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "SkipEmptyValues",
+      "label": "Skip Empty Values",
+      "description": "True to skip null/empty source values when combining. Defaults to false.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultDataTable",
+      "label": "Result Data Table",
+      "description": "The resulting data table.",
+      "defaultValue": {
+        "value": "ResultDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

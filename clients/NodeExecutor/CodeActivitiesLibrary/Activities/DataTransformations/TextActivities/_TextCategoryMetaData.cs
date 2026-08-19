@@ -3,7 +3,7 @@ using CodeActivitiesLibrary.Extensions;
 namespace CodeActivitiesLibrary.DataTransformations.TextActivities
 {
     [ActivityCategoryMetadata(
-        primaryCategory: "Data Transformations",
+        primaryCategory: "Data Engineering",
         label: "Text",
         description: "Text manipulation and transformation.",
         img: "/assets/Text.svg")]

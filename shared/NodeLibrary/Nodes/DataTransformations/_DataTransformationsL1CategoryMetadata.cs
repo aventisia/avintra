@@ -1,7 +1,7 @@
 ﻿namespace NodeLibrary.Nodes;
 
 [NodeL1CategoryMetadata(
-    label: "Data Transformations",
-    description: "Clean, transform, and structure your data with ease",
+    label: "Data Engineering",
+    description: "Clean, transform, aggregate, and structure your data with ease",
     icon: "DataTransformationsIcon")]
 internal sealed class _DataTransformationsL1CategoryMetadata { }

@@ -1,0 +1,71 @@
+{
+  "name": "MovingSumNode",
+  "label": "Moving Sum",
+  "description": "Adds a column with the moving (sliding-window) sum of a numeric column. The window restarts for each partition.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to compute the moving sum for.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ValueColumn",
+      "label": "Value Column",
+      "description": "The numeric column to sum.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "WindowSize",
+      "label": "Window Size",
+      "description": "The number of rows in the sliding window. Defaults to 3.",
+      "defaultValue": 3,
+      "required": false,
+      "min": 1
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PartitionByColumns",
+      "label": "Partition By Columns",
+      "description": "Optional comma-separated columns that define partitions. The moving sum restarts per partition.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumnName",
+      "label": "Result Column Name",
+      "description": "The name of the moving sum column. Defaults to '<ValueColumn>_MovingSum'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultDataTable",
+      "label": "Result Data Table",
+      "description": "The resulting data table.",
+      "defaultValue": {
+        "value": "ResultDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

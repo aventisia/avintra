@@ -1,0 +1,52 @@
+{
+  "name": "ImputeByMedianNode",
+  "label": "Impute by Median",
+  "description": "Replaces missing (null) values in one or more numeric columns with the median of each column. Computed per optional group columns.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the columns to impute.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnsToImpute",
+      "label": "Columns To Impute",
+      "description": "Comma-separated numeric column names whose null values are replaced with the median.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "GroupByColumns",
+      "label": "Group By Columns",
+      "description": "Optional comma-separated columns to compute the median within. Leave empty to use the whole table.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ImputedDataTable",
+      "label": "Imputed Data Table",
+      "description": "The resulting data table with imputed values.",
+      "defaultValue": {
+        "value": "ImputedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "name": "LagNode",
+  "label": "Lag",
+  "description": "Adds a column with the value of a source column from a row that is offset rows earlier within each partition.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to compute lag values for.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceColumn",
+      "label": "Source Column",
+      "description": "The column whose earlier values are retrieved.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Offset",
+      "label": "Offset",
+      "description": "The number of rows to look back. Defaults to 1.",
+      "defaultValue": 1,
+      "required": false,
+      "min": 0
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DefaultValue",
+      "label": "Default Value",
+      "description": "Optional value used when no earlier row exists within the partition.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "PartitionByColumns",
+      "label": "Partition By Columns",
+      "description": "Optional comma-separated columns that define partitions. Lag does not cross partition boundaries.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ResultColumnName",
+      "label": "Result Column Name",
+      "description": "The name of the lag column. Defaults to '<SourceColumn>_Lag<Offset>'.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultDataTable",
+      "label": "Result Data Table",
+      "description": "The resulting data table.",
+      "defaultValue": {
+        "value": "ResultDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

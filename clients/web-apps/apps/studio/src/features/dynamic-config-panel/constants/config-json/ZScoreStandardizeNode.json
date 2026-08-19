@@ -1,0 +1,43 @@
+{
+  "name": "ZScoreStandardizeNode",
+  "label": "Z-Score Standardize",
+  "description": "Standardizes one or more numeric columns to have zero mean and unit variance (sample standard deviation) using each column's global statistics.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the numeric columns to standardize.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnsToStandardize",
+      "label": "Columns To Standardize",
+      "description": "Comma-separated numeric column names to standardize.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "StandardizedDataTable",
+      "label": "Standardized Data Table",
+      "description": "The resulting data table with standardized columns.",
+      "defaultValue": {
+        "value": "StandardizedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

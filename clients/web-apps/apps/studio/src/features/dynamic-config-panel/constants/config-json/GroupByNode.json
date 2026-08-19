@@ -1,0 +1,52 @@
+{
+  "name": "GroupByNode",
+  "label": "Group By",
+  "description": "Groups rows by one or more columns and applies multiple aggregation functions to one or more value columns.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to group and aggregate.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "GroupByColumns",
+      "label": "Group By Columns",
+      "description": "Comma-separated column names used to group rows.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "AggregationsJson",
+      "label": "Aggregations (JSON)",
+      "description": "JSON array of aggregation definitions: [{ \"Column\": string, \"Aggregation\": string, \"Result\": string }].",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "GroupedDataTable",
+      "label": "Grouped Data Table",
+      "description": "The resulting grouped and aggregated data table.",
+      "defaultValue": {
+        "value": "GroupedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

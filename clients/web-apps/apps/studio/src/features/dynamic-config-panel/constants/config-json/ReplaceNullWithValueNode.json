@@ -1,0 +1,61 @@
+{
+  "name": "ReplaceNullWithValueNode",
+  "label": "Replace Null with Value",
+  "description": "Replaces null/empty values in one or more columns with a specified replacement value. When no columns are given, all columns are processed.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "badge": "Beta",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to clean.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnsToClean",
+      "label": "Columns To Clean",
+      "description": "Optional comma-separated column names to process. Leave empty to process all columns.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ReplacementValue",
+      "label": "Replacement Value",
+      "description": "The value used to replace null/empty cells.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "AlsoTreatWhitespaceAsNull",
+      "label": "Also Treat Whitespace As Null",
+      "description": "True to also treat whitespace-only strings as null. Defaults to false.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CleanedDataTable",
+      "label": "Cleaned Data Table",
+      "description": "The resulting data table with nulls replaced.",
+      "defaultValue": {
+        "value": "CleanedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

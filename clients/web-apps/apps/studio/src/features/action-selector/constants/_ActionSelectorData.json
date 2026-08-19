@@ -159,8 +159,8 @@
     ]
   },
   {
-    "label": "Data Transformations",
-    "description": "Clean, transform, and structure your data with ease",
+    "label": "Data Engineering",
+    "description": "Clean, transform, aggregate, and structure your data with ease",
     "icon": "DataTransformationsIcon",
     "actionCategories": [
       {
@@ -1177,6 +1177,541 @@
             "img": "/assets/Cryptography.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["cloud", "windows"]
+          }
+        ]
+      },
+      {
+        "label": "Aggregation",
+        "description": "Group, summarize, and compute statistics across data table rows.",
+        "img": "/assets/Aggregation.svg",
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "GroupByNode",
+            "label": "Group By",
+            "description": "Groups rows by one or more columns and applies multiple aggregation functions.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ModeNode",
+            "label": "Mode",
+            "description": "Adds a column with the most frequently occurring value of a column per group.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "PercentileNode",
+            "label": "Percentile",
+            "description": "Adds a column with the N-th percentile of a column per group.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "WeightedAverageNode",
+            "label": "Weighted Average",
+            "description": "Adds a column with the weighted average of a value column using a weights column.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "GeometricMeanNode",
+            "label": "Geometric Mean",
+            "description": "Adds a column with the geometric mean of a numeric column per group.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "HarmonicMeanNode",
+            "label": "Harmonic Mean",
+            "description": "Adds a column with the harmonic mean of a numeric column per group.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "PopulationVarianceNode",
+            "label": "Population Variance",
+            "description": "Adds a column with the population variance of a numeric column per group.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "PopulationStandardDeviationNode",
+            "label": "Population Standard Deviation",
+            "description": "Adds a column with the population standard deviation of a numeric column per group.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "SampleVarianceNode",
+            "label": "Sample Variance",
+            "description": "Adds a column with the sample variance of a numeric column per group.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "SkewnessNode",
+            "label": "Skewness",
+            "description": "Adds a column with the sample skewness of a numeric column per group.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "KurtosisNode",
+            "label": "Kurtosis",
+            "description": "Adds a column with the sample excess kurtosis of a numeric column per group.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "CountRowsPerGroupNode",
+            "label": "Count Rows Per Group",
+            "description": "Adds a column with the number of rows (optionally distinct) in each group.",
+            "img": "/assets/Aggregation.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          }
+        ]
+      },
+      {
+        "label": "Windowing",
+        "description": "Compute row-wise, running, and sliding-window analytics over ordered data.",
+        "img": "/assets/Windowing.svg",
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "RowNumberNode",
+            "label": "Row Number",
+            "description": "Adds a sequential row number column, optionally restarting per partition.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "RankRowsNode",
+            "label": "Rank Rows",
+            "description": "Adds a column with the rank of rows within partitions.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "PercentRankNode",
+            "label": "Percent Rank",
+            "description": "Adds a column with the relative rank (0 to 1) of each row within a partition.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "CumulativeSumNode",
+            "label": "Cumulative Sum",
+            "description": "Adds a column with the running total of a numeric column per partition.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "RunningAverageNode",
+            "label": "Running Average",
+            "description": "Adds a column with the cumulative mean of a numeric column per partition.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "MovingAverageNode",
+            "label": "Moving Average",
+            "description": "Adds a column with the sliding-window average of a numeric column.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "MovingSumNode",
+            "label": "Moving Sum",
+            "description": "Adds a column with the sliding-window sum of a numeric column.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "LagNode",
+            "label": "Lag",
+            "description": "Adds a column with the value from a row offset rows earlier within each partition.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "LeadNode",
+            "label": "Lead",
+            "description": "Adds a column with the value from a row offset rows later within each partition.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "FirstValueByGroupNode",
+            "label": "First Value By Group",
+            "description": "Adds a column with the first value of a source column within each group.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "LastValueByGroupNode",
+            "label": "Last Value By Group",
+            "description": "Adds a column with the last value of a source column within each group.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "TopNByGroupNode",
+            "label": "Top N By Group",
+            "description": "Filters the data table to keep the top N rows within each group.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "BottomNByGroupNode",
+            "label": "Bottom N By Group",
+            "description": "Filters the data table to keep the bottom N rows within each group.",
+            "img": "/assets/Windowing.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          }
+        ]
+      },
+      {
+        "label": "Shaping",
+        "description": "Reshape, reorder, split, and combine rows and columns.",
+        "img": "/assets/Shaping.svg",
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "UnpivotNode",
+            "label": "Unpivot",
+            "description": "Melts a wide data table into a long format.",
+            "img": "/assets/Shaping.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "StackColumnsNode",
+            "label": "Stack Columns",
+            "description": "Stacks the values of multiple columns vertically into a single column.",
+            "img": "/assets/Shaping.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "CombineColumnsNode",
+            "label": "Combine Columns",
+            "description": "Merges the values of multiple columns into a single column with a delimiter.",
+            "img": "/assets/Shaping.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "CopyColumnNode",
+            "label": "Copy Column",
+            "description": "Duplicates an existing column into a new column.",
+            "img": "/assets/Shaping.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "MoveColumnsNode",
+            "label": "Move Columns",
+            "description": "Reorders columns in a data table.",
+            "img": "/assets/Shaping.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ExpandDelimitedCellToRowsNode",
+            "label": "Expand Delimited Cell to Rows",
+            "description": "Explodes delimited cells into one row per value.",
+            "img": "/assets/Shaping.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "CollapseRowsToDelimitedNode",
+            "label": "Collapse Rows to Delimited",
+            "description": "Concatenates column values into a single delimited string per group.",
+            "img": "/assets/Shaping.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ConditionalSplitNode",
+            "label": "Conditional Split",
+            "description": "Routes each row into one of several outputs based on filter expressions.",
+            "img": "/assets/Shaping.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "AddConstantColumnNode",
+            "label": "Add Constant Column",
+            "description": "Adds a new column populated with a constant value on every row.",
+            "img": "/assets/Shaping.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          }
+        ]
+      },
+      {
+        "label": "Encoding",
+        "description": "Encode, scale, and bin categorical and numeric values for analysis.",
+        "img": "/assets/Encoding.svg",
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "OneHotEncodeNode",
+            "label": "One-Hot Encode",
+            "description": "Creates one binary column per distinct value in a categorical column.",
+            "img": "/assets/Encoding.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "LabelEncodeNode",
+            "label": "Label Encode",
+            "description": "Converts a categorical column into integer labels.",
+            "img": "/assets/Encoding.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "MinMaxScaleNode",
+            "label": "Min-Max Scale",
+            "description": "Scales numeric columns to a target range (default 0 to 1).",
+            "img": "/assets/Encoding.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ZScoreStandardizeNode",
+            "label": "Z-Score Standardize",
+            "description": "Standardizes numeric columns to zero mean and unit variance.",
+            "img": "/assets/Encoding.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "BinValuesNode",
+            "label": "Bin Values",
+            "description": "Bins numeric values into equal-width buckets.",
+            "img": "/assets/Encoding.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "QuantileBinNode",
+            "label": "Quantile Bin",
+            "description": "Bins numeric values into equal-frequency quantile buckets.",
+            "img": "/assets/Encoding.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          }
+        ]
+      },
+      {
+        "label": "Data Quality",
+        "description": "Clean, impute, and detect anomalies to improve data quality.",
+        "img": "/assets/DataQuality.svg",
+        "actions": [
+          {
+            "type": "activityNode",
+            "name": "ImputeByMeanNode",
+            "label": "Impute by Mean",
+            "description": "Replaces missing numeric values with the column mean.",
+            "img": "/assets/DataQuality.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ImputeByMedianNode",
+            "label": "Impute by Median",
+            "description": "Replaces missing numeric values with the column median.",
+            "img": "/assets/DataQuality.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ImputeByModeNode",
+            "label": "Impute by Mode",
+            "description": "Replaces missing values with the most frequent column value.",
+            "img": "/assets/DataQuality.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "RemoveColumnsByMissingRatioNode",
+            "label": "Remove Columns by Missing Ratio",
+            "description": "Removes columns whose missing-value ratio exceeds a threshold.",
+            "img": "/assets/DataQuality.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "ReplaceNullWithValueNode",
+            "label": "Replace Null with Value",
+            "description": "Replaces null or empty values with a specified value.",
+            "img": "/assets/DataQuality.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "DetectOutliersNode",
+            "label": "Detect Outliers",
+            "description": "Flags numeric outliers using IQR or Z-score.",
+            "img": "/assets/DataQuality.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "RemoveOutliersNode",
+            "label": "Remove Outliers",
+            "description": "Removes rows flagged as numeric outliers.",
+            "img": "/assets/DataQuality.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "NormalizeDateFormatsNode",
+            "label": "Normalize Date Formats",
+            "description": "Parses date values and rewrites them to a single output format.",
+            "img": "/assets/DataQuality.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "StandardizeColumnNamesNode",
+            "label": "Standardize Column Names",
+            "description": "Renames columns to a consistent case style.",
+            "img": "/assets/DataQuality.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
+          },
+          {
+            "type": "activityNode",
+            "name": "FuzzyMatchNode",
+            "label": "Fuzzy Match",
+            "description": "Matches rows between two tables using fuzzy string similarity.",
+            "img": "/assets/DataQuality.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["cloud"],
+            "badge": "Beta"
           }
         ]
       }
