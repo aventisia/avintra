@@ -81,7 +81,8 @@ export const SetFixedCreditsDialog = () => {
             onChange={(e) => setValue(e.target.value)}
           />
           <p className="text-sm text-muted-foreground">
-            Leave empty to clear the fixed credits limit for this agent.
+            Sets a fixed credit amount deducted for every run of this agent, replacing the
+            default credit mechanism. Leave empty to clear the override and use the default.
           </p>
         </div>
 

@@ -80,6 +80,15 @@ public interface IJobsTableService
     /// <returns>A service response that indicates whether the job abort was successful or not.</returns>
     Task<ServiceResponse<bool>> AbortJobExecutionAsync(JobAbortRequestDto jobAbortRequestDto);
 
+    /// <summary>
+    /// Gets the fixed credits override configured for an agent (flow version).
+    /// Returns <see langword="null"/> when the agent has no fixed credits override,
+    /// in which case the default credit deduction applies.
+    /// </summary>
+    /// <param name="flowVersionId">The flow version (agent) ID to look up.</param>
+    /// <returns>A service response containing the fixed credits amount, if configured.</returns>
+    Task<ServiceResponse<int?>> GetAgentFixedCreditsAsync(Guid flowVersionId);
+
     // TODO: Need to check this
     // /// <summary>
     // /// Retrieves a list of all job logs between optional start and end date filters.

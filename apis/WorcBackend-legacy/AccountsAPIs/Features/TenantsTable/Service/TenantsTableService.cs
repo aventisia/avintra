@@ -49,9 +49,9 @@ public class TenantsTableService : ITenantsTableService
                 tenantFilterQuery.EndDate = DateTime.UtcNow.Date;
             }
 
-            // Fetch the list of tenants based on the condition (editable, not default, and not the current tenant)
+            // Fetch the list of tenants 
             var tenants = await _unitOfWork.TenantRepo
-                .GetByConditionAsync(w => w.IsEditable && !w.IsDefault && w.Id != _currentTenantService.CurrentTenantId)
+                .GetByConditionAsync(w => true)
                 .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
 

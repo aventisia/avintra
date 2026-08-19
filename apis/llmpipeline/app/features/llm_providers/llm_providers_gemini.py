@@ -9,6 +9,7 @@ from app.core.logger import log_exception, logger
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
 from app.core.byok_usage_manager import ByokUsageManager
+from app.features.litellm.core.credit_utils import agent_has_fixed_credits
 from app.features.litellm.core.credentials import resolve_credential_name
 from app.features.llm_providers.llm_providers_schemas import (
     EmbeddingRequest,
@@ -464,6 +465,11 @@ class GeminiProvider(BaseLLMProvider):
         
         # Post credit usage only when BYOK is disabled and no credential is provided
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
+            # Skip token-based deduction when the agent has a fixed-credits override.
+            if agent_has_fixed_credits(llm_request.ref_id, jwt):
+                logger.info(f"Skipping platform credit usage for agent {llm_request.ref_id} (fixed credits).")
+                return llm_response
+
             # Prepare the credit usage data
             credit_usage_data = self._build_gemini_credit_usage(llm_request, llm_response, space_id)
 

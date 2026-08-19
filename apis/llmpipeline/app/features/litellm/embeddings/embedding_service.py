@@ -9,6 +9,7 @@ from app.core.logger import log_exception, logger
 from app.features.auth.authenticated_user import User
 
 from ..core.credit_utils import (
+    agent_has_fixed_credits,
     build_byok_entry,
     build_credit_entry,
     check_sufficient_credits,
@@ -91,6 +92,10 @@ class EmbeddingService:
     def _post_credit_usage(self, req: EmbeddingRequest, resp: EmbeddingResponse, user: User) -> None:
         # Only post usage for platform (non-BYOK) requests.
         if not should_post_usage(req.is_byok_enabled, req.credential_id):
+            return
+        # Skip token-based deduction when the agent has a fixed-credits override.
+        if agent_has_fixed_credits(req.reference_id, user.access_token):
+            logger.info(f"[LLM-V2] Skipping platform credit usage for agent {req.reference_id} (fixed credits).")
             return
         try:
             service = get_credit_service_type(req.provider, req.model, "service")

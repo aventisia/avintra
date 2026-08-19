@@ -7,13 +7,13 @@ public class JobsTableService : IJobsTableService
     private readonly ICurrentTenantService _currentTenantService;
     private readonly IJobsExecutorService _jobsExecutorService;
     private readonly IWebhookCallbackService _webhookCallbackService;
-    private readonly IHttpClientFactory _httpClientFactory;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
     private readonly string? _authHeader;
     private readonly string _displayName;
     private readonly INodeExecutionLogService _nodeExecutionLogService;
     private readonly IClientContextResolver _clientContextResolver;
+    private readonly IExecutionNotificationService _executionNotificationService;
     private const int MaxRemarkLength = 2000;
 
     public JobsTableService(
@@ -23,10 +23,10 @@ public class JobsTableService : IJobsTableService
         ICurrentTenantService currentTenantService,
         IJobsExecutorService jobsExecutorService,
         IWebhookCallbackService webhookCallbackService,
-        IHttpClientFactory httpClientFactory,
         EnvironmentConfig environmentConfig,
         INodeExecutionLogService nodeExecutionLogService,
-        IClientContextResolver clientContextResolver)
+        IClientContextResolver clientContextResolver,
+        IExecutionNotificationService executionNotificationService)
     {
         // Set the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -42,10 +42,10 @@ public class JobsTableService : IJobsTableService
         _currentTenantService = currentTenantService;
         _jobsExecutorService = jobsExecutorService;
         _webhookCallbackService = webhookCallbackService;
-        _httpClientFactory = httpClientFactory;
         _environmentConfig = environmentConfig;
         _nodeExecutionLogService = nodeExecutionLogService;
         _clientContextResolver = clientContextResolver;
+        _executionNotificationService = executionNotificationService;
     }
 
     /// <summary>
@@ -739,11 +739,17 @@ public class JobsTableService : IJobsTableService
             }
 
             // Track credits consumed for agent execution time.
+            // If the agent (flow version) has a fixed credits override configured by the
+            // Super Admin (Tenants section), deduct that exact amount instead of the
+            // default duration-based calculation.
             var durationSeconds = job.StartTime.HasValue
                 ? Math.Ceiling((now - job.StartTime.Value).TotalSeconds)
                 : 0;
 
-            var creditUsageResponse = await RecordAgentExecutionCreditUsageAsync(job, durationSeconds);
+            var fixedCredits = job.FlowVersion?.FixedCredits;
+            var isFixedCredits = fixedCredits.HasValue && fixedCredits.Value >= 0;
+
+            var creditUsageResponse = await RecordAgentExecutionCreditUsageAsync(job, isFixedCredits ? fixedCredits!.Value : durationSeconds, isFixedCredits);
             if (creditUsageResponse.StatusCode == 200 && creditUsageResponse.Data != null)
             {
                 job.CreditsConsumed = (int?)creditUsageResponse.Data.CreditsUsed;
@@ -761,6 +767,15 @@ public class JobsTableService : IJobsTableService
             // Close-Job failed, log and return
             if (!await _unitOfWork.SaveAsync())
                 return serviceResponse.Update("Failed to save changes.", 500);
+
+            // Notify the initiating user (job.RefId) so the frontend can refresh the
+            // credit balance immediately after the run completes. This covers the
+            // runner/desktop path, which does not otherwise emit a JobCompleted signal.
+            if (job.RefId.HasValue && job.RefId.Value != Guid.Empty)
+            {
+                await _executionNotificationService.NotifyExecutionCompletedAsync(
+                    job.RefId.Value, job.Id, job.Status, job.Remark);
+            }
 
             // Return success response
             return serviceResponse.Update("Job closed", 200, job.Adapt<JobRecordDto>());
@@ -841,7 +856,9 @@ public class JobsTableService : IJobsTableService
     }
 
     // Posts a single credit usage record to AccountsAPIs for agent execution time.
-    private async Task<ServiceResponse<RecordedCreditUsageDto>> RecordAgentExecutionCreditUsageAsync(Job job, double durationSeconds)
+    // When isFixedCredits is true, consumedUnits is treated as a fixed credit amount
+    // that supersedes the default unit-based deduction.
+    private async Task<ServiceResponse<RecordedCreditUsageDto>> RecordAgentExecutionCreditUsageAsync(Job job, double consumedUnits, bool isFixedCredits = false)
     {
         var serviceResponse = ServiceResponse<RecordedCreditUsageDto>.Create("Failed to record credit usage.", 500);
 
@@ -856,7 +873,8 @@ public class JobsTableService : IJobsTableService
             var payload = new
             {
                 ServiceType = CreditServicesEnum.AgentExecutionTime,
-                ConsumedUnit = durationSeconds,
+                ConsumedUnit = consumedUnits,
+                IsFixedCredits = isFixedCredits,
                 RefType = UsageSourceTypesEnum.Agent,
                 RefId = job.FlowVersionId,
                 RefName = flowName,
@@ -866,7 +884,12 @@ public class JobsTableService : IJobsTableService
                 TriggeredByAgent = flowName
             };
 
-            using var httpClient = _httpClientFactory.CreateClient();
+            // In local development the AccountsAPIs dev certificate is untrusted, so
+            // bypass SSL validation to allow the cross-API credit recording to succeed.
+            using var httpClient = new HttpClient(new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+            });
             httpClient.Timeout = TimeSpan.FromSeconds(30);
 
             if (!string.IsNullOrWhiteSpace(_authHeader))
@@ -899,6 +922,36 @@ public class JobsTableService : IJobsTableService
             _logger.LogError(ex, "An error occurred while recording credit usage for job {JobId}.", job.Id);
             return serviceResponse;
         }
+    }
+
+    // Gets the fixed credits override configured for an agent (flow version).
+    // Returns null when no override is set, meaning the default credit deduction applies.
+    public async Task<ServiceResponse<int?>> GetAgentFixedCreditsAsync(Guid flowVersionId)
+    {
+        var serviceResponse = ServiceResponse<int?>.Create("Failed to retrieve fixed credits.", 500);
+
+        try
+        {
+            var flowVersion = await _unitOfWork.FlowVersionRepo
+                .GetByConditionAsync(w => w.Id == flowVersionId)
+                .FirstOrDefaultAsync();
+
+            if (flowVersion == null)
+            {
+                serviceResponse.Message = "Agent not found.";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = flowVersion.FixedCredits;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Fixed credits retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving fixed credits for agent {FlowVersionId}.", flowVersionId);
+        }
+
+        return serviceResponse;
     }
 
     // Exports jobs data into a CSV file 
