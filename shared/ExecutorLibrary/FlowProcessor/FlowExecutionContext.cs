@@ -200,6 +200,21 @@ public class FlowExecutionContext
             return expando;
         }
 
+        // ExpandoObject and other generic string-keyed dictionaries must be preserved
+        // as objects so dot-notation (e.g. CurrentItem.name) works in DynamicExpresso.
+        if (value is IDictionary<string, object?> genericDictionary)
+        {
+            var expando = new ExpandoObject() as IDictionary<string, object?>;
+            foreach (var kvp in genericDictionary)
+            {
+                if (!string.IsNullOrWhiteSpace(kvp.Key))
+                {
+                    expando[kvp.Key] = ConvertForInterpreter(kvp.Value);
+                }
+            }
+            return expando;
+        }
+
         if (value is IEnumerable enumerable)
         {
             return enumerable.Cast<object?>().Select(ConvertForInterpreter).ToList();
