@@ -1,0 +1,42 @@
+{
+  "name": "ConcatenateDataTablesNode",
+  "label": "Concatenate Data Tables",
+  "description": "Stacks two data tables vertically, aligning columns by name. Missing columns are filled with null.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FirstDataTable",
+      "label": "First Data Table",
+      "description": "The first data table to concatenate.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SecondDataTable",
+      "label": "Second Data Table",
+      "description": "The second data table to append below the first.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ConcatenatedDataTable",
+      "label": "Concatenated Data Table",
+      "description": "The resulting data table with rows from both inputs.",
+      "defaultValue": {
+        "value": "ConcatenatedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

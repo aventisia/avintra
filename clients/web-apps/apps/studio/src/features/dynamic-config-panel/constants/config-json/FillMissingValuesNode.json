@@ -1,0 +1,91 @@
+{
+  "name": "FillMissingValuesNode",
+  "label": "Fill Missing Values",
+  "description": "Fills missing (null) values in a column using a constant, the previous or next value, or the group mean.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table whose missing values will be filled.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Column",
+      "label": "Column",
+      "description": "The name of the column to fill.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "FillMethod",
+      "label": "Fill Method",
+      "description": "How missing values are filled.",
+      "defaultValue": "Constant",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Constant",
+          "value": "Constant",
+          "description": "Replaces missing values with a constant value."
+        },
+        {
+          "label": "Previous Value",
+          "value": "PreviousValue",
+          "description": "Carries forward the last non-null value (forward fill)."
+        },
+        {
+          "label": "Next Value",
+          "value": "NextValue",
+          "description": "Uses the next non-null value (backward fill)."
+        },
+        {
+          "label": "Group Mean",
+          "value": "GroupMean",
+          "description": "Replaces missing values with the mean of the values within the group."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ConstantValue",
+      "label": "Constant Value",
+      "description": "The constant value used by the Constant fill method.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "GroupByColumns",
+      "label": "Group By Columns",
+      "description": "Comma-separated column names used to group rows when computing the group mean. Optional.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "UpdatedDataTable",
+      "label": "Updated Data Table",
+      "description": "The data table with missing values filled.",
+      "defaultValue": {
+        "value": "UpdatedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

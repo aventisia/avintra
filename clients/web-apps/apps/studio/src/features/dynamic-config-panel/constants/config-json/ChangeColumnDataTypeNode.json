@@ -1,0 +1,93 @@
+{
+  "name": "ChangeColumnDataTypeNode",
+  "label": "Change Column Data Type",
+  "description": "Casts one or more columns of a data table to a target data type.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table whose columns will be converted.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Columns",
+      "label": "Columns",
+      "description": "Comma-separated column names to convert.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "TargetDataType",
+      "label": "Target Data Type",
+      "description": "The data type to convert the selected columns to.",
+      "defaultValue": "String",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "String",
+          "value": "String",
+          "description": "Converts the column to a string (System.String)."
+        },
+        {
+          "label": "Integer (Int32)",
+          "value": "Int32",
+          "description": "Converts the column to a 32-bit signed integer."
+        },
+        {
+          "label": "Long (Int64)",
+          "value": "Int64",
+          "description": "Converts the column to a 64-bit signed integer."
+        },
+        {
+          "label": "Decimal",
+          "value": "Decimal",
+          "description": "Converts the column to a decimal (128-bit)."
+        },
+        {
+          "label": "Double",
+          "value": "Double",
+          "description": "Converts the column to a double-precision floating point."
+        },
+        {
+          "label": "DateTime",
+          "value": "DateTime",
+          "description": "Converts the column to a date and time value."
+        },
+        {
+          "label": "Boolean",
+          "value": "Boolean",
+          "description": "Converts the column to a boolean value."
+        },
+        {
+          "label": "Guid",
+          "value": "Guid",
+          "description": "Converts the column to a globally unique identifier."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ConvertedDataTable",
+      "label": "Converted Data Table",
+      "description": "The data table with the converted column types.",
+      "defaultValue": {
+        "value": "ConvertedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

@@ -29,6 +29,11 @@ export const ActionToSelect = ({ data }: ActionToSelectProps) => {
       <div className="grow space-y-0.5">
         <h2 className="flex items-center text-xs font-medium text-foreground">
           {data.label}{" "}
+          {data.badge && (
+            <Badge className="ml-1 bg-muted text-3xs text-muted-foreground" variant={"outline"}>
+              {data.badge}
+            </Badge>
+          )}
           {data.disabled && (
             <Badge className="ml-1 text-3xs" variant={"outline"}>
               Coming soon

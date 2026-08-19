@@ -1,0 +1,90 @@
+{
+  "name": "SplitTextToColumnsNode",
+  "label": "Split Text to Columns",
+  "description": "Splits the values of a single text column into multiple columns using a delimiter or fixed-length chunks.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the source column to split.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceColumn",
+      "label": "Source Column",
+      "description": "The name of the text column to split.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "SplitBy",
+      "label": "Split By",
+      "description": "Whether to split by a delimiter or into fixed-length chunks.",
+      "defaultValue": "Delimiter",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Delimiter",
+          "value": "Delimiter",
+          "description": "Splits the text on a specified delimiter."
+        },
+        {
+          "label": "Fixed Length",
+          "value": "FixedLength",
+          "description": "Splits the text into fixed-length chunks."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Delimiter",
+      "label": "Delimiter",
+      "description": "The delimiter used to split the text (used by Delimiter mode).",
+      "defaultValue": ",",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ChunkLength",
+      "label": "Chunk Length",
+      "description": "The fixed length of each chunk (used by Fixed Length mode).",
+      "defaultValue": 5,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnPrefix",
+      "label": "Column Prefix",
+      "description": "The prefix for the generated columns, e.g., \u0027Part\u0027 produces Part1, Part2, etc.",
+      "defaultValue": "Part",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "SplitDataTable",
+      "label": "Split Data Table",
+      "description": "The data table with the source column split into multiple columns.",
+      "defaultValue": {
+        "value": "SplitDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

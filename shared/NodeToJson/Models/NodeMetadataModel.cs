@@ -12,6 +12,7 @@ internal class NodeMetadataModel
     public string? DocsLink { get; set; }
     public List<string>? SupportedPlatforms { get; set; }
     public List<string>? DoNotRenderIf { get; set; }
+    public string? Badge { get; set; }
 }
 
 // ["name"] = nodeType.Name,

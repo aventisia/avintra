@@ -1,0 +1,60 @@
+{
+  "name": "TokenizeTextNode",
+  "label": "Tokenize Text",
+  "description": "Splits text into a list of word tokens, optionally removing punctuation and stop words.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Text",
+      "label": "Text",
+      "description": "The text to tokenize.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "LowercaseTokens",
+      "label": "Lowercase Tokens",
+      "description": "Converts all tokens to lowercase.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "RemovePunctuation",
+      "label": "Remove Punctuation",
+      "description": "Removes punctuation characters from the tokens.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "RemoveStopWords",
+      "label": "Remove Stop Words",
+      "description": "Removes common English stop words (e.g., \u0027the\u0027, \u0027and\u0027).",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Tokens",
+      "label": "Tokens",
+      "description": "The resulting list of word tokens.",
+      "defaultValue": {
+        "value": "Tokens",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

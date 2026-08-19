@@ -180,6 +180,7 @@ internal class Program
                         DocsLink = nodeMetaData?.DocsLink ?? "https://docs.aventisia.com",
                         SupportedPlatforms = nodeSupportedPlatforms,
                         DoNotRenderIf = nodeMetaData?.DoNotRenderIf != null ? nodeMetaData?.DoNotRenderIf.Split(',').ToList() : null,
+                        Badge = string.IsNullOrWhiteSpace(nodeMetaData?.Badge) ? null : nodeMetaData.Badge,
                     });
 
                     // Create node json file

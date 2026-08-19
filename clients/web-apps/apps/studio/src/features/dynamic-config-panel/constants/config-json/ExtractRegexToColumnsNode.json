@@ -1,0 +1,60 @@
+{
+  "name": "ExtractRegexToColumnsNode",
+  "label": "Extract Regex to Columns",
+  "description": "Applies a regular expression with capture groups to a column; each capture group becomes a new column.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the source column.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SourceColumn",
+      "label": "Source Column",
+      "description": "The name of the column to which the regular expression is applied.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "RegularExpression",
+      "label": "Regular Expression",
+      "description": "The regular expression pattern. Each capture group becomes a new column.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnPrefix",
+      "label": "Column Prefix",
+      "description": "The prefix for the generated columns, e.g., \u0027Group\u0027 produces Group1, Group2, etc.",
+      "defaultValue": "Group",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ExtractedDataTable",
+      "label": "Extracted Data Table",
+      "description": "The data table with the extracted capture-group columns appended.",
+      "defaultValue": {
+        "value": "ExtractedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

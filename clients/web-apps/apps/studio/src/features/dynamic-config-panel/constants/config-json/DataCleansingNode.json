@@ -1,0 +1,100 @@
+{
+  "name": "DataCleansingNode",
+  "label": "Data Cleansing",
+  "description": "Cleans text columns by trimming whitespace, collapsing spaces, removing special characters, and normalizing casing.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to cleanse.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Columns",
+      "label": "Columns",
+      "description": "Comma-separated column names to cleanse. Empty means all text columns.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "TrimWhitespace",
+      "label": "Trim Whitespace",
+      "description": "Removes leading and trailing whitespace.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "CollapseSpaces",
+      "label": "Collapse Spaces",
+      "description": "Replaces multiple consecutive spaces with a single space.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "RemoveSpecialCharacters",
+      "label": "Remove Special Characters",
+      "description": "Removes characters that are not letters, digits, or whitespace.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "NormalizeCase",
+      "label": "Normalize Case",
+      "description": "Converts the text to the selected case format.",
+      "defaultValue": "None",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "None",
+          "value": "None",
+          "description": "Leaves the text casing unchanged."
+        },
+        {
+          "label": "Lowercase",
+          "value": "Lowercase",
+          "description": "Converts all characters to lowercase."
+        },
+        {
+          "label": "Uppercase",
+          "value": "Uppercase",
+          "description": "Converts all characters to uppercase."
+        },
+        {
+          "label": "Title Case",
+          "value": "TitleCase",
+          "description": "Capitalizes the first letter of each word."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CleansedDataTable",
+      "label": "Cleansed Data Table",
+      "description": "The data table with cleansed column values.",
+      "defaultValue": {
+        "value": "CleansedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

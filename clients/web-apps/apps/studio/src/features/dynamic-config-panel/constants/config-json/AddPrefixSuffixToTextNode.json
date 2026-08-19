@@ -1,0 +1,51 @@
+{
+  "name": "AddPrefixSuffixToTextNode",
+  "label": "Add Prefix or Suffix to Text",
+  "description": "Adds a prefix and/or suffix to a text value.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Text",
+      "label": "Text",
+      "description": "The original text.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Prefix",
+      "label": "Prefix",
+      "description": "The text to prepend to the original text.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Suffix",
+      "label": "Suffix",
+      "description": "The text to append to the original text.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The resulting text with the prefix and/or suffix applied.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

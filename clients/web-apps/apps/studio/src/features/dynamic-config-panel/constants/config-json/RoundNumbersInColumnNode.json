@@ -1,0 +1,77 @@
+{
+  "name": "RoundNumbersInColumnNode",
+  "label": "Round Numbers in Column",
+  "description": "Rounds the numeric values of a column to a fixed number of decimal places, significant digits, or to whole numbers.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table containing the numeric column to round.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Column",
+      "label": "Column",
+      "description": "The name of the numeric column to round.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "RoundMode",
+      "label": "Round Mode",
+      "description": "Whether to round to an integer, decimal places, or significant digits.",
+      "defaultValue": "DecimalPlaces",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Integer",
+          "value": "Integer",
+          "description": "Rounds the value to the nearest whole number."
+        },
+        {
+          "label": "Decimal Places",
+          "value": "DecimalPlaces",
+          "description": "Rounds the value to a fixed number of decimal places."
+        },
+        {
+          "label": "Significant Digits",
+          "value": "SignificantDigits",
+          "description": "Rounds the value to a fixed number of significant digits."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Precision",
+      "label": "Precision",
+      "description": "The number of decimal places or significant digits to round to.",
+      "defaultValue": 2,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "UpdatedDataTable",
+      "label": "Updated Data Table",
+      "description": "The data table with the rounded column values.",
+      "defaultValue": {
+        "value": "UpdatedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}
