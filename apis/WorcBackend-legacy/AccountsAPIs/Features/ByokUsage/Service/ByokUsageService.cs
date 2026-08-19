@@ -1,3 +1,5 @@
+using AccountsAPIs.Helpers;
+
 namespace AccountsAPIs.Services;
 
 public class ByokUsageService : IByokUsageService
@@ -102,13 +104,13 @@ public class ByokUsageService : IByokUsageService
                             {
                                 Model = modelGroup.Key,
                                 UnitType = modelGroup.FirstOrDefault()?.UnitType,
-                                TotalConsumption = modelGroup.Sum(sm => sm.ConsumedUnit),
+                                TotalConsumption = CreditRoundingHelper.RoundToTwo(modelGroup.Sum(sm => sm.ConsumedUnit)),
                                 UsageTimeline = modelGroup
                                     .GroupBy(g1 => g1.UsedAt.Date)
                                     .Select(s1 => new DataUsageDataPointDto
                                     {
                                         Date = s1.Key,
-                                        TotalCount = s1.Sum(x => x.ConsumedUnit),
+                                        TotalCount = CreditRoundingHelper.RoundToTwo(s1.Sum(x => x.ConsumedUnit)),
                                     })
                                     .OrderBy(o => o.Date)
                                     .ToList(),
@@ -130,9 +132,9 @@ public class ByokUsageService : IByokUsageService
                             Username = user.UserName,
                             FirstName = user.FirstName,
                             LastName = user.LastName,
-                            TotalConsumption = byokUsages
+                            TotalConsumption = CreditRoundingHelper.RoundToTwo(byokUsages
                                 .Where(w => w.UsedByUserId == user.Id)
-                                .Sum(sm => sm.ConsumedUnit),
+                                .Sum(sm => sm.ConsumedUnit)),
                         };
                     })
                     .ToList(),
@@ -146,9 +148,9 @@ public class ByokUsageService : IByokUsageService
                         return new ByokAgentUsageDto
                         {
                             AgentName = agentName,
-                            TotalConsumption = byokUsages
+                            TotalConsumption = CreditRoundingHelper.RoundToTwo(byokUsages
                                 .Where(w => w.TriggeredByAgent == agentName)
-                                .Sum(sm => sm.ConsumedUnit),
+                                .Sum(sm => sm.ConsumedUnit)),
                         };
                     })
                     .ToList(),

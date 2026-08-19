@@ -84,7 +84,7 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     /// Gets or sets the fixed credits limit configured for this agent (flow version).
     /// When set, the agent is capped to this number of credits. Null means no fixed limit.
     /// </summary>
-    public int? FixedCredits { get; set; }
+    public double? FixedCredits { get; set; }
 
     /// <summary>
     /// Configures the many-to-many relationship between machine flow and flow versions.

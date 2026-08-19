@@ -752,7 +752,7 @@ public class JobsTableService : IJobsTableService
             var creditUsageResponse = await RecordAgentExecutionCreditUsageAsync(job, isFixedCredits ? fixedCredits!.Value : durationSeconds, isFixedCredits);
             if (creditUsageResponse.StatusCode == 200 && creditUsageResponse.Data != null)
             {
-                job.CreditsConsumed = (int?)creditUsageResponse.Data.CreditsUsed;
+                job.CreditsConsumed = creditUsageResponse.Data.CreditsUsed;
             }
             else
             {
@@ -926,9 +926,9 @@ public class JobsTableService : IJobsTableService
 
     // Gets the fixed credits override configured for an agent (flow version).
     // Returns null when no override is set, meaning the default credit deduction applies.
-    public async Task<ServiceResponse<int?>> GetAgentFixedCreditsAsync(Guid flowVersionId)
+    public async Task<ServiceResponse<double?>> GetAgentFixedCreditsAsync(Guid flowVersionId)
     {
-        var serviceResponse = ServiceResponse<int?>.Create("Failed to retrieve fixed credits.", 500);
+        var serviceResponse = ServiceResponse<double?>.Create("Failed to retrieve fixed credits.", 500);
 
         try
         {

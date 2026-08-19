@@ -29,5 +29,5 @@ public interface IManageTenantService
     /// <param name="flowVersionId">The flow version (agent) ID.</param>
     /// <param name="fixedCredits">The fixed credits limit to set. Null clears the limit.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task<ServiceResponse<bool>> SetFixedCreditsAsync(Guid flowVersionId, int? fixedCredits);
+    Task<ServiceResponse<bool>> SetFixedCreditsAsync(Guid flowVersionId, double? fixedCredits);
 }

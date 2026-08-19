@@ -178,7 +178,7 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
     # Build the payload the Accounts API expects (PascalCase fields).
     credit_usage_entry = {
         "ServiceType": backend_service_type,
-        "ConsumedUnit": max(int(consumed_units or 0), 0),
+        "ConsumedUnit": max(consumed_units or 0, 0),
         "RefType": request.ref_type,
         "RefId": request.ref_id,
         "RefName": request.ref_name,

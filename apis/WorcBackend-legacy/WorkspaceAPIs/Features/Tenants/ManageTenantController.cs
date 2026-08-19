@@ -35,7 +35,7 @@ public class ManageTenantController : BaseApiController
 
     // Sets the fixed credits limit for a published agent.
     [HttpPut("agent/{flowVersionId}/fixed-credits")]
-    public async Task<ActionResult<ServiceResponse<bool>>> SetFixedCredits(Guid flowVersionId, [FromBody] int? fixedCredits)
+    public async Task<ActionResult<ServiceResponse<bool>>> SetFixedCredits(Guid flowVersionId, [FromBody] double? fixedCredits)
     {
         return ResultHelper(await _manageTenantService.SetFixedCreditsAsync(flowVersionId, fixedCredits));
     }

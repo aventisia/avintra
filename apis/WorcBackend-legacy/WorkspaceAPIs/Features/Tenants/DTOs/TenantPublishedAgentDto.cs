@@ -39,5 +39,5 @@ public class TenantPublishedAgentDto
     /// <summary>
     /// Gets or sets the fixed credits limit configured for this agent, if any.
     /// </summary>
-    public int? FixedCredits { get; set; }
+    public double? FixedCredits { get; set; }
 }

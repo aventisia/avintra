@@ -29,7 +29,7 @@ public class ExecutionController : BaseApiController
     // Used by the LLM pipeline to skip token-based credit deduction when the agent
     // has a fixed credits override set by the Super Admin (Tenants section).
     [HttpGet("agent/{flowVersionId}/fixed-credits")]
-    public async Task<ActionResult<ServiceResponse<int?>>> GetAgentFixedCredits(Guid flowVersionId)
+    public async Task<ActionResult<ServiceResponse<double?>>> GetAgentFixedCredits(Guid flowVersionId)
     {
         return ResultHelper(await _jobsTableService.GetAgentFixedCreditsAsync(flowVersionId));
     }
