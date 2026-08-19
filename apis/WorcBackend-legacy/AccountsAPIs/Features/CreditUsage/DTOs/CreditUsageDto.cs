@@ -22,6 +22,14 @@ public class CreditsUsageDto
     public double ConsumedUnit { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the credits consumed are a fixed
+    /// amount per execution (Supersedes the default unit-based calculation).
+    /// When <see langword="true"/>, <see cref="ConsumedUnit"/> is treated directly
+    /// as the number of credits to deduct, ignoring the credit plan conversion.
+    /// </summary>
+    public bool IsFixedCredits { get; set; }
+
+    /// <summary>
     /// Gets or sets the type of reference entity or operation where the credits were applied (e.g., Agent).
     /// </summary>
     public UsageSourceTypesEnum? RefType { get; set; }

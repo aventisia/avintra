@@ -1,6 +1,8 @@
 import { invoke } from "@tauri-apps/api/core";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 
+import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
 import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
 import { saveCompletedExecutionLog } from "@/features/execute-flow/utils/save-node-execution-log";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
@@ -81,6 +83,7 @@ const mapIncomingNodeLog = (log: IncomingNodeLog): NodeExecutionLogType => ({
  */
 export const useLocalExecutionWebSocket = () => {
   const socketRef = useRef<WebSocket | null>(null);
+  const queryClient = useQueryClient();
 
   const jobId = useCurrentFlowStore((state) => state.currentFlow.jobId);
   const versionId = useCurrentFlowStore((state) => state.currentFlow.versionId);
@@ -153,6 +156,10 @@ export const useLocalExecutionWebSocket = () => {
           // back to the green play state here.
           useCurrentFlowStore.getState().setExecutionState("stopped");
           setShowRunResultsRef.current(true);
+
+          // Credits are consumed server-side when the job closes; refresh the header
+          // balance so it updates without needing a manual page reload.
+          queryClient.invalidateQueries({ queryKey: AC_QUERY_KEY });
 
           // Persist the completed run (per-node logs + job outcome) to IndexedDB so a
           // refresh with ?showRunResults=1 can restore the colored canvas and panel.

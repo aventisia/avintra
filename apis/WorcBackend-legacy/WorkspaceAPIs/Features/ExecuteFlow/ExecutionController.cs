@@ -25,6 +25,15 @@ public class ExecutionController : BaseApiController
         return ResultHelper(await _executionGraphService.GetExecutionGraphAsync(jobId));
     }
 
+    // Returns the fixed credits override configured for an agent (flow version).
+    // Used by the LLM pipeline to skip token-based credit deduction when the agent
+    // has a fixed credits override set by the Super Admin (Tenants section).
+    [HttpGet("agent/{flowVersionId}/fixed-credits")]
+    public async Task<ActionResult<ServiceResponse<int?>>> GetAgentFixedCredits(Guid flowVersionId)
+    {
+        return ResultHelper(await _jobsTableService.GetAgentFixedCreditsAsync(flowVersionId));
+    }
+
     [HttpPost("logs/{jobId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> InsertNodeExecutionLogs(
         Guid jobId,

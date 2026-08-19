@@ -318,14 +318,23 @@ public class CreditUsageService : ICreditUsageService
                 // Calculate how many credits are needed based on the consumed units
                 TenantCredit? tenantAvailableCredit = null;
 
-                // Round up the consumed units to the nearest whole number
-                creditUsageDto.ConsumedUnit = Math.Ceiling(creditUsageDto.ConsumedUnit);
+                if (creditUsageDto.IsFixedCredits)
+                {
+                    // Fixed credits: deduct the configured amount directly, bypassing
+                    // the unit-based credit plan conversion.
+                    creditUsed = creditUsageDto.ConsumedUnit;
+                }
+                else
+                {
+                    // Round up the consumed units to the nearest whole number
+                    creditUsageDto.ConsumedUnit = Math.Ceiling(creditUsageDto.ConsumedUnit);
 
-                // Calculate the credit used based on the consumed units, the credit plan's unit value, and the number of credits per unit
-                creditUsed = creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit * existingCreditPlan.Credits;
+                    // Calculate the credit used based on the consumed units, the credit plan's unit value, and the number of credits per unit
+                    creditUsed = creditUsageDto.ConsumedUnit / existingCreditPlan.OneUnit * existingCreditPlan.Credits;
 
-                // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
-                creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
+                    // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
+                    creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
+                }
 
                 // Attempt to find the first available credit that has enough available credits to cover the usage
                 tenantAvailableCredit = await availableCredits
@@ -471,14 +480,23 @@ public class CreditUsageService : ICreditUsageService
                     // Calculate how many credits are needed based on the consumed units
                     var creditPlan = existingCreditPlans.FirstOrDefault(p => p.ServiceType == creditUsageDto.ServiceType);
 
-                    // Round up the consumed units to the nearest whole number
-                    creditUsageDto.ConsumedUnit = Math.Ceiling(creditUsageDto.ConsumedUnit);
+                    if (creditUsageDto.IsFixedCredits)
+                    {
+                        // Fixed credits: deduct the configured amount directly, bypassing
+                        // the unit-based credit plan conversion.
+                        creditUsed = creditUsageDto.ConsumedUnit;
+                    }
+                    else
+                    {
+                        // Round up the consumed units to the nearest whole number
+                        creditUsageDto.ConsumedUnit = Math.Ceiling(creditUsageDto.ConsumedUnit);
 
-                    // Calculate the credit used based on the consumed units, the credit plan's unit value, and the number of credits per unit
-                    creditUsed = creditUsageDto.ConsumedUnit / creditPlan.OneUnit * creditPlan.Credits;
+                        // Calculate the credit used based on the consumed units, the credit plan's unit value, and the number of credits per unit
+                        creditUsed = creditUsageDto.ConsumedUnit / creditPlan.OneUnit * creditPlan.Credits;
 
-                    // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
-                    creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
+                        // Apply the tenant's discount to creditUsed if it exists; otherwise, leave it unchanged.
+                        creditUsed = tenant.Discount.HasValue ? creditUsed * tenant.Discount.Value : creditUsed;
+                    }
 
                     // Attempt to find the first available credit that has enough available credits to cover the usage
                     var tenantAvailableCredit = availableCredits.FirstOrDefault(w => w.AvailableCredits >= creditUsed);

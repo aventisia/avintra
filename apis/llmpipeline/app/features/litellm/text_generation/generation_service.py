@@ -17,6 +17,7 @@ from app.utils.file_converter_utils import (
 
 from .kb_integration import augment_with_kb_context
 from ..core.credit_utils import (
+    agent_has_fixed_credits,
     build_byok_entry,
     build_credit_entry,
     check_sufficient_credits,
@@ -198,6 +199,12 @@ def _map_finish_reason_to_status(finish_reason: str | None) -> str:
 def _post_credit_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, user: User) -> None:
     # Only post usage for platform (non-BYOK) requests.
     if not should_post_usage(req.is_byok_enabled, req.credential_id):
+        return
+    # Skip token-based deduction when the agent has a fixed-credits override set
+    # by the Super Admin (the WorkspaceAPIs job-close path already bills the fixed
+    # amount, so posting token usage here would double-charge).
+    if agent_has_fixed_credits(req.ref_id, user.access_token):
+        logger.info(f"[LLM-V2] Skipping platform credit usage for agent {req.ref_id} (fixed credits).")
         return
     try:
         entries = []

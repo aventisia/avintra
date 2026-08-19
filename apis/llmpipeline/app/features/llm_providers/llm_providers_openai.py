@@ -17,6 +17,7 @@ from app.features.llm_providers.llm_job_manager import active_llm_jobs
 from fastapi import HTTPException
 from app.core.vault_manager import VaultManager
 from app.core.credit_manager import CreditManagerService
+from app.features.litellm.core.credit_utils import agent_has_fixed_credits
 from app.utils.file_converter_utils import file_to_base64
 
 class OpenAIProvider(BaseLLMProvider):
@@ -526,6 +527,11 @@ class OpenAIProvider(BaseLLMProvider):
         
         # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
         if not llm_request.is_byok_enabled and not llm_request.credential_id:
+            # Skip token-based deduction when the agent has a fixed-credits override.
+            if agent_has_fixed_credits(llm_request.ref_id, jwt):
+                logger.info(f"Skipping platform credit usage for agent {llm_request.ref_id} (fixed credits).")
+                return llm_response
+
             credit_usage_data = self._build_gpt_credit_usage(llm_request, llm_response, space_id)
 
             # Initialize the CreditManagerService

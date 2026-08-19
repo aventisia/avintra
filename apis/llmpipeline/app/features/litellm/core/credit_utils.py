@@ -7,13 +7,62 @@
 # implementation.
 from __future__ import annotations
 
+import httpx
 from fastapi import HTTPException
 
 from app.core.byok_usage_manager import ByokUsageManager
+from app.core.config import settings
 from app.core.credit_manager import CreditManagerService
 from app.core.logger import logger
 
 from .provider_registry import get_credit_service_type, should_post_usage
+
+
+def _workspace_api_base_url() -> str:
+    """Return the base URL for WorkspaceAPIs internal calls.
+
+    Defaults to ``https://{APP_BASE_URL}/api``. The ASP.NET backend uses a
+    ``/api`` path base, so internal callers should target ``/api`` directly.
+    Can be overridden via the ``WORKSPACE_API_URL`` setting for local dev.
+    """
+    default = f"https://{settings.APP_BASE_URL}/api"
+    return getattr(settings, "WORKSPACE_API_URL", None) or default
+
+
+def agent_has_fixed_credits(ref_id: str, access_token: str) -> bool:
+    """Return whether the agent (flow version) has a fixed-credits override.
+
+    When the Super Admin configured fixed credits for an agent in the Tenants
+    section, every run of that agent is billed a fixed amount at job close
+    (WorkspaceAPIs). The token-based credit postings in this pipeline must
+    therefore be suppressed to avoid double-charging.
+
+    Args:
+        ref_id: The flow version (agent) ID the credit usage is attributed to.
+        access_token: The authenticated user's JWT.
+
+    Returns:
+        True when the agent has a fixed-credits override and token-based
+        platform credit postings should be skipped; False otherwise.
+    """
+    if not ref_id:
+        return False
+
+    try:
+        headers = {"Content-Type": "application/json"}
+        if access_token:
+            headers["Authorization"] = f"Bearer {access_token}"
+
+        url = f"{_workspace_api_base_url()}/execution/agent/{ref_id}/fixed-credits"
+        response = httpx.get(url, headers=headers, timeout=15, verify=settings.SSL_VERIFY)
+        if not response.is_success:
+            return False
+
+        data = response.json().get("data")
+        return data is not None
+    except Exception as e:
+        logger.warning(f"[credit-utils] Failed to check fixed credits for agent {ref_id}: {e}")
+        return False
 
 
 def has_sufficient_platform_credits(access_token: str) -> bool:
@@ -119,6 +168,12 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
     # Reject unmapped models to prevent silent billing gaps.
     if not backend_service_type:
         raise ValueError(f"Unsupported model for credit usage: {request.model}")
+
+    # Skip token-based deduction when the agent has a fixed-credits override.
+    ref_id = getattr(request, "ref_id", None)
+    if agent_has_fixed_credits(ref_id, access_token):
+        logger.info(f"[credit-utils] Skipping platform credit usage for agent {ref_id} (fixed credits).")
+        return
 
     # Build the payload the Accounts API expects (PascalCase fields).
     credit_usage_entry = {
