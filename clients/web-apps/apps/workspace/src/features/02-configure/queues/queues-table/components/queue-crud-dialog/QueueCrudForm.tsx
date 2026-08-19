@@ -30,6 +30,7 @@ import {
 } from "../../constants/queue-form-field-props";
 import { queueZodSchema } from "../../constants/queue-zod-schema";
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
+import { QueueProcessingModeEnum } from "../../enums/queue-processing-mode-enum";
 import { useDefineQueueForm } from "../../hooks/useDefineQueueForm";
 import { useTableTab } from "../../hooks/useTableTab";
 
@@ -152,6 +153,19 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
   // Is form in read mode?
   const isReadMode = crudAction === "read";
 
+  // Watch the selected Instance Type. Agent queues are locked to the Flexible
+  // processing mode, so we track it to disable the Processing Mode field and
+  // force it back to Flexible whenever the type is set to Agent.
+  const selectedType = form.watch("type");
+  const isAgentType = selectedType === "Agent";
+
+  // When the Instance Type is Agent, force the Processing Mode to Flexible.
+  useEffect(() => {
+    if (isAgentType) {
+      form.setValue("processingMode", QueueProcessingModeEnum.Manual);
+    }
+  }, [isAgentType, form]);
+
   // Return the form
   return (
     <Form
@@ -172,9 +186,11 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
 
         {/* Processing Mode */}
         {crudAction === "create" ? (
-          <SelectField {...processingModeProps} />
+          <SelectField {...processingModeProps} disabled={isAgentType} />
         ) : (
-          form.getValues("processingMode") !== "" && <SelectField {...processingModeProps} />
+          form.getValues("processingMode") !== "" && (
+            <SelectField {...processingModeProps} disabled={isAgentType} />
+          )
         )}
       </div>
       {/* Name */}

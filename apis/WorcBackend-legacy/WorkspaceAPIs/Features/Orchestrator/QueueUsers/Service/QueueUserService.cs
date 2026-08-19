@@ -57,6 +57,7 @@ public class QueueUserService : IQueueUserService
                 .Include(i => i.QueueTransactions)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
+                .Include(i => i.QueueFlowVersions).ThenInclude(qf => qf.FlowVersion).ThenInclude(fv => fv.Flow)
                 .ToListAsync();
 
             // Map to DTOs, then override the completed count and average processing
@@ -138,6 +139,7 @@ public class QueueUserService : IQueueUserService
                 .Include(i => i.QueueTransactions)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
+                .Include(i => i.QueueFlowVersions).ThenInclude(qf => qf.FlowVersion).ThenInclude(fv => fv.Flow)
                 .ToListAsync();
 
             // Map to DTOs, then override the completed count and average processing

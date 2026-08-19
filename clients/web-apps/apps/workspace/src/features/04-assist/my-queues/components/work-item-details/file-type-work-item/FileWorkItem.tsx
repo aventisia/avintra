@@ -14,12 +14,14 @@ export default function FileWorkItem({
   extractedData,
   setExtractedData,
   inputSchema,
+  readOnly = false,
 }: {
   data?: QueueWorkItemDto;
   extractedData: string | undefined;
   credentialId?: string;
   inputSchema?: InputSchemaField[] | null;
   setExtractedData: Dispatch<SetStateAction<string | undefined>>;
+  readOnly?: boolean;
 }) {
   const { addFileUrls, clearAllFiles } = useLocalFileStore(
     useShallow((state) => ({
@@ -68,6 +70,7 @@ export default function FileWorkItem({
         extractedData={extractedData}
         setExtractedData={setExtractedData}
         inputSchema={inputSchema}
+        readOnly={readOnly}
       />
     </div>
   );

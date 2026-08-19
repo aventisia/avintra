@@ -106,6 +106,11 @@ export interface QueuesTableDto {
   total: number;
 
   /**
+   * Names of the agents (flow versions) assigned to the queue.
+   */
+  agentsNames?: string[] | null;
+
+  /**
    * Average age (in seconds) of the active (Pending + InProgress) items.
    */
   averageAgeSeconds?: number;

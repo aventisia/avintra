@@ -106,6 +106,11 @@ export interface QueuesTableDto {
   total: number;
 
   /**
+   * Names of the agents (flow versions) assigned to the queue.
+   */
+  agentsNames?: string[] | null;
+
+  /**
    * Indicates whether the queue is accessible
    * to all users within the tenant.
    */

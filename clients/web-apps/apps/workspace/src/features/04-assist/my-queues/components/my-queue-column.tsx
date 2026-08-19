@@ -48,7 +48,7 @@ export const buildColumns = (
         <DTColumnHeader tableKey={TABLE_KEY} column={column} title="WorkItem" />
       ),
       cell: ({ row }) => (
-        <WorkItemsTableCellLink rowId={row.original.rowId} viewOnly={viewOnly}>
+        <WorkItemsTableCellLink rowId={row.original.rowId}>
           {row.original.rowId}
         </WorkItemsTableCellLink>
       ),

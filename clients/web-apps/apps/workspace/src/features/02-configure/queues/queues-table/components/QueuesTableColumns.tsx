@@ -71,40 +71,18 @@ export const queuesTableColumns = (isSharedTab: boolean): ColumnDef<QueuesTableD
     ),
   },
   {
-    accessorKey: "inProgress",
+    accessorKey: "agentsNames",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("inProgress")} />
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("agentsNames")} />
     ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("inProgress") ?? 0}</div>
-    ),
-  },
-  {
-    accessorKey: "pending",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("pending")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("pending") ?? 0}</div>
-    ),
-  },
-  {
-    accessorKey: "completed",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("completed")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("completed") ?? 0}</div>
-    ),
-  },
-  {
-    accessorKey: "failed",
-    header: ({ column }) => (
-      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("failed")} />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("failed") ?? 0}</div>
-    ),
+    cell: ({ row }) => {
+      const agents = row.getValue<string[]>("agentsNames") ?? [];
+      return (
+        <div className="w-auto max-w-60 truncate font-medium">
+          {agents.length > 0 ? agents.join(", ") : "--"}
+        </div>
+      );
+    },
   },
   {
     accessorKey: "total",

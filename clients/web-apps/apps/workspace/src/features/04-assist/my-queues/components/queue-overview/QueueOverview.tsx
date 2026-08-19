@@ -73,7 +73,7 @@ export const QueueOverview = () => {
   };
 
   return (
-    <div className="space-y-4 pb-4 pt-[17px]">
+    <div className="space-y-4 pb-6 pt-[17px]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-lg font-bold text-accent-foreground">{TABLE_HEADING} Overview</h1>
@@ -84,10 +84,12 @@ export const QueueOverview = () => {
           </p>
         </div>
         <div className="flex items-center gap-3">
-          <QueueTypeSwitch value={queueType} onChange={handleQueueTypeChange} />
           <HistoryDateRangeFilter value={dateRange} onChange={setDateRange} />
         </div>
       </div>
+
+      {/* Switch below the heading, matching the Usage screen placement. */}
+      <QueueTypeSwitch value={queueType} onChange={handleQueueTypeChange} />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {queues.map((queue) => (
@@ -95,6 +97,7 @@ export const QueueOverview = () => {
             key={queue.id}
             queueName={queue.name}
             processingMode={queue.processingMode}
+            agentsNames={queue.agentsNames}
             pending={queue.pending}
             inProgress={queue.inProgress}
             completed={queue.completed}
