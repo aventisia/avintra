@@ -50,7 +50,7 @@ export const flowsTableColumns = (isSharedTab: boolean): ColumnDef<FlowsTableDto
     cell: ({ row }) => (
       <div className="flex items-center gap-3 ">
         <FlowVersionNavLink
-          to={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.id}&return=1`}
+          to={`${import.meta.env.VITE_STUDIO_PATH}agent?f=${row.original.id}`}
           title={`Open ${row.original.name} v${row.original.versionNumber} in Agent Builder`}
           flowName={row.original.name ?? "NAME_NOT_FOUND"}
           flowVersionNumber={`v${row.original.versionNumber}`}
