@@ -14,7 +14,7 @@ public class ReadFromCsvTextNode : BaseNode
     public InArgument<bool> TrimFields { get; set; } = new InArgument<bool>(false);
 
     [DisplayName("First Line Contains Column Names"), Description("If true, treats the first line as column names.")]
-    public InArgument<bool> FirstLineContainsColumnNames { get; set; } = new InArgument<bool>(false);
+    public InArgument<bool> FirstLineContainsColumnNames { get; set; } = new InArgument<bool>(true);
 
     [DisplayName("Get CSV Fields as Text"), Description("If true, converts all fields to text.")]
     public InArgument<bool> GetCsvFieldsAsText { get; set; } = new InArgument<bool>(false);
@@ -28,7 +28,7 @@ public class ReadFromCsvTextNode : BaseNode
 
     [DisplayName("Fixed Column Widths"), Description("The fixed widths of columns when 'Columns Separator' is 'Fixed Column Widths'.")]
     [RenderIfCondition(nameof(ColumnsSeparator), ReadCsvSeparatorEnum.FixedColumnWidths)]
-    public InArgument<string> FixedColumnWidths { get; set; }
+    public InArgument<string> FixedColumnWidths { get; set; } = new InArgument<string>(string.Empty);
 
     [DisplayName("Result Data Table"), Description("The generated data table.")]
     public OutArgument<DataTable> ResultDataTable { get; set; } = new OutArgument<DataTable>();
