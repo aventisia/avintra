@@ -1,3 +1,7 @@
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("NodeLibrary.Tests")]
+
 namespace NodeLibrary.Core;
 
 /// <summary>
@@ -6,6 +10,7 @@ namespace NodeLibrary.Core;
 public interface INodeContext
 {
     T GetValue<T>(InArgument<T> argument);
+    T GetOutValue<T>(OutArgument<T> argument);
     void SetValue<T>(OutArgument<T> argument, T value);
 
     // Add any additional context methods you need
@@ -25,6 +30,12 @@ public class NodeContext : INodeContext
     }
 
     public T GetValue<T>(InArgument<T> argument)
+    {
+        var result = argument.Get(this);
+        return result is not null ? result : default!;
+    }
+
+    public T GetOutValue<T>(OutArgument<T> argument)
     {
         var result = argument.Get(this);
         return result is not null ? result : default!;

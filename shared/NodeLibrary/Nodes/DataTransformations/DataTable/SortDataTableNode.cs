@@ -19,7 +19,7 @@ public class SortDataTableNode : BaseNode
 
     [DisplayName("Column Index"), Description("The index of the column to sort by (used when 'Specify Column With' is set to 'Index').")]
     [RenderIfCondition(nameof(SpecifyColumnWith), DataTableSortColumnByEnum.Index)]
-    public InArgument<int> ColumnIndex { get; set; }
+    public InArgument<int> ColumnIndex { get; set; } = new InArgument<int>(0);
 
     [DisplayName("Order"), Description("Specifies whether to sort in ascending or descending order.")]
     public InArgument<SortOrderEnum> Order { get; set; } = new InArgument<SortOrderEnum>(SortOrderEnum.Ascending);
@@ -71,9 +71,9 @@ public class SortDataTableNode : BaseNode
             // Clone the original DataTable to avoid modifying the input
             var sortedDataTable = dataTable.Clone();
 
-            // Sort the DataTable using LINQ
+            // Sort the DataTable using LINQ - handle null values properly
             var sortedRows = dataTable.AsEnumerable()
-                .OrderBy(row => row[sortColumnName])
+                .OrderBy(row => row[sortColumnName] == DBNull.Value ? null : row[sortColumnName])
                 .Select(row => row.ItemArray)
                 .ToArray();
 

@@ -59,10 +59,27 @@ public class CreateDataTableNode : BaseNode
                     }
                     else if (columns is string columnString)
                     {
-                        var columnNames = columnString.Split(',');
-                        foreach (var col in columnNames)
-                            resultTable.Columns.Add(col.Trim());
-                        status = $"Created data table with {columnNames.Length} columns.";
+                        var columnDefs = columnString.Split(',');
+                        foreach (var colDef in columnDefs)
+                        {
+                            var parts = colDef.Trim().Split(':');
+                            var columnName = parts[0].Trim();
+                            var columnType = parts.Length > 1 ? parts[1].Trim() : "string";
+                            
+                            var dataType = columnType.ToLower() switch
+                            {
+                                "int" or "int32" => typeof(int),
+                                "long" or "int64" => typeof(long),
+                                "double" => typeof(double),
+                                "decimal" => typeof(decimal),
+                                "bool" or "boolean" => typeof(bool),
+                                "date" or "datetime" => typeof(DateTime),
+                                _ => typeof(string)
+                            };
+                            
+                            resultTable.Columns.Add(columnName, dataType);
+                        }
+                        status = $"Created data table with {columnDefs.Length} columns.";
                     }
                 }
 
