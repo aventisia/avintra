@@ -1056,6 +1056,18 @@ public class FlowProcessor
             return true;
         }
 
+        // Handle JsonElement arrays by converting them to a list of objects
+        if (listObj is JsonElement jsonElement && jsonElement.ValueKind == JsonValueKind.Array)
+        {
+            var convertedList = new List<object?>();
+            foreach (var item in jsonElement.EnumerateArray())
+            {
+                convertedList.Add(ConvertJsonElement(item));
+            }
+            enumerable = convertedList;
+            return true;
+        }
+
         if (listObj is System.Collections.IEnumerable en && listObj is not string)
         {
             enumerable = en;
@@ -1112,6 +1124,46 @@ public class FlowProcessor
             NodeLogs = logs,
             ErrorMessage = errorMessage,
         };
+    }
+
+    /// <summary>
+    /// Recursively converts a JsonElement into a form suitable for DynamicExpresso evaluation.
+    /// Objects become dictionaries, arrays become lists, and primitives are unwrapped.
+    /// </summary>
+    private static object? ConvertJsonElement(JsonElement element)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.Object:
+                var expando = new System.Dynamic.ExpandoObject() as IDictionary<string, object?>;
+                foreach (var property in element.EnumerateObject())
+                {
+                    expando[property.Name] = ConvertJsonElement(property.Value);
+                }
+                return expando;
+
+            case JsonValueKind.Array:
+                return element.EnumerateArray().Select(ConvertJsonElement).ToList();
+
+            case JsonValueKind.String:
+                return element.GetString();
+
+            case JsonValueKind.Number:
+                return element.TryGetInt64(out var longValue) ? longValue : element.GetDouble();
+
+            case JsonValueKind.True:
+                return true;
+
+            case JsonValueKind.False:
+                return false;
+
+            case JsonValueKind.Null:
+            case JsonValueKind.Undefined:
+                return null;
+
+            default:
+                return element.GetRawText();
+        }
     }
 
     private static Dictionary<string, object?>? SnapshotOutputVariables(FlowExecutionContext? context)

@@ -91,6 +91,26 @@
         "img": "/function.png",
         "actions": [
           {
+            "type": "conditionalNode",
+            "name": "ConditionalActivity",
+            "label": "Router",
+            "description": "Use conditions to decide which direction the flow should take",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "ConditionalNodeIcon",
+            "img": "/function.png",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
+            "type": "forLoopNode",
+            "name": "LoopActivity",
+            "label": "Loop",
+            "description": "Use this to keep doing something again and again, as long as certain conditions are met.",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": "LoopNodeIcon",
+            "img": "/function.png",
+            "supportedPlatforms": ["cloud", "windows"]
+          },
+          {
             "type": "breakLoopNode",
             "name": "BreakLoopNode",
             "label": "Break Loop",
