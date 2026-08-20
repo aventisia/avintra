@@ -97,12 +97,14 @@ public class FlowExecutionContext
     /// </summary>
     public object? ResolveTemplateObject(object? value)
     {
-        // Convert JsonElement into an interpreter-friendly dynamic structure
+        // Convert JsonElement / JsonNode into an interpreter-friendly dynamic structure
         // (ExpandoObject / List<object?>) so dot-notation and indexing work.
-        if (value is JsonElement jsonElement)
+        value = value switch
         {
-            value = ConvertJsonElement(jsonElement);
-        }
+            JsonElement jsonElement => ConvertJsonElement(jsonElement),
+            JsonNode jsonNode => ConvertJsonNode(jsonNode),
+            _ => value
+        };
 
         if (value is string stringValue && stringValue.Contains("{{") && stringValue.Contains("}}"))
         {
@@ -200,7 +202,7 @@ public class FlowExecutionContext
 
     /// <summary>
     /// Recursively converts values into forms that DynamicExpresso can evaluate
-    /// with dot-notation and indexing. JsonElements become ExpandoObjects or lists,
+    /// with dot-notation and indexing. JsonElements / JsonNodes become ExpandoObjects or lists,
     /// and nested dictionaries/enumerables are flattened the same way.
     /// </summary>
     private static object? ConvertForInterpreter(object? value)
@@ -210,6 +212,9 @@ public class FlowExecutionContext
 
         if (value is JsonElement element)
             return ConvertJsonElement(element);
+
+        if (value is JsonNode node)
+            return ConvertJsonNode(node);
 
         if (value is string)
             return value;
@@ -245,7 +250,7 @@ public class FlowExecutionContext
 
         if (value is IEnumerable enumerable)
         {
-            return enumerable.Cast<object?>().Select(ConvertForInterpreter).ToList();
+            return ConvertEnumerable(enumerable.Cast<object?>());
         }
 
         return value;
@@ -264,7 +269,7 @@ public class FlowExecutionContext
                 return expando;
 
             case JsonValueKind.Array:
-                return element.EnumerateArray().Select(ConvertJsonElement).ToList();
+                return ConvertEnumerable(element.EnumerateArray().Select(ConvertJsonElement));
 
             case JsonValueKind.String:
                 return element.GetString();
@@ -285,5 +290,55 @@ public class FlowExecutionContext
             default:
                 return element.GetRawText();
         }
+    }
+
+    private static object? ConvertJsonNode(JsonNode? node)
+    {
+        if (node is null)
+            return null;
+
+        if (node is JsonObject jsonObject)
+        {
+            var expando = new ExpandoObject() as IDictionary<string, object?>;
+            foreach (var property in jsonObject)
+            {
+                if (!string.IsNullOrWhiteSpace(property.Key))
+                {
+                    expando[property.Key] = ConvertJsonNode(property.Value);
+                }
+            }
+            return expando;
+        }
+
+        if (node is JsonArray jsonArray)
+        {
+            return ConvertEnumerable(jsonArray.Select(ConvertJsonNode));
+        }
+
+        if (node is JsonValue jsonValue)
+        {
+            var value = jsonValue.GetValue<object?>();
+            return value is JsonElement nestedElement ? ConvertJsonElement(nestedElement) : value;
+        }
+
+        return node.ToString();
+    }
+
+    /// <summary>
+    /// Converts a sequence of interpreter-friendly values into a strongly-typed list
+    /// when possible. If every element is an ExpandoObject we return
+    /// <see cref="List{ExpandoObject}"/> so that indexers preserve the dynamic type
+    /// and DynamicExpresso can resolve dot-notation like list[2].Value.line_items.
+    /// Otherwise we fall back to <see cref="List{Object}"/>.
+    /// </summary>
+    private static object ConvertEnumerable(IEnumerable<object?> items)
+    {
+        var converted = items.Select(ConvertForInterpreter).ToList();
+        if (converted.Count > 0 && converted.All(i => i is ExpandoObject))
+        {
+            return converted.Cast<ExpandoObject>().ToList();
+        }
+
+        return converted;
     }
 }
