@@ -1,8 +1,6 @@
-import { IS_TAURI } from "@avplatform/ui/constants";
 import { axiosInstance } from "@avplatform/ui/lib";
 
 import { PrimaryCategoryType } from "../features/action-selector/types/primary-category-type";
-import { loadJsonFromTauriResources } from "../utils/tauri-resource-loader";
 
 // Glob all JSON files in the constants folder (used in web mode)
 const modules = import.meta.glob("../features/action-selector/constants/*.json");
@@ -99,43 +97,27 @@ function mergeActionSelectorData(
 export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   let finalNodeList: PrimaryCategoryType[];
 
-  // Load desktop nodes
-  if (IS_TAURI) {
-    // Load desktop nodes mapping file from Tauri bundled resources
-    finalNodeList = await loadJsonFromTauriResources<PrimaryCategoryType[]>(
-      "action-selector/_ActionSelectorData.json",
-    );
+  // Load desktop nodes from web bundled modules
+  const desktopNodesJson = "../features/action-selector/constants/_ActionSelectorData.json";
+  const loader = modules[desktopNodesJson];
+  if (!loader) throw new Error("Action selector data JSON not found");
+  const desktopNodesModule = (await loader()) as {
+    default: PrimaryCategoryType[];
+  };
+  finalNodeList = desktopNodesModule.default;
 
-    // Load Cloud Connectors mapping file from Tauri bundled resources
-    const cloudConnectors = await loadJsonFromTauriResources<PrimaryCategoryType[]>(
-      "action-selector/CloudConnectorActionSelectorMappingFile.json",
-    );
-    if (cloudConnectors) {
-      finalNodeList = mergeActionSelectorData(finalNodeList, cloudConnectors);
+  // Fetch Cloud Connector module from remote URL using axiosInstance
+  try {
+    const response = await axiosInstance
+      .get<PrimaryCategoryType[]>(
+        `${import.meta.env.VITE_WORKSPACE_API_PATH}/cloud-connector/config-file/CloudConnectorActionSelectorMappingFile.json`,
+      )
+      .then((res) => res.data);
+    if (response) {
+      finalNodeList = mergeActionSelectorData(finalNodeList, response);
     }
-  } else {
-    // Load desktop nodes from web bundled modules
-    const desktopNodesJson = "../features/action-selector/constants/_ActionSelectorData.json";
-    const loader = modules[desktopNodesJson];
-    if (!loader) throw new Error("Action selector data JSON not found");
-    const desktopNodesModule = (await loader()) as {
-      default: PrimaryCategoryType[];
-    };
-    finalNodeList = desktopNodesModule.default;
-
-    // Fetch Cloud Connector module from remote URL using axiosInstance
-    try {
-      const response = await axiosInstance
-        .get<PrimaryCategoryType[]>(
-          `${import.meta.env.VITE_WORKSPACE_API_PATH}/cloud-connector/config-file/CloudConnectorActionSelectorMappingFile.json`,
-        )
-        .then((res) => res.data);
-      if (response) {
-        finalNodeList = mergeActionSelectorData(finalNodeList, response);
-      }
-    } catch (error) {
-      console.error("Cloud Connector mapping file fetch error:", error);
-    }
+  } catch (error) {
+    console.error("Cloud Connector mapping file fetch error:", error);
   }
 
   // Explicitly import AI Integrations module

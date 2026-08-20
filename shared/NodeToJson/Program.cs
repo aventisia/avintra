@@ -191,23 +191,10 @@ internal class Program
                         continue;
                     }
 
-                    // Save node json to worc-platform repo
+                    // Save node json to the studio repo
                     var nodeJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "studio", "src", "features", "dynamic-config-panel", "constants", "config-json", nodeType.Name + ".json"));
                     DeleteLegacyActivityJsonIfExists(nodeJsonFilePath, nodeType.Name);
                     WriteJsonToFile(nodeJsonFilePath, nodeJson, jsonSerializerOptions);
-
-                    // Save node json to desktop-app/config-files/desktop-nodes folder
-                    nodeJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "desktop-app", "src-tauri", "config-files", "desktop-nodes", nodeType.Name + ".json"));
-                    DeleteLegacyActivityJsonIfExists(nodeJsonFilePath, nodeType.Name);
-                    WriteJsonToFile(nodeJsonFilePath, nodeJson, jsonSerializerOptions);
-
-                    // Save the same file in LocalAppData/AvintraDesktopApp (if applicable)
-                    if (OperatingSystem.IsWindows())
-                    {
-                        nodeJsonFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AvintraDesktopApp", "config-files", "desktop-nodes", nodeType.Name + ".json");
-                        DeleteLegacyActivityJsonIfExists(nodeJsonFilePath, nodeType.Name);
-                        WriteJsonToFile(nodeJsonFilePath, nodeJson, jsonSerializerOptions);
-                    }
                 }
 
                 // Add the level 2 category to the level 1 category
@@ -218,26 +205,10 @@ internal class Program
             nodeMappingObject.Add(nodeL1Category);
         }
 
-        // Save _NodeSelectorData.json to the worc-platform repo. Merge with existing data so legacy categories are preserved.
+        // Save _NodeSelectorData.json to the studio repo. Merge with existing data so legacy categories are preserved.
         var nodeSelectorJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "studio", "src", "features", "action-selector", "constants", "_ActionSelectorData.json"));
         var mergedMappingObject = LoadAndMergeActionSelectorData(nodeSelectorJsonFilePath, nodeMappingObject, jsonSerializerOptions);
-        WriteJsonToFile(nodeSelectorJsonFilePath, mergedMappingObject, jsonSerializerOptions, "Nodes mapping JSON saved to worc-platform repo");
-
-        // Save _NodeSelectorData.json to the desktop-app. Merge with existing data so legacy categories are preserved.
-        nodeSelectorJsonFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "..", "clients", "web-apps", "apps", "desktop-app", "src-tauri", "config-files", "action-selector", "_ActionSelectorData.json"));
-        mergedMappingObject = LoadAndMergeActionSelectorData(nodeSelectorJsonFilePath, nodeMappingObject, jsonSerializerOptions);
-        WriteJsonToFile(nodeSelectorJsonFilePath, mergedMappingObject, jsonSerializerOptions, "Nodes mapping JSON saved to desktop-app repo");
-
-        // Save same file _NodeSelectorData.json to LocalAppData/AvintraDesktopApp (if applicable). Merge with existing data so legacy categories are preserved.
-        if (OperatingSystem.IsWindows())
-        {
-            nodeSelectorJsonFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AvintraDesktopApp", "config-files", "action-selector", "_ActionSelectorData.json");
-            WriteJsonToFile(nodeSelectorJsonFilePath, mergedMappingObject, jsonSerializerOptions, "Node selector mapping JSON saved to AppData/Local/AvintraDesktopApp");
-        }
-
-        // Temporary: Copy cloud connector config files from WorkspaceAPIs to LocalAppData and desktop-app release folder to bundle with the app until we move the cloud connectors from WorkspaceAPIs to NodeLibrary project.
-        // TODO: If we keep this code, then refactor or optimize the file copying logic to support linux and windows os
-        NodeToJsonHelper.CopyCloudConnectorConfigFiles();
+        WriteJsonToFile(nodeSelectorJsonFilePath, mergedMappingObject, jsonSerializerOptions, "Nodes mapping JSON saved to studio repo");
 
         Console.WriteLine("Task complete");
     }
