@@ -2,7 +2,7 @@ import { getFileDataUsingFileUrl } from "../apis/get-file-data-apis";
 
 export interface RemoteFileLoaderParams {
   fileUrl: string;
-  credentialId?: string;
+  credentialName?: string;
   extension: string;
   name: string;
   signal?: AbortSignal;
@@ -16,8 +16,8 @@ export type RemoteFileLoader = (params: RemoteFileLoaderParams) => Promise<Remot
  * Default loader that always hits the workspace API, returning the base64 payload for a file URL.
  */
 export const defaultRemoteFileLoader: RemoteFileLoader = async (params) => {
-  const credentialId = params.credentialId ?? "";
-  const { data, message } = await getFileDataUsingFileUrl(credentialId, params.fileUrl);
+  const credentialName = params.credentialName ?? "";
+  const { data, message } = await getFileDataUsingFileUrl(credentialName, params.fileUrl);
 
   if (!data) {
     throw new Error(message || "Failed to download file");

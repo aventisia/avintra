@@ -39,7 +39,7 @@ async def list_models_route(
     return await provider_admin_service.list_models(
         provider,
         capability=capability.value if capability else None,
-        credential_id=credential_name,
+        credential_name=credential_name,
         user=_user,
     )
 

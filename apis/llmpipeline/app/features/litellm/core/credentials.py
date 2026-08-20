@@ -26,21 +26,19 @@ class CredentialResolution:
         uses_platform_credentials: True when the request runs on the platform's
             environment credentials (non-BYOK), so platform credits apply.
             False when the caller supplied their own (BYOK) credentials.
-        credential_id: The BYOK vault credential id (None when not BYOK).
         credential_name: The display name of the BYOK vault credential
             (None when not BYOK).
     """
     kwargs: dict = field(default_factory=dict)
     uses_platform_credentials: bool = True
-    credential_id: str | None = None
     credential_name: str | None = None
 
 
-def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None, user: User) -> CredentialResolution:
+def resolve_credentials(provider: str, is_byok: bool, credential_name: str | None, user: User) -> CredentialResolution:
     """
     Decide which credentials to use for a provider call.
 
-    - BYOK enabled with a valid credential reference: fetch those credentials
+    - BYOK enabled with a valid credential name: fetch those credentials
       from the vault and use them exclusively — never the env. The request is
       a BYOK request, so no platform credits apply.
     - BYOK disabled (or null/default credential): return an empty kwargs dict
@@ -53,12 +51,12 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
     generation, streaming, STT and TTS.
     """
     # Non-BYOK: use platform credentials from settings (platform credit tracking applies).
-    if not is_byok and not credential_id:
+    if not is_byok and not credential_name:
         kwargs = _platform_credentials_kwargs(provider)
         return CredentialResolution(kwargs=kwargs, uses_platform_credentials=True)
 
-    # BYOK must always carry a real credential; never fall back to the env.
-    if not _is_real_credential(credential_id):
+    # BYOK must always carry a real credential name; never fall back to the env.
+    if not _is_real_credential(credential_name):
         logger.error(
             f"[LLM-V2] BYOK enabled but no credential for provider {provider}"
         )
@@ -68,9 +66,11 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
 
     vault = VaultManager()
     credential = vault.get_vault_secret_by_name(
-        credential=credential_id,
+        credential=credential_name,
         jwt=user.access_token,
         env_type=user.env_type,
+        tenant_id=str(user.tenant_id) if user.tenant_id else None,
+        space_id=user.space_id,
     )
     if not credential:
         logger.error(f"[LLM-V2] Invalid BYOK credentials for provider {provider}")
@@ -78,8 +78,8 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
 
     credential_data = credential.get("data") or credential
     # The vault secret carries a display Name at the top level; fall back to the
-    # credential id when it is not present so BYOK usage can still be attributed.
-    credential_name = credential.get("Name") or credential_data.get("Name")
+    # credential name when it is not present so BYOK usage can still be attributed.
+    resolved_name = credential.get("Name") or credential_data.get("Name") or credential_name
 
     # AWS-style providers authenticate via AWS credentials, not an api_key.
     if provider in _AWS_PROVIDERS:
@@ -94,8 +94,7 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
         return CredentialResolution(
             kwargs={k: v for k, v in kwargs.items() if v is not None},
             uses_platform_credentials=False,
-            credential_id=credential_id,
-            credential_name=credential_name,
+            credential_name=resolved_name,
         )
 
     # Google Vertex AI uses a service-account JSON + project + location.
@@ -108,8 +107,7 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
         return CredentialResolution(
             kwargs={k: v for k, v in kwargs.items() if v is not None},
             uses_platform_credentials=False,
-            credential_id=credential_id,
-            credential_name=credential_name,
+            credential_name=resolved_name,
         )
 
     # Azure OpenAI uses a key + endpoint + version.
@@ -122,8 +120,7 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
         return CredentialResolution(
             kwargs={k: v for k, v in kwargs.items() if v is not None},
             uses_platform_credentials=False,
-            credential_id=credential_id,
-            credential_name=credential_name,
+            credential_name=resolved_name,
         )
 
     # IBM WatsonX uses a key + project id + region.
@@ -136,8 +133,7 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
         return CredentialResolution(
             kwargs={k: v for k, v in kwargs.items() if v is not None},
             uses_platform_credentials=False,
-            credential_id=credential_id,
-            credential_name=credential_name,
+            credential_name=resolved_name,
         )
 
     # Key-based providers: api_key + optional api_base/api_version.
@@ -149,62 +145,70 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
     return CredentialResolution(
         kwargs={k: v for k, v in kwargs.items() if v is not None},
         uses_platform_credentials=False,
-        credential_id=credential_id,
-        credential_name=credential_name,
+        credential_name=resolved_name,
     )
 
 
 def resolve_credential_name(
-    credential_id: str | None,
+    credential_name: str | None,
     user: User | None = None,
     *,
     jwt: str | None = None,
 ) -> str | None:
-    """Resolve the display name for a vault credential id.
+    """Resolve the display name for a vault credential name.
 
     Used for BYOK usage attribution. Returns the credential's `Name` if the
-    secret is found, otherwise falls back to the credential id itself.
-    Accepts either a `User` instance (from which the access token is read) or
-    a raw `jwt` keyword argument.
+    secret is found, otherwise falls back to the credential name itself.
+    Accepts either a `User` instance (from which the access token and tenant
+    scoping are read) or a raw `jwt` keyword argument.
     """
-    if not _is_real_credential(credential_id):
+    if not _is_real_credential(credential_name):
         return None
 
     access_token = jwt
+    tenant_id = None
+    space_id = None
+    env_type = "dev"
     if access_token is None and user is not None:
         access_token = user.access_token
+        tenant_id = str(user.tenant_id) if user.tenant_id else None
+        space_id = user.space_id
+        env_type = user.env_type
 
     if not access_token:
         logger.warning(
-            f"[LLM-V2] resolve_credential_name called without an access token for credential {credential_id}"
+            f"[LLM-V2] resolve_credential_name called without an access token for credential {credential_name}"
         )
-        return str(credential_id)
+        return credential_name
 
     try:
         vault = VaultManager()
-        credential = vault.get_vault_secret_by_id(
-            vault_secret_id=credential_id,
+        credential = vault.get_vault_secret_by_name(
+            credential=credential_name,
             jwt=access_token,
+            env_type=env_type,
+            tenant_id=tenant_id,
+            space_id=space_id,
         )
         if not credential:
-            return str(credential_id)
+            return credential_name
 
         credential_data = credential.get("data") or credential
         name = credential.get("Name") or credential_data.get("Name")
-        return name if name else str(credential_id)
+        return name if name else credential_name
     except Exception as exc:
         logger.warning(
-            f"[LLM-V2] Failed to resolve credential name for {credential_id}: {exc}"
+            f"[LLM-V2] Failed to resolve credential name for {credential_name}: {exc}"
         )
-        return str(credential_id)
+        return credential_name
 
 
-def _is_real_credential(credential_id: str | None) -> bool:
-    """True when a real (non-null / non-empty / non-default-GUID) credential reference is supplied."""
-    if not credential_id:
+def _is_real_credential(credential_name: str | None) -> bool:
+    """True when a real (non-null / non-empty) credential name is supplied."""
+    if not credential_name:
         return False
-    cleaned = str(credential_id).strip()
-    return cleaned not in ("", "00000000-0000-0000-0000-000000000000")
+    cleaned = str(credential_name).strip()
+    return cleaned != ""
 
 
 def _platform_credentials_kwargs(provider: str) -> dict:

@@ -263,6 +263,8 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                 credential=req.credential_name,
                 jwt=user.access_token,
                 env_type=user.env_type,
+                tenant_id=str(user.tenant_id) if user.tenant_id else None,
+                space_id=user.space_id,
             )
 
             if not credential:
@@ -332,7 +334,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
             output="",
             stream=req.stream,
             language=req.language,
-            credentials_id=req.credential_name,
+            credential_name=req.credential_name,
             is_byok_enabled=req.is_byok_enabled,
             ref_id=req.ref_id,
             ref_type=req.ref_type,
@@ -407,7 +409,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                 )
 
         # BYOK USAGE (caller's own key)
-        elif req.is_byok_enabled and req.credentials_id:
+        elif req.is_byok_enabled and req.credential_name:
             try:
                 byok_manager = ByokUsageManager()
 
@@ -426,7 +428,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     raise ValueError(f"Unsupported STT model: {req.model}")
 
                 # Resolve the vault credential name for attribution
-                credential_name = resolve_credential_name(req.credentials_id, jwt=jwt)
+                credential_name = resolve_credential_name(req.credential_name, jwt=jwt)
 
                 byok_usage = {
                     "ServiceType": service_type,
@@ -434,7 +436,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     "Model": req.model,
                     "ConsumedUnit": base_response.token_count,
                     "UnitType": "Seconds",
-                    "CredentialId": req.credentials_id,
+                    "CredentialId": req.credential_name,
                     "CredentialName": credential_name,
                     "RefType": req.ref_type,
                     "RefId": req.ref_id,

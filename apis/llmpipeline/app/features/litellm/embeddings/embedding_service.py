@@ -81,7 +81,7 @@ class EmbeddingService:
             time_taken=round(time.perf_counter() - start, 2),
             input_tokens=input_tokens,
             is_byok_enabled=req.is_byok_enabled,
-            credential_id=req.credential_name,
+            credential_name=req.credential_name,
             status="completed",
         )
 
@@ -117,7 +117,7 @@ class EmbeddingService:
 
     def _post_byok_usage(self, req: EmbeddingRequest, resp: EmbeddingResponse, user: User) -> None:
         # Only post usage for BYOK requests (caller's own key).
-        if not should_record_byok(req.is_byok_enabled, req.credential_id):
+        if not should_record_byok(req.is_byok_enabled, req.credential_name):
             return
         try:
             service = get_credit_service_type(req.provider, req.model, "service")
@@ -129,7 +129,6 @@ class EmbeddingService:
                 req.model,
                 resp.input_tokens or 0,
                 "Tokens",
-                req.credential_id,
                 req.credential_name,
                 req.reference_type,
                 req.reference_id,

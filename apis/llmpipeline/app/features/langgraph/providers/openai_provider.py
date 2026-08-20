@@ -37,9 +37,11 @@ def create_openai_model(
 
         # Retrieve credentials from vault
         credential = vault_manager.get_vault_secret_by_name(
-            vault_secret_id=llm_request.credential_name,
+            credential=llm_request.credential_name,
             jwt=user.access_token,
             env_type=user.env_type,
+            tenant_id=str(user.tenant_id) if user.tenant_id else None,
+            space_id=user.space_id,
         )
 
         # Validate credential exists

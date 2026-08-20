@@ -61,7 +61,7 @@ class PgVectorStore(BaseVectorStore):
                 reference_name=ingest_doc_request.ref_name,
                 action=ingest_doc_request.action,
                 is_byok_enabled=bool(ingest_doc_request.embedding_credential_name),
-                credential_id=ingest_doc_request.embedding_credential_name,
+                credential_name=ingest_doc_request.embedding_credential_name,
             )
             embedding_response = await embedding_model_provider.generate_embeddings(embedding_request, user)
             
@@ -116,8 +116,8 @@ class PgVectorStore(BaseVectorStore):
                 embeddings_stored=embeddings_stored,
                 time_taken=elapsed,
                 input_tokens=embedding_response.input_tokens or 0,
-                store_credential_id=ingest_doc_request.credential_name,
-                embedding_credential_id=ingest_doc_request.embedding_credential_name,
+                credential_name=ingest_doc_request.credential_name,
+                embedding_credential_name=ingest_doc_request.embedding_credential_name,
                 error=None,
             )
 
@@ -137,8 +137,8 @@ class PgVectorStore(BaseVectorStore):
                 embeddings_stored=embeddings_stored,
                 time_taken=elapsed,
                 input_tokens=0,
-                store_credential_id=ingest_doc_request.credential_name,
-                embedding_credential_id=ingest_doc_request.embedding_credential_name,
+                credential_name=ingest_doc_request.credential_name,
+                embedding_credential_name=ingest_doc_request.embedding_credential_name,
                 error=str(exc),
             )
 
@@ -162,7 +162,7 @@ class PgVectorStore(BaseVectorStore):
                 reference_type=query_doc_request.ref_type,
                 action=query_doc_request.action,
                 is_byok_enabled=bool(query_doc_request.embedding_credential_name),
-                credential_id=query_doc_request.embedding_credential_name,
+                credential_name=query_doc_request.embedding_credential_name,
             )
             embedding_response = await embedding_model_provider.generate_embeddings(embedding_request, user)
 
@@ -269,8 +269,8 @@ class PgVectorStore(BaseVectorStore):
                 chunks=chunks,
                 time_taken=elapsed,
                 input_tokens=embedding_response.input_tokens or 0,
-                store_credential_id=query_doc_request.credential_name,
-                embedding_credential_id=query_doc_request.embedding_credential_name,
+                credential_name=query_doc_request.credential_name,
+                embedding_credential_name=query_doc_request.embedding_credential_name,
                 error=None,
             )
         except HTTPException:
@@ -289,8 +289,8 @@ class PgVectorStore(BaseVectorStore):
                 chunks=[],
                 time_taken=elapsed,
                 input_tokens=0,
-                store_credential_id=query_doc_request.credential_name,
-                embedding_credential_id=query_doc_request.embedding_credential_name,
+                credential_name=query_doc_request.credential_name,
+                embedding_credential_name=query_doc_request.embedding_credential_name,
                 error=str(exc),
             )
 

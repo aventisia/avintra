@@ -37,8 +37,6 @@ async def generate_embeddings_route(
         else:
             # Preserve the normalized credential name.
             req.credential_name = credential_name
-
-        return await embedding_service.embed(req, _user)
     except HTTPException:
         raise
     except Exception as e:

@@ -24,16 +24,18 @@ async def synthesize_tts(
     `/v2/llm/tts/*` path.
     """
     try:
-        # Normalize credentials_id (empty / whitespace / default GUID -> None).
-        raw_id = req.credentials_id
-        if raw_id:
-            cleaned = str(raw_id).strip()
-            if cleaned and cleaned != "00000000-0000-0000-0000-000000000000":
-                req.credentials_id = cleaned
+        # Normalize credential_name:
+        # - Convert to string and trim surrounding whitespace.
+        # - Treat None, empty strings, and whitespace-only values as "no credential".
+        raw = req.credential_name
+        if raw:
+            cleaned = str(raw).strip()
+            if cleaned:
+                req.credential_name = cleaned
             else:
-                req.credentials_id = None
+                req.credential_name = None
         else:
-            req.credentials_id = None
+            req.credential_name = None
 
         # All TTS providers (including ElevenLabs) go through LiteLLM.
         provider = LiteLLMTTSProvider()

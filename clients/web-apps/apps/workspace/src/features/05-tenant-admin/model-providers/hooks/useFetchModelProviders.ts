@@ -23,11 +23,11 @@ export const useFetchModelProviders = () => {
  * Custom hook to fetch the list of models for a given provider using a selected credential.
  * Enabled only when both a provider type and a credential are provided.
  */
-export const useFetchProviderModels = (providerType?: string, credentialId?: string) => {
+export const useFetchProviderModels = (providerType?: string, credentialName?: string) => {
   return useQuery({
-    queryKey: ["model-providers", "models", providerType, credentialId],
-    queryFn: () => getProviderModels(providerType as string, credentialId as string),
-    enabled: Boolean(providerType && credentialId),
+    queryKey: ["model-providers", "models", providerType, credentialName],
+    queryFn: () => getProviderModels(providerType as string, credentialName as string),
+    enabled: Boolean(providerType && credentialName),
   });
 };
 

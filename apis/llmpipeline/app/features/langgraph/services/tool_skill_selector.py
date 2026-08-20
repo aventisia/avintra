@@ -74,7 +74,7 @@ async def select_tools_and_skills(
         is_json_output=True,
         json_schema=ToolSkillSelectionResponse.model_json_schema(),
         is_byok_enabled=request.is_byok_enabled,
-        credential_id=request.credential_id,
+        credential_name=request.credential_name,
         temperature=0.0,
         max_output_tokens=1024,
     )

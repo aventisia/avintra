@@ -67,15 +67,15 @@ def _normalize_tool_calls(message: AIMessage) -> AIMessage:
     return rebuilt
 
 
-def _resolve_outlook_credential_id(request: LLMRequest) -> str | None:
-    """Find the Outlook credential id from the request's tool_config."""
+def _resolve_outlook_credential_name(request: LLMRequest) -> str | None:
+    """Find the Outlook credential name from the request's tool_config."""
     for config in request.tool_config or []:
         if isinstance(config, dict):
             if config.get("tool", "").lower() == "outlook":
-                return config.get("credential_id")
+                return config.get("credential_name")
         elif isinstance(config, ToolConfig):
             if config.tool.lower() == "outlook":
-                return config.credential_id
+                return config.credential_name
     return None
 
 
@@ -169,8 +169,8 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
             args = tool_call.get("args", {})
 
             if tool_name == "outlook_send_email" and request is not None:
-                credential_id = _resolve_outlook_credential_id(request)
-                if not credential_id:
+                credential_name = _resolve_outlook_credential_name(request)
+                if not credential_name:
                     connector_results[tool_call_id] = ToolMessage(
                         content="No Outlook credential configured for this agent.",
                         tool_call_id=tool_call_id,
@@ -196,7 +196,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
                 try:
                     result = await send_email_via_outlook(
                         user=user,
-                        credential_id=credential_id,
+                        credential_name=credential_name,
                         to=args.get("to", ""),
                         subject=args.get("subject", ""),
                         body=args.get("body", ""),

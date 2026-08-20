@@ -15,9 +15,6 @@ from fastapi import HTTPException
 
 from .schemas import ProviderLiteral
 
-# The .NET-style empty GUID clients send to mean "no credential".
-DEFAULT_GUID = "00000000-0000-0000-0000-000000000000"
-
 # Map user-facing provider names to LiteLLM prefixes. LiteLLM has no "google"
 # provider (Gemini lives under "gemini" / "vertex_ai"), so normalize aliases.
 PROVIDER_ALIASES: dict[str, str] = {
@@ -223,30 +220,30 @@ def get_credit_service_type(provider: str, model: str, kind: str) -> str | None:
     return model_map.get(kind)
 
 
-def _has_credential(is_byok: bool, credential_id: str | None) -> bool:
-    """True when a real BYOK credential is supplied (not null / empty / default GUID)."""
+def _has_credential(is_byok: bool, credential_name: str | None) -> bool:
+    """True when a real BYOK credential name is supplied (not null / empty)."""
     if not is_byok:
         return False
-    if not credential_id:
+    if not credential_name:
         return False
-    cleaned = str(credential_id).strip()
-    return cleaned not in ("", DEFAULT_GUID)
+    cleaned = str(credential_name).strip()
+    return cleaned != ""
 
 
-def should_post_usage(is_byok: bool, credential_id: str | None) -> bool:
+def should_post_usage(is_byok: bool, credential_name: str | None) -> bool:
     """True only when the request used platform (non-BYOK) credentials.
 
     Usage is posted against the platform's credit system only when BYOK is
-    disabled AND no real credential is supplied. A null/empty/default-GUID
+    disabled AND no real credential name is supplied. A null/empty
     credential counts as "no real credential"; any other value (a real
     credential) means we should not post platform usage.
     """
     if is_byok:
         return False
-    if not credential_id:
+    if not credential_name:
         return True
-    cleaned = str(credential_id).strip()
-    return cleaned in ("", DEFAULT_GUID)
+    cleaned = str(credential_name).strip()
+    return cleaned == ""
 
 
 def _litellm_providers() -> set[str]:

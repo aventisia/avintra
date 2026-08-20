@@ -8,7 +8,7 @@ from app.features.llm_providers.services.cloud_connector_executor import execute
 
 async def send_email_via_outlook(
     user: Any,
-    credential_id: str,
+    credential_name: str,
     to: str,
     subject: str,
     body: str,
@@ -23,7 +23,7 @@ async def send_email_via_outlook(
 
     Args:
         user: Authenticated user with ``access_token``.
-        credential_id: Outlook credential id configured in Studio.
+        credential_name: Outlook credential name configured in Studio.
         to: Semicolon-separated recipient email addresses.
         subject: Email subject.
         body: Email body content.
@@ -66,13 +66,13 @@ async def send_email_via_outlook(
         "agentName": agent_name or "HR_Advisor",
         "provider": "M365/Outlook",
         "action": "SendEmail",
-        "credentialId": credential_id,
+        "credentialName": credential_name,
         "payload": payload,
     }
 
     logger.info(
-        "Sending Outlook email. credential_id=%s to=%s subject=%s agent=%s",
-        credential_id,
+        "Sending Outlook email. credential_name=%s to=%s subject=%s agent=%s",
+        credential_name,
         to,
         subject,
         agent_name,

@@ -4,7 +4,7 @@ export type FileStatus = "idle" | "loading" | "ready" | "error";
 
 export interface ProtectedFileDescriptor {
   url: string;
-  credentialId?: string;
+  credentialName?: string;
   name?: string;
   requiresProxy?: boolean;
 }
@@ -19,7 +19,7 @@ export interface LocalFile {
   extension: string;
   url: string; // Used for both local `blob:` URLs and remote proxies (once downloaded)
   sourceUrl?: string; // Original URL used when a backend proxy is required
-  credentialId?: string;
+  credentialName?: string;
   status: FileStatus;
   error?: string | null;
   originalFile: File | null; // Null if it's sourced from a remote endpoint
@@ -133,7 +133,7 @@ export const useLocalFileStore = create<LocalFileStoreState>((set, get) => ({
         extension,
         url: requiresProxy ? "" : descriptor.url,
         sourceUrl: requiresProxy ? descriptor.url : undefined,
-        credentialId: descriptor.credentialId,
+        credentialName: descriptor.credentialName,
         status: requiresProxy ? "idle" : "ready",
         error: null,
         originalFile: null,

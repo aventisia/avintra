@@ -167,7 +167,7 @@ class QdrantVectorStore(BaseVectorStore):
                     reference_type=ingest_doc_request.ref_type,
                     action=ingest_doc_request.action,
                     is_byok_enabled=bool(ingest_doc_request.embedding_credential_name),
-                    credential_id=ingest_doc_request.embedding_credential_name,
+                    credential_name=ingest_doc_request.embedding_credential_name,
                 ),
                 user,
             )
@@ -299,7 +299,7 @@ class QdrantVectorStore(BaseVectorStore):
                     reference_type=query_doc_request.ref_type,
                     action=query_doc_request.action,
                     is_byok_enabled=bool(query_doc_request.embedding_credential_name),
-                    credential_id=query_doc_request.embedding_credential_name,
+                    credential_name=query_doc_request.embedding_credential_name,
                 ),
                 user,
             )

@@ -27,13 +27,13 @@ class ProviderAdminService:
         self,
         provider: str,
         capability: str | None = None,
-        credential_id: str | None = None,
+        credential_name: str | None = None,
         user: User | None = None,
     ) -> ModelsResponse:
         models = await litellm_service.list_models(
             provider,
             capability,
-            credential_id=credential_id,
+            credential_name=credential_name,
             user=user,
         )
         return ModelsResponse(provider=provider, models=models, count=len(models))

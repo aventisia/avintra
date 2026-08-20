@@ -5,29 +5,38 @@ public class CloudConnectorsVaultService : ICloudConnectorsVaultService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<CloudConnectorsVaultService> _logger;
     private readonly IStringEncryptionService _stringEncryptionService;
+    private readonly ICurrentTenantService _currentTenantService;
 
     public CloudConnectorsVaultService(
         IUnitOfWork unitOfWork,
         ILogger<CloudConnectorsVaultService> logger,
-        IStringEncryptionService stringEncryptionService)
+        IStringEncryptionService stringEncryptionService,
+        ICurrentTenantService currentTenantService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _stringEncryptionService = stringEncryptionService;
+        _currentTenantService = currentTenantService;
     }
 
     public async Task<VaultCredentialObj?> GetCredentialFromVaultAsync(string credentialName)
     {
         try
         {
-            // Fetch the credential entity along with its encrypted key-value pairs by NAME
+            // Fetch the credential entity along with its encrypted key-value pairs by NAME.
+            // Scoped by Name + TenantId (+ EnvType) so the (credential_name, tenant_id)
+            // combination resolves the correct, unique credential.
             var vaultCredential = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Name == credentialName && !w.IsDisabled)
+                .GetByConditionAsync(w =>
+                    w.Name == credentialName &&
+                    !w.IsDisabled &&
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .AsNoTracking()
                 .Include(i => i.EncryptedKeyValues)
                 .FirstOrDefaultAsync();
             if (vaultCredential == null) return null;
-            
+
             // Decrypt and merge key-value pairs into the VaultCredentialObj's data object
             var decryptedData = new Dictionary<string, string>();
             foreach (var kvp in vaultCredential.EncryptedKeyValues)

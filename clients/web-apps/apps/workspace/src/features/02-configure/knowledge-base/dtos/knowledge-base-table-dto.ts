@@ -52,6 +52,13 @@ export interface KnowledgeBaseTableDto {
   storeCredentialId?: string;
 
   /**
+   * Name of the credential used for the vector store.
+   * The Agent Builder stores and submits the resource NAME; the backend resolves
+   * it to the storeCredentialId before persisting.
+   */
+  storeCredentialName?: string;
+
+  /**
    * Name of the collection/index in the vector store.
    */
   collectionName?: string;

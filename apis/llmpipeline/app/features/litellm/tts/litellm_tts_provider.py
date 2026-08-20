@@ -43,11 +43,11 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
         start_time = time.perf_counter()
 
         # Validate the provider/model with the request's credential mode.
-        validate_provider(tts_request.provider, tts_request.is_byok_enabled, tts_request.credentials_id)
-        validate_model(tts_request.provider, tts_request.model, tts_request.is_byok_enabled, tts_request.credentials_id)
+        validate_provider(tts_request.provider, tts_request.is_byok_enabled, tts_request.credential_name)
+        validate_model(tts_request.provider, tts_request.model, tts_request.is_byok_enabled, tts_request.credential_name)
 
         # Platform credits apply only for non-BYOK requests.
-        if not tts_request.is_byok_enabled and tts_request.credentials_id:
+        if not tts_request.is_byok_enabled and tts_request.credential_name:
             self._check_credits(tts_request, user)
 
         try:
@@ -59,7 +59,7 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
                 voice=tts_request.voice_id or "",
                 speed=tts_request.speed if tts_request.speed is not None else 1.0,
                 is_byok=tts_request.is_byok_enabled,
-                credential_id=tts_request.credentials_id,
+                credential_name=tts_request.credential_name,
                 user=user,
             )
         except HTTPException:
@@ -111,7 +111,7 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
             output=base64.b64encode(audio_bytes).decode("utf-8"),
             status="completed",
             stream=False,
-            credentials_id=tts_request.credentials_id,
+            credential_name=tts_request.credential_name,
             is_byok_enabled=tts_request.is_byok_enabled,
             time_taken=round(time.perf_counter() - start_time, 2),
             token_count=len(tts_request.input),
@@ -122,7 +122,7 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
             action=tts_request.action,
         )
         # Post credit usage only for platform (non-BYOK) requests.
-        if should_post_usage(tts_request.is_byok_enabled, tts_request.credentials_id):
+        if should_post_usage(tts_request.is_byok_enabled, tts_request.credential_name):
             try:
                 # Bill based on the number of characters synthesized.
                 post_credit_usage(tts_request, tts_request.provider, "service", len(tts_request.input), user.access_token, user.space_id)
@@ -130,10 +130,10 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
                 logger.error(f"Failed to post TTS credit usage | error={exc}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {exc}")
         # Post BYOK usage for caller's own key requests.
-        if should_record_byok(tts_request.is_byok_enabled, tts_request.credentials_id):
+        if should_record_byok(tts_request.is_byok_enabled, tts_request.credential_name):
             try:
                 # Resolve the vault credential name for attribution.
-                tts_request.credential_name = resolve_credential_name(tts_request.credentials_id, user)
+                resolved_name = resolve_credential_name(tts_request.credential_name, user)
                 service = get_credit_service_type(tts_request.provider, tts_request.model, "service")
                 if service:
                     entry = build_byok_entry(
@@ -142,7 +142,6 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
                         tts_request.model,
                         len(tts_request.input),
                         "Characters",
-                        tts_request.credentials_id,
                         tts_request.credential_name,
                         tts_request.ref_type,
                         tts_request.ref_id,
@@ -150,6 +149,7 @@ class LiteLLMTTSProvider(BaseTextToSpeechProvider):
                         tts_request.action,
                         tts_request.agent_name,
                         user.space_id,
+                        display_name=resolved_name,
                     )
                     post_byok_usage(tts_request.provider, [entry], user.access_token)
             except Exception as exc:

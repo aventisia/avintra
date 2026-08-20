@@ -256,7 +256,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 json_schema = llmRequest.JsonSchema,
                 max_output_tokens = llmRequest.MaxOutputTokens,
                 is_byok_enabled = llmRequest.IsBYOKEnabled,
-                credential_id = llmRequest.CredentialId,
+                credential_name = llmRequest.CredentialName,
                 temperature = llmRequest.Temperature,
                 top_p = llmRequest.TopP,
                 stream = llmRequest.Stream,

@@ -30,9 +30,15 @@ class OllamaProvider(BaseLLMProvider):
         if llm_request.is_byok_enabled and llm_request.credential_name:
             vault_manager = VaultManager()
 
-            # Fetch the credentials from the vault using the credential NAME and JWT
+            # Fetch the credentials from the vault using the credential NAME, tenant, and JWT
             logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
-            credential = vault_manager.get_vault_secret_by_name(credential=llm_request.credential_name, jwt=user.access_token, env_type=user.env_type)
+            credential = vault_manager.get_vault_secret_by_name(
+                credential=llm_request.credential_name,
+                jwt=user.access_token,
+                env_type=user.env_type,
+                tenant_id=str(user.tenant_id) if user.tenant_id else None,
+                space_id=user.space_id,
+            )
 
             if credential:
                 # Update the API URL and key from the vault credentials
@@ -102,9 +108,15 @@ class OllamaProvider(BaseLLMProvider):
         if llm_request.is_byok_enabled and llm_request.credential_name:
             vault_manager = VaultManager()
 
-            # Fetch the credentials from the vault using the credential NAME and JWT
+            # Fetch the credentials from the vault using the credential NAME, tenant, and JWT
             logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
-            credential = vault_manager.get_vault_secret_by_name(credential=llm_request.credential_name, jwt=user.access_token, env_type=user.env_type)
+            credential = vault_manager.get_vault_secret_by_name(
+                credential=llm_request.credential_name,
+                jwt=user.access_token,
+                env_type=user.env_type,
+                tenant_id=str(user.tenant_id) if user.tenant_id else None,
+                space_id=user.space_id,
+            )
 
             if credential:
                 # Update the API URL and key from the vault credentials
@@ -286,7 +298,7 @@ class OllamaProvider(BaseLLMProvider):
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,
             is_byok_enabled=llm_request.is_byok_enabled,
-            credential_id=llm_request.credential_name,
+            credential_name=llm_request.credential_name,
             error=None
         )
      
@@ -382,6 +394,8 @@ class OllamaProvider(BaseLLMProvider):
                 credential=embedding_request.credential_name,
                 jwt=user.access_token,
                 env_type=user.env_type,
+                tenant_id=str(user.tenant_id) if user.tenant_id else None,
+                space_id=user.space_id,
             )
 
             if not credential:
@@ -435,7 +449,7 @@ class OllamaProvider(BaseLLMProvider):
                     time_taken=round(end_time - start_time, 2),
                     input_tokens=estimated_tokens,
                     is_byok_enabled=embedding_request.is_byok_enabled,
-                    credential_id=embedding_request.credential_name,
+                    credential_name=embedding_request.credential_name,
                     status="completed"
                 )
 

@@ -62,7 +62,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                         provider = modelConfig?["provider"]?.Value<string>(),
                         model = modelConfig?["model"]?.Value<string>(),
                         is_byok_enabled = modelConfig?["is_byok_enabled"]?.Value<bool?>() ?? false,
-                        credential_name = modelConfig?["credential_name"]?.Value<string>() ?? modelConfig?["credential_id"]?.Value<string>() ?? Guid.Empty.ToString(),
+                        credential_name = modelConfig?["credential_name"]?.Value<string>() ?? modelConfig?["credential_id"]?.Value<string>(),
                         input = formattedFile,
                         language = modelConfig?["language"]?.Value<string>() ?? "en",
                         stream = false,

@@ -40,7 +40,7 @@ class OpenRouterProvider(BaseLLMProvider):
         logger.info(f"[NO STREAMING] Prompt sent to OpenRouter with model: {llm_request.model}")
 
         # Validate BYOK or credits
-        self._handle_byok_and_credits(llm_request, user.access_token, env_type=user.env_type)
+        self._handle_byok_and_credits(llm_request, user)
 
         # Initialize response data
         response_data = {}
@@ -118,7 +118,7 @@ class OpenRouterProvider(BaseLLMProvider):
         logger.info(f"[STREAMING] Prompt sent to OpenRouter with model: {llm_request.model}")
 
         # Validate BYOK or credits
-        self._handle_byok_and_credits(llm_request, user.access_token, env_type=user.env_type)
+        self._handle_byok_and_credits(llm_request, user)
 
         # Initialize chunk response
         chunk_response = LLMChunkResponse(
@@ -380,11 +380,15 @@ class OpenRouterProvider(BaseLLMProvider):
         return payload, headers
 
     # Helper: Handle BYOK credentials or credit usage
-    def _handle_byok_and_credits(self, llm_request: LLMRequest, jwt: str, env_type: str = "dev"):
+    def _handle_byok_and_credits(self, llm_request: LLMRequest, user: User):
         if llm_request.is_byok_enabled and llm_request.credential_name:
             vault = VaultManager()
             credential = vault.get_vault_secret_by_name(
-                llm_request.credential_name, jwt, env_type=env_type
+                llm_request.credential_name,
+                user.access_token,
+                env_type=user.env_type,
+                tenant_id=str(user.tenant_id) if user.tenant_id else None,
+                space_id=user.space_id,
             )
 
             if not credential:
@@ -398,7 +402,7 @@ class OpenRouterProvider(BaseLLMProvider):
 
         else:
             credit_mgr = CreditManagerService()
-            if not credit_mgr.has_sufficient_credits("openrouter", jwt):
+            if not credit_mgr.has_sufficient_credits("openrouter", user.access_token):
                 raise HTTPException(400, "Insufficient credits")
 
     # Helper: Create default LLMResponse
@@ -415,7 +419,7 @@ class OpenRouterProvider(BaseLLMProvider):
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,
             is_byok_enabled=llm_request.is_byok_enabled,
-            credential_id=llm_request.credential_name,
+            credential_name=llm_request.credential_name,
             error=None,
         )
 
@@ -594,7 +598,11 @@ class OpenRouterProvider(BaseLLMProvider):
         if embedding_request.is_byok_enabled and embedding_request.credential_name:
             vault = VaultManager()
             credential = vault.get_vault_secret_by_name(
-                embedding_request.credential_name, user.access_token, env_type=user.env_type
+                embedding_request.credential_name,
+                user.access_token,
+                env_type=user.env_type,
+                tenant_id=str(user.tenant_id) if user.tenant_id else None,
+                space_id=user.space_id,
             )
 
             if not credential:
@@ -655,7 +663,7 @@ class OpenRouterProvider(BaseLLMProvider):
                     time_taken=round(end_time - start_time, 2),
                     input_tokens=response_data.get("usage", {}).get("total_tokens", 0),
                     is_byok_enabled=embedding_request.is_byok_enabled,
-                    credential_id=embedding_request.credential_name,
+                    credential_name=embedding_request.credential_name,
                     status="completed"
                 )
 

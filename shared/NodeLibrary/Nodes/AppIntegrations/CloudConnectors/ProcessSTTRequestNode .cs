@@ -53,7 +53,7 @@ public class ProcessSTTRequestNode : BaseNode
                 model = GetStringProperty(modelConfig, "model"),
                 input = formattedFile,
                 is_byok_enabled = GetBoolProperty(modelConfig, "is_byok_enabled") ?? false,
-                credential_name = GetStringProperty(modelConfig, "credential_name") ?? GetStringProperty(modelConfig, "credential_id") ?? Guid.Empty.ToString(),
+                credential_name = GetStringProperty(modelConfig, "credential_name") ?? GetStringProperty(modelConfig, "credential_id"),
                 language = GetStringProperty(modelConfig, "language") ?? "en",
                 stream = false,
 

@@ -27,15 +27,15 @@ class ToolConfig(BaseModel):
     Request-scoped configuration for one tool integration.
 
     Example:
-        ``{"tool": "gmail", "credential_id": "abc", "actions": [...]}``
+        ``{"tool": "gmail", "credential_name": "gmail-cred", "actions": [...]}``
     """
 
     tool: str = Field(
         description="Unique tool identifier.",
     )
-    credential_id: str | None = Field(
+    credential_name: str | None = Field(
         default=None,
-        description="Optional BYOK credential identifier.",
+        description="Optional BYOK credential name.",
     )
     actions: list[ToolActionConfig] = Field(
         default_factory=list,

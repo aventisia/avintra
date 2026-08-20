@@ -193,26 +193,26 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
     logger.info(f"Credit usage posted | task={provider} ref_id={request.ref_id}")
 
 
-def should_record_byok(is_byok: bool, credential_id: str | None) -> bool:
+def should_record_byok(is_byok: bool, credential_name: str | None) -> bool:
     """True when a request used the caller's own (BYOK) credentials.
 
     BYOK consumption is recorded against the user's own key (not platform
-    credits). A null/empty/default-GUID credential counts as "no real
+    credits). A null/empty credential name counts as "no real
     credential" and therefore not BYOK.
 
     Args:
         is_byok: Whether the request is flagged as BYOK.
-        credential_id: The BYOK vault credential id (None when not BYOK).
+        credential_name: The BYOK vault credential name (None when not BYOK).
 
     Returns:
-        True when BYOK is enabled AND a real credential is supplied.
+        True when BYOK is enabled AND a real credential name is supplied.
     """
     if not is_byok:
         return False
-    if not credential_id:
+    if not credential_name:
         return False
-    cleaned = str(credential_id).strip()
-    return cleaned not in ("", "00000000-0000-0000-0000-000000000000")
+    cleaned = str(credential_name).strip()
+    return cleaned != ""
 
 
 def build_byok_entry(
@@ -221,7 +221,6 @@ def build_byok_entry(
     model: str,
     consumed_units: float,
     unit_type: str | None,
-    credential_id: str | None,
     credential_name: str | None,
     ref_type: str,
     ref_id: str,
@@ -229,6 +228,8 @@ def build_byok_entry(
     action: str,
     agent_name: str | None,
     space_id: str | None = None,
+    *,
+    display_name: str | None = None,
 ) -> dict:
     """Build a single BYOK usage payload entry (PascalCase fields).
 
@@ -242,8 +243,10 @@ def build_byok_entry(
         model: The model name (e.g. "gpt-4o-mini").
         consumed_units: Number of provider units consumed (tokens/seconds/chars).
         unit_type: The provider unit type (e.g. "Tokens", "Seconds", "Characters").
-        credential_id: The BYOK vault credential id.
-        credential_name: The display name of the BYOK vault credential.
+        credential_name: The BYOK vault credential name (also echoed to the
+            legacy CredentialId field for back-compat with the Accounts API).
+        display_name: Optional resolved display name for CredentialName; falls
+            back to credential_name.
         ref_type: The reference type (e.g. "Agent").
         ref_id: The reference id (e.g. AgentId).
         ref_name: The reference display name.
@@ -260,8 +263,8 @@ def build_byok_entry(
         "Model": model,
         "ConsumedUnit": max(consumed_units or 0, 0),
         "UnitType": unit_type,
-        "CredentialId": credential_id,
-        "CredentialName": credential_name,
+        "CredentialId": credential_name,
+        "CredentialName": display_name or credential_name,
         "RefType": ref_type,
         "RefId": ref_id,
         "RefName": ref_name,

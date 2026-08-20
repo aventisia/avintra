@@ -226,10 +226,8 @@ class STTRequest(BaseModel):
     input: str  # URL, local path, or base64 data URI
     language: Optional[str] = None
     stream: bool = False
-    credentials_id: Optional[str] = None
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
     is_byok_enabled: bool = False
-    # Resolved server-side from the vault credential; used for BYOK usage attribution.
-    credential_name: Optional[str] = None
     ref_type: str = ""
     ref_id: str = ""
     ref_name: str = ""
@@ -244,7 +242,7 @@ class STTResponse(BaseModel):
     status: Literal["completed", "failed"] = "completed"
     error: Optional[str] = None
     stream: bool = False
-    credentials_id: Optional[str] = None
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
     is_byok_enabled: bool = False
     duration_seconds: Optional[float] = None
     token_count: Optional[float] = None
@@ -271,10 +269,8 @@ class TTSRequest(BaseModel):
     language: Optional[str] = None
     speed: float = 1.0
     stream: bool = False
-    credentials_id: Optional[str] = None
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
     is_byok_enabled: bool = False
-    # Resolved server-side from the vault credential; used for BYOK usage attribution.
-    credential_name: Optional[str] = None
     ref_type: str = ""
     ref_id: str = ""
     ref_name: str = ""
@@ -289,7 +285,7 @@ class TTSResponse(BaseModel):
     status: Literal["completed", "failed"] = "completed"
     error: Optional[str] = None
     stream: bool = False
-    credentials_id: Optional[str] = None
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
     is_byok_enabled: bool = False
     token_count: Optional[float] = None
     time_taken: Optional[float] = None
