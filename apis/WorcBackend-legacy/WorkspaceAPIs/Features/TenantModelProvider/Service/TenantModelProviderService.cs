@@ -10,15 +10,18 @@ public class TenantModelProviderService : ITenantModelProviderService
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
+    private readonly ICurrentTenantService _currentTenantService;
 
     // Constructor for dependency injection.
     public TenantModelProviderService(
         ILogger<TenantModelProviderService> logger,
         IUnitOfWork unitOfWork,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _currentTenantService = currentTenantService;
 
         // Initialize the user ID from the JWT claims in the HTTP context.
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -113,6 +116,12 @@ public class TenantModelProviderService : ITenantModelProviderService
                 .Where(w => !string.IsNullOrWhiteSpace(w))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
+
+            // Resolve the credential name to its ID (entity keeps the ID per name-based Agent Builder).
+            if (!string.IsNullOrWhiteSpace(modelProviderDto.CredentialName))
+            {
+                modelProviderDto.CredentialId = await ResolveCredentialIdAsync(modelProviderDto.CredentialName, modelProviderDto.CredentialId);
+            }
 
             // Look for an existing configuration for the same provider within this tenant.
             var existingProvider = await _unitOfWork.TenantModelProviderRepo
@@ -226,5 +235,19 @@ public class TenantModelProviderService : ITenantModelProviderService
         }
 
         return serviceResponse;
+    }
+
+    // Resolves a credential NAME to its entity ID. If a name is supplied it takes precedence;
+    // otherwise the explicitly provided ID is returned unchanged.
+    private async Task<Guid?> ResolveCredentialIdAsync(string? credentialName, Guid? existingCredentialId)
+    {
+        if (string.IsNullOrWhiteSpace(credentialName))
+            return existingCredentialId;
+
+        var credential = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(w => w.Name == credentialName && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+
+        return credential?.Id ?? existingCredentialId;
     }
 }

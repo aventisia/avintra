@@ -256,7 +256,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
     }
 
     // Retrieves a file as a Base64 data URL. Supports local files, SharePoint files, public HTTP/HTTPS URLs, and existing Base64 data URLs.
-    public async Task<ServiceResponse<string>> GetDataUrlAsync(Guid? credentialId, string fileUrl)
+    public async Task<ServiceResponse<string>> GetDataUrlAsync(string? credentialName, string fileUrl)
     {
         // Initialize the default failure response.
         var serviceResponse = new ServiceResponse<string>
@@ -289,9 +289,9 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
             {
                 // Download from SharePoint or OneDrive.
                 _ when IsMicrosoft365FileUrl(fileUrl) =>
-                    !credentialId.HasValue
-                        ? throw new UnauthorizedAccessException("CredentialId is required for SharePoint access.")
-                        : await DownloadMicrosoft365FileAsync(fileUrl, credentialId.Value),
+                    string.IsNullOrWhiteSpace(credentialName)
+                        ? throw new UnauthorizedAccessException("CredentialName is required for SharePoint access.")
+                        : await DownloadMicrosoft365FileAsync(fileUrl, credentialName),
 
                 // Download from a public HTTP/HTTPS URL.
                 _ when Uri.TryCreate(fileUrl, UriKind.Absolute, out var uri) &&
@@ -346,10 +346,10 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
 
     // Downloads a file from SharePoint using the Microsoft Graph API.
     // Resolves the site, drive, and item identifiers from the provided SharePoint URL before downloading the file content.
-    private async Task<byte[]> DownloadMicrosoft365FileAsync(string sharePointUrl, Guid credentialId)
+    private async Task<byte[]> DownloadMicrosoft365FileAsync(string sharePointUrl, string credentialName)
     {
         // Retrieve an access token for Microsoft Graph.
-        var accessToken = await _m365ConnectorsService.GetM365AccessTokenAsync(credentialId);
+        var accessToken = await _m365ConnectorsService.GetM365AccessTokenAsync(credentialName);
 
         if (string.IsNullOrWhiteSpace(accessToken))
         {
@@ -409,7 +409,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
         var itemId = itemJson.RootElement.GetProperty("id").GetString();
 
         // Refresh the access token before downloading the file.
-        accessToken = await _m365ConnectorsService.GetM365AccessTokenAsync(credentialId);
+        accessToken = await _m365ConnectorsService.GetM365AccessTokenAsync(credentialName);
 
         // Build the Microsoft Graph endpoint used to download the file content.
         var contentUrl = $"https://graph.microsoft.com/v1.0/drives/{driveId}/items/{itemId}/content";

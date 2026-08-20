@@ -18,6 +18,12 @@ public class KeyStore : BaseEntity, IMustHaveTenant
     public Guid? SpaceId { get; set; }
 
     /// <summary>
+    /// Gets or sets the deployment environment this key store belongs to.
+    /// Combined with tenant/space/name this enforces uniqueness per environment.
+    /// </summary>
+    public ConfigureEnvironmentType EnvType { get; set; } = ConfigureEnvironmentType.Dev;
+
+    /// <summary>
     /// Gets or sets the name of the configuration item.
     /// The name should be unique and descriptive of the configuration.
     /// </summary>

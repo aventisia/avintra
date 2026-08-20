@@ -44,7 +44,25 @@ public class TenantResolver
         // Guid.Empty (absent) means the default "Central" space.
         currentTenantService.CurrentSpaceId = ResolveSpaceId(context);
 
+        // Resolve the deployment environment for this request from the "X-Env-Type" header,
+        // defaulting to Dev when absent or unrecognized.
+        currentTenantService.CurrentEnvType = ResolveEnvType(context);
+
         await _next(context);
+    }
+
+    // Resolves the current environment from the "X-Env-Type" request header.
+    // Returns Dev when the header is missing or holds an unsupported value.
+    private static ConfigureEnvironmentType ResolveEnvType(HttpContext context)
+    {
+        if (context.Request.Headers.TryGetValue("X-Env-Type", out var envTypeHeader) &&
+            Enum.TryParse<ConfigureEnvironmentType>(envTypeHeader.ToString(), ignoreCase: true, out var envType))
+        {
+            return envType;
+        }
+
+        // No environment selected -> Dev.
+        return ConfigureEnvironmentType.Dev;
     }
 
     // Resolves the current space ID from the "X-Space-Id" header, falling back to the "spid" JWT claim.

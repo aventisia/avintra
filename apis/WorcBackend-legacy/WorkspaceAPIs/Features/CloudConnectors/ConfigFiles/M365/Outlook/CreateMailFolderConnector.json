@@ -10,7 +10,7 @@
     {
       "direction": "Input",
       "type": "credentials-select",
-      "name": "__CredentialId__M365",
+      "name": "__CredentialName__M365",
       "label": "Microsoft 365 Credentials",
       "description": "Select the Microsoft 365 credentials to authenticate the API request for creating a new mail folder.",
       "defaultValue": ""

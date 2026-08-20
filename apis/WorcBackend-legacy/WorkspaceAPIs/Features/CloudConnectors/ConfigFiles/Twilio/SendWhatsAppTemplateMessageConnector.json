@@ -10,7 +10,7 @@
     {
       "direction": "Input",
       "type": "credentials-select",
-      "name": "__CredentialId__Twilio",
+      "name": "__CredentialName__Twilio",
       "label": "Twilio Credential",
       "description": "The Twilio credential containing valid auth token and accountsId which is used to authenticate API requests.",
       "defaultValue": ""

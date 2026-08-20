@@ -27,6 +27,13 @@ public interface IVaultService
     Task<ServiceResponse<VaultDto>> GetVaultByIdAsync(Guid vaultId);
 
     /// <summary>
+    /// Fetches a configuration item by its name within the current environment and tenant.
+    /// </summary>
+    /// <param name="vaultName">The name of the configuration item to retrieve.</param>
+    /// <returns>A task representing the service response containing the details of the configuration item.</returns>
+    Task<ServiceResponse<VaultDto>> GetVaultByNameAsync(string vaultName);
+
+    /// <summary>
     /// Creates a new configuration item with the provided data.
     /// </summary>
     /// <param name="vaultDto">The data needed to create the new configuration item.</param>
@@ -63,4 +70,11 @@ public interface IVaultService
     /// <param name="vaultId">The unique identifier of the vault.</param>
     /// <returns>A response containing the decrypted vault data as a <see cref="VaultDto"/>, or an error message if the decryption process fails.</returns>
     Task<ServiceResponse<VaultDto>> RetrieveDecryptedVaultValueAsync(Guid vaultId);
+
+    /// <summary>
+    /// Retrieves the decrypted values (username and password) of an encrypted vault using its name within the current environment.
+    /// </summary>
+    /// <param name="vaultName">The name of the vault.</param>
+    /// <returns>A response containing the decrypted vault data as a <see cref="VaultDto"/>, or an error message if the decryption process fails.</returns>
+    Task<ServiceResponse<VaultDto>> RetrieveDecryptedVaultValueByNameAsync(string vaultName);
 }

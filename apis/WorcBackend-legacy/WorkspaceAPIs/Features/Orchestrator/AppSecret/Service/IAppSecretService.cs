@@ -92,4 +92,13 @@ public interface IAppSecretService
     /// A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{AppSecretDto}"/> with the App Secret details.
     /// </returns>
     Task<ServiceResponse<AppSecretDto>> GetAppSecretDetailAsync(Guid appSecretId);
+
+    /// <summary>
+    /// Retrieves the details (with decrypted key-value pairs) of a specific App Secret by its name within the current environment.
+    /// </summary>
+    /// <param name="appSecretName">The name of the App Secret.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{AppSecretDto}"/> with the App Secret details.
+    /// </returns>
+    Task<ServiceResponse<AppSecretDto>> GetAppSecretDetailByNameAsync(string appSecretName);
 }

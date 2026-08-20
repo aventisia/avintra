@@ -28,6 +28,13 @@ public interface ISkillRegistryService
     Task<ServiceResponse<SkillDto>> GetSkillByIdAsync(Guid skillId);
 
     /// <summary>
+    /// Retrieves a skill by its name within the current environment and tenant.
+    /// </summary>
+    /// <param name="skillName">The name of the skill to retrieve.</param>
+    /// <returns>The task result contains the service response with the skill details.</returns>
+    Task<ServiceResponse<SkillDto>> GetSkillByNameAsync(string skillName);
+
+    /// <summary>
     /// Inserts a new skill.
     /// </summary>
     /// <param name="skillDto">The data required to insert the skill.</param>

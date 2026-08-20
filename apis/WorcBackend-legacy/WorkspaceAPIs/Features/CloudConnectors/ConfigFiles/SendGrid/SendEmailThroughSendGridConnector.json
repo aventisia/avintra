@@ -10,7 +10,7 @@
     {
       "direction": "Input",
       "type": "credentials-select",
-      "name": "__CredentialId__SendGrid",
+      "name": "__CredentialName__SendGrid",
       "label": "SendGrid Credential",
       "description": "The SendGrid credential containing valid API key which is used to authenticate API requests.",
       "defaultValue": ""

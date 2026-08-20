@@ -25,8 +25,10 @@ public class AppSecretMappingProfile : IRegister
             .IgnoreNullValues(true);
 
         // Get app secret in SelectOption format
+        // The option Value is the resource NAME (not the ID) so the Agent Builder
+        // stores and resolves credentials by name.
         config.NewConfig<AppSecret, SelectOption>()
-            .Map(dest => dest.Value, src => src.Id)
+            .Map(dest => dest.Value, src => src.Name)
             .Map(dest => dest.Label, src => src.Name)
             .Map(dest => dest.Description, src => src.Description);
     }

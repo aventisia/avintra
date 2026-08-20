@@ -39,8 +39,8 @@ public interface IFileUploadService
     /// <summary>
     /// Retrieves the data URL for the specified file.
     /// </summary>
-    /// <param name="credentialId">The credential identifier used to authorize access to the file.</param>
+    /// <param name="credentialName">The credential name used to authorize access to the file.</param>
     /// <param name="fileUrl">The URL of the file.</param>
     /// <returns>Returns the data URL of the specified file.</returns>
-    Task<ServiceResponse<string>> GetDataUrlAsync(Guid? credentialId, string fileUrl);
+    Task<ServiceResponse<string>> GetDataUrlAsync(string? credentialName, string fileUrl);
 }

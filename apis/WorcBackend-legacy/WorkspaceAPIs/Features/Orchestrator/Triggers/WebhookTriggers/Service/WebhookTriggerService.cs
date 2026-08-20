@@ -7,19 +7,22 @@ public class WebhookTriggerService : IWebhookTriggerService
     private readonly Guid _userId;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly IResourceShareService _resourceShareService;
+    private readonly ICurrentTenantService _currentTenantService;
 
     public WebhookTriggerService(
         ILogger<WebhookTriggerService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         EnvironmentConfig environmentConfig,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _environmentConfig = environmentConfig;
         _resourceShareService = resourceShareService;
+        _currentTenantService = currentTenantService;
     }
 
     // Retrieves all webhook triggers.
@@ -42,7 +45,8 @@ public class WebhookTriggerService : IWebhookTriggerService
                 triggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.TriggerType == TriggerTypesEnum.Webhook &&
-                        w.CreatedByUserId == _userId)
+                        w.CreatedByUserId == _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -70,6 +74,7 @@ public class WebhookTriggerService : IWebhookTriggerService
                 triggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.IsTenantWideAccess ||
                             resourceAccess.Keys.Contains(w.Id)
@@ -121,7 +126,7 @@ public class WebhookTriggerService : IWebhookTriggerService
         try
         {
             var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.Webhook)
+                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.Webhook && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
@@ -186,8 +191,8 @@ public class WebhookTriggerService : IWebhookTriggerService
             // Duplicate name check
             var existing = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.Webhook &&
-                    w.Name.ToLower() == dto.Name.ToLower())
+                    w.Name.ToLower() == dto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (existing != null)
@@ -208,6 +213,7 @@ public class WebhookTriggerService : IWebhookTriggerService
 
             var newTrigger = dto.Adapt<Trigger>();
             newTrigger.TriggerType = TriggerTypesEnum.Webhook;
+            newTrigger.EnvType = _currentTenantService.CurrentEnvType;
             newTrigger.Timezone = string.Empty;
             newTrigger.Metadata = SerializeMetadata(model);
             newTrigger.CreatedByUserId = _userId;
@@ -296,7 +302,7 @@ public class WebhookTriggerService : IWebhookTriggerService
         try
         {
             var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == dto.Id && w.TriggerType == TriggerTypesEnum.Webhook)
+                .GetByConditionAsync(w => w.Id == dto.Id && w.TriggerType == TriggerTypesEnum.Webhook && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.TriggerFlowVersions)
                 .SingleOrDefaultAsync();
 
@@ -329,9 +335,9 @@ public class WebhookTriggerService : IWebhookTriggerService
             // Duplicate name check among other triggers
             var duplicate = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.Webhook &&
                     w.Name.ToLower() == dto.Name.ToLower() &&
-                    w.Id != dto.Id)
+                    w.Id != dto.Id &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (duplicate != null)
@@ -468,13 +474,28 @@ public class WebhookTriggerService : IWebhookTriggerService
         try
         {
             var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.Webhook)
+                .GetByConditionAsync(w => w.Id == triggerId && w.TriggerType == TriggerTypesEnum.Webhook && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             if (trigger == null)
             {
                 serviceResponse.Message = "Webhook trigger does not exist";
                 return serviceResponse;
+            }
+
+            // PROD-guard: block deletion of PROD triggers or triggers with a same-name PROD twin.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.TriggerRepo,
+                trigger.EnvType,
+                trigger.Name,
+                w => w.Name.ToLower() == trigger.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == trigger.TenantId &&
+                     w.SpaceId == trigger.SpaceId,
+                "webhook trigger");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             // Validate delete permission
@@ -533,7 +554,7 @@ public class WebhookTriggerService : IWebhookTriggerService
         try
         {
             var triggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(t => triggerIds.Contains(t.Id) && t.TriggerType == TriggerTypesEnum.Webhook)
+                .GetByConditionAsync(t => triggerIds.Contains(t.Id) && t.TriggerType == TriggerTypesEnum.Webhook && t.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
             if (triggers == null || triggers.Count == 0)
@@ -542,6 +563,8 @@ public class WebhookTriggerService : IWebhookTriggerService
                 return serviceResponse;
             }
 
+            // Validate delete permission + PROD-guard for all triggers
+            var blockedNames = new List<string>();
             foreach (var trigger in triggers)
             {
                 var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
@@ -561,6 +584,29 @@ public class WebhookTriggerService : IWebhookTriggerService
                     serviceResponse.Message = "You do not have access to delete one or more webhook triggers.";
                     return serviceResponse;
                 }
+
+                // PROD-guard: block the whole batch if any trigger is PROD or has a same-name PROD twin.
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.TriggerRepo,
+                    trigger.EnvType,
+                    trigger.Name,
+                    w => w.Name.ToLower() == trigger.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == trigger.TenantId &&
+                         w.SpaceId == trigger.SpaceId,
+                    "webhook trigger");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(trigger.Name);
+                }
+            }
+
+            // Reject the entire batch when any selected trigger is protected by the PROD guard.
+            if (blockedNames.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following webhook trigger(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}";
+                return serviceResponse;
             }
 
             // Remove access mappings
@@ -598,8 +644,8 @@ public class WebhookTriggerService : IWebhookTriggerService
         {
             var exists = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.Webhook &&
-                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (exists != null)

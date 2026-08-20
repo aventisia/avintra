@@ -11,4 +11,10 @@ public class FlowExecutionArgs
     public required ReactFlowDataModel FlowData { get; set; }
     public required Guid UserId { get; set; }
     public string? AccessToken { get; set; }
+
+    /// <summary>
+    /// The deployment environment of the executing flow ("dev" or "prod"), derived from the
+    /// flow's publication status (published → "prod", otherwise "dev").
+    /// </summary>
+    public string EnvType { get; set; } = "dev";
 }

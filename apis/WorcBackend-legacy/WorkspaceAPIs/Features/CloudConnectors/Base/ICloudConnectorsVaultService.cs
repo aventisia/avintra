@@ -3,10 +3,10 @@ namespace WorkspaceAPIs.Features.CloudConnectors;
 public interface ICloudConnectorsVaultService
 {
     /// <summary>
-    /// Asynchronously retrieves a credential object from the vault using the specified credential ID.
+    /// Asynchronously retrieves a credential object from the vault using the specified credential name.
     /// </summary>
-    /// <param name="credentialId">The unique identifier of the credential to retrieve from the vault.</param>
+    /// <param name="credentialName">The name of the credential to retrieve from the vault.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the <see cref="VaultCredentialObj"/> retrieved from the vault.</returns>
-    Task<VaultCredentialObj?> GetCredentialFromVaultAsync(Guid credentialId);
+    Task<VaultCredentialObj?> GetCredentialFromVaultAsync(string credentialName);
 }
 

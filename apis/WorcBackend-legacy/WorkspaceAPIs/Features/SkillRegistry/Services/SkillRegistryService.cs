@@ -46,7 +46,7 @@ public class SkillRegistryService : ISkillRegistryService
             {
                 // Query skills owned by the current user with related data.
                 skills = await _unitOfWork.SkillRepo
-                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -71,6 +71,7 @@ public class SkillRegistryService : ISkillRegistryService
                 skills = await _unitOfWork.SkillRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.IsTenantWideAccess ||
                             resourceAccess.Keys.Contains(w.Id)
@@ -129,10 +130,11 @@ public class SkillRegistryService : ISkillRegistryService
             // Normalize input for case-insensitive comparison.
             var normalizedName = checkAvailabilityDto.UserInput.ToLowerInvariant();
 
-            // Check for duplicate name excluding the current skill during updates.
+            // Check for duplicate name excluding the current skill during updates, within the current environment.
             var existingSkill = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == normalizedName &&
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     (skillId == Guid.Empty || skillId == null || w.Id != skillId)
                 )
                 .FirstOrDefaultAsync();
@@ -174,7 +176,7 @@ public class SkillRegistryService : ISkillRegistryService
             // Retrieve the skill by ID including its related users and files.
             // Bypass global tenant/space filters so platform/global skills are visible.
             var skill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(w => w.Id == skillId)
+                .GetByConditionAsync(w => w.Id == skillId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.Files)
@@ -226,6 +228,82 @@ public class SkillRegistryService : ISkillRegistryService
     }
 
     /// <summary>
+    /// Retrieves a skill by its name within the current environment and tenant.
+    /// </summary>
+    public async Task<ServiceResponse<SkillDto>> GetSkillByNameAsync(string skillName)
+    {
+        // Initialize a failed response in case the operation does not complete successfully.
+        var serviceResponse = ServiceResponse<SkillDto>.Create("Failed to retrieve skill. Please try again", 404);
+
+        try
+        {
+            // Validate the provided skill name.
+            if (string.IsNullOrWhiteSpace(skillName))
+            {
+                serviceResponse.Message = "A valid skill name is required";
+                return serviceResponse;
+            }
+
+            // Normalize input for case-insensitive comparison.
+            var normalizedName = skillName.Trim().ToLowerInvariant();
+
+            // Retrieve the skill by name within the current tenant, space, and environment.
+            // Bypass global tenant/space filters so platform/global skills are visible.
+            var skill = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == normalizedName &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.Files)
+                .IgnoreQueryFilters()
+                .FirstOrDefaultAsync();
+
+            // Return when skill does not exist.
+            if (skill == null)
+            {
+                serviceResponse.Message = "Skill not found";
+                return serviceResponse;
+            }
+
+            // Verify the current user has permission to view the skill.
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                skill.Id,
+                ResourceTypeEnum.Skill,
+                skill.CreatedByUserId,
+                skill.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.Edit,
+                    ResourceAccessTypeEnum.View,
+                }
+            );
+
+            // Return forbidden when user lacks view permission.
+            if (!canView)
+            {
+                _logger.LogWarning("User {UserId} attempted to access skill {SkillName} without permission.", _userId, skillName);
+                serviceResponse.Message = "You do not have permission to view this skill";
+                return serviceResponse;
+            }
+
+            // Map to DTO and set effective access level.
+            var skillDto = skill.Adapt<SkillDto>();
+            skillDto.AccessLevel = accessLevel ?? ResourceAccessTypeEnum.View;
+
+            serviceResponse.Update("Skill retrieved successfully", 200, skillDto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving skill {SkillName} for user {UserId}", skillName, _userId);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
     /// Inserts a new skill.
     /// </summary>
     public async Task<ServiceResponse<SkillDto>> InsertSkillAsync(SkillDto skillDto)
@@ -245,9 +323,11 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
-            // Check duplicate name within tenant to avoid conflicts.
+            // Check duplicate name within tenant and current environment to avoid conflicts.
             var existingSkill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == skillDto.Name.ToLower())
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == skillDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (existingSkill != null)
@@ -259,6 +339,7 @@ public class SkillRegistryService : ISkillRegistryService
             // Map DTO to entity, force custom type, and set audit fields.
             var newSkill = skillDto.Adapt<Skill>();
             newSkill.Type = ComponentTypeEnum.Custom;
+            newSkill.EnvType = _currentTenantService.CurrentEnvType;
             newSkill.CreatedByUserId = _userId;
             newSkill.LastModifiedByUserId = _userId;
 
@@ -325,7 +406,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Retrieve the existing skill for update.
             var existingSkill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(w => w.Id == skillDto.Id)
+                .GetByConditionAsync(w => w.Id == skillDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             // Return when skill is missing.
@@ -357,11 +438,12 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
-            // Check for duplicate name excluding the current skill.
+            // Check for duplicate name excluding the current skill, within the current environment.
             var duplicateName = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
                     w.Id != skillDto.Id &&
-                    w.Name.ToLower() == skillDto.Name.ToLower()
+                    w.Name.ToLower() == skillDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .FirstOrDefaultAsync();
 
@@ -449,7 +531,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Retrieve the skill for deletion.
             var skill = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(w => w.Id == skillId)
+                .GetByConditionAsync(w => w.Id == skillId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             // Return 404 when skill does not exist.
@@ -457,6 +539,21 @@ public class SkillRegistryService : ISkillRegistryService
             {
                 serviceResponse.Message = "Skill not found";
                 return serviceResponse;
+            }
+
+            // PROD-guard: block deletion of PROD skills or skills with a same-name PROD twin.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.SkillRepo,
+                skill.EnvType,
+                skill.Name,
+                w => w.Name.ToLower() == skill.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == skill.TenantId &&
+                     w.SpaceId == skill.SpaceId,
+                "skill");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             // Verify owner permission for deletion.
@@ -529,7 +626,7 @@ public class SkillRegistryService : ISkillRegistryService
 
             // Load all requested skills from the database.
             var allMatchedSkills = await _unitOfWork.SkillRepo
-                .GetByConditionAsync(w => requestedIds.Contains(w.Id))
+                .GetByConditionAsync(w => requestedIds.Contains(w.Id) && w.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
             // Ensure every requested ID matches an existing skill.
@@ -539,7 +636,8 @@ public class SkillRegistryService : ISkillRegistryService
                 return serviceResponse;
             }
 
-            // Validate owner access for every skill before deletion.
+            // Validate owner access + PROD-guard for every skill before deletion.
+            var blockedNames = new List<string>();
             foreach (var skill in allMatchedSkills)
             {
                 var (canDelete, _) = await _resourceShareService.GetResourceAccessAsync(
@@ -561,6 +659,29 @@ public class SkillRegistryService : ISkillRegistryService
                     serviceResponse.Message = "You do not have access to delete one or more skills";
                     return serviceResponse;
                 }
+
+                // PROD-guard: block the whole batch if any skill is PROD or has a same-name PROD twin.
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.SkillRepo,
+                    skill.EnvType,
+                    skill.Name,
+                    w => w.Name.ToLower() == skill.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == skill.TenantId &&
+                         w.SpaceId == skill.SpaceId,
+                    "skill");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(skill.Name);
+                }
+            }
+
+            // Reject the entire batch when any selected skill is protected by the PROD guard.
+            if (blockedNames.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following skill(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}";
+                return serviceResponse;
             }
 
             // Remove all associated resource shares for the skills.
@@ -623,6 +744,7 @@ public class SkillRegistryService : ISkillRegistryService
             var skills = await _unitOfWork.SkillRepo
                 .GetByConditionAsync(w =>
                     w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     (
                         w.CreatedByUserId == _currentTenantService.CurrentUserId ||
                         w.IsTenantWideAccess ||
@@ -725,6 +847,7 @@ public class SkillRegistryService : ISkillRegistryService
                 .GetByConditionAsync(w =>
                     w.IsDisabled == false &&
                     w.IsActive &&
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     (
                         w.CreatedByUserId == _userId ||
                         w.IsTenantWideAccess ||

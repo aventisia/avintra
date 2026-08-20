@@ -7,13 +7,15 @@ public class VaultService : IVaultService
     private readonly Guid _userId;
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly ICurrentTenantService _currentTenantService;
 
     public VaultService(
         ILogger<VaultService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IStringEncryptionService stringEncryptionService,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        ICurrentTenantService currentTenantService)
     {
         // Extract the user ID from the HTTP context, default to Guid.Empty if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,6 +24,7 @@ public class VaultService : IVaultService
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
         _resourceShareService = resourceShareService;
+        _currentTenantService = currentTenantService;
     }
 
     // Method to check if the vault name is available for the current user
@@ -35,11 +38,12 @@ public class VaultService : IVaultService
 
         try
         {
-            // Check if a vault with the same name already exists for the current user
+            // Check if a vault with the same name already exists for the current user within the current environment
             var existingVault = await _unitOfWork.VaultRepo
                 .GetByConditionAsync(w =>
-                    w.CreatedByUserId == _userId &&
-                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
+                    w.CreatedByUserId == _userId)
                 .FirstOrDefaultAsync();
 
             // If an item with the same name exists, return a message indicating it's unavailable
@@ -84,7 +88,7 @@ public class VaultService : IVaultService
             {
                 vaults = await _unitOfWork.VaultRepo
                     .GetByConditionAsync(w =>
-                        w.CreatedByUserId == _userId)
+                        w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(w => w.CreatedOn)
                     .ToListAsync();
             }
@@ -106,6 +110,7 @@ public class VaultService : IVaultService
                 vaults = await _unitOfWork.VaultRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.IsTenantWideAccess ||
                             resourceAccess.Keys.Contains(w.Id)
@@ -156,7 +161,80 @@ public class VaultService : IVaultService
         {
             // Fetch the vault by ID, ensuring it's created by the current user
             var vault = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w => w.Id == vaultId)
+                .GetByConditionAsync(w => w.Id == vaultId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .SingleOrDefaultAsync();
+
+            // Validate vault exists
+            if (vault == null)
+            {
+                _logger.LogInformation("Vault not found.");
+                serviceResponse.Message = "Vault not found.";
+                return serviceResponse;
+            }
+
+            // Validate access permission
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                vault.Id,
+                ResourceTypeEnum.Vault,
+                vault.CreatedByUserId,
+                vault.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            // Reject unauthorized access
+            if (!canView)
+            {
+                _logger.LogWarning("User {UserId} attempted unauthorized vault access.", _userId);
+                serviceResponse.Message = "You do not have access to view this vault.";
+                return serviceResponse;
+            }
+
+            // Convert entity into DTO response
+            serviceResponse.Data = vault.Adapt<VaultDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Vault retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
+    // Method to retrieve a specific vault by its name within the current environment and tenant
+    public async Task<ServiceResponse<VaultDto>> GetVaultByNameAsync(string vaultName)
+    {
+        var serviceResponse = new ServiceResponse<VaultDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve the vault. Please try again."
+        };
+
+        try
+        {
+            // Validate the provided vault name
+            if (string.IsNullOrWhiteSpace(vaultName))
+            {
+                serviceResponse.Message = "A valid vault name is required.";
+                return serviceResponse;
+            }
+
+            // Normalize input for case-insensitive comparison
+            var normalizedName = vaultName.Trim().ToLowerInvariant();
+
+            // Fetch the vault by name within the current environment
+            var vault = await _unitOfWork.VaultRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == normalizedName &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Validate vault exists
@@ -215,10 +293,11 @@ public class VaultService : IVaultService
 
         try
         {
-            // Check if a vault with the same name already exists for the user
+            // Check if a vault with the same name already exists for the user within the current environment
             var existingVault = await _unitOfWork.VaultRepo
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == vaultDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     w.CreatedByUserId == _userId)
                 .FirstOrDefaultAsync();
 
@@ -238,6 +317,7 @@ public class VaultService : IVaultService
             var newVault = vaultDto.Adapt<Vault>();
             newVault.CreatedByUserId = _userId;
             newVault.LastModifiedByUserId = _userId;
+            newVault.EnvType = _currentTenantService.CurrentEnvType;
 
             // Encrypt the credential values (username and password) before saving them
             newVault.Username = _stringEncryptionService.EncryptString(newVault.Username);
@@ -290,7 +370,7 @@ public class VaultService : IVaultService
         {
             // Fetch the existing vault
             var vault = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w => w.Id == vaultDto.Id)
+                .GetByConditionAsync(w => w.Id == vaultDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // If the item doesn't exist, return an error message
@@ -321,10 +401,11 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
-            // Check if another vault with the same name exists
+            // Check if another vault with the same name exists within the current environment
             var existingVault = await _unitOfWork.VaultRepo
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == vaultDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     w.CreatedByUserId == vault.CreatedByUserId &&
                     w.Id != vaultDto.Id)
                 .FirstOrDefaultAsync();
@@ -388,7 +469,7 @@ public class VaultService : IVaultService
         {
             // Fetch the vault to be deleted
             var vault = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w => w.Id == vaultId)
+                .GetByConditionAsync(w => w.Id == vaultId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // If the item doesn't exist, return an error message
@@ -397,6 +478,21 @@ public class VaultService : IVaultService
                 _logger.LogInformation("Vault does not exist.");
                 serviceResponse.Message = "Vault does not exist.";
                 return serviceResponse;
+            }
+
+            // PROD-guard: block deletion of PROD vaults or vaults with a same-name PROD twin.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.VaultRepo,
+                vault.EnvType,
+                vault.Name,
+                w => w.Name.ToLower() == vault.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == vault.TenantId &&
+                     w.SpaceId == vault.SpaceId,
+                "vault");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             // Validate delete permission
@@ -460,7 +556,7 @@ public class VaultService : IVaultService
         {
             // Fetch the vaults to be deleted
             var vaults = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w => vaultIds.Contains(w.Id))
+                .GetByConditionAsync(w => vaultIds.Contains(w.Id) && w.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
             // If no items are found, return an error message
@@ -471,7 +567,8 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
-            // Validate permissions
+            // Validate permissions + PROD-guard
+            var blockedNames = new List<string>();
             foreach (var vault in vaults)
             {
                 var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
@@ -491,6 +588,29 @@ public class VaultService : IVaultService
                     serviceResponse.Message = "You do not have access to delete one or more vaults.";
                     return serviceResponse;
                 }
+
+                // PROD-guard: block the whole batch if any vault is PROD or has a same-name PROD twin.
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.VaultRepo,
+                    vault.EnvType,
+                    vault.Name,
+                    w => w.Name.ToLower() == vault.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == vault.TenantId &&
+                         w.SpaceId == vault.SpaceId,
+                    "vault");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(vault.Name);
+                }
+            }
+
+            // Reject the entire batch when any selected vault is protected by the PROD guard.
+            if (blockedNames.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following vault(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}";
+                return serviceResponse;
             }
             // Remove access mappings
             await _resourceShareService.DeleteResourceSharesAsync(
@@ -536,7 +656,7 @@ public class VaultService : IVaultService
         {
             // Fetch the encrypted vault by its ID
             var vault = await _unitOfWork.VaultRepo
-                .GetByConditionAsync(w => w.Id == vaultId)
+                .GetByConditionAsync(w => w.Id == vaultId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Return an error response if the vault does not exist
@@ -547,6 +667,85 @@ public class VaultService : IVaultService
                 return serviceResponse;
             }
 
+
+            // Validate access permission
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                    _userId,
+                    vault.Id,
+                    ResourceTypeEnum.Vault,
+                    vault.CreatedByUserId,
+                    vault.IsTenantWideAccess,
+                    new[]
+                    {
+                        ResourceAccessTypeEnum.Owner,
+                        ResourceAccessTypeEnum.View,
+                        ResourceAccessTypeEnum.Edit,
+                    }
+                );
+
+            // Block unauthorized access
+            if (!canView)
+            {
+                _logger.LogWarning("User {UserId} attempted unauthorized vault access.", _userId);
+                serviceResponse.Message = "You do not have access to view this vault.";
+                return serviceResponse;
+            }
+
+            var vaultDto = vault.Adapt<VaultDto>();
+
+            // Decrypt the username and password
+            vaultDto.Username = _stringEncryptionService.DecryptString(vault.Username);
+            vaultDto.Password = _stringEncryptionService.DecryptString(vault.Password);
+
+            // Set the decrypted vault data in the response
+            serviceResponse.Data = vaultDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Vault decrypted successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurred while decrypting the vault.";
+        }
+
+        return serviceResponse;
+    }
+
+    // Method to retrieve the decrypted value of an encrypted vault by name within the current environment and tenant
+    public async Task<ServiceResponse<VaultDto>> RetrieveDecryptedVaultValueByNameAsync(string vaultName)
+    {
+        var serviceResponse = new ServiceResponse<VaultDto>
+        {
+            Data = null,
+            Message = "Unable to decrypt the vault. Please try again later."
+        };
+
+        try
+        {
+            // Validate the provided vault name
+            if (string.IsNullOrWhiteSpace(vaultName))
+            {
+                serviceResponse.Message = "A valid vault name is required.";
+                return serviceResponse;
+            }
+
+            // Normalize input for case-insensitive comparison
+            var normalizedName = vaultName.Trim().ToLowerInvariant();
+
+            // Fetch the encrypted vault by its name within the current environment
+            var vault = await _unitOfWork.VaultRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == normalizedName &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
+                .SingleOrDefaultAsync();
+
+            // Return an error response if the vault does not exist
+            if (vault == null)
+            {
+                _logger.LogInformation("Vault not found.");
+                serviceResponse.Message = "Vault not found.";
+                return serviceResponse;
+            }
 
             // Validate access permission
             var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(

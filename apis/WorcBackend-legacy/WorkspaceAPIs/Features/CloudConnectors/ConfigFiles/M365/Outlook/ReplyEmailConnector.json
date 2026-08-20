@@ -10,7 +10,7 @@
     {
       "direction": "Input",
       "type": "credentials-select",
-      "name": "__CredentialId__M365",
+      "name": "__CredentialName__M365",
       "label": "M365 Credential",
       "description": "Select Microsoft 365 credentials for authentication."
     },

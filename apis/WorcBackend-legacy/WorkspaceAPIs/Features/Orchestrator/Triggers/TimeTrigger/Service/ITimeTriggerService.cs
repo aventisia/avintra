@@ -41,6 +41,13 @@ public interface ITimeTriggerService
     Task<ServiceResponse<TimeTriggerDto>> GetTimeTriggerAsync(Guid timeTriggerId);
 
     /// <summary>
+    /// Retrieves a time trigger by its name within the current environment and tenant.
+    /// </summary>
+    /// <param name="triggerName">The name of the time trigger.</param>
+    /// <returns>A service response containing the trigger details.</returns>
+    Task<ServiceResponse<TimeTriggerDto>> GetTimeTriggerByNameAsync(string triggerName);
+
+    /// <summary>
     /// Updates an existing time trigger.
     /// </summary>
     /// <param name="triggerDto">The updated time trigger details.</param>

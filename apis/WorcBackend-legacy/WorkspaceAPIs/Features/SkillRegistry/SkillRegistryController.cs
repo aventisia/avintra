@@ -46,6 +46,13 @@ public class SkillRegistryController : BaseApiController
         return ResultHelper(await _skillRegistryService.GetSkillByIdAsync(skillId));
     }
 
+    // Retrieves a skill by its name within the current environment.
+    [HttpGet("by-name/{skillName}")]
+    public async Task<ActionResult<ServiceResponse<SkillDto>>> GetSkillByName(string skillName)
+    {
+        return ResultHelper(await _skillRegistryService.GetSkillByNameAsync(skillName));
+    }
+
     // Creates a new skill.
     [HttpPost]
     [Authorize(Roles = "SA,TA,OM")]

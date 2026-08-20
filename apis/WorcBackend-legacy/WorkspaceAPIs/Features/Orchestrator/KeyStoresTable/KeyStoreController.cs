@@ -47,7 +47,7 @@ public class KeyStoreController : BaseApiController
         return ResultHelper(await _keyStoreService.GetKeyStoreByIdAsync(keyStoreId));
     }
 
-    [HttpGet("name/{keyStoreName}")]
+    [HttpGet("by-name/{keyStoreName}")]
     public async Task<ActionResult<ServiceResponse<KeyStoreDto>>> GetKeyStoreByNameAsync(string keyStoreName)
     {
         return ResultHelper(await _keyStoreService.GetKeyStoreByNameAsync(keyStoreName));
@@ -86,5 +86,12 @@ public class KeyStoreController : BaseApiController
     public async Task<IActionResult> DecryptKeyStoreValue(Guid keyStoreId)
     {
         return ResultHelper(await _keyStoreService.DecryptKeyStoreValueAsync(keyStoreId));
+    }
+
+    // Decrypts the value of a key store by its name within the current environment.
+    [HttpGet("decrypt/by-name/{keyStoreName}")]
+    public async Task<IActionResult> DecryptKeyStoreValueByName(string keyStoreName)
+    {
+        return ResultHelper(await _keyStoreService.DecryptKeyStoreValueByNameAsync(keyStoreName));
     }
 }

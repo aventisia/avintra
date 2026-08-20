@@ -43,10 +43,10 @@ public class EmailConnectorsService : IEmailConnectorsService
         try
         {
             // Get Username and Password 
-            var emailCred = await GetEmailCredentialAsync(cloudConnectorReqDto.CredentialId);
+            var emailCred = await GetEmailCredentialAsync(cloudConnectorReqDto.CredentialName);
             if (emailCred == null)
             {
-                _logger.LogWarning("Failed to obtain Email credentials for Credential ID: {CredentialId}", cloudConnectorReqDto.CredentialId);
+                _logger.LogWarning("Failed to obtain Email credentials for Credential Name: {CredentialName}", cloudConnectorReqDto.CredentialName);
                 serviceResponse.Message = "Failed to retrieve Email Username and AppPassword.";
                 return serviceResponse;
             }
@@ -84,12 +84,13 @@ public class EmailConnectorsService : IEmailConnectorsService
 
 
     // Get Email Username  and Password.
-    private async Task<(string Username, string Password)?> GetEmailCredentialAsync(Guid credentialId)
+    // Get Email Username  and Password.
+    private async Task<(string Username, string Password)?> GetEmailCredentialAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialId);
+        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
         if (vaultCredential == null)
         {
-            _logger.LogWarning("Vault credential not found for ID: {CredentialId}", credentialId);
+            _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);
             return null;
         }
 
@@ -97,7 +98,7 @@ public class EmailConnectorsService : IEmailConnectorsService
             !vaultCredential.Data.TryGetValue("Username", out var usernameValue) ||
             !vaultCredential.Data.TryGetValue("Password", out var passwordValue))
         {
-            _logger.LogWarning("No 'Username' or 'Password' found in vault credential Data for ID: {CredentialId}", credentialId);
+            _logger.LogWarning("No 'Username' or 'Password' found in vault credential Data for Name: {CredentialName}", credentialName);
             return null;
         }
         string? username = usernameValue?.ToString();
@@ -105,7 +106,7 @@ public class EmailConnectorsService : IEmailConnectorsService
 
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
         {
-            _logger.LogWarning("Username or Password is null or whitespace for credential ID: {CredentialId}", credentialId);
+            _logger.LogWarning("Username or Password is null or whitespace for credential Name: {CredentialName}", credentialName);
             return null;
         }
         return (username, password);

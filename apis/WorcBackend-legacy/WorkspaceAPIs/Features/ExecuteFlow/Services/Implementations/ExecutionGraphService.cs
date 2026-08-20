@@ -68,6 +68,9 @@ public class ExecutionGraphService : IExecutionGraphService
                 ReactFlowObject = reactFlowObject,
                 InputOutputObject = flowVersion.InputOutputObject,
                 SubFlows = subFlows,
+                // Published agents run against production resources; unpublished/draft flows run
+                // against development resources.
+                EnvType = flowVersion.IsPublished ? "prod" : "dev",
             };
 
             serviceResponse.Data = dto;

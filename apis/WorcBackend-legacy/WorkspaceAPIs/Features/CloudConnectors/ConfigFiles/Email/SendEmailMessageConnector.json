@@ -10,7 +10,7 @@
     {
       "direction": "Input",
       "type": "credentials-select",
-      "name": "__CredentialId__GeneralCredential",
+      "name": "__CredentialName__GeneralCredential",
       "label": "Email Credential",
       "description": "The Email credential containing valid email and app password which is used to authenticate user requests.",
       "defaultValue": ""

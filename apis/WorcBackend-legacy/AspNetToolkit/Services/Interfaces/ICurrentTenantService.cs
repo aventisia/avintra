@@ -28,6 +28,12 @@ public interface ICurrentTenantService
     Guid CurrentSpaceId { get; set; }
 
     /// <summary>
+    /// Gets or sets the deployment environment for the current request.
+    /// Resolved from the "X-Env-Type" request header, defaulting to <see cref="ConfigureEnvironmentType.Dev"/> when absent.
+    /// </summary>
+    ConfigureEnvironmentType CurrentEnvType { get; set; }
+
+    /// <summary>
     /// Gets the container name associated with the current tenant.
     /// </summary>
     string CurrentTenantContainerName { get; }

@@ -40,10 +40,10 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
         try
         {
             // Get open Ai Credentials
-            var openAiCredentials = await GetOpenAICredentialsAsync(cloudConnectorReqDto.CredentialId);
+            var openAiCredentials = await GetOpenAICredentialsAsync(cloudConnectorReqDto.CredentialName);
             if (openAiCredentials == null)
             {
-                _logger.LogError("Failed to obtain Open AI credentials for Credential ID: {CredentialId}", cloudConnectorReqDto.CredentialId);
+                _logger.LogError("Failed to obtain Open AI credentials for Credential Name: {CredentialName}", cloudConnectorReqDto.CredentialName);
                 serviceResponse.Message = "Open Ai credentials not found";
                 return serviceResponse;
             }
@@ -130,9 +130,8 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
                 }
             }
 
-            // credential_id (if passed in payload, override or echo back)
-            string? payloadCredentialId = root.TryGetProperty("credential_id", out var credIdProp)
-                ? credIdProp.GetString() : null;
+            // credential_name (if passed in payload, override or echo back) - now carries the credential NAME
+            string? payloadCredentialName = ReadCredentialName(root) ?? cloudConnectorReqDto.CredentialName;
 
             // Build FINAL Payload for Internal LLM Pipeline API
             var llmPipelinePayload = new Dictionary<string, object>
@@ -145,7 +144,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
                 ["json_schema"] = jsonSchema,
                 ["max_output_tokens"] = maxOutputTokens,
                 ["is_byok_enabled"] = isByokEnabled,
-                ["credential_id"] = payloadCredentialId,
+                ["credential_name"] = payloadCredentialName,
                 ["temperature"] = temperature,
                 ["top_p"] = topP,
                 ["stream"] = stream
@@ -185,7 +184,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             var finalResponse = new JsonObject
             {
                 ["provider"] = provider.ToString().ToLowerInvariant(),
-                ["credential_id"] = payloadCredentialId,
+                ["credential_name"] = payloadCredentialName,
                 ["created_on"] = DateTime.UtcNow.ToString("o"),
                 ["action"] = cloudConnectorReqDto.Action
             };
@@ -223,32 +222,44 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
         }
         return serviceResponse;
     }
-    // Get openAi apikey from the vault credential id.
-    private async Task<(string ApiKey, string? Organization)?> GetOpenAICredentialsAsync(Guid credentialId)
+    // Get openAi apikey from the vault credential name.
+    private async Task<(string ApiKey, string? Organization)?> GetOpenAICredentialsAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialId);
+        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
         if (vaultCredential == null)
         {
-            _logger.LogWarning("Vault credential not found for ID: {CredentialId}", credentialId);
+            _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);
             return null;
         }
 
         if (vaultCredential.Data == null || !vaultCredential.Data.TryGetValue("ApiKey", out var apiKeyValue) ||
              apiKeyValue == null)
         {
-            _logger.LogWarning("No 'ApiKey' found in vault credential Data for ID: {CredentialId}", credentialId);
+            _logger.LogWarning("No 'ApiKey' found in vault credential Data for Name: {CredentialName}", credentialName);
             return null;
         }
         string? apiKey = apiKeyValue.ToString();
 
         if (string.IsNullOrWhiteSpace(apiKey))
         {
-            _logger.LogWarning("ApiKey is null or whitespace for credential ID: {CredentialId}", credentialId);
+            _logger.LogWarning("ApiKey is null or whitespace for credential Name: {CredentialName}", credentialName);
             return null;
         }
         string? organization = vaultCredential.Data.TryGetValue("Organization", out var orgObj)
          ? orgObj as string : null;
 
         return (apiKey, organization);
+    }
+
+    // Reads a credential reference from a JSON payload. Accepts the canonical
+    // "credential_name" key and the legacy "credential_id" key (Q12 back-compat).
+    private static string? ReadCredentialName(JsonElement root)
+    {
+        if (root.TryGetProperty("credential_name", out var nameProp))
+        {
+            var name = nameProp.GetString();
+            if (!string.IsNullOrWhiteSpace(name)) return name;
+        }
+        return null;
     }
 }

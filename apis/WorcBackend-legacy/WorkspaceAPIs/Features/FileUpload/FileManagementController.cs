@@ -55,8 +55,8 @@ public class UploadedDocController : BaseApiController
 
     // Get file data URL
     [HttpGet("data-uri")]
-    public async Task<ActionResult<ServiceResponse<string>>> GetDataUrl([FromQuery] Guid? credentialId, [FromQuery] string fileUrl)
+    public async Task<ActionResult<ServiceResponse<string>>> GetDataUrl([FromQuery] string? credentialName, [FromQuery] string fileUrl)
     {
-        return ResultHelper(await _fileUploadService.GetDataUrlAsync(credentialId, fileUrl));
+        return ResultHelper(await _fileUploadService.GetDataUrlAsync(credentialName, fileUrl));
     }
 }

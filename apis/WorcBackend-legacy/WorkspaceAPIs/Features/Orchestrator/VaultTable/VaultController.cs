@@ -40,6 +40,13 @@ public class VaultController : BaseApiController
         return ResultHelper(await _vaultService.GetVaultByIdAsync(vaultId));
     }
 
+    // Get a specific vault by name within the current environment
+    [HttpGet("by-name/{vaultName}")]
+    public async Task<ActionResult<ServiceResponse<VaultDto>>> GetVaultByNameAsync(string vaultName)
+    {
+        return ResultHelper(await _vaultService.GetVaultByNameAsync(vaultName));
+    }
+
     // Create a new vault
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<VaultDto>>> CreateVaultAsync([FromBody] VaultDto vaultDto)
@@ -73,5 +80,12 @@ public class VaultController : BaseApiController
     public async Task<IActionResult> RetrieveDecryptedVaultValue(Guid vaultId)
     {
         return ResultHelper(await _vaultService.RetrieveDecryptedVaultValueAsync(vaultId));
+    }
+
+    // Retrieves the decrypted values of a vault based on its name within the current environment.
+    [HttpGet("decrypt/by-name/{vaultName}")]
+    public async Task<IActionResult> RetrieveDecryptedVaultValueByName(string vaultName)
+    {
+        return ResultHelper(await _vaultService.RetrieveDecryptedVaultValueByNameAsync(vaultName));
     }
 }

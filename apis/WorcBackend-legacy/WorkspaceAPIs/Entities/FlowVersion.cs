@@ -87,6 +87,14 @@ public class FlowVersion : BaseEntity, IMustHaveTenant
     public double? FixedCredits { get; set; }
 
     /// <summary>
+    /// Gets or sets the resource references for this flow version as a JSON string.
+    /// Populated at publish time with the referenced resource NAMES keyed by resource type
+    /// (e.g. credentials, queues, knowledgeBases, tools, skills). All supported resource
+    /// types are always present; unreferenced types hold an empty array.
+    /// </summary>
+    public string? ResourceReferences { get; set; }
+
+    /// <summary>
     /// Configures the many-to-many relationship between machine flow and flow versions.
     /// </summary>
     public virtual ICollection<Machine_FlowVersion> FlowVersionMachines { get; set; } = new List<Machine_FlowVersion>();

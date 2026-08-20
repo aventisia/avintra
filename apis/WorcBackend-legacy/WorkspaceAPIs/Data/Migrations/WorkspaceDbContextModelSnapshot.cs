@@ -162,6 +162,12 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("EnvType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Dev");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -202,6 +208,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
+                        .IsUnique();
 
                     b.ToTable("AppSecrets");
                 });
@@ -572,6 +581,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("ReactFlowObject")
                         .HasColumnType("text");
 
+                    b.Property<string>("ResourceReferences")
+                        .HasColumnType("text");
+
                     b.Property<JsonDocument>("Settings")
                         .HasColumnType("jsonb");
 
@@ -884,6 +896,12 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("EnvType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Dev");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -930,6 +948,9 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
+                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
+                        .IsUnique();
+
                     b.ToTable("KeyStores");
                 });
 
@@ -964,6 +985,12 @@ namespace WorkspaceAPIs.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
+
+                    b.Property<string>("EnvType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Dev");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
@@ -1011,7 +1038,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("TenantId", "Name")
+                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
                         .IsUnique();
 
                     b.ToTable("worc_KBs");
@@ -1576,6 +1603,12 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("EnvType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Dev");
+
                     b.Property<string>("InputSchema")
                         .HasColumnType("text");
 
@@ -1645,6 +1678,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
+                        .IsUnique();
 
                     b.ToTable("Queues");
                 });
@@ -1860,6 +1896,12 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("EnvType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Dev");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -1905,7 +1947,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("TenantId", "Name")
+                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
                         .IsUnique();
 
                     b.ToTable("worc_Skills");
@@ -2641,6 +2683,12 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<string>("EnvType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Dev");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
@@ -2692,7 +2740,7 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("TenantId", "Name")
+                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
                         .IsUnique();
 
                     b.ToTable("ws_Tools");
@@ -2709,6 +2757,12 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.Property<DateTimeOffset>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EnvType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Dev");
 
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
@@ -2755,6 +2809,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
+                        .IsUnique();
 
                     b.ToTable("worc_Triggers");
                 });
@@ -2824,6 +2881,12 @@ namespace WorkspaceAPIs.Data.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("character varying(500)");
 
+                    b.Property<string>("EnvType")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("text")
+                        .HasDefaultValue("Dev");
+
                     b.Property<bool>("IsDisabled")
                         .HasColumnType("boolean");
 
@@ -2868,6 +2931,9 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.HasIndex("CreatedByUserId");
 
                     b.HasIndex("LastModifiedByUserId");
+
+                    b.HasIndex("TenantId", "SpaceId", "EnvType", "Name")
+                        .IsUnique();
 
                     b.ToTable("Vaults");
                 });

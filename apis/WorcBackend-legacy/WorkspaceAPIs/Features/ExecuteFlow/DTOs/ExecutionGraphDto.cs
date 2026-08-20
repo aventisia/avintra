@@ -10,6 +10,13 @@ public class ExecutionGraphDto
     public string ReactFlowObject { get; set; } = string.Empty;
     public string? InputOutputObject { get; set; }
     public List<SubFlowGraphDto> SubFlows { get; set; } = [];
+
+    /// <summary>
+    /// The deployment environment of the executing flow ("dev" or "prod"), derived from the
+    /// flow's publication status (published → "prod", otherwise "dev"). Consumed by the
+    /// desktop runner so nodes forward "X-Env-Type" and resolve resources in the same env.
+    /// </summary>
+    public string EnvType { get; set; } = "dev";
 }
 
 public class SubFlowGraphDto

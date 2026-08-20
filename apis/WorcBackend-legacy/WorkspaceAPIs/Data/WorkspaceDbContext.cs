@@ -91,7 +91,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Machine>().HasIndex(index => new { index.Name }).IsUnique();
         modelBuilder.Entity<SupportTicket>().HasIndex(index => index.TicketNumber).IsUnique();
         modelBuilder.Entity<Ticket>().HasIndex(index => index.TicketNumber).IsUnique();
-        modelBuilder.Entity<KnowledgeBase>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
+        modelBuilder.Entity<KnowledgeBase>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<KnowledgeBaseFile>().HasIndex(index => new { index.KnowledgeBaseId, index.FileName }).IsUnique();
         modelBuilder.Entity<ResourceShare>().HasIndex(index => new { index.ResourceId, index.UserId }).IsUnique();
         modelBuilder.Entity<ApiKey>().HasIndex(index => index.KeyHash).IsUnique();
@@ -101,10 +101,15 @@ public class WorkspaceDbContext : DbContext
         });
         modelBuilder.Entity<ApiKey>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<ApiKey>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
-        modelBuilder.Entity<Skill>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
+        modelBuilder.Entity<Skill>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<SkillFile>().HasIndex(index => new { index.SkillId, index.FileName }).IsUnique();
-        modelBuilder.Entity<Tool>().HasIndex(index => new { index.TenantId, index.Name }).IsUnique();
+        modelBuilder.Entity<Tool>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
         modelBuilder.Entity<FlowVersion_Tool>().HasIndex(index => new { index.TenantId, index.FlowVersionId, index.ToolId }).IsUnique();
+        modelBuilder.Entity<Queue>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
+        modelBuilder.Entity<KeyStore>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
+        modelBuilder.Entity<Vault>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
+        modelBuilder.Entity<AppSecret>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
+        modelBuilder.Entity<Trigger>().HasIndex(index => new { index.TenantId, index.SpaceId, index.EnvType, index.Name }).IsUnique();
 
         // Enum to string conversion
         modelBuilder.Entity<Notification>().Property(e => e.Type).HasConversion(new EnumToStringConverter<NotificationTypesEnum>());
@@ -126,8 +131,13 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<QueueFlowVersion>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<QueueWorkItemAccessTypesEnum>());
         modelBuilder.Entity<KeyStore>().Property(e => e.Type).HasConversion(new EnumToStringConverter<KeyStoreTypesEnum>());
         modelBuilder.Entity<KeyStore>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<AccessLevelTypesEnum>());
+        modelBuilder.Entity<KeyStore>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<TimeTrigger>().Property(e => e.Frequency).HasConversion(new EnumToStringConverter<TriggerFrequencyTypesEnum>());
         modelBuilder.Entity<Trigger>().Property(e => e.TriggerType).HasConversion(new EnumToStringConverter<TriggerTypesEnum>());
+        modelBuilder.Entity<Trigger>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
+        modelBuilder.Entity<Queue>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
+        modelBuilder.Entity<Vault>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
+        modelBuilder.Entity<AppSecret>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<FlowUser>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ProjectUserAccessEnum>());
         modelBuilder.Entity<AppSecret>().Property(e => e.Type).HasConversion(new EnumToStringConverter<AppSecretTypesEnum>());
         modelBuilder.Entity<Job>().Property(e => e.Status).HasConversion(new EnumToStringConverter<JobStatusEnum>());
@@ -149,13 +159,16 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusEnum>());
         modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageSenderEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());
+        modelBuilder.Entity<KnowledgeBase>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<KnowledgeBaseFile>().Property(e => e.Status).HasConversion(new EnumToStringConverter<VectorizationStatusEnum>());
         modelBuilder.Entity<PromptTemplate>().Property(e => e.AccessType).HasConversion(new EnumToStringConverter<PromptTemplateAccessTypeEnum>());
         modelBuilder.Entity<ResourceShare>().Property(e => e.AccessLevel).HasConversion(new EnumToStringConverter<ResourceAccessTypeEnum>());
         modelBuilder.Entity<ResourceShare>().Property(e => e.ResourceType).HasConversion(new EnumToStringConverter<ResourceTypeEnum>());
         modelBuilder.Entity<Skill>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ComponentTypeEnum>());
+        modelBuilder.Entity<Skill>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
         modelBuilder.Entity<Tool>().Property(e => e.Type).HasConversion(new EnumToStringConverter<ComponentTypeEnum>());
         modelBuilder.Entity<Tool>().Property(e => e.AuthenticationType).HasConversion(new EnumToStringConverter<ToolAuthenticationTypeEnum>());
+        modelBuilder.Entity<Tool>().Property(e => e.EnvType).HasConversion(new EnumToStringConverter<ConfigureEnvironmentType>()).HasDefaultValue(ConfigureEnvironmentType.Dev);
 
         // Ticket enum to string conversion
         modelBuilder.Entity<Ticket>().Property(e => e.RequestType).HasConversion(new EnumToStringConverter<RequestTypeEnum>());
