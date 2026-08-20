@@ -14,6 +14,7 @@ import {
   MonitorCheck,
   MonitorCog,
   MousePointerClick,
+  Puzzle,
   SquareFunction,
   TimerReset,
   Webhook,
@@ -37,6 +38,7 @@ export const iconMapper: { [key: string]: JSX.Element } = {
   DataTransformationsIcon: (
     <NodesCategoryL1Icon Icon={DatabaseZap} className="h-5 w-5 text-primary" />
   ),
+  CustomNodesIcon: <NodesCategoryL1Icon Icon={Puzzle} className="h-5 w-5 text-primary" />,
   AutomationEssentialsIcon: (
     <NodesCategoryL1Icon Icon={SquareFunction} className="h-5 w-5 text-primary" />
   ),

@@ -1,4 +1,5 @@
 import { ScrollArea } from "@avplatform/ui/scroll";
+import { cn } from "@avplatform/ui/lib";
 import { KeyboardEvent, useEffect, useRef, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
@@ -57,6 +58,7 @@ export const PrimaryCategoryList = ({ inputRef, firstItemRef }: PrimaryCategoryL
       }
     } else if (e.key === "Enter") {
       e.preventDefault();
+      if (actionSelectorData[index].disabled) return;
       setPrimaryCategoryLabel(actionSelectorData[index].label);
       return;
     }
@@ -70,24 +72,36 @@ export const PrimaryCategoryList = ({ inputRef, firstItemRef }: PrimaryCategoryL
   return (
     <ScrollArea className="h-full bg-background p-3">
       <div className="grid grid-cols-2 gap-3 pb-4" role="grid" aria-label="Primary Categories">
-        {actionSelectorData.map((item, index) => (
-          <button
-            key={item.label}
-            ref={(el) => {
-              gridRefs.current[index] = el;
-              if (index === 0) firstItemRef.current = el;
-            }}
-            role="gridcell"
-            tabIndex={activeIndex === index ? 0 : -1}
-            onClick={() => setPrimaryCategoryLabel(item.label)}
-            onKeyDown={(e) => handleKeyDown(e, index)}
-            onFocus={() => setActiveIndex(index)}
-            className="group flex h-48 w-full flex-col justify-between rounded-2xl border border-indigo-100 p-4 text-left text-foreground outline-none transition-all hover:border-primary focus-visible:border-primary"
-            aria-label={`Select ${item.label}`}
-          >
-            <PrimaryCategory data={item} />
-          </button>
-        ))}
+        {actionSelectorData.map((item, index) => {
+          const isDisabled = item.disabled;
+          return (
+            <button
+              key={item.label}
+              ref={(el) => {
+                gridRefs.current[index] = el;
+                if (index === 0) firstItemRef.current = el;
+              }}
+              role="gridcell"
+              tabIndex={isDisabled ? -1 : activeIndex === index ? 0 : -1}
+              disabled={isDisabled}
+              onClick={() => {
+                if (isDisabled) return;
+                setPrimaryCategoryLabel(item.label);
+              }}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              onFocus={() => !isDisabled && setActiveIndex(index)}
+              className={cn(
+                "group flex h-48 w-full flex-col justify-between rounded-2xl border p-4 text-left text-foreground outline-none transition-all",
+                isDisabled
+                  ? "cursor-not-allowed border-border bg-muted/30 opacity-70"
+                  : "cursor-pointer border-indigo-100 bg-background shadow-sm hover:-translate-y-0.5 hover:border-primary hover:shadow-md focus-visible:border-primary",
+              )}
+              aria-label={`Select ${item.label}`}
+            >
+              <PrimaryCategory data={item} />
+            </button>
+          );
+        })}
       </div>
     </ScrollArea>
   );

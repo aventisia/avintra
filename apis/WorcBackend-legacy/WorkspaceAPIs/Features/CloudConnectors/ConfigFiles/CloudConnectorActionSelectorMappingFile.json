@@ -1,8 +1,9 @@
 [
   {
-    "label": "Data Engineering",
-    "description": "Clean, transform, aggregate, and structure your data with ease",
-    "icon": "DataTransformationsIcon",
+    "label": "Custom Nodes",
+    "description": "Create and use custom nodes to extend your automation beyond the built-in set",
+    "icon": "CustomNodesIcon",
+    "disabled": true,
     "img": null,
     "actionCategories": []
   },

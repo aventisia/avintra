@@ -141,6 +141,7 @@
             "name": "CallAgentNode",
             "label": "Call Agent",
             "description": "Use this to call another agent within the current agent",
+            "icon": "CallAgentIcon",
             "img": "CallAgentIcon",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["cloud", "windows"]
@@ -150,6 +151,7 @@
             "name": "CallBlockNode",
             "label": "Call Block",
             "description": "Use to add custom block",
+            "icon": "BlockNodeIcon",
             "img": "BlockNodeIcon",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["cloud", "windows"]
