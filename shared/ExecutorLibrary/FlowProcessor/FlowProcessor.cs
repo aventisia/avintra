@@ -853,7 +853,10 @@ public class FlowProcessor
                 throw new InvalidOperationException($"Loop node '{parentNodeId}' exceeded maximum allowed iterations of {_maxLoopIterations}.");
             }
 
-            if (loopState.CurrentIteration < loopState.MaxIterations)
+            // While-loop (ConditionalLoop) semantics: re-evaluate the configured condition
+            // against the live context after each pass through the body. Exit the loop when
+            // the condition becomes false (or is missing/empty).
+            if (EvaluateLoopCondition(parentNode, flowExecutionContext))
             {
                 return loopState.LoopBodyStartNodeId;
             }
@@ -871,94 +874,167 @@ public class FlowProcessor
         FlowExecutionContext flowExecutionContext,
         Dictionary<string, LoopState> loopStates)
     {
-        if (!loopStates.TryGetValue(node.Id, out var loopState))
+        if (loopStates.TryGetValue(node.Id, out var existing))
         {
-            var mergeNodeId = node.Data.MergeBranchesNodeId;
-            if (string.IsNullOrWhiteSpace(mergeNodeId))
-            {
-                throw new InvalidOperationException($"For loop node '{node.Id}' is missing merge node id.");
-            }
-
-            var bodyStartNodeId = ResolveLoopBodyStartNodeId(node, flow, mergeNodeId);
-
-            var loopType = node.Data?.Inputs?.FirstOrDefault(i =>
-                string.Equals(i.Key, "LoopType", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "for";
-
-            if (string.Equals(loopType, "ForEachLoop", StringComparison.OrdinalIgnoreCase))
-            {
-                var listVarName = node.Data?.Inputs?.FirstOrDefault(i =>
-                    string.Equals(i.Key, "ListVariableName", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? string.Empty;
-
-                // ItemVariableName / ItemIndexVariableName are declared on the loop node's
-                // outputs (each output.Value.Value holds the variable alias, e.g. "CurrentItem").
-                var itemVarName = GetLoopOutputAlias(node, "ItemVariableName");
-
-                var indexVarName = GetLoopOutputAlias(node, "ItemIndexVariableName");
-
-                var totalCount = 0;
-                if (TryResolveForEachList(flowExecutionContext, listVarName, out var enumerable))
-                {
-                    var list = enumerable.Cast<object?>().ToList();
-                    totalCount = list.Count;
-
-                    if (totalCount > 0)
-                    {
-                        if (!string.IsNullOrWhiteSpace(itemVarName))
-                            flowExecutionContext.Set(itemVarName, list[0]);
-                        if (!string.IsNullOrWhiteSpace(indexVarName))
-                            flowExecutionContext.Set(indexVarName, 0);
-                    }
-                }
-
-                loopState = new LoopState
-                {
-                    Id = node.Id,
-                    LoopType = "ForEachLoop",
-                    MergeBranchesNodeId = mergeNodeId,
-                    LoopBodyStartNodeId = bodyStartNodeId,
-                    MaxIterations = totalCount,
-                    CurrentIteration = 0,
-                    CurrentIndex = 0,
-                    TotalCount = totalCount,
-                    ListVariableName = listVarName,
-                    ItemVariableName = itemVarName,
-                    ItemIndexVariableName = indexVarName
-                };
-            }
-            else
-            {
-                var maxIterations = 5;
-                if (maxIterations < 0)
-                {
-                    throw new InvalidOperationException($"For loop node '{node.Id}' has invalid negative iteration count.");
-                }
-
-                if (maxIterations > _maxLoopIterations)
-                {
-                    throw new InvalidOperationException($"For loop node '{node.Id}' exceeds maximum configured loop iteration cap of {_maxLoopIterations}.");
-                }
-
-                loopState = new LoopState
-                {
-                    Id = node.Id,
-                    LoopType = "for",
-                    MergeBranchesNodeId = mergeNodeId,
-                    LoopBodyStartNodeId = bodyStartNodeId,
-                    MaxIterations = maxIterations,
-                    CurrentIteration = 0
-                };
-            }
-
-            loopStates[node.Id] = loopState;
+            // Already initialized: only re-enter the body if the loop has not been closed.
+            return existing.LoopBodyStartNodeId;
         }
 
-        if (loopState.MaxIterations == 0)
+        var mergeNodeId = node.Data.MergeBranchesNodeId;
+        if (string.IsNullOrWhiteSpace(mergeNodeId))
+        {
+            throw new InvalidOperationException($"For loop node '{node.Id}' is missing merge node id.");
+        }
+
+        var bodyStartNodeId = ResolveLoopBodyStartNodeId(node, flow, mergeNodeId);
+
+        var loopType = node.Data?.Inputs?.FirstOrDefault(i =>
+            string.Equals(i.Key, "LoopType", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? "ConditionalLoop";
+
+        if (string.Equals(loopType, "ForEachLoop", StringComparison.OrdinalIgnoreCase))
+        {
+            var listVarName = node.Data?.Inputs?.FirstOrDefault(i =>
+                string.Equals(i.Key, "ListVariableName", StringComparison.OrdinalIgnoreCase))?.Value?.ToString() ?? string.Empty;
+
+            // ItemVariableName / ItemIndexVariableName are declared on the loop node's
+            // outputs (each output.Value.Value holds the variable alias, e.g. "CurrentItem").
+            var itemVarName = GetLoopOutputAlias(node, "ItemVariableName");
+            var indexVarName = GetLoopOutputAlias(node, "ItemIndexVariableName");
+
+            var totalCount = 0;
+            if (TryResolveForEachList(flowExecutionContext, listVarName, out var enumerable))
+            {
+                var list = enumerable.Cast<object?>().ToList();
+                totalCount = list.Count;
+
+                if (totalCount > 0)
+                {
+                    if (!string.IsNullOrWhiteSpace(itemVarName))
+                        flowExecutionContext.Set(itemVarName, list[0]);
+                    if (!string.IsNullOrWhiteSpace(indexVarName))
+                        flowExecutionContext.Set(indexVarName, 0);
+                }
+            }
+
+            var forEachState = new LoopState
+            {
+                Id = node.Id,
+                LoopType = "ForEachLoop",
+                MergeBranchesNodeId = mergeNodeId,
+                LoopBodyStartNodeId = bodyStartNodeId,
+                CurrentIteration = 0,
+                CurrentIndex = 0,
+                TotalCount = totalCount,
+                ListVariableName = listVarName,
+                ItemVariableName = itemVarName,
+                ItemIndexVariableName = indexVarName
+            };
+            loopStates[node.Id] = forEachState;
+
+            // Nothing to iterate over: skip the loop entirely.
+            if (totalCount == 0)
+            {
+                loopStates.Remove(node.Id);
+                return mergeNodeId;
+            }
+
+            return bodyStartNodeId;
+        }
+
+        // ConditionalLoop (while mode): the body runs while the configured condition
+        // evaluates to true. The condition is re-evaluated against the live context on every
+        // iteration (both on entry and when the loop body completes), matching the legacy
+        // executor. There is no fixed iteration count — _maxLoopIterations is only a runaway
+        // safety guard.
+        var conditionMet = EvaluateLoopCondition(node, flowExecutionContext);
+
+        var whileState = new LoopState
+        {
+            Id = node.Id,
+            LoopType = "ConditionalLoop",
+            MergeBranchesNodeId = mergeNodeId,
+            LoopBodyStartNodeId = bodyStartNodeId,
+            CurrentIteration = 0
+        };
+        loopStates[node.Id] = whileState;
+
+        if (!conditionMet)
         {
             loopStates.Remove(node.Id);
-            return loopState.MergeBranchesNodeId;
+            return mergeNodeId;
         }
 
-        return loopState.LoopBodyStartNodeId;
+        return bodyStartNodeId;
+    }
+
+    /// <summary>
+    /// Reads the raw condition groups declared on a ConditionalLoop node's "Conditions" input and
+    /// evaluates them against the live execution context. The raw input is re-read on every call so
+    /// template placeholders are re-resolved against the latest context each iteration (matching the
+    /// legacy executor). Non-template literal strings are type-inferred so numeric, boolean, and date
+    /// comparisons behave correctly. Returns false when the input is absent, empty, or malformed.
+    /// </summary>
+    private static bool EvaluateLoopCondition(
+        ReactFlowNodeModel node,
+        FlowExecutionContext flowExecutionContext)
+    {
+        var conditionsInput = node.Data?.Inputs?.FirstOrDefault(i =>
+            string.Equals(i.Key, "Conditions", StringComparison.OrdinalIgnoreCase));
+
+        if (conditionsInput?.Value is null)
+        {
+            return false;
+        }
+
+        List<List<ResolvedConditionModel>>? conditionGroups = null;
+
+        if (conditionsInput.Value is JsonElement jsonElement)
+        {
+            try
+            {
+                conditionGroups = JsonSerializer.Deserialize<List<List<ResolvedConditionModel>>>(
+                    jsonElement.GetRawText(), s_caseInsensitiveConditionOptions);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        else if (conditionsInput.Value is List<List<ResolvedConditionModel>> typedGroups)
+        {
+            conditionGroups = typedGroups;
+        }
+
+        if (conditionGroups is null || conditionGroups.Count == 0)
+        {
+            return false;
+        }
+
+        foreach (var group in conditionGroups)
+        {
+            if (group is null)
+                continue;
+
+            foreach (var condition in group)
+            {
+                if (condition is null)
+                    continue;
+
+                var rawFirst = condition.FirstValue?.ToString();
+                var rawSecond = condition.SecondValue?.ToString();
+
+                condition.FirstValue = flowExecutionContext.ResolveTemplateObject(condition.FirstValue);
+                condition.SecondValue = flowExecutionContext.ResolveTemplateObject(condition.SecondValue);
+
+                if (condition.FirstValue is string s1 && rawFirst is not null && !rawFirst.Trim().StartsWith("{{"))
+                    condition.FirstValue = InferType(s1);
+
+                if (condition.SecondValue is string s2 && rawSecond is not null && !rawSecond.Trim().StartsWith("{{"))
+                    condition.SecondValue = InferType(s2);
+            }
+        }
+
+        return ConditionEvaluator.Evaluate(conditionGroups);
     }
 
     /// <summary>

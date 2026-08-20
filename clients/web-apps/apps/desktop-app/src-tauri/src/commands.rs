@@ -1,10 +1,16 @@
 use serde::Serialize;
 use std::fs::OpenOptions;
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
 use std::path::PathBuf;
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Duration;
+
+/// Creation flag that prevents a console window from being created for a
+/// console-subsystem process (used to hide the RunnerApp's black terminal).
+const CREATE_NO_WINDOW: u32 = 0x0800_0000;
 
 static RUNNER_ACTIVE: AtomicBool = AtomicBool::new(false);
 static LAST_RUNNER_CHILD: std::sync::LazyLock<Arc<Mutex<Option<Child>>>> =
@@ -72,6 +78,11 @@ pub fn launch_runner_app(
     // console output visible when debugging a run.
     cmd.stdout(Stdio::from(open_runner_log()?))
         .stderr(Stdio::from(open_runner_log()?));
+
+    // Hide the runner's console window so the black terminal doesn't flash on
+    // screen when the executor launches from the desktop app.
+    #[cfg(windows)]
+    cmd.creation_flags(CREATE_NO_WINDOW);
 
     // Spawn and clear the guard if the process fails to start. If it succeeds,
     // spawn a background thread that waits for the child to exit and then clears

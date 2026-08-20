@@ -1,4 +1,6 @@
-﻿namespace NodeLibrary.ExcelNodes;
+﻿using NodeLibrary.Helpers;
+
+namespace NodeLibrary.ExcelNodes;
 
 [DisplayName("Open Excel Workbook"), Description("Opens or reuses an Excel workbook in an existing Excel instance by workbook name.")]
 [NodeMetadata(icon: "/assets/Excel.svg")]
@@ -26,7 +28,6 @@ public class OpenWorkbookNode : BaseNode
             dynamic excelApp = ExcelInstance.Get(context);
             var workbookName = WorkbookName.Get(context);
             var readOnly = OpenAsReadOnly.Get(context);
-            var password = ReadProtectionPassword.Get(context);
             dynamic? workbook = null;
 
             if (excelApp == null)
@@ -51,11 +52,14 @@ public class OpenWorkbookNode : BaseNode
                 }
             }
 
-            workbook = workbooks.Open(
-                workbookName,
-                ReadOnly: readOnly,
-                Password: password
-            );
+            var openPassword = SecureStringHelper.ConvertSecureStringToString(ReadProtectionPassword.Get(context) ?? new SecureString());
+
+            // Only supply the password argument to COM when a value was actually provided.
+            // Passing null/empty SecureString to a late-bound COM call can fail with
+            // "Could not convert argument N for call to Open".
+            workbook = string.IsNullOrEmpty(openPassword)
+                ? workbooks.Open(workbookName, ReadOnly: readOnly)
+                : workbooks.Open(workbookName, ReadOnly: readOnly, Password: openPassword);
 
             WorkbookInstance.Set(context, workbook);
             IsSuccess.Set(context, true);

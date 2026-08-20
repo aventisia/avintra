@@ -66,9 +66,9 @@ export interface LLMRequestDto {
   is_byok_enabled?: boolean;
 
   /**
-   * Optional credential ID for BYOK.
+   * Optional credential name for BYOK.
    */
-  credential_id?: string | null;
+  credential_name?: string | null;
 
   /**
    * Temperature setting for the model.
