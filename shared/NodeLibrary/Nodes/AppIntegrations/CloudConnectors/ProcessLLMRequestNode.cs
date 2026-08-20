@@ -120,7 +120,7 @@ public class ProcessLLMRequestNode : BaseNode
             var responseContent = await response.Content.ReadAsStringAsync();
 
             using var responseDoc = JsonDocument.Parse(responseContent);
-            Result.Set(context, responseDoc.RootElement.Clone());
+            Result.Set(context, NormalizeJsonOutput(responseDoc.RootElement.Clone(), GetBoolProperty(modelConfig, "is_json_output") ?? false));
             StatusMessage.Set(context, "Request processed successfully.");
             IsSuccess.Set(context, true);
         }
@@ -201,6 +201,53 @@ public class ProcessLLMRequestNode : BaseNode
             JsonValueKind.Null or JsonValueKind.Undefined => null,
             _ => null,
         };
+    }
+
+    /// <summary>
+    /// The LLM pipeline returns the model answer in the response's "output" property as a
+    /// JSON-encoded string (double-encoded) whenever is_json_output is enabled. Downstream
+    /// expression resolution (DynamicExpresso dot-notation, e.g. {{result.output.supplier_name}})
+    /// treats that member as a plain string, so property access fails. This method parses the
+    /// "output" string back into a structured JSON object (or array) and replaces it in place,
+    /// keeping the rest of the response shape (provider, model, status, usage, ...) untouched.
+    /// When the output is not JSON-shaped, or is_json_output is disabled, the response is returned
+    /// unchanged.
+    /// </summary>
+    private static JsonElement NormalizeJsonOutput(JsonElement root, bool isJsonOutput)
+    {
+        if (!isJsonOutput || root.ValueKind != JsonValueKind.Object)
+        {
+            return root;
+        }
+
+        if (!root.TryGetProperty("output", out var outputProp) ||
+            outputProp.ValueKind != JsonValueKind.String)
+        {
+            return root;
+        }
+
+        var rawOutput = outputProp.GetString();
+        if (string.IsNullOrWhiteSpace(rawOutput))
+        {
+            return root;
+        }
+
+        JsonElement parsed;
+        try
+        {
+            using var parsedDoc = JsonDocument.Parse(rawOutput);
+            parsed = parsedDoc.RootElement.Clone();
+        }
+        catch (JsonException)
+        {
+            // The output string is not valid JSON (e.g. plain text) — leave the response unchanged.
+            return root;
+        }
+
+        var outputDictionary = root.EnumerateObject()
+            .ToDictionary(p => p.Name, p => p.Value.Clone(), StringComparer.OrdinalIgnoreCase);
+        outputDictionary["output"] = parsed;
+        return JsonDocument.Parse(JsonSerializer.Serialize(outputDictionary)).RootElement.Clone();
     }
 
     private static List<string>? GetStringArrayProperty(JsonElement element, string propertyName)
