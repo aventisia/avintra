@@ -1,5 +1,5 @@
 
-The **Support** page (under Tenant Admin) lets you raise and track support tickets. Get help from the Avintra team when you need it.
+The **Support** page lets you raise and track support tickets. Get help from the Avintra team when you need it.
 
 ## Purpose
 

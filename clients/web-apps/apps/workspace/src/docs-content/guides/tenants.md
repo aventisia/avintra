@@ -1,5 +1,5 @@
 
-The **Tenants** page (under Super Admin) lets you view and manage all tenants in the deployment. This is a platform-level view.
+The **Tenants** page lets you view and manage all tenants in the deployment. This is a platform-level view.
 
 ## Purpose
 

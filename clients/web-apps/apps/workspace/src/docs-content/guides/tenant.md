@@ -1,5 +1,5 @@
 
-The **Tenant** page (under Tenant Admin) shows your tenant's profile and settings. Use it to manage your organization's account details.
+The **Tenant** page shows your tenant's profile and settings. Use it to manage your organization's account details.
 
 ## Purpose
 

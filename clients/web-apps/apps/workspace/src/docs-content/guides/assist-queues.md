@@ -1,4 +1,3 @@
-
 The **Queues** page shows all the Queues you have access to and the work items in those queues. Process each item, view its details and timeline, and complete or escalate it as needed.
 
 ## Purpose
