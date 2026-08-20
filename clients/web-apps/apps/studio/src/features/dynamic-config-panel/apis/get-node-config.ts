@@ -1,7 +1,4 @@
-import { IS_TAURI } from "@avplatform/ui/constants";
 import { axiosInstance } from "@avplatform/ui/lib";
-
-import { loadJsonFromTauriResources } from "@/utils/tauri-resource-loader";
 
 import { DCPFieldSchemaType } from "..";
 
@@ -50,18 +47,7 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
   }
 
   if (nodeUniqueName.length > 9 && nodeUniqueName.slice(-9) === "Connector") {
-    // For Cloud Connectors, first attempt to load from Tauri resources (if in Tauri), then fall back to API fetch
-    if (IS_TAURI) {
-      try {
-        return await loadJsonFromTauriResources<DCPFieldSchemaType[]>(
-          `cloud-connectors/${nodeUniqueName}.json`,
-        );
-      } catch (error) {
-        console.error(`Cloud Connector ${nodeUniqueName} load error from Tauri resources:`, error);
-      }
-    }
-
-    // If not in Tauri or if loading from Tauri failed, attempt to fetch from API
+    // For Cloud Connectors, fetch the config from the WorkspaceAPIs server
     try {
       const connectorConfig = await axiosInstance
         .get(
@@ -75,17 +61,6 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
       }
     } catch (error) {
       console.error(`Cloud Connector ${nodeUniqueName} fetch error:`, error);
-    }
-  }
-
-  // For regular desktop nodes in Tauri, load from bundled resources
-  if (IS_TAURI) {
-    try {
-      return await loadJsonFromTauriResources<DCPFieldSchemaType[]>(
-        `desktop-nodes/${nodeUniqueName}.json`,
-      );
-    } catch (error) {
-      console.error(`Config load error for ${nodeUniqueName} from Tauri resources:`, error);
     }
   }
 
