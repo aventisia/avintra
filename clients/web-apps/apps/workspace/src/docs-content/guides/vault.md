@@ -1,4 +1,3 @@
-# Vault
 
 The **Vault** page lets you store and manage encrypted secrets that are protected and audited. Use the Vault for sensitive credentials that should not be stored in plain text.
 

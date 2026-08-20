@@ -1,4 +1,3 @@
-# Tools
 
 The **Tools** page lets you create and manage tools that connect agents to external systems and APIs. Configure a tool with its endpoint, authentication, and schema, then call it from a node in your agent.
 

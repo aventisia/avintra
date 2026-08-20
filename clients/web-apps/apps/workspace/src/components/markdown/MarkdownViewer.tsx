@@ -17,8 +17,8 @@ const MarkdownViewer = ({
     // Headers with custom styling
     h1: ({ children }) => (
       <h2
-        className={`mb-4 border-b border-gray-300 pb-1 font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100 ${
-          compact ? "mt-3 text-xl" : "mt-10 text-3xl"
+        className={`border-b border-gray-300 pb-1 font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100 ${
+          compact ? "mb-2 mt-2 text-base" : "mb-4 mt-10 text-3xl"
         }`}
       >
         {children}
@@ -26,8 +26,8 @@ const MarkdownViewer = ({
     ),
     h2: ({ children }) => (
       <h2
-        className={`mb-4 border-b border-gray-300 pb-1 font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100 ${
-          compact ? "mt-3 text-xl" : "mt-10 text-3xl"
+        className={`border-b border-gray-300 pb-1 font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100 ${
+          compact ? "mb-2 mt-2 text-base" : "mb-4 mt-10 text-3xl"
         }`}
       >
         {children}
@@ -35,8 +35,8 @@ const MarkdownViewer = ({
     ),
     h3: ({ children }) => (
       <h3
-        className={`mb-3 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
-          compact ? "mt-3 text-lg" : "mt-8 text-2xl"
+        className={`mb-2 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
+          compact ? "mt-2 text-base" : "mt-8 text-2xl"
         }`}
       >
         {children}
@@ -44,8 +44,8 @@ const MarkdownViewer = ({
     ),
     h4: ({ children }) => (
       <h4
-        className={`mb-3 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
-          compact ? "mt-2 text-base" : "mt-7 text-xl"
+        className={`mb-2 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
+          compact ? "mt-2 text-sm" : "mt-7 text-xl"
         }`}
       >
         {children}
@@ -53,7 +53,7 @@ const MarkdownViewer = ({
     ),
     h5: ({ children }) => (
       <h5
-        className={`mb-2 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
+        className={`mb-1 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
           compact ? "mt-2 text-sm" : "mt-6 text-lg"
         }`}
       >
@@ -62,7 +62,7 @@ const MarkdownViewer = ({
     ),
     h6: ({ children }) => (
       <h6
-        className={`mb-2 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
+        className={`mb-1 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
           compact ? "mt-2 text-sm" : "mt-5 text-base"
         }`}
       >
@@ -71,7 +71,13 @@ const MarkdownViewer = ({
     ),
     // Paragraphs
     p: ({ children }) => (
-      <p className="not-first:mt-6 leading-7 text-gray-700 dark:text-gray-300">{children}</p>
+      <p
+        className={`text-gray-700 dark:text-gray-300 ${
+          compact ? "not-first:mt-2 text-[0.8125rem] leading-5" : "not-first:mt-6 leading-7"
+        }`}
+      >
+        {children}
+      </p>
     ),
 
     // Strong text
@@ -134,13 +140,27 @@ const MarkdownViewer = ({
     ),
 
     // Lists
-    ul: ({ children }) => <ul className="not-first:mt-6 list-disc space-y-2">{children}</ul>,
-    ol: ({ children }) => <ol className="not-first:mt-6 list-decimal space-y-2">{children}</ol>,
-    li: ({ children }) => <li className="my-2 dark:text-gray-300">{children}</li>,
+    ul: ({ children }) => (
+      <ul className={`list-disc ${compact ? "not-first:mt-2 space-y-1" : "not-first:mt-6 space-y-2"}`}>
+        {children}
+      </ul>
+    ),
+    ol: ({ children }) => (
+      <ol className={`list-decimal ${compact ? "not-first:mt-2 space-y-1" : "not-first:mt-6 space-y-2"}`}>
+        {children}
+      </ol>
+    ),
+    li: ({ children }) => (
+      <li className={`dark:text-gray-300 ${compact ? "my-0" : "my-2"}`}>{children}</li>
+    ),
 
     // Blockquotes (for callouts/notes)
     blockquote: ({ children }) => (
-      <div className="mt-6 flex overflow-x-auto rounded-lg border border-blue-200 bg-blue-100 py-2 pe-4 text-blue-900 dark:border-blue-200/30 dark:bg-blue-900/30 dark:text-blue-200">
+      <div
+        className={`flex overflow-x-auto rounded-lg border border-blue-200 bg-blue-100 py-2 pe-4 text-blue-900 dark:border-blue-200/30 dark:bg-blue-900/30 dark:text-blue-200 ${
+          compact ? "mt-2 text-[0.8125rem]" : "mt-6"
+        }`}
+      >
         <div className="w-full min-w-0 leading-7">{children}</div>
       </div>
     ),

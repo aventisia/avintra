@@ -1,4 +1,3 @@
-# Users
 
 The **Users** page (under Tenant Admin) lets you invite, manage, and remove users, and assign roles and permissions.
 

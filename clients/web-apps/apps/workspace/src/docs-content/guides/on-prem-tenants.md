@@ -1,4 +1,3 @@
-# On-prem Tenants
 
 The **On-prem Tenants** page (under Global Admin) lets you view and manage on-premises tenant instances and their data.
 

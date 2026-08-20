@@ -1,4 +1,3 @@
-# Spaces
 
 The **Spaces** page (under Tenant Admin) lets you organize users and resources into spaces. Spaces group related work so you can manage access and resources more easily.
 

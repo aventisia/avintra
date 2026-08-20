@@ -1,4 +1,3 @@
-# Published Agents
 
 The **Published Agents** page (under Orchestrator) shows the agents that are live in production. Once you publish an agent from the **Agents** editor, it appears here and can be executed.
 

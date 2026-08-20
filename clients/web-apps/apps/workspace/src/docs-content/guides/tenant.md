@@ -1,4 +1,3 @@
-# Tenant
 
 The **Tenant** page (under Tenant Admin) shows your tenant's profile and settings. Use it to manage your organization's account details.
 

@@ -1,4 +1,3 @@
-# Library
 
 The **Library** is a collection of reusable templates and components you can use to start new agents quickly. Templates encapsulate proven patterns so you don't have to build common workflows from scratch.
 
