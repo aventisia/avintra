@@ -40,10 +40,10 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
     """
     Decide which credentials to use for a provider call.
 
-    - BYOK enabled with a valid credential_id: fetch those credentials from the
-      vault and use them exclusively — never the env. The request is a BYOK
-      request, so no platform credits apply.
-    - BYOK disabled (or null/default credential_id): return an empty kwargs dict
+    - BYOK enabled with a valid credential reference: fetch those credentials
+      from the vault and use them exclusively — never the env. The request is
+      a BYOK request, so no platform credits apply.
+    - BYOK disabled (or null/default credential): return an empty kwargs dict
       so LiteLLM uses its own environment variables (e.g. OPENAI_API_KEY).
       Platform credit tracking is enabled.
 
@@ -57,19 +57,20 @@ def resolve_credentials(provider: str, is_byok: bool, credential_id: str | None,
         kwargs = _platform_credentials_kwargs(provider)
         return CredentialResolution(kwargs=kwargs, uses_platform_credentials=True)
 
-    # BYOK must always carry a real credential id; never fall back to the env.
+    # BYOK must always carry a real credential; never fall back to the env.
     if not _is_real_credential(credential_id):
         logger.error(
-            f"[LLM-V2] BYOK enabled but no credential_id for provider {provider}"
+            f"[LLM-V2] BYOK enabled but no credential for provider {provider}"
         )
         raise HTTPException(
-            status_code=400, detail="A valid credential_id is required when BYOK is enabled."
+            status_code=400, detail="A valid credential is required when BYOK is enabled."
         )
 
     vault = VaultManager()
-    credential = vault.get_vault_secret_by_id(
-        vault_secret_id=credential_id,
+    credential = vault.get_vault_secret_by_name(
+        credential=credential_id,
         jwt=user.access_token,
+        env_type=user.env_type,
     )
     if not credential:
         logger.error(f"[LLM-V2] Invalid BYOK credentials for provider {provider}")
@@ -199,7 +200,7 @@ def resolve_credential_name(
 
 
 def _is_real_credential(credential_id: str | None) -> bool:
-    """True when a real (non-null / non-empty / non-default-GUID) credential id is supplied."""
+    """True when a real (non-null / non-empty / non-default-GUID) credential reference is supplied."""
     if not credential_id:
         return False
     cleaned = str(credential_id).strip()

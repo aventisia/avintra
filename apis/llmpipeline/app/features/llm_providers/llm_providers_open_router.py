@@ -40,7 +40,7 @@ class OpenRouterProvider(BaseLLMProvider):
         logger.info(f"[NO STREAMING] Prompt sent to OpenRouter with model: {llm_request.model}")
 
         # Validate BYOK or credits
-        self._handle_byok_and_credits(llm_request, user.access_token)
+        self._handle_byok_and_credits(llm_request, user.access_token, env_type=user.env_type)
 
         # Initialize response data
         response_data = {}
@@ -118,7 +118,7 @@ class OpenRouterProvider(BaseLLMProvider):
         logger.info(f"[STREAMING] Prompt sent to OpenRouter with model: {llm_request.model}")
 
         # Validate BYOK or credits
-        self._handle_byok_and_credits(llm_request, user.access_token)
+        self._handle_byok_and_credits(llm_request, user.access_token, env_type=user.env_type)
 
         # Initialize chunk response
         chunk_response = LLMChunkResponse(
@@ -380,11 +380,11 @@ class OpenRouterProvider(BaseLLMProvider):
         return payload, headers
 
     # Helper: Handle BYOK credentials or credit usage
-    def _handle_byok_and_credits(self, llm_request: LLMRequest, jwt: str):
-        if llm_request.is_byok_enabled and llm_request.credential_id:
+    def _handle_byok_and_credits(self, llm_request: LLMRequest, jwt: str, env_type: str = "dev"):
+        if llm_request.is_byok_enabled and llm_request.credential_name:
             vault = VaultManager()
-            credential = vault.get_vault_secret_by_id(
-                llm_request.credential_id, jwt
+            credential = vault.get_vault_secret_by_name(
+                llm_request.credential_name, jwt, env_type=env_type
             )
 
             if not credential:
@@ -415,7 +415,7 @@ class OpenRouterProvider(BaseLLMProvider):
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,
             is_byok_enabled=llm_request.is_byok_enabled,
-            credential_id=llm_request.credential_id,
+            credential_id=llm_request.credential_name,
             error=None,
         )
 
@@ -441,8 +441,8 @@ class OpenRouterProvider(BaseLLMProvider):
         llm_response.output_tokens = usage.get("completion_tokens", 0)
         llm_response.output_reasoning_tokens = usage.get("completion_tokens_details", {}).get("reasoning_tokens", 0)
 
-        # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
-        if not llm_request.is_byok_enabled and not llm_request.credential_id:
+        # If BYOK is not enabled and a credential name is not provided, post credit usage to CreditManagerService
+        if not llm_request.is_byok_enabled and not llm_request.credential_name:
             # Prepare the credit usage data
             credit_usage_data = self._build_openrouter_credit_usage(llm_request, llm_response, space_id)
 
@@ -591,10 +591,10 @@ class OpenRouterProvider(BaseLLMProvider):
         logger.info(f"[EMBEDDING] Request sent to OpenRouter with model: {embedding_request.model}")
 
         # Handle BYOK or credit validation
-        if embedding_request.is_byok_enabled and embedding_request.credential_id:
+        if embedding_request.is_byok_enabled and embedding_request.credential_name:
             vault = VaultManager()
-            credential = vault.get_vault_secret_by_id(
-                embedding_request.credential_id, user.access_token
+            credential = vault.get_vault_secret_by_name(
+                embedding_request.credential_name, user.access_token, env_type=user.env_type
             )
 
             if not credential:
@@ -655,12 +655,12 @@ class OpenRouterProvider(BaseLLMProvider):
                     time_taken=round(end_time - start_time, 2),
                     input_tokens=response_data.get("usage", {}).get("total_tokens", 0),
                     is_byok_enabled=embedding_request.is_byok_enabled,
-                    credential_id=embedding_request.credential_id,
+                    credential_id=embedding_request.credential_name,
                     status="completed"
                 )
 
                 # Credit consumption
-                if not embedding_request.is_byok_enabled and not embedding_request.credential_id:
+                if not embedding_request.is_byok_enabled and not embedding_request.credential_name:
                     credit_usage = self._build_openrouter_embedding_credit_usage(
                         embedding_request,
                         embedding_response,

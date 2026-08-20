@@ -20,7 +20,7 @@ class TestToolRequest(BaseModel):
     base_url: str = Field(alias="baseUrl")
     operation_id: str = Field(alias="operationId")
     parameters: dict | None = Field(default=None)
-    credential_id: UUID | None = Field(default=None, alias="credentialId")
+    credential_name: str | None = Field(default=None, alias="credentialName")
     open_api_spec: str | None = Field(default=None, alias="openApiSpec")
 
 
@@ -35,7 +35,7 @@ class ExecuteToolRequest(BaseModel):
     tool_id: UUID
     operation_id: str
     parameters: dict[str, Any] = Field(default_factory=dict)
-    credential_id: UUID | None = Field(default=None)
+    credential_name: str | None = Field(default=None)
 
 
 class ToolDefinition(BaseModel):

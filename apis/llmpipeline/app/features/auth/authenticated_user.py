@@ -14,3 +14,7 @@ class User(BaseModel):
     # Current space id from the "X-Space-Id" request header, used to scope
     # credit usage. None (or empty) means the default "Central" space.
     space_id: Optional[str] = Field(default=None, exclude=True, repr=False)
+    # Current deployment environment from the "X-Env-Type" request header ("dev" or "prod").
+    # Used to scope credential/vault resolution so flows resolve resources in the same env
+    # as their publication status. Defaults to "dev".
+    env_type: str = Field(default="dev", exclude=True, repr=False)

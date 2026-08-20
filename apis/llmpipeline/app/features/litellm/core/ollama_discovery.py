@@ -84,14 +84,16 @@ def _credential_base_url_and_key(
 ) -> tuple[str, str | None]:
     """Fetch the Ollama base URL and API key from the credential manager.
 
-    Reads the credential directly from the vault by `credential_id` and extracts
-    the `ApiKey` and `Url`/`Host` fields (PascalCase, matching the vault payload).
-    Raises `HTTPException(400)` on invalid/missing credentials or a missing URL.
+    Reads the credential directly from the vault by credential name/reference and
+    extracts the `ApiKey` and `Url`/`Host` fields (PascalCase, matching the vault
+    payload). Raises `HTTPException(400)` on invalid/missing credentials or a
+    missing URL.
     """
     vault = VaultManager()
-    credential = vault.get_vault_secret_by_id(
-        vault_secret_id=credential_id,
+    credential = vault.get_vault_secret_by_name(
+        credential=credential_id,
         jwt=user.access_token,
+        env_type=user.env_type,
     )
     if not credential:
         logger.error(f"[LLM-V2] Invalid Ollama credentials for provider {provider}")

@@ -1,5 +1,5 @@
 # Schemas for LLM Providers feature
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AliasChoices
 from typing import Dict, Optional, Literal, TypeAlias, Any
 from datetime import datetime, timezone
 from typing import Union, List
@@ -19,7 +19,7 @@ class ToolAction(BaseModel):
 
 class ToolConfig(BaseModel):
     tool: str    # Name of the tool or external service (e.g. "gmail")
-    credential_id: str    # Identifier for the credentials used to access the tool
+    credential_name: str = Field(validation_alias=AliasChoices('credential_name', 'credential_id'), serialization_alias='credential_name')    # Credential reference (name, or legacy id/uuid) used to access the tool
     actions: List[ToolAction]    # List of permitted actions for this tool
 
 
@@ -34,7 +34,7 @@ class LLMRequest(BaseModel):
     json_schema: Optional[Union[str, dict]] = None  # Can be JSON string or dict object
     max_output_tokens: Optional[int] = Field(default=None, ge=0) # None or 0 means no limit
     is_byok_enabled: Optional[bool] = False # TODO: Implement BYOK support
-    credential_id: Optional[str] = None # TODO: Implement BYOK support
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credential_id'), serialization_alias='credential_name') # Credential reference (name, or legacy id/uuid)
     temperature: Optional[float] = 1.0
     top_p: Optional[float] = 1.0
     reasoning_effort: Optional[str] = None  # OpenAI reasoning models (e.g. o1/o3/gpt-5): low | medium | high

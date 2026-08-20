@@ -16,8 +16,9 @@ from app.features.litellm.core.credentials import resolve_credentials
 class _FakeUser:
     """Minimal stand-in for the authenticated user carrying a JWT."""
 
-    def __init__(self, access_token: str = "fake-jwt"):
+    def __init__(self, access_token: str = "fake-jwt", env_type: str = "dev"):
         self.access_token = access_token
+        self.env_type = env_type
 
 
 def _credential_data(payload: dict) -> dict:
@@ -45,7 +46,7 @@ def test_byok_invalid_credentials_raises():
     with patch(
         "app.features.litellm.core.credentials.VaultManager"
     ) as mock_vault_cls:
-        mock_vault_cls.return_value.get_vault_secret_by_id.return_value = None
+        mock_vault_cls.return_value.get_vault_secret_by_name.return_value = None
         with pytest.raises(HTTPException) as exc:
             resolve_credentials("openai", True, "00000000-0000-0000-0000-000000000001", _FakeUser())
         assert exc.value.status_code == 400
@@ -61,7 +62,7 @@ def test_openai_maps_pascalcase_fields():
     with patch(
         "app.features.litellm.core.credentials.VaultManager"
     ) as mock_vault_cls:
-        mock_vault_cls.return_value.get_vault_secret_by_id.return_value = _credential_data(payload)
+        mock_vault_cls.return_value.get_vault_secret_by_name.return_value = _credential_data(payload)
         result = resolve_credentials("openai", True, "00000000-0000-0000-0000-000000000001", _FakeUser())
     assert result.kwargs == {
         "api_key": "sk-test",
@@ -76,7 +77,7 @@ def test_groq_maps_url_to_api_base():
     with patch(
         "app.features.litellm.core.credentials.VaultManager"
     ) as mock_vault_cls:
-        mock_vault_cls.return_value.get_vault_secret_by_id.return_value = _credential_data(payload)
+        mock_vault_cls.return_value.get_vault_secret_by_name.return_value = _credential_data(payload)
         result = resolve_credentials("groq", True, "00000000-0000-0000-0000-000000000001", _FakeUser())
     assert result.kwargs == {
         "api_key": "gsk-test",
@@ -91,7 +92,7 @@ def test_mistral_maps_url_to_api_base():
     with patch(
         "app.features.litellm.core.credentials.VaultManager"
     ) as mock_vault_cls:
-        mock_vault_cls.return_value.get_vault_secret_by_id.return_value = _credential_data(payload)
+        mock_vault_cls.return_value.get_vault_secret_by_name.return_value = _credential_data(payload)
         result = resolve_credentials("mistral", True, "00000000-0000-0000-0000-000000000001", _FakeUser())
     assert result.kwargs == {
         "api_key": "mistral-test",
@@ -111,7 +112,7 @@ def test_bedrock_maps_aws_fields_and_no_api_key():
     with patch(
         "app.features.litellm.core.credentials.VaultManager"
     ) as mock_vault_cls:
-        mock_vault_cls.return_value.get_vault_secret_by_id.return_value = _credential_data(payload)
+        mock_vault_cls.return_value.get_vault_secret_by_name.return_value = _credential_data(payload)
         result = resolve_credentials("bedrock", True, "00000000-0000-0000-0000-000000000001", _FakeUser())
     assert result.kwargs == {
         "aws_access_key_id": "AKIA-test",
@@ -134,7 +135,7 @@ def test_bedrock_omits_session_token_when_absent():
     with patch(
         "app.features.litellm.core.credentials.VaultManager"
     ) as mock_vault_cls:
-        mock_vault_cls.return_value.get_vault_secret_by_id.return_value = _credential_data(payload)
+        mock_vault_cls.return_value.get_vault_secret_by_name.return_value = _credential_data(payload)
         result = resolve_credentials("bedrock", True, "00000000-0000-0000-0000-000000000001", _FakeUser())
     assert result.kwargs == {
         "aws_access_key_id": "AKIA-test",
@@ -151,7 +152,7 @@ def test_host_fallback_for_api_base():
     with patch(
         "app.features.litellm.core.credentials.VaultManager"
     ) as mock_vault_cls:
-        mock_vault_cls.return_value.get_vault_secret_by_id.return_value = _credential_data(payload)
+        mock_vault_cls.return_value.get_vault_secret_by_name.return_value = _credential_data(payload)
         result = resolve_credentials("gemini", True, "00000000-0000-0000-0000-000000000001", _FakeUser())
     assert result.kwargs == {
         "api_key": "gemini-test",
@@ -170,7 +171,7 @@ def test_vertex_maps_service_account_fields():
     with patch(
         "app.features.litellm.core.credentials.VaultManager"
     ) as mock_vault_cls:
-        mock_vault_cls.return_value.get_vault_secret_by_id.return_value = _credential_data(payload)
+        mock_vault_cls.return_value.get_vault_secret_by_name.return_value = _credential_data(payload)
         result = resolve_credentials("vertex_ai", True, "00000000-0000-0000-0000-000000000001", _FakeUser())
     assert result.kwargs == {
         "vertex_project": "my-project",
@@ -191,7 +192,7 @@ def test_azure_maps_endpoint_and_version():
     with patch(
         "app.features.litellm.core.credentials.VaultManager"
     ) as mock_vault_cls:
-        mock_vault_cls.return_value.get_vault_secret_by_id.return_value = _credential_data(payload)
+        mock_vault_cls.return_value.get_vault_secret_by_name.return_value = _credential_data(payload)
         result = resolve_credentials("azure", True, "00000000-0000-0000-0000-000000000001", _FakeUser())
     assert result.kwargs == {
         "api_key": "az-key",
@@ -211,7 +212,7 @@ def test_watsonx_maps_project_and_region():
     with patch(
         "app.features.litellm.core.credentials.VaultManager"
     ) as mock_vault_cls:
-        mock_vault_cls.return_value.get_vault_secret_by_id.return_value = _credential_data(payload)
+        mock_vault_cls.return_value.get_vault_secret_by_name.return_value = _credential_data(payload)
         result = resolve_credentials("watsonx", True, "00000000-0000-0000-0000-000000000001", _FakeUser())
     assert result.kwargs == {
         "api_key": "wx-key",

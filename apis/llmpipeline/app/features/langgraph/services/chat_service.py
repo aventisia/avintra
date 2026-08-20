@@ -718,6 +718,7 @@ class ChatService:
                 ),
                 workspace_api="https://{settings.APP_BASE_URL}/workspace",
                 access_token=user.access_token,
+                env_type=user.env_type,
             )
             for ct in custom_tools:
                 self.tool_registry.register(ct)

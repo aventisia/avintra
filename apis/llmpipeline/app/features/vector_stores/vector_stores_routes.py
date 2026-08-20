@@ -24,9 +24,9 @@ async def ingest_document_route(
     _user: User = Depends(authorize()),
 ):
     try:
-        # Normalize credential IDs
-        ingest_doc_request.embedding_credential_id = _normalize_optional_credential(ingest_doc_request.embedding_credential_id)
-        ingest_doc_request.store_credential_id = _normalize_optional_credential(ingest_doc_request.store_credential_id)
+        # Normalize credential references
+        ingest_doc_request.embedding_credential_name = _normalize_optional_credential(ingest_doc_request.embedding_credential_name)
+        ingest_doc_request.credential_name = _normalize_optional_credential(ingest_doc_request.credential_name)
 
         logger.info("[VECTOR-INGEST] route called store=%s user=%s", ingest_doc_request.vector_store, _user.username)
 
@@ -62,9 +62,9 @@ async def query_document_route(
     _user: User = Depends(authorize()),
 ):
     try:
-        # Normalize credential IDs
-        query_doc_request.embedding_credential_id = _normalize_optional_credential(query_doc_request.embedding_credential_id)
-        query_doc_request.store_credential_id = _normalize_optional_credential(query_doc_request.store_credential_id)
+        # Normalize credential references
+        query_doc_request.embedding_credential_name = _normalize_optional_credential(query_doc_request.embedding_credential_name)
+        query_doc_request.credential_name = _normalize_optional_credential(query_doc_request.credential_name)
 
         logger.info("[VECTOR-QUERY] route called store=%s user=%s", query_doc_request.vector_store, _user.username)
 
@@ -100,8 +100,8 @@ async def delete_document_route(
     _user: User = Depends(authorize()),
 ):
     try:
-        # Normalize credential IDs
-        delete_doc_request.store_credential_id = _normalize_optional_credential(delete_doc_request.store_credential_id)
+        # Normalize credential reference
+        delete_doc_request.credential_name = _normalize_optional_credential(delete_doc_request.credential_name)
 
         logger.info("[VECTOR-DELETE] route called store=%s user=%s", delete_doc_request.vector_store, _user.username)
 

@@ -17,6 +17,7 @@ async def execute_operation(
     credential_id: UUID | None,
     workspace_api: str | None = None,
     access_token: str | None = None,
+    env_type: str = "dev",
 ) -> dict[str, Any]:
     resolved_path = _resolve_path(operation.path, parameters)
     method = operation.method.upper()
@@ -41,7 +42,7 @@ async def execute_operation(
     if credential_id and authentication_type and authentication_type != "none":
         if workspace_api:
             credential = await fetch_decrypted_credential(
-                workspace_api, credential_id, access_token
+                workspace_api, credential_id, access_token, env_type=env_type
             )
             _inject_auth(headers, query_params, authentication_type, credential)
 

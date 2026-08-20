@@ -40,10 +40,10 @@ class EmbeddingService:
         self._litellm = litellm_service
 
     async def embed(self, req: EmbeddingRequest, user: User) -> EmbeddingResponse:
-        validate_provider(req.provider, req.is_byok_enabled, req.credential_id)
-        validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_id)
+        validate_provider(req.provider, req.is_byok_enabled, req.credential_name)
+        validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_name)
 
-        check_sufficient_credits(req.is_byok_enabled, req.credential_id, req.provider, user.access_token)
+        check_sufficient_credits(req.is_byok_enabled, req.credential_name, req.provider, user.access_token)
         texts = _normalize_input(req.input)
         start = time.perf_counter()
 
@@ -81,7 +81,7 @@ class EmbeddingService:
             time_taken=round(time.perf_counter() - start, 2),
             input_tokens=input_tokens,
             is_byok_enabled=req.is_byok_enabled,
-            credential_id=req.credential_id,
+            credential_id=req.credential_name,
             status="completed",
         )
 
@@ -91,7 +91,7 @@ class EmbeddingService:
 
     def _post_credit_usage(self, req: EmbeddingRequest, resp: EmbeddingResponse, user: User) -> None:
         # Only post usage for platform (non-BYOK) requests.
-        if not should_post_usage(req.is_byok_enabled, req.credential_id):
+        if not should_post_usage(req.is_byok_enabled, req.credential_name):
             return
         # Skip token-based deduction when the agent has a fixed-credits override.
         if agent_has_fixed_credits(req.reference_id, user.access_token):

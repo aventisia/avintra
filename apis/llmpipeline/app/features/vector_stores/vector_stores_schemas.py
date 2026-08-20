@@ -1,5 +1,5 @@
 # Schemas for Vector Store feature
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AliasChoices
 from typing import List, Optional, Literal, TypeAlias, Union
 from datetime import datetime, timezone
 from app.features.llm_providers.llm_providers_schemas import ProviderLiteral
@@ -16,8 +16,8 @@ class IngestDocRequest(BaseModel):
     metadata: dict # Required metadata to associate with the ingested document (e.g., {"kb_name": "my_kb", "doc_name": "test.txt", "description": "Test document"})
     chunk_size: int = Field(default=500, ge=100, le=8000)  # Max characters per chunk
     chunk_overlap: int = Field(default=100, ge=0)  # Overlapping characters between chunks
-    store_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
-    embedding_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for embedding provider (if applicable)
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'store_credential_id'), serialization_alias='credential_name')  # Credential reference for vector store (name, or legacy id/uuid)
+    embedding_credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('embedding_credential_name', 'embedding_credential_id'), serialization_alias='embedding_credential_name')  # Credential reference for embedding provider (name, or legacy id/uuid)
     # The following fields are for future use
     batch_size: int = Field(default=100, ge=1, le=200)  # TODO: Yet to be test/implemented
     dimensions: Optional[int] = Field(default=None, ge=1)  # TODO: Yet to be test/implemented
@@ -38,8 +38,8 @@ class IngestDocResponse(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     time_taken: float  # Time taken for the entire ingestion process in seconds
     input_tokens: Optional[int] = 0
-    store_credential_id: Optional[str] = None # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
-    embedding_credential_id: Optional[str] = None # TODO: Implement BYOK support. Credential ID for embedding provider (if applicable)
+    credential_name: Optional[str] = None  # Credential reference for vector store (name, or legacy id/uuid)
+    embedding_credential_name: Optional[str] = None  # Credential reference for embedding provider (name, or legacy id/uuid)
     error: Optional[str] = None
 
 # ------------------------------------------------------------------------------------------------------
@@ -54,8 +54,8 @@ class QueryDocRequest(BaseModel):
     score_threshold: float = Field(default=0.1, ge=0.0, le=1.0)
     kb_names: Optional[List[str]] = None  # Filter by Knowledge Base name(s)
     doc_names: Optional[List[str]] = None  # Filter by document/file name(s)
-    store_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for vector store (if applicable)
-    embedding_credential_id: Optional[str] = None  # TODO: Implement BYOK support. Credential ID for embedding provider (if applicable)
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'store_credential_id'), serialization_alias='credential_name')  # Credential reference for vector store (name, or legacy id/uuid)
+    embedding_credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('embedding_credential_name', 'embedding_credential_id'), serialization_alias='embedding_credential_name')  # Credential reference for embedding provider (name, or legacy id/uuid)
     ref_type: str # Type of the reference (e.g., "Agent", "Workflow"). TODO: Yet to confirm the better implemenation of this.
     ref_id: str # Identifier to link back to Agent/Workflow. TODO: Yet to confirm the better implemenation of this.
     ref_name: str # Name of the reference (e.g., name of the Agent/Workflow). TODO: Yet to confirm the better implemenation of this.
@@ -81,8 +81,8 @@ class QueryDocResponse(BaseModel):
     chunks: List[RetrievedChunk]
     time_taken: float
     input_tokens: Optional[int] = 0
-    store_credential_id: Optional[str] = None
-    embedding_credential_id: Optional[str] = None
+    credential_name: Optional[str] = None
+    embedding_credential_name: Optional[str] = None
     error: Optional[str] = None
 
 
@@ -94,7 +94,7 @@ class DeleteDocRequest(BaseModel):
     # One of the kb_name or doc_name should be provided to identify the documents to delete. If both are provided, kb_name will take precedence.
     kb_names: Optional[List[str]] = None  # Delete by Knowledge Base name(s)
     doc_names: Optional[List[str]] = None  # Delete by document/file name(s)
-    store_credential_id: Optional[str] = None
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'store_credential_id'), serialization_alias='credential_name')
 
 # Response schema for document deletion endpoint
 class DeleteDocResponse(BaseModel):

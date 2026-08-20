@@ -34,6 +34,10 @@ def authorize(required_roles: list[str] | None = None):
         # the backend middleware. Empty means the default "Central" space.
         user.space_id = request.headers.get("X-Space-Id") or None
 
+        # Resolve the current deployment environment from the "X-Env-Type" request header,
+        # mirroring the backend middleware. Defaults to "dev" when absent.
+        user.env_type = request.headers.get("X-Env-Type") or "dev"
+
         # Return user if no specific roles are required
         if not normalized_required_roles:
             return user

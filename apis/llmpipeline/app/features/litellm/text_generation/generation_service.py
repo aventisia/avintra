@@ -198,7 +198,7 @@ def _map_finish_reason_to_status(finish_reason: str | None) -> str:
 
 def _post_credit_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, user: User) -> None:
     # Only post usage for platform (non-BYOK) requests.
-    if not should_post_usage(req.is_byok_enabled, req.credential_id):
+    if not should_post_usage(req.is_byok_enabled, req.credential_name):
         return
     # Skip token-based deduction when the agent has a fixed-credits override set
     # by the Super Admin (the WorkspaceAPIs job-close path already bills the fixed
@@ -253,9 +253,9 @@ class GenerationService:
         self._litellm = litellm_service
 
     async def generate(self, req: LLMGenerationRequest, user: User) -> LLMGenerationResponse:
-        validate_provider(req.provider, req.is_byok_enabled, req.credential_id)
-        validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_id)
-        check_sufficient_credits(req.is_byok_enabled, req.credential_id, req.provider, user.access_token)
+        validate_provider(req.provider, req.is_byok_enabled, req.credential_name)
+        validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_name)
+        check_sufficient_credits(req.is_byok_enabled, req.credential_name, req.provider, user.access_token)
         await augment_with_kb_context(req, user)
 
         messages = _messages_from_request(req)
@@ -298,7 +298,7 @@ class GenerationService:
             output_tokens=usage.get("completion_tokens", 0),
             is_json_output=req.is_json_output,
             is_byok_enabled=req.is_byok_enabled,
-            credential_id=req.credential_id,
+            credential_id=req.credential_name,
             conversation_id=req.conversation_id,
             is_temp_chat=req.is_temp_chat,
         )
@@ -314,9 +314,9 @@ class GenerationService:
         When the stream finishes, a final `LLMGenerationResponse` is emitted and
         credit usage is posted (only for platform, non-BYOK requests).
         """
-        validate_provider(req.provider, req.is_byok_enabled, req.credential_id)
-        validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_id)
-        check_sufficient_credits(req.is_byok_enabled, req.credential_id, req.provider, user.access_token)
+        validate_provider(req.provider, req.is_byok_enabled, req.credential_name)
+        validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_name)
+        check_sufficient_credits(req.is_byok_enabled, req.credential_name, req.provider, user.access_token)
         await augment_with_kb_context(req, user)
 
         messages = _messages_from_request(req)
@@ -389,14 +389,14 @@ class GenerationService:
                 output_tokens=output_tokens,
                 is_json_output=req.is_json_output,
                 is_byok_enabled=req.is_byok_enabled,
-                credential_id=req.credential_id,
+                credential_id=req.credential_name,
                 conversation_id=req.conversation_id,
                 is_temp_chat=req.is_temp_chat,
             )
             yield response.model_dump_json()
 
             # Post credit usage only for platform (non-BYOK) requests.
-            if should_post_usage(req.is_byok_enabled, req.credential_id):
+            if should_post_usage(req.is_byok_enabled, req.credential_name):
                 _post_credit_usage(req, response, user)
             # Post BYOK usage for caller's own key requests.
             _post_byok_usage(req, response, user)

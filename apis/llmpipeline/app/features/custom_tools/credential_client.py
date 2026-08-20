@@ -9,9 +9,10 @@ async def fetch_decrypted_credential(
     workspace_api: str,
     app_secret_id: UUID,
     access_token: str | None = None,
+    env_type: str = "dev",
 ) -> dict:
     url = f"{workspace_api.rstrip('/')}/internal/tool-credential/{app_secret_id}/decrypt"
-    headers = {}
+    headers = {"X-Env-Type": env_type}
     if access_token:
         # The token is already a full Authorization value (e.g. "Bearer <token>")
         # when forwarded from the .NET Workspace API.

@@ -169,17 +169,18 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
     def _handle_auth_and_credits(self, req: TTSProviderRequest, user: User):
 
         # BYOK flow (use user-provided API key)
-        if req.is_byok_enabled and req.credentials_id:
+        if req.is_byok_enabled and req.credential_name:
             vault = VaultManager()
 
-            credential = vault.get_vault_secret_by_id(
-                vault_secret_id=req.credentials_id,
-                jwt=user.access_token
+            credential = vault.get_vault_secret_by_name(
+                credential=req.credential_name,
+                jwt=user.access_token,
+                env_type=user.env_type,
             )
 
             if not credential:
                 logger.error("Invalid BYOK credentials")
-                raise HTTPException(400, "Invalid credential_id")
+                raise HTTPException(400, "Invalid credential name")
 
             # Override API config from vault (support both wrapped and flat data shapes)
             credential_data = credential.get("data") or credential
@@ -187,7 +188,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
             self.api_key = credential_data.get("ApiKey")
 
             if not self.api_url or not self.api_key:
-                raise HTTPException(400, "Invalid credential_id")
+                raise HTTPException(400, "Invalid credential name")
 
         else:
             # Credit-based usage check
@@ -229,7 +230,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
             status="processing",
             output="",
             stream=req.stream,
-            credentials_id=req.credentials_id,
+            credentials_id=req.credential_name,
             is_byok_enabled=req.is_byok_enabled,
             ref_id=req.ref_id,
             ref_type=req.ref_type,
@@ -257,7 +258,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
         base_response.token_count = len(req.input)
 
         # Post credit usage if not BYOK
-        if not req.is_byok_enabled and not req.credentials_id:
+        if not req.is_byok_enabled and not req.credential_name:
             try:
                 credit_manager = CreditManagerService()
 

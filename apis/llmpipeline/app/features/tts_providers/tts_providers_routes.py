@@ -29,20 +29,21 @@ async def synthesize_tts(
         # Get provider instance (e.g., elevenlabs)
         provider = get_tts_provider(tts_request.provider)
 
-        # Normalize credentials_id
-        # Convert empty, whitespace, or default GUID to None
-        raw_id = tts_request.credentials_id
+        # Normalize credential_name:
+        # - Convert to string and trim surrounding whitespace.
+        # - Treat None, empty strings, and whitespace-only values as "no credential".
+        credential_name = (
+            str(tts_request.credential_name).strip()
+            if tts_request.credential_name is not None
+            else ""
+        )
 
-        if raw_id:
-            cleaned = str(raw_id).strip()
-
-            # Ignore empty or placeholder GUID
-            if cleaned and cleaned != "00000000-0000-0000-0000-000000000000":
-                tts_request.credentials_id = cleaned
-            else:
-                tts_request.credentials_id = None
+        # Empty or whitespace-only value means no credential was provided.
+        if not credential_name:
+            tts_request.credential_name = None
         else:
-            tts_request.credentials_id = None
+            # Preserve the normalized credential name.
+            tts_request.credential_name = credential_name
 
         # Streaming response (SSE with job tracking)
         if tts_request.stream:

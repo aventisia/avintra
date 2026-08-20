@@ -31,12 +31,12 @@ class OpenAIProvider(BaseLLMProvider):
         logger.info(f"[NO STREAMING] Prompt sent to OpenAI provider with model: {llm_request.model}")
         
         # Handle BYOK (Bring Your Own Key) if enabled
-        if llm_request.is_byok_enabled and llm_request.credential_id:
+        if llm_request.is_byok_enabled and llm_request.credential_name:
             vault_manager = VaultManager()
 
-            # Fetch the credentials from the vault using the credential ID and JWT
-            logger.info(f"Fetching credentials from vault for credential_id: {llm_request.credential_id}")
-            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=user.access_token)
+            # Fetch the credentials from the vault using the credential NAME and JWT
+            logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
+            credential = vault_manager.get_vault_secret_by_name(credential=llm_request.credential_name, jwt=user.access_token, env_type=user.env_type)
 
             if credential:
                 # Update the API URL and key from the vault credentials
@@ -44,8 +44,11 @@ class OpenAIProvider(BaseLLMProvider):
                 self.api_key = credential.get("data", {}).get("ApiKey") or credential.get("ApiKey")
                 logger.info("BYOK credentials successfully applied.")
             else:
-                logger.error(f"BYOK enabled but no valid credentials found for credential_id: {llm_request.credential_id}")
-                raise HTTPException(status_code=400, detail="No valid credentials found for the provided credential_id.")
+                logger.error(f"BYOK enabled but no valid credentials found for credential: {llm_request.credential_name}")
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"No valid credentials found for the provided credential '{llm_request.credential_name}'. Verify the name and that you have access in the '{user.env_type}' environment.",
+                )
         else:
             # If BYOK is not enabled, check the user's credits
             credential_manager = CreditManagerService()
@@ -163,12 +166,12 @@ class OpenAIProvider(BaseLLMProvider):
         logger.info(f"[STREAMING] Prompt sent to OpenAI provider with model: {llm_request.model}")
 
         # Handle BYOK (Bring Your Own Key) if enabled
-        if llm_request.is_byok_enabled and llm_request.credential_id:
+        if llm_request.is_byok_enabled and llm_request.credential_name:
             vault_manager = VaultManager()
 
-            # Fetch the credentials from the vault using the credential ID and JWT
-            logger.info(f"Fetching credentials from vault for credential_id: {llm_request.credential_id}")
-            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=user.access_token)
+            # Fetch the credentials from the vault using the credential NAME and JWT
+            logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
+            credential = vault_manager.get_vault_secret_by_name(credential=llm_request.credential_name, jwt=user.access_token, env_type=user.env_type)
 
             if credential:
                 # Update the API URL and key from the vault credentials
@@ -177,8 +180,11 @@ class OpenAIProvider(BaseLLMProvider):
                 self.api_key = credential_data.get("ApiKey")
                 logger.info("BYOK credentials successfully applied.")
             else:
-                logger.error(f"BYOK enabled but no valid credentials found for credential_id: {llm_request.credential_id}")
-                raise HTTPException(status_code=400, detail="No valid credentials found for the provided credential_id.")
+                logger.error(f"BYOK enabled but no valid credentials found for credential: {llm_request.credential_name}")
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"No valid credentials found for the provided credential '{llm_request.credential_name}'. Verify the provider and that you have it in the current environment.",
+                )
         else:
             # If BYOK is not enabled, check the user's credits
             credential_manager = CreditManagerService()
@@ -448,7 +454,7 @@ class OpenAIProvider(BaseLLMProvider):
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,
             is_byok_enabled=llm_request.is_byok_enabled,
-            credential_id=llm_request.credential_id,
+            credential_id=llm_request.credential_name,
             error=None
         )
      
@@ -525,8 +531,8 @@ class OpenAIProvider(BaseLLMProvider):
         llm_response.output_tokens = usage.get("output_tokens", 0)
         llm_response.output_reasoning_tokens = usage.get("output_tokens_details", {}).get("reasoning_tokens", 0)
         
-        # If BYOK is not enabled and credential_id is not provided, post credit usage to CreditManagerService
-        if not llm_request.is_byok_enabled and not llm_request.credential_id:
+        # If BYOK is not enabled and a credential name is not provided, post credit usage to CreditManagerService
+        if not llm_request.is_byok_enabled and not llm_request.credential_name:
             # Skip token-based deduction when the agent has a fixed-credits override.
             if agent_has_fixed_credits(llm_request.ref_id, jwt):
                 logger.info(f"Skipping platform credit usage for agent {llm_request.ref_id} (fixed credits).")
@@ -647,13 +653,14 @@ class OpenAIProvider(BaseLLMProvider):
         logger.info(f"[EMBEDDING] Request sent to OpenAI provider with model: {embedding_request.model}")
 
         # Handle BYOK (Bring Your Own Key)
-        if embedding_request.is_byok_enabled and embedding_request.credential_id:
+        if embedding_request.is_byok_enabled and embedding_request.credential_name:
             vault_manager = VaultManager()
 
-            logger.info(f"Fetching credentials from vault for credential_id: {embedding_request.credential_id}")
-            credential = vault_manager.get_vault_secret_by_id(
-                vault_secret_id=embedding_request.credential_id,
-                jwt=user.access_token
+            logger.info(f"Fetching credentials from vault for credential name: {embedding_request.credential_name}")
+            credential = vault_manager.get_vault_secret_by_name(
+                credential=embedding_request.credential_name,
+                jwt=user.access_token,
+                env_type=user.env_type,
             )
 
             if credential:
@@ -662,7 +669,7 @@ class OpenAIProvider(BaseLLMProvider):
                 self.api_key = credential_data.get("ApiKey")
                 logger.info("BYOK credentials successfully applied.")
             else:
-                logger.error("Invalid BYOK credential_id")
+                logger.error("Invalid BYOK credential name")
                 raise HTTPException(status_code=400, detail="No valid credentials found.")
         else:
             credit_manager = CreditManagerService()
@@ -717,12 +724,12 @@ class OpenAIProvider(BaseLLMProvider):
                     time_taken=round(end_time - start_time, 2),
                     input_tokens=response_data.get("usage", {}).get("total_tokens", 0),
                     is_byok_enabled=embedding_request.is_byok_enabled,
-                    credential_id=embedding_request.credential_id,
+                    credential_id=embedding_request.credential_name,
                     status="completed"
                 )
 
                 # Credit consumption (same pattern as LLM)
-                if not embedding_request.is_byok_enabled and not embedding_request.credential_id:
+                if not embedding_request.is_byok_enabled and not embedding_request.credential_name:
                     credit_usage = self._build_embedding_credit_usage(
                         embedding_request,
                         embedding_response,

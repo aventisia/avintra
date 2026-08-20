@@ -26,12 +26,12 @@ class AnthropicProvider(BaseLLMProvider):
         logger.info(f"[NO STREAMING] Promptf sent to Anthropic provider with model: {llm_request.model}")
         
         # Handle BYOK (Bring Your Own Key) if enabled
-        if llm_request.is_byok_enabled and llm_request.credential_id:
+        if llm_request.is_byok_enabled and llm_request.credential_name:
             vault_manager = VaultManager()
 
-            # Fetch the credentials from the vault using the credential ID and JWT
-            logger.info(f"Fetching credentials from vault for credential_id: {llm_request.credential_id}")
-            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=user.access_token)
+            # Fetch the credentials from the vault using the credential NAME and JWT
+            logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
+            credential = vault_manager.get_vault_secret_by_name(credential=llm_request.credential_name, jwt=user.access_token, env_type=user.env_type)
 
             if credential:
                 # Update the API URL and key from the vault credentials
@@ -39,8 +39,11 @@ class AnthropicProvider(BaseLLMProvider):
                 self.api_key = credential.get("data", {}).get("ApiKey", self.api_key)
                 logger.info("BYOK credentials successfully applied.")
             else:
-                logger.error(f"BYOK enabled but no valid credentials found for credential_id: {llm_request.credential_id}")
-                raise HTTPException(status_code=400, detail="No valid credentials found for the provided credential_id.")
+                logger.error(f"BYOK enabled but no valid credentials found for credential: {llm_request.credential_name}")
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"No valid credentials found for the provided credential '{llm_request.credential_name}'. Verify the name and that you have access in the '{user.env_type}' environment.",
+                )
         else:
             # If BYOK is not enabled, check the user's credits
             credential_manager = CreditManagerService()
@@ -109,12 +112,12 @@ class AnthropicProvider(BaseLLMProvider):
         logger.info(f"[STREAMING] Prompt sent to Anthropic provider with model: {llm_request.model}")
 
         # Handle BYOK (Bring Your Own Key) if enabled
-        if llm_request.is_byok_enabled and llm_request.credential_id:
+        if llm_request.is_byok_enabled and llm_request.credential_name:
             vault_manager = VaultManager()
 
-            # Fetch the credentials from the vault using the credential ID and JWT
-            logger.info(f"Fetching credentials from vault for credential_id: {llm_request.credential_id}")
-            credential = vault_manager.get_vault_secret_by_id(vault_secret_id=llm_request.credential_id, jwt=user.access_token)
+            # Fetch the credentials from the vault using the NAME and JWT
+            logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
+            credential = vault_manager.get_vault_secret_by_name(credential=llm_request.credential_name, jwt=user.access_token, env_type=user.env_type)
 
             if credential:
                 # Update the API URL and key from the vault credentials
@@ -122,8 +125,11 @@ class AnthropicProvider(BaseLLMProvider):
                 self.api_key = credential.get("data", {}).get("ApiKey", self.api_key)
                 logger.info("BYOK credentials successfully applied.")
             else:
-                logger.error(f"BYOK enabled but no valid credentials found for credential_id: {llm_request.credential_id}")
-                raise HTTPException(status_code=400, detail="No valid credentials found for the provided credential_id.")
+                logger.error(f"BYOK enabled but no valid credentials found for credential: {llm_request.credential_name}")
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"No valid credentials found for the provided credential '{llm_request.credential_name}'. Verify the provider and that you have it in the current environment.",
+                )
         else:
             # If BYOK is not enabled, check the user's credits
             credential_manager = CreditManagerService()
@@ -460,7 +466,7 @@ class AnthropicProvider(BaseLLMProvider):
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,
             is_byok_enabled=llm_request.is_byok_enabled,
-            credential_id=llm_request.credential_id,
+            credential_id=llm_request.credential_name,
             error=None
         )
 
@@ -479,7 +485,7 @@ class AnthropicProvider(BaseLLMProvider):
         llm_response.output_reasoning_tokens = usage.get("reasoning_tokens", 0)
 
        # Post credit usage only when BYOK is disabled and no external credential is used
-        if not llm_request.is_byok_enabled and not llm_request.credential_id:
+        if not llm_request.is_byok_enabled and not llm_request.credential_name:
             credit_usage_data = self._build_anthropic_credit_usage(llm_request, llm_response)
 
             # # TODO: Extend ServiceType handling if new token categories are introduced
