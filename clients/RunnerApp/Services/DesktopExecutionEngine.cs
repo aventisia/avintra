@@ -26,6 +26,7 @@ public class DesktopExecutionEngine : IExecutionEngine
     {
         var flow = ReactFlowHelper.Parse(graph.ReactFlowObject)
             ?? throw new InvalidOperationException("Failed to parse parent flow graph.");
+        DebugLog.Info($"Parsed parent flow graph: {flow.Nodes.Count} nodes, {flow.Edges.Count} edges.");
 
         // Attach the flow's declared input/output schema to the top-level graph so the
         // processor can seed the trigger's declared inputs (with their defaults) as

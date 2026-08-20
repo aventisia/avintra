@@ -109,6 +109,7 @@ public class NodeProcessor : INodeProcessor
             // 9. Build result
             var nodeLog = new NodeExecutionLog
             {
+                UniqueNodeId = Guid.NewGuid().ToString(),
                 NodeId = node.Id,
                 NodeName = nodeDisplayName,
                 NodeUniqueName = nodeClassName,
@@ -278,6 +279,7 @@ public class NodeProcessor : INodeProcessor
         sw.Stop();
         var nodeLog = new NodeExecutionLog
         {
+            UniqueNodeId = Guid.NewGuid().ToString(),
             NodeId = nodeId,
             NodeName = nodeDisplayName,
             NodeUniqueName = nodeUniqueName ?? nodeId,

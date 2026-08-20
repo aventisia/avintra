@@ -33,8 +33,9 @@ the in-process Tauri WebSocket. Server mode remains available for future long-li
 service deployments.
 
 The executor supports backend `OrchestratorHub` (SignalR) commands (`Initiate`, `Abort`, `Pause`,
-`Resume`, `Killed`) in server/service mode. If SignalR is unavailable, it falls back to HTTP
-polling with a 30-second timeout.
+`Resume`, `Killed`) in **server/service mode**. If SignalR is unavailable in that mode, it falls back to HTTP
+polling with a 30-second timeout. The local desktop sidecar path does not use SignalR or HTTP polling; it
+receives abort control and sends progress over the in-process Tauri WebSocket.
 
 ## Prerequisites
 
@@ -245,6 +246,6 @@ AvintraRunnerApp.exe --run --appBaseUrl <url> --apiKey <key> --tenantId <id> --l
 
 ## Related
 
-- `RUNNER_APP_PLAN.md` — Full migration plan and phase breakdown
+- `local-runner-app-plan.md` — Full migration plan and phase breakdown
 - `apis/WorcBackend-legacy/WorkspaceAPIs/Features/ExecuteFlow/` — Backend execution APIs
 - `apis/WorcBackend-legacy/WorkspaceAPIs/Hubs/OrchestratorHub.cs` — SignalR hub for machine communication

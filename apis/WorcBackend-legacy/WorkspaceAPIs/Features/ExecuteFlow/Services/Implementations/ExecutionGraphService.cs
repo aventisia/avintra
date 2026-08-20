@@ -98,13 +98,13 @@ public class ExecutionGraphService : IExecutionGraphService
         {
             if (string.Equals(node.Type, "callAgentNode", StringComparison.OrdinalIgnoreCase))
             {
-                var refStr = node.Data?.SelectedAgent;
+                var refStr = node.Data?.SelectedAgent?.ToString();
                 if (!string.IsNullOrWhiteSpace(refStr))
                     TryExtractFlowVersionId(refStr, subFlowIds);
             }
             else if (string.Equals(node.Type, "blockNode", StringComparison.OrdinalIgnoreCase))
             {
-                var refStr = node.Data?.SelectedBlock;
+                var refStr = node.Data?.SelectedBlock?.ToString();
                 if (!string.IsNullOrWhiteSpace(refStr))
                     TryExtractFlowVersionId(refStr, subFlowIds);
             }

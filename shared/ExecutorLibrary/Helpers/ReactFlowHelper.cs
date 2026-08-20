@@ -30,7 +30,8 @@ public static class ReactFlowHelper
         }
         catch (System.Text.Json.JsonException ex)
         {
-            return new ReactFlowDataModel();
+            throw new InvalidOperationException(
+                $"Failed to parse ReactFlow object: {ex.Message}", ex);
         }
     }
 }
