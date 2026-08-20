@@ -10,9 +10,8 @@ public class LoopState
 
     public string LoopBodyStartNodeId { get; set; } = string.Empty;
 
+    /// <summary>Total number of times the loop body has been entered (guards against runaway while loops).</summary>
     public int CurrentIteration { get; set; }
-
-    public int MaxIterations { get; set; }
 
     public string ListVariableName { get; set; } = string.Empty;
 

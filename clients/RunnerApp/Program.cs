@@ -698,28 +698,21 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
 static void PrintUsage()
 {
     Console.Error.WriteLine("Usage:");
-    Console.Error.WriteLine("  AvintraRunnerService --install                              Install as Windows service (interactive)");
-    Console.Error.WriteLine("  AvintraRunnerService --install --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>");
-    Console.Error.WriteLine("                                                         Install as Windows service (silent)");
-    Console.Error.WriteLine("  AvintraRunnerService --uninstall                            Uninstall Windows service");
-    Console.Error.WriteLine("  AvintraRunnerService --run --appBaseUrl <url> [options]     Run once (console)");
-    Console.Error.WriteLine("  AvintraRunnerService --run --service [options]              Run as Windows service");
+    Console.Error.WriteLine("  AvintraRunnerApp --appBaseUrl <url> --accessToken <token> --jobId <guid> [--websocketPort <port>]");
+    Console.Error.WriteLine("                                          Run once in local desktop mode");
     Console.Error.WriteLine("");
-    Console.Error.WriteLine("Install options (for silent install):");
+    Console.Error.WriteLine("Local (recommended) options:");
     Console.Error.WriteLine("  --appBaseUrl <url>       Backend API base URL (required)");
-    Console.Error.WriteLine("  --apiKey <key>           Tenant API key (required)");
-    Console.Error.WriteLine("  --tenantId <guid>        Tenant ID (required)");
-    Console.Error.WriteLine("  --linkedUsername <name>  Linked workspace username (required)");
+    Console.Error.WriteLine("  --accessToken <token>    JWT access token (required)");
+    Console.Error.WriteLine("  --jobId <guid>           Job ID to execute (required)");
+    Console.Error.WriteLine("  --websocketPort <port>   Local Tauri WebSocket port (node progress + abort control)");
     Console.Error.WriteLine("");
-    Console.Error.WriteLine("Run options:");
-    Console.Error.WriteLine("  --appBaseUrl <url>       Backend API base URL (required)");
-    Console.Error.WriteLine("  --accessToken <token>    JWT access token (console/local mode)");
-    Console.Error.WriteLine("  --jobId <guid>           Job ID to execute (console/local mode; optional in service mode)");
-    Console.Error.WriteLine("  --websocketPort <port>   Local Tauri WebSocket port (local/non-service mode, node progress + control)");
-    Console.Error.WriteLine("  --apiKey <key>           Tenant API key (service mode, long-lived registration)");
-    Console.Error.WriteLine("  --tenantId <guid>        Tenant ID (service mode)");
-    Console.Error.WriteLine("  --linkedUsername <name>  Linked workspace username (service mode)");
-    Console.Error.WriteLine("  --service                Run as Windows service (no console)");
+    Console.Error.WriteLine("SERVICE MODE (UNVALIDATED - do not use in production without testing):");
+    Console.Error.WriteLine("  AvintraRunnerApp --install [--appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>]");
+    Console.Error.WriteLine("                                Install as Windows service (interactive or silent)");
+    Console.Error.WriteLine("  AvintraRunnerApp --uninstall  Uninstall Windows service");
+    Console.Error.WriteLine("  AvintraRunnerApp --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>");
+    Console.Error.WriteLine("                                Run as long-lived Windows service");
 }
 
 enum ExecutorMode

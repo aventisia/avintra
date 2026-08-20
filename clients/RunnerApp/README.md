@@ -20,17 +20,16 @@
 │     WorkspaceAPIs (.NET 8)    │◄────►│   RunnerApp (.NET 8)  │      │  Office / UI    │
 │  - execution graph endpoint    │      │  - fetches graph      │◄────►│  automation     │
 │  - job start/close             │      │  - runs flow          │      │  (Excel, etc.)  │
-│  - log ingestion endpoint      │      │  - pushes WS progress │      │                 │
-│  - SignalR command routing*     │      │  - closes job         │      │                 │
-│  - real-time notifications*     │      │                       │      │                 │
+│  - node execution logs         │      │  - pushes WS progress │      │                 │
+│  - SignalR command routing*    │      │  - closes job         │      │                 │
 └──────────────────────────────┘      └──────────────────────┘      └─────────────────┘
 ```
 
 \* SignalR / server-mode command routing is present in the codebase but is **not used by the
 local desktop flow**. For local desktop runs, the Tauri app launches RunnerApp in local mode
 (`--jobId`, `--accessToken`, `--websocketPort`) and all control/progress messages travel over
-the in-process Tauri WebSocket. Server mode remains available for future long-lived Windows
-service deployments.
+the in-process Tauri WebSocket. Server mode remains available but is **not validated** — do not
+use it in production without testing.
 
 The executor supports backend `OrchestratorHub` (SignalR) commands (`Initiate`, `Abort`, `Pause`,
 `Resume`, `Killed`) in **server/service mode**. If SignalR is unavailable in that mode, it falls back to HTTP
@@ -51,7 +50,7 @@ dotnet build clients/RunnerApp/RunnerApp.csproj
 
 ## Publish
 
-`publish.sh` produces a versioned, **self-contained** single-file Windows binary (the .NET 8 runtime is embedded, so the target machine does not need it installed) and packages it into `artifacts/AvintraRunnerService_<version>_win-x64.zip`. It also copies `Install-AvintraRunnerService.ps1` into `artifacts/` so the provisioning script can be uploaded to the server's `scripts/` directory alongside the runner zip.
+`publish.sh` produces a versioned, **self-contained** single-file Windows binary (the .NET 8 runtime is embedded, so the target machine does not need it installed) and packages it into `artifacts/AvintraRunnerApp_<version>_win-x64.zip`. It also copies `Install-AvintraRunnerService.ps1` into `artifacts/` so the provisioning script can be uploaded to the server's `scripts/` directory alongside the runner zip.
 
 ```sh
 ./clients/RunnerApp/publish.sh
@@ -88,6 +87,10 @@ longer accepted as CLI arguments.
 
 ## Run as Windows Service
 
+> **WARNING — UNVALIDATED.** Windows-service / SignalR mode is implemented but has **not been
+> tested or validated** in this sprint. Only the local desktop (console) mode is verified. Do not
+> run service mode in production without a dedicated validation pass.
+
 ### Prerequisites
 
 The Windows Service build is **self-contained** and bundles the .NET 8 runtime, so the target machine does not need .NET 8 installed.
@@ -119,6 +122,9 @@ irm https://<host>/files/scripts/Install-AvintraRunnerService.ps1 | iex
 The script must be run from an elevated PowerShell prompt. It installs the runner to `C:\Program Files\AvintraRunnerService` and starts the service automatically.
 
 The runner is self-contained, so no .NET 8 runtime or winget install is required on the target machine.
+
+> **Unvalidated:** the automated install path is provided as-is and has not been exercised in
+> this sprint.
 
 Available parameters:
 
@@ -228,20 +234,18 @@ clients/RunnerApp/
 
 ## Usage
 
+**Local desktop mode (validated):**
+
 ```powershell
-# Windows service install
+AvintraRunnerApp.exe --appBaseUrl <url> --accessToken <token> --jobId <guid> [--websocketPort <port>]
+```
+
+**Service mode (UNVALIDATED — see warning above):**
+
+```powershell
 AvintraRunnerService.exe --install
-AvintraRunnerService.exe --install --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>
 AvintraRunnerService.exe --uninstall
-
-# Single job (console)
-AvintraRunnerService.exe --run --appBaseUrl <url> --accessToken <token> --jobId <guid> [options]
-
-# Windows service
 AvintraRunnerService.exe --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> [options]
-
-# Desktop App sidecar (bundled with the builder app)
-AvintraRunnerApp.exe --run --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> --persist [options]
 ```
 
 ## Related

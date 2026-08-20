@@ -1,4 +1,5 @@
 ﻿using NodeLibrary.ExcelNodes.Enums;
+using NodeLibrary.Helpers;
 using NodeLibrary.Office;
 
 namespace NodeLibrary.ExcelNodes;
@@ -111,8 +112,8 @@ public class LaunchExcelNode : BaseNode
                             throw new ArgumentException("Document Path cannot be empty when opening an existing file.");
 
                         var readOnly = OpenAsReadOnly.Get(context);
-                        var readPassword = ReadProtectionPassword.Get(context);
-                        var writePassword = WriteProtectionPassword.Get(context);
+                        var readPassword = SecureStringHelper.ConvertSecureStringToString(ReadProtectionPassword.Get(context) ?? new SecureString());
+                        var writePassword = SecureStringHelper.ConvertSecureStringToString(WriteProtectionPassword.Get(context) ?? new SecureString());
 
                         dynamic workbooks = excelApp.Workbooks;
                         bool workbookAlreadyOpen = false;
@@ -132,12 +133,17 @@ public class LaunchExcelNode : BaseNode
 
                         if (!workbookAlreadyOpen)
                         {
-                            workbook = workbooks.Open(
-                                Filename: documentPath,
-                                ReadOnly: readOnly,
-                                Password: readPassword,
-                                WriteResPassword: writePassword
-                            );
+                            // Only supply password arguments to COM when a value was actually
+                            // provided. Passing null/empty SecureString to a late-bound COM call
+                            // can fail with "Could not convert argument N for call to Open".
+                            workbook = string.IsNullOrEmpty(readPassword) && string.IsNullOrEmpty(writePassword)
+                                ? workbooks.Open(Filename: documentPath, ReadOnly: readOnly)
+                                : workbooks.Open(
+                                    Filename: documentPath,
+                                    ReadOnly: readOnly,
+                                    Password: readPassword,
+                                    WriteResPassword: writePassword
+                                );
                         }
                         break;
                     }

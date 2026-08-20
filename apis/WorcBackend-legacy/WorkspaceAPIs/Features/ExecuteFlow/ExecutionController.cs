@@ -6,16 +6,13 @@ namespace WorkspaceAPIs.Controllers;
 public class ExecutionController : BaseApiController
 {
     private readonly IExecutionGraphService _executionGraphService;
-    private readonly INodeExecutionLogService _nodeExecutionLogService;
     private readonly IJobsTableService _jobsTableService;
 
     public ExecutionController(
         IExecutionGraphService executionGraphService,
-        INodeExecutionLogService nodeExecutionLogService,
         IJobsTableService jobsTableService)
     {
         _executionGraphService = executionGraphService;
-        _nodeExecutionLogService = nodeExecutionLogService;
         _jobsTableService = jobsTableService;
     }
 
@@ -32,14 +29,6 @@ public class ExecutionController : BaseApiController
     public async Task<ActionResult<ServiceResponse<double?>>> GetAgentFixedCredits(Guid flowVersionId)
     {
         return ResultHelper(await _jobsTableService.GetAgentFixedCreditsAsync(flowVersionId));
-    }
-
-    [HttpPost("logs/{jobId}")]
-    public async Task<ActionResult<ServiceResponse<bool>>> InsertNodeExecutionLogs(
-        Guid jobId,
-        [FromBody] List<NodeExecutionLogDto> logs)
-    {
-        return ResultHelper(await _nodeExecutionLogService.InsertNodeExecutionLogsAsync(jobId, logs));
     }
 
     // Starts a job (Created -> Running). This is an executor-only endpoint that is

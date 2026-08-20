@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
+using System.Security;
 using ExecutorLibrary.Helpers;
 using NodeLibrary.Core;
 using NodeLibrary.Helpers;
@@ -165,6 +166,12 @@ public class NodeProcessor : INodeProcessor
 
             // Convert to target type
             var convertedValue = NodeArgumentHelper.ConvertToType(resolvedValue, genericArgType);
+
+            // Skip empty optional SecureString inputs entirely — don't map or log them so
+            // unused password fields (e.g. Excel Read/Write Protection) don't clutter the
+            // execution inputs list.
+            if (convertedValue is SecureString ss && ss.Length == 0)
+                continue;
 
             // Create InArgument<T> with the value and set on the node
             var inArgument = NodeArgumentHelper.CreateInArgument(genericArgType, convertedValue);
