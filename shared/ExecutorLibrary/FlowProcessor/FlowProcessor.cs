@@ -489,12 +489,23 @@ public class FlowProcessor
 
         // Resolve any template placeholders (e.g. {{ButtonPressed}}) in the condition values
         // so comparisons are made against the actual runtime values rather than raw strings.
+        // For non-template literal strings, infer primitive types so numeric/boolean/date
+        // comparisons behave the same as the legacy Windows Workflow implementation.
         foreach (var group in conditionGroups)
         {
             foreach (var condition in group)
             {
+                var rawFirst = condition.FirstValue?.ToString();
+                var rawSecond = condition.SecondValue?.ToString();
+
                 condition.FirstValue = flowExecutionContext.ResolveTemplateObject(condition.FirstValue);
                 condition.SecondValue = flowExecutionContext.ResolveTemplateObject(condition.SecondValue);
+
+                if (condition.FirstValue is string s1 && rawFirst is not null && !rawFirst.Trim().StartsWith("{{"))
+                    condition.FirstValue = InferType(s1);
+
+                if (condition.SecondValue is string s2 && rawSecond is not null && !rawSecond.Trim().StartsWith("{{"))
+                    condition.SecondValue = InferType(s2);
             }
         }
 
@@ -770,8 +781,17 @@ public class FlowProcessor
         {
             foreach (var condition in group)
             {
+                var rawFirst = condition.FirstValue?.ToString();
+                var rawSecond = condition.SecondValue?.ToString();
+
                 condition.FirstValue = context.ResolveTemplateObject(condition.FirstValue);
                 condition.SecondValue = context.ResolveTemplateObject(condition.SecondValue);
+
+                if (condition.FirstValue is string s1 && rawFirst is not null && !rawFirst.Trim().StartsWith("{{"))
+                    condition.FirstValue = InferType(s1);
+
+                if (condition.SecondValue is string s2 && rawSecond is not null && !rawSecond.Trim().StartsWith("{{"))
+                    condition.SecondValue = InferType(s2);
             }
         }
 
@@ -1181,6 +1201,38 @@ public class FlowProcessor
         }
 
         return snapshot.Count > 0 ? snapshot : null;
+    }
+
+    /// <summary>
+    /// Infers the strongest primitive type from a string value.
+    /// Mirrors the legacy ActivityExecutorService.InferType behavior so that
+    /// condition literals like "5", "true", or "2024-01-01" compare as numbers,
+    /// booleans, or dates rather than as plain strings.
+    /// </summary>
+    private static object InferType(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return value;
+
+        if (bool.TryParse(value, out var boolResult))
+            return boolResult;
+
+        if (int.TryParse(value, out var intResult))
+            return intResult;
+
+        if (long.TryParse(value, out var longResult))
+            return longResult;
+
+        if (decimal.TryParse(value, out var decResult))
+            return decResult;
+
+        if (double.TryParse(value, out var dblResult))
+            return dblResult;
+
+        if (DateTime.TryParse(value, out var dtResult))
+            return dtResult;
+
+        return value;
     }
 
     private static List<TriggerInputSchema> ParseTriggerInputs(string? inputOutputObjectJson)

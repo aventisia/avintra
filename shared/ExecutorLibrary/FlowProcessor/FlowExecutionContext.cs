@@ -151,14 +151,14 @@ public class FlowExecutionContext
                 try
                 {
                     var evaluated = Interpreter.Eval(expr);
-                    return evaluated?.ToString() ?? string.Empty;
+                    return ObjectToString(evaluated);
                 }
                 catch
                 {
                     // Fallback: try simple dictionary lookup
                     if (_variables.TryGetValue(expr, out var value))
                     {
-                        return value?.ToString() ?? string.Empty;
+                        return ObjectToString(value);
                     }
 
                     return match.Value; // Leave as-is if evaluation fails
@@ -168,6 +168,34 @@ public class FlowExecutionContext
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Converts an evaluated object to its string representation.
+    /// ExpandoObject / dictionary-backed dynamic objects are serialized as JSON
+    /// because their default ToString() returns "System.Dynamic.ExpandoObject".
+    /// </summary>
+    private static string ObjectToString(object? value)
+    {
+        if (value is null)
+            return string.Empty;
+
+        if (value is string s)
+            return s;
+
+        if (value is ExpandoObject || value is IDictionary<string, object?>)
+        {
+            try
+            {
+                return JsonSerializer.Serialize(value);
+            }
+            catch
+            {
+                return value.ToString() ?? string.Empty;
+            }
+        }
+
+        return value.ToString() ?? string.Empty;
     }
 
     /// <summary>
