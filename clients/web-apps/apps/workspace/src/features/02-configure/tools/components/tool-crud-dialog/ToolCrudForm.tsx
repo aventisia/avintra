@@ -74,6 +74,7 @@ export const ToolCrudForm = ({
         label="Name"
         placeholder="My Custom API"
         isRequired
+        description="A **unique** name for the tool.\n\n- **Max length:** 255 characters.\n- **Can be changed** after creation."
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
         autoFocus

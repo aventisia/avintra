@@ -10,6 +10,7 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
+import { HelpButton } from "@/components/help/HelpButton";
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -47,7 +48,10 @@ export const CreditPlansTable = () => {
         <div className="space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <HelpButton guideId="credit-plans" />
+            </div>
 
             <div className="flex items-center gap-2">
               <DTSearchBox

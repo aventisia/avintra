@@ -263,7 +263,20 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
               label="Work Item schema"
               isRequired
               disabled={isReadMode}
-              description={`Define the list of fields that each work item in the queue must contain, as a JSON array. Each element is an object with: name (field key), description (optional), label (display text), type (string, int, Date or Array), isRequired (true = the field is mandatory on every work item), and isUsedForUniqueIdentifier (true = this field is used to detect duplicate work items). The value must be a JSON array, e.g. [{"name":"requestId","type":"string","isRequired":true,"isUsedForUniqueIdentifier":true}]. An example array is pre-filled below - edit or replace it as needed.`}
+              description={`Define the list of fields that each work item in the queue must contain, as a **JSON array**.
+
+Each element is an object with:
+
+- **name** — the field key
+- **description** — optional
+- **label** — display text
+- **type** — \`string\`, \`int\`, \`Date\` or \`Array\`
+- **isRequired** — \`true\` = the field is mandatory on every work item
+- **isUsedForUniqueIdentifier** — \`true\` = this field is used to detect duplicate work items
+
+The value must be a JSON array, e.g. \`[{"name":"requestId","type":"string","isRequired":true,"isUsedForUniqueIdentifier":true}]\`.
+
+An example array is pre-filled below — edit or replace it as needed.`}
             />
             <Button onClick={handleClick} type="button" variant={"link"}>
               Browse File
@@ -281,7 +294,18 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
               label="Disposition Status"
               isRequired={form.watch("type") === "User"}
               disabled={isReadMode}
-              description="Queue-specific disposition statuses (e.g., Approved, Rejected) in addition to the core Pending, In-progress, Completed and Failed statuses. Required when the Instance Type is User. An example structure is pre-filled below. Keys: name (status value), label (display text), color (badge color, e.g. #22c55e), routeQueue (name of the destination queue to route the work item to when this status is selected; empty = no routing). Disposition statuses are always terminal (end) states."
+              description={`Queue-specific disposition statuses (e.g. **Approved**, **Rejected**) in addition to the core **Pending**, **In-progress**, **Completed** and **Failed** statuses.
+
+Required when the **Instance Type** is **User**. An example structure is pre-filled below.
+
+Keys:
+
+- **name** — status value
+- **label** — display text
+- **color** — badge color, e.g. \`#22c55e\`
+- **routeQueue** — name of the destination queue to route the work item to when this status is selected; empty = no routing
+
+Disposition statuses are always terminal (end) states.`}
             />
           </div>
           <pre>

@@ -26,5 +26,6 @@ export * from "./FormItemContext";
 export * from "./FormLabel";
 export * from "./FormMessage";
 export * from "./non-field/AutherCard";
+export * from "./non-field/FieldHelpPopover";
 export * from "./non-field/FormLabelExt";
 export * from "./useFormField";

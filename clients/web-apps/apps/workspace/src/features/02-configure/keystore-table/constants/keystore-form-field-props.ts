@@ -37,6 +37,8 @@ export const nameProps: InputFieldProps = {
   label: "Name (Cannot be edited after creation)",
   isRequired: true,
   placeholder: "Enter a unique name",
+  description:
+    "A **unique** name for the key.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9) and underscore (`_`). Must start with a letter or underscore. No spaces or other special characters.\n- **Cannot contain** `__config__`.\n- **Cannot be changed** after creation.",
 };
 
 // Name

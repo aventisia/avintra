@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import { HelpButton } from "@/components/help/HelpButton";
 import {
   DateRangeFilter,
   HISTORY_JOB_STATUSES,
@@ -102,6 +103,7 @@ export const JobsTable = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
+              <HelpButton guideId="jobs" />
               <Tabs value={tabValue} onValueChange={handleTabSelect}>
                 <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
                   {tabs.map((tab) => (

@@ -15,7 +15,8 @@ const idProps: InputFieldProps = {
 const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
-  description: "A friendly name to identify this API key.",
+  description:
+    "A **friendly** name to identify this API key.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Can be changed** after creation.",
   isRequired: true,
   placeholder: "Production Integration",
 };

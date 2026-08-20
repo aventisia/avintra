@@ -9,6 +9,7 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
+import { HelpButton } from "@/components/help/HelpButton";
 import { TABLE_KEY } from "../constants";
 import { columnDisplayNames } from "../constants/column-display-names";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -53,7 +54,10 @@ export const AgentsTable = () => {
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             {/* <AgentsTableHeading /> */}
-            <DTHeading heading="Published" />
+            <div className="flex items-center gap-2">
+              <DTHeading heading="Published" />
+              <HelpButton guideId="published-agents" />
+            </div>
 
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search agents..." />

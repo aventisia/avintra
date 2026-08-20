@@ -25,7 +25,8 @@ const nameProps: InputFieldProps = {
   label: "Name",
   isRequired: true,
   placeholder: "Trigger Name",
-  description: "Specify a name for this trigger.",
+  description:
+    "Specify a **unique** name for this trigger.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Can be changed** after creation.",
 };
 
 const selectFrequencyProps: SelectFieldProps = {

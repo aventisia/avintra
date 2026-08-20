@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { HelpButton } from "@/components/help/HelpButton";
 
 import { useFetchChatAgents } from "../hooks/useFetchChatAgents";
 import { NoAgentsAvailable } from "./NoAgentsAvailable";
@@ -109,7 +110,10 @@ export function MyChatsLayout({ mode = "page" }: { mode?: LayoutMode }) {
       {/* Header - hide on mobile if chat is active so chat takes full screen */}
       {layoutMode !== "stacked" && (
         <div className={cn("w-full flex items-center justify-between")}>
-          <p className="text-lg font-medium">Chats</p>
+          <div className="flex items-center gap-2">
+            <p className="text-lg font-medium">Chats</p>
+            <HelpButton guideId="assist-chats" />
+          </div>
           {HAS_AGENTS && <SearchCommandTrigger />}
         </div>
       )}

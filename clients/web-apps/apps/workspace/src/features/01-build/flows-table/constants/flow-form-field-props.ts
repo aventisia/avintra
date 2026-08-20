@@ -45,6 +45,8 @@ const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
   isRequired: true,
+  description:
+    "A **unique**, descriptive name for the agent.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Can be changed** after creation.",
 };
 
 // Description
