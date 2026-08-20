@@ -648,11 +648,11 @@ public class JobsTableService : IJobsTableService
 
             // CANNOT START THE JOB: Job must be in Created status to start.
             if (job.Status != JobStatusEnum.Created)
-                return serviceResponse.Update("Only jobs in created status can be started.", 400);
-
-            // CANNOT START THE JOB: Job is already in a terminal status
-            if (job.Status.IsTerminal())
-                return serviceResponse.Update("Cannot start a job that is already completed or closed.", 400);
+            {
+                return job.Status.IsTerminal()
+                    ? serviceResponse.Update("Cannot start a job that is already completed or closed.", 409)
+                    : serviceResponse.Update("Only jobs in created status can be started.", 409);
+            }
 
             // Update status and start time.
             job.Status = JobStatusEnum.Running;
@@ -701,7 +701,7 @@ public class JobsTableService : IJobsTableService
 
             // CANNOT CLOSE THE JOB: Job is already in a terminal status
             if (job.Status.IsTerminal())
-                return serviceResponse.Update("Cannot close a job that is already completed or closed.", 400);
+                return serviceResponse.Update("Cannot close a job that is already completed or closed.", 409);
 
             // Run the shared close logic.
             var closeResult = await CloseJobCoreAsync(job, jobCloseDto.ClosingStatus, jobCloseDto.Remarks, jobCloseDto.NodeExecutionLogs ?? []);

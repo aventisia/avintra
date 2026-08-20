@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace RunnerApp.Services;
@@ -131,7 +132,9 @@ public class BackendHttpClient : IBackendClient
     {
         response.EnsureSuccessStatusCode();
 
-        var wrapper = await response.Content.ReadFromJsonAsync<ServiceResponseWrapper<T>>(cancellationToken: ct)
+        var wrapper = await response.Content.ReadFromJsonAsync<ServiceResponseWrapper<T>>(
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true },
+            cancellationToken: ct)
             ?? throw new InvalidOperationException("Backend returned an empty response.");
 
         if (wrapper.StatusCode is < 200 or >= 300)

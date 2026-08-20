@@ -50,17 +50,6 @@ public class ExecutionController : BaseApiController
     public async Task<ActionResult<ServiceResponse<JobRecordDto>>> StartJob(Guid jobId)
     {
         var response = await _jobsTableService.StartJobAsync(new JobStartDto { Id = jobId });
-
-        // Surface an already-started job as 409 Conflict so the runner can treat it as
-        // idempotent rather than a client error.
-        if (response.StatusCode == 400 &&
-            !string.IsNullOrWhiteSpace(response.Message) &&
-            response.Message.Contains("Only jobs in created status can be started.", StringComparison.OrdinalIgnoreCase))
-        {
-            response.StatusCode = 409;
-            response.Message = $"Job '{jobId}' is already started or no longer in Created status.";
-        }
-
         return ResultHelper(response);
     }
 
@@ -72,16 +61,6 @@ public class ExecutionController : BaseApiController
     {
         jobCloseDto.Id = jobId;
         var response = await _jobsTableService.CloseJobAsync(jobCloseDto);
-
-        // Surface a double-close as 409 Conflict so the runner can treat it as idempotent.
-        if (response.StatusCode == 400 &&
-            !string.IsNullOrWhiteSpace(response.Message) &&
-            response.Message.Contains("Cannot close a job that is already completed or closed.", StringComparison.OrdinalIgnoreCase))
-        {
-            response.StatusCode = 409;
-            response.Message = $"Job '{jobId}' is already in a terminal status.";
-        }
-
         return ResultHelper(response);
     }
 }

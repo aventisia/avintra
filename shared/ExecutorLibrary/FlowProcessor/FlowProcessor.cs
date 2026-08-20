@@ -312,12 +312,16 @@ public class FlowProcessor
             throw new NotSupportedException($"Sub-flow node type '{node.Type}' requires an IFlowGraphProvider.");
         }
 
-        var flowVersionIdStr = node.Type switch
+        var selectedSubFlow = node.Type switch
         {
             "callAgentNode" => node.Data?.SelectedAgent,
             "blockNode" => node.Data?.SelectedBlock,
             _ => null
         };
+
+        var flowVersionIdStr = selectedSubFlow?.ValueKind == JsonValueKind.Object
+            ? GetJsonStringProperty(selectedSubFlow.Value, "id")
+            : selectedSubFlow?.ToString();
 
         if (!TryParseFlowVersionId(flowVersionIdStr, out var flowVersionId))
         {
@@ -407,35 +411,6 @@ public class FlowProcessor
 
         var trimmed = raw.Trim();
 
-        // Modern frontend stores selectedAgent/selectedBlock as a JSON object: { "id": "...", "flowId": "..." }
-        if (trimmed.StartsWith('{') && trimmed.EndsWith('}'))
-        {
-            try
-            {
-                using var document = JsonDocument.Parse(trimmed);
-                if (document.RootElement.TryGetProperty("id", out var idProperty) &&
-                    idProperty.ValueKind == JsonValueKind.String &&
-                    Guid.TryParse(idProperty.GetString(), out var id))
-                {
-                    flowVersionId = id;
-                    return true;
-                }
-
-                // Fallback: some payloads may use flowVersionId as the key.
-                if (document.RootElement.TryGetProperty("flowVersionId", out var flowVersionIdProperty) &&
-                    flowVersionIdProperty.ValueKind == JsonValueKind.String &&
-                    Guid.TryParse(flowVersionIdProperty.GetString(), out var flowVersionIdValue))
-                {
-                    flowVersionId = flowVersionIdValue;
-                    return true;
-                }
-            }
-            catch
-            {
-                // Fall through to legacy parsing.
-            }
-        }
-
         // Legacy format stored by the backend normalization: "flowId,flowVersionId"
         var segments = trimmed.Split(',');
         if (segments.Length >= 1 && Guid.TryParse(segments[0].Trim(), out var legacyId))
@@ -445,6 +420,16 @@ public class FlowProcessor
         }
 
         return false;
+    }
+
+    private static string? GetJsonStringProperty(JsonElement element, string propertyName)
+    {
+        if (element.TryGetProperty(propertyName, out var property) && property.ValueKind == JsonValueKind.String)
+        {
+            return property.GetString();
+        }
+
+        return null;
     }
 
     private static readonly JsonSerializerOptions s_caseInsensitiveConditionOptions = new()

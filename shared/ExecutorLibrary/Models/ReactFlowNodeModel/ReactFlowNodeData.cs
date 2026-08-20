@@ -23,9 +23,11 @@ public class ReactFlowNodeData
     // Required on branchEndNode to distinguish between ConditionalBranch and LoopBranch.
     public string? GroupType { get; set; }
 
-    // Required on callAgentNode to specify the selected agent (format: "flowId,id").
-    public string? SelectedAgent { get; set; }
+    // Required on callAgentNode to specify the selected agent.
+    // Modern frontend stores this as a JSON object { id, flowId, ... }.
+    public JsonElement? SelectedAgent { get; set; }
 
-    // Required on blockNode to specify the selected block (format: "flowId,id").
-    public string? SelectedBlock { get; set; }
+    // Required on blockNode to specify the selected block.
+    // Modern frontend stores this as a JSON object { id, flowId, ... }.
+    public JsonElement? SelectedBlock { get; set; }
 }
