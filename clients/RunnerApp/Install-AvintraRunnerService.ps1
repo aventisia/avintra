@@ -64,7 +64,7 @@
         $env:AVINTRA_API_KEY = "my-api-key"
         $env:AVINTRA_TENANT_ID = "00000000-0000-0000-0000-000000000000"
         $env:AVINTRA_LINKED_USERNAME = "jdoe"
-        irm https://example.com/Install-AvintraRunnerService.ps1 | iex
+        irm https://example.com/files/scripts/Install-AvintraRunnerService.ps1 | iex
 
 .EXAMPLE
     Run the downloaded script with explicit parameters:
@@ -138,7 +138,13 @@ function Resolve-RunnerZipUrl {
     Write-Step "Resolving latest runner version from backend..."
     $base = $AppBaseUrl.TrimEnd('/')
     $latestUrl = "$base/files/binaries/runner/latest"
-    $latest = Invoke-RestMethod -Uri $latestUrl -UseBasicParsing
+    $response = Invoke-RestMethod -Uri $latestUrl -UseBasicParsing
+
+    # The backend wraps payloads in a ServiceResponse object; unwrap the inner DTO.
+    $latest = $response.data
+    if (-not $latest) {
+        $latest = $response
+    }
 
     if ([string]::IsNullOrWhiteSpace($latest.url)) {
         throw "Backend returned no runner download URL. Check that the runner archive is published."

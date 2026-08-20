@@ -112,7 +112,7 @@ $env:AVINTRA_APP_BASE_URL = "https://api.avintra.com"
 $env:AVINTRA_API_KEY = "<API_KEY>"
 $env:AVINTRA_TENANT_ID = "<TENANT_ID>"
 $env:AVINTRA_LINKED_USERNAME = "<LINKED_USERNAME>"
-irm https://<host>/files/binaries/runner/script/Install-AvintraRunnerService.ps1 | iex
+irm https://<host>/files/scripts/Install-AvintraRunnerService.ps1 | iex
 ```
 
 The script must be run from an elevated PowerShell prompt. It installs the runner to `C:\Program Files\AvintraRunnerService` and starts the service automatically.

@@ -32,13 +32,6 @@ public class RunnerBinariesController : BaseApiController
         return StreamBinary(_clientBinariesService.GetRunnerDownload(version));
     }
 
-    // GET: /binaries/runner/script/Install-AvintraRunnerService.ps1
-    [HttpGet("script/Install-AvintraRunnerService.ps1")]
-    public IActionResult GetInstallScript()
-    {
-        return StreamBinary(_clientBinariesService.GetInstallScript());
-    }
-
     // Streams a resolved binary file, or returns a not-found response when it could not be resolved.
     private IActionResult StreamBinary(BinaryFileResult result)
     {
