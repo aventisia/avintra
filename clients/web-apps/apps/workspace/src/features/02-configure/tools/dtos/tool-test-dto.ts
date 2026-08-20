@@ -18,9 +18,9 @@ export interface TestToolDto {
   parameters?: Record<string, unknown>;
 
   /**
-   * Optional credential identifier override.
+   * Optional credential NAME override.
    */
-  credentialId?: string;
+  credentialName?: string;
 
   /**
    * OpenAPI specification of the tool.

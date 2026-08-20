@@ -8,7 +8,7 @@ from langchain_core.tools import tool
 from app.core.logger import logger
 from app.features.custom_tools.custom_tool_executor import execute_operation
 from app.features.custom_tools.models import Tool
-from app.features.custom_tools.schemas import ToolDefinition, ToolOperation
+from app.features.custom_tools.schemas import ToolOperation
 
 
 async def load_tools_for_tenant(
@@ -80,7 +80,7 @@ def _build_langchain_tool(
             operation=operation,
             parameters=kwargs,
             authentication_type=tool.authentication_type,
-            credential_id=tool.credential_id,
+            credential_name=tool.credential_name,
             workspace_api=workspace_api,
             access_token=access_token,
             env_type=env_type,

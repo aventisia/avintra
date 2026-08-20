@@ -26,7 +26,7 @@ export interface LLMToolsOutputDto {
     agentName?: string;
     provider?: string;
     action?: string;
-    credentialId?: string;
+    credentialName?: string;
 
     /**
      * Dynamic payload returned by tool execution.

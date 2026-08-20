@@ -397,7 +397,7 @@ public class ToolService : IToolService
             toolToUpdate.Description = toolDto.Description;
             toolToUpdate.BaseUrl = toolDto.BaseUrl;
             toolToUpdate.AuthenticationType = toolDto.AuthenticationType;
-            toolToUpdate.CredentialId = toolDto.CredentialId;
+            toolToUpdate.CredentialName = toolDto.CredentialName;
             toolToUpdate.IsTenantWideAccess = toolDto.IsTenantWideAccess;
             toolToUpdate.LastModifiedByUserId = _currentUserId;
 
@@ -631,7 +631,7 @@ public class ToolService : IToolService
             }
 
             // Pass credential identity to the LLM pipeline so it can decrypt and apply auth.
-            var credentialId = testToolDto.CredentialId ?? tool.CredentialId;
+            var credentialName = testToolDto.CredentialName ?? tool.CredentialName;
 
             // Build the test payload for the LLM pipeline.
             var testPayload = new
@@ -639,7 +639,7 @@ public class ToolService : IToolService
                 baseUrl = tool.BaseUrl,
                 operationId = testToolDto.OperationId,
                 parameters = testToolDto.Parameters,
-                credentialId,
+                credentialName,
                 openApiSpec = tool.OpenApiSpec,
             };
 

@@ -17,7 +17,7 @@ public class TestToolDto
     public Dictionary<string, object>? Parameters { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the credential used to authenticate the tool request.
+    /// Gets or sets the unique name of the credential used to authenticate the tool request.
     /// </summary>
-    public Guid? CredentialId { get; set; }
+    public string? CredentialName { get; set; }
 }

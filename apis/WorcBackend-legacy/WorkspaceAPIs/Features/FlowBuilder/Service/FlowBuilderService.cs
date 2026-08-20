@@ -832,7 +832,7 @@ public class FlowBuilderService : IFlowBuilderService
                 OpenApiSpec = devTool.OpenApiSpec,
                 ParsedSchema = devTool.ParsedSchema,
                 AuthenticationType = devTool.AuthenticationType,
-                CredentialId = await ResolveProdCredentialIdAsync(devTool.CredentialId),
+                CredentialName = devTool.CredentialName,
                 IsTenantWideAccess = devTool.IsTenantWideAccess,
                 IsActive = devTool.IsActive,
                 IsVerified = devTool.IsVerified,

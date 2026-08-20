@@ -70,10 +70,10 @@ const subscriptionIdProps: InputFieldProps = {
   description: "SubscriptionId",
 };
 
-const credentialIdProps: InputFieldProps = {
-  name: "credentialId",
-  label: "Credential Id",
-  description: "CredentialId",
+const credentialNameProps: InputFieldProps = {
+  name: "credentialName",
+  label: "Credential Name",
+  description: "CredentialName",
   isRequired: true,
 };
 
@@ -100,7 +100,7 @@ export {
   resubscribeEnabledProps,
   resubscribeFrequencyProps,
   subscriptionIdProps,
-  credentialIdProps,
+  credentialNameProps,
   providerProps,
   isDisabledProps,
 };

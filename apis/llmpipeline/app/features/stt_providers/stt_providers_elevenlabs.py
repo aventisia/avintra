@@ -436,7 +436,6 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     "Model": req.model,
                     "ConsumedUnit": base_response.token_count,
                     "UnitType": "Seconds",
-                    "CredentialId": req.credential_name,
                     "CredentialName": credential_name,
                     "RefType": req.ref_type,
                     "RefId": req.ref_id,

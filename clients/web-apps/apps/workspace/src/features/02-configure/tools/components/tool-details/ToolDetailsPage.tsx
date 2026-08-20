@@ -36,7 +36,7 @@ const metadataRows = (tool: {
   description?: string;
   baseUrl?: string;
   authenticationType?: string;
-  credentialId?: string;
+  credentialName?: string;
   isActive?: boolean;
   isVerified?: boolean;
   isDisabled?: boolean;
@@ -60,7 +60,7 @@ const metadataRows = (tool: {
   },
   {
     label: "Credential",
-    value: tool.credentialId || "-",
+    value: tool.credentialName || "-",
   },
   {
     label: "Status",
@@ -154,7 +154,7 @@ export const ToolDetailsPage = () => {
       parameters: parsed,
       baseUrl: tool?.baseUrl ?? "",
       openApiSpec: tool?.openApiSpec,
-      credentialId: tool?.credentialId,
+      credentialName: tool?.credentialName,
     });
   };
 

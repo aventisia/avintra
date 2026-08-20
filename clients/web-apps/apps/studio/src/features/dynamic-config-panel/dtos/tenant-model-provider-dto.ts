@@ -12,6 +12,9 @@ export interface TenantModelProviderDto {
   /** The identifier of the vault credential associated with the provider. Null for URL-based providers (e.g. Ollama). */
   credentialId: string | null;
 
+  /** The unique name of the vault credential associated with the provider. Null for URL-based providers (e.g. Ollama). */
+  credentialName?: string | null;
+
   /** The base URL for self-hosted providers (e.g. Ollama). */
   providerUrl?: string | null;
 

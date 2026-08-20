@@ -5,16 +5,19 @@ public class FlowVersionToolService : IFlowVersionToolService
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILogger<FlowVersionToolService> _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _currentUserId;
 
     public FlowVersionToolService(
         IUnitOfWork unitOfWork,
         ILogger<FlowVersionToolService> logger,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _httpContextAccessor = httpContextAccessor;
+        _currentTenantService = currentTenantService;
         _currentUserId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
 
@@ -116,7 +119,7 @@ public class FlowVersionToolService : IFlowVersionToolService
 
             // Update allowed operations and credential override.
             linkToUpdate.AllowedOperations = flowVersionToolDto.AllowedOperations;
-            linkToUpdate.CredentialId = flowVersionToolDto.CredentialId;
+            linkToUpdate.CredentialName = flowVersionToolDto.CredentialName;
 
             _unitOfWork.FlowVersionToolRepo.Update(linkToUpdate);
 
@@ -178,4 +181,5 @@ public class FlowVersionToolService : IFlowVersionToolService
 
         return serviceResponse;
     }
+
 }

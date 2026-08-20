@@ -30,7 +30,7 @@ export const toolZodSchema = z.object({
   openApiSpec: z.string().optional(),
   parsedSchema: z.record(z.unknown()).optional(),
   authenticationType: z.nativeEnum(ToolAuthenticationTypeEnum).optional(),
-  credentialId: z.string().optional(),
+  credentialName: z.string().optional(),
   isTenantWideAccess: z.boolean().default(false),
   isActive: z.boolean().default(false),
   isVerified: z.boolean().default(false),

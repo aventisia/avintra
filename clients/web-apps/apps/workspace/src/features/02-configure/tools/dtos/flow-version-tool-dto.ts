@@ -20,7 +20,7 @@ export interface FlowVersionToolDto {
   allowedOperations?: string[];
 
   /**
-   * Optional credential identifier override for this flow version.
+   * Optional credential NAME override for this flow version.
    */
-  credentialId?: string;
+  credentialName?: string;
 }

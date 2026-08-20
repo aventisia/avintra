@@ -46,9 +46,10 @@ public class FlowVersion_Tool : IMustHaveTenant
     public List<string>? AllowedOperations { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the credential used by this tool association.
+    /// Gets or sets the unique name of the credential used by this tool association.
     /// </summary>
-    public Guid? CredentialId { get; set; }
+    [MaxLength(255)]
+    public string? CredentialName { get; set; }
 
     /// <summary>
     /// Gets or sets the identifier of the user who created the association.

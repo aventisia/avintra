@@ -76,7 +76,7 @@ export const StepPlayground = () => {
       parameters: parsed,
       baseUrl: draftTool?.baseUrl ?? "",
       openApiSpec: draftTool?.openApiSpec,
-      credentialId: draftTool?.credentialId,
+      credentialName: draftTool?.credentialName,
     });
   };
 

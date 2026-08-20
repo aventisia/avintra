@@ -613,9 +613,6 @@ namespace AccountsAPIs.Data.Migrations
                     b.Property<double>("ConsumedUnit")
                         .HasColumnType("double precision");
 
-                    b.Property<Guid?>("CredentialId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("CredentialName")
                         .HasColumnType("text");
 

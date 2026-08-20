@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, AliasChoices
+from pydantic import BaseModel, Field
 from typing import Optional, Literal, Dict, Any, Union
 from datetime import datetime
 
@@ -13,7 +13,7 @@ class STTProviderRequest(BaseModel):
     model: str
     language: Optional[str] = Field(None)
     stream: bool = Field(False)
-    credential_name: Optional[str] = Field(None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
+    credential_name: Optional[str] = Field(None, validation_alias='credential_name', serialization_alias='credential_name')
     is_byok_enabled: Optional[bool] = Field(False)
     ref_type: str # Type of the reference (e.g., "Agent", "Workflow")
     ref_id: str # Identifier to link back to Agent/Workflow
@@ -34,7 +34,7 @@ class STTProviderResponse(BaseModel):
     output: Optional[str] = Field(None)
     error: Optional[str] = None
     stream: bool = Field(False)
-    credential_name: Optional[str] = Field(None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
+    credential_name: Optional[str] = Field(None, validation_alias='credential_name', serialization_alias='credential_name')
     is_byok_enabled: Optional[bool] = Field(False)
     duration_seconds: Optional[float] = Field(None)
     token_count: Optional[float] = Field(None)

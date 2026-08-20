@@ -31,7 +31,7 @@ export const StepAuthenticate = () => {
   const handleCredentialChange = (value: string) => {
     setDraftTool({
       ...draftTool,
-      credentialId: value,
+      credentialName: value,
     });
   };
 
@@ -55,7 +55,7 @@ export const StepAuthenticate = () => {
       <div className="space-y-1.5">
         <label className="text-sm font-medium">Credential</label>
         <select
-          value={draftTool.credentialId ?? ""}
+          value={draftTool.credentialName ?? ""}
           onChange={(e) => handleCredentialChange(e.target.value)}
           disabled={isCredentialsLoading}
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"

@@ -7,11 +7,12 @@ from app.core.logger import logger
 
 async def fetch_decrypted_credential(
     workspace_api: str,
-    app_secret_id: UUID,
+    credential_name: str,
     access_token: str | None = None,
     env_type: str = "dev",
 ) -> dict:
-    url = f"{workspace_api.rstrip('/')}/internal/tool-credential/{app_secret_id}/decrypt"
+    """Fetch a decrypted credential by its unique NAME from the Workspace API."""
+    url = f"{workspace_api.rstrip('/')}/api/app-secret/decrypted-data/by-name/{credential_name}"
     headers = {"X-Env-Type": env_type}
     if access_token:
         # The token is already a full Authorization value (e.g. "Bearer <token>")

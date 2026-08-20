@@ -43,5 +43,5 @@ class ToolDefinition(BaseModel):
     tenant_id: UUID
     name: str
     base_url: str
-    credential_id: UUID | None = None
+    credential_name: str | None = None
     parsed_schema: list[ToolOperation]

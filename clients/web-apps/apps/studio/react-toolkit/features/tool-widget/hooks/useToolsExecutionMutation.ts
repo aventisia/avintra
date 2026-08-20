@@ -9,7 +9,7 @@ type ExecuteToolPayload = {
   agentName: string;
   provider: string;
   action: string;
-  credentialId: string;
+  credentialName: string;
   payload: Record<string, unknown>;
 };
 

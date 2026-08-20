@@ -59,11 +59,6 @@ public class ByokUsage : IMustHaveTenant
     public UnitTypesEnum? UnitType { get; set; }
 
     /// <summary>
-    /// Gets or sets the ID of the vault credential (BYOK key) that was used.
-    /// </summary>
-    public Guid? CredentialId { get; set; }
-
-    /// <summary>
     /// Gets or sets the display name of the vault credential (BYOK key) that was used.
     /// </summary>
     public string? CredentialName { get; set; }
