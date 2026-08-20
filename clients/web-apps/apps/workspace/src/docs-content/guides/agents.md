@@ -1,4 +1,3 @@
-
 The **Agents** page is where you build, edit, and manage your AI agents. An agent is an automation built by chaining together nodes — each node performs one step such as processing text, reading from a queue, calling an external tool, or running a skill.
 
 ## Purpose

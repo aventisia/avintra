@@ -1,5 +1,5 @@
 
-The **Usage** page (under Tenant Admin) shows your tenant's consumption and credits. Monitor how much of your plan you are using.
+The **Usage** page shows your tenant's consumption and credits. Monitor how much of your plan you are using.
 
 ## Purpose
 
