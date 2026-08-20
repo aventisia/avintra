@@ -13,7 +13,7 @@ export const idProps: InputFieldProps = {
 // Name
 export const nameProps: InputFieldProps = {
   name: "name",
-  label: "Name",
+  label: "Unique Name",
   isRequired: true,
   description:
     "A **unique**, descriptive name for the queue.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Can be changed** after creation.",

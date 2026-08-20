@@ -199,6 +199,7 @@ export const QueueCrudForm = ({ rowId, crudAction }: QueueCrudFormProps) => {
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
         autoFocus
+        disabled={crudAction !== "create"}
       />
       {/* Description */}
       <TextareaField {...descriptionProps} />
@@ -315,8 +316,8 @@ Disposition statuses are always terminal (end) states.`}
       </div>
       <SelectField
         selectOptions={selectOptions ?? []}
-        name="credentialId"
-        label="Credential Id"
+        name="credentialName"
+        label="Credential"
         disabled={isReadMode}
       />
 

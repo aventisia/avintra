@@ -12,7 +12,7 @@ export interface ToolActionConfig {
 
 export interface ToolsConfigItem {
   tool: string;
-  credential_id: string;
+  credential_name: string;
   actions: ToolActionConfig[];
 }
 

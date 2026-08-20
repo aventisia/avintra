@@ -74,7 +74,7 @@ const QueueSelectorField = ({ name, selectOptions, ...props }: QueueSelectorFiel
     const values = getValues();
     const fieldExists = "WorkItemData" in values;
     if (queueSelectField.value && fieldExists) {
-      const queueSchema = data?.find((item) => item.id == queueSelectField.value)?.inputSchema;
+      const queueSchema = data?.find((item) => item.name == queueSelectField.value)?.inputSchema;
 
       if (queueSchema) {
         const sampleWorkItem = createExampleValueObjectFromSchema(queueSchema);

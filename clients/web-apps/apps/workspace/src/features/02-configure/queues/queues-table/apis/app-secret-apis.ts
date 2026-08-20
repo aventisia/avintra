@@ -1,7 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { getSpaceHeaders } from "@/utils/space-headers";
+import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { CredSelectDto } from "../dtos/cred-select-dto.ts";
 

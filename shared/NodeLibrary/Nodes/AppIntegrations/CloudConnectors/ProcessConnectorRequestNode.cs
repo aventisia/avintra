@@ -13,8 +13,8 @@ public class ProcessConnectorRequestNode : BaseNode
     [DisplayName("Connector Unique Name")]
     public required InArgument<string> Action { get; set; }
 
-    [DisplayName("Credential Id")]
-    public required InArgument<string> CredentialId { get; set; }
+    [DisplayName("Credential Name")]
+    public required InArgument<string> CredentialName { get; set; }
 
     [DisplayName("Connector Request Payload")]
     public required InArgument<string> Payload { get; set; }
@@ -28,7 +28,7 @@ public class ProcessConnectorRequestNode : BaseNode
         {
             var provider = Provider.Get(context);
             var action = Action.Get(context);
-            var credentialId = CredentialId.Get(context);
+            var credentialName = CredentialName.Get(context);
             var payload = Payload.Get(context);
             var flowMetadata = FlowMetadata.Get(context) ?? throw new InvalidOperationException("Agent metadata is required");
             var callerContext = CallerContext.Get(context) ?? throw new InvalidOperationException("Caller context is required");
@@ -42,7 +42,7 @@ public class ProcessConnectorRequestNode : BaseNode
                 agentName = flowMetadata.Name,
                 provider,
                 action,
-                credentialId,
+                credentialName,
                 payload = ParsePayload(payload) // Parse the payload string into camelCase JSON only if it's a valid JSON, otherwise send as string
             };
 
@@ -51,6 +51,7 @@ public class ProcessConnectorRequestNode : BaseNode
             using var request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", callerContext.AccessToken);
+            NodeHttpHeaders.ApplyEnvHeader(request, callerContext);
             request.Content = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);

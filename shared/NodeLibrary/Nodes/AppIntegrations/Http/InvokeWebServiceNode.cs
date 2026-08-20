@@ -66,6 +66,7 @@ public class InvokeWebServiceNode : BaseNode
 
         try
         {
+            var callerContext = CallerContext.Get(context);
             var url = EndpointUrl.Get(context);
             var method = HttpMethod.Get(context);
             var body = RequestBody.Get(context);
@@ -126,6 +127,9 @@ public class InvokeWebServiceNode : BaseNode
             if (headers != null)
                 foreach (var header in headers)
                     client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+
+            // Forward the execution environment so backend resource resolution stays consistent.
+            NodeHttpHeaders.ApplyEnvHeader(client.DefaultRequestHeaders, callerContext);
 
             HttpResponseMessage response = method switch
             {

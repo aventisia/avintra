@@ -352,9 +352,9 @@ public class NodeProcessor : INodeProcessor
             if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
             if (IsSystemInput(input.Key)) continue;
 
-            if (input.Key.Contains("__CredentialId__"))
+            if (input.Key.Contains("__CredentialName__"))
             {
-                newInputs.Add(new ReactFlowNodeInput { Key = "CredentialId", Value = input.Value });
+                newInputs.Add(new ReactFlowNodeInput { Key = "CredentialName", Value = input.Value });
                 continue;
             }
 

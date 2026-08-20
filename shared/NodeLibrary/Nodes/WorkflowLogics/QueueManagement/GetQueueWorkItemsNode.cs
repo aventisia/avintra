@@ -75,7 +75,8 @@ public class GetQueueWorkItemsNode : BaseNode
                 "workspace/api/queue/workitem/list",
                 HttpMethod.Post,
                 accessToken,
-                payload);
+                payload,
+                callerContext.EnvType);
 
             Result.Set(context, retrievedWorkItems);
             IsSuccess.Set(context, true);

@@ -51,7 +51,7 @@ export const ModelProviderSetupDialog = () => {
     [],
   );
   const [isCredentialLoading, setIsCredentialLoading] = useState(false);
-  const [selectedCredentialId, setSelectedCredentialId] = useState<string>("");
+  const [selectedCredentialName, setSelectedCredentialName] = useState<string>("");
   const [enabledModelIds, setEnabledModelIds] = useState<string[]>([]);
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -62,7 +62,7 @@ export const ModelProviderSetupDialog = () => {
 
   const resetState = () => {
     setStep("credential");
-    setSelectedCredentialId("");
+    setSelectedCredentialName("");
     setEnabledModelIds([]);
     setCredentialOptions([]);
     setIsDisabled(false);
@@ -86,7 +86,7 @@ export const ModelProviderSetupDialog = () => {
 
         // Pre-select the saved credential and its enabled models when re-configuring.
         if (config) {
-          setSelectedCredentialId(config.credentialId ?? "");
+          setSelectedCredentialName(config.credentialName ?? config.credentialId ?? "");
           setEnabledModelIds(config.enabledModelIds ?? []);
           setIsDisabled(Boolean(config.isDisabled));
           // Skip straight to the models step so existing state is shown.
@@ -128,7 +128,7 @@ export const ModelProviderSetupDialog = () => {
       const modelsRes = await getLlmModelsV2(
         provider.value.toLowerCase(),
         undefined,
-        selectedCredentialId,
+        selectedCredentialName,
       );
       setProviderModels(modelsRes?.models ?? []);
     } catch (err) {
@@ -140,17 +140,17 @@ export const ModelProviderSetupDialog = () => {
   };
 
   const handleNext = () => {
-    if (!selectedCredentialId) return;
+    if (!selectedCredentialName) return;
     setStep("models");
     void loadProviderModels();
   };
 
   const handleSave = () => {
     if (!provider) return;
-    if (!selectedCredentialId) return;
+    if (!selectedCredentialName) return;
     upsertMutation.mutate({
       providerType: provider.value,
-      credentialId: selectedCredentialId,
+      credentialName: selectedCredentialName,
       enabledModelIds,
       isDisabled,
     });
@@ -207,8 +207,8 @@ export const ModelProviderSetupDialog = () => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Credential</label>
                 <Select
-                  value={selectedCredentialId}
-                  onValueChange={(value) => setSelectedCredentialId(value)}
+                  value={selectedCredentialName}
+                  onValueChange={(value) => setSelectedCredentialName(value)}
                   disabled={isCredentialLoading}
                 >
                   <SelectTrigger className="w-full">
@@ -232,7 +232,7 @@ export const ModelProviderSetupDialog = () => {
                 <Button variant="ghost" onClick={handleClose}>
                   Cancel
                 </Button>
-                <Button onClick={handleNext} disabled={!selectedCredentialId}>
+                <Button onClick={handleNext} disabled={!selectedCredentialName}>
                   Next
                 </Button>
               </div>
@@ -243,8 +243,8 @@ export const ModelProviderSetupDialog = () => {
               <div className="space-y-2">
                 <label className="text-sm font-medium">Credential</label>
                 <Select
-                  value={selectedCredentialId}
-                  onValueChange={(value) => setSelectedCredentialId(value)}
+                  value={selectedCredentialName}
+                  onValueChange={(value) => setSelectedCredentialName(value)}
                   disabled={isCredentialLoading}
                 >
                   <SelectTrigger className="w-full">
@@ -327,7 +327,7 @@ export const ModelProviderSetupDialog = () => {
                   </Button>
                   <Button
                     onClick={handleSave}
-                    disabled={upsertMutation.isPending || !selectedCredentialId}
+                    disabled={upsertMutation.isPending || !selectedCredentialName}
                   >
                     {upsertMutation.isPending ? "Saving..." : "Save"}
                   </Button>

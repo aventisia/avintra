@@ -57,7 +57,7 @@ export const useDefineKnowledgeBaseForm = ({
       embeddingConfig: {
         isByokEnabled: false,
         provider: "openai",
-        credentialId: "",
+        credentialName: "",
         model: "",
       },
       isDisabled: false,
@@ -98,7 +98,7 @@ export const useDefineKnowledgeBaseForm = ({
       embeddingConfig: {
         isByokEnabled: knowledgeBaseData?.embeddingCredentialId ? true : false,
         provider: knowledgeBaseData?.embeddingProvider ?? "openai",
-        credentialId: knowledgeBaseData?.embeddingCredentialId ?? "",
+        credentialName: knowledgeBaseData?.embeddingCredentialName ?? knowledgeBaseData?.embeddingCredentialId ?? "",
         model: knowledgeBaseData?.embeddingModel ?? "",
       },
       isDisabled: knowledgeBaseData?.isDisabled ?? false,
@@ -136,7 +136,8 @@ export const useDefineKnowledgeBaseForm = ({
       description: formData.description,
       vectorStore: formData.vectorStore as VectorStoreEnum,
       embeddingProvider: formData.embeddingConfig.provider,
-      embeddingCredentialId: formData.embeddingConfig.credentialId || undefined,
+      embeddingCredentialName: formData.embeddingConfig.credentialName || undefined,
+      embeddingCredentialId: undefined,
       embeddingModel: formData.embeddingConfig.model,
       isDisabled: formData.isDisabled,
       createdBy: formData.createdBy,

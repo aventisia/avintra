@@ -1,17 +1,17 @@
-// import { useCheckAvailability } from "@avplatform/ui/hooks";
+import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
-// import { isNameAvailable } from "../apis/triggers-table-apis";
+import { isNameAvailable } from "../apis/triggers-table-apis";
 import {
-  // triggerNameSchema,
+  triggerNameSchema,
   triggerZodSchema,
 } from "../constants/trigger-zod-schema";
 import { MessageTriggerDto } from "../dtos/message-trigger-dto";
@@ -22,7 +22,7 @@ import { useTableTab } from "./useTableTab";
  */
 export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: CrudActionType }) => {
   // Trigger name state for availability check
-  // const [triggerName, setTriggerName] = useState("");
+  const [triggerName, setTriggerName] = useState("");
 
   // Get user session
   const { userSession } = useUserSessionStore(
@@ -50,7 +50,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
         d.setDate(d.getDate() + 30);
         return d;
       })(), // Default to 30 days ahead
-      credentialId: "",
+      credentialName: "",
       resource: "/chats/getAllMessages",
       reference: "",
       provider: "M365",
@@ -79,7 +79,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
     const triggerData = triggersData?.data.find((item) => item.id === rowId);
 
     // Set trigger name for availability check
-    // setTriggerName(triggerData?.name ?? "");
+    setTriggerName(triggerData?.name ?? "");
     const datePlus30 = new Date();
     datePlus30.setDate(datePlus30.getDate() + 30);
 
@@ -98,7 +98,7 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
 
       resubscribeFrequency: triggerData?.resubscribeFrequency?.toString() ?? "1",
 
-      credentialId: triggerData?.credentialId ?? "",
+      credentialName: triggerData?.credentialName ?? triggerData?.credentialId ?? "",
       resource: triggerData?.resource ?? "/chats/getAllMessages",
       provider: triggerData?.provider ?? "M365",
       resubscribeEnabled: triggerData?.resubscribeEnabled ?? false,
@@ -107,19 +107,18 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
   }, [rowId, form, queryClient, userSession, queryKey]);
 
   // Get check availability state and methods
-  // const {
-  //   isAvailable,
-  //   isCheckPending,
-  //   handleInputChange,
-  //   availabilityMessage,
-  //   setAvailabilityMessage,
-  // } = useCheckAvailability<z.infer<typeof triggerZodSchema>, z.ZodString>({
-  //   defaultInputValue: triggerName,
-  //   fieldName: "name",
-  //   form,
-  //   fieldSchema: triggerNameSchema,
-  //   checkAvailabilityAPIFn: isNameAvailable,
-  // });
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+  } = useCheckAvailability<z.infer<typeof triggerZodSchema>, z.ZodString>({
+    defaultInputValue: triggerName,
+    fieldName: "name",
+    form,
+    fieldSchema: triggerNameSchema,
+    checkAvailabilityAPIFn: isNameAvailable,
+  });
 
   // Refine form data before submission
   const refineFormData = (formData: z.infer<typeof triggerZodSchema>) => {
@@ -143,9 +142,9 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction?: Cr
     form,
     isDirty,
     refineFormData,
-    // isAvailable,
-    // availabilityMessage,
-    // isCheckPending,
-    // handleInputChange,
+    isAvailable,
+    availabilityMessage,
+    isCheckPending,
+    handleInputChange,
   };
 };

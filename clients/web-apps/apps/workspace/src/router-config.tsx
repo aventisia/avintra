@@ -4,6 +4,7 @@ import { Navigate, RouteObject, createBrowserRouter } from "react-router-dom";
 import { AppErrorPage } from "./components/layout/AppErrorPage";
 import { AppLayout } from "./components/layout/AppLayout";
 import { AppRedirectPage } from "./components/layout/AppRedirectPage";
+import { ConfigureLayout } from "./features/02-configure/ConfigureLayout";
 import { ConversationsTable } from "./features/03-orchestrator/conversations-table/components/ConversationsTable";
 import Chat from "./features/04-assist/my-chats/components/ChatSection";
 import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALayout";
@@ -78,6 +79,7 @@ const routerConfig: RouteObject[] = [
       // configure section
       {
         path: "/configure",
+        element: <ConfigureLayout />,
         children: [
           {
             index: true,

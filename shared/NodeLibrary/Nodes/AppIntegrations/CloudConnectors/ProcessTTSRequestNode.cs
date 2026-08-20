@@ -47,7 +47,8 @@ public class ProcessTTSRequestNode : BaseNode
                 model = GetStringProperty(modelConfig, "model"),
                 input = inputText,
                 is_byok_enabled = GetBoolProperty(modelConfig, "is_byok_enabled") ?? false,
-                credentials_id = GetStringProperty(modelConfig, "credential_id") ?? Guid.Empty.ToString(),
+                // Canonical key is credential_name; value may be a legacy GUID or a name (Q12 back-compat).
+                credential_name = GetStringProperty(modelConfig, "credential_name") ?? GetStringProperty(modelConfig, "credential_id") ?? Guid.Empty.ToString(),
                 stream = false,
 
                 // Voice synthesis settings.
@@ -74,6 +75,9 @@ public class ProcessTTSRequestNode : BaseNode
 
             request.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", callerContext.AccessToken);
+
+            // Forward the execution environment so backend resources resolve in the same env.
+            NodeHttpHeaders.ApplyEnvHeader(request, callerContext);
 
             // Attach the serialized JSON payload.
             request.Content = new StringContent(

@@ -2,7 +2,7 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { getSpaceHeaders } from "@/utils/space-headers";
+import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { LlmModelsResponseDto, LlmProvidersResponseDto } from "../dtos/llm-provider-v2-dto";
 import { TenantModelProviderDto } from "../dtos/model-provider-dto";
@@ -38,12 +38,12 @@ export const deleteModelProvider = (id: string) => {
 };
 
 /**
- * Retrieves the list of models for a given provider using a selected credential.
+ * Retrieves the list of models for a given provider using a selected credential name.
  */
-export const getProviderModels = (providerType: string, credentialId: string) => {
+export const getProviderModels = (providerType: string, credentialName: string) => {
   return axiosInstance
     .get<IHttpResponse<ISelectOption[]>>(
-      `${import.meta.env.VITE_WORKSPACE_API_PATH}/llm-provider/models/select-option?providerType=${providerType}&credentialId=${credentialId}`,
+      `${import.meta.env.VITE_WORKSPACE_API_PATH}/llm-provider/models/select-option?providerType=${providerType}&credentialName=${credentialName}`,
     )
     .then((res) => res.data);
 };
@@ -71,11 +71,11 @@ export const getLlmProvidersV2 = (capability?: string) => {
 export const getLlmModelsV2 = (
   provider: string,
   capability?: string,
-  credentialId?: string,
+  credentialName?: string,
 ) => {
   const params = new URLSearchParams({ provider });
   if (capability) params.set("capability", capability);
-  if (credentialId) params.set("credential_id", credentialId);
+  if (credentialName) params.set("credential_name", credentialName);
   return axiosInstance
     .get<LlmModelsResponseDto>(`${llmPipelineBaseURL}/models?${params.toString()}`, {
       headers: getSpaceHeaders(),

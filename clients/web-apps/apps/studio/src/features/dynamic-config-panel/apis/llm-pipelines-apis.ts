@@ -2,7 +2,7 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 import { ISelectOption } from "@avplatform/ui/types";
 
-import { getStudioSpaceHeaders } from "@/utils/space-headers";
+import { getStudioConfigHeaders } from "@/utils/space-headers";
 
 import { LLMRequestDto, LLMResponseDto } from "../dtos/llm-providers-dto";
 import { STTRequestDto, STTResponseDto } from "../dtos/stt-model-dto";
@@ -13,7 +13,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_LLMPIPELINE_API_PATH}`;
 const generateLLMResponse = (obj: LLMRequestDto) => {
   return axiosInstance
     .post<IHttpResponse<LLMResponseDto>>(`${baseAPIURL}/llm/generate`, obj, {
-      headers: getStudioSpaceHeaders(),
+      headers: getStudioConfigHeaders(),
     })
     .then((res) => res.data);
 };
@@ -29,7 +29,7 @@ ${credentialId}`,
 const generateSTTResponse = (obj: STTRequestDto) => {
   return axiosInstance
     .post<IHttpResponse<STTResponseDto>>(`${baseAPIURL}/stt/transcribe`, obj, {
-      headers: getStudioSpaceHeaders(),
+      headers: getStudioConfigHeaders(),
     })
     .then((res) => res.data);
 };
@@ -37,7 +37,7 @@ const generateSTTResponse = (obj: STTRequestDto) => {
 const generateTTSResponse = (obj: TTSRequestDto) => {
   return axiosInstance
     .post<IHttpResponse<TTSResponseDto>>(`${baseAPIURL}/tts/synthesize`, obj, {
-      headers: getStudioSpaceHeaders(),
+      headers: getStudioConfigHeaders(),
     })
     .then((res) => res.data);
 };

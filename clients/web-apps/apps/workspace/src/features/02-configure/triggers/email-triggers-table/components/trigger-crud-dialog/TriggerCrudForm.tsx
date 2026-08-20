@@ -54,10 +54,10 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
   const {
     form,
     isDirty,
-    // isAvailable,
-    // availabilityMessage,
-    // isCheckPending,
-    // handleInputChange,
+    isAvailable,
+    availabilityMessage,
+    isCheckPending,
+    handleInputChange,
     refineFormData,
   } = useDefineTriggerForm({ rowId, crudAction });
 
@@ -155,8 +155,9 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
       {/* Name */}
       <InputField
         {...nameProps}
-        // onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        // nonErrorMessage={availabilityMessage}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+        disabled={crudAction !== "create"}
       />
 
       <FormField
@@ -189,17 +190,17 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
       {crudAction === "create" ? (
         <SelectField
           selectOptions={selectOptions ?? []}
-          name="credentialId"
-          label="Credential Id"
+          name="credentialName"
+          label="Credential"
           isRequired
           disabled={isReadMode}
         />
       ) : (
-        form.getValues("credentialId") !== "" && (
+        form.getValues("credentialName") !== "" && (
           <SelectField
             selectOptions={selectOptions ?? []}
-            name="credentialId"
-            label="Credential Id"
+            name="credentialName"
+            label="Credential"
             isRequired
             disabled={isReadMode || isUpdateMode}
           />
@@ -254,7 +255,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
             secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
             isPending={isPending}
-            disabled={!isDirty}
+            disabled={!isDirty || !isAvailable || isCheckPending}
           />
         </div>
       )}

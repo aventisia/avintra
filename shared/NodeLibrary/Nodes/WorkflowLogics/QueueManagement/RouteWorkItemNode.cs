@@ -48,7 +48,8 @@ public class RouteWorkItemNode : BaseNode
                 "workspace/api/queue/workitem/route",
                 HttpMethod.Put,
                 accessToken,
-                payload);
+                payload,
+                callerContext.EnvType);
 
             var routeResult = response.ValueKind == JsonValueKind.True ||
                 (response.ValueKind == JsonValueKind.String && bool.TryParse(response.GetString(), out var parsed) && parsed);

@@ -28,6 +28,8 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
     setCurrentStep,
     draftTool,
     isDraftSaved,
+    isNameAvailable,
+    isNameCheckPending,
     reset,
     setCrudAction,
     setDraftTool,
@@ -39,6 +41,9 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
   const { queryKey } = useTableTab();
 
   const isCreate = crudAction === "create";
+
+  // Name availability gates create mode: the name must be unique (and not being checked).
+  const isNameValidForSubmit = !isCreate || (isNameAvailable && !isNameCheckPending);
 
   useEffect(() => {
     setCrudAction(crudAction);
@@ -147,6 +152,8 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
     draftTool?.name?.trim() && draftTool?.baseUrl?.trim() && draftTool?.openApiSpec?.trim(),
   );
 
+  const canProceed = isIngestValid && isNameValidForSubmit;
+
   const steps = [
     { key: "ingest", label: "Ingest Spec", component: <StepIngestSpec crudAction={crudAction} /> },
     { key: "authenticate", label: "Authenticate", component: <StepAuthenticate /> },
@@ -228,14 +235,18 @@ export const ToolWizard = ({ crudAction, rowId }: ToolWizardProps) => {
           <div className="flex gap-2">
             {currentIndex < steps.length - 1 ? (
               <Button
-                disabled={currentIndex === steps.length - 1 || !isIngestValid}
+                disabled={currentIndex === steps.length - 1 || !canProceed}
                 onClick={() => setCurrentStep(steps[currentIndex + 1].key)}
                 type="button"
               >
                 Next
               </Button>
             ) : (
-              <Button onClick={handleFinish} disabled={!draftTool || isSavePending} type="button">
+              <Button
+                onClick={handleFinish}
+                disabled={!draftTool || isSavePending || !canProceed}
+                type="button"
+              >
                 {isSavePending ? (isCreate ? "Creating..." : "Updating...") : "Finish"}
               </Button>
             )}

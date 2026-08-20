@@ -32,7 +32,8 @@ public class GetWorkItemByIdNode : BaseNode
                 baseUrl,
                 $"workspace/api/queue/workitem/{workItemId}",
                 HttpMethod.Get,
-                accessToken);
+                accessToken,
+                envType: callerContext.EnvType);
 
             Result.Set(context, retrievedWorkItem);
             IsSuccess.Set(context, true);

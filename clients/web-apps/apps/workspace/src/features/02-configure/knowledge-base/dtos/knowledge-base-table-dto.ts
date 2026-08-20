@@ -40,6 +40,13 @@ export interface KnowledgeBaseTableDto {
   embeddingCredentialId?: string;
 
   /**
+   * Name of the credential used for the embedding model provider.
+   * The Agent Builder stores and submits the resource NAME; the backend resolves
+   * it to the embeddingCredentialId before persisting.
+   */
+  embeddingCredentialName?: string;
+
+  /**
    * Credential ID used for the vector store.
    */
   storeCredentialId?: string;

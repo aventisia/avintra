@@ -5,6 +5,7 @@ import { useShallow } from "zustand/react/shallow";
 import { getCredSelectOptions } from "@/features/02-configure/queues/queues-table/apis/app-secret-apis";
 import { CredSelectDto } from "@/features/02-configure/queues/queues-table/dtos/cred-select-dto.ts.ts";
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
+import { useEnvironmentStore } from "@/stores/environment-store";
 
 import { DATA_QUERY_KEY } from "../constants/tools-table.constants";
 
@@ -22,8 +23,10 @@ export const useFetchCustomApiCredentials = () => {
     })),
   );
 
+  const env = useEnvironmentStore((state) => state.env);
+
   const { data, isFetching, isLoading, isError } = useQuery({
-    queryKey: [...DATA_QUERY_KEY, "credentials", "custom-api-tool", currentSpace?.id],
+    queryKey: [...DATA_QUERY_KEY, "credentials", "custom-api-tool", currentSpace?.id, env],
     queryFn: () => getCredSelectOptions("CustomApiTool"),
     staleTime: 60 * 1000,
   });

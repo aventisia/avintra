@@ -1,3 +1,4 @@
+import { useCheckAvailability } from "@avplatform/ui/hooks";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { useUserSessionStore } from "@avplatform/ui/stores";
 import { type CrudActionType } from "@avplatform/ui/types";
@@ -8,8 +9,9 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useShallow } from "zustand/react/shallow";
 
+import { isNameAvailable } from "../apis/triggers-table-apis";
 import { numbersToWeekdays, weekdaysToNumbers } from "../constants/form-utils";
-import { triggerZodSchema } from "../constants/trigger-zod-schema";
+import { triggerNameSchema, triggerZodSchema } from "../constants/trigger-zod-schema";
 import { TimeTriggerDto } from "../dtos/time-trigger-dto";
 import { useTableTab } from "./useTableTab";
 
@@ -18,6 +20,9 @@ import { useTableTab } from "./useTableTab";
  * Handles synchronizing Data Table selections with the form inputs and preparing payloads.
  */
 export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: CrudActionType }) => {
+  // Trigger name state for availability check
+  const [triggerName, setTriggerName] = useState("");
+
   // Get user session
   const { userSession } = useUserSessionStore(
     useShallow((state) => ({
@@ -73,6 +78,9 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
     const triggersData = queryClient.getQueryData<{ data: TimeTriggerDto[] }>(queryKey);
     const triggerData = triggersData?.data.find((item) => item.id === rowId);
 
+    // Set trigger name for availability check
+    setTriggerName(triggerData?.name ?? "");
+
     // Evaluate the historical start date against current time to lock UI fields if necessary
     if (triggerData?.effectiveDate) {
       const originalEffective = new Date(triggerData.effectiveDate);
@@ -102,6 +110,20 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
       nextTriggerTime: triggerData?.nextTriggerTime ?? null,
     });
   }, [rowId, form, queryClient, userSession, queryKey]);
+
+  // Get check availability state and methods
+  const {
+    isAvailable,
+    isCheckPending,
+    handleInputChange,
+    availabilityMessage,
+  } = useCheckAvailability<z.infer<typeof triggerZodSchema>, z.ZodString>({
+    defaultInputValue: triggerName,
+    fieldName: "name",
+    form,
+    fieldSchema: triggerNameSchema,
+    checkAvailabilityAPIFn: isNameAvailable,
+  });
 
   /**
    * Transforms form state back into the required DTO format for the backend API.
@@ -141,5 +163,9 @@ export const useDefineTriggerForm = ({ rowId }: { rowId: string; crudAction: Cru
     isDirty,
     refineFormData,
     isEffectivePassed,
+    isAvailable,
+    availabilityMessage,
+    isCheckPending,
+    handleInputChange,
   };
 };

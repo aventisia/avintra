@@ -1,4 +1,5 @@
 using System.Net;
+using NodeLibrary.Helpers;
 
 namespace NodeLibrary.QueueManagementNodes.Helpers;
 
@@ -22,7 +23,8 @@ public static class QueueApiExecutor
         string endpoint,
         HttpMethod method,
         string accessToken,
-        object? payload = null)
+        object? payload = null,
+        string? envType = null)
     {
         if (string.IsNullOrWhiteSpace(baseUrl))
             throw new ArgumentNullException(nameof(baseUrl));
@@ -38,6 +40,7 @@ public static class QueueApiExecutor
         using var request = new HttpRequestMessage(method, requestUri);
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+        NodeHttpHeaders.ApplyEnvHeader(request, envType);
 
         if (method != HttpMethod.Get && method != HttpMethod.Delete && payload != null)
         {

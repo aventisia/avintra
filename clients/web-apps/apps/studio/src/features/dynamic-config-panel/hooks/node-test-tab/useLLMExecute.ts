@@ -128,7 +128,7 @@ export function useLLMExecute(
       json_schema: formData.useJSONSchema ? (formData.json_schema as string) : null,
       max_output_tokens: modelConfig.max_output_tokens ?? null,
       is_byok_enabled: modelConfig.is_byok_enabled,
-      credential_id: modelConfig.credential_id || null,
+      credential_name: modelConfig.credential_name || null,
       temperature: modelConfig.temperature,
       top_p: modelConfig.top_p,
       reasoning_effort: modelConfig.reasoning_effort ?? null,

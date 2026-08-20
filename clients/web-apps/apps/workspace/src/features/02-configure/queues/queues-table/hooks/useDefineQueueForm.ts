@@ -125,7 +125,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       statuses: defaultStatuses,
       routeToQueues: [],
       processingMode: "Manual",
-      credentialId: null,
+      credentialName: null,
       // outputDataSchemaFile: undefined,
 
       isDisabled: false,
@@ -167,7 +167,7 @@ export const useDefineQueueForm = ({ rowId, crudAction }: UseDefineQueueFormOpti
       type: queueData?.type ?? "Agent",
       routeToQueues: queueData?.routeToQueues ?? [],
       processingMode: queueData?.processingMode || "Manual",
-      credentialId: queueData?.credentialId || null,
+      credentialName: queueData?.credentialName || queueData?.credentialId || null,
       isUniqueReferencesEnforced: queueData?.isUniqueReferencesEnforced,
       isStoredEncrypted: queueData?.isStoredEncrypted,
       // shouldRetryFailedItems: queueData?.shouldRetryFailedItems,

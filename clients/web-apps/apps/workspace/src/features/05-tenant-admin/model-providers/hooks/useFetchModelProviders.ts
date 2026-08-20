@@ -45,17 +45,17 @@ export const useFetchLlmProvidersV2 = (capability?: string) => {
 /**
  * Custom hook to fetch the list of models for a given provider from the LLM
  * pipeline API (`/v2/llm/models?provider=X`). Enabled only when a provider is given.
- * A `credentialId` is forwarded for ollama providers so the pipeline can echo it
+ * A `credentialName` is forwarded for ollama providers so the pipeline can echo it
  * back on each returned model.
  */
 export const useFetchLlmModelsV2 = (
   provider?: string,
   capability?: string,
-  credentialId?: string,
+  credentialName?: string,
 ) => {
   return useQuery({
-    queryKey: ["llm-models-v2", provider, capability, credentialId],
-    queryFn: () => getLlmModelsV2(provider as string, capability, credentialId),
+    queryKey: ["llm-models-v2", provider, capability, credentialName],
+    queryFn: () => getLlmModelsV2(provider as string, capability, credentialName),
     enabled: Boolean(provider),
   });
 };

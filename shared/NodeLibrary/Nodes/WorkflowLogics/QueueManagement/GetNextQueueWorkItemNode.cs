@@ -61,7 +61,8 @@ public class GetNextQueueWorkItemNode : BaseNode
                 "workspace/api/queue/workitem/next",
                 HttpMethod.Put,
                 accessToken,
-                payload);
+                payload,
+                callerContext.EnvType);
 
             Result.Set(context, nextWorkItem);
             IsSuccess.Set(context, true);

@@ -43,10 +43,12 @@ const CustomApiToolForm = ({
 
       <InputField
         name="name"
-        label="Name"
+        label="Unique Name"
         placeholder="Custom API Tool"
         isRequired
+        description="Name cannot be modified after creation."
         autoFocus
+        disabled={crudAction !== "create"}
         onChangeCapture={(e) => onNameChange?.(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
       />

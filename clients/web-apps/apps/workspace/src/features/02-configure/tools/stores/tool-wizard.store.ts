@@ -12,12 +12,20 @@ interface ToolWizardState {
   isDraftSaved: boolean;
   specText: string;
   specFile?: File;
+  isNameAvailable: boolean;
+  isNameCheckPending: boolean;
+  nameAvailabilityMessage: string | null;
   setCurrentStep: (step: WizardStep) => void;
   setCrudAction: (action?: DialogCrudAction) => void;
   setDraftTool: (tool?: ToolDto) => void;
   setDraftSaved: (saved: boolean) => void;
   setSpecText: (text: string) => void;
   setSpecFile: (file?: File) => void;
+  setNameAvailability: (state: {
+    isAvailable: boolean;
+    isCheckPending: boolean;
+    message: string | null;
+  }) => void;
   reset: () => void;
 }
 
@@ -28,6 +36,9 @@ const initialState = {
   isDraftSaved: false,
   specText: "",
   specFile: undefined,
+  isNameAvailable: true,
+  isNameCheckPending: false,
+  nameAvailabilityMessage: null,
 };
 
 export const useToolWizardStore = create<ToolWizardState>((set) => ({
@@ -38,5 +49,7 @@ export const useToolWizardStore = create<ToolWizardState>((set) => ({
   setDraftSaved: (saved) => set({ isDraftSaved: saved }),
   setSpecText: (text) => set({ specText: text }),
   setSpecFile: (file) => set({ specFile: file }),
+  setNameAvailability: ({ isAvailable, isCheckPending, message }) =>
+    set({ isNameAvailable: isAvailable, isNameCheckPending: isCheckPending, nameAvailabilityMessage: message }),
   reset: () => set(initialState),
 }));

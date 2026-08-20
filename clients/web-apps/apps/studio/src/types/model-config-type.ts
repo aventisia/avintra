@@ -1,7 +1,7 @@
 export interface ModelConfigType {
   is_byok_enabled: boolean;
   provider: string;
-  credential_id: string;
+  credential_name: string;
   model: string;
   temperature: number;
   top_p: number;

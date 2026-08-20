@@ -2,7 +2,7 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { getSpaceHeaders } from "@/utils/space-headers";
+import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { LLMRequestDto, LLMResponseDto } from "../dtos/llm-providers-dto";
 

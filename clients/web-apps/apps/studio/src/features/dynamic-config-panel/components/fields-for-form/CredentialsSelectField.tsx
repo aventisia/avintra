@@ -32,7 +32,7 @@ interface CredentialsSelectFieldProps
 }
 
 /**
- * A custom select form field component to select credential_id form app secret api
+ * A custom select form field component to select credential from app secret api
  */
 const CredentialsSelectField = ({
   name,
@@ -56,9 +56,9 @@ const CredentialsSelectField = ({
     // Set loading state
     setLoading(true);
 
-    // Fetch credential_id list. Note: Every credential-field should have name ending with 'Credential'
+    // Fetch credential list. Note: Every credential-field should have name ending with 'Credential'
     getCredSelectOptions(
-      name.includes("credential_id") ? modelProvider : name.replace("__CredentialId__", ""),
+      name.includes("credential_name") ? modelProvider : name.replace("__CredentialName__", ""),
     )
       .then((data) => {
         setSelectOptions(data?.data);

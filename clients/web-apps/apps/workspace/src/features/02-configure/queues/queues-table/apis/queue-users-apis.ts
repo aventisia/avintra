@@ -1,7 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { getSpaceHeaders } from "@/utils/space-headers";
+import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { QueueUserDto } from "../dtos/queue-users-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";

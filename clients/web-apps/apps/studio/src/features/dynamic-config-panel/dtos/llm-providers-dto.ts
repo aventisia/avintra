@@ -28,7 +28,7 @@ export interface ToolActionDto {
 
 export interface ToolConfigDto {
   tool: string;
-  credential_id: string;
+  credential_name: string;
   actions: ToolActionDto[];
 }
 
@@ -77,9 +77,9 @@ export interface LLMRequestDto {
   is_byok_enabled?: boolean;
 
   /**
-   * Optional credential ID for BYOK.
+   * Optional credential reference for BYOK. May hold a name or a legacy UUID.
    */
-  credential_id?: string | null;
+  credential_name?: string | null;
 
   /**
    * Temperature setting for the model.

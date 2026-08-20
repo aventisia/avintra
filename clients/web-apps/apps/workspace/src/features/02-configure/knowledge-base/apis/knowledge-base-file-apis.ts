@@ -1,7 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { getSpaceHeaders } from "@/utils/space-headers";
+import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { KnowledgeBaseFileDto, VectorizationStatus } from "../dtos/kb-file-dto";
 
@@ -31,8 +31,8 @@ interface VectorStoreIngestRequestDto {
   metadata: Record<string, string>;
   chunk_size: number;
   chunk_overlap: number;
-  store_credential_id?: string;
-  embedding_credential_id?: string;
+  credential_name?: string;
+  embedding_credential_name?: string;
   ref_type: string;
   ref_id: string;
   ref_name: string;
@@ -49,8 +49,8 @@ interface VectorStoreQueryRequestDto {
   score_threshold?: number;
   kb_names?: string[];
   doc_names?: string[];
-  store_credential_id?: string;
-  embedding_credential_id?: string;
+  credential_name?: string;
+  embedding_credential_name?: string;
   ref_type: string;
   ref_id: string;
   ref_name: string;
@@ -63,7 +63,7 @@ interface VectorStoreDeleteRequestDto {
   // One of the kb_name or doc_name should be provided to identify the documents to delete. If both are provided, kb_name will take precedence.
   kb_names?: string[];
   doc_names?: string[];
-  store_credential_id?: string;
+  credential_name?: string;
 }
 
 interface RetrievedChunkDto {

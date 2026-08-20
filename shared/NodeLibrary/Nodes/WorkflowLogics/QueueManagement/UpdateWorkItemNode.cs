@@ -89,7 +89,8 @@ public class UpdateWorkItemNode : BaseNode
                 "workspace/api/queue/workitem",
                 HttpMethod.Put,
                 accessToken,
-                payload);
+                payload,
+                callerContext.EnvType);
 
             Result.Set(context, updatedWorkItem);
             IsSuccess.Set(context, true);

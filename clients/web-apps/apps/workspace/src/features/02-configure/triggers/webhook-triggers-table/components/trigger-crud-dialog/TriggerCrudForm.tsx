@@ -45,10 +45,10 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
   const {
     form,
     isDirty,
-    // isAvailable,
-    // availabilityMessage,
-    // isCheckPending,
-    // handleInputChange,
+    isAvailable,
+    availabilityMessage,
+    isCheckPending,
+    handleInputChange,
     refineFormData,
     queryClient,
     objectToArray,
@@ -130,9 +130,9 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
       {/* Name */}
       <InputField
         {...nameProps}
-        disabled={isReadMode}
-        // onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
-        // nonErrorMessage={availabilityMessage}
+        disabled={crudAction !== "create"}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
       />
       <Controller
         control={form.control}
@@ -188,7 +188,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
             secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
             isPending={isPending}
-            disabled={!isDirty}
+            disabled={!isDirty || !isAvailable || isCheckPending}
           />
         </div>
       )}
