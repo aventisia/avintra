@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Reflection;
 using NodeLibrary.Core;
 
@@ -25,15 +26,98 @@ public static class NodeArgumentHelper
 
         // Handle string target
         if (targetType == typeof(string))
+        {
+            // DataTable: render as CSV, matching the legacy ActivityExecutorService behavior.
+            if (value is System.Data.DataTable dt)
+            {
+                var sb = new System.Text.StringBuilder();
+                var columns = dt.Columns.Cast<System.Data.DataColumn>().Select(c => c.ColumnName);
+                sb.AppendLine(string.Join(",", columns));
+                foreach (System.Data.DataRow row in dt.Rows)
+                    sb.AppendLine(string.Join(",", row.ItemArray.Select(x => x?.ToString() ?? "")));
+                return sb.ToString().Trim();
+            }
+
+            // IEnumerable (including lists/arrays of dynamic objects): serialize as JSON.
+            if (value is IEnumerable enumerable && value is not string)
+            {
+                try
+                {
+                    return JsonSerializer.Serialize(value);
+                }
+                catch
+                {
+                    return value.ToString();
+                }
+            }
+
+            // ExpandoObject / dictionary-backed dynamic objects have a useless ToString();
+            // serialize them as JSON so template outputs like {{ai_model_result.output}}
+            // render as structured data instead of "System.Dynamic.ExpandoObject".
+            if (value is System.Dynamic.ExpandoObject || value is IDictionary<string, object?>)
+            {
+                try
+                {
+                    return JsonSerializer.Serialize(value);
+                }
+                catch
+                {
+                    return value.ToString();
+                }
+            }
+
             return value.ToString();
+        }
 
         // Handle JsonElement — deserialize to target type
         if (value is JsonElement jsonElement)
             return DeserializeJsonElement(jsonElement, targetType);
 
+        // Handle SecureString target from plain string
+        if (targetType == typeof(System.Security.SecureString) && value is string secureStr)
+        {
+            var secureString = new System.Security.SecureString();
+            foreach (char c in secureStr)
+                secureString.AppendChar(c);
+            secureString.MakeReadOnly();
+            return secureString;
+        }
+
         // Handle string source — try parsing for known types
         if (value is string str)
             return ConvertFromString(str, targetType);
+
+        // Handle arrays from comma-separated string (legacy ActivityExecutorService behavior)
+        if (targetType.IsArray && value is string arrStr)
+        {
+            var elemType = targetType.GetElementType()!;
+            var items = arrStr.Split(',').Select(s => ConvertToType(s.Trim(), elemType)).ToArray();
+            var array = Array.CreateInstance(elemType, items.Length);
+            for (int i = 0; i < items.Length; i++)
+                array.SetValue(items[i], i);
+            return array;
+        }
+
+        // Handle List<T> from comma-separated string or IEnumerable (legacy behavior)
+        if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(List<>))
+        {
+            var elemType = targetType.GetGenericArguments()[0];
+            var list = (IList)Activator.CreateInstance(targetType)!;
+
+            if (value is string listStr)
+            {
+                foreach (var item in listStr.Split(','))
+                    list.Add(ConvertToType(item.Trim(), elemType));
+                return list;
+            }
+
+            if (value is IEnumerable enumerable)
+            {
+                foreach (var item in enumerable)
+                    list.Add(ConvertToType(item, elemType));
+                return list;
+            }
+        }
 
         // Try Convert.ChangeType for primitives
         try
