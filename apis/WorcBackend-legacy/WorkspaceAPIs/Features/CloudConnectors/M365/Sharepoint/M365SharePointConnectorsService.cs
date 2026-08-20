@@ -49,10 +49,10 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
             }
 
             // Retrieve M365 access token
-            var accessToken = await _m365ConnectorsService.GetM365AccessTokenAsync(cloudConnectorReqDto.CredentialId);
+            var accessToken = await _m365ConnectorsService.GetM365AccessTokenAsync(cloudConnectorReqDto.CredentialName);
             if (string.IsNullOrWhiteSpace(accessToken))
             {
-                _logger.LogWarning("Failed to retrieve M365 access token for CredentialId: {CredentialId}", cloudConnectorReqDto.CredentialId);
+                _logger.LogWarning("Failed to retrieve M365 access token for Credential Name: {CredentialName}", cloudConnectorReqDto.CredentialName);
                 serviceResponse.Message = "Failed to obtain M365 access token.";
                 return serviceResponse;
             }

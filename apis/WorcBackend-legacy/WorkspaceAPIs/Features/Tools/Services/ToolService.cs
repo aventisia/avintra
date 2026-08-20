@@ -10,6 +10,7 @@ public class ToolService : IToolService
     private readonly IResourceShareService _resourceShareService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly EnvironmentConfig _environmentConfig;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _currentUserId;
     private readonly string _accessToken;
 
@@ -19,7 +20,8 @@ public class ToolService : IToolService
         IHttpContextAccessor httpContextAccessor,
         IResourceShareService resourceShareService,
         IHttpClientFactory httpClientFactory,
-        EnvironmentConfig environmentConfig)
+        EnvironmentConfig environmentConfig,
+        ICurrentTenantService currentTenantService)
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
@@ -27,6 +29,7 @@ public class ToolService : IToolService
         _resourceShareService = resourceShareService;
         _httpClientFactory = httpClientFactory;
         _environmentConfig = environmentConfig;
+        _currentTenantService = currentTenantService;
         _currentUserId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _accessToken = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? string.Empty;
     }
@@ -48,7 +51,7 @@ public class ToolService : IToolService
             {
                 // Fetch tools owned by the current user.
                 toolList = await _unitOfWork.ToolRepo
-                    .GetByConditionAsync(w => w.CreatedByUserId == _currentUserId)
+                    .GetByConditionAsync(w => w.CreatedByUserId == _currentUserId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -71,6 +74,7 @@ public class ToolService : IToolService
                 toolList = await _unitOfWork.ToolRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _currentUserId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (w.IsTenantWideAccess || resourceAccessMap.Keys.Contains(w.Id)))
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
@@ -120,9 +124,11 @@ public class ToolService : IToolService
                     new TrueFalseResultDto { Result = false });
             }
 
-            // Search for an existing tool with the same name (case-insensitive).
+            // Search for an existing tool with the same name (case-insensitive) within the current environment.
             var existingToolWithSameName = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == normalizedName.ToLower())
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == normalizedName.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             if (existingToolWithSameName != null)
@@ -158,7 +164,7 @@ public class ToolService : IToolService
         {
             // Fetch the requested tool.
             var tool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Id == toolId)
+                .GetByConditionAsync(w => w.Id == toolId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .SingleOrDefaultAsync();
@@ -200,6 +206,71 @@ public class ToolService : IToolService
         return serviceResponse;
     }
 
+    // Retrieves a tool by its name within the current environment and tenant.
+    public async Task<ServiceResponse<ToolDto>> GetToolByNameAsync(string toolName)
+    {
+        var serviceResponse = new ServiceResponse<ToolDto>
+        {
+            Message = "Failed to fetch tool."
+        };
+
+        try
+        {
+            // Validate the provided tool name.
+            if (string.IsNullOrWhiteSpace(toolName))
+            {
+                return serviceResponse.Update("Tool name is required.", 400);
+            }
+
+            // Normalize input for case-insensitive comparison.
+            var normalizedName = toolName.Trim().ToLowerInvariant();
+
+            // Fetch the requested tool by name within the current environment.
+            var tool = await _unitOfWork.ToolRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == normalizedName &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .SingleOrDefaultAsync();
+
+            if (tool == null)
+            {
+                return serviceResponse.Update("Tool not found.", 404);
+            }
+
+            // Verify the current user can view the tool.
+            var (canView, _) = await _resourceShareService.GetResourceAccessAsync(
+                _currentUserId,
+                tool.Id,
+                ResourceTypeEnum.Tool,
+                tool.CreatedByUserId,
+                tool.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                });
+
+            if (!canView)
+            {
+                return serviceResponse.Update("You do not have permission to view this tool.", 403);
+            }
+
+            return serviceResponse.Update(
+                "Tool retrieved successfully.",
+                200,
+                tool.Adapt<ToolDto>());
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to fetch tool with name {ToolName}.", toolName);
+        }
+
+        return serviceResponse;
+    }
+
     // Inserts a new tool.
     public async Task<ServiceResponse<ToolDto>> InsertToolAsync(ToolDto toolDto)
     {
@@ -213,9 +284,11 @@ public class ToolService : IToolService
             // Normalize string properties to avoid case-sensitivity issues.
             toolDto = TrimDtoStringPropsUtil.TrimDtoStringProps(toolDto);
 
-            // Ensure the tool name is unique.
+            // Ensure the tool name is unique within the current environment.
             var toolWithSameName = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == toolDto.Name.ToLower())
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == toolDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             if (toolWithSameName != null)
@@ -226,6 +299,7 @@ public class ToolService : IToolService
             // Map DTO to entity, force custom type, and set audit fields.
             var toolToCreate = toolDto.Adapt<Tool>();
             toolToCreate.Type = ComponentTypeEnum.Custom;
+            toolToCreate.EnvType = _currentTenantService.CurrentEnvType;
             toolToCreate.CreatedByUserId = _currentUserId;
             toolToCreate.LastModifiedByUserId = _currentUserId;
 
@@ -279,7 +353,7 @@ public class ToolService : IToolService
 
             // Fetch the existing tool.
             var toolToUpdate = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Id == toolDto.Id)
+                .GetByConditionAsync(w => w.Id == toolDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             if (toolToUpdate == null)
@@ -305,9 +379,12 @@ public class ToolService : IToolService
                 return serviceResponse.Update("You do not have access to update this tool.", 403);
             }
 
-            // Ensure no other tool uses the requested name.
+            // Ensure no other tool uses the requested name within the current environment.
             var otherToolWithSameName = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == toolDto.Name.ToLower() && w.Id != toolDto.Id)
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == toolDto.Name.ToLower() &&
+                    w.Id != toolDto.Id &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             if (otherToolWithSameName != null)
@@ -371,12 +448,27 @@ public class ToolService : IToolService
         {
             // Fetch the tool to delete.
             var toolToDelete = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Id == toolId)
+                .GetByConditionAsync(w => w.Id == toolId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             if (toolToDelete == null)
             {
                 return serviceResponse.Update("Tool not found.", 404);
+            }
+
+            // PROD-guard: block deletion of PROD tools or tools with a same-name PROD twin.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.ToolRepo,
+                toolToDelete.EnvType,
+                toolToDelete.Name,
+                w => w.Name.ToLower() == toolToDelete.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == toolToDelete.TenantId &&
+                     w.SpaceId == toolToDelete.SpaceId,
+                "tool");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             // Verify the current user is the owner.
@@ -426,7 +518,7 @@ public class ToolService : IToolService
         {
             // Fetch all tools matching the provided identifiers.
             var toolsToDelete = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => toolIds.Contains(w.Id))
+                .GetByConditionAsync(w => toolIds.Contains(w.Id) && w.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
             if (toolsToDelete.Count == 0)
@@ -434,7 +526,8 @@ public class ToolService : IToolService
                 return serviceResponse.Update("No tools found to delete.", 404);
             }
 
-            // Verify ownership for every selected tool.
+            // Verify ownership + PROD-guard for every selected tool.
+            var blockedNames = new List<string>();
             foreach (var tool in toolsToDelete)
             {
                 var (canDelete, _) = await _resourceShareService.GetResourceAccessAsync(
@@ -449,6 +542,30 @@ public class ToolService : IToolService
                 {
                     return serviceResponse.Update("You do not have access to delete one or more selected tools.", 403);
                 }
+
+                // PROD-guard: block the whole batch if any tool is PROD or has a same-name PROD twin.
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.ToolRepo,
+                    tool.EnvType,
+                    tool.Name,
+                    w => w.Name.ToLower() == tool.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == tool.TenantId &&
+                         w.SpaceId == tool.SpaceId,
+                    "tool");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(tool.Name);
+                }
+            }
+
+            // Reject the entire batch when any selected tool is protected by the PROD guard.
+            if (blockedNames.Count > 0)
+            {
+                return serviceResponse.Update(
+                    $"Cannot delete the following tool(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}",
+                    400,
+                    false);
             }
 
             // Remove related resource shares and delete the tools.

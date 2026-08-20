@@ -9,9 +9,16 @@ public class LLMProviderModelRequestDto
     public LLMProviderTypesEnum ProviderType { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique identifier for the credential associated with the external provider's API.
+    /// Gets or sets the name of the credential associated with the external provider's API.
     /// </summary>
-    public required Guid CredentialId { get; set; }
+    public string? CredentialName { get; set; }
+
+    /// <summary>
+    /// Gets or sets the credential identifier (name) associated with the external provider's API.
+    /// Accepted as an alias for <see cref="CredentialName"/> so callers that pass the stored
+    /// credential name via <c>credentialId</c> (the credential-name plan) still resolve correctly.
+    /// </summary>
+    public string? CredentialId { get; set; }
 
     /// <summary>
     /// Optional output modalities (e.g., text, image, audio, embeddings) supported or requested for the model.

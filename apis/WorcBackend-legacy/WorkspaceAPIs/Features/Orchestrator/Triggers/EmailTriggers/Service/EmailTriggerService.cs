@@ -10,6 +10,7 @@ public class EmailTriggerService : IEmailTriggerService
     private readonly IJobsExecutorService _jobsExecutorService;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly IResourceShareService _resourceShareService;
+    private readonly ICurrentTenantService _currentTenantService;
     private const int OUTLOOK_EXPIRY_MINUTES = 10080;
 
     public IResourceShareService ResourceShareService => _resourceShareService;
@@ -22,7 +23,8 @@ public class EmailTriggerService : IEmailTriggerService
         EnvironmentConfig environmentConfig,
         IJobsExecutorService jobsExecutorService,
         WorkspaceInternalDbContext workspaceInternalDbContext,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -34,6 +36,7 @@ public class EmailTriggerService : IEmailTriggerService
         _jobsExecutorService = jobsExecutorService;
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _resourceShareService = resourceShareService;
+        _currentTenantService = currentTenantService;
     }
 
     // Retrieves all email triggers.
@@ -58,7 +61,8 @@ public class EmailTriggerService : IEmailTriggerService
                 emailTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.TriggerType == TriggerTypesEnum.Email &&
-                        w.CreatedByUserId == _userId)
+                        w.CreatedByUserId == _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -86,6 +90,7 @@ public class EmailTriggerService : IEmailTriggerService
                 emailTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.IsTenantWideAccess ||
                             resourceAccess.Keys.Contains(w.Id)
@@ -141,7 +146,7 @@ public class EmailTriggerService : IEmailTriggerService
         {
             // Fetch email trigger from the repository
             var emailTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == emailTriggerId)
+                .GetByConditionAsync(w => w.Id == emailTriggerId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
@@ -209,8 +214,8 @@ public class EmailTriggerService : IEmailTriggerService
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.Email &&
-                    w.Name.ToLower() == emailTriggerDto.Name.ToLower()
+                    w.Name.ToLower() == emailTriggerDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .FirstOrDefaultAsync();
 
@@ -237,6 +242,9 @@ public class EmailTriggerService : IEmailTriggerService
 
             // Trim all string properties on the DTO
             emailTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(emailTriggerDto);
+
+            // Resolve the credential name to its ID (entity keeps the ID per name-based Agent Builder).
+            emailTriggerDto.CredentialId = await ResolveCredentialIdAsync(emailTriggerDto.CredentialName, emailTriggerDto.CredentialId);
 
             // Convert DTO to Trigger entity
             var newEmailTrigger = emailTriggerDto.Adapt<Trigger>();
@@ -269,6 +277,7 @@ public class EmailTriggerService : IEmailTriggerService
 
             // Set the TriggerType explicitly
             newEmailTrigger.TriggerType = TriggerTypesEnum.Email;
+            newEmailTrigger.EnvType = _currentTenantService.CurrentEnvType;
 
             // Set audit fields: created and last modified by current user
             newEmailTrigger.CreatedByUserId = _userId;
@@ -364,7 +373,7 @@ public class EmailTriggerService : IEmailTriggerService
         {
             // Retrieve existing email trigger
             var emailTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == emailTriggerDto.Id)
+                .GetByConditionAsync(w => w.Id == emailTriggerDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.TriggerFlowVersions)
                 .SingleOrDefaultAsync();
 
@@ -400,9 +409,9 @@ public class EmailTriggerService : IEmailTriggerService
             // Check for duplicate name among other triggers
             var duplicateTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.Email &&
                     w.Name.ToLower() == emailTriggerDto.Name.ToLower() &&
-                    w.Id != emailTriggerDto.Id
+                    w.Id != emailTriggerDto.Id &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .FirstOrDefaultAsync();
 
@@ -416,6 +425,12 @@ public class EmailTriggerService : IEmailTriggerService
 
             // Normalize input (trim all string properties)
             emailTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(emailTriggerDto);
+
+            // Resolve the credential name to its ID (entity keeps the ID per name-based Agent Builder).
+            if (!string.IsNullOrWhiteSpace(emailTriggerDto.CredentialName))
+            {
+                emailTriggerDto.CredentialId = await ResolveCredentialIdAsync(emailTriggerDto.CredentialName, emailTriggerDto.CredentialId);
+            }
 
             // Validate ExpiryDateTime cannot be reduced
             if (emailTrigger.Metadata.RootElement.TryGetProperty("expiryDateTime", out var existingExpiryElement))
@@ -617,7 +632,7 @@ public class EmailTriggerService : IEmailTriggerService
         {
             // Retrieve the email trigger
             var emailTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == emailTriggerId)
+                .GetByConditionAsync(w => w.Id == emailTriggerId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Check existence
@@ -626,6 +641,22 @@ public class EmailTriggerService : IEmailTriggerService
                 _logger.LogInformation("Delete failed. Email trigger with ID {EmailTriggerId} does not exist.", emailTriggerId);
                 serviceResponse.Message = "Email trigger does not exist";
                 return serviceResponse;
+            }
+
+            // PROD-guard: block deletion of PROD triggers or triggers with a same-name PROD twin.
+            // Checked before the provider unsubscribe so a blocked deletion has no side effects.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.TriggerRepo,
+                emailTrigger.EnvType,
+                emailTrigger.Name,
+                w => w.Name.ToLower() == emailTrigger.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == emailTrigger.TenantId &&
+                     w.SpaceId == emailTrigger.SpaceId,
+                "email trigger");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             // Configure JSON options first
@@ -713,7 +744,7 @@ public class EmailTriggerService : IEmailTriggerService
         {
             // Retrieve triggers that match provided IDs
             var emailTriggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(t => emailTriggerIds.Contains(t.Id))
+                .GetByConditionAsync(t => emailTriggerIds.Contains(t.Id) && t.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
             // Check if any triggers were found
@@ -721,6 +752,33 @@ public class EmailTriggerService : IEmailTriggerService
             {
                 _logger.LogInformation("Delete multiple failed. No email triggers found for provided IDs.");
                 serviceResponse.Message = "Email triggers not found";
+                return serviceResponse;
+            }
+
+            // PROD-guard: block the whole batch if any trigger is PROD or has a same-name PROD twin.
+            // Checked before the provider unsubscribe so a blocked deletion has no side effects.
+            var blockedNames = new List<string>();
+            foreach (var emailTrigger in emailTriggers)
+            {
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.TriggerRepo,
+                    emailTrigger.EnvType,
+                    emailTrigger.Name,
+                    w => w.Name.ToLower() == emailTrigger.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == emailTrigger.TenantId &&
+                         w.SpaceId == emailTrigger.SpaceId,
+                    "email trigger");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(emailTrigger.Name);
+                }
+            }
+
+            if (blockedNames.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following email trigger(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}";
                 return serviceResponse;
             }
 
@@ -817,7 +875,7 @@ public class EmailTriggerService : IEmailTriggerService
         {
             // Check repository for existing trigger with the same name
             var triggerExists = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (triggerExists != null)
@@ -1367,5 +1425,19 @@ public class EmailTriggerService : IEmailTriggerService
         };
 
         return System.Text.Json.JsonSerializer.Serialize(result); // convert to JSON
+    }
+
+    // Resolves a credential NAME to its entity ID. If a name is supplied it takes precedence;
+    // otherwise the explicitly provided ID is returned unchanged.
+    private async Task<Guid> ResolveCredentialIdAsync(string? credentialName, Guid existingCredentialId)
+    {
+        if (string.IsNullOrWhiteSpace(credentialName))
+            return existingCredentialId;
+
+        var credential = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(w => w.Name == credentialName && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+
+        return credential?.Id ?? existingCredentialId;
     }
 }

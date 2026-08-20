@@ -54,6 +54,13 @@ public class TimeTriggerController : BaseApiController
         return ResultHelper(await _timeTriggerService.GetTimeTriggerAsync(timeTriggerId));
     }
 
+    // Retrieves a time trigger by its name within the current environment.
+    [HttpGet("by-name/{triggerName}")]
+    public async Task<ActionResult<ServiceResponse<TimeTriggerDto>>> GetTimeTriggerByName(string triggerName)
+    {
+        return ResultHelper(await _timeTriggerService.GetTimeTriggerByNameAsync(triggerName));
+    }
+
     // Deletes a time trigger by its ID.
     [HttpDelete("{timeTriggerId}")]
     public async Task<ActionResult<ServiceResponse<bool>>> DeleteTimeTrigger(Guid timeTriggerId)

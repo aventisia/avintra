@@ -16,13 +16,13 @@ public class CloudConnectorsVaultService : ICloudConnectorsVaultService
         _stringEncryptionService = stringEncryptionService;
     }
 
-    public async Task<VaultCredentialObj?> GetCredentialFromVaultAsync(Guid credentialId)
+    public async Task<VaultCredentialObj?> GetCredentialFromVaultAsync(string credentialName)
     {
         try
         {
-            // Fetch the credential entity along with its encrypted key-value pairs
+            // Fetch the credential entity along with its encrypted key-value pairs by NAME
             var vaultCredential = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Id == credentialId && !w.IsDisabled)
+                .GetByConditionAsync(w => w.Name == credentialName && !w.IsDisabled)
                 .AsNoTracking()
                 .Include(i => i.EncryptedKeyValues)
                 .FirstOrDefaultAsync();
@@ -57,7 +57,7 @@ public class CloudConnectorsVaultService : ICloudConnectorsVaultService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving Credential with ID: {CredentialId}", credentialId);
+            _logger.LogError(ex, "An error occurred while retrieving Credential with Name: {CredentialName}", credentialName);
         }
 
         return null;

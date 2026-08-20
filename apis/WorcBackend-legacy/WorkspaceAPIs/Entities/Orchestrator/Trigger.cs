@@ -20,6 +20,12 @@ public class Trigger : BaseEntity, IMustHaveTenant
     public Guid? SpaceId { get; set; }
 
     /// <summary>
+    /// Gets or sets the deployment environment this trigger belongs to.
+    /// Combined with tenant/space/name/trigger-type this enforces uniqueness per environment.
+    /// </summary>
+    public ConfigureEnvironmentType EnvType { get; set; } = ConfigureEnvironmentType.Dev;
+
+    /// <summary>
     /// The name of the trigger.
     /// </summary>
     public required string Name { get; set; }

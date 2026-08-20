@@ -29,13 +29,19 @@ public class LLMProviderService : ILLMProviderService
 
         try
         {
-            // Fetch the secret credentials associated with the provided CredentialId.
-            var credential = await _appSecretService.GetAppSecretDetailAsync(requestDto.CredentialId);
+            // Fetch the secret credentials associated with the provided CredentialName.
+            // Accept the credential name from either `credentialName` or `credentialId` (the
+            // credential-name plan stores the name in the credentialId field).
+            var credentialName = string.IsNullOrWhiteSpace(requestDto.CredentialName)
+                ? requestDto.CredentialId
+                : requestDto.CredentialName;
+
+            var credential = await _appSecretService.GetAppSecretDetailByNameAsync(credentialName);
 
             // If credentials are not valid, return the error message.
             if (credential.StatusCode != 200)
             {
-                serviceResponse.Message = "Invalid credentials. Please verify the CredentialId and try again.";
+                serviceResponse.Message = "Invalid credentials. Please verify the CredentialName and try again.";
                 return serviceResponse;
             }
 

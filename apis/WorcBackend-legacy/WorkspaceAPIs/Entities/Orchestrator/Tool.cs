@@ -22,6 +22,12 @@ public class Tool : BaseEntity, IMustHaveTenant
     public Guid? SpaceId { get; set; }
 
     /// <summary>
+    /// Gets or sets the deployment environment this tool belongs to.
+    /// Combined with tenant/space/name this enforces uniqueness per environment.
+    /// </summary>
+    public ConfigureEnvironmentType EnvType { get; set; } = ConfigureEnvironmentType.Dev;
+
+    /// <summary>
     /// Gets or sets the name of the tool.
     /// </summary>
     [MaxLength(255)]

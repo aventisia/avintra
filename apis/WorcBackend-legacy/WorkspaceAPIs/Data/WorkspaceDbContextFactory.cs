@@ -51,6 +51,7 @@ public class DesignTimeCurrentTenantService : ICurrentTenantService
 
     public string CurrentTenantContainerName { get; } = string.Empty;
     public Guid CurrentSpaceId { get; set; } = Guid.Empty;
+    public ConfigureEnvironmentType CurrentEnvType { get; set; } = ConfigureEnvironmentType.Dev;
 
     public Task<string> SetTenantAndUser(string tenantId, string userId)
     {

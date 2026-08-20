@@ -135,6 +135,13 @@ public class QueuesTableDto
     public Guid? CredentialId { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the credential used to access resources associated with the queue.
+    /// The Agent Builder stores and submits the resource NAME; the service resolves it to the
+    /// CredentialId before persisting.
+    /// </summary>
+    public string? CredentialName { get; set; }
+
+    /// <summary>
     /// Gets or sets a flag indicating whether the user record is disabled.
     /// </summary>
     /// <remarks>

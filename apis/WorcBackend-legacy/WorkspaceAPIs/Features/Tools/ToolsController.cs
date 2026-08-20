@@ -41,6 +41,13 @@ public class ToolsController : BaseApiController
         return ResultHelper(await _toolService.GetToolByIdAsync(toolId));
     }
 
+    // Gets a tool by its name within the current environment.
+    [HttpGet("by-name/{toolName}")]
+    public async Task<ActionResult<ServiceResponse<ToolDto>>> GetToolByName(string toolName)
+    {
+        return ResultHelper(await _toolService.GetToolByNameAsync(toolName));
+    }
+
     // Creates a new tool.
     [HttpPost]
     public async Task<ActionResult<ServiceResponse<ToolDto>>> CreateTool([FromBody] ToolDto toolDto)

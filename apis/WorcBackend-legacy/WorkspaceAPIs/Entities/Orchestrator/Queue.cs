@@ -18,6 +18,12 @@ public class Queue : BaseEntity, IMustHaveTenant
     public Guid? SpaceId { get; set; }
 
     /// <summary>
+    /// Gets or sets the deployment environment this queue belongs to.
+    /// Combined with tenant/space/name this enforces uniqueness per environment.
+    /// </summary>
+    public ConfigureEnvironmentType EnvType { get; set; } = ConfigureEnvironmentType.Dev;
+
+    /// <summary>
     /// Gets or sets the name of the queue.
     /// This is a required field with a maximum length of 256 characters.
     /// </summary>

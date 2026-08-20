@@ -10,7 +10,7 @@
     {
       "direction": "Input",
       "type": "credentials-select",
-      "name": "__CredentialId__M365",
+      "name": "__CredentialName__M365",
       "label": "M365 Excel API Credential",
       "description": "Credential for authenticating with Microsoft 365 Excel API (requires tenant ID, client ID, and client secret).",
       "defaultValue": ""

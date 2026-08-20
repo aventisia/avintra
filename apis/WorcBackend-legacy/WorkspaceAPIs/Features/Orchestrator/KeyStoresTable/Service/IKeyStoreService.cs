@@ -77,4 +77,11 @@ public interface IKeyStoreService
     /// <param name="keyStoreId">The unique identifier of the key store.</param>
     /// <returns>A response containing the decrypted value, or an error message if decryption fails.</returns>
     Task<ServiceResponse<string>> DecryptKeyStoreValueAsync(Guid keyStoreId);
+
+    /// <summary>
+    /// Decrypts the value of an encrypted key store by its name within the current environment.
+    /// </summary>
+    /// <param name="keyStoreName">The name of the key store to decrypt.</param>
+    /// <returns>The task result contains the service response with the decrypted value.</returns>
+    Task<ServiceResponse<string>> DecryptKeyStoreValueByNameAsync(string keyStoreName);
 }

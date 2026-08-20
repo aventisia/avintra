@@ -4,7 +4,7 @@ public interface IM365ConnectorsService
 {
     string GRAPH_BASE_URL { get; }
 
-    Task<string?> GetM365AccessTokenAsync(Guid credentialId);
+    Task<string?> GetM365AccessTokenAsync(string credentialName);
 
     Task<JsonDocument> GetDriveAndItemIdAsync(string accessToken, string fileUrl);
 

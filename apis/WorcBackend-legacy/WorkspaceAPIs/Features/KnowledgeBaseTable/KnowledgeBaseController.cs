@@ -46,7 +46,7 @@ public class KnowledgeBaseController : BaseApiController
 
     // Gets a knowledge base by name.
     [Authorize(Roles = "SA,TA,OM")]
-    [HttpGet("{name}")]
+    [HttpGet("by-name/{knowledgeBaseName}")]
     public async Task<ActionResult<ServiceResponse<KnowledgeBaseDto>>> GetKnowledgeBaseByName(string knowledgeBaseName)
     {
         return ResultHelper(await _knowledgeBaseService.GetKnowledgeBaseByNameAsync(knowledgeBaseName));

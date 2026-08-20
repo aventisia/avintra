@@ -11,6 +11,7 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly IFlowVersionHistoryService _flowVersionHistoryService;
     private readonly IResourceShareService _resourceShareService;
     private readonly INotificationEventService _notificationEventService;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _userId;
 
     public FlowBuilderService(
@@ -20,7 +21,8 @@ public class FlowBuilderService : IFlowBuilderService
         IUserManagementGuardService userManagementGuardService,
         IFlowVersionHistoryService flowVersionHistoryService,
         IResourceShareService resourceShareService,
-        INotificationEventService notificationEventService)
+        INotificationEventService notificationEventService,
+        ICurrentTenantService currentTenantService)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -31,6 +33,7 @@ public class FlowBuilderService : IFlowBuilderService
         _flowVersionHistoryService = flowVersionHistoryService;
         _resourceShareService = resourceShareService;
         _notificationEventService = notificationEventService;
+        _currentTenantService = currentTenantService;
     }
 
     // Fetch the parent flow details of given parent flow version id
@@ -347,6 +350,9 @@ public class FlowBuilderService : IFlowBuilderService
                     // Adapt the DTO values into the flow version object
                     publishFlowVersionDto.Adapt(flowVersion);
 
+                    // Collect and store the referenced resource names (credentials, queues, KBs, tools, skills)
+                    flowVersion.ResourceReferences = await CollectResourceReferencesAsync(flowVersion.ReactFlowObject);
+
                     // Mark the flow version as published
                     flowVersion.IsPublished = true;
                     flowVersion.LastModifiedByUserId = _userId;
@@ -489,5 +495,499 @@ public class FlowBuilderService : IFlowBuilderService
         }
 
         return serviceResponse;
+    }
+
+    /// <summary>
+    /// Parses the flow's ReactFlowObject and collects the referenced resource NAMES keyed by
+    /// resource type. All supported resource types are always present; unreferenced types hold
+    /// an empty array. This powers publish-time Prod find-or-clone resolution.
+    /// </summary>
+    private async Task<string?> CollectResourceReferencesAsync(string? reactFlowObject)
+    {
+        var references = new Dictionary<string, List<string>>
+        {
+            ["credentials"] = new(),
+            ["queues"] = new(),
+            ["knowledgeBases"] = new(),
+            ["tools"] = new(),
+            ["skills"] = new(),
+            ["keyStores"] = new(),
+        };
+
+        try
+        {
+            var flow = ReactFlowHelper.Parse(reactFlowObject);
+            if (flow?.Nodes is null || flow.Nodes.Count == 0)
+                return System.Text.Json.JsonSerializer.Serialize(references);
+
+            foreach (var node in flow.Nodes)
+            {
+                if (node?.Data?.Inputs is null)
+                    continue;
+
+                // Build a key/value map from the node inputs.
+                var configObj = new JsonObject();
+                foreach (var input in node.Data.Inputs)
+                {
+                    if (string.IsNullOrWhiteSpace(input.Key) || input.Value is null)
+                        continue;
+                    configObj[input.Key] = input.Value is JsonElement je
+                        ? JsonNode.Parse(je.GetRawText())
+                        : JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(input.Value));
+                }
+
+                // Credentials: any key containing __CredentialName__ (value is the credential name)
+                foreach (var kvp in configObj)
+                {
+                    if (kvp.Key.Contains("__CredentialName__") && kvp.Value is not null)
+                        AddIfNotPresent(references["credentials"], kvp.Value.ToString());
+                }
+
+                // Credentials: __ModelConfig__* -> credential_id / credential_name
+                foreach (var kvp in configObj)
+                {
+                    if (!kvp.Key.Contains("__ModelConfig__") || kvp.Value is not JsonObject mc)
+                        continue;
+                    var credId = ReadCredentialReference(mc);
+                    if (credId is not null && !IsEmptyCredential(credId))
+                        AddIfNotPresent(references["credentials"], credId);
+                }
+
+                // Tools: __ToolsConfig__* -> array of { tool, credential_id / credential_name }
+                foreach (var kvp in configObj)
+                {
+                    if (!kvp.Key.Contains("__ToolsConfig__") || kvp.Value is not JsonArray toolsArr)
+                        continue;
+                    foreach (var item in toolsArr)
+                    {
+                        if (item is not JsonObject toolObj)
+                            continue;
+                        if (toolObj.TryGetPropertyValue("tool", out var toolNode) && toolNode is not null)
+                            AddIfNotPresent(references["tools"], toolNode.ToString());
+                        var toolCred = ReadCredentialReference(toolObj);
+                        if (toolCred is not null && !IsEmptyCredential(toolCred))
+                            AddIfNotPresent(references["credentials"], toolCred);
+                    }
+                }
+
+                // Knowledge bases: __KbConfig__* -> knowledgeBase[] names
+                foreach (var kvp in configObj)
+                {
+                    if (!kvp.Key.Contains("__KbConfig__") || kvp.Value is not JsonObject kb)
+                        continue;
+                    if (kb.TryGetPropertyValue("knowledgeBase", out var kbNode) && kbNode is JsonArray kbArr)
+                    {
+                        foreach (var name in kbArr.Where(x => x is not null))
+                            AddIfNotPresent(references["knowledgeBases"], name!.ToString());
+                    }
+                }
+
+                // Skills: __SkillsConfig__* -> skills[] names
+                foreach (var kvp in configObj)
+                {
+                    if (!kvp.Key.Contains("__SkillsConfig__") || kvp.Value is not JsonObject sc)
+                        continue;
+                    if (sc.TryGetPropertyValue("skills", out var skillsNode) && skillsNode is JsonArray skillsArr)
+                    {
+                        foreach (var name in skillsArr.Where(x => x is not null))
+                            AddIfNotPresent(references["skills"], name!.ToString());
+                    }
+                }
+
+                // Queues: QueueName / QueueId node fields (persisted value is the queue name)
+                foreach (var kvp in configObj)
+                {
+                    if (kvp.Key.Equals("QueueName", StringComparison.OrdinalIgnoreCase) && kvp.Value is not null)
+                        AddIfNotPresent(references["queues"], kvp.Value.ToString());
+                }
+            }
+
+            // Validate credential references: resolve any legacy GUID values to their actual
+            // credential names and drop references that no longer resolve in the current env.
+            await ValidateCredentialReferencesAsync(references["credentials"]);
+
+            // Ensure PROD clones exist for every referenced resource so the published agent can
+            // resolve them in the Production environment. Missing resources are created with
+            // EnvType = Prod and their names are retained in the ResourceReferences JSON.
+            await EnsureProdClonesAsync(references);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to collect resource references while publishing.");
+        }
+
+        return System.Text.Json.JsonSerializer.Serialize(references);
+    }
+
+    /// <summary>
+    /// Normalizes the collected credential references. Legacy rows may store a GUID instead of a
+    /// name; those are resolved to the actual credential name. References that do not resolve to a
+    /// credential in the current environment are removed so the published flow never points at a
+    /// missing credential.
+    /// </summary>
+    private async Task ValidateCredentialReferencesAsync(List<string> credentialNames)
+    {
+        for (var i = credentialNames.Count - 1; i >= 0; i--)
+        {
+            var value = credentialNames[i];
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                credentialNames.RemoveAt(i);
+                continue;
+            }
+
+            // Legacy GUID value -> resolve to the actual credential name.
+            if (Guid.TryParse(value, out var guid))
+            {
+                var byId = await _unitOfWork.AppSecretRepo
+                    .GetByConditionAsync(w => w.Id == guid && w.EnvType == _currentTenantService.CurrentEnvType)
+                    .FirstOrDefaultAsync();
+                if (byId != null)
+                {
+                    credentialNames[i] = byId.Name;
+                    continue;
+                }
+            }
+
+            // Verify the name resolves in the current environment; otherwise drop it.
+            var byName = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w => w.Name == value && w.EnvType == _currentTenantService.CurrentEnvType)
+                .FirstOrDefaultAsync();
+            if (byName == null)
+                credentialNames.RemoveAt(i);
+        }
+    }
+
+    /// <summary>
+    /// Ensures a Production (EnvType = Prod) clone exists for every referenced resource. The source
+    /// is the current request environment; the target is always Prod. Existing Prod records are left
+    /// untouched (find-or-clone).
+    /// </summary>
+    private async Task EnsureProdClonesAsync(Dictionary<string, List<string>> references)
+    {
+        if (references["credentials"].Count > 0)
+            await EnsureProdAppSecretsAsync(references["credentials"]);
+        if (references["queues"].Count > 0)
+            await EnsureProdQueuesAsync(references["queues"]);
+        if (references["tools"].Count > 0)
+            await EnsureProdToolsAsync(references["tools"]);
+        if (references["knowledgeBases"].Count > 0)
+            await EnsureProdKnowledgeBasesAsync(references["knowledgeBases"]);
+        if (references["skills"].Count > 0)
+            await EnsureProdSkillsAsync(references["skills"]);
+        if (references["keyStores"].Count > 0)
+            await EnsureProdKeyStoresAsync(references["keyStores"]);
+    }
+
+    /// <summary>
+    /// Finds or creates the Production clone of a credential (App Secret), including its encrypted
+    /// key-value pairs. Returns the Production App Secret ID, or the original ID when no source
+    /// credential exists.
+    /// </summary>
+    private async Task<Guid?> ResolveProdCredentialIdAsync(Guid? devCredentialId)
+    {
+        if (devCredentialId is null || devCredentialId == Guid.Empty)
+            return devCredentialId;
+
+        var devSecret = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(w => w.Id == devCredentialId && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+        if (devSecret == null)
+            return devCredentialId;
+
+        var prodSecret = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(w => w.Name == devSecret.Name && w.EnvType == ConfigureEnvironmentType.Prod)
+            .FirstOrDefaultAsync();
+        if (prodSecret != null)
+            return prodSecret.Id;
+
+        var clone = await CloneAppSecretToProdAsync(devSecret);
+        return clone?.Id ?? devCredentialId;
+    }
+
+    /// <summary>
+    /// Clones a source App Secret into a new Production record, copying its encrypted key-value
+    /// pairs and assigning ownership to the current user.
+    /// </summary>
+    private async Task<AppSecret?> CloneAppSecretToProdAsync(AppSecret devSecret)
+    {
+        var clone = new AppSecret
+        {
+            Name = devSecret.Name,
+            Type = devSecret.Type,
+            Description = devSecret.Description,
+            Data = devSecret.Data,
+            UsageCount = 0,
+            IsTenantWideAccess = devSecret.IsTenantWideAccess,
+            EnvType = ConfigureEnvironmentType.Prod,
+            CreatedByUserId = _userId,
+            LastModifiedByUserId = _userId,
+        };
+        await _unitOfWork.AppSecretRepo.InsertAsync(clone);
+        await _unitOfWork.SaveAsync();
+
+        var devKeyValues = await _unitOfWork.EncryptedKeyValueRepo
+            .GetByConditionAsync(kv => kv.AppSecretId == devSecret.Id)
+            .ToListAsync();
+        foreach (var kv in devKeyValues)
+        {
+            await _unitOfWork.EncryptedKeyValueRepo.InsertAsync(new EncryptedKeyValue
+            {
+                Name = kv.Name,
+                Value = kv.Value,
+                AppSecretId = clone.Id,
+            });
+        }
+        await _unitOfWork.SaveAsync();
+
+        await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.AppSecret);
+        return clone;
+    }
+
+    private async Task EnsureProdAppSecretsAsync(List<string> names)
+    {
+        foreach (var name in names)
+        {
+            var devSecret = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
+                .FirstOrDefaultAsync();
+            if (devSecret == null)
+                continue;
+
+            var prodSecret = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (prodSecret != null)
+                continue;
+
+            await CloneAppSecretToProdAsync(devSecret);
+        }
+    }
+
+    private async Task EnsureProdQueuesAsync(List<string> names)
+    {
+        foreach (var name in names)
+        {
+            var devQueue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
+                .FirstOrDefaultAsync();
+            if (devQueue == null)
+                continue;
+
+            var prodQueue = await _unitOfWork.QueueRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (prodQueue != null)
+                continue;
+
+            var clone = new Queue
+            {
+                Name = devQueue.Name,
+                Type = devQueue.Type,
+                ProcessingMode = devQueue.ProcessingMode,
+                RouteToQueues = devQueue.RouteToQueues,
+                Description = devQueue.Description,
+                IsUniqueReferencesEnforced = devQueue.IsUniqueReferencesEnforced,
+                IsStoredEncrypted = devQueue.IsStoredEncrypted,
+                ShouldRetryFailedItems = devQueue.ShouldRetryFailedItems,
+                ShouldRetryAbandonedItems = devQueue.ShouldRetryAbandonedItems,
+                MaximumRetryAttempts = devQueue.MaximumRetryAttempts,
+                InputSchema = devQueue.InputSchema,
+                OutputSchema = devQueue.OutputSchema,
+                Statuses = devQueue.Statuses,
+                IsTenantWideAccess = devQueue.IsTenantWideAccess,
+                CredentialId = await ResolveProdCredentialIdAsync(devQueue.CredentialId),
+                EnvType = ConfigureEnvironmentType.Prod,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            };
+            await _unitOfWork.QueueRepo.InsertAsync(clone);
+            await _unitOfWork.SaveAsync();
+            await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.Queue);
+        }
+    }
+
+    private async Task EnsureProdToolsAsync(List<string> names)
+    {
+        foreach (var name in names)
+        {
+            var devTool = await _unitOfWork.ToolRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
+                .FirstOrDefaultAsync();
+            if (devTool == null)
+                continue;
+
+            var prodTool = await _unitOfWork.ToolRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (prodTool != null)
+                continue;
+
+            var clone = new Tool
+            {
+                Name = devTool.Name,
+                Description = devTool.Description,
+                Type = devTool.Type,
+                BaseUrl = devTool.BaseUrl,
+                OpenApiSpec = devTool.OpenApiSpec,
+                ParsedSchema = devTool.ParsedSchema,
+                AuthenticationType = devTool.AuthenticationType,
+                CredentialId = await ResolveProdCredentialIdAsync(devTool.CredentialId),
+                IsTenantWideAccess = devTool.IsTenantWideAccess,
+                IsActive = devTool.IsActive,
+                IsVerified = devTool.IsVerified,
+                EnvType = ConfigureEnvironmentType.Prod,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            };
+            await _unitOfWork.ToolRepo.InsertAsync(clone);
+            await _unitOfWork.SaveAsync();
+            await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.Tool);
+        }
+    }
+
+    private async Task EnsureProdKnowledgeBasesAsync(List<string> names)
+    {
+        foreach (var name in names)
+        {
+            var devKb = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
+                .FirstOrDefaultAsync();
+            if (devKb == null)
+                continue;
+
+            var prodKb = await _unitOfWork.KnowledgeBaseRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (prodKb != null)
+                continue;
+
+            var clone = new KnowledgeBase
+            {
+                Name = devKb.Name,
+                Description = devKb.Description,
+                VectorStore = devKb.VectorStore,
+                EmbeddingProvider = devKb.EmbeddingProvider,
+                EmbeddingModel = devKb.EmbeddingModel,
+                EmbeddingCredentialId = await ResolveProdCredentialIdAsync(devKb.EmbeddingCredentialId),
+                StoreCredentialId = await ResolveProdCredentialIdAsync(devKb.StoreCredentialId),
+                CollectionName = devKb.CollectionName,
+                VectorStoreConfig = devKb.VectorStoreConfig,
+                IsTenantWideAccess = devKb.IsTenantWideAccess,
+                EnvType = ConfigureEnvironmentType.Prod,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            };
+            await _unitOfWork.KnowledgeBaseRepo.InsertAsync(clone);
+            await _unitOfWork.SaveAsync();
+            await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.KnowledgeBase);
+        }
+    }
+
+    private async Task EnsureProdSkillsAsync(List<string> names)
+    {
+        foreach (var name in names)
+        {
+            var devSkill = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
+                .Include(i => i.Files)
+                .FirstOrDefaultAsync();
+            if (devSkill == null)
+                continue;
+
+            var prodSkill = await _unitOfWork.SkillRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (prodSkill != null)
+                continue;
+
+            var clone = new Skill
+            {
+                Name = devSkill.Name,
+                Description = devSkill.Description,
+                Type = devSkill.Type,
+                IsGlobal = devSkill.IsGlobal,
+                IsTenantWideAccess = devSkill.IsTenantWideAccess,
+                IsActive = devSkill.IsActive,
+                EnvType = ConfigureEnvironmentType.Prod,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            };
+            await _unitOfWork.SkillRepo.InsertAsync(clone);
+            await _unitOfWork.SaveAsync();
+
+            foreach (var file in devSkill.Files ?? new List<SkillFile>())
+            {
+                await _unitOfWork.SkillFileRepo.InsertAsync(new SkillFile
+                {
+                    SkillId = clone.Id,
+                    FileName = file.FileName,
+                    Content = file.Content,
+                    FileType = file.FileType,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId,
+                });
+            }
+            await _unitOfWork.SaveAsync();
+
+            await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.Skill);
+        }
+    }
+
+    private async Task EnsureProdKeyStoresAsync(List<string> names)
+    {
+        foreach (var name in names)
+        {
+            var devKeyStore = await _unitOfWork.KeyStoreRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == _currentTenantService.CurrentEnvType)
+                .FirstOrDefaultAsync();
+            if (devKeyStore == null)
+                continue;
+
+            var prodKeyStore = await _unitOfWork.KeyStoreRepo
+                .GetByConditionAsync(w => w.Name == name && w.EnvType == ConfigureEnvironmentType.Prod)
+                .FirstOrDefaultAsync();
+            if (prodKeyStore != null)
+                continue;
+
+            var clone = new KeyStore
+            {
+                Name = devKeyStore.Name,
+                Description = devKeyStore.Description,
+                Type = devKeyStore.Type,
+                Value = devKeyStore.Value,
+                IsEncrypted = devKeyStore.IsEncrypted,
+                AccessLevel = devKeyStore.AccessLevel,
+                IsTenantWideAccess = devKeyStore.IsTenantWideAccess,
+                EnvType = ConfigureEnvironmentType.Prod,
+                CreatedByUserId = _userId,
+                LastModifiedByUserId = _userId,
+            };
+            await _unitOfWork.KeyStoreRepo.InsertAsync(clone);
+            await _unitOfWork.SaveAsync();
+            await _resourceShareService.AssignOwnerAsync(_userId, clone.Id, ResourceTypeEnum.KeyStore);
+        }
+    }
+
+    private static bool IsEmptyCredential(string? value) =>
+        string.IsNullOrWhiteSpace(value) ||
+        value == "00000000-0000-0000-0000-000000000000";
+
+    // Reads a credential reference from a config object. Accepts both the canonical
+    // "credential_name" key and the legacy "credential_id" key (Q12 back-compat).
+    private static string? ReadCredentialReference(JsonObject obj)
+    {
+        if (obj.TryGetPropertyValue("credential_name", out var nameNode) && nameNode is not null)
+            return nameNode.ToString();
+        if (obj.TryGetPropertyValue("credential_id", out var idNode) && idNode is not null)
+            return idNode.ToString();
+        return null;
+    }
+
+    private static void AddIfNotPresent(List<string> list, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return;
+        if (!list.Contains(value, StringComparer.OrdinalIgnoreCase))
+            list.Add(value);
     }
 }

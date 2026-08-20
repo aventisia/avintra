@@ -48,7 +48,7 @@ public class AppSecretController : BaseApiController
     }
 
     // Get app secret by name.
-    [HttpGet("name/{appSecretName}")]
+    [HttpGet("by-name/{appSecretName}")]
     public async Task<ActionResult<ServiceResponse<AppSecretDto>>> GetAppSecretByNameAsync(string appSecretName)
     {
         return ResultHelper(await _appSecretService.GetAppSecretByNameAsync(appSecretName));
@@ -87,5 +87,12 @@ public class AppSecretController : BaseApiController
     public async Task<ActionResult<ServiceResponse<AppSecretDto>>> GetAppSecretDetailAsync(Guid appSecretId)
     {
         return ResultHelper(await _appSecretService.GetAppSecretDetailAsync(appSecretId));
+    }
+
+    // Get app secret with actual data by name within the current environment.
+    [HttpGet("decrypted-data/by-name/{appSecretName}")]
+    public async Task<ActionResult<ServiceResponse<AppSecretDto>>> GetAppSecretDetailByNameAsync(string appSecretName)
+    {
+        return ResultHelper(await _appSecretService.GetAppSecretDetailByNameAsync(appSecretName));
     }
 }

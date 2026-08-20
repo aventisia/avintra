@@ -45,6 +45,13 @@ public class KnowledgeBaseDto
     public Guid? EmbeddingCredentialId { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the credential used for the embedding model provider.
+    /// The Agent Builder stores and submits the resource NAME; the service resolves
+    /// it to the EmbeddingCredentialId before persisting.
+    /// </summary>
+    public string? EmbeddingCredentialName { get; set; }
+
+    /// <summary>
     /// Gets or sets the credential ID used for the vector store.
     /// </summary>
     public Guid? StoreCredentialId { get; set; }

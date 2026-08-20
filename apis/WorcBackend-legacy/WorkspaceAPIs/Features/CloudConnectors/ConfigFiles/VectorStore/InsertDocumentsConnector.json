@@ -46,7 +46,7 @@
       "defaultValue": {
         "is_byok_enabled": false,
         "provider": "openai",
-        "credential_id": "00000000-0000-0000-0000-000000000000",
+        "credential_name": "",
         "model": "text-embedding-3-small",
         "dimensions": "",
         "encoding_format": ""

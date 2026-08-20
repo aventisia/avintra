@@ -252,9 +252,14 @@ public class VectorConnectorsService : IVectorConnectorsService
                     throw new ArgumentException("metadata is required.");
                 }
 
-                string? storeCredentialId = payload.TryGetValue("store_credential_id", out var storeCredentialValue)
+                string? storeCredentialName = payload.TryGetValue("credential_name", out var storeCredentialValue)
                     ? storeCredentialValue?.ToString()
-                    : cloudConnectorReqDto.CredentialId.ToString();
+                    : cloudConnectorReqDto.CredentialName;
+                // Accept legacy store_credential_id key for backward compatibility (Q12)
+                if (string.IsNullOrWhiteSpace(storeCredentialName) && payload.TryGetValue("store_credential_id", out var legacyStoreCred))
+                {
+                    storeCredentialName = legacyStoreCred?.ToString();
+                }
 
                 int chunkSize = payload.TryGetValue("chunk_size", out var chunkSizeValue)
                     && int.TryParse(chunkSizeValue?.ToString(), out var parsedChunkSize)
@@ -295,7 +300,7 @@ public class VectorConnectorsService : IVectorConnectorsService
 
                 embeddingProvider = embeddingConfig?["provider"]?.ToString();
                 embeddingModel = embeddingConfig?["model"]?.ToString();
-                embeddingCredentialId = embeddingConfig?["credential_id"]?.ToString();
+                embeddingCredentialId = ReadCredentialFromConfig(embeddingConfig);
                 if (bool.TryParse(embeddingConfig?["is_byok_enabled"]?.ToString(), out var parsedByokEnabled))
                 {
                     isByokEnabled = parsedByokEnabled;
@@ -312,8 +317,8 @@ public class VectorConnectorsService : IVectorConnectorsService
                     ["metadata"] = metadata,
                     ["chunk_size"] = chunkSize,
                     ["chunk_overlap"] = chunkOverlap,
-                    ["store_credential_id"] = storeCredentialId,
-                    ["embedding_credential_id"] = embeddingCredentialId,
+                    ["credential_name"] = storeCredentialName,
+                    ["embedding_credential_name"] = embeddingCredentialId,
                     ["batch_size"] = batchSize,
                     ["dimensions"] = dimensions,
                     ["is_byok_enabled"] = isByokEnabled,
@@ -381,7 +386,7 @@ public class VectorConnectorsService : IVectorConnectorsService
 
                 embeddingProvider = embeddingConfig?["provider"]?.ToString();
                 embeddingModel = embeddingConfig?["model"]?.ToString();
-                embeddingCredentialId = embeddingConfig?["credential_id"]?.ToString();
+                embeddingCredentialId = ReadCredentialFromConfig(embeddingConfig);
                 if (bool.TryParse(embeddingConfig?["is_byok_enabled"]?.ToString(), out var parsedByokEnabledG))
                 {
                     isByokEnabled = parsedByokEnabledG;
@@ -393,11 +398,11 @@ public class VectorConnectorsService : IVectorConnectorsService
                     // ["collection_name"] = collectionName,
                     ["embedding_provider"] = embeddingProvider,
                     ["embedding_model"] = embeddingModel,
-                    ["embedding_credential_id"] = embeddingCredentialId,
+                    ["embedding_credential_name"] = embeddingCredentialId,
                     ["query"] = inputText,
                     ["top_k"] = numberOfChunks,
                     ["score_threshold"] = scoreThreshold,
-                    ["store_credential_id"] = cloudConnectorReqDto.CredentialId,
+                    ["credential_name"] = cloudConnectorReqDto.CredentialName,
                     ["is_byok_enabled"] = isByokEnabled,
                     ["kb_names"] = !string.IsNullOrWhiteSpace(knowledgeBaseNames)
                         ? System.Text.Json.JsonSerializer.SerializeToNode(
@@ -434,9 +439,14 @@ public class VectorConnectorsService : IVectorConnectorsService
 
                 // Optional Store Credential Configuration
 
-                storeCredentialId = payload.TryGetValue("store_credential_id", out var storeCredentialValueD)
+                string? deleteStoreCredentialName = payload.TryGetValue("credential_name", out var storeCredentialValueD)
                     ? storeCredentialValueD?.ToString()
-                    : cloudConnectorReqDto.CredentialId.ToString();
+                    : cloudConnectorReqDto.CredentialName;
+                // Accept legacy store_credential_id key for backward compatibility (Q12)
+                if (string.IsNullOrWhiteSpace(deleteStoreCredentialName) && payload.TryGetValue("store_credential_id", out var legacyStoreCredD))
+                {
+                    deleteStoreCredentialName = legacyStoreCredD?.ToString();
+                }
 
                 // Build Delete Request
 
@@ -455,12 +465,21 @@ public class VectorConnectorsService : IVectorConnectorsService
                                 ',',
                                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
                         : null,
-                    ["store_credential_id"] = storeCredentialId
+                    ["credential_name"] = deleteStoreCredentialName
                 };
 
             default:
                 throw new InvalidOperationException($"Unsupported action: {action}");
         }
+    }
+
+    // Reads a credential reference from an embedding config object. Accepts the canonical
+    // "credential_name" key and the legacy "credential_id" key (Q12 back-compat).
+    private static string? ReadCredentialFromConfig(JsonNode? config)
+    {
+        if (config is null) return null;
+        if (config["credential_name"] is { } nameNode) return nameNode.ToString();
+        return null;
     }
 
     #endregion

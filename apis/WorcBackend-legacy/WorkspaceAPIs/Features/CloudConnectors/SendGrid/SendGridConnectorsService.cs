@@ -32,7 +32,7 @@ public class SendGridConnectorsService : ISendGridConnectorsService
         try
         {
             //Get the decrypted SendGrid API Key from Vault
-            string? apiKey = await GetSendGridApiKeyAsync(cloudConnectorReqDto.CredentialId);
+            string? apiKey = await GetSendGridApiKeyAsync(cloudConnectorReqDto.CredentialName);
             if (string.IsNullOrWhiteSpace(apiKey))
             {
                 serviceResponse.StatusCode = 400;
@@ -65,7 +65,7 @@ public class SendGridConnectorsService : ISendGridConnectorsService
             string? bccEmail = payload.TryGetValue("bcc", out var bccEmailObj) ? bccEmailObj?.ToString() : null;
 
             // Send the email using the API key
-            bool sendSuccess = await SendEmailAsync(credentialId: cloudConnectorReqDto.CredentialId,
+            bool sendSuccess = await SendEmailAsync(credentialName: cloudConnectorReqDto.CredentialName,
                 toEmail: toEmail, subject: subject, body: body, fromEmail: fromEmail,
                 fromName: fromName, ccEmail: ccEmail, bccEmail: bccEmail);
 
@@ -93,27 +93,27 @@ public class SendGridConnectorsService : ISendGridConnectorsService
         return serviceResponse;
     }
 
-    // Get sendgrid apikey from the vault credential id.
-    private async Task<string?> GetSendGridApiKeyAsync(Guid credentialId)
+    // Get sendgrid apikey from the vault credential name.
+    private async Task<string?> GetSendGridApiKeyAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialId);
+        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
         if (vaultCredential == null)
         {
-            _logger.LogWarning("Vault credential not found for ID: {CredentialId}", credentialId);
+            _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);
             return null;
         }
         if (vaultCredential.Data == null ||
             !vaultCredential.Data.TryGetValue("ApiKey", out var apiKeyValue) ||
             apiKeyValue == null)
         {
-            _logger.LogWarning("No 'ApiKey' found in vault credential Data for ID: {CredentialId}", credentialId);
+            _logger.LogWarning("No 'ApiKey' found in vault credential Data for Name: {CredentialName}", credentialName);
             return null;
         }
         string? apiKey = apiKeyValue.ToString();
 
         if (string.IsNullOrWhiteSpace(apiKey))
         {
-            _logger.LogWarning("ApiKey is null or whitespace for credential ID: {CredentialId}", credentialId);
+            _logger.LogWarning("ApiKey is null or whitespace for credential Name: {CredentialName}", credentialName);
             return null;
         }
 
@@ -121,14 +121,14 @@ public class SendGridConnectorsService : ISendGridConnectorsService
     }
 
 
-    public async Task<bool> SendEmailAsync(Guid credentialId, string toEmail, string subject,
+    public async Task<bool> SendEmailAsync(string credentialName, string toEmail, string subject,
        string body, string fromEmail, string? fromName = null, string? ccEmail = null, string? bccEmail = null)
     {
         // 1. Get API key from vault
-        var apiKey = await GetSendGridApiKeyAsync(credentialId);
+        var apiKey = await GetSendGridApiKeyAsync(credentialName);
         if (string.IsNullOrEmpty(apiKey))
         {
-            _logger.LogError("Unable to retrieve or decrypt SendGrid API key for Credential ID: {CredentialId}", credentialId);
+            _logger.LogError("Unable to retrieve or decrypt SendGrid API key for Credential Name: {CredentialName}", credentialName);
             return false;
         }
 
@@ -153,7 +153,7 @@ public class SendGridConnectorsService : ISendGridConnectorsService
             if (response.StatusCode == System.Net.HttpStatusCode.Accepted ||
                 response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                _logger.LogInformation("Email sent successfully to {ToEmail} using Credential ID: {CredentialId}", toEmail, credentialId);
+                _logger.LogInformation("Email sent successfully to {ToEmail} using Credential Name: {CredentialName}", toEmail, credentialName);
                 return true;
             }
             else
@@ -164,7 +164,7 @@ public class SendGridConnectorsService : ISendGridConnectorsService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Exception while sending email via SendGrid for Credential ID: {CredentialId}", credentialId);
+            _logger.LogError(ex, "Exception while sending email via SendGrid for Credential Name: {CredentialName}", credentialName);
             return false;
         }
     }

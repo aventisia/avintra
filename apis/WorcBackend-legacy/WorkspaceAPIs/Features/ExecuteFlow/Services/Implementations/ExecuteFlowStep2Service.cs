@@ -1,3 +1,4 @@
+using AspNetToolkit.Config;
 using AspNetToolkit.Enums;
 using ExecutorLibrary.FlowProcessor;
 using ExecutorLibrary.FlowProcessor.Models;
@@ -12,6 +13,7 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
     private readonly ILogger<ExecuteFlowStep2Service> _logger;
     private readonly Guid? _userId;
     private readonly IClientContextResolver _clientContextResolver;
+    private readonly EnvironmentConfig _environmentConfig;
 
     // Maximum length allowed for a job remark.
     private const int MaxRemarkLength = 2000;
@@ -20,11 +22,13 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
         IServiceScopeFactory scopeFactory,
         ILogger<ExecuteFlowStep2Service> logger,
         IHttpContextAccessor httpContextAccessor,
-        IClientContextResolver clientContextResolver)
+        IClientContextResolver clientContextResolver,
+        EnvironmentConfig environmentConfig)
     {
         _scopeFactory = scopeFactory;
         _logger = logger;
         _clientContextResolver = clientContextResolver;
+        _environmentConfig = environmentConfig;
 
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
     }
@@ -157,7 +161,9 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 {
                     UserId = flowExecutionArgs.UserId,
                     TenantId = flowExecutionArgs.TenantId,
-                    AccessToken = flowExecutionArgs.AccessToken ?? string.Empty
+                    AccessToken = flowExecutionArgs.AccessToken ?? string.Empty,
+                    AppBaseUrl = _environmentConfig.AppBaseUrl,
+                    EnvType = flowExecutionArgs.EnvType
                 },
                 ["_job"] = new JobContext
                 {
@@ -271,7 +277,9 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
                 {
                     UserId = flowExecutionArgs.UserId,
                     TenantId = flowExecutionArgs.TenantId,
-                    AccessToken = flowExecutionArgs.AccessToken ?? string.Empty
+                    AccessToken = flowExecutionArgs.AccessToken ?? string.Empty,
+                    AppBaseUrl = _environmentConfig.AppBaseUrl,
+                    EnvType = flowExecutionArgs.EnvType
                 },
                 ["_job"] = new JobContext
                 {

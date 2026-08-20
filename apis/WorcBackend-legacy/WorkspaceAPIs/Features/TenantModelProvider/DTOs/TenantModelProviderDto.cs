@@ -24,6 +24,13 @@ public class TenantModelProviderDto
     public Guid? CredentialId { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the vault credential associated with the provider.
+    /// The Agent Builder stores and submits the resource NAME; the service resolves
+    /// it to the CredentialId before persisting.
+    /// </summary>
+    public string? CredentialName { get; set; }
+
+    /// <summary>
     /// Gets or sets the base URL for self-hosted providers (e.g. Ollama).
     /// Null/empty for credential-based providers.
     /// </summary>

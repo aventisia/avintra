@@ -44,6 +44,13 @@ public class EmailTriggerModel
     public Guid CredentialId { get; set; }
 
     /// <summary>
+    /// Gets or sets the name of the credential used for authentication.
+    /// The Agent Builder stores and submits the resource NAME; the service resolves
+    /// it to the CredentialId before persisting.
+    /// </summary>
+    public string? CredentialName { get; set; }
+
+    /// <summary>
     /// Gets or sets the provider associated with the email trigger. Defaults to Microsoft 365.
     /// </summary>
     public TriggerProviderTypesEnum Provider { get; set; } = TriggerProviderTypesEnum.M365;

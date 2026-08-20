@@ -48,7 +48,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             if (isPersonal)
             {
                 knowledgeBases = await _unitOfWork.KnowledgeBaseRepo
-                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -73,6 +73,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 knowledgeBases = await _unitOfWork.KnowledgeBaseRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.IsTenantWideAccess ||
                             resourceAccess.Keys.Contains(w.Id)
@@ -142,6 +143,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             var options = await _unitOfWork.KnowledgeBaseRepo
                 .GetByConditionAsync(w =>
                     w.IsDisabled == false &&
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     (
                         w.CreatedByUserId == _userId ||
                         w.IsTenantWideAccess ||
@@ -192,9 +194,11 @@ public class KnowledgeBaseService : IKnowledgeBaseService
 
             var normalizedName = checkAvailabilityDto.UserInput.Trim().ToLower();
 
-            // Check for duplicate name
+            // Check for duplicate name within the current environment
             var existingKB = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb => kb.Name.ToLower() == normalizedName)
+                .GetByConditionAsync(kb =>
+                    kb.Name.ToLower() == normalizedName &&
+                    kb.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             var isAvailable = existingKB == null;
@@ -233,9 +237,11 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
-            // Retrieve the knowledge base by name.
+            // Retrieve the knowledge base by name within the current environment.
             var knowledgeBase = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb => kb.Name.ToLower() == knowledgeBaseName.ToLower())
+                .GetByConditionAsync(kb =>
+                    kb.Name.ToLower() == knowledgeBaseName.ToLower() &&
+                    kb.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(kb => kb.CreatedByUser)
                 .Include(kb => kb.LastModifiedByUser)
                 .Include(kb => kb.Files)
@@ -328,9 +334,11 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 return serviceResponse;
             }
 
-            // Check if name already exists in this tenant
+            // Check if name already exists in this tenant within the current environment
             var existingKB = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb => kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower())
+                .GetByConditionAsync(kb =>
+                    kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower() &&
+                    kb.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (existingKB != null)
@@ -348,7 +356,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 VectorStore = knowledgeBaseDto.VectorStore,
                 EmbeddingProvider = knowledgeBaseDto.EmbeddingProvider,
                 EmbeddingModel = knowledgeBaseDto.EmbeddingModel,
-                EmbeddingCredentialId = knowledgeBaseDto.EmbeddingCredentialId,
+                EmbeddingCredentialId = await ResolveCredentialIdAsync(knowledgeBaseDto.EmbeddingCredentialName, knowledgeBaseDto.EmbeddingCredentialId),
                 StoreCredentialId = knowledgeBaseDto.StoreCredentialId,
                 CollectionName = knowledgeBaseDto.CollectionName,
                 VectorStoreConfig = knowledgeBaseDto.VectorStoreConfig,
@@ -357,7 +365,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 LastModifiedByUserId = _userId,
                 CreatedOn = DateTimeOffset.UtcNow,
                 LastModifiedOn = DateTimeOffset.UtcNow,
-                TenantId = _currentTenantService.CurrentTenantId
+                TenantId = _currentTenantService.CurrentTenantId,
+                EnvType = _currentTenantService.CurrentEnvType
             };
 
             await _unitOfWork.KnowledgeBaseRepo.InsertAsync(newKB);
@@ -435,7 +444,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 .GetByConditionAsync(kb =>
                     string.IsNullOrEmpty(knowledgeBaseDto.Name)
                         ? kb.Id == knowledgeBaseDto.Id
-                        : kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower()
+                        : kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower() && kb.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .FirstOrDefaultAsync();
 
@@ -450,7 +459,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             var duplicateName = await _unitOfWork.KnowledgeBaseRepo
                 .GetByConditionAsync(kb =>
                     kb.Id != knowledgeBaseDto.Id &&
-                    kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower())
+                    kb.Name.ToLower() == knowledgeBaseDto.Name.ToLower() &&
+                    kb.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (duplicateName != null)
@@ -506,6 +516,11 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             // Check and update Embedding Credential ID if the value has changed
+            if (!string.IsNullOrWhiteSpace(knowledgeBaseDto.EmbeddingCredentialName))
+            {
+                knowledgeBaseDto.EmbeddingCredentialId = await ResolveCredentialIdAsync(knowledgeBaseDto.EmbeddingCredentialName, knowledgeBaseDto.EmbeddingCredentialId);
+            }
+
             if (existingKB.EmbeddingCredentialId != knowledgeBaseDto.EmbeddingCredentialId)
             {
                 existingKB.EmbeddingCredentialId = knowledgeBaseDto.EmbeddingCredentialId;
@@ -577,7 +592,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         {
             // Get the knowledge base
             var kb = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(k => k.Id == id)
+                .GetByConditionAsync(k => k.Id == id && k.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (kb == null)
@@ -585,6 +600,21 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                 serviceResponse.Message = "Knowledge base not found";
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
+            }
+
+            // PROD-guard: block deletion of PROD KBs or KBs with a same-name PROD twin.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.KnowledgeBaseRepo,
+                kb.EnvType,
+                kb.Name,
+                w => w.Name.ToLower() == kb.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == kb.TenantId &&
+                     w.SpaceId == kb.SpaceId,
+                "knowledge base");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             // Validate delete permission
@@ -671,7 +701,7 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             var allMatchedKBs = await _unitOfWork.KnowledgeBaseRepo
-                .GetByConditionAsync(kb => requestedIds.Contains(kb.Id))
+                .GetByConditionAsync(kb => requestedIds.Contains(kb.Id) && kb.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
             if (allMatchedKBs.Count != requestedIds.Count)
@@ -682,7 +712,8 @@ public class KnowledgeBaseService : IKnowledgeBaseService
             }
 
             var kbs = allMatchedKBs;
-            // Validate delete permission for each knowledge base
+            // Validate delete permission + PROD-guard for each knowledge base
+            var blockedNames = new List<string>();
             foreach (var kb in kbs)
             {
                 var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
@@ -704,6 +735,29 @@ public class KnowledgeBaseService : IKnowledgeBaseService
                     serviceResponse.Message = "You do not have access to delete one or more knowledge bases.";
                     return serviceResponse;
                 }
+
+                // PROD-guard: block the whole batch if any KB is PROD or has a same-name PROD twin.
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.KnowledgeBaseRepo,
+                    kb.EnvType,
+                    kb.Name,
+                    w => w.Name.ToLower() == kb.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == kb.TenantId &&
+                         w.SpaceId == kb.SpaceId,
+                    "knowledge base");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(kb.Name);
+                }
+            }
+
+            // Reject the entire batch when any selected KB is protected by the PROD guard.
+            if (blockedNames.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following knowledge base(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}";
+                return serviceResponse;
             }
 
             // Delete associated vector store entries for all KBs
@@ -762,5 +816,19 @@ public class KnowledgeBaseService : IKnowledgeBaseService
         return !string.IsNullOrWhiteSpace(metadataKbName)
             && !string.IsNullOrWhiteSpace(kbName)
             && string.Equals(metadataKbName, kbName, StringComparison.OrdinalIgnoreCase);
+    }
+
+    // Resolves a credential NAME to its entity ID. If a name is supplied it takes precedence;
+    // otherwise the explicitly provided ID is returned unchanged.
+    private async Task<Guid?> ResolveCredentialIdAsync(string? credentialName, Guid? existingCredentialId)
+    {
+        if (string.IsNullOrWhiteSpace(credentialName))
+            return existingCredentialId;
+
+        var credential = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(w => w.Name == credentialName && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+
+        return credential?.Id ?? existingCredentialId;
     }
 }

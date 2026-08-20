@@ -7,11 +7,13 @@ public class TimeTriggerService(
     ILogger<TimeTriggerService> logger,
     IUnitOfWork unitOfWork,
     IResourceShareService resourceShareService,
-    IHttpContextAccessor httpContextAccessor) : ITimeTriggerService
+    IHttpContextAccessor httpContextAccessor,
+    ICurrentTenantService currentTenantService) : ITimeTriggerService
 {
     private readonly ILogger<TimeTriggerService> _logger = logger;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly IResourceShareService _resourceShareService = resourceShareService;
+    private readonly ICurrentTenantService _currentTenantService = currentTenantService;
     private readonly Guid _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
     // Retrieve all time triggers associated with current user
@@ -36,7 +38,8 @@ public class TimeTriggerService(
                 timeTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.TriggerType == TriggerTypesEnum.Time &&
-                        w.CreatedByUserId == _userId
+                        w.CreatedByUserId == _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType
                     )
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -67,6 +70,7 @@ public class TimeTriggerService(
                     .GetByConditionAsync(w =>
                         w.TriggerType == TriggerTypesEnum.Time &&
                         w.CreatedByUserId != _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)
                         )
@@ -122,7 +126,7 @@ public class TimeTriggerService(
         {
             // Try to get time trigger
             var timeTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == timeTriggerId)
+                .GetByConditionAsync(w => w.Id == timeTriggerId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
@@ -174,6 +178,84 @@ public class TimeTriggerService(
         return serviceResponse;
     }
 
+    // Retrieves a time trigger by its name within the current environment and tenant.
+    public async Task<ServiceResponse<TimeTriggerDto>> GetTimeTriggerByNameAsync(string triggerName)
+    {
+        // Initialize ServiceResponse with failed response
+        var serviceResponse = new ServiceResponse<TimeTriggerDto>
+        {
+            Data = null,
+            Message = "Failed to retrieve trigger, Please try again"
+        };
+
+        try
+        {
+            // Validate the provided trigger name
+            if (string.IsNullOrWhiteSpace(triggerName))
+            {
+                serviceResponse.Message = "Trigger name is required.";
+                return serviceResponse;
+            }
+
+            // Normalize input for case-insensitive comparison
+            var normalizedName = triggerName.Trim().ToLowerInvariant();
+
+            // Try to get time trigger by name within the current environment
+            var timeTrigger = await _unitOfWork.TriggerRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == normalizedName &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
+                .Include(i => i.CreatedByUser)
+                .Include(i => i.LastModifiedByUser)
+                .Include(i => i.TriggerFlowVersions)
+                    .ThenInclude(i2 => i2.FlowVersion)
+                        .ThenInclude(i3 => i3.Flow)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            if (timeTrigger == null)
+            {
+                serviceResponse.Message = "Time trigger does not exist";
+                _logger.LogInformation("There is no time trigger with name {Name}", triggerName);
+                return serviceResponse;
+            }
+
+            // Verify current user has permission to view this trigger
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                timeTrigger.Id,
+                ResourceTypeEnum.Trigger,
+                timeTrigger.CreatedByUserId,
+                timeTrigger.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canView)
+            {
+                _logger.LogInformation("User {UserId} attempted unauthorized access to time trigger {TriggerName}.", _userId, triggerName);
+                serviceResponse.Message = "You do not have access to view this time trigger.";
+                return serviceResponse;
+            }
+
+            // Task successful
+            serviceResponse.Data = timeTrigger.Adapt<TimeTriggerDto>();
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Time trigger retrieved successfully";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            return serviceResponse;
+        }
+
+        return serviceResponse;
+    }
+
     // Checks the availability of a time trigger name.
     public async Task<ServiceResponse<TrueFalseResultDto>> IsTimeTriggerNameAvailableAsync(CheckAvailabilityDto checkAvailabilityDto)
     {
@@ -186,9 +268,9 @@ public class TimeTriggerService(
 
         try
         {
-            // Validate trigger name uniqueness
+            // Validate trigger name uniqueness within the current environment
             var triggerAlreadyExists = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.Time && w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             // Trigger already exists
@@ -246,7 +328,7 @@ public class TimeTriggerService(
 
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.Time && w.Name.ToLower() == timeTriggerDto.Name.ToLower())
+                .GetByConditionAsync(w => w.Name.ToLower() == timeTriggerDto.Name.ToLower() && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (existingTrigger != null)
@@ -298,6 +380,9 @@ public class TimeTriggerService(
 
             // Set the TriggerType explicitly
             newTimeTrigger.TriggerType = TriggerTypesEnum.Time;
+
+            // Set the environment explicitly from the current request
+            newTimeTrigger.EnvType = _currentTenantService.CurrentEnvType;
 
             // Set audit fields: created and last modified by current user
             newTimeTrigger.CreatedByUserId = _userId;
@@ -406,7 +491,7 @@ public class TimeTriggerService(
 
             // Retrieve existing time trigger
             var timeTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == timeTriggerDto.Id)
+                .GetByConditionAsync(w => w.Id == timeTriggerDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.TriggerFlowVersions)
                 .SingleOrDefaultAsync();
 
@@ -440,9 +525,9 @@ public class TimeTriggerService(
             // Check for duplicate name among other triggers
             var duplicateTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.Time &&
                     w.Name.ToLower() == timeTriggerDto.Name.ToLower() &&
-                    w.Id != timeTriggerDto.Id
+                    w.Id != timeTriggerDto.Id &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .FirstOrDefaultAsync();
 
@@ -719,7 +804,7 @@ public class TimeTriggerService(
         {
             // Try to get time trigger
             var trigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == timeTriggerId && w.TriggerType == TriggerTypesEnum.Time)
+                .GetByConditionAsync(w => w.Id == timeTriggerId && w.TriggerType == TriggerTypesEnum.Time && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             // Trigger does not exist
@@ -728,6 +813,21 @@ public class TimeTriggerService(
                 _logger.LogInformation($"Time Trigger does not exist");
                 serviceResponse.Message = "Time Trigger does not exist";
                 return serviceResponse;
+            }
+
+            // PROD-guard: block deletion of PROD triggers or triggers with a same-name PROD twin.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.TriggerRepo,
+                trigger.EnvType,
+                trigger.Name,
+                w => w.Name.ToLower() == trigger.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == trigger.TenantId &&
+                     w.SpaceId == trigger.SpaceId,
+                "time trigger");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             // Validate current user has permission to delete this trigger
@@ -794,7 +894,7 @@ public class TimeTriggerService(
         {
             // Validate time triggers existence
             var timeTriggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => timeTriggerIds.Contains(w.Id) && w.TriggerType == TriggerTypesEnum.Time)
+                .GetByConditionAsync(w => timeTriggerIds.Contains(w.Id) && w.TriggerType == TriggerTypesEnum.Time && w.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
             // Triggers do not exist
@@ -805,7 +905,8 @@ public class TimeTriggerService(
                 return serviceResponse;
             }
 
-            // Validate delete access for all triggers
+            // Validate delete access + PROD-guard for all triggers
+            var blockedNames = new List<string>();
             foreach (var trigger in timeTriggers)
             {
                 var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
@@ -826,6 +927,29 @@ public class TimeTriggerService(
                     serviceResponse.Message = "You do not have access to delete one or more time triggers.";
                     return serviceResponse;
                 }
+
+                // PROD-guard: block the whole batch if any trigger is PROD or has a same-name PROD twin.
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.TriggerRepo,
+                    trigger.EnvType,
+                    trigger.Name,
+                    w => w.Name.ToLower() == trigger.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == trigger.TenantId &&
+                         w.SpaceId == trigger.SpaceId,
+                    "time trigger");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(trigger.Name);
+                }
+            }
+
+            // Reject the entire batch when any selected trigger is protected by the PROD guard.
+            if (blockedNames.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following time trigger(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}";
+                return serviceResponse;
             }
 
             // Remove all resource share mappings before deleting triggers

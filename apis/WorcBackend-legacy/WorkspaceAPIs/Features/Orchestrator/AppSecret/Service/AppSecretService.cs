@@ -7,12 +7,14 @@ public class AppSecretService : IAppSecretService
     private readonly IStringEncryptionService _encryptionService;
     private readonly Guid _userId;
     private readonly IResourceShareService _resourceShareService;
+    private readonly ICurrentTenantService _currentTenantService;
     public AppSecretService(
         IUnitOfWork unitOfWork,
         ILogger<AppSecretService> logger, IHttpContextAccessor
         httpContextAccessor,
         IStringEncryptionService encryptionService,
-        IResourceShareService resourceShareService
+        IResourceShareService resourceShareService,
+        ICurrentTenantService currentTenantService
     )
     {
         _unitOfWork = unitOfWork;
@@ -22,6 +24,7 @@ public class AppSecretService : IAppSecretService
         // Extract user ID from the HTTP context, if available
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _resourceShareService = resourceShareService;
+        _currentTenantService = currentTenantService;
     }
 
     // Retrieve all vault credentials
@@ -38,12 +41,11 @@ public class AppSecretService : IAppSecretService
         {
             List<AppSecret> appSecrets = new();
             Dictionary<Guid, ResourceAccessTypeEnum>? resourceAccess = new();
-
             if (isPersonal)
             {
                 // Retrieve user's personal app secrets
                 appSecrets = await _unitOfWork.AppSecretRepo
-                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -67,6 +69,7 @@ public class AppSecretService : IAppSecretService
                 appSecrets = await _unitOfWork.AppSecretRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.IsTenantWideAccess ||
                             resourceAccess.Keys.Contains(w.Id)
@@ -133,9 +136,11 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Check if credential with the same name exists (case-insensitive)
+            // Check if credential with the same name exists (case-insensitive) within the current environment
             var existingAppSecret = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == appSecretName.ToLower())
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == appSecretName.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Credential name already exists
@@ -188,6 +193,7 @@ public class AppSecretService : IAppSecretService
             // Attempt to fetch the selectable credential options from the repository
             var accessibleSecrets = await _unitOfWork.AppSecretRepo
                 .GetByConditionAsync(w =>
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     (!type.HasValue || w.Type == type) &&
                     (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleSecretIds.Contains(w.Id))
                 )
@@ -222,7 +228,7 @@ public class AppSecretService : IAppSecretService
         {
             // Attempt to retrieve the credential by its ID
             var appSecret = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Id == appSecretId)
+                .GetByConditionAsync(w => w.Id == appSecretId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
@@ -287,9 +293,11 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Attempt to retrieve the credential by its name
+            // Attempt to retrieve the credential by its name within the current environment
             var appSecret = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Name == appSecretName)
+                .GetByConditionAsync(w =>
+                    w.Name == appSecretName &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .SingleOrDefaultAsync();
 
@@ -362,9 +370,11 @@ public class AppSecretService : IAppSecretService
 
         try
         {
-            // Check if a credential with the same name already exists
+            // Check if a credential with the same name already exists within the current environment
             var existingSecret = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == appSecretDto.Name.ToLower())
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == appSecretDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // If an existing credential is found, return a conflict response
@@ -394,6 +404,7 @@ public class AppSecretService : IAppSecretService
             newAppSecret.Data = validateData.SanitizedDataJson;
             newAppSecret.CreatedByUserId = _userId;
             newAppSecret.LastModifiedByUserId = _userId;
+            newAppSecret.EnvType = _currentTenantService.CurrentEnvType;
 
             // Insert the new credential into the repository
             await _unitOfWork.AppSecretRepo.InsertAsync(newAppSecret);
@@ -468,7 +479,7 @@ public class AppSecretService : IAppSecretService
                 .GetByConditionAsync(w =>
                     string.IsNullOrEmpty(appSecretDto.Name)
                         ? w.Id == appSecretDto.Id
-                        : w.Name.ToLower() == appSecretDto.Name.ToLower()
+                        : w.Name.ToLower() == appSecretDto.Name.ToLower() && w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .Include(i => i.EncryptedKeyValues)
                 .SingleOrDefaultAsync();
@@ -502,9 +513,9 @@ public class AppSecretService : IAppSecretService
                 return serviceResponse;
             }
 
-            // Check for a duplicate credential by name
+            // Check for a duplicate credential by name within the current environment
             var duplicateSecret = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == appSecretDto.Name.ToLower() && w.Id != appSecretDto.Id)
+                .GetByConditionAsync(w => w.Name.ToLower() == appSecretDto.Name.ToLower() && w.EnvType == _currentTenantService.CurrentEnvType && w.Id != appSecretDto.Id)
                 .SingleOrDefaultAsync();
 
             // If a duplicate exists, return a conflict message
@@ -685,7 +696,7 @@ public class AppSecretService : IAppSecretService
         {
             // Attempt to retrieve the credential by ID
             var appSecret = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Id == appSecretId)
+                .GetByConditionAsync(w => w.Id == appSecretId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // If no credential is found, return an error message
@@ -694,6 +705,21 @@ public class AppSecretService : IAppSecretService
                 _logger.LogWarning("No credential found with ID: {AppSecretId}", appSecretId);
                 serviceResponse.Message = "Credential not found.";
                 return serviceResponse;
+            }
+
+            // PROD-guard: block deletion of PROD credentials or credentials with a same-name PROD twin.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.AppSecretRepo,
+                appSecret.EnvType,
+                appSecret.Name,
+                w => w.Name.ToLower() == appSecret.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == appSecret.TenantId &&
+                     w.SpaceId == appSecret.SpaceId,
+                "credential");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             // Validate update access
@@ -760,7 +786,7 @@ public class AppSecretService : IAppSecretService
         {
             // Attempt to retrieve the credentials by their IDs
             var appSecrets = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => appSecretIds.Contains(w.Id))
+                .GetByConditionAsync(w => appSecretIds.Contains(w.Id) && w.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
             // If no credentials are found, return an error message
@@ -770,6 +796,7 @@ public class AppSecretService : IAppSecretService
                 serviceResponse.Message = "No credentials found to delete.";
                 return serviceResponse;
             }
+            var blockedNames = new List<string>();
             foreach (var appSecret in appSecrets)
             {
                 var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
@@ -789,6 +816,29 @@ public class AppSecretService : IAppSecretService
                     serviceResponse.Message = "You do not have access to delete one or more selected credentials.";
                     return serviceResponse;
                 }
+
+                // PROD-guard: block the whole batch if any credential is PROD or has a same-name PROD twin.
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.AppSecretRepo,
+                    appSecret.EnvType,
+                    appSecret.Name,
+                    w => w.Name.ToLower() == appSecret.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == appSecret.TenantId &&
+                         w.SpaceId == appSecret.SpaceId,
+                    "credential");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(appSecret.Name);
+                }
+            }
+
+            // Reject the entire batch when any selected credential is protected by the PROD guard.
+            if (blockedNames.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following credential(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}";
+                return serviceResponse;
             }
 
             await _resourceShareService.DeleteResourceSharesAsync(appSecretIds, ResourceTypeEnum.AppSecret);
@@ -834,7 +884,7 @@ public class AppSecretService : IAppSecretService
         {
             // Fetch the credential entity along with its encrypted key-value pairs
             var appSecret = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Id == appSecretId)
+                .GetByConditionAsync(w => w.Id == appSecretId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .AsNoTracking()
                 .Include(i => i.EncryptedKeyValues)
                 .SingleOrDefaultAsync();
@@ -890,6 +940,89 @@ public class AppSecretService : IAppSecretService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving Credential with ID: {AppSecretId}", appSecretId);
+        }
+
+        return serviceResponse;
+    }
+
+    // Retrieves the details (with decrypted key-value pairs) of a specific App Secret by its name within the current environment.
+    public async Task<ServiceResponse<AppSecretDto>> GetAppSecretDetailByNameAsync(string appSecretName)
+    {
+        // Prepare default response in case of failure
+        var serviceResponse = new ServiceResponse<AppSecretDto>
+        {
+            Data = null,
+            Message = "Unable to load credential. Please try again later.",
+        };
+        try
+        {
+            // Validate the provided credential name
+            if (string.IsNullOrWhiteSpace(appSecretName))
+            {
+                serviceResponse.Message = "Credential name is required.";
+                return serviceResponse;
+            }
+
+            // Fetch the credential entity by name within the current environment, including its encrypted key-value pairs
+            var appSecret = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w =>
+                    w.Name == appSecretName &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
+                .AsNoTracking()
+                .Include(i => i.EncryptedKeyValues)
+                .SingleOrDefaultAsync();
+
+            if (appSecret == null)
+            {
+                _logger.LogWarning("No credential found with name: {AppSecretName}", appSecretName);
+                serviceResponse.Message = "Credential not found.";
+                return serviceResponse;
+            }
+
+            // Validate view access
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                appSecret.Id,
+                ResourceTypeEnum.AppSecret,
+                appSecret.CreatedByUserId,
+                appSecret.IsTenantWideAccess,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canView)
+            {
+                _logger.LogWarning("User {UserId} is not authorized to view credential name: {AppSecretName}", _userId, appSecretName);
+                serviceResponse.Message = "You do not have access to view this credential.";
+                return serviceResponse;
+            }
+
+            // Map entity to DTO
+            var appSecretDto = appSecret.Adapt<AppSecretDto>();
+
+            // Decrypt and merge key-value pairs into the DTO's data object
+            var encryptedValues = appSecret.EncryptedKeyValues?.ToList();
+            if (encryptedValues != null && encryptedValues.Any())
+            {
+                var decryptedMap = encryptedValues.ToDictionary(
+                    kv => kv.Name,
+                    kv => _encryptionService.DecryptString(kv.Value));
+
+                appSecretDto.Data = UpdateObjectProperties(appSecretDto.Data, decryptedMap);
+            }
+
+            // Prepare successful response
+            serviceResponse.Data = appSecretDto;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Credential retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while retrieving Credential with name: {AppSecretName}", appSecretName);
         }
 
         return serviceResponse;

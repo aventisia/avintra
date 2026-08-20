@@ -148,6 +148,9 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 FlowData = parsedFlow,
                 UserId = _userId,
                 AccessToken = _accessToken,
+                // Published agents run against production resources; unpublished/draft flows run
+                // against development resources.
+                EnvType = flowVersion.IsPublished ? "prod" : "dev",
             };
 
             // Start flow execution asynchronously or synchronously based on WaitForCompletion flag

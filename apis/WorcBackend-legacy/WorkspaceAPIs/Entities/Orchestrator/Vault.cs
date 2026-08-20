@@ -19,6 +19,12 @@ public class Vault : BaseEntity, IMustHaveTenant
     public Guid? SpaceId { get; set; }
 
     /// <summary>
+    /// Gets or sets the deployment environment this vault belongs to.
+    /// Combined with tenant/space/name this enforces uniqueness per environment.
+    /// </summary>
+    public ConfigureEnvironmentType EnvType { get; set; } = ConfigureEnvironmentType.Dev;
+
+    /// <summary>
     /// Gets or sets the name of the configuration item.
     /// This name must be unique and should clearly describe the configuration.
     /// </summary>

@@ -14,15 +14,15 @@ public class M365ConnectorsService : IM365ConnectorsService
         _cloudConnectorsVaultService = cloudConnectorsVaultService;
     }
 
-    public async Task<string?> GetM365AccessTokenAsync(Guid credentialId)
+    public async Task<string?> GetM365AccessTokenAsync(string credentialName)
     {
         try
         {
             // Step 1: Get credentials from vault
-            var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialId);
+            var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
             if (vaultCredential == null)
             {
-                _logger.LogWarning("No credential found with ID: {CredentialId} for M365", credentialId);
+                _logger.LogWarning("No credential found with Name: {CredentialName} for M365", credentialName);
                 return null;
             }
 
@@ -31,7 +31,7 @@ public class M365ConnectorsService : IM365ConnectorsService
                 vaultCredential.Data["ClientId"] == null ||
                 vaultCredential.Data["ClientSecret"] == null)
             {
-                _logger.LogWarning("One or more required credential fields are missing for Credential ID: {CredentialId}", credentialId);
+                _logger.LogWarning("One or more required credential fields are missing for Credential Name: {CredentialName}", credentialName);
                 return null;
             }
 
@@ -54,7 +54,7 @@ public class M365ConnectorsService : IM365ConnectorsService
             var accessToken = jsonDocument.RootElement.GetProperty("access_token").GetString();
             if (accessToken == null)
             {
-                _logger.LogWarning("Failed to obtain M365 access token for Credential ID: {CredentialId}", credentialId);
+                _logger.LogWarning("Failed to obtain M365 access token for Credential Name: {CredentialName}", credentialName);
                 return null;
             }
 
@@ -142,10 +142,10 @@ public class M365ConnectorsService : IM365ConnectorsService
         try
         {
             // Step 1: Get access token from M365ConnectorsService
-            var accessToken = await GetM365AccessTokenAsync(cloudConnectorReqDto.CredentialId);
+            var accessToken = await GetM365AccessTokenAsync(cloudConnectorReqDto.CredentialName);
             if (accessToken == null)
             {
-                _logger.LogWarning("Failed to obtain M365 access token for Credential ID: {CredentialId}", cloudConnectorReqDto.CredentialId);
+                _logger.LogWarning("Failed to obtain M365 access token for Credential Name: {CredentialName}", cloudConnectorReqDto.CredentialName);
                 serviceResponse.Message = "Failed to obtain M365 access token.";
                 return serviceResponse;
             }

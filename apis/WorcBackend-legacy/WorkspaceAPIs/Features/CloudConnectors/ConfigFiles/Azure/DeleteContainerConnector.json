@@ -9,7 +9,7 @@
     {
       "direction": "Input",
       "type": "credentials-select",
-      "name": "__CredentialId__GeneralCredential",
+      "name": "__CredentialName__GeneralCredential",
       "label": "AzureBlobStorage",
       "description": "",
       "defaultValue": ""

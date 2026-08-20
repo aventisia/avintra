@@ -34,10 +34,10 @@ public class TwilioConnectorsService : ITwilioConnectorsService
         try
         {
             // Get AccountSid and AuthToken 
-            var twilioCreds = await GetTwilioAccountSidAndAuthTokenAsync(cloudConnectorReqDto.CredentialId);
+            var twilioCreds = await GetTwilioAccountSidAndAuthTokenAsync(cloudConnectorReqDto.CredentialName);
             if (twilioCreds == null)
             {
-                _logger.LogWarning("Failed to obtain Twilio credentials for Credential ID: {CredentialId}", cloudConnectorReqDto.CredentialId);
+                _logger.LogWarning("Failed to obtain Twilio credentials for Credential Name: {CredentialName}", cloudConnectorReqDto.CredentialName);
                 serviceResponse.Message = "Failed to retrieve Twilio AccountSid and AuthToken.";
                 return serviceResponse;
             }
@@ -101,12 +101,12 @@ public class TwilioConnectorsService : ITwilioConnectorsService
     }
 
     // Get twilio auth token and accountSid.
-    private async Task<(string AccountSid, string AuthToken)?> GetTwilioAccountSidAndAuthTokenAsync(Guid credentialId)
+    private async Task<(string AccountSid, string AuthToken)?> GetTwilioAccountSidAndAuthTokenAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialId);
+        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
         if (vaultCredential == null)
         {
-            _logger.LogWarning("Vault credential not found for ID: {CredentialId}", credentialId);
+            _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);
             return null;
         }
 
@@ -114,7 +114,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
             !vaultCredential.Data.TryGetValue("AccountSid", out var sidValue) ||
             !vaultCredential.Data.TryGetValue("AuthToken", out var tokenValue))
         {
-            _logger.LogWarning("No 'AccountSid' or 'AuthToken' found in vault credential Data for ID: {CredentialId}", credentialId);
+            _logger.LogWarning("No 'AccountSid' or 'AuthToken' found in vault credential Data for Name: {CredentialName}", credentialName);
             return null;
         }
         string? accountSid = sidValue?.ToString();
@@ -122,7 +122,7 @@ public class TwilioConnectorsService : ITwilioConnectorsService
 
         if (string.IsNullOrWhiteSpace(accountSid) || string.IsNullOrWhiteSpace(authToken))
         {
-            _logger.LogWarning("AccountSid or AuthToken is null or whitespace for credential ID: {CredentialId}", credentialId);
+            _logger.LogWarning("AccountSid or AuthToken is null or whitespace for credential Name: {CredentialName}", credentialName);
             return null;
         }
         return (accountSid, authToken);

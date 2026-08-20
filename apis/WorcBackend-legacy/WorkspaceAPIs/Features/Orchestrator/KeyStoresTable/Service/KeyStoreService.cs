@@ -7,13 +7,15 @@ public class KeyStoreService : IKeyStoreService
     private readonly Guid _userId;
     private readonly IStringEncryptionService _stringEncryptionService;
     private readonly IResourceShareService _resourceShareService;
+    private readonly ICurrentTenantService _currentTenantService;
 
     public KeyStoreService(
         ILogger<KeyStoreService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
         IStringEncryptionService stringEncryptionService,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        ICurrentTenantService currentTenantService)
     {
         // Extract the user ID from the HTTP context, default to Guid.Empty if not found
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -22,6 +24,7 @@ public class KeyStoreService : IKeyStoreService
         _unitOfWork = unitOfWork;
         _stringEncryptionService = stringEncryptionService;
         _resourceShareService = resourceShareService;
+        _currentTenantService = currentTenantService;
     }
 
     // Method to check if the key store name is available for the current user
@@ -43,10 +46,11 @@ public class KeyStoreService : IKeyStoreService
                 return serviceResponse;
             }
 
-            // Check if a key store with the same name already exists for the current user
+            // Check if a key store with the same name already exists within the current environment
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                    w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             // If an item with the same name exists, return a message indicating it's unavailable
@@ -90,7 +94,7 @@ public class KeyStoreService : IKeyStoreService
             {
                 // Retrieve only owned key stores
                 keyStores = await _unitOfWork.KeyStoreRepo
-                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(w => w.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -114,6 +118,7 @@ public class KeyStoreService : IKeyStoreService
                 keyStores = await _unitOfWork.KeyStoreRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.IsTenantWideAccess ||
                             resourceAccess.Keys.Contains(w.Id)
@@ -165,7 +170,7 @@ public class KeyStoreService : IKeyStoreService
         {
             // Fetch the key store by ID, ensuring it's created by the current user
             var keyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Id == keyStoreId)
+                .GetByConditionAsync(w => w.Id == keyStoreId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (keyStore == null)
@@ -221,9 +226,11 @@ public class KeyStoreService : IKeyStoreService
 
         try
         {
-            // Fetch the key store by its name
+            // Fetch the key store by its name within the current environment
             var keyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == keyStoreName.ToLower())
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == keyStoreName.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             // Return if the key store does not exist
@@ -293,6 +300,7 @@ public class KeyStoreService : IKeyStoreService
             // Fetch the key store values based on the provided keys
             var keyValuePairs = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     (fetchAllAccessibleKeys || normalizedKeys.Contains(w.Name))
                     && (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleResourceIds.Contains(w.Id)))
                 .Select(w => new ConfigKeyValueDto { Key = w.Name, Value = w.Value })
@@ -330,10 +338,11 @@ public class KeyStoreService : IKeyStoreService
                 return serviceResponse;
             }
 
-            // Check if a key store with the same name already exists for the user
+            // Check if a key store with the same name already exists within the current environment
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == keyStoreDto.Name.ToLower()
+                    w.Name.ToLower() == keyStoreDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .FirstOrDefaultAsync();
 
@@ -353,6 +362,7 @@ public class KeyStoreService : IKeyStoreService
             var newKeyStore = keyStoreDto.Adapt<KeyStore>();
             newKeyStore.CreatedByUserId = _userId;
             newKeyStore.LastModifiedByUserId = _userId;
+            newKeyStore.EnvType = _currentTenantService.CurrentEnvType;
 
             // Insert the new key store into the repository
             await _unitOfWork.KeyStoreRepo.InsertAsync(newKeyStore);
@@ -406,7 +416,7 @@ public class KeyStoreService : IKeyStoreService
 
             // Fetch the existing key store
             var keyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Id == keyStoreDto.Id)
+                .GetByConditionAsync(w => w.Id == keyStoreDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // If the item doesn't exist, return an error message
@@ -439,10 +449,11 @@ public class KeyStoreService : IKeyStoreService
                 return serviceResponse;
             }
 
-            // Check if another key store with the same name exists
+            // Check if another key store with the same name exists within the current environment
             var existingKeyStore = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == keyStoreDto.Name.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     w.Id != keyStoreDto.Id)
                 .FirstOrDefaultAsync();
 
@@ -528,7 +539,7 @@ public class KeyStoreService : IKeyStoreService
         {
             // Fetch the key store to be deleted
             var keyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Id == keyStoreId)
+                .GetByConditionAsync(w => w.Id == keyStoreId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // If the item doesn't exist, return an error message
@@ -537,6 +548,21 @@ public class KeyStoreService : IKeyStoreService
                 _logger.LogInformation("Key store does not exist.");
                 serviceResponse.Message = "Key store does not exist.";
                 return serviceResponse;
+            }
+
+            // PROD-guard: block deletion of PROD key stores or key stores with a same-name PROD twin.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.KeyStoreRepo,
+                keyStore.EnvType,
+                keyStore.Name,
+                w => w.Name.ToLower() == keyStore.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == keyStore.TenantId &&
+                     w.SpaceId == keyStore.SpaceId,
+                "key store");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             // Validate delete permission
@@ -598,7 +624,7 @@ public class KeyStoreService : IKeyStoreService
         {
             // Fetch the key stores to be deleted
             var keyStores = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => keyStoreIds.Contains(w.Id))
+                .GetByConditionAsync(w => keyStoreIds.Contains(w.Id) && w.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
             // If no items are found, return an error message
@@ -609,6 +635,7 @@ public class KeyStoreService : IKeyStoreService
                 return serviceResponse;
             }
 
+            var blockedNames = new List<string>();
             foreach (var keyStore in keyStores)
             {
                 var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
@@ -628,6 +655,29 @@ public class KeyStoreService : IKeyStoreService
                     serviceResponse.Message = "You do not have access to delete one or more key stores.";
                     return serviceResponse;
                 }
+
+                // PROD-guard: block the whole batch if any key store is PROD or has a same-name PROD twin.
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.KeyStoreRepo,
+                    keyStore.EnvType,
+                    keyStore.Name,
+                    w => w.Name.ToLower() == keyStore.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == keyStore.TenantId &&
+                         w.SpaceId == keyStore.SpaceId,
+                    "key store");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(keyStore.Name);
+                }
+            }
+
+            // Reject the entire batch when any selected key store is protected by the PROD guard.
+            if (blockedNames.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following key store(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}";
+                return serviceResponse;
             }
 
             // Remove resource shares
@@ -670,7 +720,88 @@ public class KeyStoreService : IKeyStoreService
         {
             // Retrieve the encrypted key store by its ID
             var keyStore = await _unitOfWork.KeyStoreRepo
-                .GetByConditionAsync(w => w.Id == keyStoreId)
+                .GetByConditionAsync(w => w.Id == keyStoreId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .SingleOrDefaultAsync();
+
+            // If the key store doesn't exist, return an error response
+            if (keyStore == null)
+            {
+                _logger.LogInformation("Key store not found.");
+                serviceResponse.Message = "Key store not found.";
+                return serviceResponse;
+            }
+
+            // Validate decrypt/view access
+            var (canView, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
+                _userId,
+                keyStore.Id,
+                ResourceTypeEnum.KeyStore,
+                keyStore.CreatedByUserId,
+                false,
+                new[]
+                {
+                    ResourceAccessTypeEnum.Owner,
+                    ResourceAccessTypeEnum.View,
+                    ResourceAccessTypeEnum.Edit,
+                }
+            );
+
+            if (!canView)
+            {
+                serviceResponse.Message =
+                    "You do not have access to decrypt this key store.";
+
+                return serviceResponse;
+            }
+
+            // If the value is not encrypted, notify the user
+            if (!keyStore.IsEncrypted)
+            {
+                serviceResponse.Message = "The key store value is not encrypted.";
+                return serviceResponse;
+            }
+
+            // Decrypt the key store value
+            var decryptedValue = _stringEncryptionService.DecryptString(keyStore.Value);
+            serviceResponse.Data = decryptedValue;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Key store decrypted successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.ToString());
+            serviceResponse.Message = "An error occurred while decrypting the key store.";
+        }
+
+        return serviceResponse;
+    }
+
+    // Method to decrypt the value of an encrypted key store by its name within the current environment
+    public async Task<ServiceResponse<string>> DecryptKeyStoreValueByNameAsync(string keyStoreName)
+    {
+        var serviceResponse = new ServiceResponse<string>
+        {
+            Data = null,
+            Message = "Unable to decrypt the key store. Please try again later."
+        };
+
+        try
+        {
+            // Validate the provided key store name
+            if (string.IsNullOrWhiteSpace(keyStoreName))
+            {
+                serviceResponse.Message = "A valid key store name is required.";
+                return serviceResponse;
+            }
+
+            // Normalize input for case-insensitive comparison
+            var normalizedName = keyStoreName.Trim().ToLowerInvariant();
+
+            // Retrieve the encrypted key store by its name within the current environment
+            var keyStore = await _unitOfWork.KeyStoreRepo
+                .GetByConditionAsync(w =>
+                    w.Name.ToLower() == normalizedName &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // If the key store doesn't exist, return an error response

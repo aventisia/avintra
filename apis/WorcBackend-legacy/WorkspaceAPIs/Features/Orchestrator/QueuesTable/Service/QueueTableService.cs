@@ -7,12 +7,14 @@ public class QueueTableService : IQueueTableService
     private readonly IResourceShareService _resourceShareService;
     private readonly Guid _userId;
     private readonly Guid _tenantId;
+    private readonly ICurrentTenantService _currentTenantService;
 
     public QueueTableService(
         ILogger<QueueTableService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        ICurrentTenantService currentTenantService)
     {
         // Set _userId and _tenantId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -21,6 +23,7 @@ public class QueueTableService : IQueueTableService
         _logger = logger;
         _unitOfWork = unitOfWork;
         _resourceShareService = resourceShareService;
+        _currentTenantService = currentTenantService;
     }
 
     // Checks the availability of a queue name.
@@ -35,10 +38,11 @@ public class QueueTableService : IQueueTableService
 
         try
         {
-            // Validate queue uniqueness
+            // Validate queue uniqueness within the current environment
             var queueAlreadyExists = await _unitOfWork.QueueRepo
                                                      .GetByConditionAsync(w =>
-                                                        w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                                                        w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() &&
+                                                        w.EnvType == _currentTenantService.CurrentEnvType)
                                                      .FirstOrDefaultAsync();
 
             // Queue already exists
@@ -84,7 +88,7 @@ public class QueueTableService : IQueueTableService
             {
                 // Return only queues created by current user
                 queues = await _unitOfWork.QueueRepo
-                    .GetByConditionAsync(w => w.CreatedByUserId == _userId)
+                    .GetByConditionAsync(w => w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.QueueTransactions)
                     .Include(i => i.QueueFlowVersions).ThenInclude(qf => qf.FlowVersion).ThenInclude(fv => fv.Flow)
@@ -114,6 +118,7 @@ public class QueueTableService : IQueueTableService
                 queues = await _unitOfWork.QueueRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId != _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.IsTenantWideAccess ||
                             resourceAccess.Keys.Contains(w.Id) ||
@@ -168,6 +173,7 @@ public class QueueTableService : IQueueTableService
             // Retrieve queues that have a QueueFlowVersion entry matching the given flow version
             var queues = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
+                    w.EnvType == _currentTenantService.CurrentEnvType &&
                     w.QueueFlowVersions != null &&
                     w.QueueFlowVersions.Any(qf => qf.FlowVersionId == flowVersionId))
                 .OrderByDescending(o => o.CreatedOn)
@@ -217,6 +223,7 @@ public class QueueTableService : IQueueTableService
                 queues = await _unitOfWork.QueueRepo
                     .GetByConditionAsync(w =>
                         w.CreatedByUserId == _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         w.Name.ToLower().Contains(queueName.ToLower())
                     )
                     .Include(i => i.QueueTransactions)
@@ -242,6 +249,7 @@ public class QueueTableService : IQueueTableService
                 queues = await _unitOfWork.QueueRepo
                     .GetByConditionAsync(w =>
                         w.Name.ToLower().Contains(queueName.ToLower()) &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.CreatedByUserId == _userId ||
                             w.IsTenantWideAccess ||
@@ -283,7 +291,7 @@ public class QueueTableService : IQueueTableService
         {
             // Get the specific queue
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == id && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == id && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             // Check if queue exists
@@ -341,10 +349,11 @@ public class QueueTableService : IQueueTableService
 
         try
         {
-            // Retrieve the queue matching the specified name for the current user.
+            // Retrieve the queue matching the specified name within the current environment for the current user.
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
-                    w.Name.ToLower() == queueName.ToLower()
+                    w.Name.ToLower() == queueName.ToLower() &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .Include(i => i.QueueTransactions)
                 .Include(i => i.CreatedByUser)
@@ -408,9 +417,9 @@ public class QueueTableService : IQueueTableService
 
         try
         {
-            // Validate queue uniqueness
+            // Validate queue uniqueness within the current environment
             var queueAlreadyExists = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Name.ToLower() == queuesTableDto.Name.ToLower() && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Name.ToLower() == queuesTableDto.Name.ToLower() && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             // Queue already exists
@@ -423,10 +432,14 @@ public class QueueTableService : IQueueTableService
 
             queuesTableDto = TrimDtoStringPropsUtil.TrimDtoStringProps(queuesTableDto);
 
+            // Resolve the credential name to its ID (entity keeps the ID per name-based Agent Builder).
+            queuesTableDto.CredentialId = await ResolveCredentialIdAsync(queuesTableDto.CredentialName, queuesTableDto.CredentialId);
+
             // Default mapping
             var newQueue = queuesTableDto.Adapt<Queue>();
             newQueue.CreatedByUserId = _userId;
             newQueue.LastModifiedByUserId = _userId;
+            newQueue.EnvType = _currentTenantService.CurrentEnvType;
 
             // Insert queue 
             await _unitOfWork.QueueRepo.InsertAsync(newQueue);
@@ -498,7 +511,7 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue existence
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queuesTableDto.Id && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == queuesTableDto.Id && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Queue does not exist
@@ -529,11 +542,12 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
-            // Validate queue name uniqueness
+            // Validate queue name uniqueness within the current environment
             var queueAlreadyExists = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == queuesTableDto.Name.ToLower() &&
-                    w.Id != queuesTableDto.Id
+                    w.Id != queuesTableDto.Id &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .FirstOrDefaultAsync();
 
@@ -588,6 +602,12 @@ public class QueueTableService : IQueueTableService
             if (queuesTableDto.RouteToQueues != null && queue.RouteToQueues != queuesTableDto.RouteToQueues)
             {
                 queue.RouteToQueues = queuesTableDto.RouteToQueues;
+            }
+
+            // Resolve the credential name to its ID (entity keeps the ID per name-based Agent Builder).
+            if (!string.IsNullOrWhiteSpace(queuesTableDto.CredentialName))
+            {
+                queuesTableDto.CredentialId = await ResolveCredentialIdAsync(queuesTableDto.CredentialName, queuesTableDto.CredentialId);
             }
 
             if (queuesTableDto.CredentialId != null && queue.CredentialId != queuesTableDto.CredentialId)
@@ -686,7 +706,7 @@ public class QueueTableService : IQueueTableService
         {
             // Validate queue existence
             var queue = await _unitOfWork.QueueRepo
-                .GetByConditionAsync(w => w.Id == queueId && w.CreatedByUserId == _userId)
+                .GetByConditionAsync(w => w.Id == queueId && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Queue does not exist
@@ -694,6 +714,21 @@ public class QueueTableService : IQueueTableService
             {
                 serviceResponse.Message = "Queue does not exist";
                 return serviceResponse;
+            }
+
+            // PROD-guard: block deletion of PROD queues or queues with a same-name PROD twin.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.QueueRepo,
+                queue.EnvType,
+                queue.Name,
+                w => w.Name.ToLower() == queue.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == queue.TenantId &&
+                     w.SpaceId == queue.SpaceId,
+                "queue");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             // Validate delete permission
@@ -758,6 +793,7 @@ public class QueueTableService : IQueueTableService
             var queues = await _unitOfWork.QueueRepo
                                             .GetByConditionAsync(w =>
                                                 w.CreatedByUserId == _userId &&
+                                                w.EnvType == _currentTenantService.CurrentEnvType &&
                                                 queueIds.Contains(w.Id))
                                             .ToListAsync();
 
@@ -769,7 +805,8 @@ public class QueueTableService : IQueueTableService
                 return serviceResponse;
             }
 
-            // Validate delete permission for all queues
+            // Validate delete permission + PROD-guard for all queues
+            var blockedNames = new List<string>();
             foreach (var queue in queues)
             {
                 var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
@@ -791,6 +828,29 @@ public class QueueTableService : IQueueTableService
 
                     return serviceResponse;
                 }
+
+                // PROD-guard: block the whole batch if any queue is PROD or has a same-name PROD twin.
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.QueueRepo,
+                    queue.EnvType,
+                    queue.Name,
+                    w => w.Name.ToLower() == queue.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == queue.TenantId &&
+                         w.SpaceId == queue.SpaceId,
+                    "queue");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(queue.Name);
+                }
+            }
+
+            // Reject the entire batch when any selected queue is protected by the PROD guard.
+            if (blockedNames.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following queue(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}";
+                return serviceResponse;
             }
 
             // TODO: Check queues relationship with other entities
@@ -845,7 +905,7 @@ public class QueueTableService : IQueueTableService
             // Check if the queue exists and belongs to the current user.
             var queue = await _unitOfWork.QueueRepo
                         .GetByConditionAsync(w =>
-                            w.Id == queueId && w.CreatedByUserId == _userId
+                            w.Id == queueId && w.CreatedByUserId == _userId && w.EnvType == _currentTenantService.CurrentEnvType
                         )
                         .Include(a => a.QueueFlowVersions)
                         .FirstOrDefaultAsync();
@@ -1168,5 +1228,19 @@ public class QueueTableService : IQueueTableService
         }
 
         return serviceResponse;
+    }
+
+    // Resolves a credential NAME to its entity ID. If a name is supplied it takes precedence;
+    // otherwise the explicitly provided ID is returned unchanged.
+    private async Task<Guid?> ResolveCredentialIdAsync(string? credentialName, Guid? existingCredentialId)
+    {
+        if (string.IsNullOrWhiteSpace(credentialName))
+            return existingCredentialId;
+
+        var credential = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(w => w.Name == credentialName && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+
+        return credential?.Id ?? existingCredentialId;
     }
 }

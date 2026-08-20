@@ -29,6 +29,13 @@ public interface IToolService
     Task<ServiceResponse<ToolDto>> GetToolByIdAsync(Guid toolId);
 
     /// <summary>
+    /// Gets a tool by its name within the current environment and tenant.
+    /// </summary>
+    /// <param name="toolName">The tool name.</param>
+    /// <returns>The requested tool.</returns>
+    Task<ServiceResponse<ToolDto>> GetToolByNameAsync(string toolName);
+
+    /// <summary>
     /// Creates a new tool.
     /// </summary>
     /// <param name="toolDto">The tool details.</param>

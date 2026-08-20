@@ -82,6 +82,10 @@ public class CurrentTenantService : ICurrentTenantService
     // Prop to keep spaceId for current request. Guid.Empty = Central (shared across the tenant).
     public Guid CurrentSpaceId { get; set; }
 
+    // Prop to keep the deployment environment for the current request.
+    // Set by the TenantResolver middleware from the "X-Env-Type" header, defaulting to Dev.
+    public ConfigureEnvironmentType CurrentEnvType { get; set; } = ConfigureEnvironmentType.Dev;
+
     // Container name associated with the current tenant.
     public required string CurrentTenantContainerName { get; set; }
 }

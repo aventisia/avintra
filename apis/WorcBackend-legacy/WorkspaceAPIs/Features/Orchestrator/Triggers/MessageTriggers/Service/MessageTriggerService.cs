@@ -10,6 +10,7 @@ public class MessageTriggerService : IMessageTriggerService
     private readonly IJobsExecutorService _jobsExecutorService;
     private readonly WorkspaceInternalDbContext _workspaceInternalDbContext;
     private readonly IResourceShareService _resourceShareService;
+    private readonly ICurrentTenantService _currentTenantService;
     private const int MESSAGE_EXPIRY_MINUTES = 4320;
 
     public MessageTriggerService(
@@ -20,7 +21,8 @@ public class MessageTriggerService : IMessageTriggerService
         EnvironmentConfig environmentConfig,
         IJobsExecutorService jobsExecutorService,
         WorkspaceInternalDbContext workspaceInternalDbContext,
-        IResourceShareService resourceShareService)
+        IResourceShareService resourceShareService,
+        ICurrentTenantService currentTenantService)
     {
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -32,6 +34,7 @@ public class MessageTriggerService : IMessageTriggerService
         _jobsExecutorService = jobsExecutorService;
         _workspaceInternalDbContext = workspaceInternalDbContext;
         _resourceShareService = resourceShareService;
+        _currentTenantService = currentTenantService;
     }
 
     // Retrieves all message triggers.
@@ -55,7 +58,8 @@ public class MessageTriggerService : IMessageTriggerService
                 messageTriggers = await _unitOfWork.TriggerRepo
                     .GetByConditionAsync(w =>
                         w.TriggerType == TriggerTypesEnum.Message &&
-                        w.CreatedByUserId == _userId)
+                        w.CreatedByUserId == _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType)
                     .OrderByDescending(o => o.CreatedOn)
                     .Include(i => i.CreatedByUser)
                     .Include(i => i.LastModifiedByUser)
@@ -84,6 +88,7 @@ public class MessageTriggerService : IMessageTriggerService
                     .GetByConditionAsync(w =>
                         w.TriggerType == TriggerTypesEnum.Message &&
                         w.CreatedByUserId != _userId &&
+                        w.EnvType == _currentTenantService.CurrentEnvType &&
                         (
                             w.IsTenantWideAccess || resourceAccess.Keys.Contains(w.Id)
                         )
@@ -138,7 +143,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Fetch message trigger from the repository
             var messageTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == messageTriggerId)
+                .GetByConditionAsync(w => w.Id == messageTriggerId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.TriggerFlowVersions)
@@ -202,7 +207,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Validate duplicate trigger by name (case-insensitive)
             var existingTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.Message && w.Name.ToLower() == messageTriggerDto.Name.ToLower())
+                .GetByConditionAsync(w => w.Name.ToLower() == messageTriggerDto.Name.ToLower() && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (existingTrigger != null)
@@ -228,6 +233,9 @@ public class MessageTriggerService : IMessageTriggerService
 
             // Trim all string properties on the DTO
             messageTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(messageTriggerDto);
+
+            // Resolve the credential name to its ID (entity keeps the ID per name-based Agent Builder).
+            messageTriggerDto.CredentialId = await ResolveCredentialIdAsync(messageTriggerDto.CredentialName, messageTriggerDto.CredentialId);
 
             // Convert DTO to Trigger entity
             var newMessageTrigger = messageTriggerDto.Adapt<Trigger>();
@@ -262,6 +270,7 @@ public class MessageTriggerService : IMessageTriggerService
 
             // Set the TriggerType explicitly
             newMessageTrigger.TriggerType = TriggerTypesEnum.Message;
+            newMessageTrigger.EnvType = _currentTenantService.CurrentEnvType;
 
             // Set audit fields: created and last modified by current user
             newMessageTrigger.CreatedByUserId = _userId;
@@ -356,7 +365,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Retrieve existing message trigger
             var messageTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == messageTriggerDto.Id)
+                .GetByConditionAsync(w => w.Id == messageTriggerDto.Id && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.TriggerFlowVersions)
                 .SingleOrDefaultAsync();
 
@@ -390,9 +399,9 @@ public class MessageTriggerService : IMessageTriggerService
             // Check for duplicate name among other triggers
             var duplicateTrigger = await _unitOfWork.TriggerRepo
                 .GetByConditionAsync(w =>
-                    w.TriggerType == TriggerTypesEnum.Message &&
                     w.Name.ToLower() == messageTriggerDto.Name.ToLower() &&
-                    w.Id != messageTriggerDto.Id
+                    w.Id != messageTriggerDto.Id &&
+                    w.EnvType == _currentTenantService.CurrentEnvType
                 )
                 .FirstOrDefaultAsync();
 
@@ -406,6 +415,12 @@ public class MessageTriggerService : IMessageTriggerService
 
             // Normalize input (trim all string properties)
             messageTriggerDto = TrimDtoStringPropsUtil.TrimDtoStringProps(messageTriggerDto);
+
+            // Resolve the credential name to its ID (entity keeps the ID per name-based Agent Builder).
+            if (!string.IsNullOrWhiteSpace(messageTriggerDto.CredentialName))
+            {
+                messageTriggerDto.CredentialId = await ResolveCredentialIdAsync(messageTriggerDto.CredentialName, messageTriggerDto.CredentialId);
+            }
 
             // Validate ExpiryDateTime cannot be reduced
             if (messageTrigger.Metadata.RootElement.TryGetProperty("expiryDateTime", out var existingExpiryElement))
@@ -606,7 +621,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Retrieve the message trigger
             var messageTrigger = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.Id == messageTriggerId && w.TriggerType == TriggerTypesEnum.Message)
+                .GetByConditionAsync(w => w.Id == messageTriggerId && w.TriggerType == TriggerTypesEnum.Message && w.EnvType == _currentTenantService.CurrentEnvType)
                 .SingleOrDefaultAsync();
 
             // Check existence
@@ -615,6 +630,22 @@ public class MessageTriggerService : IMessageTriggerService
                 _logger.LogInformation("Delete failed. message trigger with ID {messageTriggerId} does not exist.", messageTriggerId);
                 serviceResponse.Message = "Message trigger does not exist";
                 return serviceResponse;
+            }
+
+            // PROD-guard: block deletion of PROD triggers or triggers with a same-name PROD twin.
+            // Checked before the provider unsubscribe so a blocked deletion has no side effects.
+            var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                _unitOfWork.TriggerRepo,
+                messageTrigger.EnvType,
+                messageTrigger.Name,
+                w => w.Name.ToLower() == messageTrigger.Name.ToLower() &&
+                     w.EnvType == ConfigureEnvironmentType.Prod &&
+                     w.TenantId == messageTrigger.TenantId &&
+                     w.SpaceId == messageTrigger.SpaceId,
+                "message trigger");
+            if (guardBlock != null)
+            {
+                return guardBlock;
             }
 
             var (canDelete, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
@@ -699,7 +730,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Retrieve triggers that match provided IDs
             var messageTriggers = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => messageTriggerIds.Contains(w.Id) && w.TriggerType == TriggerTypesEnum.Message)
+                .GetByConditionAsync(w => messageTriggerIds.Contains(w.Id) && w.TriggerType == TriggerTypesEnum.Message && w.EnvType == _currentTenantService.CurrentEnvType)
                 .ToListAsync();
 
             // Check if any triggers were found
@@ -707,6 +738,33 @@ public class MessageTriggerService : IMessageTriggerService
             {
                 _logger.LogInformation("Delete multiple failed. No message triggers found for provided IDs.");
                 serviceResponse.Message = "Message triggers not found";
+                return serviceResponse;
+            }
+
+            // PROD-guard: block the whole batch if any trigger is PROD or has a same-name PROD twin.
+            // Checked before the provider unsubscribe so a blocked deletion has no side effects.
+            var blockedNames = new List<string>();
+            foreach (var messageTrigger in messageTriggers)
+            {
+                var guardBlock = await DeleteResourceGuard.ValidateAsync(
+                    _unitOfWork.TriggerRepo,
+                    messageTrigger.EnvType,
+                    messageTrigger.Name,
+                    w => w.Name.ToLower() == messageTrigger.Name.ToLower() &&
+                         w.EnvType == ConfigureEnvironmentType.Prod &&
+                         w.TenantId == messageTrigger.TenantId &&
+                         w.SpaceId == messageTrigger.SpaceId,
+                    "message trigger");
+                if (guardBlock != null)
+                {
+                    blockedNames.Add(messageTrigger.Name);
+                }
+            }
+
+            if (blockedNames.Count > 0)
+            {
+                serviceResponse.Message =
+                    $"Cannot delete the following message trigger(s) because they are published (PROD) or have a same-name PROD version: {string.Join(", ", blockedNames)}";
                 return serviceResponse;
             }
 
@@ -799,7 +857,7 @@ public class MessageTriggerService : IMessageTriggerService
         {
             // Check repository for existing trigger with the same name
             var triggerExists = await _unitOfWork.TriggerRepo
-                .GetByConditionAsync(w => w.TriggerType == TriggerTypesEnum.Message && w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                .GetByConditionAsync(w => w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower() && w.EnvType == _currentTenantService.CurrentEnvType)
                 .FirstOrDefaultAsync();
 
             if (triggerExists != null)
@@ -1350,5 +1408,19 @@ public class MessageTriggerService : IMessageTriggerService
         };
 
         return System.Text.Json.JsonSerializer.Serialize(result); // convert to JSON
+    }
+
+    // Resolves a credential NAME to its entity ID. If a name is supplied it takes precedence;
+    // otherwise the explicitly provided ID is returned unchanged.
+    private async Task<Guid> ResolveCredentialIdAsync(string? credentialName, Guid existingCredentialId)
+    {
+        if (string.IsNullOrWhiteSpace(credentialName))
+            return existingCredentialId;
+
+        var credential = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(w => w.Name == credentialName && w.EnvType == _currentTenantService.CurrentEnvType)
+            .FirstOrDefaultAsync();
+
+        return credential?.Id ?? existingCredentialId;
     }
 }

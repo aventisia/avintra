@@ -107,6 +107,11 @@ public class StreamingChatService : IStreamingChatService
             httpClient.DefaultRequestHeaders.Add("X-Space-Id", flowSpaceId.Value.ToString());
         }
 
+        // Forward the flow's environment to llmpipeline so Chat Agent resource
+        // resolution (credentials, vaults, etc.) matches the flow's publication
+        // status: published → "prod", otherwise "dev". Mirrors the executor path.
+        httpClient.DefaultRequestHeaders.Add("X-Env-Type", flowVersion.IsPublished ? "prod" : "dev");
+
         using var httpRequest = new HttpRequestMessage(HttpMethod.Post, endpoint)
         {
             Content = jsonContent,
@@ -317,7 +322,7 @@ public class StreamingChatService : IStreamingChatService
         if (!string.IsNullOrWhiteSpace(request.UserInput))
             messages.Add(new { role = "user", content = request.UserInput });
 
-        // tool_config: array of { tool, credential_id, actions: [{action, approval}] }
+        // tool_config: array of { tool, credential_name, actions: [{action, approval}] }
         var toolConfig = new List<object>();
         if (toolsConfig is not null)
         {
@@ -344,7 +349,7 @@ public class StreamingChatService : IStreamingChatService
                 toolConfig.Add(new
                 {
                     tool = obj.TryGetPropertyValue("tool", out var tool) ? tool?.ToString() : null,
-                    credential_id = obj.TryGetPropertyValue("credential_id", out var cred) ? cred?.ToString() : null,
+                    credential_name = ReadCredentialProperty(obj),
                     actions,
                 });
             }
@@ -372,7 +377,7 @@ public class StreamingChatService : IStreamingChatService
             top_p = modelConfig?.TryGetPropertyValue("top_p", out var topP) == true ? topP?.GetValue<double>() : 1.0,
             reasoning_effort = modelConfig?.TryGetPropertyValue("reasoning_effort", out var reEffort) == true && reEffort?.GetValueKind() == System.Text.Json.JsonValueKind.String ? reEffort?.GetValue<string>() : null,
             is_byok_enabled = modelConfig?.TryGetPropertyValue("is_byok_enabled", out var byok) == true && byok?.GetValue<bool>() == true,
-            credential_id = modelConfig?.TryGetPropertyValue("credential_id", out var credId) == true ? credId?.ToString() : null,
+            credential_name = ReadCredentialProperty(modelConfig),
             kb_names = kbNames,
             top_k = topK,
             skill_names = hasSkillNames ? skillNames : null,
@@ -420,6 +425,15 @@ public class StreamingChatService : IStreamingChatService
         if (node is not JsonObject obj || !obj.TryGetPropertyValue(key, out var value) || value is null)
             return null;
         return value.GetValueKind() == System.Text.Json.JsonValueKind.String ? value.GetValue<string>() : value.ToString();
+    }
+
+    // Reads a credential reference from a config object. Accepts the canonical
+    // "credential_name" key and the legacy "credential_id" key (Q12 back-compat).
+    private static string? ReadCredentialProperty(JsonNode? node)
+    {
+        var canonical = GetStringProperty(node, "credential_name");
+        if (!string.IsNullOrWhiteSpace(canonical)) return canonical;
+        return GetStringProperty(node, "credential_id");
     }
 
     private static bool? GetBoolProperty(JsonNode? node, string key)

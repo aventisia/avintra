@@ -35,7 +35,7 @@ public class AzureConnectorsService : IAzureConnectorsService
         };
         try
         {
-            var azureconnectionstring = await GetBlobConnectionStringAsync(cloudConnectorReqDto.CredentialId);
+            var azureconnectionstring = await GetBlobConnectionStringAsync(cloudConnectorReqDto.CredentialName);
             if (azureconnectionstring == null)
             {
                 serviceResponse.StatusCode = 400;
@@ -75,26 +75,26 @@ public class AzureConnectorsService : IAzureConnectorsService
         return serviceResponse;
     }
 
-    private async Task<string?> GetBlobConnectionStringAsync(Guid credentialId)
+    private async Task<string?> GetBlobConnectionStringAsync(string credentialName)
     {
-        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialId);
+        var vaultCredential = await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
         if (vaultCredential == null)
         {
-            _logger.LogWarning("Vault credential not found for ID: {CredentialId}", credentialId);
+            _logger.LogWarning("Vault credential not found for Name: {CredentialName}", credentialName);
             return null;
         }
         if (vaultCredential.Data == null ||
             !vaultCredential.Data.TryGetValue("ConnectionString", out var blobConnectionString) ||
             blobConnectionString == null)
         {
-            _logger.LogWarning("No 'ConnectionString' found in vault credential Data for ID: {CredentialId}", credentialId);
+            _logger.LogWarning("No 'ConnectionString' found in vault credential Data for Name: {CredentialName}", credentialName);
             return null;
         }
         string? connectionString = blobConnectionString.ToString();
 
         if (string.IsNullOrWhiteSpace(connectionString))
         {
-            _logger.LogWarning("Connection string is null or whitespace for credential ID: {CredentialId}", credentialId);
+            _logger.LogWarning("Connection string is null or whitespace for credential Name: {CredentialName}", credentialName);
             return null;
         }
 

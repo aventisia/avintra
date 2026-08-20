@@ -46,7 +46,7 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
 
             // Get Access Token
             var accessToken = await _m365ConnectorsService
-                    .GetM365AccessTokenAsync(cloudConnectorReqDto.CredentialId);
+                    .GetM365AccessTokenAsync(cloudConnectorReqDto.CredentialName);
 
             if (string.IsNullOrWhiteSpace(accessToken))
             {
