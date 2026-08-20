@@ -1,4 +1,6 @@
-﻿using NodeLibrary.ExcelNodes.Enums;
+﻿using System.Runtime.InteropServices;
+
+using NodeLibrary.ExcelNodes.Enums;
 using NodeLibrary.Office;
 
 namespace NodeLibrary.ExcelNodes;
@@ -28,7 +30,7 @@ public class CloseExcelNode : BaseNode
                 throw new InvalidOperationException("Excel Application is null.");
 
             dynamic excelApp = excelAppArg;
-            excelApp.DisplayAlerts = false;
+            OfficeAutomationHelper.RetryComCall(() => excelApp.DisplayAlerts = false);
 
             switch (closeOption)
             {
@@ -36,7 +38,7 @@ public class CloseExcelNode : BaseNode
                     break;
 
                 case ExcelCloseOptionEnum.SaveDocument:
-                    excelApp.ActiveWorkbook.Save();
+                    OfficeAutomationHelper.RetryComCall(() => excelApp.ActiveWorkbook.Save());
                     break;
 
                 case ExcelCloseOptionEnum.SaveDocumentAs:
@@ -44,7 +46,7 @@ public class CloseExcelNode : BaseNode
                         var savePath = SavePath.Get(context);
                         if (string.IsNullOrWhiteSpace(savePath))
                             throw new ArgumentException("Save Path cannot be empty when saving as.");
-                        excelApp.ActiveWorkbook.SaveAs(savePath);
+                        OfficeAutomationHelper.RetryComCall(() => excelApp.ActiveWorkbook.SaveAs(savePath));
                         break;
                     }
 
@@ -52,9 +54,26 @@ public class CloseExcelNode : BaseNode
                     throw new ArgumentOutOfRangeException(nameof(closeOption));
             }
 
-            excelApp.Quit();
+            // Capture the workbook reference before Quit; after Quit ActiveWorkbook may be
+            // gone or return a disconnected proxy, and any access can throw RPC_E_CALL_REJECTED.
+            dynamic? workbook = null;
+            try
+            {
+                workbook = OfficeAutomationHelper.RetryComCall(() => excelApp.ActiveWorkbook);
+            }
+            catch (COMException)
+            {
+                // Best-effort: if we can't get the workbook at this point we'll still release
+                // the application and not let the close fail because of a reference probe.
+            }
 
-            OfficeAutomationHelper.Release(excelApp.ActiveWorkbook);
+            OfficeAutomationHelper.RetryComCall(() => excelApp.Quit());
+
+            if (workbook is not null)
+            {
+                OfficeAutomationHelper.Release(workbook);
+            }
+
             OfficeAutomationHelper.Release(excelApp);
 
             IsSuccess.Set(context, true);
