@@ -150,6 +150,22 @@ public static class NodeLogHelper
             {
                 // Limit collection to 100 items and truncate large field values
                 var limitedItems = enumerable.Cast<object>().Take(100).ToList();
+
+                // Special handling for List<JsonNode> - convert each JsonNode to JsonElement for proper serialization
+                if (limitedItems.Count > 0 && limitedItems[0] is System.Text.Json.Nodes.JsonNode)
+                {
+                    var jsonElements = limitedItems
+                        .Cast<System.Text.Json.Nodes.JsonNode>()
+                        .Select((jn, idx) =>
+                        {
+                            if (jn == null) return (JsonElement?)null;
+                            if (jn.GetValueKind() == System.Text.Json.JsonValueKind.Undefined) return (JsonElement?)null;
+                            return JsonSerializer.Deserialize<JsonElement>(jn.ToJsonString());
+                        })
+                        .ToList();
+                    return JsonSerializer.Serialize(jsonElements, GetTruncatingSerializerOptions());
+                }
+
                 return JsonSerializer.Serialize(limitedItems, GetTruncatingSerializerOptions());
             }
             catch
