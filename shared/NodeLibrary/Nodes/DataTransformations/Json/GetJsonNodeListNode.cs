@@ -29,9 +29,14 @@ public class GetJSONNodeListNode : BaseNode
                 return;
             }
 
-            var jsonNode = jsonContent is string
-                ? JsonNode.Parse((string)jsonContent)
-                : (JsonNode)jsonContent;
+            // Handle various input types: string, JsonNode, ExpandoObject, or other objects
+            JsonNode? jsonNode = jsonContent switch
+            {
+                string s => JsonNode.Parse(s),
+                JsonNode node => node,
+                System.Dynamic.ExpandoObject expando => JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(expando)),
+                _ => JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(jsonContent))
+            };
 
             var result = FindAllValuesHelper(jsonNode, keyToFind);
             ResultList.Set(context, result);

@@ -19,7 +19,67 @@ Execute a safe pull operation followed by a consolidated commit. The commit mess
 
 Run the commands below directly in the terminal. All paths and tools are assumed to be available in the current shell (`git`, `npx`).
 
-### 1. Stash local changes
+### 1. Scan for secrets (gate)
+
+Before anything is stashed, staged, or committed, scan **all** uncommitted changes (tracked + untracked) for hardcoded secrets: JWTs, API keys, bearer tokens, connection strings, private keys, and similar credentials.
+
+Run Gitleaks against the full working tree (unstaged + staged + untracked):
+
+**Bash / WSL / Git Bash**
+
+```sh
+# Scan the current diff (unstaged + staged) for secrets.
+git diff --no-color | gitleaks detect --no-git -v || true
+# Also scan untracked files that are about to enter the repo.
+untracked=$(git ls-files --others --exclude-standard)
+if [ -n "$untracked" ]; then
+  echo "$untracked" | tr '\n' '\0' | xargs -0 cat 2>/dev/null | gitleaks detect --no-git -v || true
+fi
+```
+
+**PowerShell (Windows)**
+
+```powershell
+# Scan the current diff (unstaged + staged) for secrets.
+git diff --no-color | gitleaks detect --no-git -v
+$untracked = git ls-files --others --exclude-standard
+if ($untracked) {
+    $untracked | ForEach-Object { Get-Content -Raw $_ } | Out-String | gitleaks detect --no-git -v
+}
+```
+
+- If Gitleaks is not installed, fall back to a **regex-based grep scan** that catches common secret patterns before the commit proceeds:
+
+**Bash / WSL / Git Bash**
+
+```sh
+# Regex fallback: JWTs, generic API keys/tokens, private keys, connection strings.
+# Only scans added/modified lines so removed-secret cleanups don't trigger.
+git diff --no-color --diff-filter=AM --unified=0 | grep -nE "^\+" | grep -iE "(eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,})|((api[_-]?key|secret|token|bearer|password|passwd|pwd|private[_-]?key|client[_-]?secret|access[_-]?token|connection[_-]?string|connstring)\s*[:=]\s*[\"'\\`][^\"'\\`]{8,})|BEGIN (RSA |EC |OPENSSH |PGP )?PRIVATE KEY" || true
+```
+
+**PowerShell (Windows)**
+
+```powershell
+# Regex fallback: JWTs, generic API keys/tokens, private keys, connection strings.
+# Only scans added/modified lines so removed-secret cleanups don't trigger.
+$diff = git diff --no-color --diff-filter=AM --unified=0
+$added = $diff | Where-Object { $_ -match '^\+' -and $_ -notmatch '^\+\+\+' }
+$pattern = '(eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,})|((?i)(api[_-]?key|secret|token|bearer|password|passwd|pwd|private[_-]?key|client[_-]?secret|access[_-]?token|connection[_-]?string|connstring)\s*[:=]\s*["' + "`" + "'][^" + "`" + "']{8,})|BEGIN (RSA |EC |OPENSSH |PGP )?PRIVATE KEY'
+$matches = $added | Where-Object { $_ -match $pattern }
+if ($matches) {
+    Write-Host "=== Potential secrets found in added lines ===" -ForegroundColor Red
+    $matches | ForEach-Object { Write-Host $_ -ForegroundColor Yellow }
+}
+```
+
+- **If any secrets are detected, STOP immediately.** Do not stash, stage, or commit.
+- Report each finding (file + line + matched pattern) to the user and ask whether the secret should be removed or replaced with an environment variable / config lookup before proceeding.
+- Common remediation: replace the hardcoded value with `Environment.GetEnvironmentVariable("...")`, a `.env.local` entry (already gitignored), or a CLI `--flag` argument.
+- **Only proceed to Step 2 once the scan is clean** (no secret patterns detected) **or** the user has explicitly confirmed the flagged value is safe to commit (e.g. a dummy/example token in test fixtures).
+- Suppression: if a flagged value is a known false positive or an intentional test fixture, the user may approve it. Record the approval reason in the commit body as a `Secret-scan exception:` footer line.
+
+### 2. Stash local changes
 
 Stash **all** current uncommitted changes — tracked, modified, and untracked files — before pulling.
 
@@ -31,7 +91,7 @@ git stash push -u -m "commit auto-stash"
 - If there are no changes, `git stash` will report "No local changes to save"; that is safe to ignore.
 - **If this git command fails for any reason, stop immediately and do not proceed to the next steps.**
 
-### 2. Pull remote updates
+### 3. Pull remote updates
 
 Attempt the pull up to 3 times before giving up.
 
@@ -66,7 +126,7 @@ for ($i = 1; $i -le $maxAttempts; $i++) {
 - If the pull reports "Already up to date", proceed to the next step.
 - **If `git pull` ultimately fails after 3 attempts, stop immediately and do not proceed to the next steps.**
 
-### 3. Pop the stash
+### 4. Pop the stash
 
 ```sh
 git stash pop
@@ -75,7 +135,7 @@ git stash pop
 - If `git stash pop` reports conflicts, proceed to the conflict gate below.
 - **If this git command fails for any reason, stop immediately and do not proceed to the next steps.**
 
-### 4. Resolve conflicts (gate)
+### 5. Resolve conflicts (gate)
 
 Check for unresolved merge conflicts.
 
@@ -87,7 +147,7 @@ git diff --name-only --diff-filter=U
 - If domain knowledge is required to resolve safely, ask the user before choosing a resolution.
 - Do **not** proceed until `git status` shows all conflicts resolved and files staged.
 
-### 5. Format changed files
+### 6. Format changed files
 
 For each changed file that belongs to a Prettier-enabled project, run `npx --no-install prettier --write` from the directory containing the nearest `.prettierrc*` config file. This respects project-level Prettier config and avoids downloading Prettier when it is not installed.
 
@@ -123,7 +183,7 @@ On Windows (PowerShell), use the equivalent loop or run the Bash variant under W
 
 After formatting, re-check `git status`; formatting may introduce additional modifications that should be committed.
 
-### 6. Analyze changes
+### 7. Analyze changes
 
 Review all modified files. Group them logically:
 
@@ -132,7 +192,7 @@ Review all modified files. Group them logically:
 
 Use the optional user argument to focus the analysis when provided.
 
-### 7. Commit
+### 8. Commit
 
 Generate and execute a single commit for all changed files using the format below.
 
@@ -163,6 +223,7 @@ Other unrelated changes:
 
 ### Commit Rules
 
+- **Secret Scan Gate**: Always run the secret scan (Step 1) before stashing or staging. If a secret is detected, halt and remediate before proceeding. The only exception is an explicit user-approved false positive, recorded as a `Secret-scan exception:` footer line in the commit message.
 - **Strict Stash/Pull/Pop Sequence**: Never skip the stash step if there are modified tracked files.
 - **Conflict Gate**: Halt and ensure clean resolution before analyzing files for the commit message.
 - **Single Commit**: All changes, regardless of domain, must be grouped into exactly one commit.

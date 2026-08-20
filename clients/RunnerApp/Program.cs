@@ -586,12 +586,15 @@ static bool IsElevated()
 
 static RunnerAppOptions? ParseRunArguments(string[] args)
 {
-    string? appBaseUrl = "https://local-avintra.aventisia.com/";
-    string? accessToken = "***REMOVED***";
-    Guid? jobId = new Guid("eced3324-75d8-4a5f-9292-8e5e7c0ce20e");
-    //string? appBaseUrl = null;
-    //string? accessToken = null;
-    //Guid? jobId = null;
+    // Local dev defaults are intentionally null — pass credentials via CLI args
+    // (--appBaseUrl, --accessToken, --jobId) or environment variables:
+    //   RUNNER_APP_BASE_URL, RUNNER_ACCESS_TOKEN, RUNNER_JOB_ID
+    // Never hardcode JWTs or tenant secrets in source.
+    string? appBaseUrl = Environment.GetEnvironmentVariable("RUNNER_APP_BASE_URL");
+    string? accessToken = Environment.GetEnvironmentVariable("RUNNER_ACCESS_TOKEN");
+    Guid? jobId = Environment.GetEnvironmentVariable("RUNNER_JOB_ID") is string jid && Guid.TryParse(jid, out var parsedJobId)
+        ? parsedJobId
+        : null;
     string? apiKey = null;
     string? tenantId = null;
     string? linkedUsername = null;
