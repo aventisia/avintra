@@ -29,6 +29,9 @@ public class NodeProcessor : INodeProcessor
             ? node.Type
             : node.Data.Label;
 
+        var nodeClassName = string.Empty;
+        var inputLogs = new Dictionary<string, string>();
+
         try
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -49,19 +52,19 @@ public class NodeProcessor : INodeProcessor
 
             // Resolve node class from the type cache. Replace suffix "Activity" with "Node" to get the BaseNode class name (e.g. "GenerateRandomNumberActivity" → "GenerateRandomNumberNode")
             // Need to remove the Activity from the last part of the name only, to support cases like "MyCustomActivityNode". This is only to support older flows that were created before we standardized on the "Node" suffix, and can be removed in the future once all flows have been updated to use the "Node" suffix.
-            var nodeClassName = preprocessedName;
+            nodeClassName = preprocessedName;
             nodeClassName = nodeClassName.EndsWith("Activity", StringComparison.OrdinalIgnoreCase)
                 ? nodeClassName.Substring(0, nodeClassName.Length - "Activity".Length) + "Node"
                 : nodeClassName;
 
             if (string.IsNullOrWhiteSpace(nodeClassName))
             {
-                return CreateFailedResult(node.Id, nodeDisplayName, sw, "Node data is missing the 'Name' field (class name).");
+                return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, sw, "Node data is missing the 'Name' field (class name).");
             }
 
             if (!NodeTypeCache.Value.TryGetValue(nodeClassName, out var nodeType))
             {
-                return CreateFailedResult(node.Id, nodeDisplayName, sw, $"No BaseNode class found for '{nodeClassName}'. Ensure the node class exists in the NodeLibrary assembly.");
+                return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, sw, $"No BaseNode class found for '{nodeClassName}'. Ensure the node class exists in the NodeLibrary assembly.");
             }
 
             // 2. Create instance
@@ -75,7 +78,7 @@ public class NodeProcessor : INodeProcessor
             baseNode.StatusMessage = new OutArgument<string>();
 
             // 4. Map inputs from ReactFlow node data to InArgument properties
-            var inputLogs = new Dictionary<string, string>();
+            inputLogs = new Dictionary<string, string>();
             DebugLog($"About to map {preprocessedInputs?.Count ?? 0} inputs for {nodeClassName}");
             if (preprocessedInputs is { Count: > 0 })
             {
@@ -132,7 +135,7 @@ public class NodeProcessor : INodeProcessor
             var errorMessage = ex.InnerException is not null
                 ? $"{ex.Message} | Inner: {ex.InnerException.GetType().Name}: {ex.InnerException.Message}"
                 : ex.Message;
-            return CreateFailedResult(node.Id, nodeDisplayName, sw, errorMessage);
+            return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, sw, errorMessage, inputLogs);
         }
     }
 
@@ -264,16 +267,23 @@ public class NodeProcessor : INodeProcessor
         }
     }
 
-    private static NodeExecutionResult CreateFailedResult(string nodeId, string nodeDisplayName, Stopwatch sw, string errorMessage)
+    private static NodeExecutionResult CreateFailedResult(
+        string nodeId,
+        string nodeDisplayName,
+        string? nodeUniqueName,
+        Stopwatch sw,
+        string errorMessage,
+        Dictionary<string, string>? inputLogs = null)
     {
         sw.Stop();
         var nodeLog = new NodeExecutionLog
         {
             NodeId = nodeId,
             NodeName = nodeDisplayName,
-            NodeUniqueName = nodeId,
+            NodeUniqueName = nodeUniqueName ?? nodeId,
             IsSuccess = false,
             Duration = sw.Elapsed.TotalMilliseconds,
+            Inputs = inputLogs ?? new Dictionary<string, string>(),
             Outputs = new Dictionary<string, string>
             {
                 ["Status"] = $"Node execution has failed: {errorMessage}"

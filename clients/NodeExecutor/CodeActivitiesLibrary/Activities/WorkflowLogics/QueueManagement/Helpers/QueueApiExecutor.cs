@@ -76,10 +76,10 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement.Helpers
                                 });
                         }
 
-                        // Ensure the response indicates success
-                        response.EnsureSuccessStatusCode();
-
-                        // Read and process the response content
+                        // Read the body before deciding success: the backend returns handled
+                        // failures (e.g. "Queue workitem not found.") as a ServiceResponse envelope
+                        // with a non-200 statusCode. Surfacing that message beats a generic
+                        // "400 (Bad Request)" from EnsureSuccessStatusCode.
                         var responseContent = await response.Content.ReadAsStringAsync();
 
                         // Deserialize the response content into a JObject for further processing
@@ -89,15 +89,15 @@ namespace CodeActivitiesLibrary.WorkflowLogics.QueueManagement.Helpers
                         if (responseObj != null)
                         {
                             // Check for a status code in the response and handle errors
-                            var statusCode = responseObj["statusCode"]?.ToObject<int>() ?? 0;
+                            var statusCode = responseObj["statusCode"]?.ToObject<int>() ?? (int)response.StatusCode;
 
-                            // If the status code is not 200, set an exception on the task completion source
-                            if (statusCode != 200)
+                            // If the status code is not a 2xx code, surface the server-provided message
+                            if (statusCode < 200 || statusCode >= 300)
                             {
                                 taskCompletionSource.SetException(
                                     new Exception(
                                         responseObj["message"]?.ToString() ??
-                                        "Request failed."));
+                                        $"Request failed with status code {statusCode}."));
                                 return;
                             }
 

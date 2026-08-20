@@ -46,28 +46,47 @@ public static class QueueApiExecutor
         }
 
         var response = await _httpClient.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-
         var responseContent = await response.Content.ReadAsStringAsync();
 
-        using var responseDoc = JsonDocument.Parse(responseContent);
-        var responseRoot = responseDoc.RootElement;
+        // Read the body before deciding success: the backend returns handled failures
+        // (e.g. "Queue workitem not found.") as a ServiceResponse envelope with a non-200
+        // statusCode. Surfacing that message beats a generic "400 (Bad Request)".
+        var statusCode = (int)response.StatusCode;
+        string? message = null;
 
-        var statusCode = responseRoot.TryGetProperty("statusCode", out var scEl)
-            ? scEl.GetInt32()
-            : (int)response.StatusCode;
-
-        if (statusCode != 200)
+        if (!string.IsNullOrWhiteSpace(responseContent))
         {
-            var message = responseRoot.TryGetProperty("message", out var msgEl)
-                ? msgEl.GetString()
-                : "Request failed.";
+            try
+            {
+                using var responseDoc = JsonDocument.Parse(responseContent);
+                var responseRoot = responseDoc.RootElement;
 
-            throw new HttpRequestException(message, null, (HttpStatusCode)statusCode);
+                if (responseRoot.TryGetProperty("statusCode", out var scEl) &&
+                    scEl.ValueKind == JsonValueKind.Number)
+                {
+                    statusCode = scEl.GetInt32();
+                }
+
+                if (responseRoot.TryGetProperty("message", out var msgEl))
+                    message = msgEl.GetString();
+            }
+            catch (JsonException)
+            {
+                // Non-JSON body (e.g. plain-text middleware/nginx error) — keep HTTP status.
+            }
         }
 
-        return responseRoot.TryGetProperty("data", out var dataEl)
+        if (statusCode < 200 || statusCode >= 300)
+        {
+            throw new HttpRequestException(
+                message ?? $"Request failed with status code {(int)response.StatusCode} ({(int)response.StatusCode}).",
+                null,
+                (HttpStatusCode)statusCode);
+        }
+
+        using var doc = JsonDocument.Parse(responseContent);
+        return doc.RootElement.TryGetProperty("data", out var dataEl)
             ? dataEl.Clone()
-            : responseRoot.Clone();
+            : doc.RootElement.Clone();
     }
 }

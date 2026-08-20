@@ -489,6 +489,7 @@ public class QueueWorkItemService : IQueueWorkItemService
             if (queueWorkitem == null)
             {
                 _logger.LogInformation("Queue workitem with ID {QueueWorkitemId} not found.", queueWorkitemId);
+                serviceResponse.StatusCode = 404;
                 serviceResponse.Message = "Queue workitem not found.";
                 return serviceResponse;
             }
