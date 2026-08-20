@@ -48,21 +48,20 @@ async def generate_langgraph_response_route(
         # -------------------------------------------------------
         # Normalize Credential Identifier
         # -------------------------------------------------------
-        # Convert empty values and the all-zero UUID into None so downstream services can consistently interpret the request as not using a BYOK credential.
+        # Normalize Credential Identifier
         # -------------------------------------------------------
-        credential_id = (
-            str(request.credential_id).strip()
-            if request.credential_id
+        # Convert empty or whitespace-only values to None so downstream services can
+        # consistently interpret the request as not using a BYOK credential.
+        credential_name = (
+            str(request.credential_name).strip()
+            if request.credential_name
             else None
         )
 
-        if credential_id in {
-            "",
-            "00000000-0000-0000-0000-000000000000",
-        }:
-            request.credential_id = None
+        if not credential_name:
+            request.credential_name = None
         else:
-            request.credential_id = credential_id
+            request.credential_name = credential_name
 
         if request.conversation_id is None:
             request.conversation_id = str(uuid4())
@@ -164,11 +163,11 @@ async def generate_langgraph_response_normalized_route(
         A ``text/event-stream`` SSE response.
     """
 
-    credential_id = str(request.credential_id).strip() if request.credential_id else None
-    if credential_id in {"", "00000000-0000-0000-0000-000000000000"}:
-        request.credential_id = None
+    credential_name = str(request.credential_name).strip() if request.credential_name else None
+    if not credential_name:
+        request.credential_name = None
     else:
-        request.credential_id = credential_id
+        request.credential_name = credential_name
 
     if request.conversation_id is None:
         request.conversation_id = str(uuid4())

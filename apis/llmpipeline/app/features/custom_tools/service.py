@@ -20,6 +20,8 @@ async def execute_tool_test(
     access_token: str | None = None,
     open_api_spec: str | None = None,
     env_type: str = "dev",
+    tenant_id: str | None = None,
+    space_id: str | None = None,
 ) -> dict:
     method = "GET"
     path = "/"
@@ -45,7 +47,13 @@ async def execute_tool_test(
     # Resolve authentication from the credential vault when an identity is provided.
     if credential_name and access_token:
         vault_manager = VaultManager()
-        credential = vault_manager.get_vault_secret_by_name(credential_name, jwt=access_token, env_type=env_type)
+        credential = vault_manager.get_vault_secret_by_name(
+            credential_name,
+            jwt=access_token,
+            env_type=env_type,
+            tenant_id=tenant_id,
+            space_id=space_id,
+        )
         _inject_auth(headers, query_params, credential)
 
     if parameters:

@@ -10,10 +10,10 @@ from app.features.vector_stores.vector_stores_schemas import DeleteDocRequest, I
 
 router = APIRouter()
 
-# Helper: Utility function to normalize optional credential IDs, treating empty or all-zero values as None
+# Helper: Utility function to normalize optional credential names, treating empty or whitespace-only values as None
 def _normalize_optional_credential(value: str | None) -> str | None:
     cleaned = str(value).strip() if value is not None else ""
-    if cleaned in ["", "00000000-0000-0000-0000-000000000000"]:
+    if not cleaned:
         return None
     return cleaned
 

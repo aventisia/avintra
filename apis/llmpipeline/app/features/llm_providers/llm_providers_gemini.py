@@ -46,7 +46,7 @@ class GeminiProvider(BaseLLMProvider):
         logger.info(f"[NO STREAMING] Prompt sent to Gemini with model: {llm_request.model}")
 
         # Validate BYOK credentials or check platform credits
-        self._handle_byok_and_credits(llm_request, user.access_token, env_type=user.env_type)
+        self._handle_byok_and_credits(llm_request, user)
 
         # Initialize container for raw Gemini response
         response_data = {}
@@ -136,7 +136,7 @@ class GeminiProvider(BaseLLMProvider):
         logger.info(f"[STREAMING] Prompt sent to Gemini with model: {llm_request.model}")
 
         # Validate BYOK credentials or available credits
-        self._handle_byok_and_credits(llm_request, user.access_token, env_type=user.env_type)
+        self._handle_byok_and_credits(llm_request, user)
 
         # Initialize streaming chunk response object
         chunk_response = LLMChunkResponse(
@@ -371,14 +371,18 @@ class GeminiProvider(BaseLLMProvider):
         return payload, headers
     
     # Helper: Handle BYOK credentials or enforce platform credit usage
-    def _handle_byok_and_credits(self, llm_request: LLMRequest, jwt: str, env_type: str = "dev"):
+    def _handle_byok_and_credits(self, llm_request: LLMRequest, user: User):
         # Use customer-provided credentials when BYOK is enabled
         if llm_request.is_byok_enabled and llm_request.credential_name:
             vault = VaultManager()
 
-            # Retrieve API credentials from secure vault
+            # Retrieve API credentials from secure vault (scoped by tenant/space)
             credential = vault.get_vault_secret_by_name(
-                llm_request.credential_name, jwt, env_type=env_type
+                llm_request.credential_name,
+                user.access_token,
+                env_type=user.env_type,
+                tenant_id=str(user.tenant_id) if user.tenant_id else None,
+                space_id=user.space_id,
             )
 
             # Reject request if credentials are invalid
@@ -399,7 +403,7 @@ class GeminiProvider(BaseLLMProvider):
             credit_mgr = CreditManagerService()
 
             # Reject request if credits are insufficient
-            if not credit_mgr.has_sufficient_credits("gemini", jwt):
+            if not credit_mgr.has_sufficient_credits("gemini", user.access_token):
                 raise HTTPException(400, "Insufficient credits")
 
     # Helper: Create llm_response object with default values
@@ -416,7 +420,7 @@ class GeminiProvider(BaseLLMProvider):
             max_output_tokens=llm_request.max_output_tokens,
             is_json_output=llm_request.is_json_output,
             is_byok_enabled=llm_request.is_byok_enabled,
-            credential_id=llm_request.credential_name,
+            credential_name=llm_request.credential_name,
             error=None
         )
 
@@ -485,7 +489,7 @@ class GeminiProvider(BaseLLMProvider):
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
 
         # Post BYOK usage when the caller supplied their own key
-        elif llm_request.is_byok_enabled and llm_request.credential_id:
+        elif llm_request.is_byok_enabled and llm_request.credential_name:
             try:
                 byok_usage_data = self._build_gemini_byok_usage(llm_request, llm_response, space_id, jwt)
 
@@ -693,7 +697,7 @@ class GeminiProvider(BaseLLMProvider):
             }
 
         # Resolve the vault credential name for attribution
-        credential_name = resolve_credential_name(llm_request.credential_id, jwt=jwt)
+        credential_name = resolve_credential_name(llm_request.credential_name, jwt=jwt)
 
         # Helper to build entry
         def build_entry(service_type, tokens):
@@ -703,7 +707,7 @@ class GeminiProvider(BaseLLMProvider):
                 "Model": llm_request.model,
                 "ConsumedUnit": tokens,
                 "UnitType": "Tokens",
-                "CredentialId": llm_request.credential_id,
+                "CredentialId": llm_request.credential_name,
                 "CredentialName": credential_name,
                 "RefType": llm_request.ref_type,
                 "RefId": llm_request.ref_id,
@@ -735,7 +739,11 @@ class GeminiProvider(BaseLLMProvider):
         if embedding_request.is_byok_enabled and embedding_request.credential_name:
             vault = VaultManager()
             credential = vault.get_vault_secret_by_name(
-                embedding_request.credential_name, user.access_token, env_type=user.env_type
+                embedding_request.credential_name,
+                user.access_token,
+                env_type=user.env_type,
+                tenant_id=str(user.tenant_id) if user.tenant_id else None,
+                space_id=user.space_id,
             )
 
             if not credential:
@@ -851,7 +859,7 @@ class GeminiProvider(BaseLLMProvider):
                         raise HTTPException(status_code=500, detail="Credit usage failed")
 
                 # BYOK usage when the caller supplied their own key
-                elif embedding_request.is_byok_enabled and embedding_request.credential_id:
+                elif embedding_request.is_byok_enabled and embedding_request.credential_name:
                     byok_usage = self._build_gemini_embedding_byok_usage(
                         embedding_request,
                         embedding_response,
@@ -954,7 +962,7 @@ class GeminiProvider(BaseLLMProvider):
         service_type = GEMINI_EMBEDDING_MODEL_MAP.get(model_name)
 
         # Resolve the vault credential name for attribution
-        credential_name = resolve_credential_name(embedding_request.credential_id, jwt=jwt)
+        credential_name = resolve_credential_name(embedding_request.credential_name, jwt=jwt)
 
         # Build and return usage payload
         return [{
@@ -963,7 +971,7 @@ class GeminiProvider(BaseLLMProvider):
             "Model": embedding_request.model,
             "ConsumedUnit": input_tokens,
             "UnitType": "Tokens",
-            "CredentialId": embedding_request.credential_id,
+            "CredentialId": embedding_request.credential_name,
             "CredentialName": credential_name,
             "RefType": embedding_request.reference_type,
             "RefId": embedding_request.reference_id,

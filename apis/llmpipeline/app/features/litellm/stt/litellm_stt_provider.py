@@ -67,11 +67,11 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
         start_time = time.perf_counter()
 
         # Validate the provider/model with the request's credential mode.
-        validate_provider(stt_request.provider, stt_request.is_byok_enabled, stt_request.credentials_id)
-        validate_model(stt_request.provider, stt_request.model, stt_request.is_byok_enabled, stt_request.credentials_id)
+        validate_provider(stt_request.provider, stt_request.is_byok_enabled, stt_request.credential_name)
+        validate_model(stt_request.provider, stt_request.model, stt_request.is_byok_enabled, stt_request.credential_name)
 
         # # Platform credits apply only for non-BYOK requests.
-        if not stt_request.is_byok_enabled and stt_request.credentials_id:
+        if not stt_request.is_byok_enabled and stt_request.credential_name:
             self._check_credits(stt_request, user)
 
         try:
@@ -88,7 +88,7 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
                 filename="audio",
                 language=stt_request.language,
                 is_byok=stt_request.is_byok_enabled,
-                credential_id=stt_request.credentials_id,
+                credential_name=stt_request.credential_name,
                 user=user,
             )
         except HTTPException:
@@ -143,7 +143,7 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
             output=transcript_text,
             status="completed",
             stream=False,
-            credentials_id=stt_request.credentials_id,
+            credential_name=stt_request.credential_name,
             is_byok_enabled=stt_request.is_byok_enabled,
             time_taken=round(time.perf_counter() - start_time, 2),
             ref_id=stt_request.ref_id,
@@ -158,17 +158,17 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
         response.token_count = audio_duration_seconds
 
         # Post credit usage only for platform (non-BYOK) requests.
-        if should_post_usage(stt_request.is_byok_enabled, stt_request.credentials_id):
+        if should_post_usage(stt_request.is_byok_enabled, stt_request.credential_name):
             try:
                 post_credit_usage(stt_request, stt_request.provider, "service", audio_duration_seconds, access_token, space_id)
             except Exception as exc:
                 logger.error(f"Failed to post STT credit usage | error={exc}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {exc}")
         # Post BYOK usage for caller's own key requests.
-        if should_record_byok(stt_request.is_byok_enabled, stt_request.credentials_id):
+        if should_record_byok(stt_request.is_byok_enabled, stt_request.credential_name):
             try:
                 # Resolve the vault credential name for attribution.
-                stt_request.credential_name = resolve_credential_name(stt_request.credentials_id, user)
+                resolved_name = resolve_credential_name(stt_request.credential_name, user)
                 service = get_credit_service_type(stt_request.provider, stt_request.model, "service")
                 if service:
                     entry = build_byok_entry(
@@ -177,7 +177,6 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
                         stt_request.model,
                         audio_duration_seconds,
                         "Seconds",
-                        stt_request.credentials_id,
                         stt_request.credential_name,
                         stt_request.ref_type,
                         stt_request.ref_id,
@@ -185,6 +184,7 @@ class LiteLLMSTTProvider(BaseSpeechToTextProvider):
                         stt_request.action,
                         stt_request.agent_name,
                         space_id,
+                        display_name=resolved_name,
                     )
                     post_byok_usage(stt_request.provider, [entry], access_token)
             except Exception as exc:

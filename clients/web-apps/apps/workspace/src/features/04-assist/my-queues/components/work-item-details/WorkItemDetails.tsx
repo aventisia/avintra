@@ -59,7 +59,7 @@ export const WorkItemDetails = () => {
 
   // Fetch the queue matching the current queue type. Agent-queue work items are
   // opened from agent queues, so we must query the agent-queue endpoint to
-  // resolve the queue's credentialId (needed to download the file/PDF).
+  // resolve the queue's credentialName (needed to download the file/PDF).
   const { data: myQueues } = useFetchQueues({ onlyUserQueues: true, queueType });
 
   const { mutate: addEvent } = useInsertQueueWorkItemEvent();
@@ -175,7 +175,7 @@ export const WorkItemDetails = () => {
         data={workItemData?.data}
         extractedData={extractedData}
         setExtractedData={setExtractedData}
-        credentialId={myCurrentQueue?.credentialId}
+        credentialName={myCurrentQueue?.credentialName}
         inputSchema={myCurrentQueue?.inputSchema}
         readOnly={isViewOnly}
       />

@@ -10,14 +10,14 @@ import { WorkItemOutputPane } from "../shared/WorkItemOutputPane";
 
 export const EmailWorkItem = ({
   data,
-  credentialId,
+  credentialName,
   extractedData,
   setExtractedData,
   inputSchema,
 }: {
   data?: QueueWorkItemDto;
   extractedData: string | undefined;
-  credentialId?: string;
+  credentialName?: string;
   inputSchema?: InputSchemaField[] | null;
   setExtractedData: Dispatch<SetStateAction<string | undefined>>;
 }) => {
@@ -38,7 +38,7 @@ export const EmailWorkItem = ({
       data.fileUrls.map((url) => ({
         url,
         requiresProxy: true,
-        credentialId,
+        credentialName,
       })),
     );
 

@@ -15,9 +15,9 @@ import { type LocalFile, useLocalFileStore } from "../stores/file-list-store";
 import { useViewerStore } from "../stores/file-viewer-store";
 import { usePdfViewerStore } from "../stores/pdf-previewer-store";
 import { FILE_TYPE, FileType, getFileType } from "../types/file-viewer-types";
+import UnsupportedViewer from "./UnsupportedViewer";
 import DocxViewer from "./docx-viewer/DocxViewer";
 import EmlViewer from "./eml-viewer/EmlViewer";
-import UnsupportedViewer from "./UnsupportedViewer";
 import FileViewerHeader from "./file-viewer-header/FileViewerHeader";
 import PageControl from "./file-viewer-header/PageControl";
 import ImageControlPanel from "./image-viewer/ImageControlPanel";
@@ -130,7 +130,7 @@ export default function FileViewer({
 
       const result = await loader({
         fileUrl: activeFile.sourceUrl,
-        credentialId: activeFile.credentialId,
+        credentialName: activeFile.credentialName,
         extension: activeFile.extension,
         name: activeFile.name,
         signal, // React Query provides the abort signal automatically

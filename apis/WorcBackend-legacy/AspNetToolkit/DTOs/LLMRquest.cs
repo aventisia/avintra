@@ -47,9 +47,9 @@ public class LLMRequest
     public bool IsBYOKEnabled { get; set; } = false;
 
     /// <summary>
-    /// Gets or sets the credential ID associated with BYOK (Bring Your Own Key) support.
+    /// Gets or sets the credential NAME associated with BYOK (Bring Your Own Key) support.
     /// </summary>
-    public Guid? CredentialId { get; set; }
+    public string? CredentialName { get; set; }
 
     /// <summary>
     /// Gets or sets the temperature setting for the LLM's randomness (between 0 and 1).

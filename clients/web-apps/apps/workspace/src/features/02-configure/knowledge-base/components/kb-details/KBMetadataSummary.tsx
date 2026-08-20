@@ -5,17 +5,21 @@ import { KnowledgeBaseTableDto } from "../../dtos/knowledge-base-table-dto";
 /**
  * Returns an array of metadata rows for display in the KBMetadataSummary panel.
  * Each row contains a label, value, and (optionally) a BYOK badge indicator.
- * - Vector Store: Shows BYOK if storeCredentialId is set.
- * - Embedding Provider: Shows BYOK if embeddingCredentialId is set.
+ * - Vector Store: Shows BYOK if storeCredentialName is set.
+ * - Embedding Provider: Shows BYOK if embeddingCredentialName is set.
  * - Embedding Model: No BYOK badge.
  *
  * @param knowledgeBase The knowledge base object to extract metadata from.
  * @returns Array of metadata row objects for rendering.
  */
 const metadataRows = (knowledgeBase?: KnowledgeBaseTableDto) => {
-  // BYOK badge is shown when a credential id is configured for that provider.
-  const storeBYOKEnabled = Boolean(knowledgeBase?.storeCredentialId);
-  const embeddingBYOKEnabled = Boolean(knowledgeBase?.embeddingCredentialId);
+  // BYOK badge is shown when a credential name is configured for that provider.
+  const storeBYOKEnabled = Boolean(
+    knowledgeBase?.storeCredentialName ?? knowledgeBase?.storeCredentialId,
+  );
+  const embeddingBYOKEnabled = Boolean(
+    knowledgeBase?.embeddingCredentialName ?? knowledgeBase?.embeddingCredentialId,
+  );
 
   // Keep rendering data-driven so adding/removing metadata fields is simple.
   return [

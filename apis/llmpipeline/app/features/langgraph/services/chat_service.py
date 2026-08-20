@@ -867,7 +867,7 @@ class ChatService:
             max_output_tokens=request.max_output_tokens,
             is_json_output=request.is_json_output,
             is_byok_enabled=request.is_byok_enabled,
-            credential_id=request.credential_id,
+            credential_name=request.credential_name,
             error=None,
             conversation_id=request.conversation_id,
             is_temp_chat=request.is_temp_chat,
@@ -927,7 +927,7 @@ class ChatService:
         if (
             self.credit_usage_service
             and not request.is_byok_enabled
-            and not request.credential_id
+            and not request.credential_name
         ):
             self.credit_usage_service.post_usage(
                 request=request,

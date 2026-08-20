@@ -223,7 +223,7 @@ def _post_credit_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, u
 
 def _post_byok_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, user: User) -> None:
     # Only post usage for BYOK requests (caller's own key).
-    if not should_record_byok(req.is_byok_enabled, req.credential_id):
+    if not should_record_byok(req.is_byok_enabled, req.credential_name):
         return
     try:
         entries = []
@@ -232,7 +232,7 @@ def _post_byok_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, use
             if service:
                 entries.append(build_byok_entry(
                     service, req.provider, req.model, resp.input_tokens, "Tokens",
-                    req.credential_id, req.credential_name,
+                    req.credential_name,
                     req.ref_type, req.ref_id, req.ref_name, req.action, req.agent_name, user.space_id,
                 ))
         if (resp.output_tokens or 0) > 0:
@@ -240,7 +240,7 @@ def _post_byok_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, use
             if service:
                 entries.append(build_byok_entry(
                     service, req.provider, req.model, resp.output_tokens, "Tokens",
-                    req.credential_id, req.credential_name,
+                    req.credential_name,
                     req.ref_type, req.ref_id, req.ref_name, req.action, req.agent_name, user.space_id,
                 ))
         post_byok_usage(req.provider, entries, user.access_token)
@@ -298,7 +298,7 @@ class GenerationService:
             output_tokens=usage.get("completion_tokens", 0),
             is_json_output=req.is_json_output,
             is_byok_enabled=req.is_byok_enabled,
-            credential_id=req.credential_name,
+            credential_name=req.credential_name,
             conversation_id=req.conversation_id,
             is_temp_chat=req.is_temp_chat,
         )
@@ -389,7 +389,7 @@ class GenerationService:
                 output_tokens=output_tokens,
                 is_json_output=req.is_json_output,
                 is_byok_enabled=req.is_byok_enabled,
-                credential_id=req.credential_name,
+                credential_name=req.credential_name,
                 conversation_id=req.conversation_id,
                 is_temp_chat=req.is_temp_chat,
             )

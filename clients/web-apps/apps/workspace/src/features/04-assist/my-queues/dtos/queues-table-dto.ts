@@ -1,7 +1,7 @@
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
-import { QueueProcessingModeEnum } from "../enums/queue-processing-mode-enum";
 import { QueueTypesEnum } from "../enums/queue-instance-type-enum";
+import { QueueProcessingModeEnum } from "../enums/queue-processing-mode-enum";
 
 /**
  * Represents a data transfer object (DTO) for a queue.
@@ -132,6 +132,12 @@ export interface QueuesTableDto {
   accessLevel: ResourceAccessTypeEnum;
 
   credentialId?: string;
+
+  /**
+   * Name of the credential used to authenticate file/PDF downloads for this
+   * queue. The runtime file proxy resolves the credential by name + tenant.
+   */
+  credentialName?: string;
 
   /**
    * Indicates whether the queue is disabled.

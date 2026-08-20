@@ -61,17 +61,17 @@ class OutlookSendEmailExecutor:
             arguments.setdefault("sensitivity", "Normal")
             arguments.setdefault("saveToSentItems", False)
 
-            # Find Outlook credentialId dynamically from llm_request.tool_config
-            credential_id = None
+            # Find Outlook credentialName dynamically from llm_request.tool_config
+            credential_name = None
 
             for tool in getattr(llm_request, "tool_config", []):
                 tool_name = getattr(tool, "tool", "")
 
                 if tool_name.lower() == "outlook":
-                    credential_id = getattr(tool, "credential_id", None)
+                    credential_name = getattr(tool, "credential_name", None)
                     break
 
-            if not credential_id:
+            if not credential_name:
                 logger.error("Outlook credential not found in LLM tool_config")
 
                 return {
@@ -88,7 +88,7 @@ class OutlookSendEmailExecutor:
             #     "agentName": llm_request.ref_name,
             #     "provider": "Outlook",
             #     "action": "SendEmailThroughOutlook",
-            #     "credentialId": credential_id,
+            #     "credentialName": credential_name,
             #     "payload": arguments,
             # }
 
@@ -105,7 +105,7 @@ class OutlookSendEmailExecutor:
                 "agentName": llm_request.ref_name,
                 "provider": "M365/Outlook",
                 "action": "SendEmail",
-                "credentialId": credential_id,
+                "credentialName": credential_name,
                 "payload": arguments,
             }
 

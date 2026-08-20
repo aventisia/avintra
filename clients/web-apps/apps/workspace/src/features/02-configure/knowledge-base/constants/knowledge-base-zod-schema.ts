@@ -27,6 +27,8 @@ export const knowledgeBaseZodSchema = z
       credentialName: z.string().optional(),
       model: z.string().min(1, { message: reqError("Embedding Model") }),
     }),
+    storeCredentialName: z.string().optional(),
+    collectionName: z.string().optional(),
     isDisabled: z.boolean().default(false).optional(),
     createdBy: z.string(),
     createdOn: z.date(),

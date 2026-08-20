@@ -39,7 +39,7 @@ def is_onprem_ollama(provider: str) -> bool:
 
 async def discover_ollama_models(
     provider: str,
-    credential_id: str,
+    credential_name: str,
     user: User,
 ) -> list[ModelInfo]:
     """Discover installed Ollama models for `provider` from a credential.
@@ -48,7 +48,7 @@ async def discover_ollama_models(
     is forwarded as a bearer token. Raises `HTTPException` on invalid credentials,
     a missing base URL, unreachable/erroring servers, or auth failures.
     """
-    base_url, api_key = _credential_base_url_and_key(provider, credential_id, user)
+    base_url, api_key = _credential_base_url_and_key(provider, credential_name, user)
     return await discover_onprem_ollama_models(provider, base_url, api_key)
 
 
@@ -79,7 +79,7 @@ async def discover_onprem_ollama_models(
 
 def _credential_base_url_and_key(
     provider: str,
-    credential_id: str,
+    credential_name: str,
     user: User,
 ) -> tuple[str, str | None]:
     """Fetch the Ollama base URL and API key from the credential manager.
@@ -91,9 +91,11 @@ def _credential_base_url_and_key(
     """
     vault = VaultManager()
     credential = vault.get_vault_secret_by_name(
-        credential=credential_id,
+        credential=credential_name,
         jwt=user.access_token,
         env_type=user.env_type,
+        tenant_id=str(user.tenant_id) if user.tenant_id else None,
+        space_id=user.space_id,
     )
     if not credential:
         logger.error(f"[LLM-V2] Invalid Ollama credentials for provider {provider}")
@@ -104,7 +106,7 @@ def _credential_base_url_and_key(
     api_key = data.get("ApiKey")
     if not base_url:
         logger.error(
-            f"[LLM-V2] Ollama credential {credential_id} has no base URL (Url/Host)."
+            f"[LLM-V2] Ollama credential {credential_name} has no base URL (Url/Host)."
         )
         raise HTTPException(
             status_code=400,

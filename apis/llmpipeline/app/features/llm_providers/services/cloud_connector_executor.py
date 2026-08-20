@@ -35,7 +35,7 @@ async def execute_agent(
           "agentName": "...",
           "provider": "...",
           "action": "...",
-          "credentialId": "...",
+          "credentialName": "...",
           "payload": {...}
       }
     - endpoint: target API URL
@@ -70,13 +70,13 @@ async def execute_agent(
 
         # WorkspaceAPIs expects the full CloudConnectorReqDto body, not just the
         # nested payload. Pass the complete agent_data dict so required fields
-        # (agentId, agentName, provider, action, credentialId) are present.
+        # (agentId, agentName, provider, action, credentialName) are present.
         request_body = {
             "agentId": agent_data.get("agentId"),
             "agentName": agent_data.get("agentName"),
             "provider": agent_data.get("provider"),
             "action": agent_data.get("action"),
-            "credentialId": agent_data.get("credentialId"),
+            "credentialName": agent_data.get("credentialName"),
             "payload": payload,
         }
 

@@ -230,7 +230,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
             status="processing",
             output="",
             stream=req.stream,
-            credentials_id=req.credential_name,
+            credential_name=req.credential_name,
             is_byok_enabled=req.is_byok_enabled,
             ref_id=req.ref_id,
             ref_type=req.ref_type,

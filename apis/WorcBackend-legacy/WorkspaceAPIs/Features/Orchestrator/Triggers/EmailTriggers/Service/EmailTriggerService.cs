@@ -1074,7 +1074,7 @@ public class EmailTriggerService : IEmailTriggerService
             case TriggerProviderTypesEnum.M365:
                 {
                     // Acquire access token for Microsoft Graph API
-                    var accessToken = await GetM365AccessTokenAsync(emailTriggerModel.CredentialId);
+                    var accessToken = await GetM365AccessTokenAsync(emailTriggerModel.CredentialName);
 
                     // Attach authorization header for all outgoing requests
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -1269,15 +1269,15 @@ public class EmailTriggerService : IEmailTriggerService
         }
     }
 
-    private async Task<string?> GetM365AccessTokenAsync(Guid credentialId)
+    private async Task<string?> GetM365AccessTokenAsync(string credentialName)
     {
         try
         {
-            // Step 1: Get credentials from vault
-            var vaultCredential = await GetCredentialFromVaultAsync(credentialId);
+            // Step 1: Get credentials from vault (by name, scoped to the current tenant)
+            var vaultCredential = await GetCredentialFromVaultAsync(credentialName);
             if (vaultCredential == null)
             {
-                _logger.LogWarning("No credential found with ID: {CredentialId} for M365", credentialId);
+                _logger.LogWarning("No credential found with Name: {CredentialName} for M365", credentialName);
                 return null;
             }
 
@@ -1286,7 +1286,7 @@ public class EmailTriggerService : IEmailTriggerService
                 vaultCredential.Data["ClientId"] == null ||
                 vaultCredential.Data["ClientSecret"] == null)
             {
-                _logger.LogWarning("One or more required credential fields are missing for Credential ID: {CredentialId}", credentialId);
+                _logger.LogWarning("One or more required credential fields are missing for Credential: {CredentialName}", credentialName);
                 return null;
             }
 
@@ -1309,7 +1309,7 @@ public class EmailTriggerService : IEmailTriggerService
             var accessToken = jsonDocument.RootElement.GetProperty("access_token").GetString();
             if (accessToken == null)
             {
-                _logger.LogWarning("Failed to obtain M365 access token for Credential ID: {CredentialId}", credentialId);
+                _logger.LogWarning("Failed to obtain M365 access token for Credential: {CredentialName}", credentialName);
                 return null;
             }
 
@@ -1323,13 +1323,19 @@ public class EmailTriggerService : IEmailTriggerService
         }
     }
 
-    private async Task<VaultCredentialObj?> GetCredentialFromVaultAsync(Guid credentialId)
+    private async Task<VaultCredentialObj?> GetCredentialFromVaultAsync(string credentialName)
     {
         try
         {
-            // Fetch the credential entity along with its encrypted key-value pairs
+            // Fetch the credential entity along with its encrypted key-value pairs.
+            // Scoped by Name + TenantId (+ EnvType) so the (credential_name, tenant_id)
+            // combination resolves the correct, unique credential.
             var vaultCredential = await _unitOfWork.AppSecretRepo
-                .GetByConditionAsync(w => w.Id == credentialId && !w.IsDisabled)
+                .GetByConditionAsync(w =>
+                    w.Name == credentialName &&
+                    !w.IsDisabled &&
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
+                    w.EnvType == _currentTenantService.CurrentEnvType)
                 .AsNoTracking()
                 .Include(i => i.EncryptedKeyValues)
                 .FirstOrDefaultAsync();
@@ -1364,7 +1370,7 @@ public class EmailTriggerService : IEmailTriggerService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving Credential with ID: {CredentialId}", credentialId);
+            _logger.LogError(ex, "An error occurred while retrieving Credential with Name: {CredentialName}", credentialName);
         }
 
         return null;

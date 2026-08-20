@@ -39,6 +39,12 @@ def _resolve_kb_credential(kb_config: dict, name_key: str, fallback: str | None 
     credential_name = kb_config.get(name_key)
     if credential_name:
         return credential_name
+    # Accept the legacy *_credential_id key when only an ID is stored, so the
+    # runtime query still resolves the credential.
+    legacy_key = name_key.replace("_name", "_id")
+    legacy = kb_config.get(legacy_key)
+    if legacy:
+        return legacy
     return fallback
 
 

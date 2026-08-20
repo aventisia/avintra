@@ -23,6 +23,9 @@ async def generate_llm_response_route(
     _user: User = Depends(authorize()),
 ):
     try:
+        # Debug logging for full request payload
+        logger.info(f"LLM Generation Request Payload: {req.model_dump()}")
+
         # Normalize credential_name:
         # - Convert to string and trim surrounding whitespace.
         # - Treat None, empty strings, and whitespace-only values as "no credential".

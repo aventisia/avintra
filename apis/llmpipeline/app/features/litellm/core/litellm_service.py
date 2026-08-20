@@ -149,7 +149,7 @@ class LiteLLMService:
         filename: str,
         language: str | None = None,
         is_byok: bool = False,
-        credential_id: str | None = None,
+        credential_name: str | None = None,
         user: User,
     ):
         """Audio-to-text via `litellm.atranscription` (non-streaming).
@@ -161,7 +161,7 @@ class LiteLLMService:
         credential_resolution = resolve_credentials(
             provider,
             is_byok,
-            credential_id,
+            credential_name,
             user,
         )
         kwargs: dict = dict(credential_resolution.kwargs)
@@ -205,7 +205,7 @@ class LiteLLMService:
         voice: str,
         speed: float = 1.0,
         is_byok: bool = False,
-        credential_id: str | None = None,
+        credential_name: str | None = None,
         user: User,
     ):
         """Text-to-speech via `litellm.aspeech` (non-streaming).
@@ -217,7 +217,7 @@ class LiteLLMService:
         credential_resolution = resolve_credentials(
             provider,
             is_byok,
-            credential_id,
+            credential_name,
             user,
         )
         kwargs: dict = dict(credential_resolution.kwargs)
@@ -309,7 +309,7 @@ class LiteLLMService:
         provider: str,
         capability: str | None = None,
         *,
-        credential_id: str | None = None,
+        credential_name: str | None = None,
         user: User | None = None,
     ) -> list[ModelInfo]:
         """Return per-model metadata for a provider via LiteLLM (dynamic).
@@ -317,7 +317,7 @@ class LiteLLMService:
         When `capability` is provided, only models whose capability matches are
         returned. Provider aliases (e.g. 'google' -> 'gemini') are normalized.
 
-        For on-prem Ollama (`ollama` / `ollama_chat`), when a `credential_id` is
+        For on-prem Ollama (`ollama` / `ollama_chat`), when a `credential_name` is
         supplied the model list is discovered live from the Ollama server via
         `GET {base_url}/api/tags` instead of LiteLLM's static catalog. `user` is
         required in that case to resolve the credential from the vault.
@@ -325,13 +325,13 @@ class LiteLLMService:
         try:
             provider = normalize_provider(provider)
 
-            if provider in OLLAMA_PROVIDERS and credential_id:
+            if provider in OLLAMA_PROVIDERS and credential_name:
                 if user is None:
                     raise HTTPException(
                         status_code=400,
                         detail="An authenticated user is required to resolve the Ollama credential.",
                     )
-                return await discover_ollama_models(provider, credential_id, user)
+                return await discover_ollama_models(provider, credential_name, user)
 
             models = litellm.models_by_provider.get(provider, set())
             models = {m for m in models if isinstance(m, str)}
@@ -352,7 +352,7 @@ class LiteLLMService:
         provider: str,
         capability: str | None = None,
         *,
-        credential_id: str | None = None,
+        credential_name: str | None = None,
         user: User | None = None,
     ) -> list[ModelInfo]:
         """Public capability-aware model listing for a provider.
@@ -363,7 +363,7 @@ class LiteLLMService:
         return await self.list_models(
             provider,
             capability,
-            credential_id=credential_id,
+            credential_name=credential_name,
             user=user,
         )
 

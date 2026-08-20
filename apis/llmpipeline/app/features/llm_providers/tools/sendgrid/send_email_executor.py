@@ -50,17 +50,17 @@ class SendGridSendEmailExecutor:
                     "provided_fields": {k: arguments.get(k) for k in ["to", "subject", "from_email", "from_name"]}
                 }
 
-            # Find SendGrid credentialId dynamically from llm_request.tool_config
-            credential_id = None
+            # Find SendGrid credentialName dynamically from llm_request.tool_config
+            credential_name = None
             
             for tool in getattr(llm_request, "tool_config", []):
                 tool_name = getattr(tool, "tool", "")
 
-                if tool_name.lower() == "outlook":
-                    credential_id = getattr(tool, "credential_id", None)
+                if tool_name.lower() == "sendgrid":
+                    credential_name = getattr(tool, "credential_name", None)
                     break
 
-            if not credential_id:
+            if not credential_name:
                 logger.error("SendGrid credential not found in LLM tool_config")
                 return {
                     "status": "failed",
@@ -76,7 +76,7 @@ class SendGridSendEmailExecutor:
             #     "agentName": llm_request.agentName,
             #     "provider": "SendGrid",
             #     "action": "SendEmailThroughSendGrid",
-            #     "credentialId": credential_id,
+            #     "credentialName": credential_name,
             #     "payload": arguments,
             # }
 
@@ -92,7 +92,7 @@ class SendGridSendEmailExecutor:
                 "agentName": llm_request.agentName,
                 "provider": "SendGrid",
                 "action": "SendEmailThroughSendGrid",
-                "credentialId": credential_id,
+                "credentialName": credential_name,
                 "payload": arguments,
             }
 
