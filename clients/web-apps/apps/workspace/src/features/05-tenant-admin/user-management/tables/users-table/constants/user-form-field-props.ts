@@ -12,6 +12,8 @@ const firstNameProps: InputFieldProps = {
   name: "firstName",
   label: "First Name",
   isRequired: true,
+  description:
+    "The user's first name.\n\n- **Max length:** 50 characters.\n- **Allowed characters:** letters only, with a single space between words.\n- **Can be changed** after creation.",
 };
 
 // Last Name
@@ -19,6 +21,8 @@ const lastNameProps: InputFieldProps = {
   name: "lastName",
   label: "Last Name",
   isRequired: true,
+  description:
+    "The user's last name.\n\n- **Max length:** 50 characters.\n- **Allowed characters:** letters only, with a single space between words.\n- **Can be changed** after creation.",
 };
 
 // Email

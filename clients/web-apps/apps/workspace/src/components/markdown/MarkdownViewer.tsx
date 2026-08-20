@@ -6,39 +6,66 @@ import remarkGfm from "remark-gfm";
 const MarkdownViewer = ({
   textValue,
   size = "sm",
+  compact = false,
 }: {
   textValue: string;
   size?: FormFieldSizeType;
+  /** Reduces heading sizes and spacing for space-constrained surfaces (e.g. help popovers). */
+  compact?: boolean;
 }) => {
   const components: Components = {
     // Headers with custom styling
     h1: ({ children }) => (
-      <h2 className="mb-4 mt-10 border-b border-gray-300 pb-1 text-3xl font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100">
+      <h2
+        className={`mb-4 border-b border-gray-300 pb-1 font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100 ${
+          compact ? "mt-3 text-xl" : "mt-10 text-3xl"
+        }`}
+      >
         {children}
       </h2>
     ),
     h2: ({ children }) => (
-      <h2 className="mb-4 mt-10 border-b border-gray-300 pb-1 text-3xl font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100">
+      <h2
+        className={`mb-4 border-b border-gray-300 pb-1 font-semibold tracking-tight text-slate-900 dark:border-gray-600 dark:text-slate-100 ${
+          compact ? "mt-3 text-xl" : "mt-10 text-3xl"
+        }`}
+      >
         {children}
       </h2>
     ),
     h3: ({ children }) => (
-      <h3 className="mb-4 mt-8 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+      <h3
+        className={`mb-3 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
+          compact ? "mt-3 text-lg" : "mt-8 text-2xl"
+        }`}
+      >
         {children}
       </h3>
     ),
     h4: ({ children }) => (
-      <h4 className="mb-4 mt-7 text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+      <h4
+        className={`mb-3 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
+          compact ? "mt-2 text-base" : "mt-7 text-xl"
+        }`}
+      >
         {children}
       </h4>
     ),
     h5: ({ children }) => (
-      <h5 className="mb-3 mt-6 text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+      <h5
+        className={`mb-2 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
+          compact ? "mt-2 text-sm" : "mt-6 text-lg"
+        }`}
+      >
         {children}
       </h5>
     ),
     h6: ({ children }) => (
-      <h6 className="mb-2 mt-5 text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">
+      <h6
+        className={`mb-2 font-semibold tracking-tight text-slate-900 dark:text-slate-100 ${
+          compact ? "mt-2 text-sm" : "mt-5 text-base"
+        }`}
+      >
         {children}
       </h6>
     ),

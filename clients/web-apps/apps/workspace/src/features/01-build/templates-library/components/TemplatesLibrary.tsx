@@ -6,6 +6,7 @@ import { SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import { HelpButton } from "@/components/help/HelpButton";
 import LibraryTemplates from "./LibraryTemplates";
 import { TemplateDetail } from "./template-details/TemplateDetails";
 
@@ -38,6 +39,9 @@ const TemplateLibrary = () => {
                 AI blueprints, empowering teams to build faster, work smarter, and scale without
                 starting from scratch.
               </p>
+              <div className="mt-3 flex justify-center">
+                <HelpButton guideId="library" />
+              </div>
             </div>
 
             {/* Search Bar for filtering templates */}

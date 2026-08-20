@@ -13,6 +13,8 @@ const nameProps: InputFieldProps = {
   label: "Space Name",
   isRequired: true,
   maxLength: 20,
+  description:
+    "A **unique** name for the space.\n\n- **Max length:** 20 characters.\n- **Can be changed** after creation.",
 };
 
 // Description

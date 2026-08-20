@@ -17,6 +17,8 @@ export interface CrudDialogEntityConfig {
   maxWidth: string;
   /** Returns the dialog heading/description for the current action. */
   getHeader: (crudAction: DialogCrudAction) => { heading: string; description?: string };
+  /** Optional extra content rendered in the dialog header (e.g. a help button). */
+  headerExtras?: React.ReactNode;
   /** Component that renders the dialog body. */
   Content: React.FC<{
     crudAction: DialogCrudAction;
@@ -155,7 +157,7 @@ function CrudDialog({
     }
   }, [isDirty, onGoBack, showDefaultAlertDialog]);
 
-  const { maxWidth, getHeader, Content } = config;
+  const { maxWidth, getHeader, Content, headerExtras } = config;
   const { heading, description } = getHeader(crudAction);
 
   return (
@@ -166,6 +168,7 @@ function CrudDialog({
           description={description}
           className="border-b p-3.5 text-lg tracking-wide"
         >
+          {headerExtras}
           {back ? (
             <Button variant="ghost" size="icon8" onClick={handleGoBack} aria-label="Go back">
               <ArrowLeftIcon className="h-5 w-5 text-[--icon-color]" />

@@ -17,6 +17,8 @@ export const roleNameProps: InputFieldProps = {
   type: "text",
   maxLength: 256,
   className: "text-base",
+  description:
+    "A name for the role.\n\n- **Max length:** 256 characters.\n- **Can be changed** after creation.",
 };
 
 export const roleDescriptionProps: TextareaFieldProps = {

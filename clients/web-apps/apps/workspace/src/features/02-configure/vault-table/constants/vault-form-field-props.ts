@@ -13,6 +13,8 @@ export const nameProps: InputFieldProps = {
   label: "Name",
   isRequired: true,
   placeholder: "exampleName",
+  description:
+    "A **unique** name for the credential.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Can be changed** after creation.",
 };
 
 // User Name

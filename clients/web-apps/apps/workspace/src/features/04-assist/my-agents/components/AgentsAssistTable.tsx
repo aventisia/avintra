@@ -6,6 +6,7 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
+import { HelpButton } from "@/components/help/HelpButton";
 import { DUMMY_MACHINE_ID } from "@/constants/machine-identity";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
@@ -48,7 +49,10 @@ export const AgentsAssistTable = () => {
         <div className="mx-auto max-w-screen-lg space-y-4 pb-4 pt-[17px]">
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
-            <DTHeading heading={TABLE_HEADING} />
+            <div className="flex items-center gap-2">
+              <DTHeading heading={TABLE_HEADING} />
+              <HelpButton guideId="assist-agents" />
+            </div>
 
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search..." />

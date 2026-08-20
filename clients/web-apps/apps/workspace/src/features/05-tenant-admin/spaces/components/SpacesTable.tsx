@@ -10,6 +10,7 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
+import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
 import { DATA_QUERY_KEY, TABLE_HEADING, TABLE_KEY } from "../constants";
@@ -50,7 +51,10 @@ export const SpacesTable = () => {
           {/* Table toolbar */}
           <div className="flex items-center justify-between">
             <div>
-              <DTHeading heading={TABLE_HEADING} />
+              <div className="flex items-center gap-2">
+                <DTHeading heading={TABLE_HEADING} />
+                <HelpButton guideId="spaces" />
+              </div>
               <p className="ml-1 mt-0.5 text-sm text-muted-foreground">
                 A logical container that acts as a global filtering / scoping dimension across the
                 platform.

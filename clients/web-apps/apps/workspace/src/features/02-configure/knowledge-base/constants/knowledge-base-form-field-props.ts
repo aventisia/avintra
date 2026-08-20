@@ -21,7 +21,8 @@ const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
   isRequired: true,
-  description: "A unique name for your knowledge base.",
+  description:
+    "A **unique** name for your knowledge base.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9) and underscore (`_`). Must start with a letter or underscore. No spaces or other special characters.\n- **Can be changed** after creation.",
 };
 
 // Description

@@ -1,8 +1,7 @@
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
-
 import { FormLabel } from "@/ui/components/form";
-import { Tooltip } from "@/ui/components/tooltip";
 import { type FormFieldSizeType } from "@/ui/types";
+
+import { FieldHelpPopover } from "./FieldHelpPopover";
 
 interface FormLabelExtProps {
   size?: FormFieldSizeType;
@@ -26,11 +25,7 @@ export const FormLabelExt = ({
         {isRequired && !disabled ? <span className="text-destructive">*</span> : null}
       </FormLabel>
       {typeof description === "string" && description.length > 0 ? (
-        <Tooltip content={description}>
-          <div className="rounded hover:bg-slate-100 hover:text-primary">
-            <InformationCircleIcon className="h-3.5 w-3.5" />
-          </div>
-        </Tooltip>
+        <FieldHelpPopover content={description} />
       ) : null}
     </div>
   );

@@ -23,6 +23,8 @@ export const nameProps: InputFieldProps = {
   name: "name",
   label: "Name",
   isRequired: true,
+  description:
+    "The tenant's name.\n\n- **Max length:** 100 characters.\n- **Allowed characters:** letters and numbers, with a single space between words.\n- **Can be changed** after creation.",
 };
 
 export const typeProps: SelectFieldProps = {

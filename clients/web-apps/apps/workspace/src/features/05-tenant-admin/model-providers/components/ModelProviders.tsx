@@ -19,6 +19,7 @@ import {
 import { useFetchModelProviders } from "../hooks/useFetchModelProviders";
 import { useModelProviderDialogStore } from "../store/model-provider-dialog-store";
 import { ModelProviderSetupDialog } from "./ModelProviderSetupDialog";
+import { HelpButton } from "@/components/help/HelpButton";
 
 /**
  * Renders the grid of model provider cards under Tenant Admin > Model Providers.
@@ -57,7 +58,10 @@ export const ModelProviders = () => {
     <div className="space-y-5 py-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-lg font-medium">Models</p>
+          <div className="flex items-center gap-2">
+            <p className="text-lg font-medium">Models</p>
+            <HelpButton guideId="models" />
+          </div>
           <p className="text-sm text-muted-foreground">
             Configure AI model providers and choose the models your tenant can use.
           </p>

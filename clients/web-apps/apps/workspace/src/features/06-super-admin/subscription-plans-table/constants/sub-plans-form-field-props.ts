@@ -17,6 +17,8 @@ const nameProps: InputFieldProps = {
   name: "name",
   label: "Plan Name",
   isRequired: true,
+  description:
+    "A **unique** name for the plan.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), space, parentheses `()`, underscore (`_`) and hyphen (`-`).\n- **Can be changed** after creation.",
 };
 
 // Type
