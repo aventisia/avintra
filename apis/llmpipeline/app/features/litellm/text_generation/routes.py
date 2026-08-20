@@ -23,12 +23,21 @@ async def generate_llm_response_route(
     _user: User = Depends(authorize()),
 ):
     try:
-        # Empty / whitespace / empty-GUID credential_id means "no credential".
-        credential_id = str(req.credential_id).strip() if req.credential_id is not None else ""
-        if credential_id in ["", "00000000-0000-0000-0000-000000000000"]:
-            req.credential_id = None
+        # Normalize credential_name:
+        # - Convert to string and trim surrounding whitespace.
+        # - Treat None, empty strings, and whitespace-only values as "no credential".
+        credential_name = (
+            str(req.credential_name).strip()
+            if req.credential_name is not None
+            else ""
+        )
+
+        # Empty or whitespace-only value means no credential was provided.
+        if not credential_name:
+            req.credential_name = None
         else:
-            req.credential_id = credential_id
+            # Preserve the normalized credential name.
+            req.credential_name = credential_name
 
         if req.stream:
             # Register the streaming job and return an SSE stream.

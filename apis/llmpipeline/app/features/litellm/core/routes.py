@@ -33,14 +33,13 @@ async def list_providers_route(
 async def list_models_route(
     provider: str,
     capability: ProviderCapability | None = None,
-    credential_id: str | None = None,
+    credential_name: str | None = None,
     _user: User = Depends(authorize()),
 ):
-    print("id",credential_id)
     return await provider_admin_service.list_models(
         provider,
         capability=capability.value if capability else None,
-        credential_id=credential_id,
+        credential_id=credential_name,
         user=_user,
     )
 

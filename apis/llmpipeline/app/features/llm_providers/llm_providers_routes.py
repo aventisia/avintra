@@ -19,12 +19,22 @@ async def generate_llm_response_route(llm_request: LLMRequest, _user: User = Dep
         # Get llm provider instance based on request
         llm_provider = get_llm_provider(llm_request.provider)
         
-        # If credential_id is empty string or whitespace or empty guid, set it to None
-        credential_id = str(llm_request.credential_id).strip() if llm_request.credential_id is not None else ""
-        if credential_id in ["", "00000000-0000-0000-0000-000000000000"]:
-            llm_request.credential_id = None
+        
+        # Normalize credential_name:
+        # - Convert to string and trim surrounding whitespace.
+        # - Treat None, empty strings, and whitespace-only values as "no credential".
+        credential_name = (
+            str(llm_request.credential_name).strip()
+            if llm_request.credential_name is not None
+            else ""
+        )
+
+        # Empty or whitespace-only value means no credential was provided.
+        if not credential_name:
+            llm_request.credential_name = None
         else:
-            llm_request.credential_id = credential_id
+            # Preserve the normalized credential name.
+            llm_request.credential_name = credential_name
 
         # Retrieve KB context chunks and inject into input if kb_names are provided
         if llm_request.kb_names:
@@ -69,17 +79,21 @@ async def generate_embedding_route(
         # Get embedding provider instance
         embedding_provider = get_llm_provider(embedding_request.provider)
 
-        # Normalize credential_id (handle empty / invalid values)
-        credential_id = (
-            str(embedding_request.credential_id).strip()
-            if embedding_request.credential_id is not None
+        # Normalize credential_name:
+        # - Convert to string and trim surrounding whitespace.
+        # - Treat None, empty strings, and whitespace-only values as "no credential".
+        credential_name = (
+            str(embedding_request.credential_name).strip()
+            if embedding_request.credential_name is not None
             else ""
         )
 
-        if credential_id in ["", "00000000-0000-0000-0000-000000000000"]:
-            embedding_request.credential_id = None
+        # Empty or whitespace-only value means no credential was provided.
+        if not credential_name:
+            embedding_request.credential_name = None
         else:
-            embedding_request.credential_id = credential_id
+            # Preserve the normalized credential name.
+            embedding_request.credential_name = credential_name
 
         # Call provider to generate embeddings
         return await embedding_provider.generate_embeddings(

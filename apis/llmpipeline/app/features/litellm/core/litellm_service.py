@@ -42,7 +42,7 @@ class LiteLLMService:
         credential_resolution = resolve_credentials(
             request.provider,
             request.is_byok_enabled,
-            request.credential_id,
+            request.credential_name,
             user,
         )
         # Carry the resolved vault credential name for BYOK usage attribution.
@@ -102,7 +102,7 @@ class LiteLLMService:
         credential_resolution = resolve_credentials(
             request.provider,
             request.is_byok_enabled,
-            request.credential_id,
+            request.credential_name,
             user,
         )
         # Carry the resolved vault credential name for BYOK usage attribution.

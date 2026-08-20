@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AliasChoices
 from typing import Optional, Literal, Dict, Any
 from datetime import datetime
 
@@ -15,7 +15,7 @@ class TTSProviderRequest(BaseModel):
     language: Optional[str] = Field(None)
     speed: Optional[float] = 1.0
     stream: bool = Field(False)
-    credentials_id: Optional[str] = Field(None)
+    credential_name: Optional[str] = Field(None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
     is_byok_enabled: Optional[bool] = Field(False)
     ref_type: str # Type of the reference (e.g., "Agent", "Workflow")
     ref_id: str # Identifier to link back to Agent/Workflow
@@ -33,7 +33,7 @@ class TTSProviderResponse(BaseModel):
     status: Literal["pending", "processing", "completed", "failed"]
     output: Optional[str] = Field(None)
     stream: bool = Field(False)
-    credentials_id: Optional[str] = Field(None)
+    credential_name: Optional[str] = Field(None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
     is_byok_enabled: Optional[bool] = Field(False)
     ref_id: Optional[str] = Field(None)
     ref_type: Optional[str] = Field(None)

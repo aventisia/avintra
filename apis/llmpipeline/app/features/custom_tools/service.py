@@ -16,9 +16,10 @@ async def execute_tool_test(
     base_url: str,
     operation_id: str,
     parameters: dict | None = None,
-    credential_id: UUID | None = None,
+    credential_name: str | None = None,
     access_token: str | None = None,
     open_api_spec: str | None = None,
+    env_type: str = "dev",
 ) -> dict:
     method = "GET"
     path = "/"
@@ -42,9 +43,9 @@ async def execute_tool_test(
     full_url = urljoin(base_url.rstrip("/") + "/", path.lstrip("/"))
 
     # Resolve authentication from the credential vault when an identity is provided.
-    if credential_id and access_token:
+    if credential_name and access_token:
         vault_manager = VaultManager()
-        credential = vault_manager.get_vault_secret_by_id(str(credential_id), jwt=access_token)
+        credential = vault_manager.get_vault_secret_by_name(credential_name, jwt=access_token, env_type=env_type)
         _inject_auth(headers, query_params, credential)
 
     if parameters:

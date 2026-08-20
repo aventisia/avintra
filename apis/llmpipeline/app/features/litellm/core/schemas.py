@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Literal, Optional, Union
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, AliasChoices
 
 
 def _utc_now() -> datetime:
@@ -74,8 +74,6 @@ class LLMGenerationRequest(BaseModel):
     files: Optional[list[str]] = None
     # BYOK
     is_byok_enabled: Optional[bool] = False
-    credential_id: Optional[str] = None
-    # Resolved server-side from the vault credential; used for BYOK usage attribution.
     credential_name: Optional[str] = None
     # KB augmentation
     kb_names: Optional[list[str]] = None
@@ -120,7 +118,7 @@ class LLMGenerationResponse(BaseModel):
     output_reasoning_tokens: Optional[int] = 0
     is_json_output: Optional[bool] = False
     is_byok_enabled: Optional[bool] = False
-    credential_id: Optional[str] = None
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credential_id'), serialization_alias='credential_name')
     error: Optional[str] = None
     conversation_id: Optional[str] = None
     is_temp_chat: bool = False
@@ -145,9 +143,7 @@ class EmbeddingRequest(BaseModel):
     dimensions: Optional[int] = None
     encoding_format: Literal["float", "base64"] = "float"
     is_byok_enabled: bool = False
-    credential_id: Optional[str] = None
-    # Resolved server-side from the vault credential; used for BYOK usage attribution.
-    credential_name: Optional[str] = None
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credential_id'), serialization_alias='credential_name')
     # Credit / reference metadata
     reference_id: Optional[str] = None
     reference_type: Optional[str] = None
@@ -163,7 +159,7 @@ class EmbeddingResponse(BaseModel):
     time_taken: Optional[float] = 0.0
     input_tokens: Optional[int] = 0
     is_byok_enabled: Optional[bool] = False
-    credential_id: Optional[str] = None
+    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credential_id'), serialization_alias='credential_name')
     status: Literal["completed", "failed"] = "completed"
     error: Optional[str] = None
 

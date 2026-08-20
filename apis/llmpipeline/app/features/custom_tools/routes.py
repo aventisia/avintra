@@ -23,8 +23,9 @@ async def test_custom_tool(
         base_url=payload.base_url,
         operation_id=payload.operation_id,
         parameters=payload.parameters,
-        credential_id=payload.credential_id,
+        credential_name=payload.credential_name,
         access_token=user.access_token,
         open_api_spec=payload.open_api_spec,
+        env_type=user.env_type,
     )
     return TestToolResponse(**result)

@@ -25,20 +25,21 @@ def create_openai_model(
     resolved_base_url: str | None
 
     # Use user-provided OpenAI credentials when BYOK is enabled
-    if llm_request.is_byok_enabled and llm_request.credential_id:
+    if llm_request.is_byok_enabled and llm_request.credential_name:
 
         # Initialize vault client
         vault_manager = VaultManager()
 
         logger.info(
-            "Fetching OpenAI BYOK credentials. credential_id=%s",
-            llm_request.credential_id,
+            "Fetching OpenAI BYOK credentials. credential_name=%s",
+            llm_request.credential_name,
         )
 
         # Retrieve credentials from vault
-        credential = vault_manager.get_vault_secret_by_id(
-            vault_secret_id=llm_request.credential_id,
+        credential = vault_manager.get_vault_secret_by_name(
+            vault_secret_id=llm_request.credential_name,
             jwt=user.access_token,
+            env_type=user.env_type,
         )
 
         # Validate credential exists

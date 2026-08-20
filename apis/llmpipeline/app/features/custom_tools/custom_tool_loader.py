@@ -17,6 +17,7 @@ async def load_tools_for_tenant(
     flow_version_id: UUID | None = None,
     workspace_api: str | None = None,
     access_token: str | None = None,
+    env_type: str = "dev",
 ) -> list[dict]:
     stmt = (
         select(Tool)
@@ -57,6 +58,7 @@ async def load_tools_for_tenant(
                     operation=operation,
                     workspace_api=workspace_api,
                     access_token=access_token,
+                    env_type=env_type,
                 )
             )
 
@@ -68,6 +70,7 @@ def _build_langchain_tool(
     operation: ToolOperation,
     workspace_api: str | None = None,
     access_token: str | None = None,
+    env_type: str = "dev",
 ):
 
     @tool
@@ -80,6 +83,7 @@ def _build_langchain_tool(
             credential_id=tool.credential_id,
             workspace_api=workspace_api,
             access_token=access_token,
+            env_type=env_type,
         )
 
     invoke.name = f"{tool.name}_{operation.operation_id}"

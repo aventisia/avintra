@@ -33,6 +33,15 @@ def _inject_context_into_input(llm_request: LLMRequest, context_str: str) -> Non
         llm_request.input = [context_message] + list(llm_request.input)
 
 
+# Helper: Resolve a single credential reference for a KB config by NAME only.
+# Returns None if no credential name is present.
+def _resolve_kb_credential(kb_config: dict, name_key: str, fallback: str | None = None) -> str | None:
+    credential_name = kb_config.get(name_key)
+    if credential_name:
+        return credential_name
+    return fallback
+
+
 async def _resolve_kb_embedding_configs(kb_names: list[str], tenant_id: str) -> list[dict]:
     """
     Resolve per-KB retrieval configuration for selected knowledge bases.
@@ -99,7 +108,7 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
     and injects them as a formatted context block into llm_request.input in-place.
 
     Defaults: vector_store=pgvector, embedding_provider=openai, embedding_model=text-embedding-3-small.
-    Uses llm_request.credential_id as the embedding credential (supports BYOK).
+    Uses llm_request.credential_name as the embedding credential (supports BYOK).
     Silently skips on any error to avoid blocking the LLM call.
     """
     query_text = _extract_query_from_input(llm_request)
@@ -145,6 +154,20 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                     )
                     continue
                 
+                # Validate that the KB config carries a credential NAME.
+                store_credential = _resolve_kb_credential(
+                    kb_config, "store_credential_name", llm_request.credential_name
+                )
+                embedding_credential = _resolve_kb_credential(
+                    kb_config, "embedding_credential_name", llm_request.credential_name
+                )
+                if not store_credential and not embedding_credential:
+                    logger.warning(
+                        "[KB-RETRIEVAL] KB '%s' has no credential name configured. Skipping.",
+                        kb_config["kb_name"],
+                    )
+                    continue
+
                 # Build query request for this KB
                 query_doc_request = QueryDocRequest(
                     vector_store=store_type,
@@ -153,8 +176,8 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                     query=query_text,
                     kb_names=[kb_config["kb_name"]],
                     top_k=llm_request.top_k or 5,
-                    store_credential_id=kb_config["store_credential_id"],
-                    embedding_credential_id=kb_config["embedding_credential_id"] or llm_request.credential_id,
+                    credential_name=store_credential,
+                    embedding_credential_name=embedding_credential,
                     ref_type=llm_request.ref_type,
                     ref_id=llm_request.ref_id,
                     ref_name=llm_request.ref_name,
