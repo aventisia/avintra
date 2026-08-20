@@ -131,7 +131,7 @@ function getModelConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
   return z.object({
     is_byok_enabled: isByokEnabledSchema,
     provider: providerSchema,
-    credential_id: credentialsSchema,
+    credential_name: credentialsSchema,
     model: modelSchema,
     temperature: temperatureSchema,
     top_p: topPSchema,
@@ -149,7 +149,7 @@ function getToolsConfigSchema(field: DCPFieldSchemaType): ZodTypeAny {
 
   const toolConfigSchema = z.object({
     tool: z.string().min(1, "Tool is required"),
-    credential_id: z.string().min(1, "Credential ID is required"),
+    credential_name: z.string().min(1, "Credential is required"),
     actions: z.array(actionItemSchema).min(1, "At least one action must be selected"),
   });
 

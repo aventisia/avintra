@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import { AiOutlineThunderbolt } from "react-icons/ai";
 
+import { EnvironmentToggle } from "@/features/02-configure/components/EnvironmentToggle";
+
 import NewAgentIcon from "../NewAgentIcon";
 import NewChatIcon from "../NewChatIcon";
 
@@ -126,6 +128,7 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         type: ["Commercial", "Enterprise"],
       },
     ],
+    sectionHeaderAction: EnvironmentToggle,
   },
   {
     // sectionInternalName: orchestrator

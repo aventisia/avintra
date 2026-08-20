@@ -124,6 +124,13 @@ export interface QueuesTableDto {
   credentialId?: string;
 
   /**
+   * Name of the credential used to access resources associated with the queue.
+   * The Agent Builder stores and submits the resource NAME; the backend resolves
+   * it to the credentialId before persisting.
+   */
+  credentialName?: string;
+
+  /**
    * Indicates whether the queue is disabled.
    */
   isDisabled?: boolean;

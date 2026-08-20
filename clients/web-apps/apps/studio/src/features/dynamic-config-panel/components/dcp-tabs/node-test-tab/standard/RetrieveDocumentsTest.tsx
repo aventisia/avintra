@@ -108,8 +108,8 @@ const RetrieveDocumentsTest = ({ formData }: Props) => {
         // Similarity threshold
         score_threshold: Number(formData.scoreThreshold ?? 0.5),
 
-        // Optional credential id
-        embedding_credential_id: modelConfig.credential_id || undefined,
+        // Optional credential reference
+        embedding_credential_name: modelConfig.credential_name || undefined,
 
         /* Flow execution metadata */
 

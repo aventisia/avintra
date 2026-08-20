@@ -191,10 +191,11 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
               <>
                 <InputField
                   name="name"
-                  label="Credential Name"
-                  description="Name"
+                  label="Unique Name"
+                  description="Name cannot be modified after creation."
                   autoFocus
                   isRequired
+                  disabled={action !== "create"}
                   onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
                   nonErrorMessage={availabilityMessage}
                 />

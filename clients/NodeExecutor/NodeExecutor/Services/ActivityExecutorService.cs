@@ -66,8 +66,8 @@ namespace NodeExecutor.Services
                             continue;
                         }
 
-                        // If input key contains "__Credential__", then add directly to newNodeInputs
-                        if (input.Key.Contains("__CredentialId__"))
+                        // If input key contains "__CredentialName__", add directly to newNodeInputs.
+                        if (input.Key.Contains("__CredentialName__"))
                         {
                             // Split the action unique name
                             var actionNameSegments = nodeData.CodeActivityName.Split('/');
@@ -83,11 +83,11 @@ namespace NodeExecutor.Services
                             // Add cloud provider
                             newNodeInputs.Add(new NodeInput { Key = "Provider", Value = providerName });
 
-                            // Add connector's unqiue idenitifier (Can be added outside the foreach loop but just of the property sequence adding it here)
+                            // Add connector's unique identifier (Can be added outside the foreach loop but just of the property sequence adding it here)
                             newNodeInputs.Add(new NodeInput { Key = "Action", Value = actionName });
 
-                            // Add credentail id
-                            newNodeInputs.Add(new NodeInput { Key = "CredentialId", Value = input.Value });
+                            // Add credential name (canonical; value is the credential name)
+                            newNodeInputs.Add(new NodeInput { Key = "CredentialName", Value = input.Value });
                             continue;
                         }
 

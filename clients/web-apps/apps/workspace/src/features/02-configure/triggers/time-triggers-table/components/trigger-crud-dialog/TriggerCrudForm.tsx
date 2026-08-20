@@ -50,7 +50,16 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
   const { onCloseConfirmed } = useCrudDialogDirty();
 
   // Define trigger form
-  const { form, isDirty, refineFormData, isEffectivePassed } = useDefineTriggerForm({
+  const {
+    form,
+    isDirty,
+    isAvailable,
+    availabilityMessage,
+    isCheckPending,
+    handleInputChange,
+    refineFormData,
+    isEffectivePassed,
+  } = useDefineTriggerForm({
     rowId,
     crudAction,
   });
@@ -105,7 +114,12 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
       {isReadMode && <InputField {...idProps} />}
 
       {/* Name */}
-      <InputField {...nameProps} />
+      <InputField
+        {...nameProps}
+        onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
+        nonErrorMessage={availabilityMessage}
+        disabled={crudAction !== "create"}
+      />
 
       <FormField
         name="timezone"
@@ -212,7 +226,7 @@ export const TriggerCrudForm = ({ rowId, crudAction }: TriggerCrudFormProps) => 
             primaryText={crudAction === "create" ? "Create" : "Save changes"}
             secondaryText={crudAction === "create" ? "Creating..." : "Saving..."}
             isPending={isPending}
-            disabled={!isDirty}
+            disabled={!isDirty || !isAvailable || isCheckPending}
           />
         </div>
       )}

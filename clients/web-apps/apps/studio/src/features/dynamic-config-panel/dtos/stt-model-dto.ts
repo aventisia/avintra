@@ -22,7 +22,7 @@ export interface STTRequestDto {
   language?: string | null; // BCP-47 e.g. "en-US"; null = auto-detect
   stream: boolean;
 
-  credentials_id?: string | null; // ← "credentials_id", NOT "credential_id"
+  credential_name?: string | null;
   is_byok_enabled?: boolean;
 
   ref_type: string; // "Agent" | "Workflow"
@@ -42,7 +42,7 @@ export interface STTResponseDto {
   output?: string | null;
   error?: string | null;
   stream: boolean;
-  credentials_id?: string | null;
+  credential_name?: string | null;
   is_byok_enabled?: boolean;
   duration_seconds?: number | null;
   token_count?: number | null;

@@ -91,6 +91,7 @@ export const SkillCrudForm = ({ rowId, crudAction }: SkillCrudFormProps) => {
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
+        disabled={crudAction !== "create"}
       />
 
       {/* Description */}

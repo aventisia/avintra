@@ -12,7 +12,10 @@ export interface TenantModelProviderDto {
   providerType: ModelProviderEnum;
 
   /** The identifier of the vault credential associated with the provider. */
-  credentialId: string | null;
+  credentialId?: string | null;
+
+  /** The name of the vault credential associated with the provider. */
+  credentialName?: string | null;
 
   /** Deprecated. Base URL for self-hosted providers. Retained for backwards compatibility. */
   providerUrl?: string | null;

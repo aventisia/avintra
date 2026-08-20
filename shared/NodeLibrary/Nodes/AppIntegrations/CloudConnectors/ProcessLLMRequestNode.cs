@@ -91,7 +91,8 @@ public class ProcessLLMRequestNode : BaseNode
                 json_schema = GetStringProperty(modelConfig, "json_schema"),
                 max_output_tokens = GetLongProperty(modelConfig, "max_output_tokens") ?? 0L,
                 is_byok_enabled = GetBoolProperty(modelConfig, "is_byok_enabled") ?? false,
-                credential_id = GetStringProperty(modelConfig, "credential_id") ?? Guid.Empty.ToString(),
+                // Canonical key is credential_name; value may be a legacy GUID or a name (Q12 back-compat).
+                credential_name = ReadCredentialProperty(modelConfig) ?? Guid.Empty.ToString(),
                 temperature = GetDoubleProperty(modelConfig, "temperature") ?? 1.0,
                 top_p = GetDoubleProperty(modelConfig, "top_p") ?? 1.0,
                 stream = false,
@@ -113,6 +114,7 @@ public class ProcessLLMRequestNode : BaseNode
             using var request = new HttpRequestMessage(HttpMethod.Post, apiUrl);
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", callerContext.AccessToken);
+            NodeHttpHeaders.ApplyEnvHeader(request, callerContext);
             request.Content = new StringContent(requestJson, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -136,6 +138,15 @@ public class ProcessLLMRequestNode : BaseNode
         if (element.ValueKind is JsonValueKind.Undefined or JsonValueKind.Null)
             return null;
         return element.TryGetProperty(propertyName, out var prop) ? prop.GetString() : null;
+    }
+
+    // Reads a credential reference from a config object. Accepts the canonical
+    // "credential_name" key and the legacy "credential_id" key (Q12 back-compat).
+    private static string? ReadCredentialProperty(JsonElement element)
+    {
+        var canonical = GetStringProperty(element, "credential_name");
+        if (!string.IsNullOrWhiteSpace(canonical)) return canonical;
+        return GetStringProperty(element, "credential_id");
     }
 
     private static bool? GetBoolProperty(JsonElement element, string propertyName)

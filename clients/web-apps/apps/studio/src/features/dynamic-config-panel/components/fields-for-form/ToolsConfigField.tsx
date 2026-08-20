@@ -44,7 +44,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
   const fieldNames = useMemo(
     () => ({
       tool: `${name}_tool`,
-      credential_id: `${name}_credential_id`,
+      credential_name: `${name}_credential_name`,
       actions: `${name}_actions`,
       approval: `${name}_approval`,
     }),
@@ -55,7 +55,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
   const currentTool = useWatch({ control, name: fieldNames.tool });
   const currentCredential = useWatch({
     control,
-    name: fieldNames.credential_id,
+    name: fieldNames.credential_name,
   });
   const currentActions = useWatch({ control, name: fieldNames.actions }) || [];
   const currentApproval = useWatch({ control, name: fieldNames.approval }) || "human";
@@ -67,7 +67,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     if (prevToolRef.current !== currentTool) {
       // Only clear if adding a new tool OR if editing but the user explicitly changed the tool type
       if (editingIndex === null || (editingIndex !== null && currentTool !== initialEditTool)) {
-        setValue(fieldNames.credential_id, "", { shouldValidate: true });
+        setValue(fieldNames.credential_name, "", { shouldValidate: true });
         setValue(fieldNames.actions, [], { shouldValidate: true });
       }
       prevToolRef.current = currentTool;
@@ -110,7 +110,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     setInitialEditTool(null);
     setDuplicateAttempted(false);
     setValue(fieldNames.tool, "");
-    setValue(fieldNames.credential_id, "");
+    setValue(fieldNames.credential_name, "");
     setValue(fieldNames.actions, []);
     setValue(fieldNames.approval, "human");
   };
@@ -133,7 +133,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
 
     const configData = {
       tool: currentTool,
-      credential_id: currentCredential,
+      credential_name: currentCredential,
       actions: mappedActions,
     };
 
@@ -155,7 +155,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
     const approval = item.actions[0]?.approval || "human";
 
     setValue(fieldNames.tool, item.tool);
-    setValue(fieldNames.credential_id, item.credential_id);
+    setValue(fieldNames.credential_name, item.credential_name);
     setValue(fieldNames.actions, flatActions);
     setValue(fieldNames.approval, approval);
 
@@ -219,7 +219,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
         />
 
         <CredentialsSelectField
-          name={fieldNames.credential_id}
+          name={fieldNames.credential_name}
           label="Select Credential"
           size="sm"
           modelProvider={currentTool == "outlook" ? "m365" : currentTool}
@@ -289,7 +289,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
             const toolConfigInfo = TOOLS.find((t) => t.value === field.tool);
             const actionNames = field.actions.map((a: any) => a.action);
             const approval = field.actions[0]?.approval || "human";
-            const credentialId = field.credential_id || "";
+            const credentialName = field.credential_name || "";
 
             // Format actions for display, capping at 3 with an overflow indicator
             const displayActions = actionNames.slice(0, 3).join(", ");
@@ -315,7 +315,7 @@ export function ToolsConfigField({ name }: ToolsConfigFieldProps) {
                         {toolConfigInfo?.label || field.tool}
                       </h4>
                       <Badge className="shrink-0 rounded-full px-2 py-px text-[0.625rem] font-medium  bg-muted text-muted-foreground">
-                        {credentialId}
+                        {credentialName}
                       </Badge>
                     </div>
 

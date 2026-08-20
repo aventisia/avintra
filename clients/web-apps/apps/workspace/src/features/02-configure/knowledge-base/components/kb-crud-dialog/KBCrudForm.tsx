@@ -93,6 +93,7 @@ export const KBCrudForm = ({ rowId, crudAction }: KBCrudFormProps) => {
         {...nameProps}
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
+        disabled={crudAction !== "create"}
       />
 
       {/* Description */}

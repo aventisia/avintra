@@ -4,15 +4,17 @@ import { useEffect } from "react";
 
 import { getQueueAgents } from "../apis/queue-agents-apis";
 import { QUEUE_AGENT_KEY } from "../constants";
+import { useEnvironmentStore } from "@/stores/environment-store";
 
 /**
  * Custom hook to fetch queue agents using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
 export const useFetchQueueAgents = (queueId: string) => {
+  const env = useEnvironmentStore((state) => state.env);
   // Get agents using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: [QUEUE_AGENT_KEY, queueId],
+    queryKey: [QUEUE_AGENT_KEY, queueId, env],
     queryFn: () => getQueueAgents(queueId),
   });
 

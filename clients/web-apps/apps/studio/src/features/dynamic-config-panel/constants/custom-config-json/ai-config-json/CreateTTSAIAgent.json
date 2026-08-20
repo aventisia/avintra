@@ -15,7 +15,7 @@
       "defaultValue": {
         "is_byok_enabled": true,
         "provider": "elevenlabs",
-        "credential_id": "",
+        "credential_name": "",
         "model": "eleven_v3"
       },
       "required": false,

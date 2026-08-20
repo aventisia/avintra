@@ -93,7 +93,7 @@ const ImproveWithAIButton = ({
         is_json_output: Boolean(isJsonOutput),
         max_output_tokens: maxOutputTokens ?? undefined,
         is_byok_enabled: false,
-        credential_id: null,
+        credential_name: null,
         temperature: temperature ?? 0.7,
         top_p: topP ?? 1,
         stream: false,

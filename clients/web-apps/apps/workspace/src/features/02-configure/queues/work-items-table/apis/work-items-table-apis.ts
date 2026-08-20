@@ -1,7 +1,7 @@
 import { IHttpResponse, IOptimisticMutation } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { getSpaceHeaders } from "@/utils/space-headers";
+import { getConfigHeaders as getSpaceHeaders } from "@/utils/space-headers";
 
 import { QueueWorkItemDto } from "../dtos/queue-work-item-dto";
 

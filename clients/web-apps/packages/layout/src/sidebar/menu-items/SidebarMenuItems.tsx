@@ -54,6 +54,7 @@ const SidebarMenuItems = () => {
               index={index}
               name={sectionData.sectionName}
               menuSectionsLength={sidebarMenuSections?.length}
+              sectionHeaderAction={sectionData.sectionHeaderAction}
             />
             <Accordion
               onValueChange={() => console.log("TODO")}

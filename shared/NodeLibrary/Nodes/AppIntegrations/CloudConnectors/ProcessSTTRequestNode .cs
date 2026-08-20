@@ -53,7 +53,7 @@ public class ProcessSTTRequestNode : BaseNode
                 model = GetStringProperty(modelConfig, "model"),
                 input = formattedFile,
                 is_byok_enabled = GetBoolProperty(modelConfig, "is_byok_enabled") ?? false,
-                credentials_id = GetStringProperty(modelConfig, "credential_id") ?? Guid.Empty.ToString(),
+                credential_name = GetStringProperty(modelConfig, "credential_name") ?? GetStringProperty(modelConfig, "credential_id") ?? Guid.Empty.ToString(),
                 language = GetStringProperty(modelConfig, "language") ?? "en",
                 stream = false,
 
@@ -73,6 +73,9 @@ public class ProcessSTTRequestNode : BaseNode
             request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             request.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", callerContext.AccessToken);
+
+            // Forward the execution environment so backend resources resolve in the same env.
+            NodeHttpHeaders.ApplyEnvHeader(request, callerContext);
 
             // Attach the serialized JSON payload.
             request.Content = new StringContent(requestJson, Encoding.UTF8, "application/json");

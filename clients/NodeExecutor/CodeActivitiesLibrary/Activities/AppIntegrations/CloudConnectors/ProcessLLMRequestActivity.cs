@@ -102,7 +102,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                         json_schema = modelConfig?["json_schema"]?.Value<string>(),
                         max_output_tokens = modelConfig?["max_output_tokens"]?.Value<long?>() ?? 0,
                         is_byok_enabled = modelConfig?["is_byok_enabled"]?.Value<bool?>() ?? false,
-                        credential_id = modelConfig?["credential_id"]?.Value<string>() ?? Guid.Empty.ToString(),
+                        // Canonical key is credential_name.
+                        credential_name = modelConfig?["credential_name"]?.Value<string>() ?? string.Empty,
                         temperature = modelConfig?["temperature"]?.Value<double?>() ?? 1,
                         top_p = modelConfig?["top_p"]?.Value<double?>() ?? 1.0,
                         stream = false,

@@ -57,7 +57,7 @@ export const triggerZodSchema = z
       })
       .min(1, { message: reqError("Resubscribe Frequency") }),
 
-    credentialId: z.string().min(1, { message: reqError("Credential Id") }),
+    credentialName: z.string().min(1, { message: reqError("Credential") }),
 
     provider: z.string(),
 

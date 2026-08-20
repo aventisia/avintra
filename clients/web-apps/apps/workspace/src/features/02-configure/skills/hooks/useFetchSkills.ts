@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
+import { useEnvironmentStore } from "@/stores/environment-store";
 
 import { getLibrarySkills, getSkills } from "../apis/skill-apis";
 import { DATA_QUERY_KEY } from "../constants";
@@ -21,6 +22,8 @@ export const useFetchSkills = (tab: "current" | "all" = "current") => {
     })),
   );
 
+  const env = useEnvironmentStore((state) => state.env);
+
   // Use this in place DATA_QUERY_KEY to handle Personal/Shared/Library tabs list
   // queryKey already includes the current space id.
   const { isPersonal, isShared, isLibrary, queryKey } = useTableTab();
@@ -31,10 +34,10 @@ export const useFetchSkills = (tab: "current" | "all" = "current") => {
   // so the queries never collide. For the current tab view, use the tab-derived key.
   // All keys include the current space id to match mutation invalidation.
   const personalQueryKey = shouldFetchBoth
-    ? [...DATA_QUERY_KEY, currentSpace?.id ?? ""]
+    ? [...DATA_QUERY_KEY, currentSpace?.id ?? "", env]
     : queryKey;
-  const sharedQueryKey = [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? ""];
-  const libraryQueryKey = [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? ""];
+  const sharedQueryKey = [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? "", env];
+  const libraryQueryKey = [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? "", env];
 
   // Get skills using react query
   const personalQuery = useQuery({

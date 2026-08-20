@@ -45,7 +45,8 @@ public class DesktopExecutionEngine : IExecutionEngine
             {
                 TenantId = graph.TenantId,
                 AccessToken = _accessToken,
-                AppBaseUrl = _appBaseUrl
+                AppBaseUrl = _appBaseUrl,
+                EnvType = graph.EnvType
             },
             ["_job"] = new JobContext
             {

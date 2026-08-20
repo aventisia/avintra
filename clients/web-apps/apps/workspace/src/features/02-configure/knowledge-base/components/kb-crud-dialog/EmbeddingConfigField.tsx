@@ -19,7 +19,7 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
     () =>
       ({
         isByokEnabled: `${name}.isByokEnabled`,
-        credentialId: `${name}.credentialId`,
+        credentialName: `${name}.credentialName`,
         provider: `${name}.provider`,
         model: `${name}.model`,
       }) as const satisfies Record<string, FieldPath<FieldValues>>,
@@ -41,7 +41,7 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
   });
 
   const { field: credentialsField } = useController({
-    name: fieldNames.credentialId,
+    name: fieldNames.credentialName,
     control,
   });
 
@@ -66,13 +66,13 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
 
     if (!formState.isDirty) return;
 
-    setValue(fieldNames.credentialId, "", { shouldDirty: true });
+    setValue(fieldNames.credentialName, "", { shouldDirty: true });
     setValue(fieldNames.model, "", { shouldDirty: true });
   }, [
     isByokEnabled,
     providerValue,
     setValue,
-    fieldNames.credentialId,
+    fieldNames.credentialName,
     fieldNames.model,
     formState.isDirty,
   ]);
@@ -126,7 +126,7 @@ const EmbeddingConfigField = ({ name }: EmbeddingConfigFieldProps) => {
       {isByokEnabled && (
         <CredentialsSelectField
           isRequired
-          name={fieldNames.credentialId}
+          name={fieldNames.credentialName}
           size="base"
           label={`${currentProvider?.label ?? ""} Credentials`}
           modelProvider={providerValue}

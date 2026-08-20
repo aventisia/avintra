@@ -26,8 +26,8 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
         public InArgument<string> Action { get; set; }
         
         [RequiredArgument]
-        [DisplayName("Credential Id")]
-        public InArgument<string> CredentialId { get; set; }
+        [DisplayName("Credential Name")]
+        public InArgument<string> CredentialName { get; set; }
 
         [RequiredArgument]
         [DisplayName("Connector Request Payload")]
@@ -42,7 +42,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
             // Capture all required values from context at the start
             var connectorProvider = Provider.Get(context);
             var action = Action.Get(context);
-            var credentialId = CredentialId.Get(context);
+            var credentialName = CredentialName.Get(context);
             var payload = ParsePayloadForCamelCase(Payload.Get(context)) ;
             var agentId = AgentId.Get(context);
             var agentName = AgentName.Get(context);
@@ -65,7 +65,7 @@ namespace CodeActivitiesLibrary.AppIntegrations.CloudConnectorsActivities
                         agentName = agentName,
                         provider = connectorProvider,
                         action = action,
-                        credentialId = credentialId,
+                        credentialName = credentialName,
                         payload = payload
                     };
 

@@ -32,3 +32,27 @@ export const getStudioSpaceHeaders = (): Record<string, string> => {
     return {};
   }
 };
+
+/**
+ * Builds the environment-scoping header (`X-Env-Type`) for the currently loaded
+ * flow, derived from its publish status.
+ *
+ * A published agent runs against the `prod` environment, while an unpublished
+ * (draft) agent runs against `dev`. This mirrors the backend pattern in
+ * `StreamingChatService` where `X-Env-Type` is set to `prod`/`dev` based on
+ * `IsPublished`, so the LLM pipeline resolves credentials/vaults against the
+ * same environment the agent is configured for.
+ */
+export const getStudioEnvHeaders = (): Record<string, string> => {
+  const isPublished = useCurrentFlowStore.getState().currentFlow?.isPublished ?? false;
+  return { "X-Env-Type": isPublished ? "prod" : "dev" };
+};
+
+/**
+ * Convenience helper that merges both space and environment headers so the
+ * LLM pipeline API calls can pass a single object while preserving both scopes.
+ */
+export const getStudioConfigHeaders = (): Record<string, string> => ({
+  ...getStudioSpaceHeaders(),
+  ...getStudioEnvHeaders(),
+});

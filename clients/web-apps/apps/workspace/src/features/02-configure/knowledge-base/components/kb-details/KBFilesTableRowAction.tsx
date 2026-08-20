@@ -36,7 +36,7 @@ export const KBFilesTableRowAction = ({
         vector_store: knowledgeBase.vectorStore,
         doc_names: [row.fileName],
         kb_names: [knowledgeBase.name],
-        store_credential_id: knowledgeBase.storeCredentialId,
+        credential_name: knowledgeBase.storeCredentialId,
       });
 
       await deleteKnowledgeBaseFile(knowledgeBaseId, row.id);

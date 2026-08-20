@@ -24,7 +24,7 @@ export const knowledgeBaseZodSchema = z
     embeddingConfig: z.object({
       isByokEnabled: z.boolean().default(false),
       provider: z.string().min(1, { message: reqError("Embedding Provider") }),
-      credentialId: z.string().optional(),
+      credentialName: z.string().optional(),
       model: z.string().min(1, { message: reqError("Embedding Model") }),
     }),
     isDisabled: z.boolean().default(false).optional(),
@@ -34,11 +34,11 @@ export const knowledgeBaseZodSchema = z
     lastModifiedOn: z.date(),
   })
   .superRefine((data, ctx) => {
-    if (data.embeddingConfig.isByokEnabled && !data.embeddingConfig.credentialId) {
+    if (data.embeddingConfig.isByokEnabled && !data.embeddingConfig.credentialName) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: reqError("Credential"),
-        path: ["embeddingConfig", "credentialId"],
+        path: ["embeddingConfig", "credentialName"],
       });
     }
   });

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
+import { useEnvironmentStore } from "@/stores/environment-store";
 
 import { getLibraryTools, getTools } from "../apis/tools.apis";
 import { DATA_QUERY_KEY } from "../constants/tools-table.constants";
@@ -20,6 +21,8 @@ export const useFetchTools = () => {
     })),
   );
 
+  const env = useEnvironmentStore((state) => state.env);
+
   const { currentTab, isPersonal, isShared, isLibrary, queryKey } = useTableTab();
 
   const personalQuery = useQuery({
@@ -29,13 +32,13 @@ export const useFetchTools = () => {
   });
 
   const sharedQuery = useQuery({
-    queryKey: [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? ""],
+    queryKey: [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? "", env],
     queryFn: () => getTools({ isPersonal: false }),
     enabled: isShared,
   });
 
   const libraryQuery = useQuery({
-    queryKey: [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? ""],
+    queryKey: [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? "", env],
     queryFn: () => getLibraryTools(),
     enabled: isLibrary,
   });

@@ -1,10 +1,13 @@
 import { Button } from "@avplatform/ui/buttons";
+import { Tooltip } from "@avplatform/ui/tooltip";
 import * as YAML from "js-yaml";
-import { useEffect, useState } from "react";
+import { Info } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
+import { isToolNameAvailable } from "../../apis/tools.apis";
 import { ComponentTypeEnum } from "../../enums/component-type-enum";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
 
@@ -14,9 +17,22 @@ interface StepIngestSpecProps {
 
 export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
   const [activeTab, setActiveTab] = useState<"file" | "text">("text");
-  const { specText, setSpecText, setSpecFile, setDraftTool, draftTool } = useToolWizardStore();
+  const {
+    specText,
+    setSpecText,
+    setSpecFile,
+    setDraftTool,
+    draftTool,
+    isNameAvailable,
+    isNameCheckPending,
+    nameAvailabilityMessage,
+    setNameAvailability,
+  } = useToolWizardStore();
   const [parseError, setParseError] = useState<string | null>(null);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const isCreate = crudAction === "create";
 
   useEffect(() => {
     if (specText.trim() && !draftTool?.parsedSchema) {
@@ -24,6 +40,38 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Debounced availability check for the tool name (create mode only).
+  useEffect(() => {
+    const name = draftTool?.name?.trim() ?? "";
+    if (!isCreate || !name) {
+      setNameAvailability({ isAvailable: true, isCheckPending: false, message: null });
+      return;
+    }
+
+    setNameAvailability({ isAvailable: true, isCheckPending: true, message: "Checking availability..." });
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      isToolNameAvailable({ userInput: name })
+        .then((res) => {
+          setNameAvailability({
+            isAvailable: res.data.result,
+            isCheckPending: false,
+            message: res.data.result
+              ? `${name} is available`
+              : `Tool name "${name}" already exists. Please enter a unique name.`,
+          });
+        })
+        .catch(() => {
+          setNameAvailability({ isAvailable: true, isCheckPending: false, message: null });
+        });
+    }, 800);
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [draftTool?.name, isCreate, setNameAvailability]);
 
   const updateDraft = (patch: Partial<typeof draftTool>) => {
     setDraftTool(draftTool ? { ...draftTool, ...patch } : undefined);
@@ -115,14 +163,29 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
   return (
     <div className="space-y-4">
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Name *</label>
+        <label className="flex items-center gap-1 text-sm font-medium">
+          Unique Name *
+          <Tooltip content="Name cannot be modified after creation.">
+            <span className="rounded hover:bg-slate-100 hover:text-primary">
+              <Info className="h-3.5 w-3.5" />
+            </span>
+          </Tooltip>
+        </label>
         <input
           value={draftTool?.name ?? ""}
           onChange={(e) => updateDraft({ name: e.target.value })}
           onBlur={() => setTouched((prev) => ({ ...prev, name: true }))}
           placeholder="My Custom API Tool"
+          disabled={crudAction === "update" || crudAction === "read"}
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
         />
+        {isNameCheckPending ? (
+          <p className="text-xs text-muted-foreground">{nameAvailabilityMessage}</p>
+        ) : !isNameAvailable && isCreate ? (
+          <p className="text-xs text-destructive">{nameAvailabilityMessage}</p>
+        ) : isNameAvailable && isCreate && nameAvailabilityMessage ? (
+          <p className="text-xs text-emerald-600">{nameAvailabilityMessage}</p>
+        ) : null}
         {getError("name") && <p className="text-xs text-destructive">{getError("name")}</p>}
       </div>
 

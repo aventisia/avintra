@@ -79,7 +79,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     () =>
       ({
         is_byok_enabled: `${name}.is_byok_enabled`,
-        credential_id: `${name}.credential_id`,
+        credential_name: `${name}.credential_name`,
         provider: `${name}.provider`,
         model: `${name}.model`,
         voice: `${name}.voice`,
@@ -106,7 +106,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     control,
   });
   const { field: credentialsField } = useController({
-    name: fieldNames.credential_id,
+    name: fieldNames.credential_name,
     control,
   });
   const { field: temperatureField } = useController({
@@ -211,7 +211,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
       prevValues.current.is_byok_enabled = is_byok_enabled;
       prevValues.current.providerValue = providerValue;
 
-      setValue(fieldNames.credential_id, "", { shouldDirty: true });
+      setValue(fieldNames.credential_name, "", { shouldDirty: true });
       setValue(fieldNames.model, "", { shouldDirty: true });
       setByokModels([]);
     }
@@ -327,7 +327,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
 
       {is_byok_enabled && (
         <CredentialsSelectField
-          name={fieldNames.credential_id}
+          name={fieldNames.credential_name}
           size="sm"
           label={`${currentProviderLabel ?? ""} Credentials`}
           modelProvider={providerValue}

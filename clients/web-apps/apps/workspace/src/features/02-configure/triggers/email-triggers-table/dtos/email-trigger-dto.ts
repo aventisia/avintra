@@ -26,6 +26,7 @@ export interface EmailTriggerDto {
   subscriptionId?: string;
 
   credentialId: string;
+  credentialName?: string;
   provider: string;
   /**
    * Gets or sets the collection of agent identifiers associated with the email trigger.

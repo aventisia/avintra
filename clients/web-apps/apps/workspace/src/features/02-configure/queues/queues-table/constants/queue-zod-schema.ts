@@ -110,7 +110,7 @@ export const queueZodSchema = z.object({
 
   routeToQueues: z.array(z.string()).nullable().optional(),
   processingMode: z.string().default("Manual"),
-  credentialId: z.string().nullable().optional(),
+  credentialName: z.string().nullable().optional(),
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
   createdBy: z.string(),

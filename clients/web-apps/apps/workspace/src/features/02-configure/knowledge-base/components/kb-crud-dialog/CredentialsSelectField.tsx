@@ -56,8 +56,8 @@ const CredentialsSelectField = ({
     // Set loading state
     setLoading(true);
 
-    // Fetch credential_id list. Prefer explicit modelProvider prop; fall back to name-based parsing.
-    getCredSelectOptions(modelProvider ?? name.replace("__CredentialId__", ""))
+    // Fetch credential list. Prefer explicit modelProvider prop; fall back to name-based parsing.
+    getCredSelectOptions(modelProvider ?? name.replace("__CredentialName__", ""))
       .then((data) => {
         setSelectOptions(data?.data);
         setLoading(false);

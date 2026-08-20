@@ -32,7 +32,8 @@ public class GetQueueNode : BaseNode
                 baseUrl,
                 $"workspace/api/queue/by-name/{queueName}",
                 HttpMethod.Get,
-                accessToken);
+                accessToken,
+                envType: callerContext.EnvType);
 
             Result.Set(context, retrievedQueue);
             IsSuccess.Set(context, true);

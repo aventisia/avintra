@@ -32,7 +32,8 @@ public class DeleteWorkItemNode : BaseNode
                 baseUrl,
                 $"workspace/api/queue/workitem/{workItemId}",
                 HttpMethod.Delete,
-                accessToken);
+                accessToken,
+                envType: callerContext.EnvType);
 
             var deleteResult = response.ValueKind == JsonValueKind.True ||
                 (response.ValueKind == JsonValueKind.String && bool.TryParse(response.GetString(), out var parsed) && parsed);

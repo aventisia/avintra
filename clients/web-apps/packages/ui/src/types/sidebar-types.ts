@@ -3,6 +3,13 @@ import { type DeploymentType, type IconProps } from "@/ui/types";
 type SidebarMenuSectionType = {
   sectionName: string;
   menuItems: SidebarMenuItemType[];
+  /**
+   * Optional component rendered on the same line as the section header, aligned
+   * to the right. Typically used for per-section controls (e.g. an environment
+   * toggle next to the "configure" section). Only rendered while the sidebar is
+   * expanded.
+   */
+  sectionHeaderAction?: React.ComponentType;
 };
 
 type SidebarMenuItemType = {

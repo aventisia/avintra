@@ -72,7 +72,7 @@ export const QueuePriorityGroupsField = (field: DCPFieldSchemaType) => {
 
   useEffect(() => {
     if (queueSelectField.value) {
-      const queueSchema = data?.find((item) => item.id == queueSelectField.value)?.inputSchema;
+      const queueSchema = data?.find((item) => item.name == queueSelectField.value)?.inputSchema;
 
       if (queueSchema) {
         setQueueFieldOptions(mapSchemaFieldsToSelectOptions(queueSchema));

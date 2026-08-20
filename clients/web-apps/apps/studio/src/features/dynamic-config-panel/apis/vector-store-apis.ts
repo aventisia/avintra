@@ -11,8 +11,8 @@ export interface VectorStoreQueryRequestDto {
   score_threshold?: number;
   kb_names?: string[];
   doc_names?: string[];
-  store_credential_id?: string;
-  embedding_credential_id?: string;
+  credential_name?: string;
+  embedding_credential_name?: string;
   ref_type: string;
   ref_id: string;
   ref_name: string;

@@ -22,7 +22,7 @@ const idProps: InputFieldProps = {
 const nameProps: InputFieldProps = {
   autoFocus: true,
   name: "name",
-  label: "Name",
+  label: "Unique Name",
   isRequired: true,
   placeholder: "Trigger Name",
   description:

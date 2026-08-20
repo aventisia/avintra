@@ -72,7 +72,8 @@ public class CreateWorkItemNode : BaseNode
                 "workspace/api/queue/workitem",
                 HttpMethod.Post,
                 accessToken,
-                payload);
+                payload,
+                callerContext.EnvType);
 
             Result.Set(context, createdWorkItem);
             IsSuccess.Set(context, true);

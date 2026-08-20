@@ -60,7 +60,7 @@ export function useSTTExecute(formData: Record<string, unknown>) {
       audio_format: input.audio_format || "audio/wav",
       language: input.language?.trim() || null,
       stream: false,
-      credentials_id: modelConfig.credential_id || null,
+      credential_name: modelConfig.credential_name || null,
       is_byok_enabled: modelConfig.is_byok_enabled ?? false,
       ref_id: currentFlow.id,
       ref_name: currentFlow.name,

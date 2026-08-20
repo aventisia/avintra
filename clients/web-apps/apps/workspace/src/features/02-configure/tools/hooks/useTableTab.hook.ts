@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { useCurrentSpaceStore } from "@/stores/current-space-store";
+import { useEnvironmentStore } from "@/stores/environment-store";
 
 import {
   DATA_QUERY_KEY,
@@ -26,6 +27,8 @@ export const useTableTab = () => {
     })),
   );
 
+  const env = useEnvironmentStore((state) => state.env);
+
   const currentTab = (searchParams.get(TABLE_TAB_QUERY_PARAM) ?? DEFAULT_TAB) as
     "personal" | "shared" | "library";
 
@@ -35,10 +38,10 @@ export const useTableTab = () => {
   const isReadOnly = isLibrary;
 
   const queryKey = useMemo(() => {
-    if (isShared) return [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? ""];
-    if (isLibrary) return [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? ""];
-    return [...DATA_QUERY_KEY, currentSpace?.id ?? ""];
-  }, [isShared, isLibrary, currentSpace?.id]);
+    if (isShared) return [...DATA_QUERY_KEY, "SHARED", currentSpace?.id ?? "", env];
+    if (isLibrary) return [...DATA_QUERY_KEY, "LIBRARY", currentSpace?.id ?? "", env];
+    return [...DATA_QUERY_KEY, currentSpace?.id ?? "", env];
+  }, [isShared, isLibrary, currentSpace?.id, env]);
 
   return {
     currentTab,
