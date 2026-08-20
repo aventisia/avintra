@@ -60,10 +60,6 @@ export const ActionSelectorContent = () => {
           onKeyDown={handleInputKeyDown}
           autoFocus
         />
-
-        <div className="pointer-events-none inline-flex h-5 items-center gap-1 rounded-md bg-muted px-1.5 text-xs text-muted-foreground">
-          ⌘K
-        </div>
       </div>
 
       <div className="min-h-0 flex-1 overflow-hidden">

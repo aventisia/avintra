@@ -14,7 +14,7 @@ const SearchCommandTrigger = () => {
 
   return (
     <div>
-      <Tooltip content="Search" shortcut="ctrl+k">
+      <Tooltip content="Search">
         <Button size="icon7" variant="outline" onClick={() => setOpen(true)}>
           <MagnifyingGlassIcon className="h-4 w-4 " />
         </Button>

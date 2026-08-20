@@ -20,10 +20,6 @@ const SearchBox = ({ className, placeholder = "Search..." }: SearchBoxProps) => 
       <span className="-mb-0.5 hidden pl-[2.4rem] text-[0.85rem] text-white/50 md:flex">
         {placeholder}
       </span>
-      <kbd className="pointer-events-none absolute right-1.5 top-1/2 mt-[1px] hidden -translate-y-1/2 select-none items-center gap-1 rounded px-1.5 font-mono text-2xs font-medium text-white/50 transition-opacity contrast-more:border-current contrast-more:text-current contrast-more:dark:border-current sm:flex">
-        <span>CTRL</span>
-        <span>K</span>
-      </kbd>
     </a>
   );
 };

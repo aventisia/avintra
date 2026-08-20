@@ -47,9 +47,6 @@ const CommandInput = React.forwardRef<
       )}
       {...props}
     />
-    <CommandShortcut>
-      <span className="text-xs">⌘</span>K
-    </CommandShortcut>
   </div>
 ));
 
