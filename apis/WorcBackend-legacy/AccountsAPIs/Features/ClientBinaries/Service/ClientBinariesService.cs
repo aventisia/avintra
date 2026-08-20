@@ -49,7 +49,16 @@ public class ClientBinariesService : IClientBinariesService
                 "zip")
         };
 
-        _cache.Set(cacheKey, manifest, TimeSpan.FromSeconds(60));
+        // Only cache when real artifacts exist for both products. If one product still
+        // has placeholder entries because files haven't been published yet, don't cache
+        // so the next request sees newly uploaded files without a restart.
+        var hasRealArtifacts = manifest.Desktop.Versions.Any(v => v.Artifacts.Any(a => a.Available))
+            && manifest.Runner.Versions.Any(v => v.Artifacts.Any(a => a.Available));
+        if (hasRealArtifacts)
+        {
+            _cache.Set(cacheKey, manifest, TimeSpan.FromSeconds(60));
+        }
+
         return serviceResponse.Update(null, 200, manifest);
     }
 
@@ -69,7 +78,11 @@ public class ClientBinariesService : IClientBinariesService
             ClientBinariesHelper.RunnerPrefix,
             ClientBinariesHelper.RunnerSuffix);
         if (string.IsNullOrEmpty(filePath))
+        {
+            // Don't cache a negative result: files may be published while the API is
+            // running, and caching "not found" requires a restart to clear.
             return serviceResponse.Update(message, 404);
+        }
 
         // Extract the version from the file name and build the download URL
         var latestVersion = ClientBinariesHelper.ParseVersion(

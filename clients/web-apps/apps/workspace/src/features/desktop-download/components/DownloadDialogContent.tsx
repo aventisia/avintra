@@ -47,7 +47,9 @@ const buildOllamaStylePowerShellCommand = (
     '$env:AVINTRA_API_KEY = "<API_KEY>"',
     `$env:AVINTRA_TENANT_ID = "${t}"`,
     `$env:AVINTRA_LINKED_USERNAME = "${u}"`,
-    `irm "${scriptUrl}" | iex`,
+    `$scriptPath = Join-Path $env:TEMP "Install-AvintraRunnerService.ps1"`,
+    `irm "${scriptUrl}" -OutFile $scriptPath`,
+    `& $scriptPath`,
   ].join("\n");
 };
 
@@ -405,15 +407,19 @@ const DownloadContent: React.FC<{
   // OS tab — default to the user's detected platform
   const [activePlatform, setActivePlatform] = useState<Platform>(() => detectPlatform());
 
-  // Derive the accounts API origin from VITE_ACCOUNTS_API_PATH so the one-liner
-  // works regardless of the workspace path the user is browsing from (e.g.
-  // /workspace/) and uses the correct backend host (not a localhost dev hostname
-  // the Windows machine can't resolve).
-  const apiBaseUrl = useMemo(() => {
+  // The runner/installer expect the backend host origin only. The runner
+  // internally calls /accounts/api/... and /workspace/api/... paths, and the
+  // install script resolves the runner zip from /files/binaries/runner/latest.
+  const apiBaseUrl = useMemo(() => window.location.origin.replace(/\/$/, ""), []);
+
+  // Derive the static-files proxy origin separately; the install script is
+  // served from /files/scripts/Install-AvintraRunnerService.ps1.
+  const filesBaseUrl = useMemo(() => {
     const path = import.meta.env.VITE_FILES_API_PATH ?? "/files";
     const origin = window.location.origin.replace(/\/$/, "");
     return `${origin}${path.startsWith("/") ? "" : "/"}${path}`;
   }, []);
+
   const installCommand = useMemo(
     () => buildExecutorServiceCommand(apiBaseUrl, tenantId, linkedUsername),
     [apiBaseUrl, tenantId, linkedUsername],
@@ -422,11 +428,11 @@ const DownloadContent: React.FC<{
     () =>
       buildOllamaStylePowerShellCommand(
         apiBaseUrl,
-        `${apiBaseUrl}/binaries/runner/script/Install-AvintraRunnerService.ps1`,
+        `${filesBaseUrl}/scripts/Install-AvintraRunnerService.ps1`,
         tenantId,
         linkedUsername,
       ),
-    [apiBaseUrl, tenantId, linkedUsername],
+    [apiBaseUrl, filesBaseUrl, tenantId, linkedUsername],
   );
 
   const isWindows = activePlatform === "windows";

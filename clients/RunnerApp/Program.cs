@@ -429,21 +429,23 @@ static int RunServiceInstaller(string[] args, bool install)
             }
 
             var binPath = BuildServiceBinPath(executablePath, installOptions);
-            var createProcess = System.Diagnostics.Process.Start("sc", $"create \"{serviceName}\" binPath=\"{binPath}\" start=auto");
-            createProcess?.WaitForExit();
-            if (createProcess?.ExitCode != 0)
+            var createExitCode = RunSc("create", serviceName, "binPath=", binPath, "start=auto");
+            if (createExitCode != 0)
             {
-                Console.Error.WriteLine($"sc create failed with exit code {createProcess?.ExitCode}.");
+                Console.Error.WriteLine($"sc create failed with exit code {createExitCode}.");
                 return 1;
             }
             Console.WriteLine($"Service '{serviceName}' installed successfully.");
         }
         else
         {
-            var stopProcess = System.Diagnostics.Process.Start("sc", $"stop \"{serviceName}\"");
-            stopProcess?.WaitForExit();
-            var deleteProcess = System.Diagnostics.Process.Start("sc", $"delete \"{serviceName}\"");
-            deleteProcess?.WaitForExit();
+            RunSc("stop", serviceName);
+            var deleteExitCode = RunSc("delete", serviceName);
+            if (deleteExitCode != 0)
+            {
+                Console.Error.WriteLine($"sc delete failed with exit code {deleteExitCode}.");
+                return 1;
+            }
             Console.WriteLine($"Service '{serviceName}' uninstalled successfully.");
         }
         return 0;
@@ -453,6 +455,40 @@ static int RunServiceInstaller(string[] args, bool install)
         Console.Error.WriteLine($"Failed to {(install ? "install" : "uninstall")} service: {ex.Message}");
         return 1;
     }
+}
+
+static int RunSc(params string[] arguments)
+{
+    var psi = new System.Diagnostics.ProcessStartInfo
+    {
+        FileName = "sc",
+        UseShellExecute = false,
+        RedirectStandardOutput = true,
+        RedirectStandardError = true,
+        CreateNoWindow = true,
+    };
+    foreach (var arg in arguments)
+    {
+        psi.ArgumentList.Add(arg);
+    }
+
+    using var process = System.Diagnostics.Process.Start(psi);
+    if (process is null)
+    {
+        Console.Error.WriteLine("Failed to start sc.exe.");
+        return -1;
+    }
+
+    var stdout = process.StandardOutput.ReadToEnd();
+    var stderr = process.StandardError.ReadToEnd();
+    process.WaitForExit();
+
+    if (!string.IsNullOrWhiteSpace(stdout))
+        Console.WriteLine(stdout.Trim());
+    if (!string.IsNullOrWhiteSpace(stderr))
+        Console.Error.WriteLine(stderr.Trim());
+
+    return process.ExitCode;
 }
 
 static RunnerAppOptions? TryParseInstallArguments(string[] args)
@@ -564,8 +600,9 @@ static string BuildServiceBinPath(string executablePath, RunnerAppOptions option
 
 static string QuoteForSc(string value)
 {
-    // sc expects inner quotes to be escaped as \" so that a value like a"b becomes a\"b.
-    var escaped = value.Replace("\\", "\\\\").Replace("\"", "\\\"");
+    // Wrap values in quotes so spaces are preserved when the service binPath is parsed.
+    // Escape any embedded double-quotes so the outer quoting remains valid.
+    var escaped = value.Replace("\"", "\\\"");
     return $"\"{escaped}\"";
 }
 
