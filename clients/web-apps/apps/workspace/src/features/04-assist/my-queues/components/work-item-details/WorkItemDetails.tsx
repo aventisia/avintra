@@ -15,10 +15,10 @@ import { useShallow } from "zustand/react/shallow";
 import { SearchableSelect } from "@/components/searchable-select/SearchableSelect";
 
 import { QueuesTableDto } from "../../dtos/queues-table-dto";
+import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
 import { QueueProcessingModeEnum } from "../../enums/queue-processing-mode-enum";
 import { QueueTransactionEventEnum } from "../../enums/queue-transaction-event-enum";
 import { QueueTransactionStatusTypesEnum } from "../../enums/queue-work-item-status-enum";
-import { QueueTypesEnum } from "../../enums/queue-instance-type-enum";
 import { useFetchQueues } from "../../hooks/useFetchQueues";
 import { useFetchQueuesWorkItemData } from "../../hooks/useFetchQueuesWorkItemData";
 import { useGetNextItemMutation } from "../../hooks/useGetNextItemMutation";
@@ -57,7 +57,10 @@ export const WorkItemDetails = () => {
 
   const { data: workItemData } = useFetchQueuesWorkItemData(workItemId ?? "");
 
-  const { data: myQueues } = useFetchQueues({ onlyUserQueues: true });
+  // Fetch the queue matching the current queue type. Agent-queue work items are
+  // opened from agent queues, so we must query the agent-queue endpoint to
+  // resolve the queue's credentialId (needed to download the file/PDF).
+  const { data: myQueues } = useFetchQueues({ onlyUserQueues: true, queueType });
 
   const { mutate: addEvent } = useInsertQueueWorkItemEvent();
 
@@ -214,33 +217,35 @@ export const WorkItemDetails = () => {
         </h2>
 
         <div className="flex items-center gap-2">
-          {!isViewOnly && workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
-            <SearchableSelect
-              options={buildDispositionOptions(myCurrentQueue)}
-              placeholder="Disposition Status"
-              value={selectedDisposition}
-              onValueChange={handleDispositionChange}
-              className="w-60"
-              size="sm"
-              disabled={!canClose}
-            />
-          )}
-          {!isViewOnly && workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
-            <Button
-              size="xs"
-              onClick={handleClose}
-              disabled={isClosePending || isClaimingNext || !selectedDisposition || !canClose}
-              title={
-                !canClose
-                  ? "Claim this item via Get Next Item before closing it"
-                  : !selectedDisposition
-                    ? "Select a disposition status to close"
-                    : undefined
-              }
-            >
-              {isClosePending || isClaimingNext ? "Closing..." : "Close"}
-            </Button>
-          )}
+          {!isViewOnly &&
+            workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
+              <SearchableSelect
+                options={buildDispositionOptions(myCurrentQueue)}
+                placeholder="Disposition Status"
+                value={selectedDisposition}
+                onValueChange={handleDispositionChange}
+                className="w-60"
+                size="sm"
+                disabled={!canClose}
+              />
+            )}
+          {!isViewOnly &&
+            workItemData?.data?.status !== QueueTransactionStatusTypesEnum.Completed && (
+              <Button
+                size="xs"
+                onClick={handleClose}
+                disabled={isClosePending || isClaimingNext || !selectedDisposition || !canClose}
+                title={
+                  !canClose
+                    ? "Claim this item via Get Next Item before closing it"
+                    : !selectedDisposition
+                      ? "Select a disposition status to close"
+                      : undefined
+                }
+              >
+                {isClosePending || isClaimingNext ? "Closing..." : "Close"}
+              </Button>
+            )}
         </div>
       </div>
 
