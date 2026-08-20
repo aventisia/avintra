@@ -52,7 +52,6 @@ class ByokUsageManager:
             sanitized = dict(item)
             sanitized["RefId"] = self._sanitize_guid(sanitized.get("RefId"))
             sanitized["SpaceId"] = self._sanitize_guid(sanitized.get("SpaceId"))
-            sanitized["CredentialId"] = self._sanitize_guid(sanitized.get("CredentialId"))
             sanitized["RefName"] = self._sanitize_optional_text(sanitized.get("RefName"))
             sanitized["CredentialName"] = self._sanitize_optional_text(sanitized.get("CredentialName"))
             sanitized["TriggeredByAgent"] = self._sanitize_optional_text(sanitized.get("TriggeredByAgent"))

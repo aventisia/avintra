@@ -67,9 +67,10 @@ public class Tool : BaseEntity, IMustHaveTenant
     public ToolAuthenticationTypeEnum? AuthenticationType { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the credential associated with the tool.
+    /// Gets or sets the unique name of the credential associated with the tool.
     /// </summary>
-    public Guid? CredentialId { get; set; }
+    [MaxLength(255)]
+    public string? CredentialName { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the tool is available to all users within the tenant.

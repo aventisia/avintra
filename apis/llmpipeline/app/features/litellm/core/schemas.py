@@ -11,7 +11,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, Literal, Optional, Union
 
-from pydantic import BaseModel, Field, model_validator, AliasChoices
+from pydantic import BaseModel, Field, model_validator
 
 
 def _utc_now() -> datetime:
@@ -118,7 +118,7 @@ class LLMGenerationResponse(BaseModel):
     output_reasoning_tokens: Optional[int] = 0
     is_json_output: Optional[bool] = False
     is_byok_enabled: Optional[bool] = False
-    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credential_id'), serialization_alias='credential_name')
+    credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     error: Optional[str] = None
     conversation_id: Optional[str] = None
     is_temp_chat: bool = False
@@ -143,7 +143,7 @@ class EmbeddingRequest(BaseModel):
     dimensions: Optional[int] = None
     encoding_format: Literal["float", "base64"] = "float"
     is_byok_enabled: bool = False
-    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credential_id'), serialization_alias='credential_name')
+    credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     # Credit / reference metadata
     reference_id: Optional[str] = None
     reference_type: Optional[str] = None
@@ -159,7 +159,7 @@ class EmbeddingResponse(BaseModel):
     time_taken: Optional[float] = 0.0
     input_tokens: Optional[int] = 0
     is_byok_enabled: Optional[bool] = False
-    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credential_id'), serialization_alias='credential_name')
+    credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     status: Literal["completed", "failed"] = "completed"
     error: Optional[str] = None
 
@@ -226,7 +226,7 @@ class STTRequest(BaseModel):
     input: str  # URL, local path, or base64 data URI
     language: Optional[str] = None
     stream: bool = False
-    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
+    credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     is_byok_enabled: bool = False
     ref_type: str = ""
     ref_id: str = ""
@@ -242,7 +242,7 @@ class STTResponse(BaseModel):
     status: Literal["completed", "failed"] = "completed"
     error: Optional[str] = None
     stream: bool = False
-    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
+    credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     is_byok_enabled: bool = False
     duration_seconds: Optional[float] = None
     token_count: Optional[float] = None
@@ -269,7 +269,7 @@ class TTSRequest(BaseModel):
     language: Optional[str] = None
     speed: float = 1.0
     stream: bool = False
-    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
+    credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     is_byok_enabled: bool = False
     ref_type: str = ""
     ref_id: str = ""
@@ -285,7 +285,7 @@ class TTSResponse(BaseModel):
     status: Literal["completed", "failed"] = "completed"
     error: Optional[str] = None
     stream: bool = False
-    credential_name: Optional[str] = Field(default=None, validation_alias=AliasChoices('credential_name', 'credentials_id', 'credential_id'), serialization_alias='credential_name')
+    credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')
     is_byok_enabled: bool = False
     token_count: Optional[float] = None
     time_taken: Optional[float] = None

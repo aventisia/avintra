@@ -68,9 +68,9 @@ class Tool(TenantScopedMixin, CustomToolsBase):
         nullable=True,
         default=None,
     )
-    credential_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        "CredentialId",
-        UUID(as_uuid=True),
+    credential_name: Mapped[Optional[str]] = mapped_column(
+        "CredentialName",
+        String(255),
         nullable=True,
         default=None,
     )
@@ -139,9 +139,9 @@ class FlowVersion_Tool(TenantScopedMixin, CustomToolsBase):
         nullable=True,
         default=None,
     )
-    credential_id: Mapped[Optional[uuid.UUID]] = mapped_column(
-        "CredentialId",
-        UUID(as_uuid=True),
+    credential_name: Mapped[Optional[str]] = mapped_column(
+        "CredentialName",
+        String(255),
         nullable=True,
         default=None,
     )

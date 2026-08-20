@@ -1,6 +1,5 @@
 import time
 from typing import Any
-from uuid import UUID
 
 import httpx
 
@@ -14,7 +13,7 @@ async def execute_operation(
     operation: ToolOperation,
     parameters: dict[str, Any],
     authentication_type: str | None,
-    credential_id: UUID | None,
+    credential_name: str | None,
     workspace_api: str | None = None,
     access_token: str | None = None,
     env_type: str = "dev",
@@ -39,10 +38,10 @@ async def execute_operation(
     if operation.request_body:
         body = _extract_body(parameters, operation.request_body)
 
-    if credential_id and authentication_type and authentication_type != "none":
-        if workspace_api:
+    if authentication_type and authentication_type != "none":
+        if credential_name and workspace_api:
             credential = await fetch_decrypted_credential(
-                workspace_api, credential_id, access_token, env_type=env_type
+                workspace_api, credential_name, access_token, env_type=env_type
             )
             _inject_auth(headers, query_params, authentication_type, credential)
 

@@ -79,7 +79,7 @@ def has_sufficient_platform_credits(access_token: str) -> bool:
     return bool(credit_manager.has_sufficient_credits(task="platform", jwt=access_token))
 
 
-def check_sufficient_credits(is_byok_enabled: bool, credential_id: str | None, provider: str, access_token: str) -> None:
+def check_sufficient_credits(is_byok_enabled: bool, credential_name: str | None, provider: str, access_token: str) -> None:
     """Raise a 400 if the platform lacks credits for a non-BYOK call.
 
     BYOK requests skip the platform credit check because the caller supplies
@@ -87,7 +87,7 @@ def check_sufficient_credits(is_byok_enabled: bool, credential_id: str | None, p
 
     Args:
         is_byok_enabled: Whether the request uses the caller's own credentials.
-        credential_id: The BYOK vault credential id (None when not BYOK).
+        credential_name: The BYOK vault credential name (None when not BYOK).
         provider: The provider name, used for billing/logging labels.
         access_token: The authenticated user's JWT.
 
@@ -95,7 +95,7 @@ def check_sufficient_credits(is_byok_enabled: bool, credential_id: str | None, p
         HTTPException(400): When non-BYOK and the platform has insufficient credits.
     """
     # BYOK requests are never billed against platform credits.
-    if is_byok_enabled and credential_id:
+    if is_byok_enabled and credential_name:
         return
 
     credit_manager = CreditManagerService()
@@ -243,8 +243,7 @@ def build_byok_entry(
         model: The model name (e.g. "gpt-4o-mini").
         consumed_units: Number of provider units consumed (tokens/seconds/chars).
         unit_type: The provider unit type (e.g. "Tokens", "Seconds", "Characters").
-        credential_name: The BYOK vault credential name (also echoed to the
-            legacy CredentialId field for back-compat with the Accounts API).
+        credential_name: The BYOK vault credential name.
         display_name: Optional resolved display name for CredentialName; falls
             back to credential_name.
         ref_type: The reference type (e.g. "Agent").
@@ -263,7 +262,6 @@ def build_byok_entry(
         "Model": model,
         "ConsumedUnit": max(consumed_units or 0, 0),
         "UnitType": unit_type,
-        "CredentialId": credential_name,
         "CredentialName": display_name or credential_name,
         "RefType": ref_type,
         "RefId": ref_id,

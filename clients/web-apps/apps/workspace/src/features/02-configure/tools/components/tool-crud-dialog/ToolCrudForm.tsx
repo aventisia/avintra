@@ -117,7 +117,7 @@ export const ToolCrudForm = ({
       />
 
       <SelectField
-        name="credentialId"
+        name="credentialName"
         label="Credential"
         placeholder="Select a Custom API Tool credential"
         selectOptions={(customApiCredentials ?? []).map((cred) => ({

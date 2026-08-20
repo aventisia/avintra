@@ -245,9 +245,14 @@ export interface LLMResponseDto {
   is_byok_enabled?: boolean;
 
   /**
-   * Credential ID for BYOK.
+   * Credential ID for BYOK (legacy).
    */
   credentialId?: string;
+
+  /**
+   * Credential name for BYOK.
+   */
+  credentialName?: string;
 
   /**
    * Any error message related to the response.

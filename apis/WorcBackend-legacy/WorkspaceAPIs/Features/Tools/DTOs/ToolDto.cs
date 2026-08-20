@@ -48,9 +48,9 @@ public class ToolDto
     public ToolAuthenticationTypeEnum? AuthenticationType { get; set; }
 
     /// <summary>
-    /// Gets or sets the identifier of the credential associated with the tool.
+    /// Gets or sets the unique name of the credential associated with the tool.
     /// </summary>
-    public Guid? CredentialId { get; set; }
+    public string? CredentialName { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the tool is accessible to all users within the tenant.

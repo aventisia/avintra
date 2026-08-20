@@ -50,9 +50,9 @@ export interface ToolDto {
   authenticationType?: ToolAuthenticationTypeEnum;
 
   /**
-   * Identifier of the credential associated with the tool.
+   * Unique name of the credential associated with the tool.
    */
-  credentialId?: string;
+  credentialName?: string;
 
   /**
    * Indicates whether the tool is accessible to all users within the tenant.

@@ -333,7 +333,7 @@ public class NodeProcessor : INodeProcessor
     }
 
     /// <summary>
-    /// Transforms cloudConnectorNode inputs into (Provider, Action, CredentialId, Payload)
+    /// Transforms cloudConnectorNode inputs into (Provider, Action, CredentialName, Payload)
     /// and routes execution to ProcessConnectorRequestNode.
     /// </summary>
     private static (string, List<ReactFlowNodeInput>) PreprocessCloudConnectorNode(

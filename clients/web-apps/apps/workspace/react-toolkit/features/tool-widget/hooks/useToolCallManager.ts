@@ -103,7 +103,7 @@ export function useToolCallManager({
           agentName: output?.agentName ?? "",
           provider: output?.provider ?? "",
           action: output?.action ?? "",
-          credentialId: output?.credentialId ?? "",
+          credentialName: output?.credentialName ?? "",
           payload: formData,
         },
         {

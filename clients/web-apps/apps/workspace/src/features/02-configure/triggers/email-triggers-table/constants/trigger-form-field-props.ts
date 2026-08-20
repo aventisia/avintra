@@ -63,10 +63,10 @@ const resubscribeFrequencyProps: InputFieldProps = {
     "Enter the subscription duration in minutes (1-4320). Microsoft 365 subscriptions expire after a maximum of 3 days.",
 };
 
-const credentialIdProps: InputFieldProps = {
-  name: "credentialId",
-  label: "Credential Id",
-  description: "CredentialId",
+const credentialNameProps: InputFieldProps = {
+  name: "credentialName",
+  label: "Credential Name",
+  description: "CredentialName",
   isRequired: true,
 };
 
@@ -92,7 +92,7 @@ export {
   expiryDateTimeProps,
   resubscribeEnabledProps,
   resubscribeFrequencyProps,
-  credentialIdProps,
+  credentialNameProps,
   providerProps,
   isDisabledProps,
 };

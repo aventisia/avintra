@@ -5,12 +5,12 @@ meta {
 }
 
 get {
-  url: {{WORKSPACE_APIS_BASE_URL}}/llm-provider/models/select-option?providerType=Gemini&credentialId=DUMMY
+  url: {{WORKSPACE_APIS_BASE_URL}}/llm-provider/models/select-option?providerType=Gemini&credentialName=DUMMY
   body: json
   auth: none
 }
 
 params:query {
   providerType: Gemini
-  credentialId: DUMMY
+  credentialName: DUMMY
 }

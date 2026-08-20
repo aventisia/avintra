@@ -3,7 +3,7 @@
 # No config-driven registry is used. Instead:
 #   - Non-BYOK (POST credit-based) requests validate against the curated
 #     `ProviderLiteral` list and the hardcoded `PROVIDER_MODELS` map below.
-#   - BYOK requests (a real credential_id) validate against LiteLLM's dynamic
+#   - BYOK requests (a real credential_name) validate against LiteLLM's dynamic
 #     provider/model lists (`litellm.LlmProviders` / `litellm.models_by_provider`).
 #
 # The provider name is used directly as the LiteLLM prefix when building the
@@ -260,13 +260,13 @@ def _litellm_models(provider: str) -> set[str]:
         return set()
 
 
-def validate_provider(provider: str, is_byok: bool = False, credential_id: str | None = None) -> None:
+def validate_provider(provider: str, is_byok: bool = False, credential_name: str | None = None) -> None:
     """Validate a provider name.
 
     - Non-BYOK: must be in the curated `ProviderLiteral` list.
-    - BYOK (real credential_id): must be a provider LiteLLM knows about.
+    - BYOK (real credential_name): must be a provider LiteLLM knows about.
     """
-    if _has_credential(is_byok, credential_id):
+    if _has_credential(is_byok, credential_name):
         if provider not in _litellm_providers():
             raise HTTPException(
                 status_code=400,
@@ -283,15 +283,15 @@ def validate_provider(provider: str, is_byok: bool = False, credential_id: str |
         )
 
 
-def validate_model(provider: str, model: str, is_byok: bool = False, credential_id: str | None = None) -> None:
+def validate_model(provider: str, model: str, is_byok: bool = False, credential_name: str | None = None) -> None:
     """Validate a model id for a provider.
 
     - Non-BYOK (POST credit-based): must be in the hardcoded `PROVIDER_MODEL_MAP` list.
-    - BYOK (real credential_id): must be in `litellm.models_by_provider[provider]`.
+    - BYOK (real credential_name): must be in `litellm.models_by_provider[provider]`.
       Providers with no model catalog (empty set) are accepted — LiteLLM will
       validate the model at call time, so we don't reject catalog-less providers.
     """
-    if _has_credential(is_byok, credential_id):
+    if _has_credential(is_byok, credential_name):
         available = _litellm_models(provider)
         # Catalog-less providers (empty model set) are valid; don't reject them.
         if not available:
