@@ -1,4 +1,3 @@
-# Assist — Chats
 
 The **Chats** page under **Assist** keeps a record of conversations you have had with agents. Reopen past conversations to continue them or review what was discussed.
 

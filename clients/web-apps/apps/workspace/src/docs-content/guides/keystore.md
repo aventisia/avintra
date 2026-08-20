@@ -1,4 +1,3 @@
-# Key Store
 
 The **Key Store** page lets you manage API keys and non-secret configuration values that your agents reference. Keys stored here are used by nodes and tools to authenticate against external services.
 

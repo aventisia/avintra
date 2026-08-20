@@ -1,4 +1,3 @@
-# Credit Plans
 
 The **Credit Plans** page (under Super Admin) lets you manage credit plans and pricing. Define how credits are sold and consumed.
 

@@ -1,4 +1,3 @@
-# Conversations
 
 The **Conversations** page lets you review the interactions your agents have with end users. Each conversation is a chat session between a user and an agent.
 

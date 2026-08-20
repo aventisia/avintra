@@ -1,4 +1,3 @@
-# Queues
 
 The **Queues** page lets you create and manage queues. A **queue** holds work items that wait to be processed by an agent or machine. Queues decouple the producers of work from the consumers, letting you balance load and process items reliably.
 

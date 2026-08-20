@@ -1,4 +1,3 @@
-# Assist — Agents
 
 The **Agents** page under **Assist** lists the agents you can interact with as an end user. Open one to start a conversation or run it directly.
 

@@ -1,4 +1,3 @@
-# Subscription Plans
 
 The **Subscription Plans** page (under Super Admin) lets you define the plans available to tenants. Manage the pricing and features of each plan.
 

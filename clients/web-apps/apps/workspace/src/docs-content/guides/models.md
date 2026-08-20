@@ -1,4 +1,3 @@
-# Models
 
 The **Models** page (under Tenant Admin) lets you configure the model providers used by your agents. Choose which AI models are available and how they are accessed.
 

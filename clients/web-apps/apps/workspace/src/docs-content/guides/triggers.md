@@ -1,4 +1,3 @@
-# Triggers
 
 The **Triggers** section lets you create and manage triggers that start an agent automatically when an event occurs. Avintra supports four trigger types, each with its own page:
 
