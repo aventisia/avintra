@@ -7,16 +7,77 @@ import { useShallow } from "zustand/react/shallow";
 import {
   DCPFieldSchemaType,
   generateZodSchema,
-  getDefaultValuesForForm,
   useDynamicConfigPanelStore,
 } from "@/features/dynamic-config-panel";
 import { getFlowToLoad } from "@/features/react-flow/apis/react-flow-apis";
+import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 
 import { useGetSelectedBlockData } from "./useGetSelectedBlockData";
+
+const OUTPUT_KEY_PREFIX = "__output__";
+
+/**
+ * Build form configuration that avoids input/output key collisions by prefixing
+ * colliding output field names. Returns the transformed config and a map of
+ * formKey -> original output key for de-mapping on submit.
+ */
+function buildFormConfig(fields: DCPFieldSchemaType[]): {
+  formConfig: DCPFieldSchemaType[];
+  outputKeyMap: Record<string, string>;
+} {
+  const inputNames = new Set(fields.filter((f) => f.direction === "Input").map((f) => f.name));
+
+  const outputKeyMap: Record<string, string> = {};
+
+  const formConfig = fields.map((field) => {
+    if (field.direction === "Output" && inputNames.has(field.name)) {
+      const formKey = `${OUTPUT_KEY_PREFIX}${field.name}`;
+      outputKeyMap[formKey] = field.name;
+      return { ...field, name: formKey };
+    }
+    return field;
+  });
+
+  return { formConfig, outputKeyMap };
+}
+
+/**
+ * Generate default form values from the transformed config, inputs, and outputs.
+ * This mirrors getDefaultValuesForForm but respects the namespaced output keys.
+ */
+function getDefaultValuesForCallBlock(
+  formConfig: DCPFieldSchemaType[],
+  inputs: NodeInputType[],
+  outputs: NodeOutputType[],
+): Record<string, unknown> {
+  const inputMap = Object.fromEntries(inputs.map((i) => [i.key, i.value]));
+  const outputMap = Object.fromEntries(outputs.map((o) => [o.key, o.value]));
+
+  const defaultValues: Record<string, unknown> = {};
+
+  for (const field of formConfig) {
+    const key = field.name;
+    const originalKey =
+      field.direction === "Output" && key.startsWith(OUTPUT_KEY_PREFIX)
+        ? key.slice(OUTPUT_KEY_PREFIX.length)
+        : key;
+
+    if (field.direction === "Input") {
+      defaultValues[key] = inputMap[key] !== undefined ? inputMap[key] : field.defaultValue;
+    } else if (field.direction === "Output") {
+      defaultValues[key] =
+        outputMap[originalKey] !== undefined ? outputMap[originalKey] : field.defaultValue;
+    }
+  }
+
+  return defaultValues;
+}
 
 export const useCallBlockForm = () => {
   // Local state for node config and zod schema
   const [nodeConfig, setNodeConfig] = useState<DCPFieldSchemaType[]>([]);
+
+  const [outputKeyMap, setOutputKeyMap] = useState<Record<string, string>>({});
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -64,6 +125,7 @@ export const useCallBlockForm = () => {
   useEffect(() => {
     if (!selectedBlockId || !selectedBlockFlowId) {
       setNodeConfig([]);
+      setOutputKeyMap({});
       setNodeConfigZodSchema(z.object({}));
       setIsLoading(false);
       setIsFormReady(true);
@@ -81,18 +143,21 @@ export const useCallBlockForm = () => {
 
         if (config?.data?.inputOutputObject) {
           const IOObj = JSON.parse(config?.data.inputOutputObject || "{}");
+          const { formConfig, outputKeyMap: map } = buildFormConfig(IOObj);
 
-          setNodeConfig(IOObj);
+          setNodeConfig(formConfig);
+          setOutputKeyMap(map);
           setNodeConfigZodSchema(
             z.object({
               selectBlock: z.any().nullable().optional(),
-              ...generateZodSchema(IOObj).shape,
+              ...generateZodSchema(formConfig).shape,
             }),
           );
           return;
         }
 
         setNodeConfig([]);
+        setOutputKeyMap({});
         setNodeConfigZodSchema(
           z.object({
             selectBlock: z.any().nullable().optional(),
@@ -120,12 +185,12 @@ export const useCallBlockForm = () => {
       const currentSelectedBlock = form.getValues("selectBlock") ?? null;
 
       form.reset({
-        ...getDefaultValuesForForm(nodeConfig, inputs, outputs),
+        ...getDefaultValuesForCallBlock(nodeConfig, inputs, outputs),
         selectBlock: currentSelectedBlock,
       });
       setIsFormReady(true); // Set form ready to true after resetting the form
     }
-  }, [nodeConfig]);
+  }, [nodeConfig, nodeConfigZodSchema, inputs, outputs]);
 
   // Destructor form values and methods
   const {
@@ -142,6 +207,7 @@ export const useCallBlockForm = () => {
     setShowDialog,
     inputKeys,
     outputKeys,
+    outputKeyMap,
     isFormReady,
     nodeId,
     nodeUniqueName,

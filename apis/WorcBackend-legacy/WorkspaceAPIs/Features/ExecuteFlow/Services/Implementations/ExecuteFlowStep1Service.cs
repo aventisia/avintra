@@ -48,8 +48,10 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         try
         {
             // Get the flow version
+            // IMPORTANT: Must use .IgnoreQueryFilters() to bypass TenantId/SpaceId global filters during execution
             var flowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w => w.Id == requestDto.FlowVersionId)
+                .IgnoreQueryFilters()
                 .Include(i => i.Flow)
                 .Include(i => i.FlowVersionHistories)
                 .AsNoTracking()
@@ -211,8 +213,10 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
         // These versions do not maintain their own access rules and inherit permissions entirely from the parent Flow.
         if (!flowVersion.IsPublished)
         {
+            // IMPORTANT: Must use .IgnoreQueryFilters() to bypass TenantId/SpaceId global filters during execution
             var flow = await _unitOfWork.FlowRepo
                 .GetByConditionAsync(w => w.Id == flowVersion.FlowId)
+                .IgnoreQueryFilters()
                 .AsNoTracking()
                 .SingleOrDefaultAsync();
 

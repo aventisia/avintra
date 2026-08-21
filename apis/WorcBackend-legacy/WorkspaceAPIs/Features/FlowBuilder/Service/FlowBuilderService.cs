@@ -50,8 +50,10 @@ public class FlowBuilderService : IFlowBuilderService
             // TODO: Implement access control logic to ensure the user has permission to access the specified subFlowIds.
 
             // Fetch the parent flow version details based on the provided parentFlowVersionId
+            // IMPORTANT: Must use .IgnoreQueryFilters() to bypass TenantId/SpaceId global filters during execution
             var parentFlowVersion = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w => w.Id == parentFlowVersionId)
+                .IgnoreQueryFilters()
                 .Include(i => i.Flow)
                 .SingleOrDefaultAsync();
 
@@ -119,8 +121,10 @@ public class FlowBuilderService : IFlowBuilderService
             //     .ToListAsync();
 
             // Fetch the reactFlowObject for the specified subFlowIds (TODO: without checking the user access for now)
+            // IMPORTANT: Must use .IgnoreQueryFilters() to bypass TenantId/SpaceId global filters during execution
             var subFlows = await _unitOfWork.FlowVersionRepo
                 .GetByConditionAsync(w => subFlowIds.Contains(w.Id))
+                .IgnoreQueryFilters()
                 .Select(s => new FetchSubFlowDto
                 {
                     FlowVersionId = s.Id,
