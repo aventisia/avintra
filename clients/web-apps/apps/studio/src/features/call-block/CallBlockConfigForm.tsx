@@ -40,6 +40,7 @@ const CallBlockConfigForm = () => {
     nodeLabel,
     nodeId,
     nodeUniqueName,
+    outputKeyMap,
   } = useCallBlockForm();
 
   // Watch all form values
@@ -68,8 +69,19 @@ const CallBlockConfigForm = () => {
     const inputKeys = renderedInputFields.map((field) => field.name);
     const outputKeys = renderedOutputFields.map((field) => field.name);
 
-    // Extract node inputs and outputs from formData
-    const { inputs, outputs } = refineSubmittedIO(nodeUniqueName, formData, inputKeys, outputKeys);
+    // Extract node inputs and outputs from formData using namespaced output keys
+    const { inputs, outputs: prefixedOutputs } = refineSubmittedIO(
+      nodeUniqueName,
+      formData,
+      inputKeys,
+      outputKeys,
+    );
+
+    // De-map prefixed output keys back to the original output names
+    const outputs = prefixedOutputs.map((output) => ({
+      ...output,
+      key: outputKeyMap[output.key] ?? output.key,
+    }));
 
     // Update node data inputs outputs and selectBlock
     if (nodeId) {

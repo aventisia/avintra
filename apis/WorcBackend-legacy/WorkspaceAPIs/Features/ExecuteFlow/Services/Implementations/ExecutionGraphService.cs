@@ -1,4 +1,5 @@
 using ExecutorLibrary.Helpers;
+using System.Text.Json;
 
 namespace WorkspaceAPIs.Services;
 
@@ -98,15 +99,11 @@ public class ExecutionGraphService : IExecutionGraphService
         {
             if (string.Equals(node.Type, "callAgentNode", StringComparison.OrdinalIgnoreCase))
             {
-                var refStr = node.Data?.SelectedAgent?.ToString();
-                if (!string.IsNullOrWhiteSpace(refStr))
-                    TryExtractFlowVersionId(refStr, subFlowIds);
+                TryExtractFlowVersionId(node.Data?.SelectedAgent, subFlowIds);
             }
             else if (string.Equals(node.Type, "blockNode", StringComparison.OrdinalIgnoreCase))
             {
-                var refStr = node.Data?.SelectedBlock?.ToString();
-                if (!string.IsNullOrWhiteSpace(refStr))
-                    TryExtractFlowVersionId(refStr, subFlowIds);
+                TryExtractFlowVersionId(node.Data?.SelectedBlock, subFlowIds);
             }
         }
 
@@ -136,10 +133,25 @@ public class ExecutionGraphService : IExecutionGraphService
         return result;
     }
 
-    private static void TryExtractFlowVersionId(string reference, HashSet<Guid> ids)
+    private static void TryExtractFlowVersionId(JsonElement? reference, HashSet<Guid> ids)
     {
-        var segments = reference.Split(',');
-        if (segments.Length >= 1 && Guid.TryParse(segments[0].Trim(), out var flowVersionId))
+        if (reference is null)
+            return;
+
+        string? flowVersionIdStr = null;
+
+        if (reference.Value.ValueKind == JsonValueKind.Object &&
+            reference.Value.TryGetProperty("id", out var idProperty))
+        {
+            flowVersionIdStr = idProperty.GetString();
+        }
+        else if (reference.Value.ValueKind == JsonValueKind.String)
+        {
+            flowVersionIdStr = reference.Value.GetString();
+        }
+
+        if (!string.IsNullOrWhiteSpace(flowVersionIdStr) &&
+            Guid.TryParse(flowVersionIdStr.Trim(), out var flowVersionId))
         {
             ids.Add(flowVersionId);
         }

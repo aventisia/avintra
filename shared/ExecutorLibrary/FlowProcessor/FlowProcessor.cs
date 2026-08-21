@@ -123,7 +123,7 @@ public class FlowProcessor
 
                 onNodeProgress?.Invoke(node.Id);
 
-                var (edgeId, nextNodeId) = await ProcessNodeAndGetNextEdgeAsync(
+                var (edgeId, nextNodeId, enteredSubFlow) = await ProcessNodeAndGetNextEdgeAsync(
                     node,
                     flow,
                     flowExecutionContext,
@@ -148,12 +148,45 @@ public class FlowProcessor
                         conditionalStates = frame.ConditionalStates;
                         loopStates = frame.LoopStates;
                         currentNodeId = frame.ReturnNodeId;
+
+                        // Mark the parent sub-flow caller node (block/callAgent) as completed
+                        // so the Studio canvas flips its spinner to a success indicator once
+                        // the nested sub-flow actually finishes.
+                        if (!string.IsNullOrWhiteSpace(frame.CallerNodeId))
+                        {
+                            var callerNode = flow.Nodes.FirstOrDefault(n => n.Id == frame.CallerNodeId);
+                            if (callerNode is not null)
+                            {
+                                var callerLog = new NodeExecutionLog
+                                {
+                                    NodeId = callerNode.Id,
+                                    NodeName = string.IsNullOrWhiteSpace(callerNode.Data?.Label) ? callerNode.Type : callerNode.Data.Label,
+                                    NodeUniqueName = callerNode.Data?.Name ?? callerNode.Type,
+                                    IsSuccess = true,
+                                    Duration = 0,
+                                    Inputs = callerNode.Data?.Inputs?.ToDictionary(i => i.Key, i => i.Value?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                                        ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+                                    Outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                                };
+                                logs.EnqueueBounded(callerLog, _maxNodeExecutionLogs);
+                                onNodeCompleted?.Invoke(callerLog);
+                            }
+                        }
+
+                        // Highlight the visible edge from the sub-flow node to the next
+                        // master-flow node now that execution is actually leaving the sub-flow.
+                        if (!string.IsNullOrWhiteSpace(frame.ReturnEdgeId) && !string.IsNullOrWhiteSpace(currentNodeId))
+                        {
+                            onEdgeTraversed?.Invoke(frame.ReturnEdgeId, currentNodeId);
+                        }
+
                         continue;
                     }
 
                     return CreateCompletedResult(startTime, logs, flowExecutionContext);
                 }
 
+                flow = enteredSubFlow ?? flow;
                 currentNodeId = nextNodeId;
             }
 
@@ -169,7 +202,7 @@ public class FlowProcessor
         }
     }
 
-    private async Task<(string? EdgeId, string? NextNodeId)> ProcessNodeAndGetNextEdgeAsync(
+    private async Task<(string? EdgeId, string? NextNodeId, ReactFlowDataModel? EnteredSubFlow)> ProcessNodeAndGetNextEdgeAsync(
         ReactFlowNodeModel node,
         ReactFlowDataModel flow,
         FlowExecutionContext flowExecutionContext,
@@ -183,7 +216,7 @@ public class FlowProcessor
         if (node.Data?.IsDisabled == true)
         {
             var disabledEdge = FindNextEdge(flow, node.Id);
-            return (disabledEdge?.Id, disabledEdge?.Target);
+            return (disabledEdge?.Id, disabledEdge?.Target, null);
         }
 
         switch (node.Type)
@@ -194,49 +227,49 @@ public class FlowProcessor
             case "branchStartNode":
                 var supportEdge = FindNextEdge(flow, node.Id);
                 CompleteSupportNode(node, logs, onNodeCompleted);
-                return (supportEdge?.Id, supportEdge?.Target);
+                return (supportEdge?.Id, supportEdge?.Target, null);
 
             case "branchNode1":
                 var (branchNext, branchLog) = await ProcessBranchNode1Async(node, flow, flowExecutionContext, cancellationToken);
                 var branchEdge = FindNextEdge(flow, node.Id, branchNext);
                 CompleteSupportNode(node, logs, onNodeCompleted, branchLog);
-                return (branchEdge?.Id, branchNext);
+                return (branchEdge?.Id, branchNext, null);
 
             case "activityNode":
             case "aiNode":
             case "cloudConnectorNode":
                 var execNext = await ProcessExecutableNodeAsync(node, flow, flowExecutionContext, logs, cancellationToken, onNodeCompleted);
                 var execEdge = string.IsNullOrWhiteSpace(execNext) ? null : FindNextEdge(flow, node.Id, execNext);
-                return (execEdge?.Id, execNext);
+                return (execEdge?.Id, execNext, null);
 
             case "flowEndNode":
                 // End node is visual/terminator only: signal completion without logging
                 // a per-node entry so the last meaningful executed node remains visible.
-                return (null, null);
+                return (null, null, null);
 
             case "conditionalNode":
                 var (conditionalNext, routerLog) = ProcessConditionalNode(node, flow, flowExecutionContext, conditionalStates);
                 var conditionalEdge = string.IsNullOrWhiteSpace(conditionalNext) ? null : FindNextEdge(flow, node.Id, conditionalNext);
                 CompleteSupportNode(node, logs, onNodeCompleted, routerLog);
-                return (conditionalEdge?.Id, conditionalNext);
+                return (conditionalEdge?.Id, conditionalNext, null);
 
             case "branchEndNode":
                 var branchEndNext = ProcessBranchEndNode(node, flow, flowExecutionContext, conditionalStates, loopStates);
                 var branchEndEdge = string.IsNullOrWhiteSpace(branchEndNext) ? null : FindNextEdge(flow, node.Id, branchEndNext);
                 CompleteSupportNode(node, logs, onNodeCompleted);
-                return (branchEndEdge?.Id, branchEndNext);
+                return (branchEndEdge?.Id, branchEndNext, null);
 
             case "forLoopNode":
                 var loopNext = ProcessForLoopNode(node, flow, flowExecutionContext, loopStates);
                 var loopEdge = string.IsNullOrWhiteSpace(loopNext) ? null : FindNextEdge(flow, node.Id, loopNext);
                 CompleteSupportNode(node, logs, onNodeCompleted);
-                return (loopEdge?.Id, loopNext);
+                return (loopEdge?.Id, loopNext, null);
 
             case "callAgentNode":
             case "blockNode":
-                var subFlowNext = await ProcessSubFlowNodeAsync(node, flow, flowExecutionContext, logs, conditionalStates, loopStates, executionStack, cancellationToken);
+                var (subFlow, subFlowNext) = await ProcessSubFlowNodeAsync(node, flow, flowExecutionContext, logs, conditionalStates, loopStates, executionStack, cancellationToken);
                 var subFlowEdge = string.IsNullOrWhiteSpace(subFlowNext) ? null : FindNextEdge(flow, node.Id, subFlowNext);
-                return (subFlowEdge?.Id, subFlowNext);
+                return (subFlowEdge?.Id, subFlowNext, subFlow);
 
             default:
                 throw new InvalidOperationException($"Unknown node type: {node.Type}");
@@ -297,7 +330,7 @@ public class FlowProcessor
         onNodeCompleted?.Invoke(log);
     }
 
-    private async Task<string?> ProcessSubFlowNodeAsync(
+    private async Task<(ReactFlowDataModel? SubFlow, string? NextNodeId)> ProcessSubFlowNodeAsync(
         ReactFlowNodeModel node,
         ReactFlowDataModel flow,
         FlowExecutionContext flowExecutionContext,
@@ -388,16 +421,21 @@ public class FlowProcessor
             flowExecutionContext.Set(callerInput.Key, resolvedValue);
         }
 
+        var returnNodeId = FindNextEdgeTarget(flow, node.Id);
+        var returnEdge = returnNodeId is null ? null : FindNextEdge(flow, node.Id, returnNodeId);
+
         var frame = new FlowExecutionFrame
         {
             Flow = flow,
-            ReturnNodeId = FindNextEdgeTarget(flow, node.Id) ?? string.Empty,
+            ReturnNodeId = returnNodeId ?? string.Empty,
+            ReturnEdgeId = returnEdge?.Id,
+            CallerNodeId = node.Id,
             ConditionalStates = conditionalStates,
             LoopStates = loopStates
         };
         executionStack.Push(frame);
 
-        return subFlowTrigger.Id;
+        return (subFlow, subFlowTrigger.Id);
     }
 
     private static bool TryParseFlowVersionId(string? raw, out Guid flowVersionId)

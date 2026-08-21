@@ -16,8 +16,10 @@ export function getDefaultValuesForForm(
     const key = field.name;
 
     if (field.direction === "Input") {
+      // Prefer input value from nodeData, fallback to field defaultValue
       defaultValues[key] = inputMap[key] ?? field.defaultValue;
     } else if (field.direction === "Output") {
+      // Prefer output value from nodeData, fallback to field defaultValue
       defaultValues[key] = outputMap[key] ?? field.defaultValue;
     }
   }

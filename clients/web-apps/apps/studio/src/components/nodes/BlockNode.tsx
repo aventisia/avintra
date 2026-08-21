@@ -3,13 +3,21 @@ import { cn } from "@avplatform/ui/lib";
 import { toast } from "@avplatform/ui/sonner";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { Node, NodeProps, NodeToolbar, Position, useReactFlow } from "@xyflow/react";
-import { ExpandIcon, ExternalLinkIcon, ShrinkIcon } from "lucide-react";
+import {
+  CheckCircle2Icon,
+  CircleXIcon,
+  ExpandIcon,
+  ExternalLinkIcon,
+  Loader2,
+  ShrinkIcon,
+} from "lucide-react";
 import { memo, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
@@ -47,6 +55,10 @@ export const BlockNode = memo(
 
     const isExecutionLog = useIsExecutionLogsRoute();
     const isAgentHistory = useIsVersionHistoryRoute();
+
+    const liveStatus = useLiveExecutionStore((state) =>
+      data?.isDisabled ? undefined : state.liveExecutionMap[id],
+    );
 
     const handleOpenSubFlow = () => {
       if (isSavePending) {
@@ -95,12 +107,22 @@ export const BlockNode = memo(
       }
     }, [data.type, data.label, data.selectedBlock, id, updateNodeData]);
 
+    const statusBorderClass =
+      liveStatus === "running"
+        ? "border-blue-500"
+        : liveStatus === "success"
+          ? "border-green-500"
+          : liveStatus === "failed"
+            ? "border-red-500"
+            : "border-[#1E1B4B]";
+
     return (
-      <OpenNodeLog nodeId={id} isDisabled={data?.isDisabled}>
+      <OpenNodeLog nodeId={id} isDisabled={data?.isDisabled} showIcon={false} showBorder={false}>
         <div
           className={cn(
-            "custom-drag-handle relative flex h-16 w-16 rounded-full border-2 border-[#1E1B4B] bg-[#1E1B4B] hover:ring hover:ring-ring",
-            selected && "border-primary ring ring-ring",
+            "custom-drag-handle relative flex h-16 w-16 rounded-full border-2 bg-[#1E1B4B] hover:ring hover:ring-ring",
+            statusBorderClass,
+            selected && "ring ring-ring",
             data?.isDisabled && "opacity-50",
             data?.isCut && "border-red-400 opacity-60",
             isExecutionLog && "border-0 ring-0",
@@ -118,6 +140,22 @@ export const BlockNode = memo(
               <OutputHandle position={sourcePosition} />
             </div>
           </OpenNodeConfig>
+
+          {liveStatus === "running" && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">
+              <Loader2 className="size-4 animate-spin text-white" />
+            </div>
+          )}
+          {liveStatus === "success" && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">
+              <CheckCircle2Icon className="size-4 text-green-500" />
+            </div>
+          )}
+          {liveStatus === "failed" && (
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">
+              <CircleXIcon className="size-4 text-red-500" />
+            </div>
+          )}
 
           <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>
             {data?.selectedBlock && (
