@@ -96,10 +96,6 @@ public class QueueTransactionEventService : IQueueTransactionEventService
             // Ensure the queue transaction event exists.
             if (queueTransactionEvent == null)
             {
-                _logger.LogInformation(
-                    "Queue transaction event with ID {QueueTransactionEventId} was not found.",
-                    queueTransactionEventId);
-
                 serviceResponse.Message = "Queue transaction event not found.";
                 return serviceResponse;
             }
@@ -386,8 +382,6 @@ public class QueueTransactionEventService : IQueueTransactionEventService
             // Ensure there are queue transaction events to delete.
             if (!queueTransactionEvents.Any())
             {
-                _logger.LogInformation("No queue transaction events were found for deletion.");
-
                 serviceResponse.Message = "No queue transaction events were found for the specified identifiers.";
                 return serviceResponse;
             }

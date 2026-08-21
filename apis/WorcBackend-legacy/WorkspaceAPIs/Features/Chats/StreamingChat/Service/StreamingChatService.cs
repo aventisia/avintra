@@ -165,12 +165,6 @@ public class StreamingChatService : IStreamingChatService
         StreamingChatRequestDto request,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation(
-            "[StreamingChat] Resolving Chat Agent config. FlowVersionId={Id}, IsTempChat={IsTempChat}, UserId={UserId}",
-            request.FlowVersionId,
-            request.IsTempChat,
-            _userId);
-
         // Load the flow version by ID and type. The published/archived gate is
         // applied after the DB query so it can vary between temporary (Studio
         // test panel, draft allowed) and persisted (Assist, published required)
@@ -232,11 +226,6 @@ public class StreamingChatService : IStreamingChatService
             return (null, null);
         }
 
-        _logger.LogInformation(
-            "[StreamingChat] Flow version resolved. FlowVersionId={Id}, FlowId={FlowId}",
-            request.FlowVersionId,
-            flowVersion.FlowId);
-
         // Parse the flow graph and locate the Chat AI node (CreateConversationAIAgent -> aiNode).
         var flow = ReactFlowHelper.Parse(flowVersion.ReactFlowObject);
         var chatNode = flow?.Nodes?.FirstOrDefault(n =>
@@ -272,11 +261,6 @@ public class StreamingChatService : IStreamingChatService
                 ? JsonNode.Parse(je.GetRawText())
                 : JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(input.Value));
         }
-
-        _logger.LogInformation(
-            "[StreamingChat] Chat AI node config resolved with {InputCount} inputs. FlowVersionId={Id}",
-            configObj.Count,
-            request.FlowVersionId);
 
         return (flowVersion, configObj);
     }

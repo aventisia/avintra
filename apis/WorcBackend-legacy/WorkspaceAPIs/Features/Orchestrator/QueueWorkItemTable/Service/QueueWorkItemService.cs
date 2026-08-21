@@ -488,7 +488,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Check if the workitem was found
             if (queueWorkitem == null)
             {
-                _logger.LogInformation("Queue workitem with ID {QueueWorkitemId} not found.", queueWorkitemId);
                 serviceResponse.StatusCode = 404;
                 serviceResponse.Message = "Queue workitem not found.";
                 return serviceResponse;
@@ -601,13 +600,11 @@ public class QueueWorkItemService : IQueueWorkItemService
             if (parsedToken is JArray array)
             {
                 dataArray = array;
-                _logger.LogInformation("Found {Count} workitem(s) in the payload array.", dataArray.Count);
             }
             // If JSON is a single object, wrap it into an array for unified processing
             else if (parsedToken is JObject obj)
             {
                 dataArray = new JArray(obj);
-                _logger.LogInformation("Found 1 workitem in the payload.");
             }
             else
             {
@@ -709,8 +706,6 @@ public class QueueWorkItemService : IQueueWorkItemService
                     newWorkItem.Description = queueWorkItemDto.Description;
 
                     newWorkItems.Add(newWorkItem);
-
-                    _logger.LogInformation("Validated workitem prepared for insertion.");
                 }
             }
 
@@ -729,7 +724,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             // Insert if no validation errors
             if (newWorkItems.Any())
             {
-                _logger.LogInformation("Inserting {Count} workitem(s) into the database...", newWorkItems.Count);
                 await _unitOfWork.QueueTransactionRepo.InsertAsync(newWorkItems);
 
                 if (!await _unitOfWork.SaveAsync())
@@ -1303,7 +1297,6 @@ public class QueueWorkItemService : IQueueWorkItemService
             // If no matching workitems are found, return early
             if (queueWorkitems.Count == 0)
             {
-                _logger.LogInformation("No matching queue workitems found for deletion.");
                 serviceResponse.Message = "No queue workitems found for the given IDs.";
                 return serviceResponse;
             }

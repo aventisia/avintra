@@ -138,7 +138,6 @@ public class TimeTriggerService(
             if (timeTrigger == null)
             {
                 serviceResponse.Message = "Time trigger does not exist";
-                _logger.LogInformation("There is no time trigger with Id {Id}", timeTriggerId);
                 return serviceResponse;
             }
 
@@ -216,7 +215,6 @@ public class TimeTriggerService(
             if (timeTrigger == null)
             {
                 serviceResponse.Message = "Time trigger does not exist";
-                _logger.LogInformation("There is no time trigger with name {Name}", triggerName);
                 return serviceResponse;
             }
 
@@ -333,7 +331,6 @@ public class TimeTriggerService(
 
             if (existingTrigger != null)
             {
-                _logger.LogInformation("Time trigger creation failed. Name {timeTriggerName} already exists.", timeTriggerDto.Name);
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Time trigger with the same name already exists.";
                 return serviceResponse; // Return early if duplicate found
@@ -436,7 +433,6 @@ public class TimeTriggerService(
                 // Attempt to save changes to the database.
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Failed to save changes while inserting the new trigger.");
                     return serviceResponse;
                 }
             }
@@ -455,7 +451,6 @@ public class TimeTriggerService(
             serviceResponse.Data = newTimeTrigger.Adapt<TimeTriggerDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Time trigger created successfully";
-            _logger.LogInformation("Time trigger created successfully with id {Id} and agents assigned", newTimeTrigger.Id);
         }
         catch (Exception ex)
         {
@@ -498,7 +493,6 @@ public class TimeTriggerService(
             // Validate existence
             if (timeTrigger == null)
             {
-                _logger.LogInformation("Update failed. time trigger with ID {timeTriggerId} does not exist.", timeTriggerDto.Id);
                 serviceResponse.Message = "Time trigger does not exist";
                 return serviceResponse; // Early return
             }
@@ -533,7 +527,6 @@ public class TimeTriggerService(
 
             if (duplicateTrigger != null)
             {
-                _logger.LogInformation("Update failed. time trigger with name {timeTriggerName} already exists.", timeTriggerDto.Name);
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Time trigger with the same name already exists.";
                 return serviceResponse;
@@ -709,8 +702,6 @@ public class TimeTriggerService(
 
                 if (agentsToRemove.Any())
                 {
-                    _logger.LogInformation("Removing agents with IDs: {AgentIds}", string.Join(", ", agentsToRemove));
-
                     // Remove the corresponding time trigger flow versions from the database
                     var agentsToRemoveFlowVersions = timeTrigger.TriggerFlowVersions
                         .Where(w => agentsToRemove.Contains(w.FlowVersionId))
@@ -721,7 +712,6 @@ public class TimeTriggerService(
                     // Attempt to save changes to the database
                     if (!await _unitOfWork.SaveAsync())
                     {
-                        _logger.LogInformation("Failed to delete time trigger flow versions.");
                         return serviceResponse;
                     }
                 }
@@ -741,8 +731,6 @@ public class TimeTriggerService(
 
                     if (agents.Count > 0)
                     {
-                        _logger.LogInformation("Adding new agents with IDs: {AgentIds}", string.Join(", ", newAgentIds));
-
                         // Create new flow versions for these agents
                         var newTriggerFlowVersions = agents.Select(s => new TriggerFlowVersion()
                         {
@@ -758,7 +746,6 @@ public class TimeTriggerService(
                         // Attempt to save changes to the database
                         if (!await _unitOfWork.SaveAsync())
                         {
-                            _logger.LogInformation("Failed to add new trigger flow versions.");
                             return serviceResponse;
                         }
                     }
@@ -810,7 +797,6 @@ public class TimeTriggerService(
             // Trigger does not exist
             if (trigger == null)
             {
-                _logger.LogInformation($"Time Trigger does not exist");
                 serviceResponse.Message = "Time Trigger does not exist";
                 return serviceResponse;
             }
@@ -859,7 +845,6 @@ public class TimeTriggerService(
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting time trigger");
                 return serviceResponse;
             }
 
@@ -867,8 +852,6 @@ public class TimeTriggerService(
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Time Trigger deleted successfully";
-
-            _logger.LogInformation("Time Trigger deleted successfully of Id {Id}", timeTriggerId);
 
         }
         catch (Exception ex)
@@ -900,7 +883,6 @@ public class TimeTriggerService(
             // Triggers do not exist
             if (timeTriggers.Count == 0)
             {
-                _logger.LogInformation($"Triggers do not exist");
                 serviceResponse.Message = "Triggers do not exist";
                 return serviceResponse;
             }
@@ -963,7 +945,6 @@ public class TimeTriggerService(
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting triggers");
                 return serviceResponse;
             }
 

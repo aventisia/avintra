@@ -169,8 +169,6 @@ public class WebhookController : BaseApiController
             }
         });
 
-        _logger.LogInformation("Webhook trigger {TriggerId} fired. Job {JobId} created.", triggerId, job.Id);
-
         return Ok(new WebhookFireResponseDto
         {
             JobId = job.Id,

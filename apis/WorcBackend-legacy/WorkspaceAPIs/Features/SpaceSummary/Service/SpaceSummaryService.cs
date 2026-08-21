@@ -32,8 +32,6 @@ public class SpaceSummaryService : ISpaceSummaryService
 
         try
         {
-            _logger.LogInformation("Starting space summary aggregation for tenant {TenantId}.", _tenantId);
-
             // Count published agents per space. Only published, non-archived, non-block agents count.
             var publishedAgentData = await _workspaceInternalDbContext.FlowVersions
                 .Where(w =>
@@ -105,8 +103,6 @@ public class SpaceSummaryService : ISpaceSummaryService
             serviceResponse.Data = summaries;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Space summaries retrieved successfully.";
-
-            _logger.LogInformation("Retrieved {Count} space summary record(s) for tenant {TenantId}.", summaries.Count, _tenantId);
         }
         catch (Exception ex)
         {

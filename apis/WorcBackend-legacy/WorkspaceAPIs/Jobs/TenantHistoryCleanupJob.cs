@@ -20,9 +20,6 @@ namespace WorkspaceAPIs.Jobs
         {
             var currentDateTime = DateTimeOffset.UtcNow;
 
-            // Log the start of the job with a timestamp
-            _logger.LogInformation($"Tenant history retention job started at {currentDateTime:O}.");
-
             try
             {
                 // Call external API to get tenant subscription information
@@ -64,36 +61,23 @@ namespace WorkspaceAPIs.Jobs
                     return; // Exit early if the data is not valid or missing
                 }
 
-                _logger.LogInformation($"Found {tenantSubscriptions.Data.Count} active tenant subscriptions to process for retention cleanup.");
-
                 // Process each tenant's subscription and cleanup their history records
                 foreach (var tenantSubscription in tenantSubscriptions.Data)
                 {
                     var retentionDate = currentDateTime.AddDays(-tenantSubscription.HistoryRetentionDays).Date;
-
-                    // Log tenant-specific retention policy details
-                    _logger.LogInformation($"Processing Tenant ID {tenantSubscription.TenantId}: " +
-                                           $"Retention Period = {tenantSubscription.HistoryRetentionDays} days, " +
-                                           $"Retention Date = {retentionDate:O}.");
 
                     // Retrieve tenant history records older than the retention date
                     var jobs = await _workspaceInternalDbContext.Jobs
                         .Where(w => w.TenantId == tenantSubscription.TenantId && w.CreatedOn.Date <= retentionDate)
                         .ToListAsync();
 
-                    // If old records are found, log and delete them
+                    // If old records are found, delete them
                     if (jobs.Any())
                     {
-                        _logger.LogInformation($"Found {jobs.Count()} history records for Tenant ID {tenantSubscription.TenantId} older than {retentionDate:O}.");
-
-                        // Attempt to delete the outdated records
                         _workspaceInternalDbContext.Jobs.RemoveRange(jobs);
                         await _workspaceInternalDbContext.SaveChangesAsync();
                     }
                 }
-
-                // Job completed successfully
-                _logger.LogInformation($"Tenant history retention job completed successfully at {currentDateTime:O}.");
             }
             catch (Exception ex)
             {

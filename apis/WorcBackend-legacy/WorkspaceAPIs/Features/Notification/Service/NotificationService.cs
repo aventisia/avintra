@@ -685,11 +685,7 @@ public class NotificationService : INotificationService
             var content = notification.Message;
 
             var sent = await _emailService.SendEmail(toEmailAddresses, subject, content);
-            if (sent)
-            {
-                _logger.LogInformation("Notification email sent for {NotificationId} to {Recipients}.", notification.Id, toEmailAddresses);
-            }
-            else
+            if (!sent)
             {
                 _logger.LogError("Failed to send notification email for {NotificationId} to {Recipients}.", notification.Id, toEmailAddresses);
             }

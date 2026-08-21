@@ -62,7 +62,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // support ticket doesn't exist
             if (supportTicket == null)
             {
-                _logger.LogInformation($"support ticket not found for Id {id}");
                 serviceResponse.Message = "support ticket does not exist";
                 return serviceResponse;
             }
@@ -71,7 +70,8 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             if (supportTicket.SupportTicketRemarks != null)
             {
                 supportTicket.SupportTicketRemarks = supportTicket.SupportTicketRemarks.OrderBy(o => o.CreatedOn).ToList();
-            };
+            }
+            ;
 
             // Task successful
             serviceResponse.Data = supportTicket.Adapt<SupportTicketsTableDto>();
@@ -145,7 +145,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // support ticket already exists
             if (supportTicketAlreadyExists != null)
             {
-                _logger.LogInformation($"support ticket already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A support ticket with the same TicketNumber already exists. Please enter a unique TicketNumber";
                 return serviceResponse;
@@ -168,7 +167,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new support ticket");
                 return serviceResponse;
             }
 
@@ -243,7 +241,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // Support ticket does not exist
             if (supportTicket == null)
             {
-                _logger.LogInformation($"Support ticket does not exist");
                 serviceResponse.Message = "Support ticket does not exist";
                 return serviceResponse;
             }
@@ -256,7 +253,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // Support ticket already exists
             if (supportTicketAlreadyExists != null)
             {
-                _logger.LogInformation($"Support ticket already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A support ticket with the same TicketNumber already exists. Please enter a unique TicketNumber";
                 return serviceResponse;
@@ -278,7 +274,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating support ticket");
                 return serviceResponse;
             }
 
@@ -316,7 +311,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // Support ticket does not exist
             if (supportTicket == null)
             {
-                _logger.LogInformation($"Support ticket does not exist");
                 serviceResponse.Message = "Support ticket does not exist";
                 return serviceResponse;
             }
@@ -337,7 +331,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating support ticket");
                 return serviceResponse;
             }
 
@@ -403,7 +396,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // support ticket does not exist
             if (supportTicket == null)
             {
-                _logger.LogInformation($"support ticket does not exist");
                 serviceResponse.Message = "support ticket does not exist";
                 return serviceResponse;
             }
@@ -424,7 +416,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // Support ticket status is not 'Open'
             if (supportTicket.Status?.CompareTo("Open") != 0)
             {
-                _logger.LogInformation($"Cannot delete support ticket because it is not in 'Open' status");
                 serviceResponse.Message = "Cannot delete requested support ticket because it is not in 'Open' status";
                 return serviceResponse;
             }
@@ -440,7 +431,6 @@ public class SupportTicketsTableService : ISupportTicketsTableService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting support ticket");
                 return serviceResponse;
             }
 

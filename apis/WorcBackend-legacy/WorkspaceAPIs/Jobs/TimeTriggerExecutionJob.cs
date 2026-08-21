@@ -23,7 +23,6 @@ public class TimeTriggerExecutionJob : IJob
             // Get current UTC time
             var currentUtcTime = DateTimeOffset.UtcNow.ToUniversalTime();
 
-            _logger.LogInformation($"Job started at {currentUtcTime:O}");
             // Check if execution is disabled in the current environment.
             if (_environmentConfig.OnPremExecutionDisabled)
             {
@@ -109,12 +108,9 @@ public class TimeTriggerExecutionJob : IJob
                     })
                     .ToDictionaryAsync(x => x.FlowVersionId, x => x.FlowVersionHistoryId);
 
-                // Log the number of triggers found
-                _logger.LogInformation($"Found {triggersToExecute.Count} triggers for execution at {currentUtcTime:O}");
-
+                // Process each trigger
                 var createdJobs = new List<Job>();
 
-                // Process each trigger
                 foreach (var trigger in triggersToExecute)
                 {
                     // JSON serializer configuration
@@ -130,9 +126,6 @@ public class TimeTriggerExecutionJob : IJob
                     var triggerModel = System.Text.Json.JsonSerializer.Deserialize<TimeTriggerModel>(
                         trigger.Metadata.RootElement.GetRawText(),
                         jsonOptions);
-
-                    // Log trigger execution start
-                    _logger.LogInformation($"Executing Trigger: {trigger.Name} (ID: {trigger.Id})");
 
                     foreach (var timeTriggerflowVersion in trigger.TriggerFlowVersions)
                     {
@@ -152,9 +145,6 @@ public class TimeTriggerExecutionJob : IJob
                         };
 
                         createdJobs.Add(jobToCreate);
-
-                        // Log job creation
-                        _logger.LogInformation($"Job created for FlowVersionId: {timeTriggerflowVersion.FlowVersionId} and TenantId: {timeTriggerflowVersion.TenantId}");
                     }
 
                     // Update the trigger's last executed time and calculate the next trigger time
@@ -189,8 +179,6 @@ public class TimeTriggerExecutionJob : IJob
                     // Save changes to the database
                     await _workspaceInternalDbContext.SaveChangesAsync();
                 }
-
-                _logger.LogInformation($"Job completed successfully at {currentUtcTime:O}");
 
                 // Now execute the jobs based on their IDs
                 // Execute job commands for all created jobs

@@ -37,7 +37,6 @@ public class MachineFlowService : IMachineFlowService
             // Machine flow already exists
             if (machineFlowAlreadyExists != null)
             {
-                _logger.LogInformation($"Machine flow already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A machine flow with same flow version already exists. Please enter a unique flow version";
                 return serviceResponse;
@@ -54,17 +53,12 @@ public class MachineFlowService : IMachineFlowService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new machine flow");
                 return serviceResponse;
             }
             // Task successful
             serviceResponse.Data = newMachineFlow.Adapt<MachineFlowDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Machine flow created successfully";
-            _logger.LogInformation(
-                "Machine flow created successfully for machine {MachineId} and flow version {FlowVersionId}",
-                newMachineFlow.MachineId,
-                newMachineFlow.FlowVersionId);
         }
         catch (Exception ex)
         {
@@ -97,7 +91,6 @@ public class MachineFlowService : IMachineFlowService
             // Machine flow does not exist
             if (machineFlow == null)
             {
-                _logger.LogInformation($"Machine flow does not exist");
                 serviceResponse.Message = "Machine flow does not exist";
                 return serviceResponse;
             }
@@ -108,7 +101,6 @@ public class MachineFlowService : IMachineFlowService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting machine flow");
                 return serviceResponse;
             }
 
@@ -117,11 +109,6 @@ public class MachineFlowService : IMachineFlowService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Machine flow deleted successfully";
-
-            _logger.LogInformation(
-                "Machine flow deleted successfully for machine {MachineId} and flow version {FlowVersionId}",
-                machineId,
-                flowVersionId);
 
         }
         catch (Exception ex)
@@ -161,7 +148,6 @@ public class MachineFlowService : IMachineFlowService
             serviceResponse.Data = machineFlows.Adapt<IEnumerable<MachineFlowDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Machine flows retrieved successfully";
-            _logger.LogInformation("Machine flows retrieved successfully.");
         }
         catch (Exception ex)
         {
@@ -199,10 +185,6 @@ public class MachineFlowService : IMachineFlowService
             if (machineFlow == null)
             {
                 serviceResponse.Message = "Machine flow does not exist";
-                _logger.LogInformation(
-                    "There is no machine flow for machine {MachineId} and flow version {FlowVersionId}",
-                    machineId,
-                    flowVersionId);
                 return serviceResponse;
             }
 
@@ -243,7 +225,6 @@ public class MachineFlowService : IMachineFlowService
             // Machine flow does not exist
             if (machineFlow == null)
             {
-                _logger.LogInformation($"Machine flow does not exist");
                 serviceResponse.Message = "Machine flow does not exist";
                 return serviceResponse;
             }
@@ -253,10 +234,6 @@ public class MachineFlowService : IMachineFlowService
             serviceResponse.Data = machineFlow.Adapt<MachineFlowDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Machine flow is already up to date.";
-            _logger.LogInformation(
-                "Machine flow update requested with no mutable columns for machine {MachineId} and flow version {FlowVersionId}",
-                machineFlow.MachineId,
-                machineFlow.FlowVersionId);
         }
         catch (Exception ex)
         {
@@ -304,7 +281,6 @@ public class MachineFlowService : IMachineFlowService
             // Machine flows do not exist
             if (machineFlows.Count == 0)
             {
-                _logger.LogInformation($"Machine flows do not exist");
                 serviceResponse.Message = "Machine flows do not exist";
                 return serviceResponse;
             }
@@ -315,7 +291,6 @@ public class MachineFlowService : IMachineFlowService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting machine flows");
                 return serviceResponse;
             }
 

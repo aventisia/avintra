@@ -164,8 +164,7 @@ public class ManageTenantService : IManageTenantService
         if (!entities.Any())
             return true;
 
-        // Delete entities and log the operation
-        _logger.LogInformation($"Deleting {entities.Count} {entityName} records for tenant ID: {tenantId}");
+        // Delete entities
         repository.Delete(entities);
 
         // Save changes and check for success

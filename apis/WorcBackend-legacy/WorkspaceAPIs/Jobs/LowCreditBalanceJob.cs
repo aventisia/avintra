@@ -27,7 +27,6 @@ namespace WorkspaceAPIs.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             var currentDateTime = DateTimeOffset.UtcNow;
-            _logger.LogInformation("Low credit balance job started at {Time:O}.", currentDateTime);
 
             // Automatic notifications are sent only in the Production environment,
             // so skip the database reads entirely elsewhere to avoid unnecessary work.
@@ -38,7 +37,6 @@ namespace WorkspaceAPIs.Jobs
 
             if (!isProduction)
             {
-                _logger.LogInformation("Low credit balance job skipped: automatic notifications are only sent in Production.");
                 return;
             }
 
@@ -53,7 +51,6 @@ namespace WorkspaceAPIs.Jobs
 
                 if (tenants.Count == 0)
                 {
-                    _logger.LogInformation("No enabled tenants found for low credit check.");
                     return;
                 }
 
@@ -77,9 +74,6 @@ namespace WorkspaceAPIs.Jobs
 
                     if (availableCredits < threshold)
                     {
-                        _logger.LogInformation("Tenant {TenantId} ({TenantName}) has low credit: {Credits:N0} below threshold {Threshold:N0}.",
-                            tenant.Id, tenant.Name, availableCredits, threshold);
-
                         await _notificationEventService.NotifyLowCreditAsync(tenant.Id, availableCredits, threshold);
                     }
                 }

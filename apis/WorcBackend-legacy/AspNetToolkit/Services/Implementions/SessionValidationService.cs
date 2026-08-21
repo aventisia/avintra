@@ -21,9 +21,6 @@ public class SessionValidationService : ISessionValidationService
             return false;
         }
 
-        // Log the start of the session validation process
-        _logger.LogInformation("Initiating validation for session with ID: {SessionId}", sessionId);
-
         // Check if the session exists in the database
         var sessionExists = await _tenantDbContext.ReadOnlyActiveSessions
             .AsNoTracking()
@@ -50,8 +47,6 @@ public class SessionValidationService : ISessionValidationService
             return false;
         }
 
-        // Log a success message if the session is valid
-        _logger.LogInformation("Session with ID: {SessionId} is valid.", sessionId);
         return true;
     }
 }

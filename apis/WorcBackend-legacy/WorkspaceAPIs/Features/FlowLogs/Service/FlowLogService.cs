@@ -72,7 +72,6 @@ public class FlowLogService : IFlowLogService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new flow log");
                 return serviceResponse;
             }
 
@@ -109,7 +108,6 @@ public class FlowLogService : IFlowLogService
             // flow log does not exist
             if (flowLog == null)
             {
-                _logger.LogInformation($"flow log does not exist");
                 serviceResponse.Message = "flow log not exist";
                 return serviceResponse;
             }
@@ -125,7 +123,6 @@ public class FlowLogService : IFlowLogService
             //  Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while silently updating flow log ");
                 return serviceResponse;
             }
 
@@ -163,7 +160,6 @@ public class FlowLogService : IFlowLogService
             // Flow log does not exist
             if (flowLog == null)
             {
-                _logger.LogInformation($"Flow log does not exist");
                 serviceResponse.Message = "Log does not exist";
                 return serviceResponse;
             }
@@ -174,7 +170,6 @@ public class FlowLogService : IFlowLogService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting flow log");
                 return serviceResponse;
             }
 

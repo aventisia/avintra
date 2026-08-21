@@ -53,7 +53,6 @@ public class WorkspaceUserService : IWorkspaceUserService
             // WU doesn't exist
             if (workspaceUser == null)
             {
-                _logger.LogInformation($"Workspace user not found for Id {id}");
                 serviceResponse.Message = "User does not exist";
                 return serviceResponse;
             }
@@ -100,7 +99,6 @@ public class WorkspaceUserService : IWorkspaceUserService
             // User already exists with same UserId
             if (userIdAlreadyExists != null)
             {
-                _logger.LogInformation($"Workspace user already exists with same UserId");
                 serviceResponse.Data = userIdAlreadyExists.Adapt<WorkspaceUserDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "User already exists with same UserId. No need to insert again";
@@ -115,7 +113,6 @@ public class WorkspaceUserService : IWorkspaceUserService
             // User already exists with same UserName
             if (userNameAlreadyExists != null)
             {
-                _logger.LogInformation($"Workspace user already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A user with same UserName already exists. Please enter a unique UserName";
                 return serviceResponse;
@@ -136,7 +133,6 @@ public class WorkspaceUserService : IWorkspaceUserService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new Workspace user");
                 return serviceResponse;
             }
 
@@ -182,7 +178,6 @@ public class WorkspaceUserService : IWorkspaceUserService
             // User does not exist
             if (workspaceUser == null)
             {
-                _logger.LogInformation($"Workspace user does not exist");
                 serviceResponse.Message = "User does not exist";
                 return serviceResponse;
             }
@@ -197,7 +192,6 @@ public class WorkspaceUserService : IWorkspaceUserService
             // User already exists
             if (userAlreadyExists != null)
             {
-                _logger.LogInformation($"Workspace user already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A user with same UserName already exists. Please enter a unique UserName";
                 return serviceResponse;
@@ -218,7 +212,6 @@ public class WorkspaceUserService : IWorkspaceUserService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating Workspace user");
                 return serviceResponse;
             }
 
@@ -264,7 +257,6 @@ public class WorkspaceUserService : IWorkspaceUserService
             // User does not exist
             if (workspaceUser == null)
             {
-                _logger.LogInformation($"Workspace user does not exist");
                 serviceResponse.Message = "User does not exist";
                 return serviceResponse;
             }
@@ -277,7 +269,6 @@ public class WorkspaceUserService : IWorkspaceUserService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting Workspace user");
                 return serviceResponse;
             }
 
@@ -315,8 +306,6 @@ public class WorkspaceUserService : IWorkspaceUserService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("User '{User}' initiated a workspace user search with key: '{SearchKey}'", _userName, searchKey);
-
             List<WorkspaceUserDto>? workspaceUsers = new List<WorkspaceUserDto>();
 
             // @rahmat, please confirm if this logic is still needed
@@ -349,7 +338,6 @@ public class WorkspaceUserService : IWorkspaceUserService
             serviceResponse.Data = workspaceUsers;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = $"Search completed. {workspaceUsers.Count} user(s) found.";
-            _logger.LogInformation("Workspace user search succeeded for key '{SearchKey}'. Total matches: {Count}.", searchKey, workspaceUsers.Count);
         }
         catch (Exception ex)
         {

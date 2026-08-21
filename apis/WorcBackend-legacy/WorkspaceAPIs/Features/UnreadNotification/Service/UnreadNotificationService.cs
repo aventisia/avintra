@@ -82,7 +82,6 @@ public class UnreadNotificationService : IUnreadNotificationService
             // Notification does not exist
             if (unreadNotification == null)
             {
-                _logger.LogInformation($"Notification does not exist");
                 serviceResponse.Message = "Notification does not exist";
                 return serviceResponse;
             }
@@ -96,7 +95,6 @@ public class UnreadNotificationService : IUnreadNotificationService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating notification as read");
                 return serviceResponse;
             }
 

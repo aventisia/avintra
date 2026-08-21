@@ -99,9 +99,6 @@ public class AppSecretService : IAppSecretService
             serviceResponse.Data = appSecretData;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credentials fetched successfully.";
-
-            // Log the number of credentials fetched
-            _logger.LogInformation("Successfully retrieved {Count} credentials from the database.", appSecrets.Count);
         }
         catch (Exception ex)
         {
@@ -267,9 +264,6 @@ public class AppSecretService : IAppSecretService
             serviceResponse.Data = appSecret.Adapt<AppSecretDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential retrieved successfully.";
-
-            // Log successful retrieval of credential by ID
-            _logger.LogInformation("Successfully fetched credential with ID: {AppSecretId}", appSecretId);
         }
         catch (Exception ex)
         {
@@ -339,11 +333,6 @@ public class AppSecretService : IAppSecretService
             serviceResponse.Data = appSecret.Adapt<AppSecretDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential retrieved successfully.";
-
-            // Log successful retrieval of credential by name
-            _logger.LogInformation(
-                "Successfully fetched credential with name: {AppSecretName}",
-                appSecretName);
         }
         catch (Exception ex)
         {
@@ -448,9 +437,6 @@ public class AppSecretService : IAppSecretService
             serviceResponse.Data = newAppSecret.Adapt<AppSecretDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential created successfully.";
-
-            // Log successful creation of the credential
-            _logger.LogInformation("Credential created successfully with ID: {AppSecretId}", newAppSecret.Id);
         }
         catch (Exception ex)
         {
@@ -668,9 +654,6 @@ public class AppSecretService : IAppSecretService
             serviceResponse.Data = existingAppSecret.Adapt<AppSecretDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential updated successfully.";
-
-            // Log successful update of the credential
-            _logger.LogInformation("Credential with ID: {AppSecretId} successfully updated.", appSecretDto.Id);
         }
         catch (Exception ex)
         {
@@ -758,9 +741,6 @@ public class AppSecretService : IAppSecretService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential deleted successfully.";
-
-            // Log successful deletion
-            _logger.LogInformation("Credential with ID: {AppSecretId} successfully deleted.", appSecretId);
         }
         catch (Exception ex)
         {
@@ -856,9 +836,6 @@ public class AppSecretService : IAppSecretService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credentials deleted successfully.";
-
-            // Log successful bulk deletion
-            _logger.LogInformation("Successfully deleted {Count} credential(s).", appSecrets.Count);
         }
         catch (Exception ex)
         {

@@ -153,7 +153,6 @@ public class SendGridConnectorsService : ISendGridConnectorsService
             if (response.StatusCode == System.Net.HttpStatusCode.Accepted ||
                 response.StatusCode == System.Net.HttpStatusCode.OK)
             {
-                _logger.LogInformation("Email sent successfully to {ToEmail} using Credential Name: {CredentialName}", toEmail, credentialName);
                 return true;
             }
             else

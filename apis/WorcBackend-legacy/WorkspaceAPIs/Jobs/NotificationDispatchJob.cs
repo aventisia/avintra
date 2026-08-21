@@ -38,7 +38,6 @@ namespace WorkspaceAPIs.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             var now = DateTimeOffset.UtcNow;
-            _logger.LogInformation("Notification dispatch job started at {Time:O}.", now);
 
             try
             {
@@ -52,11 +51,8 @@ namespace WorkspaceAPIs.Jobs
 
                 if (dueNotifications.Count == 0)
                 {
-                    _logger.LogInformation("No scheduled notifications due for dispatch.");
                     return;
                 }
-
-                _logger.LogInformation("Dispatching {Count} scheduled notification(s).", dueNotifications.Count);
 
                 foreach (var notification in dueNotifications)
                 {
@@ -233,11 +229,7 @@ namespace WorkspaceAPIs.Jobs
                 var content = notification.Message;
 
                 var sent = await _emailService.SendEmail(toEmailAddresses, subject, content);
-                if (sent)
-                {
-                    _logger.LogInformation("Notification email sent for {Id} to {Recipients}.", notification.Id, toEmailAddresses);
-                }
-                else
+                if (!sent)
                 {
                     _logger.LogError("Failed to send notification email for {Id} to {Recipients}.", notification.Id, toEmailAddresses);
                 }

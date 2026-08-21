@@ -155,7 +155,6 @@ public class MessageTriggerService : IMessageTriggerService
             // Check if the message trigger exists
             if (messageTrigger == null)
             {
-                _logger.LogInformation("Message trigger with ID {messageTriggerId} does not exist.", messageTriggerId);
                 serviceResponse.Message = "Message trigger does not exist";
                 return serviceResponse; // Return early if not found
             }
@@ -212,7 +211,6 @@ public class MessageTriggerService : IMessageTriggerService
 
             if (existingTrigger != null)
             {
-                _logger.LogInformation("Message trigger creation failed. Name {messageTriggerName} already exists.", messageTriggerDto.Name);
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Message trigger with the same name already exists.";
                 return serviceResponse; // Return early if duplicate found
@@ -220,12 +218,6 @@ public class MessageTriggerService : IMessageTriggerService
 
             if (DateTimeOffset.UtcNow.AddMinutes(MESSAGE_EXPIRY_MINUTES) < messageTriggerDto.ExpiryDateTime)
             {
-                _logger.LogInformation(
-                    "Update failed. New expiry {NewExpiry} exceeds maximum allowed expiry for trigger ID {TriggerId}.",
-                    messageTriggerDto.ExpiryDateTime,
-                    messageTriggerDto.Id
-                );
-
                 serviceResponse.StatusCode = 400;
                 serviceResponse.Message = $"Expiry date cannot exceed {MESSAGE_EXPIRY_MINUTES} minutes from now.";
                 return serviceResponse;
@@ -323,7 +315,6 @@ public class MessageTriggerService : IMessageTriggerService
                 // Save changes to the database and check if the operation succeeded.
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Failed to persist TriggerFlowVersion entries for the new message trigger.");
                     return serviceResponse;
                 }
             }
@@ -372,7 +363,6 @@ public class MessageTriggerService : IMessageTriggerService
             // Validate existence
             if (messageTrigger == null)
             {
-                _logger.LogInformation("Update failed. message trigger with ID {messageTriggerId} does not exist.", messageTriggerDto.Id);
                 serviceResponse.Message = "Message trigger does not exist";
                 return serviceResponse; // Early return
             }
@@ -407,7 +397,6 @@ public class MessageTriggerService : IMessageTriggerService
 
             if (duplicateTrigger != null)
             {
-                _logger.LogInformation("Update failed. message trigger with name {messageTriggerName} already exists.", messageTriggerDto.Name);
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Message trigger with the same name already exists.";
                 return serviceResponse;
@@ -429,13 +418,6 @@ public class MessageTriggerService : IMessageTriggerService
 
                 if (messageTriggerDto.ExpiryDateTime < existingExpiry)
                 {
-                    _logger.LogInformation(
-                        "Update failed. New expiry {NewExpiry} is less than existing expiry {ExistingExpiry} for trigger ID {TriggerId}.",
-                        messageTriggerDto.ExpiryDateTime,
-                        existingExpiry,
-                        messageTriggerDto.Id
-                    );
-
                     serviceResponse.StatusCode = 400;
                     serviceResponse.Message = "Expiry date cannot be earlier than the existing expiry date.";
                     return serviceResponse;
@@ -444,12 +426,6 @@ public class MessageTriggerService : IMessageTriggerService
 
             if (DateTimeOffset.UtcNow.AddMinutes(MESSAGE_EXPIRY_MINUTES) <= messageTriggerDto.ExpiryDateTime)
             {
-                _logger.LogInformation(
-                    "Update failed. New expiry {NewExpiry} exceeds maximum allowed expiry for trigger ID {TriggerId}.",
-                    messageTriggerDto.ExpiryDateTime,
-                    messageTriggerDto.Id
-                );
-
                 serviceResponse.StatusCode = 400;
                 serviceResponse.Message = $"Expiry date cannot exceed {MESSAGE_EXPIRY_MINUTES} minutes from now.";
                 return serviceResponse;
@@ -627,7 +603,6 @@ public class MessageTriggerService : IMessageTriggerService
             // Check existence
             if (messageTrigger == null)
             {
-                _logger.LogInformation("Delete failed. message trigger with ID {messageTriggerId} does not exist.", messageTriggerId);
                 serviceResponse.Message = "Message trigger does not exist";
                 return serviceResponse;
             }
@@ -736,7 +711,6 @@ public class MessageTriggerService : IMessageTriggerService
             // Check if any triggers were found
             if (messageTriggers == null || messageTriggers.Count == 0)
             {
-                _logger.LogInformation("Delete multiple failed. No message triggers found for provided IDs.");
                 serviceResponse.Message = "Message triggers not found";
                 return serviceResponse;
             }
@@ -863,7 +837,6 @@ public class MessageTriggerService : IMessageTriggerService
             if (triggerExists != null)
             {
                 // Duplicate exists
-                _logger.LogInformation("Message trigger name '{messageTriggerName}' already exists.", checkAvailabilityDto.UserInput);
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Message trigger name already exists";
                 serviceResponse.Data = new TrueFalseResultDto { Result = false };
@@ -874,7 +847,6 @@ public class MessageTriggerService : IMessageTriggerService
             serviceResponse.StatusCode = 200;
             serviceResponse.Data = new TrueFalseResultDto { Result = true };
             serviceResponse.Message = "Message trigger name is available";
-            _logger.LogInformation("Message trigger name '{messageTriggerName}' is available.", checkAvailabilityDto.UserInput);
         }
         catch (Exception ex)
         {
@@ -1002,7 +974,6 @@ public class MessageTriggerService : IMessageTriggerService
                 // Check if changes were successfully saved
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Failed to save changes while inserting new job.");
                     return serviceResponse;
                 }
 

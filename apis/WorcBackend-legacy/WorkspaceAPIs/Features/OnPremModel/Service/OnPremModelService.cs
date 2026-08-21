@@ -60,7 +60,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = new TrueFalseResultDto { Result = true };
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "On-prem model name is available.";
-            _logger.LogInformation("Model name '{ModelName}' is available for user {UserId}.", checkAvailabilityDto.UserInput, _userId);
         }
         catch (Exception ex)
         {
@@ -124,8 +123,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = onPremModels;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "On-prem models retrieved successfully.";
-
-            _logger.LogInformation("Successfully retrieved {ModelCount} on-prem models for user {UserId}.", onPremModels.Count, _userId);
         }
         catch (Exception ex)
         {
@@ -151,7 +148,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = ollamaModels;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Ollama models retrieved successfully.";
-            _logger.LogInformation("Retrieved {ModelCount} models from Ollama for user {UserId}.", ollamaModels.Count, _userId);
         }
         catch (Exception ex)
         {
@@ -208,8 +204,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = onPremModel.Adapt<OnPremModelDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "On-prem model retrieved successfully.";
-
-            _logger.LogInformation("Successfully retrieved on-prem model with ID {OnPremModelId}.", onPremModelId);
         }
         catch (Exception ex)
         {
@@ -275,9 +269,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = onPremModel.Adapt<OnPremModelDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "On-prem model retrieved successfully.";
-
-            // Log success for the retrieval.
-            _logger.LogInformation("Successfully retrieved on-prem model with name '{OnPremModelName}'.", onPremModelName);
         }
         catch (Exception ex)
         {
@@ -342,14 +333,6 @@ public class OnPremModelService : IOnPremModelService
                 return serviceResponse;
             }
 
-            // Log the start of the provider-specific model operation. The message adapts to the current model status (Download / Install / Uninstall).
-            _logger.LogInformation(
-                "Starting model operation. Status: {Status}, ProviderType: {ProviderType}, Model: {ModelName}, ProviderUrl: {ProviderUrl}",
-                newOnPremModel.Status,
-                newOnPremModel.ProviderType,
-                newOnPremModel.ModelName,
-                newOnPremModel.ProviderUrl);
-
             // Execute the provider-specific model operation (pull or delete) based on the current model status.
             var isSuccessful = await HandleModelAsync(
                 newOnPremModel.ProviderType,
@@ -377,14 +360,6 @@ public class OnPremModelService : IOnPremModelService
             }
             else
             {
-                // Log successful completion of the provider operation.
-                _logger.LogInformation(
-                    "Model operation completed successfully. Status: {Status}, ProviderType: {ProviderType}, Model: {ModelName}, ProviderUrl: {ProviderUrl}",
-                    newOnPremModel.Status,
-                    newOnPremModel.ProviderType,
-                    newOnPremModel.ModelName,
-                    newOnPremModel.ProviderUrl);
-
                 // Optional follow-up actions:
                 // - Transition model status (e.g., Downloading → Installed)
                 // - Persist completion timestamp
@@ -398,11 +373,7 @@ public class OnPremModelService : IOnPremModelService
                 ProviderType = onPremModelDto.ProviderType
             });
 
-            if (syncResponse.Data)
-            {
-                _logger.LogInformation("Successfully synced on-prem models for ProviderUrl: {ProviderUrl}, ProviderType: {ProviderType}.", onPremModelDto.ProviderUrl, onPremModelDto.ProviderType);
-            }
-            else
+            if (!syncResponse.Data)
             {
                 _logger.LogWarning("Failed to sync on-prem models for ProviderUrl: {ProviderUrl}, ProviderType: {ProviderType}.", onPremModelDto.ProviderUrl, onPremModelDto.ProviderType);
             }
@@ -411,8 +382,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = newOnPremModel.Adapt<OnPremModelDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "On-prem model inserted successfully.";
-
-            _logger.LogInformation("Successfully inserted new on-prem model with name '{ModelName}' for user {UserId}.", onPremModelDto.Name, _userId);
         }
         catch (Exception ex)
         {
@@ -486,14 +455,6 @@ public class OnPremModelService : IOnPremModelService
                 return serviceResponse;
             }
 
-            // Log the start of the provider-specific model operation. The message adapts to the current model status (Download / Install / Uninstall).
-            _logger.LogInformation(
-                "Starting model operation. Status: {Status}, ProviderType: {ProviderType}, Model: {ModelName}, ProviderUrl: {ProviderUrl}",
-                existingOnPremModel.Status,
-                existingOnPremModel.ProviderType,
-                existingOnPremModel.ModelName,
-                existingOnPremModel.ProviderUrl);
-
             // Execute the provider-specific model operation (pull or delete) based on the current model status.
             var isSuccessful = await HandleModelAsync(
                 existingOnPremModel.ProviderType,
@@ -521,14 +482,6 @@ public class OnPremModelService : IOnPremModelService
             }
             else
             {
-                // Log successful completion of the provider operation.
-                _logger.LogInformation(
-                    "Model operation completed successfully. Status: {Status}, ProviderType: {ProviderType}, Model: {ModelName}, ProviderUrl: {ProviderUrl}",
-                    existingOnPremModel.Status,
-                    existingOnPremModel.ProviderType,
-                    existingOnPremModel.ModelName,
-                    existingOnPremModel.ProviderUrl);
-
                 // Optional follow-up actions:
                 // - Transition model status (e.g., Downloading → Installed)
                 // - Persist completion timestamp
@@ -542,11 +495,7 @@ public class OnPremModelService : IOnPremModelService
                 ProviderType = onPremModelDto.ProviderType
             });
 
-            if (syncResponse.Data)
-            {
-                _logger.LogInformation("Successfully synced on-prem models for ProviderUrl: {ProviderUrl}, ProviderType: {ProviderType}.", onPremModelDto.ProviderUrl, onPremModelDto.ProviderType);
-            }
-            else
+            if (!syncResponse.Data)
             {
                 _logger.LogWarning("Failed to sync on-prem models for ProviderUrl: {ProviderUrl}, ProviderType: {ProviderType}.", onPremModelDto.ProviderUrl, onPremModelDto.ProviderType);
             }
@@ -558,8 +507,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = existingOnPremModel.Adapt<OnPremModelDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "On-prem model updated successfully.";
-
-            _logger.LogInformation("Successfully updated on-prem model with ID {OnPremModelId} for user {UserId}.", onPremModelDto.Id, _userId);
         }
         catch (Exception ex)
         {
@@ -592,12 +539,6 @@ public class OnPremModelService : IOnPremModelService
                 serviceResponse.Message = "On-prem model not found.";
                 return serviceResponse;
             }
-            // Log the start of the provider-specific uninstall operation.
-            _logger.LogInformation(
-                "Starting model uninstall operation. ProviderType: {ProviderType}, Model: {ModelName}, ProviderUrl: {ProviderUrl}",
-                existingOnPremModel.ProviderType,
-                existingOnPremModel.ModelName,
-                existingOnPremModel.ProviderUrl);
 
             // Execute the provider-specific uninstall operation (delete).
             var isSuccessful = await HandleModelAsync(
@@ -623,13 +564,6 @@ public class OnPremModelService : IOnPremModelService
             }
             else
             {
-                // Log successful completion of the uninstall operation.
-                _logger.LogInformation(
-                    "Model uninstall completed successfully. ProviderType: {ProviderType}, Model: {ModelName}, ProviderUrl: {ProviderUrl}",
-                    existingOnPremModel.ProviderType,
-                    existingOnPremModel.ModelName,
-                    existingOnPremModel.ProviderUrl);
-
                 // Optional follow-up actions:
                 // - Update model status to Uninstalled
                 // - Persist completion timestamp
@@ -650,8 +584,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "On-prem model deleted successfully.";
-
-            _logger.LogInformation("Successfully deleted on-prem model with ID {OnPremModelId} for user {UserId}.", OnPremModelId, _userId);
         }
         catch (Exception ex)
         {
@@ -688,13 +620,6 @@ public class OnPremModelService : IOnPremModelService
 
             foreach (var existingOnPremModel in modelsToDelete)
             {
-                // Log the start of the provider-specific uninstall operation.
-                _logger.LogInformation(
-                    "Starting model uninstall operation. ProviderType: {ProviderType}, Model: {ModelName}, ProviderUrl: {ProviderUrl}",
-                    existingOnPremModel.ProviderType,
-                    existingOnPremModel.ModelName,
-                    existingOnPremModel.ProviderUrl);
-
                 // Execute the provider-specific uninstall operation (delete).
                 var isSuccessful = await HandleModelAsync(
                     existingOnPremModel.ProviderType,
@@ -719,12 +644,6 @@ public class OnPremModelService : IOnPremModelService
                 }
                 else
                 {
-                    _logger.LogInformation(
-                        "Model uninstall completed successfully. ProviderType: {ProviderType}, Model: {ModelName}, ProviderUrl: {ProviderUrl}",
-                        existingOnPremModel.ProviderType,
-                        existingOnPremModel.ModelName,
-                        existingOnPremModel.ProviderUrl);
-
                     // Optional follow-up actions:
                     // - Update model status to Uninstalled
                     // - Persist completion timestamp
@@ -747,8 +666,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = $"Successfully deleted {modelsToDelete.Count} on-prem models.";
-
-            _logger.LogInformation("Successfully deleted {ModelCount} on-prem models for user {UserId} with model IDs {OnPremModelIds}.", modelsToDelete.Count, _userId, string.Join(", ", OnPremModelIds));
         }
         catch (Exception ex)
         {
@@ -789,7 +706,6 @@ public class OnPremModelService : IOnPremModelService
             // If no models are found, return a message.
             if (matchedOnPremModels == null || !matchedOnPremModels.Any())
             {
-                _logger.LogInformation("No on-prem models found for search term '{ModelName}' for user {UserId}.", modelName, _userId);
                 serviceResponse.Message = "No on-prem models found matching the search term.";
                 return serviceResponse;
             }
@@ -798,8 +714,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = matchedOnPremModels.Adapt<IEnumerable<OnPremModelDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = $"{matchedOnPremModels.Count} on-prem model(s) found matching the search term '{modelName}'.";
-
-            _logger.LogInformation("{Count} on-prem model(s) found for search term '{ModelName}' for user {UserId}.", matchedOnPremModels.Count, modelName, _userId);
         }
         catch (Exception ex)
         {
@@ -812,9 +726,6 @@ public class OnPremModelService : IOnPremModelService
     // Entry point for handling on-prem model lifecycle operations. Decides which provider-specific handler should be executed based on the provided provider type.
     public async Task<bool> HandleModelAsync(OnPremModelProviderEnum providerType, string providerUrl, string modelName, OnPremModelStatusEnum onPremModelStatus, CancellationToken cancellationToken = default)
     {
-        // Log the start of the operation with all contextual information
-        _logger.LogInformation("Starting model operation. ProviderType: {ProviderType}, Model: {Model}, TargetStatus: {Status}, ProviderUrl: {Url}", providerType, modelName, onPremModelStatus, providerUrl);
-
         // Select the correct provider handler based on provider type
         return providerType switch
         {
@@ -854,9 +765,6 @@ public class OnPremModelService : IOnPremModelService
                     endpoint = "/api/pull";
                     payload = new { name = modelName, stream = true };
 
-                    // Log the initiation of the pull operation
-                    _logger.LogInformation("Initiating ollama model pull. Model: {Model}, Endpoint: {Endpoint}", modelName, endpoint);
-
                     request = new HttpRequestMessage(HttpMethod.Post, endpoint)
                     {
                         Content = JsonContent.Create(payload)
@@ -867,9 +775,6 @@ public class OnPremModelService : IOnPremModelService
                 case OnPremModelStatusEnum.Uninstalled:
                     endpoint = "/api/delete";
                     payload = new { name = modelName };
-
-                    // Log the initiation of the delete operation
-                    _logger.LogInformation("Initiating ollama model deletion. Model: {Model}, Endpoint: {Endpoint}", modelName, endpoint);
 
                     request = new HttpRequestMessage(HttpMethod.Delete, endpoint)
                     {
@@ -889,9 +794,6 @@ public class OnPremModelService : IOnPremModelService
             // Check if the response is successful (status code 2xx)
             if (response.IsSuccessStatusCode)
             {
-                // Log the successful operation with response status
-                _logger.LogInformation("Ollama operation succeeded. Model: {Model}, Status: {Status}, HttpStatus: {HttpStatus}", modelName, providerStatus, response.StatusCode);
-
                 return true;
             }
 
@@ -933,9 +835,6 @@ public class OnPremModelService : IOnPremModelService
             // Define the endpoint for fetching the model list
             string endpoint = "/api/tags";
 
-            // Log the initiation of the models retrieval process
-            _logger.LogInformation("Initiating request to retrieve models. Endpoint: {Endpoint}", endpoint);
-
             // Send the GET request to fetch the model list
             var response = await httpClient.GetAsync(endpoint, cancellationToken);
 
@@ -957,9 +856,6 @@ public class OnPremModelService : IOnPremModelService
                 // Check if the deserialization was successful and if models are present
                 if (modelListResponse != null && modelListResponse.Models.Any())
                 {
-                    // Log the successful retrieval of models
-                    _logger.LogInformation("Successfully retrieved {ModelCount} models from Ollama.", modelListResponse.Models);
-
                     // Return the list of models
                     return modelListResponse.Models;
                 }
@@ -1079,9 +975,6 @@ public class OnPremModelService : IOnPremModelService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "On-prem models synced successfully.";
-
-            // Log successful syncing of models
-            _logger.LogInformation("Successfully synced {ModelCount} on-prem models for user {UserId}.", onPremModels.Count, _userId);
         }
         catch (Exception ex)
         {

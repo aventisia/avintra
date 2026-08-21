@@ -136,7 +136,6 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
             // Error: Failed to save the new job to database
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new job for flow execution. FlowVersionId: {FlowVersionId}", requestDto.FlowVersionId);
                 return serviceResponse;
             }
 

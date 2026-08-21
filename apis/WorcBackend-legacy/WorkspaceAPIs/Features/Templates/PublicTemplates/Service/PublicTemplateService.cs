@@ -44,9 +44,6 @@ public class PublicTemplateService : IPublicTemplateService
             serviceResponse.Data = template.Adapt<ProjectTemplateDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Template retrieved successfully.";
-
-            // Log the successful retrieval of the template
-            _logger.LogInformation("Successfully retrieved template with ID {TemplateId}.", templateId);
         }
         catch (Exception ex)
         {
@@ -88,9 +85,6 @@ public class PublicTemplateService : IPublicTemplateService
             serviceResponse.Data = templates;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Templates retrieved successfully.";
-
-            // Log the search operation and the number of results found
-            _logger.LogInformation("SearchTemplatesAsync: Retrieved {Count} templates matching search key '{SearchKey}'", templates.Count, searchKey);
         }
         catch (Exception ex)
         {
@@ -130,9 +124,6 @@ public class PublicTemplateService : IPublicTemplateService
             serviceResponse.Data = trendingTemplates.Adapt<IEnumerable<TrendingTemplateDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Trending templates retrieved successfully.";
-
-            // Log the number of trending templates retrieved
-            _logger.LogInformation("Successfully retrieved {Count} trending templates.", trendingTemplates.Count);
         }
         catch (Exception ex)
         {

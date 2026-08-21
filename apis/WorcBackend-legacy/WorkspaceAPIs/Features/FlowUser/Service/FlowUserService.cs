@@ -43,9 +43,6 @@ public class FlowUserService : IFlowUserService
             serviceResponse.Data = flowUsers;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Users retrieved successfully";
-
-            // Log success with details
-            _logger.LogInformation($"Successfully retrieved {flowUsers.Count} users for flow with Id {flowId}");
         }
         catch (Exception ex)
         {
@@ -80,7 +77,6 @@ public class FlowUserService : IFlowUserService
             // If not found, log and return default response
             if (flowUser == null)
             {
-                _logger.LogInformation($"Flow user with Id {flowUserId} not found.");
                 return serviceResponse;
             }
 
@@ -88,9 +84,6 @@ public class FlowUserService : IFlowUserService
             serviceResponse.Data = flowUser.Adapt<FlowUserDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow user retrieved successfully.";
-
-            // Log success
-            _logger.LogInformation($"Successfully retrieved flow user with Id {flowUserId}.");
         }
         catch (Exception ex)
         {
@@ -113,7 +106,7 @@ public class FlowUserService : IFlowUserService
         };
 
         try
-        {   
+        {
             // @rahmat, please confirm if this logic is still needed
             // Check if the tenant ID matches and return if true
             // if (_defaultTenantConfig.TenantId == _tenantId)
@@ -133,9 +126,6 @@ public class FlowUserService : IFlowUserService
             // Check if the flow user already exists based on UserId and FlowId
             if (flowUser != null)
             {
-                // Log that the flow user exists and provide the flow user details (including the Id)
-                _logger.LogInformation($"Attempted to update Flow user with UserId {flowUserDto.UserId} and FlowId {flowUserDto.FlowId}. User already exists. FlowUser ID: {flowUser.Id}");
-
                 // Set the message for the service response, indicating that the user already exists for the given flow
                 serviceResponse.Message = "User already exists for the specified flow.";
 
@@ -166,9 +156,6 @@ public class FlowUserService : IFlowUserService
             serviceResponse.Data = newFlowUser.Adapt<FlowUserDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "User added to flow successfully";
-
-            // Log the successful addition with user and flow info
-            _logger.LogInformation($"User {newFlowUser.UserId} added to flow {newFlowUser.FlowId} successfully.");
         }
         catch (Exception ex)
         {
@@ -203,7 +190,6 @@ public class FlowUserService : IFlowUserService
             // Check if the flow user exists
             if (flowUser == null)
             {
-                _logger.LogInformation($"Flow user with Id {flowUserDto.Id} not found for update.");
                 serviceResponse.Message = "User not found.";
                 return serviceResponse;
             }
@@ -254,8 +240,6 @@ public class FlowUserService : IFlowUserService
             serviceResponse.Data = flowUser.Adapt<FlowUserDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow user updated successfully.";
-
-            _logger.LogInformation($"Flow user with Id {flowUser.Id} updated successfully.");
         }
         catch (Exception ex)
         {
@@ -289,7 +273,6 @@ public class FlowUserService : IFlowUserService
             // If flow user does not exist, return error response
             if (flowUser == null)
             {
-                _logger.LogInformation($"Flow user with Id {flowUserId} does not exist.");
                 serviceResponse.Message = "User does not exist.";
                 return serviceResponse;
             }
@@ -330,8 +313,6 @@ public class FlowUserService : IFlowUserService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow user deleted successfully.";
-
-            _logger.LogInformation($"Flow user with Id {flowUserId} deleted successfully.");
         }
         catch (Exception ex)
         {
@@ -363,7 +344,6 @@ public class FlowUserService : IFlowUserService
             // If no users are found, log info and return response
             if (!flowUsers.Any())
             {
-                _logger.LogInformation("No flow users found matching the provided IDs.");
                 serviceResponse.Message = "No users found to delete.";
                 return serviceResponse;
             }
@@ -382,9 +362,6 @@ public class FlowUserService : IFlowUserService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Flow users deleted successfully.";
-
-            // Log the number of users deleted
-            _logger.LogInformation($"Successfully deleted {flowUsers.Count} flow user(s).");
         }
         catch (Exception ex)
         {
@@ -418,7 +395,6 @@ public class FlowUserService : IFlowUserService
             // If the user is not associated with the flow, return an error response
             if (flowUser == null)
             {
-                _logger.LogInformation($"No association found for the user with Id {flowId}.");
                 serviceResponse.Message = "User is not associated with this flow.";
                 return serviceResponse;
             }
@@ -437,8 +413,6 @@ public class FlowUserService : IFlowUserService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Access successfully removed from the flow.";
-
-            _logger.LogInformation($"Successfully revoked access for the user associated with flow Id {flowId}.");
         }
         catch (Exception ex)
         {

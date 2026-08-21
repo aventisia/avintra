@@ -1044,8 +1044,7 @@ public class JobsTableService : IJobsTableService
                 FileDownloadName = $"jobs-data-{DateTime.UtcNow:dd-MMM-yyyy}.csv"
             };
 
-            // Log and return the success response with the CSV file
-            _logger.LogInformation("Jobs data exported. File generated: {FileName}", jobsCsvData.FileDownloadName);
+            // Return the success response with the CSV file
             return serviceResponse.Update("Jobs exported", 200, jobsCsvData);
         }
         catch (Exception ex)

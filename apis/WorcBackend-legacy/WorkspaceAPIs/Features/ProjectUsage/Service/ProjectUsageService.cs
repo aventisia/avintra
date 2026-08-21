@@ -29,8 +29,6 @@ public class ProjectUsageService : IProjectUsageService
             var previousDay = DateTimeOffset.UtcNow.AddDays(-1).Date;
             var sevenDaysAgo = DateTimeOffset.UtcNow.AddDays(-7).Date;
 
-            _logger.LogInformation("Starting retrieval of project usage metrics for the last 7 days: {StartDate} to {EndDate}", sevenDaysAgo, previousDay);
-
             // Initialize the list to hold 7 days of usage data
             var last7DayUsageMetrics = new List<ProjectUsageMetricDto>();
 
@@ -54,8 +52,6 @@ public class ProjectUsageService : IProjectUsageService
             for (int i = 0; i < 7; i++)
             {
                 var currentDate = sevenDaysAgo.AddDays(i);
-
-                _logger.LogInformation("Collecting metrics for {Date}", currentDate);
 
                 // Calculate the number of published flows for this day
                 var publishedFlowsForDay = await publishedFlowCountQuery
@@ -90,9 +86,6 @@ public class ProjectUsageService : IProjectUsageService
             serviceResponse.Data = last7DayUsageMetrics;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Project usage metrics for the last 7 days retrieved successfully.";
-
-            // Log the successful collection of data
-            _logger.LogInformation("Project usage metrics successfully computed and returned for the last 7 days.");
         }
         catch (Exception ex)
         {

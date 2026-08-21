@@ -349,7 +349,6 @@ public class KeyStoreService : IKeyStoreService
             // If an item with the same name exists, return a conflict response
             if (existingKeyStore != null)
             {
-                _logger.LogInformation("Key store already exists.");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A key store with the same name already exists. Please enter a unique name.";
                 return serviceResponse;
@@ -370,7 +369,6 @@ public class KeyStoreService : IKeyStoreService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while inserting new key store.");
                 return serviceResponse;
             }
 
@@ -422,7 +420,6 @@ public class KeyStoreService : IKeyStoreService
             // If the item doesn't exist, return an error message
             if (keyStore == null)
             {
-                _logger.LogInformation("Key store does not exist.");
                 serviceResponse.Message = "Key store does not exist.";
                 return serviceResponse;
             }
@@ -460,7 +457,6 @@ public class KeyStoreService : IKeyStoreService
             // If a conflict is found, return a conflict response
             if (existingKeyStore != null)
             {
-                _logger.LogInformation("Key store name already exists.");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A key store with the same name already exists. Please enter a unique name.";
                 return serviceResponse;
@@ -508,7 +504,6 @@ public class KeyStoreService : IKeyStoreService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while updating key store.");
                 return serviceResponse;
             }
 
@@ -545,7 +540,6 @@ public class KeyStoreService : IKeyStoreService
             // If the item doesn't exist, return an error message
             if (keyStore == null)
             {
-                _logger.LogInformation("Key store does not exist.");
                 serviceResponse.Message = "Key store does not exist.";
                 return serviceResponse;
             }
@@ -593,7 +587,6 @@ public class KeyStoreService : IKeyStoreService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while deleting key store.");
                 return serviceResponse;
             }
 
@@ -630,7 +623,6 @@ public class KeyStoreService : IKeyStoreService
             // If no items are found, return an error message
             if (keyStores.Count == 0)
             {
-                _logger.LogInformation("Key stores do not exist.");
                 serviceResponse.Message = "Key stores do not exist.";
                 return serviceResponse;
             }
@@ -689,7 +681,6 @@ public class KeyStoreService : IKeyStoreService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while deleting key stores.");
                 return serviceResponse;
             }
 
@@ -726,7 +717,6 @@ public class KeyStoreService : IKeyStoreService
             // If the key store doesn't exist, return an error response
             if (keyStore == null)
             {
-                _logger.LogInformation("Key store not found.");
                 serviceResponse.Message = "Key store not found.";
                 return serviceResponse;
             }
@@ -807,7 +797,6 @@ public class KeyStoreService : IKeyStoreService
             // If the key store doesn't exist, return an error response
             if (keyStore == null)
             {
-                _logger.LogInformation("Key store not found.");
                 serviceResponse.Message = "Key store not found.";
                 return serviceResponse;
             }

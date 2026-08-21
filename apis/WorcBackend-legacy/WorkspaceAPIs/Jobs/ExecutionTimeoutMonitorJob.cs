@@ -24,8 +24,6 @@ namespace WorkspaceAPIs.Jobs
             // Use a single UTC timestamp throughout the execution to ensure  consistent timeout calculations.
             var currentUtcTime = DateTimeOffset.UtcNow;
 
-            _logger.LogInformation("Execution timeout monitor started at {CurrentUtcTime}.", currentUtcTime);
-
             try
             {
                 // Retrieve all jobs that are currently running.
@@ -38,11 +36,8 @@ namespace WorkspaceAPIs.Jobs
 
                 if (runningJobs.Count == 0)
                 {
-                    _logger.LogInformation("No active jobs found for timeout evaluation.");
                     return;
                 }
-
-                _logger.LogInformation("Evaluating {RunningJobCount} running job(s) for execution timeout.", runningJobs.Count);
 
                 // Load all required FlowVersion records in a single query to avoid repeated database lookups during processing.
                 var flowVersionIds = runningJobs
@@ -114,11 +109,6 @@ namespace WorkspaceAPIs.Jobs
                 {
                     await _workspaceInternalDbContext.SaveChangesAsync();
                 }
-
-                _logger.LogInformation(
-                    "Execution timeout monitor completed. Evaluated {EvaluatedJobCount} job(s); marked {KilledJobCount} job(s) as Killed.",
-                    runningJobs.Count,
-                    killedJobCount);
             }
             catch (Exception ex)
             {
