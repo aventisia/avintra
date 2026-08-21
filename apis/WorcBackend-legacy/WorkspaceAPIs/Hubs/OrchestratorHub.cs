@@ -230,14 +230,15 @@ public class OrchestratorHub : Hub
                 // Remove non-machine clients from their tenant group
                 await Groups.RemoveFromGroupAsync(clientDataStore.ConnectionId, $"TENANT_{clientDataStore.TenantId}");
 
-                // Check if another connection exists
-                var hasOtherConnections = await _clientStatusStore.GetUserStatusesAsync(clientDataStore.ClientId);
-
-                // Handle machine disconnection
-                if (hasOtherConnections.Any() && clientDataStore.Type == ClientTypesEnum.AvintraMachine)
+                // Handle machine disconnection: if this was the last connection for that machine,
+                // notify the tenant group so the UI can refresh without a page reload.
+                if (clientDataStore.Type == ClientTypesEnum.AvintraMachine)
                 {
-                    // Notify the tenant group about the machine going offline
-                    await Clients.Group($"TENANT_{clientDataStore.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");
+                    var stillConnectedMachine = await _clientStatusStore.GetClientByIdAsync(clientDataStore.ClientId);
+                    if (stillConnectedMachine == null)
+                    {
+                        await Clients.Group($"TENANT_{clientDataStore.TenantId}").SendAsync("machine_status_update", "A machine is offline now.");
+                    }
                 }
             }
 

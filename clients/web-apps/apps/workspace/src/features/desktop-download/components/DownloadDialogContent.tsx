@@ -30,7 +30,7 @@ const buildExecutorServiceCommand = (
   const appBaseUrl = baseUrl.replace(/\/$/, "");
   const t = tenantId ?? "<TENANT_ID>";
   const u = linkedUsername ?? "<LINKED_USERNAME>";
-  return `AvintraRunnerService.exe --install --appBaseUrl "${appBaseUrl}" --apiKey "<API_KEY>" --tenantId "${t}" --linkedUsername "${u}"`;
+  return `.\\AvintraRunnerService.exe --install --appBaseUrl "${appBaseUrl}" --apiKey "<API_KEY>" --tenantId "${t}" --linkedUsername "${u}"`;
 };
 
 const buildOllamaStylePowerShellCommand = (
@@ -354,7 +354,7 @@ const RunnerInstallRow = ({
                 </code>
                 . The exe handles both stopping the service and removing its registration:
               </p>
-              <OneLinerBlock command="AvintraRunnerService.exe --uninstall" />
+              <OneLinerBlock command=".\AvintraRunnerService.exe --uninstall" />
             </li>
           </ol>
         </div>
