@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace RunnerApp;
 
@@ -19,9 +20,19 @@ public static class MachineIdentity
     public static string OsId => GetOsId();
 
     /// <summary>
-    /// Current OS username.
+    /// Current interactive OS username.
+    /// On Windows, when running as a service (e.g. LocalSystem), this queries the active
+    /// console/RDP session instead of returning the service account (e.g. THINKPAD$).
+    /// This value is persisted in the Machines.Username column.
     /// </summary>
-    public static string Username => Environment.UserName;
+    public static string Username => GetUsername();
+
+    /// <summary>
+    /// The account under which the runner process is executing.
+    /// For a Windows service this is typically LocalSystem / NT SERVICE\SERVICE_NAME
+    /// or a machine account such as THINKPAD$. It is used to build the stable machine name.
+    /// </summary>
+    public static string ServiceAccountUsername => Environment.UserName;
 
     /// <summary>
     /// NetBIOS / hostname of the machine.
@@ -32,6 +43,126 @@ public static class MachineIdentity
     /// RunnerApp assembly version, used when connecting to the backend hub.
     /// </summary>
     public static string AppVersion => GetAppVersion();
+
+    private static string GetUsername()
+    {
+        if (OperatingSystem.IsWindows())
+        {
+            try
+            {
+                var interactiveUsername = GetActiveWindowsSessionUsername();
+                if (!string.IsNullOrWhiteSpace(interactiveUsername))
+                {
+                    return interactiveUsername;
+                }
+            }
+            catch
+            {
+                // Fall through to the default identity.
+            }
+        }
+
+        return Environment.UserName;
+    }
+
+    private static string? GetActiveWindowsSessionUsername()
+    {
+        const int WTS_CURRENT_SERVER_HANDLE = 0;
+        const int WTSUserName = 5;
+
+        if (!WTSEnumerateSessions(WTS_CURRENT_SERVER_HANDLE, 0, 1, out var sessionInfoPtr, out var sessionCount))
+        {
+            return null;
+        }
+
+        try
+        {
+            var sessionSize = Marshal.SizeOf(typeof(WTS_SESSION_INFO));
+            var current = sessionInfoPtr;
+
+            for (var i = 0; i < sessionCount; i++)
+            {
+                var session = Marshal.PtrToStructure<WTS_SESSION_INFO>(current);
+                current = IntPtr.Add(current, sessionSize);
+
+                // "Active" is the normal interactive logon state.
+                if (session.State != WTS_CONNECTSTATE_CLASS.WTSActive)
+                {
+                    continue;
+                }
+
+                var bufferPtr = IntPtr.Zero;
+                try
+                {
+                    if (!WTSQuerySessionInformation(WTS_CURRENT_SERVER_HANDLE, session.SessionId, WTSUserName, out bufferPtr, out _))
+                    {
+                        continue;
+                    }
+
+                    var username = Marshal.PtrToStringAnsi(bufferPtr);
+                    if (!string.IsNullOrWhiteSpace(username))
+                    {
+                        return username;
+                    }
+                }
+                finally
+                {
+                    if (bufferPtr != IntPtr.Zero)
+                    {
+                        WTSFreeMemory(bufferPtr);
+                    }
+                }
+            }
+        }
+        finally
+        {
+            WTSFreeMemory(sessionInfoPtr);
+        }
+
+        return null;
+    }
+
+    [DllImport("wtsapi32.dll", SetLastError = true)]
+    private static extern bool WTSEnumerateSessions(
+        int hServer,
+        int reserved,
+        int version,
+        out IntPtr ppSessionInfo,
+        out int pCount);
+
+    [DllImport("wtsapi32.dll", SetLastError = true)]
+    private static extern bool WTSQuerySessionInformation(
+        int hServer,
+        int sessionId,
+        int wtsInfoClass,
+        out IntPtr ppBuffer,
+        out int pBytesReturned);
+
+    [DllImport("wtsapi32.dll", SetLastError = true)]
+    private static extern void WTSFreeMemory(IntPtr pMemory);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct WTS_SESSION_INFO
+    {
+        public int SessionId;
+        [MarshalAs(UnmanagedType.LPStr)]
+        public string pWinStationName;
+        public WTS_CONNECTSTATE_CLASS State;
+    }
+
+    private enum WTS_CONNECTSTATE_CLASS
+    {
+        WTSActive,
+        WTSConnected,
+        WTSConnectQuery,
+        WTSShadow,
+        WTSDisconnected,
+        WTSIdle,
+        WTSListen,
+        WTSReset,
+        WTSDown,
+        WTSInit
+    }
 
     private static string GetOsId()
     {

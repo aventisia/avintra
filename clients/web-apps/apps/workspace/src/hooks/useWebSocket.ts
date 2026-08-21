@@ -1,5 +1,5 @@
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 /**
  * useWebSocket
@@ -19,8 +19,9 @@ export default function useWebSocket({
   url: string;
   shouldConnect: boolean;
 }) {
-  // Stores the HubConnection instance to persist between renders.
-  const connectionRef = useRef<HubConnection | null>(null);
+  // Keep the active HubConnection in state so React re-renders consumers
+  // once the connection is established and listeners can be registered.
+  const [connection, setConnection] = useState<HubConnection | null>(null);
 
   // Indicates whether the WebSocket connection is ready.
   const [isReady, setIsReady] = useState(false);
@@ -30,19 +31,19 @@ export default function useWebSocket({
     if (!shouldConnect) return;
 
     // Avoid creating multiple connections.
-    if (connectionRef.current) return;
+    if (connection) return;
 
     // Build the SignalR connection.
-    const connection = new HubConnectionBuilder()
+    const newConnection = new HubConnectionBuilder()
       .withUrl(url)
       .withAutomaticReconnect()
       .configureLogging(LogLevel.Information)
       .build();
 
-    connectionRef.current = connection;
+    setConnection(newConnection);
 
     // Start connection.
-    connection
+    newConnection
       .start()
       .then(() => {
         console.log("WebSocket Connected");
@@ -52,14 +53,14 @@ export default function useWebSocket({
 
     // Cleanup when component unmounts or parameters change.
     return () => {
-      connection.stop();
-      connectionRef.current = null;
+      newConnection.stop();
+      setConnection(null);
       setIsReady(false);
     };
-  }, [shouldConnect, url]);
+  }, [shouldConnect, url, connection]);
 
   return {
-    connection: connectionRef.current,
+    connection,
     isReady,
   };
 }

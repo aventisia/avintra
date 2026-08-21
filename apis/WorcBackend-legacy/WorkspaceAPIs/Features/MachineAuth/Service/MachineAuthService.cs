@@ -46,6 +46,9 @@ public class MachineAuthService : IMachineAuthService
             var osId = machineAuthReqDto.OsID.Trim().ToLowerInvariant();
             var username = machineAuthReqDto.Username.Trim().ToLowerInvariant();
             var hostname = machineAuthReqDto.Hostname.Trim().ToLowerInvariant();
+            var serviceAccountUsername = string.IsNullOrWhiteSpace(machineAuthReqDto.ServiceAccountUsername)
+                ? username
+                : machineAuthReqDto.ServiceAccountUsername.Trim().ToLowerInvariant();
 
             // Look for an existing machine with the same OS ID and username in the tenant
             var machine = await _workspaceDbContext.Machines
@@ -59,7 +62,7 @@ public class MachineAuthService : IMachineAuthService
             {
                 machine = new Machine
                 {
-                    Name = MachinesTableHelpers.BuildMachineName(machineAuthReqDto.OperatingSystem, osId, username),
+                    Name = MachinesTableHelpers.BuildMachineName(machineAuthReqDto.OperatingSystem, osId, serviceAccountUsername),
                     OperatingSystem = machineAuthReqDto.OperatingSystem,
                     OsID = osId,
                     Username = username,
