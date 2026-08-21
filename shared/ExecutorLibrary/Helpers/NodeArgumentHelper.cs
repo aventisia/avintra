@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Reflection;
+using ExecutorLibrary.FlowProcessor;
 using NodeLibrary.Core;
 
 namespace ExecutorLibrary.Helpers;
@@ -38,32 +39,16 @@ public static class NodeArgumentHelper
                 return sb.ToString().Trim();
             }
 
-            // IEnumerable (including lists/arrays of dynamic objects): serialize as JSON.
-            if (value is IEnumerable enumerable && value is not string)
-            {
-                try
-                {
-                    return JsonSerializer.Serialize(value);
-                }
-                catch
-                {
-                    return value.ToString();
-                }
-            }
-
-            // ExpandoObject / dictionary-backed dynamic objects have a useless ToString();
+            // IEnumerable (including lists/arrays of dynamic objects), DynamicJson,
+            // ExpandoObject, and dictionary-backed dynamic objects have a useless ToString();
             // serialize them as JSON so template outputs like {{ai_model_result.output}}
-            // render as structured data instead of "System.Dynamic.ExpandoObject".
-            if (value is System.Dynamic.ExpandoObject || value is IDictionary<string, object?>)
+            // render as structured data instead of the class name.
+            if ((value is IEnumerable enumerable && value is not string)
+                || value is DynamicJson
+                || value is System.Dynamic.ExpandoObject
+                || value is IDictionary<string, object?>)
             {
-                try
-                {
-                    return JsonSerializer.Serialize(value);
-                }
-                catch
-                {
-                    return value.ToString();
-                }
+                return SerializeOrToString(value);
             }
 
             return value.ToString();
@@ -277,9 +262,34 @@ public static class NodeArgumentHelper
         }
 
         // Try JSON deserialization for complex types from string
+        return DeserializeJson(str, targetType);
+    }
+
+    /// <summary>
+    /// Serializes an object to JSON, falling back to its <see cref="object.ToString"/> value
+    /// when serialization fails (e.g., for cycles or unsupported types).
+    /// </summary>
+    private static string SerializeOrToString(object? value)
+    {
         try
         {
-            return JsonSerializer.Deserialize(str, targetType);
+            return JsonSerializer.Serialize(value);
+        }
+        catch
+        {
+            return value?.ToString() ?? string.Empty;
+        }
+    }
+
+    /// <summary>
+    /// Deserializes a JSON string to the specified target type, returning the default value
+    /// for value types when deserialization fails.
+    /// </summary>
+    private static object? DeserializeJson(string json, Type targetType)
+    {
+        try
+        {
+            return JsonSerializer.Deserialize(json, targetType);
         }
         catch
         {

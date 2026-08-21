@@ -27,7 +27,7 @@ public class FlowExecutionContext
         }
 
         _variables[key] = value;
-        Interpreter.SetVariable(key, ConvertForInterpreter(value));
+        Interpreter.SetVariable(key, JsonToDynamicConverter.ConvertForInterpreter(value));
     }
 
     public T? Get<T>(string key)
@@ -98,12 +98,12 @@ public class FlowExecutionContext
     public object? ResolveTemplateObject(object? value)
     {
         // Convert JsonElement / JsonNode into an interpreter-friendly dynamic structure
-        // (ExpandoObject / List<object?>) so dot-notation and indexing work.
+        // (DynamicJson / List<object?>) so dot-notation and indexing work.
         value = value switch
         {
-            JsonElement jsonElement => ConvertJsonElement(jsonElement),
-            JsonNode jsonNode => ConvertJsonNode(jsonNode),
-            _ => value
+            JsonElement jsonElement => JsonToDynamicConverter.ConvertJsonElement(jsonElement),
+            JsonNode jsonNode => JsonToDynamicConverter.ConvertJsonNode(jsonNode),
+            _ => JsonToDynamicConverter.ConvertForInterpreter(value)
         };
 
         if (value is string stringValue && stringValue.Contains("{{") && stringValue.Contains("}}"))
@@ -155,6 +155,13 @@ public class FlowExecutionContext
                     var evaluated = Interpreter.Eval(expr);
                     return ObjectToString(evaluated);
                 }
+                catch (Exception ex) when (ex is KeyNotFoundException || ex.InnerException is KeyNotFoundException
+                                           || ex is Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
+                {
+                    // Surface missing key / bad indexer errors so users see the actual
+                    // template problem instead of the placeholder being left unresolved.
+                    throw;
+                }
                 catch
                 {
                     // Fallback: try simple dictionary lookup
@@ -174,8 +181,8 @@ public class FlowExecutionContext
 
     /// <summary>
     /// Converts an evaluated object to its string representation.
-    /// ExpandoObject / dictionary-backed dynamic objects are serialized as JSON
-    /// because their default ToString() returns "System.Dynamic.ExpandoObject".
+    /// DynamicJson / ExpandoObject / dictionary-backed dynamic objects are serialized as JSON
+    /// because their default ToString() returns the class name.
     /// </summary>
     private static string ObjectToString(object? value)
     {
@@ -185,7 +192,7 @@ public class FlowExecutionContext
         if (value is string s)
             return s;
 
-        if (value is ExpandoObject || value is IDictionary<string, object?>)
+        if (value is DynamicJson || value is ExpandoObject || value is IDictionary<string, object?>)
         {
             try
             {
@@ -198,147 +205,5 @@ public class FlowExecutionContext
         }
 
         return value.ToString() ?? string.Empty;
-    }
-
-    /// <summary>
-    /// Recursively converts values into forms that DynamicExpresso can evaluate
-    /// with dot-notation and indexing. JsonElements / JsonNodes become ExpandoObjects or lists,
-    /// and nested dictionaries/enumerables are flattened the same way.
-    /// </summary>
-    private static object? ConvertForInterpreter(object? value)
-    {
-        if (value is null)
-            return null;
-
-        if (value is JsonElement element)
-            return ConvertJsonElement(element);
-
-        if (value is JsonNode node)
-            return ConvertJsonNode(node);
-
-        if (value is string)
-            return value;
-
-        if (value is IDictionary dictionary)
-        {
-            var expando = new ExpandoObject() as IDictionary<string, object?>;
-            foreach (var key in dictionary.Keys)
-            {
-                var keyString = key?.ToString();
-                if (!string.IsNullOrWhiteSpace(keyString) && key is not null)
-                {
-                    expando[keyString] = ConvertForInterpreter(dictionary[key]);
-                }
-            }
-            return expando;
-        }
-
-        // ExpandoObject and other generic string-keyed dictionaries must be preserved
-        // as objects so dot-notation (e.g. CurrentItem.name) works in DynamicExpresso.
-        if (value is IDictionary<string, object?> genericDictionary)
-        {
-            var expando = new ExpandoObject() as IDictionary<string, object?>;
-            foreach (var kvp in genericDictionary)
-            {
-                if (!string.IsNullOrWhiteSpace(kvp.Key))
-                {
-                    expando[kvp.Key] = ConvertForInterpreter(kvp.Value);
-                }
-            }
-            return expando;
-        }
-
-        if (value is IEnumerable enumerable)
-        {
-            return ConvertEnumerable(enumerable.Cast<object?>());
-        }
-
-        return value;
-    }
-
-    private static object? ConvertJsonElement(JsonElement element)
-    {
-        switch (element.ValueKind)
-        {
-            case JsonValueKind.Object:
-                var expando = new ExpandoObject() as IDictionary<string, object?>;
-                foreach (var property in element.EnumerateObject())
-                {
-                    expando[property.Name] = ConvertJsonElement(property.Value);
-                }
-                return expando;
-
-            case JsonValueKind.Array:
-                return ConvertEnumerable(element.EnumerateArray().Select(ConvertJsonElement));
-
-            case JsonValueKind.String:
-                return element.GetString();
-
-            case JsonValueKind.Number:
-                return element.TryGetInt64(out var longValue) ? longValue : element.GetDouble();
-
-            case JsonValueKind.True:
-                return true;
-
-            case JsonValueKind.False:
-                return false;
-
-            case JsonValueKind.Null:
-            case JsonValueKind.Undefined:
-                return null;
-
-            default:
-                return element.GetRawText();
-        }
-    }
-
-    private static object? ConvertJsonNode(JsonNode? node)
-    {
-        if (node is null)
-            return null;
-
-        if (node is JsonObject jsonObject)
-        {
-            var expando = new ExpandoObject() as IDictionary<string, object?>;
-            foreach (var property in jsonObject)
-            {
-                if (!string.IsNullOrWhiteSpace(property.Key))
-                {
-                    expando[property.Key] = ConvertJsonNode(property.Value);
-                }
-            }
-            return expando;
-        }
-
-        if (node is JsonArray jsonArray)
-        {
-            return ConvertEnumerable(jsonArray.Select(ConvertJsonNode));
-        }
-
-        if (node is JsonValue jsonValue)
-        {
-            var value = jsonValue.GetValue<object?>();
-            return value is JsonElement nestedElement ? ConvertJsonElement(nestedElement) : value;
-        }
-
-        return node.ToString();
-    }
-
-    /// <summary>
-    /// Converts a sequence of interpreter-friendly values into a strongly-typed list
-    /// when possible. If every element is an ExpandoObject we return
-    /// <see cref="List{ExpandoObject}"/> so that indexers preserve the dynamic type
-    /// and DynamicExpresso can resolve dot-notation like list[2].Value.line_items.
-    /// Otherwise we fall back to <see cref="List{Object}"/>.
-    /// </summary>
-    private static object ConvertEnumerable(IEnumerable<object?> items)
-    {
-        var converted = items.Select(ConvertForInterpreter).ToList();
-        if (converted.Count > 0 && converted.All(i => i is ExpandoObject))
-        {
-            return converted.Cast<ExpandoObject>().ToList();
-        }
-
-        return converted;
     }
 }

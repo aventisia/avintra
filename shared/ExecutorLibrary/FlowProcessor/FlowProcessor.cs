@@ -1209,43 +1209,13 @@ public class FlowProcessor
 
     /// <summary>
     /// Recursively converts a JsonElement into a form suitable for DynamicExpresso evaluation.
-    /// Objects become dictionaries, arrays become lists, and primitives are unwrapped.
+    /// Objects become DynamicJson (supports both dot-notation and string indexing), arrays
+    /// become lists, and primitives are unwrapped. This delegates to
+    /// <see cref="JsonToDynamicConverter.ConvertJsonElement"/> so all conversion paths
+    /// produce consistent types.
     /// </summary>
     private static object? ConvertJsonElement(JsonElement element)
-    {
-        switch (element.ValueKind)
-        {
-            case JsonValueKind.Object:
-                var expando = new System.Dynamic.ExpandoObject() as IDictionary<string, object?>;
-                foreach (var property in element.EnumerateObject())
-                {
-                    expando[property.Name] = ConvertJsonElement(property.Value);
-                }
-                return expando;
-
-            case JsonValueKind.Array:
-                return element.EnumerateArray().Select(ConvertJsonElement).ToList();
-
-            case JsonValueKind.String:
-                return element.GetString();
-
-            case JsonValueKind.Number:
-                return element.TryGetInt64(out var longValue) ? longValue : element.GetDouble();
-
-            case JsonValueKind.True:
-                return true;
-
-            case JsonValueKind.False:
-                return false;
-
-            case JsonValueKind.Null:
-            case JsonValueKind.Undefined:
-                return null;
-
-            default:
-                return element.GetRawText();
-        }
-    }
+        => JsonToDynamicConverter.ConvertJsonElement(element);
 
     private static Dictionary<string, object?>? SnapshotOutputVariables(FlowExecutionContext? context)
     {
