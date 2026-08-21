@@ -231,9 +231,13 @@ function Install-Service {
 
     $psi = [System.Diagnostics.ProcessStartInfo]::new()
     $psi.FileName = $ExecutablePath
-    foreach ($arg in $arguments) {
-        $psi.ArgumentList.Add($arg)
-    }
+    # Build the argument string instead of using $psi.ArgumentList, which is only
+    # available in PowerShell 7+ (Core). In Windows PowerShell 5.1, .ArgumentList is
+    # $null and calling .Add() throws "cannot call a method on a null-valued expression".
+    # Quote any argument containing whitespace so values with spaces survive parsing.
+    $psi.Arguments = ($arguments | ForEach-Object {
+            if ($_ -match '\s') { '"' + ($_ -replace '"', '\"') + '"' } else { $_ }
+        }) -join ' '
     $psi.UseShellExecute = $false
     $psi.RedirectStandardOutput = $true
     $psi.RedirectStandardError = $true
