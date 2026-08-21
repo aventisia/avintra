@@ -29,7 +29,6 @@ public class AutoNotificationService : IAutoNotificationService
             // User list is empty
             if (autoNotificationDto.UserIdList.Count == 0)
             {
-                _logger.LogInformation("Provided user list is empty");
                 return false;
             }
 
@@ -51,14 +50,12 @@ public class AutoNotificationService : IAutoNotificationService
             // Insert NotificationUser relationship
             if (!await _notificationHelperService.AddNotificationUsers(newNotification.Id, autoNotificationDto.UserIdList))
             {
-                _logger.LogInformation("Failed to insert NotificationUsers relationship");
                 return false;
             }
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new auto notification");
                 return false;
             }
         }
@@ -84,7 +81,6 @@ public class AutoNotificationService : IAutoNotificationService
             // Auto notification does not exist
             if (notification == null)
             {
-                _logger.LogInformation($"Auto notification does not exist");
                 return false;
             }
 
@@ -102,14 +98,12 @@ public class AutoNotificationService : IAutoNotificationService
             // Update NotificationUser relationship
             if (!await _notificationHelperService.UpdateNotificationUsers(notification.Id, autoNotificationDto.UserIdList))
             {
-                _logger.LogInformation("Failed to update NotificationUsers relationship");
                 return false;
             }
 
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating auto notification");
                 return false;
             }
         }
@@ -135,7 +129,6 @@ public class AutoNotificationService : IAutoNotificationService
             // Auto notification does not exist
             if (notification == null)
             {
-                _logger.LogInformation($"Auto notification does not exist");
                 return false;
             }
 
@@ -155,7 +148,6 @@ public class AutoNotificationService : IAutoNotificationService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting auto notification");
                 return false;
             }
         }

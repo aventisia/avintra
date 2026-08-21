@@ -162,9 +162,6 @@ public class LLMProviderService : ILLMProviderService
                 return serviceResponse;
             }
 
-            // Log success
-            _logger.LogInformation("Successfully retrieved models from {Provider} API.", lLMProviderModelRequestDto.ProviderType);
-
             // Parse JSON response body.
             // ElevenLabs returns a top-level JSON array; other providers return a JSON object.
             IEnumerable<JToken>? dataArray = null;

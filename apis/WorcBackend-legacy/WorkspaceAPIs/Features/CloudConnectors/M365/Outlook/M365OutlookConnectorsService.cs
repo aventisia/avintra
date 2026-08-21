@@ -68,8 +68,6 @@ public class M365OutlookConnectorsService : IM365OutlookConnectorsService
             serviceResponse.Data.Response = result;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "M365 Outlook connector invoked successfully.";
-
-            _logger.LogInformation("Outlook action executed successfully.");
         }
         catch (Exception ex)
         {

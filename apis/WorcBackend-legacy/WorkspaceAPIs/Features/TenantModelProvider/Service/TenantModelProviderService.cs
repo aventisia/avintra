@@ -52,7 +52,6 @@ public class TenantModelProviderService : ITenantModelProviderService
             serviceResponse.Data = modelProviders;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Model providers retrieved successfully.";
-            _logger.LogInformation("Retrieved {Count} model provider configurations for tenant {TenantId}.", modelProviders.Count, _tenantId);
         }
         catch (Exception ex)
         {
@@ -154,7 +153,6 @@ public class TenantModelProviderService : ITenantModelProviderService
                 serviceResponse.Data = modelProviderDto;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Model provider created successfully.";
-                _logger.LogInformation("Created model provider {ProviderType} for tenant {TenantId}.", modelProviderDto.ProviderType, _tenantId);
             }
             else
             {
@@ -184,7 +182,6 @@ public class TenantModelProviderService : ITenantModelProviderService
                 serviceResponse.Data = modelProviderDto;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Model provider updated successfully.";
-                _logger.LogInformation("Updated model provider {ProviderType} for tenant {TenantId}.", modelProviderDto.ProviderType, _tenantId);
             }
         }
         catch (Exception ex)

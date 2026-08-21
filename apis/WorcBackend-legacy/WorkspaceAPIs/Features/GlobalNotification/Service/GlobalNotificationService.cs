@@ -43,7 +43,6 @@ public class GlobalNotificationService : IGlobalNotificationService
             // Notification doesn't exist
             if (notification == null)
             {
-                _logger.LogInformation($"Notification not found for Id {id}");
                 serviceResponse.Message = "Notification does not exist";
                 return serviceResponse;
             }
@@ -126,14 +125,12 @@ public class GlobalNotificationService : IGlobalNotificationService
             // Insert NotificationUser relationship
             if (!await _notificationHelperService.AddNotificationUsers(newNotification.Id, userIds))
             {
-                _logger.LogInformation("Failed to insert NotificationUser relationship");
                 return serviceResponse;
             }
 
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new notification");
                 return serviceResponse;
             }
 
@@ -173,7 +170,6 @@ public class GlobalNotificationService : IGlobalNotificationService
             // Notification does not exist
             if (notification == null)
             {
-                _logger.LogInformation($"Notification does not exist");
                 serviceResponse.Message = "Notification does not exist";
                 return serviceResponse;
             }
@@ -181,7 +177,6 @@ public class GlobalNotificationService : IGlobalNotificationService
             // Notification is older than 10 minutes
             if (notification.CreatedOn.AddMinutes(10) < DateTimeOffset.UtcNow)
             {
-                _logger.LogInformation($"Notification is older than 10 minutes");
                 serviceResponse.Message = "Notification is older than 10 minutes and cannot be updated";
                 return serviceResponse;
             }
@@ -203,7 +198,6 @@ public class GlobalNotificationService : IGlobalNotificationService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating notification");
                 return serviceResponse;
             }
 
@@ -243,7 +237,6 @@ public class GlobalNotificationService : IGlobalNotificationService
             // Notification does not exist
             if (notification == null)
             {
-                _logger.LogInformation($"Notification does not exist");
                 serviceResponse.Message = "Notification does not exist";
                 return serviceResponse;
             }
@@ -251,7 +244,6 @@ public class GlobalNotificationService : IGlobalNotificationService
             // Notification is older than 10 minutes
             if (notification.CreatedOn.AddMinutes(10) < DateTimeOffset.UtcNow)
             {
-                _logger.LogInformation($"Notification is older than 10 minutes");
                 serviceResponse.Message = "Notification is older than 10 minutes and cannot be updated";
                 return serviceResponse;
             }
@@ -272,7 +264,6 @@ public class GlobalNotificationService : IGlobalNotificationService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting notification");
                 return serviceResponse;
             }
 

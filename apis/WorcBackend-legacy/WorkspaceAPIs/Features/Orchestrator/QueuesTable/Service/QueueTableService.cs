@@ -447,7 +447,6 @@ public class QueueTableService : IQueueTableService
             // Save changes
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while creating a new queue");
                 return serviceResponse;
             }
 
@@ -478,7 +477,6 @@ public class QueueTableService : IQueueTableService
                 // Save changes to the database
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Context SaveChanges failed while creating a new queue user");
                     return serviceResponse;
                 }
             }
@@ -554,7 +552,6 @@ public class QueueTableService : IQueueTableService
             // Queue already exists
             if (queueAlreadyExists != null)
             {
-                _logger.LogInformation("Queue name already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A queue with the same name already exists. Please enter a unique name";
                 return serviceResponse;
@@ -674,7 +671,6 @@ public class QueueTableService : IQueueTableService
             // Save changes
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating queue");
                 return serviceResponse;
             }
 
@@ -759,7 +755,6 @@ public class QueueTableService : IQueueTableService
             // Save changes
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting queue");
                 return serviceResponse;
             }
 
@@ -800,7 +795,6 @@ public class QueueTableService : IQueueTableService
             // Flows do not exist
             if (queues.Count == 0)
             {
-                _logger.LogInformation($"Queues do not exist");
                 serviceResponse.Message = "Queues do not exist";
                 return serviceResponse;
             }
@@ -864,7 +858,6 @@ public class QueueTableService : IQueueTableService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting queues");
                 return serviceResponse;
             }
 
@@ -897,7 +890,6 @@ public class QueueTableService : IQueueTableService
             // Check if queue IDs are unique.
             if (agentIds.Count() != agentIds.Distinct().Count())
             {
-                _logger.LogInformation("Duplicate queue IDs detected.");
                 serviceResponse.Message = "Queue IDs cannot contain duplicates.";
                 return serviceResponse;
             }
@@ -913,7 +905,6 @@ public class QueueTableService : IQueueTableService
             if (queue == null)
             {
                 // If queue does not exist or does not belong to the current user, return failure.
-                _logger.LogInformation("Queue not found.");
                 serviceResponse.Message = "The queue does not exist.";
                 return serviceResponse;
             }
@@ -930,7 +921,6 @@ public class QueueTableService : IQueueTableService
             if (invalidAgnetIds.Any())
             {
                 // If there are invalid queue IDs, return failure.
-                _logger.LogInformation("Invalid queue IDs found: {InvalidAgnetIds}", string.Join(", ", invalidAgnetIds));
                 serviceResponse.Message = $"The following queue IDs are invalid or do not belong to the user: {string.Join(", ", invalidAgnetIds)}";
                 return serviceResponse;
             }
@@ -948,7 +938,6 @@ public class QueueTableService : IQueueTableService
             // If no changes are made (no new agents, no agents to remove), inform the user.
             if (!newIds.Any() && !removedIds.Any())
             {
-                _logger.LogInformation("No changes made; all provided agents are already assigned to the queue.");
                 serviceResponse.Message = "No changes made to the queue assignments.";
                 return serviceResponse;
             }
@@ -982,7 +971,6 @@ public class QueueTableService : IQueueTableService
             if (!await _unitOfWork.SaveAsync())
             {
                 // If saving fails, log and return failure.
-                _logger.LogInformation("Database save operation failed while assigning or updating agents.");
                 serviceResponse.Message = "Failed to update agent assignments for the queue.";
                 return serviceResponse;
             }
@@ -1024,7 +1012,6 @@ public class QueueTableService : IQueueTableService
             // Return an error if the queue doesn't exist
             if (queue == null)
             {
-                _logger.LogInformation("Queue with ID {QueueId} not found for user {UserId}.", queueId, _userId);
                 serviceResponse.Message = "The queue does not exist.";
                 return serviceResponse;
             }
@@ -1073,7 +1060,6 @@ public class QueueTableService : IQueueTableService
             // Ensure user IDs are unique.
             if (userIds.Count() != userIds.Distinct().Count())
             {
-                _logger.LogInformation("Duplicate user IDs detected.");
                 serviceResponse.Message = "User IDs cannot contain duplicates.";
                 return serviceResponse;
             }
@@ -1087,7 +1073,6 @@ public class QueueTableService : IQueueTableService
             if (queue == null)
             {
                 // If the queue doesn't exist or doesn't belong to the current user, return failure.
-                _logger.LogInformation("Queue not found.");
                 serviceResponse.Message = "The queue does not exist or doesn't belong to you.";
                 return serviceResponse;
             }
@@ -1103,7 +1088,6 @@ public class QueueTableService : IQueueTableService
             if (invalidUserIds.Any())
             {
                 // If any user IDs are invalid, return failure.
-                _logger.LogInformation("Invalid user IDs found: {InvalidUserIds}", string.Join(", ", invalidUserIds));
                 serviceResponse.Message = $"The following user IDs are invalid or do not belong to the current user: {string.Join(", ", invalidUserIds)}";
                 return serviceResponse;
             }
@@ -1119,7 +1103,6 @@ public class QueueTableService : IQueueTableService
             // If there are no changes (no users to assign or remove), return a message.
             if (!usersToAssign.Any() && !usersToRemove.Any())
             {
-                _logger.LogInformation("No changes made; the users are already correctly assigned to the queue.");
                 serviceResponse.Message = "No changes made to the queue assignments.";
                 return serviceResponse;
             }
@@ -1154,7 +1137,6 @@ public class QueueTableService : IQueueTableService
             if (!await _unitOfWork.SaveAsync())
             {
                 // If saving fails, return failure response.
-                _logger.LogInformation("Database save operation failed while assigning or updating users.");
                 serviceResponse.Message = "Failed to update user assignments for the queue.";
                 return serviceResponse;
             }
@@ -1196,7 +1178,6 @@ public class QueueTableService : IQueueTableService
             // Return an error if the queue doesn't exist
             if (queue == null)
             {
-                _logger.LogInformation("Queue with ID {QueueId} not found for user {UserId}.", queueId, _userId);
                 serviceResponse.Message = "The queue does not exist.";
                 return serviceResponse;
             }

@@ -328,11 +328,6 @@ public class ConversationService : IConversationService
             // Prevent redundant archive operation
             if (conversation.Status == ConversationStatusEnum.Archived)
             {
-                _logger.LogInformation(
-                    "[ArchiveConversation] Conversation already archived. ConversationId: {ConversationId}, UserId: {UserId}",
-                    conversationId,
-                    _userId);
-
                 serviceResponse.Data = true;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Conversation is already archived.";
@@ -406,11 +401,6 @@ public class ConversationService : IConversationService
             // Prevent redundant unarchive operation
             if (conversation.Status == ConversationStatusEnum.Active)
             {
-                _logger.LogInformation(
-                    "[UnarchiveConversation] Conversation already active. ConversationId: {ConversationId}, UserId: {UserId}",
-                    conversationId,
-                    _userId);
-
                 serviceResponse.Data = true;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Conversation is already active.";
@@ -496,10 +486,6 @@ public class ConversationService : IConversationService
 
             if (!conversationsToArchive.Any())
             {
-                _logger.LogInformation(
-                    "[ArchiveBulk] All conversations already archived. UserId: {UserId}",
-                    _userId);
-
                 serviceResponse.Data = true;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "All conversations are already archived.";

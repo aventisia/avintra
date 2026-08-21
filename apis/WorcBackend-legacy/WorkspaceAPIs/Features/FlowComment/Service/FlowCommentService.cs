@@ -76,7 +76,6 @@ public class FlowCommentService : IFlowCommentService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new flow comment");
                 return serviceResponse;
             }
 
@@ -114,7 +113,6 @@ public class FlowCommentService : IFlowCommentService
             // Flow comment does not exist
             if (flowComment == null)
             {
-                _logger.LogInformation($"Flow comment does not exist");
                 serviceResponse.Message = "Comment does not exist";
                 return serviceResponse;
             }
@@ -133,7 +131,6 @@ public class FlowCommentService : IFlowCommentService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating flow comment");
                 return serviceResponse;
             }
 
@@ -171,7 +168,6 @@ public class FlowCommentService : IFlowCommentService
             // Flow comment does not exist
             if (flowComment == null)
             {
-                _logger.LogInformation($"Flow comment does not exist");
                 serviceResponse.Message = "Comment does not exist";
                 return serviceResponse;
             }
@@ -182,7 +178,6 @@ public class FlowCommentService : IFlowCommentService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting flow comment");
                 return serviceResponse;
             }
 

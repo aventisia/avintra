@@ -197,7 +197,6 @@ public class AgentTableService : IAgentTableService
             _unitOfWork.FlowVersionRepo.Update(existingVersion);
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating existing flow version");
                 return serviceResponse;
             }
             ;
@@ -311,7 +310,6 @@ public class AgentTableService : IAgentTableService
             // Check if machine IDs are unique.
             if (machineIds.Count() != machineIds.Distinct().Count())
             {
-                _logger.LogInformation("Duplicate machine IDs detected.");
                 serviceResponse.Message = "Machine IDs cannot contain duplicates.";
                 return serviceResponse;
             }
@@ -327,7 +325,6 @@ public class AgentTableService : IAgentTableService
             if (agent == null)
             {
                 // If agent does not exist or does not belong to the current user, return failure.
-                _logger.LogInformation("Agent not found.");
                 serviceResponse.Message = "The agent does not exist.";
                 return serviceResponse;
             }
@@ -344,7 +341,6 @@ public class AgentTableService : IAgentTableService
             if (invalidMachineIds.Any())
             {
                 // If there are invalid machine IDs, return failure.
-                _logger.LogInformation("Invalid machine IDs found: {InvalidMachineIds}", string.Join(", ", invalidMachineIds));
                 serviceResponse.Message = $"The following machine IDs are invalid or do not belong to the user: {string.Join(", ", invalidMachineIds)}";
                 return serviceResponse;
             }
@@ -362,7 +358,6 @@ public class AgentTableService : IAgentTableService
             // If no changes are made (no new machines, no machines to remove), inform the user.
             if (!newMachineIds.Any() && !removedMachineIds.Any())
             {
-                _logger.LogInformation("No changes made; all provided machines are already assigned to the agent.");
                 serviceResponse.Message = "No changes made to the machine assignments.";
                 return serviceResponse;
             }
@@ -394,7 +389,6 @@ public class AgentTableService : IAgentTableService
             if (!await _unitOfWork.SaveAsync())
             {
                 // If saving fails, log and return failure.
-                _logger.LogInformation("Database save operation failed while assigning or updating machines.");
                 serviceResponse.Message = "Failed to update machine assignments for the agent.";
                 return serviceResponse;
             }
@@ -429,7 +423,6 @@ public class AgentTableService : IAgentTableService
             // Check if machine IDs are unique.
             if (machineIds.Count() != machineIds.Distinct().Count())
             {
-                _logger.LogInformation("Duplicate machine IDs detected.");
                 serviceResponse.Message = "Machine IDs cannot contain duplicates.";
                 return serviceResponse;
             }
@@ -443,7 +436,6 @@ public class AgentTableService : IAgentTableService
             if (agent == null)
             {
                 // If agent does not exist or does not belong to the current user, return failure.
-                _logger.LogInformation("Agent not found.");
                 serviceResponse.Message = "The agent does not exist.";
                 return serviceResponse;
             }
@@ -458,7 +450,6 @@ public class AgentTableService : IAgentTableService
             if (invalidMachineIds.Any())
             {
                 // If there are invalid machine IDs, return failure.
-                _logger.LogInformation("Invalid machine IDs found: {InvalidMachineIds}", string.Join(", ", invalidMachineIds));
                 serviceResponse.Message = $"The following machine IDs are invalid or do not belong to the user: {string.Join(", ", invalidMachineIds)}";
                 return serviceResponse;
             }
@@ -469,7 +460,6 @@ public class AgentTableService : IAgentTableService
             if (!machinesToRemove.Any())
             {
                 // If no machines are assigned, inform the user.
-                _logger.LogInformation("None of the provided machines are currently assigned to this agent.");
                 serviceResponse.Message = "No matching machines are assigned to this agent.";
                 return serviceResponse;
             }
@@ -481,7 +471,6 @@ public class AgentTableService : IAgentTableService
             if (!await _unitOfWork.SaveAsync())
             {
                 // If saving fails, log and return failure.
-                _logger.LogInformation("Database save operation failed while removing machines.");
                 serviceResponse.Message = "Failed to remove machines from the agent.";
                 return serviceResponse;
             }
@@ -521,7 +510,6 @@ public class AgentTableService : IAgentTableService
             if (agent == null)
             {
                 // If agent does not exist or does not belong to the current user, return failure.
-                _logger.LogInformation("Agent with ID {AgentId} not found for user {UserId}.", agentId, _userId);
                 serviceResponse.Message = "The agent does not exist.";
                 return serviceResponse;
             }
@@ -636,7 +624,6 @@ public class AgentTableService : IAgentTableService
             // Save the changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while disabling flow versions.");
                 return serviceResponse;
             }
 

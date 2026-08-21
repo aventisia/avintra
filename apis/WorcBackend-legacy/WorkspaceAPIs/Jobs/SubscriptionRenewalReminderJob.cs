@@ -29,10 +29,9 @@ namespace WorkspaceAPIs.Jobs
         public async Task Execute(IJobExecutionContext context)
         {
             var currentDateTime = DateTimeOffset.UtcNow;
-            _logger.LogInformation("Subscription renewal reminder job started at {Time:O}.", currentDateTime);
 
             // Automatic notifications are sent only in the Production environment,
-            // so skip the database reads entirely elsewhere to avoid unnecessary work.
+            // so skip the database reads entirely to avoid unnecessary work.
             var isProduction = string.Equals(
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
                 "Production",
@@ -40,7 +39,6 @@ namespace WorkspaceAPIs.Jobs
 
             if (!isProduction)
             {
-                _logger.LogInformation("Subscription renewal reminder job skipped: automatic notifications are only sent in Production.");
                 return;
             }
 
@@ -57,7 +55,6 @@ namespace WorkspaceAPIs.Jobs
 
                 if (subscriptions.Count == 0)
                 {
-                    _logger.LogInformation("No subscriptions due for renewal within the reminder window.");
                     return;
                 }
 
@@ -82,13 +79,8 @@ namespace WorkspaceAPIs.Jobs
                     // Only remind when the next billing date is within [today, start of window].
                     if (subscription.NextBillingDate.Date > reminderStartDate)
                     {
-                        _logger.LogInformation("Tenant {TenantId} subscription renewal on {NextBillingDate:O} is outside the {Days} day reminder window; skipping.",
-                            subscription.TenantId, subscription.NextBillingDate, reminderWindowDays);
                         continue;
                     }
-
-                    _logger.LogInformation("Sending renewal reminder for tenant {TenantId} with next billing date {NextBillingDate:O}.",
-                        subscription.TenantId, subscription.NextBillingDate);
 
                     await _notificationEventService.NotifySubscriptionRenewalAsync(subscription.TenantId, subscription.NextBillingDate);
                 }

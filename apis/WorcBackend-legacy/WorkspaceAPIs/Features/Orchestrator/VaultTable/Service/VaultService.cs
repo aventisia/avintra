@@ -167,7 +167,6 @@ public class VaultService : IVaultService
             // Validate vault exists
             if (vault == null)
             {
-                _logger.LogInformation("Vault not found.");
                 serviceResponse.Message = "Vault not found.";
                 return serviceResponse;
             }
@@ -240,7 +239,6 @@ public class VaultService : IVaultService
             // Validate vault exists
             if (vault == null)
             {
-                _logger.LogInformation("Vault not found.");
                 serviceResponse.Message = "Vault not found.";
                 return serviceResponse;
             }
@@ -304,7 +302,6 @@ public class VaultService : IVaultService
             // If an item with the same name exists, return a conflict response
             if (existingVault != null)
             {
-                _logger.LogInformation("Vault already exists.");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A vault with the same name already exists. Please enter a unique name.";
                 return serviceResponse;
@@ -329,7 +326,6 @@ public class VaultService : IVaultService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while inserting new vault.");
                 return serviceResponse;
             }
 
@@ -376,7 +372,6 @@ public class VaultService : IVaultService
             // If the item doesn't exist, return an error message
             if (vault == null)
             {
-                _logger.LogInformation("Vault does not exist.");
                 serviceResponse.Message = "Vault does not exist.";
                 return serviceResponse;
             }
@@ -413,7 +408,6 @@ public class VaultService : IVaultService
             // If a conflict is found, return a conflict response
             if (existingVault != null)
             {
-                _logger.LogInformation("Vault name already exists.");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A vault with the same name already exists. Please enter a unique name.";
                 return serviceResponse;
@@ -438,7 +432,6 @@ public class VaultService : IVaultService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while updating vault.");
                 return serviceResponse;
             }
 
@@ -475,7 +468,6 @@ public class VaultService : IVaultService
             // If the item doesn't exist, return an error message
             if (vault == null)
             {
-                _logger.LogInformation("Vault does not exist.");
                 serviceResponse.Message = "Vault does not exist.";
                 return serviceResponse;
             }
@@ -525,7 +517,6 @@ public class VaultService : IVaultService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while deleting vault.");
                 return serviceResponse;
             }
 
@@ -562,7 +553,6 @@ public class VaultService : IVaultService
             // If no items are found, return an error message
             if (vaults.Count == 0)
             {
-                _logger.LogInformation("Vaults do not exist.");
                 serviceResponse.Message = "Vaults do not exist.";
                 return serviceResponse;
             }
@@ -624,7 +614,6 @@ public class VaultService : IVaultService
             // Ensure changes are saved successfully
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while deleting vaults.");
                 return serviceResponse;
             }
 
@@ -662,7 +651,6 @@ public class VaultService : IVaultService
             // Return an error response if the vault does not exist
             if (vault == null)
             {
-                _logger.LogInformation("Vault not found.");
                 serviceResponse.Message = "Vault not found.";
                 return serviceResponse;
             }
@@ -742,7 +730,6 @@ public class VaultService : IVaultService
             // Return an error response if the vault does not exist
             if (vault == null)
             {
-                _logger.LogInformation("Vault not found.");
                 serviceResponse.Message = "Vault not found.";
                 return serviceResponse;
             }

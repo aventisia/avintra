@@ -63,7 +63,6 @@ public class QueueTransactionService : IQueueTransactionService
             serviceResponse.Data = queueTransactions.Adapt<IEnumerable<QueueTransactionDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved queue transactions.";
-            _logger.LogInformation($"Successfully retrieved {queueTransactions.Count} transactions for queue {queueId}.");
         }
         catch (Exception ex)
         {
@@ -118,8 +117,6 @@ public class QueueTransactionService : IQueueTransactionService
             // Apply dynamic filters in memory
             if (queueFilterRequestDto.Conditions.Any())
             {
-                _logger.LogInformation("Applying {Count} filter conditions...", queueFilterRequestDto.Conditions.Count);
-
                 items = items.Where(item =>
                 {
                     foreach (var condition in queueFilterRequestDto.Conditions)
@@ -172,8 +169,6 @@ public class QueueTransactionService : IQueueTransactionService
             // Apply dynamic sorting
             if (queueFilterRequestDto.QueuePriority.Any())
             {
-                _logger.LogInformation("Applying sorting priorities...");
-
                 foreach (var sort in queueFilterRequestDto.QueuePriority)
                 {
                     sorted = sort.OrderBy.Equals("Ascending", StringComparison.OrdinalIgnoreCase)
@@ -204,8 +199,6 @@ public class QueueTransactionService : IQueueTransactionService
             serviceResponse.Data = result;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Successfully retrieved queue transactions.";
-
-            _logger.LogInformation("Completed successfully. Returning {Count} transactions for Queue ID: {QueueId}", result.Count, queue.Id);
         }
         catch (Exception ex)
         {
@@ -240,7 +233,6 @@ public class QueueTransactionService : IQueueTransactionService
             // Check if the transaction was found
             if (queueTransaction == null)
             {
-                _logger.LogInformation("Queue transaction with ID {QueueTransactionId} not found.", queueTransactionId);
                 serviceResponse.Message = "Queue transaction not found.";
                 return serviceResponse;
             }
@@ -249,8 +241,6 @@ public class QueueTransactionService : IQueueTransactionService
             serviceResponse.Data = queueTransaction.Adapt<QueueTransactionDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queue transaction retrieved successfully.";
-
-            _logger.LogInformation("Queue transaction with ID {QueueTransactionId} retrieved successfully.", queueTransactionId);
         }
         catch (Exception ex)
         {
@@ -271,10 +261,7 @@ public class QueueTransactionService : IQueueTransactionService
 
         try
         {
-            _logger.LogInformation("Starting transaction insertion process...");
-
             // Retrieve the target queue (by ID or name)
-            _logger.LogInformation("Retrieving queue information for processing...");
             var queue = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
                     string.IsNullOrEmpty(queueTransactionDto.QueueName)
@@ -291,21 +278,16 @@ public class QueueTransactionService : IQueueTransactionService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Queue found (ID: {QueueId}). Proceeding with validation and insertion...", queue.Id);
-
             // Deserialize input schema from the queue definition
-            _logger.LogInformation("Deserializing queue input schema...");
             var inputSchema = System.Text.Json.JsonSerializer.Deserialize<List<QueueSchemaDefinitionDto>>(
                 queue.InputSchema ?? "[]",
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             ) ?? new List<QueueSchemaDefinitionDto>();
-            _logger.LogInformation("Schema contains {Count} field definitions.", inputSchema.Count);
 
             // Collect existing unique keys for duplicate detection
             var existingUniqueKeys = new HashSet<string>();
             if (queue.QueueTransactions != null)
             {
-                _logger.LogInformation("Collecting existing unique keys for duplicate validation...");
                 foreach (var transaction in queue.QueueTransactions)
                 {
                     var payload = transaction.PayloadData;
@@ -329,13 +311,10 @@ public class QueueTransactionService : IQueueTransactionService
                     var uniqueKey = string.Join("|", keyParts);
                     existingUniqueKeys.Add(uniqueKey);
                 }
-                _logger.LogInformation("Collected {Count} existing unique keys.", existingUniqueKeys.Count);
             }
 
             // Parse incoming payload data (array of transaction objects)
-            _logger.LogInformation("Parsing incoming payload data...");
             var dataArray = JArray.Parse(queueTransactionDto.PayloadData ?? "[]");
-            _logger.LogInformation("Found {Count} transaction(s) in the payload.", dataArray.Count);
 
             var enrichedPayloadData = new JArray(); // To hold validated/enriched payload
             var newTransactions = new List<QueueTransaction>(); // To hold valid transaction entities
@@ -428,8 +407,6 @@ public class QueueTransactionService : IQueueTransactionService
                     newTransaction.Status = QueueTransactionStatusTypesEnum.Pending.ToString();
 
                     newTransactions.Add(newTransaction);
-
-                    _logger.LogInformation("Validated transaction prepared for insertion.");
                 }
             }
 
@@ -450,7 +427,6 @@ public class QueueTransactionService : IQueueTransactionService
             // Insert if no validation errors
             if (newTransactions.Any())
             {
-                _logger.LogInformation("Inserting {Count} transaction(s) into the database...", newTransactions.Count);
                 await _unitOfWork.QueueTransactionRepo.InsertAsync(newTransactions);
 
                 if (!await _unitOfWork.SaveAsync())
@@ -472,7 +448,6 @@ public class QueueTransactionService : IQueueTransactionService
             serviceResponse.StatusCode = 200;
             serviceResponse.Data = queueTransactionDto;
             serviceResponse.Message = $"Transaction validated and added successfully. {newTransactions.Count} work item(s) added to the queue.";
-            _logger.LogInformation("Transaction processing completed successfully. All transactions inserted into queue {QueueId}.", queueTransactionDto.QueueId);
         }
         catch (Exception ex)
         {
@@ -493,8 +468,6 @@ public class QueueTransactionService : IQueueTransactionService
 
         try
         {
-            _logger.LogInformation("Initiating update for transaction ID {TransactionId}.", queueTransactionDto.Id);
-
             // Retrieve the transaction with its associated queue
             var queueTransaction = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w => w.Id == queueTransactionDto.Id)
@@ -532,7 +505,6 @@ public class QueueTransactionService : IQueueTransactionService
             serviceResponse.Data = queueTransaction.Adapt<QueueTransactionDto>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Transaction status updated successfully.";
-            _logger.LogInformation("Transaction ID {TransactionId} successfully updated. New status: {Status}.", queueTransactionDto.Id, queueTransactionDto.Status);
         }
         catch (Exception ex)
         {
@@ -553,8 +525,6 @@ public class QueueTransactionService : IQueueTransactionService
 
         try
         {
-            _logger.LogInformation("Initiating update for transaction ID {TransactionId}.", queueTransactionDto.Id);
-
             // Retrieve the transaction with its associated queue
             var queueTransaction = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w => w.Id == queueTransactionDto.Id)
@@ -700,7 +670,6 @@ public class QueueTransactionService : IQueueTransactionService
             // Return successful response
             serviceResponse.Data = queueTransaction.Adapt<QueueTransactionDto>();
             serviceResponse.StatusCode = 200;
-            _logger.LogInformation("Transaction ID {TransactionId} successfully updated. New status: {Status}.", queueTransactionDto.Id, queueTransactionDto.Status);
         }
         catch (Exception ex)
         {
@@ -721,8 +690,6 @@ public class QueueTransactionService : IQueueTransactionService
 
         try
         {
-            _logger.LogInformation("Attempting to remove a transaction from the queue.");
-
             // Retrieve the transaction to be deleted
             var queueTransaction = await _unitOfWork.QueueTransactionRepo
                 .GetByConditionAsync(w => w.Id == transactionId)
@@ -749,7 +716,6 @@ public class QueueTransactionService : IQueueTransactionService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Queue transaction removed successfully.";
-            _logger.LogInformation($"Successfully removed transaction {transactionId} from queue.");
         }
         catch (Exception ex)
         {
@@ -779,7 +745,6 @@ public class QueueTransactionService : IQueueTransactionService
             // If no matching transactions are found, return early
             if (queueTransactions.Count == 0)
             {
-                _logger.LogInformation("No matching queue transactions found for deletion.");
                 serviceResponse.Message = "No queue transactions found for the given IDs.";
                 return serviceResponse;
             }

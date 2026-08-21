@@ -26,9 +26,6 @@ public class OrchestratorHub : Hub
     {
         try
         {
-            // Log the connection of a client
-            _logger.LogInformation("Client {ConnectionId} connected.", Context.ConnectionId);
-
             // Retrieve the HTTP context to access user identity and query parameters
             var httpContext = Context.GetHttpContext();
 
@@ -43,9 +40,6 @@ public class OrchestratorHub : Hub
             string? osId = httpContext.Request.Query["osId"];
             string? username = httpContext.Request.Query["username"];
             string? appVersion = httpContext.Request.Query["appVersion"];
-
-            // Log the retrieved client information
-            _logger.LogInformation("ClientType: {ClientType}, OSId: {OSId}, Username: {Username}, AppVersion: {AppVersion}", clientType, osId, username, appVersion);
 
             // Initialize clientId with userId by default
             Guid clientId = userId;
@@ -67,7 +61,6 @@ public class OrchestratorHub : Hub
                 {
                     clientId = machine.Id;
                     clientType = ClientTypesEnum.AvintraMachine;
-                    _logger.LogInformation("Machine found with OSId: {OSId}, Username: {Username}. Assigned ClientId: {ClientId}, ClientType: {ClientType}.", osId, username, clientId, clientType);
                 }
                 else
                 {
@@ -138,7 +131,6 @@ public class OrchestratorHub : Hub
 
             // Add client to group based on their type (WebBrowser or DesktopApp)
             await Groups.AddToGroupAsync(connectionId, $"TENANT_{tenantId}");
-            _logger.LogInformation("Client {ConnectionId} added to group TENANT_{TenantId}.", connectionId, tenantId);
 
             // If the client is a machine, handle machine-specific logic (e.g., job assignment)
             if (clientType == ClientTypesEnum.AvintraMachine && !_environmentConfig.OnPremExecutionDisabled)
@@ -175,8 +167,6 @@ public class OrchestratorHub : Hub
                     clientDataStore.Status = MachineStatusEnum.Running;
                     await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
-                    _logger.LogInformation("Assigned job {JobId} to machine {ClientId}.", job.Id, clientId);
-
                     var executionRequest = new ExecutionCommandDto()
                     {
                         JobId = job.Id,
@@ -192,12 +182,8 @@ public class OrchestratorHub : Hub
                 {
                     // Notify the tenant group that a machine is online
                     await Clients.Group($"TENANT_{tenantId}").SendAsync("machine_status_update", "A machine is online now.");
-                    _logger.LogInformation("Machine {ClientId} is online. Notified tenant group {TenantId}.", clientId, tenantId);
                 }
             }
-
-            // Final log statement indicating successful connection
-            _logger.LogInformation("Client {ConnectionId} connected successfully. TenantId: {TenantId}, ClientId: {ClientId}, ClientType: {ClientType}.", connectionId, tenantId, clientId, clientType);
 
             // Continue with the base connection logic
             await base.OnConnectedAsync();
@@ -266,9 +252,6 @@ public class OrchestratorHub : Hub
                 _logger.LogError("Execution is currently disabled in this environment. Job processing cannot be performed.");
                 return;
             }
-            // Log the attempt to execute the agent on a machine
-            _logger.LogInformation("Attempting to execute agent {AgentId} on machine {MachineId}.", agentId, machineId);
-
             // Retrieve agent details from the database and ensure it is published
             var agent = await _workspaceInternalDbContext.FlowVersions
                 .Where(w => w.Id == agentId && w.IsPublished)
@@ -290,8 +273,6 @@ public class OrchestratorHub : Hub
             // If no machine ID is provided, attempt to find an available online machine
             if (machineId == null || machineId == Guid.Empty)
             {
-                _logger.LogInformation("No machine ID provided. Searching for an available online machine...");
-
                 // Retrieve all machine IDs assigned to this agent
                 var availableMachineIds = agent.FlowVersionMachines?.Select(s => s.MachineId).ToList();
 
@@ -316,9 +297,8 @@ public class OrchestratorHub : Hub
                     return;
                 }
 
-                // Update machineId with the found machine and log the assignment
+                // Update machineId with the found machine
                 machineId = clientDataStore.ClientId;
-                _logger.LogInformation("Assigned machine {MachineId} to agent {AgentId}.", machineId, agentId);
             }
 
             // Retrieve user identity and tenant ID from the HTTP context
@@ -387,7 +367,6 @@ public class OrchestratorHub : Hub
                     };
 
                     await Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionRequest);
-                    _logger.LogInformation("Agent {AgentId} triggered on machine {MachineId}.", agentId, machineId);
                 }
                 else
                 {

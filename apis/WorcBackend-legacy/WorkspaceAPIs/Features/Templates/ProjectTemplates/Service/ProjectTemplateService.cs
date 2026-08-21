@@ -65,10 +65,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = projectTemplates.Adapt<IEnumerable<ProjectTemplateDto>>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project templates retrieved successfully.";
-
-                // Log success with count and context
-                _logger.LogInformation("Successfully retrieved {Count} project templates for user {UserId} in tenant {TenantId}.",
-                    projectTemplates.Count, _userId, _tenantId);
             }
             catch (Exception ex)
             {
@@ -111,9 +107,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = projectTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project template retrieved successfully.";
-
-                // Log successful retrieval
-                _logger.LogInformation("Successfully retrieved project template with ID {ProjectTemplateId}.", projectTemplateId);
             }
             catch (Exception ex)
             {
@@ -147,8 +140,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = projectTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project template retrieved successfully.";
-
-                _logger.LogInformation("Successfully retrieved project template with reference ID {RefId}.", refId);
             }
             catch (Exception ex)
             {
@@ -199,7 +190,6 @@ namespace WorkspaceAPIs.Services
                 // Save changes and check success
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("SaveChanges failed when inserting new project template with RefId {RefId}.", projectTemplateDto.RefId);
                     return serviceResponse;
                 }
 
@@ -207,10 +197,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = newProjectTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project template inserted successfully.";
-
-                // Log successful insert
-                _logger.LogInformation("Successfully inserted new project template with RefId {RefId} by user {UserId}.",
-                    projectTemplateDto.RefId, _userId);
             }
             catch (Exception ex)
             {
@@ -268,7 +254,6 @@ namespace WorkspaceAPIs.Services
                 // Save changes and check success
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("SaveChanges failed when updating project template with ID {ProjectTemplateId}.", projectTemplateDto.Id);
                     return serviceResponse;
                 }
 
@@ -331,7 +316,6 @@ namespace WorkspaceAPIs.Services
                     {
                         // If Resources is null, delete all existing resources for this project template
                         resourcesToRemove = existingResources;
-                        _logger.LogInformation("No resources provided in the request. Removing all resources for project template with ID {ProjectTemplateId}.", existingTemplate.Id);
                     }
 
                     // Apply the changes: Insert new resources, Update existing resources, Delete old resources
@@ -369,10 +353,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = existingTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project template updated successfully.";
-
-                // Log success
-                _logger.LogInformation("Successfully updated project template with ID {ProjectTemplateId} by user {UserId}.",
-                    projectTemplateDto.Id, _userId);
             }
             catch (Exception ex)
             {
@@ -423,7 +403,6 @@ namespace WorkspaceAPIs.Services
                     // Save changes and check success
                     if (!await _unitOfWork.SaveAsync())
                     {
-                        _logger.LogInformation("SaveChanges failed when deleting project template with ID {ProjectTemplateId}.", projectTemplateId);
                         return serviceResponse;
                     }
                 }
@@ -438,10 +417,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = true;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project template deleted successfully.";
-
-                // Log success
-                _logger.LogInformation("Successfully deleted project template with ID {ProjectTemplateId} by user {UserId}.",
-                    projectTemplateId, _userId);
             }
             catch (Exception ex)
             {
@@ -505,7 +480,6 @@ namespace WorkspaceAPIs.Services
                 // Save changes and check success
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("SaveChanges failed when deleting multiple project templates.");
                     return serviceResponse;
                 }
 
@@ -513,10 +487,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = true;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = $"Successfully deleted {templatesToDelete.Count} project templates.";
-
-                // Log success with count and user context
-                _logger.LogInformation("Successfully deleted {Count} project templates by user {UserId}.",
-                    templatesToDelete.Count, _userId);
             }
             catch (Exception ex)
             {
@@ -558,10 +528,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = pendingApprovalTemplates.Adapt<IEnumerable<ProjectTemplateDto>>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project templates pending approval retrieved successfully.";
-
-                // Log success with count and context
-                _logger.LogInformation("Successfully retrieved {Count} project templates pending approval for user {UserId} in tenant {TenantId}.",
-                    pendingApprovalTemplates.Count, _userId, _tenantId);
             }
             catch (Exception ex)
             {
@@ -602,10 +568,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = pendingApprovalTemplates.Adapt<IEnumerable<ProjectTemplateDto>>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project templates pending approval retrieved successfully.";
-
-                // Log success with count and context
-                _logger.LogInformation("Successfully retrieved {Count} project templates pending approval for user {UserId} in tenant {TenantId}.",
-                    pendingApprovalTemplates.Count, _userId, _tenantId);
             }
             catch (Exception ex)
             {
@@ -656,7 +618,6 @@ namespace WorkspaceAPIs.Services
                 // Save changes and check success
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("SaveChanges failed when updating status for project template with ID {ProjectTemplateId}.", projectTemplateDto.Id);
                     return serviceResponse;
                 }
 
@@ -709,18 +670,11 @@ namespace WorkspaceAPIs.Services
                             projectTemplateDto.Id,
                             projectTemplateDto.Status);
                     }
-                    else
-                        // Log success if required
-                        _logger.LogInformation("Notification for project template {ProjectTemplateId} with status {Status} sent to user {UserId}.", projectTemplateDto.Id, projectTemplateDto.Status, existingTemplate.CreatedByUserId);
                 }
                 // Map updated entity to DTO and set success response
                 serviceResponse.Data = existingTemplate.Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project template status updated successfully.";
-
-                // Log success
-                _logger.LogInformation("Successfully updated status for project template with ID {ProjectTemplateId} to {Status} by user {UserId}.",
-                    projectTemplateDto.Id, projectTemplateDto.Status, _userId);
             }
             catch (Exception ex)
             {
@@ -800,7 +754,6 @@ namespace WorkspaceAPIs.Services
 
                             if (flowVersion == null)
                             {
-                                _logger.LogInformation("PublishTemplateAsync: No flow version found for RefId: {RefId}.", publishProjectTemplateDto.RefId);
                                 serviceResponse.Message = "Specified flow version does not exist.";
                                 return serviceResponse;
                             }
@@ -912,9 +865,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = projectTemplates?.FirstOrDefault().Adapt<ProjectTemplateDto>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Template published successfully.";
-
-                _logger.LogInformation("PublishTemplateAsync: Successfully published template with RefId {RefId} by user {UserId}.",
-                    publishProjectTemplateDto.RefId, _userId);
             }
             catch (Exception ex)
             {
@@ -958,10 +908,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = projectTemplates;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project templates retrieved successfully.";
-
-                // Log successful search
-                _logger.LogInformation("SearchProjectTemplatesAsync: Retrieved {Count} project templates matching search key '{SearchKey}' for user {UserId}.",
-                    projectTemplates.Count, searchKey, _userId);
             }
             catch (Exception ex)
             {
@@ -1007,9 +953,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = trendingTemplates.Adapt<IEnumerable<TrendingTemplateDto>>();
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Trending project templates retrieved successfully.";
-
-                // Log successful retrieval
-                _logger.LogInformation("Successfully retrieved {Count} trending project templates.", trendingTemplates.Count);
             }
             catch (Exception ex)
             {
@@ -1050,8 +993,6 @@ namespace WorkspaceAPIs.Services
 
                 var projectTemplateDto = projectTemplate.Adapt<ProjectTemplateDto>();
 
-                _logger.LogInformation("Project template found. Template ID: {TemplateId}", trendingTemplateDto.Id);
-
                 // Trim string properties in DTO to clean up any extra whitespace
                 trendingTemplateDto = TrimDtoStringPropsUtil.TrimDtoStringProps(trendingTemplateDto);
 
@@ -1077,8 +1018,6 @@ namespace WorkspaceAPIs.Services
                         return serviceResponse;
                     }
 
-                    _logger.LogInformation("New flow saved successfully. Flow ID: {FlowId}", flowEntity.Id);
-
                     // Create corresponding FlowVersion
                     var newFlowVersion = new FlowVersion
                     {
@@ -1100,8 +1039,6 @@ namespace WorkspaceAPIs.Services
                     // Update refId as flowId
                     projectTemplateDto.RefId = flowEntity.Id;
                     projectTemplateDto.AccessPath = $"/agent?f={flowEntity.Id}&v={newFlowVersion.Id}"; ;
-
-                    _logger.LogInformation("Flow version saved successfully. Flow ID: {FlowId}, Version: 1", flowEntity.Id);
                 }
 
                 // Increment usage count and update the template
@@ -1113,8 +1050,6 @@ namespace WorkspaceAPIs.Services
                     _logger.LogError("Failed to update usage count for project template ID: {TemplateId}.", projectTemplate.Id);
                     return serviceResponse;
                 }
-
-                _logger.LogInformation("Flow or Mdoel successfully created from project template. Template ID: {TemplateId}", trendingTemplateDto.Id);
 
                 // Return success response
                 serviceResponse.Data = projectTemplateDto;
@@ -1182,10 +1117,7 @@ namespace WorkspaceAPIs.Services
 
             try
             {
-                // Log initiation of documentation generation using LLM
-                _logger.LogInformation("Starting instruction/documentation generation using LLM. Model: {Model}, Temperature: {Temperature}, {Prompt}", model, temperature, prompt);
-
-                // // Call the LLM service to generate the documentation
+                // Call the LLM service to generate the documentation
                 // var generatedOutput = await _llmDataExtractionService.ExtractDataAsync(
                 //     prompt: prompt,
                 //     llmModel: model,
@@ -1227,8 +1159,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = generatedOutput.Data;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Documentation and instructions generated successfully.";
-
-                _logger.LogInformation("Successfully generated instructions/documentation using LLM model: {Model}", model);
             }
             catch (Exception ex)
             {
@@ -1289,8 +1219,6 @@ namespace WorkspaceAPIs.Services
                 serviceResponse.Data = validatedProjects;
                 serviceResponse.StatusCode = 200;
                 serviceResponse.Message = "Project access validated successfully.";
-
-                _logger.LogInformation("ValidateProjectAccessAsync: Validated {Count} project templates for access.", validatedProjects.Count);
             }
             catch (Exception ex)
             {

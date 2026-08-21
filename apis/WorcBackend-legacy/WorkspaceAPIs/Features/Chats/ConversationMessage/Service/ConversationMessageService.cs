@@ -92,10 +92,6 @@ public class ConversationMessageService : IConversationMessageService
             // CASE 1: Create new conversation (no ID provided)
             if (isNewConversationRequest && conversation == null)
             {
-                _logger.LogInformation(
-                    "[SendMessage] No ConversationId provided. Creating new conversation. UserId: {UserId}",
-                    _userId);
-
                 conversation = new Conversation
                 {
                     FlowVersionId = conversationMessageDto.FlowVersionId,

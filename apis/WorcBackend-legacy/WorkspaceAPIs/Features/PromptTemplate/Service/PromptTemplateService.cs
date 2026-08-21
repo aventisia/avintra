@@ -202,7 +202,6 @@ public class PromptTemplateService : IPromptTemplateService
             // Persist changes
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("SaveChanges failed when inserting prompt template with name {TemplateName}.", promptTemplateDto.Name);
                 return serviceResponse;
             }
 
@@ -329,7 +328,6 @@ public class PromptTemplateService : IPromptTemplateService
             // Persist changes
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("SaveChanges failed when updating prompt template with ID {PromptTemplateId}.", promptTemplateDto.Id);
                 return serviceResponse;
             }
 
@@ -381,7 +379,6 @@ public class PromptTemplateService : IPromptTemplateService
             // Persist changes
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("SaveChanges failed when deleting prompt template with ID {PromptTemplateId}.", promptTemplateId);
                 return serviceResponse;
             }
 
@@ -491,10 +488,6 @@ public class PromptTemplateService : IPromptTemplateService
             // Handle no results
             if (matchedPromptTemplates == null || !matchedPromptTemplates.Any())
             {
-                _logger.LogInformation(
-                    "No prompt templates found for search term '{TemplateName}' for user {UserId}.",
-                    templateName, _userId);
-
                 serviceResponse.Message = "No prompt templates found matching the provided search term.";
                 return serviceResponse;
             }

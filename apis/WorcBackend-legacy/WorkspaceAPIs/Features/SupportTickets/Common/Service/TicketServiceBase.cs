@@ -119,9 +119,7 @@ public abstract class TicketServiceBase
     // Applies a single save and returns true on success.
     private async Task<bool> TrySaveAsync(string logMessage)
     {
-        if (await UnitOfWork.SaveAsync()) return true;
-        Logger.LogInformation("SaveChanges failed: {Message}", logMessage);
-        return false;
+        return await UnitOfWork.SaveAsync();
     }
 
     // Retrieves a ticket by its ID.

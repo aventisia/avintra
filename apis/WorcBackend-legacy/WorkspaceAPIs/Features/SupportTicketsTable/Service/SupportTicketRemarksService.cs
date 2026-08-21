@@ -54,11 +54,10 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // support ticket doesn't exist
             if (supportTicket == null)
             {
-                _logger.LogInformation($"support ticket not found for Id {supportTicketId}");
                 serviceResponse.Message = "support ticket does not exist";
                 return serviceResponse;
             }
-            
+
             // Retrieve all remarks associated with the support ticket
             var supportTicketRemarks = await _unitOfWork.SupportTicketRemarkRepo
                                         .GetByConditionAsync(w => w.SupportTicketId == supportTicketId)
@@ -104,7 +103,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // Support ticket does not exist
             if (supportTicket == null)
             {
-                _logger.LogInformation($"Support ticket does not exist");
                 serviceResponse.Message = "Support ticket does not exist";
                 return serviceResponse;
             }
@@ -123,7 +121,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new support ticket remark");
                 return serviceResponse;
             }
 
@@ -137,7 +134,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
 
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Context SaveChanges failed while updating support ticket with new reviewer.");
                     return serviceResponse;
                 }
 
@@ -233,7 +229,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // support ticket remark does not exist
             if (supportTicketRemark == null)
             {
-                _logger.LogInformation($"support ticket remark does not exist");
                 serviceResponse.Message = "support ticket remark does not exist";
                 return serviceResponse;
             }
@@ -246,7 +241,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // Support ticket does not exist
             if (supportTicket == null)
             {
-                _logger.LogInformation($"Support ticket does not exist");
                 serviceResponse.Message = "Support ticket does not exist";
                 return serviceResponse;
             }
@@ -273,7 +267,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating support ticket remark");
                 return serviceResponse;
             }
 
@@ -311,7 +304,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // support ticket remark does not exist
             if (supportTicketRemark == null)
             {
-                _logger.LogInformation($"support ticket remark does not exist");
                 serviceResponse.Message = "support ticket remark does not exist";
                 return serviceResponse;
             }
@@ -324,7 +316,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // Support ticket does not exist
             if (supportTicket == null)
             {
-                _logger.LogInformation($"Support ticket does not exist");
                 serviceResponse.Message = "Support ticket does not exist";
                 return serviceResponse;
             }
@@ -342,7 +333,6 @@ public class SupportTicketRemarksService : ISupportTicketRemarksService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting support ticket remark");
                 return serviceResponse;
             }
 

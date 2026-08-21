@@ -46,7 +46,6 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
             serviceResponse.Data = response.Data?.Select(f => f.Path).ToArray();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Files uploaded successfully.";
-            _logger.LogInformation(serviceResponse.Message);
 
         }
         catch (Exception ex)
@@ -92,7 +91,6 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
 
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "File uploaded successfully.";
-            _logger.LogInformation(serviceResponse.Message);
 
         }
         catch (Exception ex)
@@ -121,8 +119,6 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Starting file deletion process for file URL: {FileUrl}.", fileUrl);
-
             var response = await _uploadFileService.DeleteFileAsync(fileUrl);
 
             if (response.StatusCode != 200)
@@ -135,7 +131,6 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
             serviceResponse.Data = response.Data;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Files deleted successfully.";
-            _logger.LogInformation(response.Message);
 
         }
         catch (Exception ex)
@@ -169,13 +164,11 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
             {
                 var downloadResponse = await _uploadFileService.DownloadFileOnServerAsync(fileOrRemoteUrl, isTemp);
                 serviceResponse.Data = downloadResponse.Data;
-                _logger.LogInformation(downloadResponse.Message);
             }
             else
             {
                 var downloadResponse = await _uploadFileService.DownloadFileAsync(fileOrRemoteUrl, isTemp);
                 serviceResponse.Data = fileOrRemoteUrl;
-                _logger.LogInformation(downloadResponse.Message);
             }
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "File downloaded at server successfully.";
@@ -206,8 +199,6 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
                 .GetByConditionAsync(w => !string.IsNullOrEmpty(w.Path) && w.Path.StartsWith("/"))
                 .AsNoTracking()
                 .ToListAsync();
-
-            _logger.LogInformation($"Found {files.Count} file(s) to upload.");
 
             var needToUpdates = new List<TemplateResource>();
 
@@ -316,8 +307,6 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
             serviceResponse.Data = dataUrl;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "File data URL retrieved successfully.";
-
-            _logger.LogInformation("Successfully retrieved data URL for '{FileUrl}'.", fileUrl);
         }
         catch (Exception ex)
         {

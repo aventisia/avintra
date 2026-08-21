@@ -38,8 +38,6 @@ public class BackfillNodeExecutionLogsHostedService : IHostedService
     {
         try
         {
-            _logger.LogInformation("Starting backfill of legacy NodeExecutionLogs into ws_NodeExecutionLogs...");
-
             using var scope = _serviceProvider.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<WorkspaceDbContext>();
 
@@ -116,17 +114,10 @@ public class BackfillNodeExecutionLogsHostedService : IHostedService
                 }
 
                 await context.SaveChangesAsync(cancellationToken);
-                _logger.LogInformation("Backfilled {ProcessedCount} jobs ({InsertedLogCount} log rows) so far...", processedCount, insertedLogCount);
             }
-
-            _logger.LogInformation(
-                "Backfill completed. Processed {ProcessedCount} jobs and inserted {InsertedLogCount} node execution log rows.",
-                processedCount,
-                insertedLogCount);
         }
         catch (OperationCanceledException)
         {
-            _logger.LogInformation("Backfill operation was cancelled.");
         }
         catch (Exception ex)
         {

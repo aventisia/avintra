@@ -80,12 +80,6 @@ public class WebhookCallbackService : IWebhookCallbackService
                     "Webhook callback to {CallbackUrl} for job {JobId} returned HTTP {StatusCode}.",
                     model.CallbackUrl, job.Id, (int)response.StatusCode);
             }
-            else
-            {
-                _logger.LogInformation(
-                    "Webhook callback sent successfully to {CallbackUrl} for job {JobId}.",
-                    model.CallbackUrl, job.Id);
-            }
         }
         catch (Exception ex)
         {

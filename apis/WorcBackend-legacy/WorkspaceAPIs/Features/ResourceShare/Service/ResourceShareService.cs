@@ -956,7 +956,6 @@ public class ResourceShareService : IResourceShareService
             // Skip deletion if none found
             if (!resourceShares.Any())
             {
-                _logger.LogInformation("No resource shares found for Resource {ResourceId}", resourceId);
                 return;
             }
 
@@ -991,7 +990,6 @@ public class ResourceShareService : IResourceShareService
             // Skip if no shares exist
             if (!resourceShares.Any())
             {
-                _logger.LogInformation("No resource shares found for bulk delete.");
                 return;
             }
 

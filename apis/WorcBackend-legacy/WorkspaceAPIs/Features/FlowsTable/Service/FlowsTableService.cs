@@ -176,7 +176,6 @@ public class FlowsTableService : IFlowsTableService
             // Flow already exists
             if (flowAlreadyExists != null)
             {
-                _logger.LogInformation($"Flow already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A flow with same Name already exists. Please enter a unique name";
                 return serviceResponse;
@@ -196,7 +195,6 @@ public class FlowsTableService : IFlowsTableService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new flow");
                 return serviceResponse;
             }
 
@@ -272,7 +270,6 @@ public class FlowsTableService : IFlowsTableService
             // Flow does not exist
             if (flow == null)
             {
-                _logger.LogInformation($"Flow does not exist");
                 serviceResponse.Message = "Flow does not exist";
                 return serviceResponse;
             }
@@ -358,7 +355,6 @@ public class FlowsTableService : IFlowsTableService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating flow");
                 return serviceResponse;
             }
 
@@ -406,7 +402,6 @@ public class FlowsTableService : IFlowsTableService
             // Flow does not exist
             if (flow == null)
             {
-                _logger.LogInformation($"Flow does not exist");
                 serviceResponse.Message = "Flow does not exist";
                 return serviceResponse;
             }
@@ -469,7 +464,6 @@ public class FlowsTableService : IFlowsTableService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting flow");
                 return serviceResponse;
             }
 
@@ -517,7 +511,6 @@ public class FlowsTableService : IFlowsTableService
             // Flows do not exist
             if (flows.Count == 0)
             {
-                _logger.LogInformation($"Flows do not exist");
                 serviceResponse.Message = "Flows do not exist";
                 return serviceResponse;
             }
@@ -581,7 +574,6 @@ public class FlowsTableService : IFlowsTableService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting flows");
                 return serviceResponse;
             }
 

@@ -22,10 +22,6 @@ public class FlowExecutionHub : Hub
         var userId = Context?.User?.FindFirstValue("uid");
         var tenantId = Context?.User?.FindFirstValue("tntid");
 
-        _logger.LogInformation(
-            "User {UserId} from tenant {TenantId} connected to FlowExecutionHub with connection {ConnectionId}",
-            userId, tenantId, Context.ConnectionId);
-
         // Add the client to their user-specific group for targeted notifications
         if (!string.IsNullOrEmpty(userId))
         {
@@ -42,9 +38,6 @@ public class FlowExecutionHub : Hub
     {
         var userId = Context?.User?.FindFirstValue("uid");
 
-        _logger.LogInformation(
-            "User {UserId} disconnected from FlowExecutionHub with connection {ConnectionId}",
-            userId, Context.ConnectionId);
 
         await base.OnDisconnectedAsync(exception);
     }

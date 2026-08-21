@@ -371,7 +371,8 @@ public class SaNotificationService : ISaNotificationService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating notification {Id}", id);        }
+            _logger.LogError(ex, "Error updating notification {Id}", id);
+        }
         return serviceResponse;
     }
 
@@ -830,11 +831,7 @@ public class SaNotificationService : ISaNotificationService
             var content = notification.Message;
 
             var sent = await _emailService.SendEmail(toEmailAddresses, subject, content);
-            if (sent)
-            {
-                _logger.LogInformation("Notification email sent for {NotificationId} to {Recipients}.", notification.Id, toEmailAddresses);
-            }
-            else
+            if (!sent)
             {
                 _logger.LogError("Failed to send notification email for {NotificationId} to {Recipients}.", notification.Id, toEmailAddresses);
             }

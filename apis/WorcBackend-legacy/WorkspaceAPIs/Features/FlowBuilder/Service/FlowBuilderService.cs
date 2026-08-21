@@ -218,7 +218,6 @@ public class FlowBuilderService : IFlowBuilderService
             // No flow version found, log and return response
             if (flowVersion == null)
             {
-                _logger.LogInformation($"No unpublished flow version found for FlowId {flowId}. VersionId: {versionId}.");
                 serviceResponse.Message = "Flow version does not exist.";
                 return serviceResponse;
             }
@@ -270,7 +269,6 @@ public class FlowBuilderService : IFlowBuilderService
             // If the flow version is not found, return a clear existence error.
             if (flowVersion == null)
             {
-                _logger.LogInformation("No flow version found for FlowId {FlowId} with VersionId {VersionId}.", publishFlowVersionDto.FlowId, publishFlowVersionDto.Id);
                 serviceResponse.Message = "Flow version does not exist.";
                 return serviceResponse;
             }
@@ -348,9 +346,6 @@ public class FlowBuilderService : IFlowBuilderService
                     // Determine the publish type for logging and message purposes
                     var publishType = publishFlowVersionDto.Type.ToString();
 
-                    // Log the start of publishing
-                    _logger.LogInformation($"Publishing flow version as {publishType}. FlowVersionId: {publishFlowVersionDto.Id}, FlowId: {publishFlowVersionDto.Id}");
-
                     // Adapt the DTO values into the flow version object
                     publishFlowVersionDto.Adapt(flowVersion);
 
@@ -371,7 +366,6 @@ public class FlowBuilderService : IFlowBuilderService
                     }
 
                     // Log success and set response message
-                    _logger.LogInformation($"Flow version successfully published as {publishType}.");
                     serviceResponse.Message = $"{publishType} published successfully.";
 
                     // Notify the Orchestrator Manager(s) of the tenant that an agent is ready for use
@@ -461,7 +455,6 @@ public class FlowBuilderService : IFlowBuilderService
             // If no flow version is found, log and return failure
             if (flowVersion == null)
             {
-                _logger.LogInformation($"No flow version found for Id {flowSilentUpdateDto.VersionId}. The flow version could not be saved.");
                 serviceResponse.Message = "Flow version does not exist.";
                 return serviceResponse;
             }
@@ -482,7 +475,6 @@ public class FlowBuilderService : IFlowBuilderService
             // Save changes to the database, log failure if saving fails
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Failed to save changes while saving flow version silently.");
                 return serviceResponse;
             }
 

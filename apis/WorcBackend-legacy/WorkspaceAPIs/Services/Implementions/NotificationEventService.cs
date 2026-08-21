@@ -49,7 +49,6 @@ public class NotificationEventService : INotificationEventService
             return true;
         }
 
-        _logger.LogInformation("Automatic notifications are suppressed outside the Production environment.");
         return false;
     }
 
@@ -65,14 +64,12 @@ public class NotificationEventService : INotificationEventService
 
             if (!await IsNotificationEnabledAsync(tenantId, s => s.PublishAgent))
             {
-                _logger.LogInformation("PublishAgent notifications are disabled for tenant {TenantId}; skipping.", tenantId);
                 return;
             }
 
             var omUserIds = await _recipientResolver.ResolveUserIdsByRoleNameAsync(CustomRolesEnum.OM.ToString(), tenantId);
             if (omUserIds.Count == 0)
             {
-                _logger.LogInformation("No Orchestrator Manager found for tenant {TenantId} to notify on agent publish.", tenantId);
                 return;
             }
 
@@ -126,14 +123,12 @@ public class NotificationEventService : INotificationEventService
 
             if (!await IsNotificationEnabledAsync(tenantId, s => s.LowCredits))
             {
-                _logger.LogInformation("LowCredit notifications are disabled for tenant {TenantId}; skipping.", tenantId);
                 return;
             }
 
             var taUserIds = await _recipientResolver.ResolveUserIdsByRoleNameAsync(CustomRolesEnum.TA.ToString(), tenantId);
             if (taUserIds.Count == 0)
             {
-                _logger.LogInformation("No Tenant Admin found for tenant {TenantId} to notify on low credit.", tenantId);
                 return;
             }
 
@@ -169,14 +164,12 @@ public class NotificationEventService : INotificationEventService
 
             if (!await IsNotificationEnabledAsync(tenantId, s => s.Subscription))
             {
-                _logger.LogInformation("Subscription notifications are disabled for tenant {TenantId}; skipping.", tenantId);
                 return;
             }
 
             var taUserIds = await _recipientResolver.ResolveUserIdsByRoleNameAsync(CustomRolesEnum.TA.ToString(), tenantId);
             if (taUserIds.Count == 0)
             {
-                _logger.LogInformation("No Tenant Admin found for tenant {TenantId} to notify on subscription renewal.", tenantId);
                 return;
             }
 
@@ -222,7 +215,6 @@ public class NotificationEventService : INotificationEventService
 
             if (recipientUserIds.Count == 0)
             {
-                _logger.LogInformation("No recipients to notify for ticket {TicketId}.", ticketId);
                 return;
             }
 

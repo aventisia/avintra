@@ -158,7 +158,6 @@ public class EmailTriggerService : IEmailTriggerService
             // Check if the email trigger exists
             if (emailTrigger == null)
             {
-                _logger.LogInformation("Email trigger with ID {EmailTriggerId} does not exist.", emailTriggerId);
                 serviceResponse.Message = "Email trigger does not exist";
                 return serviceResponse; // Return early if not found
             }
@@ -221,7 +220,6 @@ public class EmailTriggerService : IEmailTriggerService
 
             if (existingTrigger != null)
             {
-                _logger.LogInformation("Email trigger creation failed. Name {EmailTriggerName} already exists.", emailTriggerDto.Name);
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Email trigger with the same name already exists.";
                 return serviceResponse; // Return early if duplicate found
@@ -229,12 +227,6 @@ public class EmailTriggerService : IEmailTriggerService
 
             if (DateTimeOffset.UtcNow.AddMinutes(OUTLOOK_EXPIRY_MINUTES) < emailTriggerDto.ExpiryDateTime)
             {
-                _logger.LogInformation(
-                    "Update failed. New expiry {NewExpiry} exceeds maximum allowed expiry for trigger ID {TriggerId}.",
-                    emailTriggerDto.ExpiryDateTime,
-                    emailTriggerDto.Id
-                );
-
                 serviceResponse.StatusCode = 400;
                 serviceResponse.Message = $"Expiry date cannot exceed {OUTLOOK_EXPIRY_MINUTES} minutes from now.";
                 return serviceResponse;
@@ -331,7 +323,6 @@ public class EmailTriggerService : IEmailTriggerService
                 // Save changes to the database and check if the operation succeeded.
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Failed to persist TriggerFlowVersion entries for the new email trigger.");
                     return serviceResponse;
                 }
             }
@@ -380,7 +371,6 @@ public class EmailTriggerService : IEmailTriggerService
             // Validate existence
             if (emailTrigger == null)
             {
-                _logger.LogInformation("Update failed. Email trigger with ID {EmailTriggerId} does not exist.", emailTriggerDto.Id);
                 serviceResponse.Message = "Email trigger does not exist";
                 return serviceResponse; // Early return
             }
@@ -417,7 +407,6 @@ public class EmailTriggerService : IEmailTriggerService
 
             if (duplicateTrigger != null)
             {
-                _logger.LogInformation("Update failed. Email trigger with name {EmailTriggerName} already exists.", emailTriggerDto.Name);
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Email trigger with the same name already exists.";
                 return serviceResponse;
@@ -439,13 +428,6 @@ public class EmailTriggerService : IEmailTriggerService
 
                 if (emailTriggerDto.ExpiryDateTime < existingExpiry)
                 {
-                    _logger.LogInformation(
-                        "Update failed. New expiry {NewExpiry} is less than existing expiry {ExistingExpiry} for trigger ID {TriggerId}.",
-                        emailTriggerDto.ExpiryDateTime,
-                        existingExpiry,
-                        emailTriggerDto.Id
-                    );
-
                     serviceResponse.StatusCode = 400;
                     serviceResponse.Message = "Expiry date cannot be earlier than the existing expiry date.";
                     return serviceResponse;
@@ -454,12 +436,6 @@ public class EmailTriggerService : IEmailTriggerService
 
             if (DateTimeOffset.UtcNow.AddMinutes(OUTLOOK_EXPIRY_MINUTES) < emailTriggerDto.ExpiryDateTime)
             {
-                _logger.LogInformation(
-                    "Update failed. New expiry {NewExpiry} exceeds maximum allowed expiry for trigger ID {TriggerId}.",
-                    emailTriggerDto.ExpiryDateTime,
-                    emailTriggerDto.Id
-                );
-
                 serviceResponse.StatusCode = 400;
                 serviceResponse.Message = $"Expiry date cannot exceed {OUTLOOK_EXPIRY_MINUTES} minutes from now.";
                 return serviceResponse;
@@ -638,7 +614,6 @@ public class EmailTriggerService : IEmailTriggerService
             // Check existence
             if (emailTrigger == null)
             {
-                _logger.LogInformation("Delete failed. Email trigger with ID {EmailTriggerId} does not exist.", emailTriggerId);
                 serviceResponse.Message = "Email trigger does not exist";
                 return serviceResponse;
             }
@@ -750,7 +725,6 @@ public class EmailTriggerService : IEmailTriggerService
             // Check if any triggers were found
             if (emailTriggers == null || emailTriggers.Count == 0)
             {
-                _logger.LogInformation("Delete multiple failed. No email triggers found for provided IDs.");
                 serviceResponse.Message = "Email triggers not found";
                 return serviceResponse;
             }
@@ -881,7 +855,6 @@ public class EmailTriggerService : IEmailTriggerService
             if (triggerExists != null)
             {
                 // Duplicate exists
-                _logger.LogInformation("Email trigger name '{EmailTriggerName}' already exists.", checkAvailabilityDto.UserInput);
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Email trigger name already exists";
                 serviceResponse.Data = new TrueFalseResultDto { Result = false };
@@ -892,7 +865,6 @@ public class EmailTriggerService : IEmailTriggerService
             serviceResponse.StatusCode = 200;
             serviceResponse.Data = new TrueFalseResultDto { Result = true };
             serviceResponse.Message = "Email trigger name is available";
-            _logger.LogInformation("Email trigger name '{EmailTriggerName}' is available.", checkAvailabilityDto.UserInput);
         }
         catch (Exception ex)
         {
@@ -1021,7 +993,6 @@ public class EmailTriggerService : IEmailTriggerService
                 // Check if changes were successfully saved
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Failed to save changes while inserting new job.");
                     return serviceResponse;
                 }
 

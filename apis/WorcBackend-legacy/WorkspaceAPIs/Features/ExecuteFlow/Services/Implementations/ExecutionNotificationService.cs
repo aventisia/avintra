@@ -32,10 +32,6 @@ public class ExecutionNotificationService : IExecutionNotificationService
             await _hubContext.Clients
                 .Group($"user_{userId}")
                 .SendAsync("JobCompleted", notification);
-
-            _logger.LogInformation(
-                "Job completion notification sent to user {UserId} for job {JobId} with status {Status}",
-                userId, jobId, status);
         }
         catch (Exception ex)
         {
@@ -64,10 +60,6 @@ public class ExecutionNotificationService : IExecutionNotificationService
             await _hubContext.Clients
                 .Group($"user_{userId}")
                 .SendAsync("JobProgress", notification);
-
-            _logger.LogInformation(
-                "Job progress notification sent to user {UserId} for job {JobId} with status {Status}",
-                userId, jobId, status);
         }
         catch (Exception ex)
         {
