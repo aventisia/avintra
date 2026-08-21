@@ -37,6 +37,7 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<FlowLog>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Machine_FlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<FlowVersionHistory>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
+        modelBuilder.Entity<AgentRiskRegistry>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<QueueFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<QueueTransaction>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TimeTriggersFlowVersion>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
@@ -175,6 +176,11 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Ticket>().Property(e => e.Status).HasConversion(new EnumToStringConverter<TicketStatusEnum>());
         modelBuilder.Entity<Ticket>().Property(e => e.Complexity).HasConversion(new EnumToStringConverter<ComplexityEnum>());
         modelBuilder.Entity<Ticket>().Property(e => e.RiskLevel).HasConversion(new EnumToStringConverter<RiskLevelEnum>());
+
+        // AgentRiskRegistry enum-to-string conversions
+        modelBuilder.Entity<AgentRiskRegistry>().Property(e => e.CompositeTier).HasConversion(new EnumToStringConverter<AgentRiskTierEnum>());
+        modelBuilder.Entity<AgentRiskRegistry>().Property(e => e.Status).HasConversion(new EnumToStringConverter<AgentRiskLifecycleStatusEnum>());
+        modelBuilder.Entity<AgentRiskRegistry>().HasIndex(index => new { index.FlowVersionId }).IsUnique();
 
         // Configure Many-to-Many relationship between User and Notification
         modelBuilder.Entity<WorkspaceUser>().HasMany(many => many.NotificationUsers).WithOne(one => one.User).HasForeignKey(fKey => fKey.UserId).IsRequired();
@@ -374,6 +380,7 @@ public class WorkspaceDbContext : DbContext
     public DbSet<FlowVersion> FlowVersions { get; set; }
     public DbSet<FlowVersionUser> FlowVersionUsers { get; set; }
     public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
+    public DbSet<AgentRiskRegistry> AgentRiskRegistries { get; set; }
     public DbSet<Queue> Queues { get; set; }
     public DbSet<QueueTransaction> QueueTransactions { get; set; }
     public DbSet<QueueTransactionEvent> QueueTransactionEvents { get; set; }

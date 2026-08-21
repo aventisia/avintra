@@ -20,6 +20,7 @@ import {
   MonitorPlayIcon,
   PuzzleIcon,
   Shield,
+  ShieldCheck,
   Wallet,
   Workflow,
   WrenchIcon,
@@ -139,6 +140,13 @@ const sidebarMenuSections: SidebarMenuSectionType[] = [
         Icon: NewAgentIcon,
         name: "Published",
         route: "/orchestrator/published-agents",
+        type: ["Commercial", "Enterprise"],
+      },
+      {
+        permissions: ["OM"],
+        Icon: ShieldCheck,
+        name: "Agent Risk Registry",
+        route: "/orchestrator/agent-risk-registry",
         type: ["Commercial", "Enterprise"],
       },
       {

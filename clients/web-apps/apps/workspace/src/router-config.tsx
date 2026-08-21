@@ -24,6 +24,7 @@ import { EmailTriggerPage } from "./pages/02-configure/triggers/EmailTriggerPage
 import { MessageTriggerPage } from "./pages/02-configure/triggers/MessageTriggerPage";
 import { TimeTriggerPage } from "./pages/02-configure/triggers/TimeTriggerPage";
 import { WebhookTriggerPage } from "./pages/02-configure/triggers/WebhookTriggerPage";
+import { AiGovernancePage } from "./pages/03-orchestrator/AiGovernancePage";
 import { ApiKeysPage } from "./pages/03-orchestrator/ApiKeysPage";
 import { JobsPage } from "./pages/03-orchestrator/JobsPage";
 import { MachinesPage } from "./pages/03-orchestrator/MachinesPage";
@@ -36,6 +37,7 @@ import { AchievesPage } from "./pages/05-tenant-admin/AchievesPage";
 import { CreditsUsagePage } from "./pages/05-tenant-admin/CreditsUsagePage";
 import { AppIntegrationsPage } from "./pages/05-tenant-admin/IntegrationsPage";
 import { ModelProvidersPage } from "./pages/05-tenant-admin/ModelProvidersPage";
+import { NotificationsPage } from "./pages/05-tenant-admin/NotificationsPage";
 import { PreferencesPage } from "./pages/05-tenant-admin/PreferencesPage";
 import { SpacesPage } from "./pages/05-tenant-admin/SpacesPage";
 import SupportTicketV2DetailPage from "./pages/05-tenant-admin/SupportTicketV2DetailPage";
@@ -43,15 +45,14 @@ import SupportTicketsV2Page from "./pages/05-tenant-admin/SupportTicketsV2Page";
 import { TenantPage } from "./pages/05-tenant-admin/TenantPage";
 import { TenantTemplatesApprovalPage } from "./pages/05-tenant-admin/TenantTemplatesApprovalPage";
 import { UsersPage } from "./pages/05-tenant-admin/UsersPage";
-import { NotificationsPage } from "./pages/05-tenant-admin/NotificationsPage";
 import { CreditPlansPage } from "./pages/06-super-admin/CreditPlansPage";
 import { PublicTemplatesApprovalPage } from "./pages/06-super-admin/PublicTemplatesApprovalPage";
+import { SaNotificationsPage } from "./pages/06-super-admin/SaNotificationsPage";
 import SaSupportTicketDetailPage from "./pages/06-super-admin/SaSupportTicketDetailPage";
 import SaSupportTicketsPage from "./pages/06-super-admin/SaSupportTicketsPage";
-import { SaNotificationsPage } from "./pages/06-super-admin/SaNotificationsPage";
 import { SubscriptionPlansPage } from "./pages/06-super-admin/SubscriptionPlansPage";
-import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
 import { TenantPublishedAgentsPage } from "./pages/06-super-admin/TenantPublishedAgentsPage";
+import { TenantsPage } from "./pages/06-super-admin/TenantsPage";
 import { OnPremTenantsPage } from "./pages/07-global-admin/OnPremTenantsPage";
 import { TenantInstanceDataPage } from "./pages/07-global-admin/TenantInstanceDataPage";
 import { TenantInstancePage } from "./pages/07-global-admin/TenantInstancePage";
@@ -178,6 +179,10 @@ const routerConfig: RouteObject[] = [
           {
             path: "published-agents",
             element: <PublishedAgentsPage />,
+          },
+          {
+            path: "agent-risk-registry",
+            element: <AiGovernancePage />,
           },
           {
             path: "machines",
