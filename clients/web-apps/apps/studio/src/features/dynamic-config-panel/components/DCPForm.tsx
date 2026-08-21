@@ -69,8 +69,18 @@ export const DCPForm = () => {
     if (nodeId) {
       updateNodeDataIO(nodeId, inputs, outputs, nodeLabel);
 
-      // Update flow variables object
-      if (outputs.length > 0) updateFlowVariablesObject(nodeId, outputs);
+      // Update flow variables object from real outputs or from SetVariableNode's dynamic variable name
+      const variableName = formData["VariableName"]?.toString();
+      if (nodeUniqueName === "SetVariableNode" && variableName) {
+        updateFlowVariablesObject(nodeId, [
+          {
+            key: variableName,
+            value: { value: variableName, enabled: true },
+          },
+        ]);
+      } else if (outputs.length > 0) {
+        updateFlowVariablesObject(nodeId, outputs);
+      }
     } else {
       toast.error("Node id is undefined. Cannot update node data");
       console.error("Node id is undefined. Cannot update node data.");

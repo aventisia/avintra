@@ -1,6 +1,8 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { SearchFlowVersionResDto } from "../dtos/search-flow-version-res-dto";
 
 // Base API URL from environment variables
@@ -22,6 +24,7 @@ const searchFlowVersions = (
   return axiosInstance
     .get<IHttpResponse<SearchFlowVersionResDto[]>>(
       `${baseAPIURL}/flow-version/search?query=${query}&type=${type}&includePublishedOnly=${includePublishedOnly}`,
+      { headers: getStudioSpaceHeaders() },
     )
     .then((res) => res.data);
 };

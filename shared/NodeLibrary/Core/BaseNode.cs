@@ -14,6 +14,13 @@ public abstract class BaseNode
     public required OutArgument<string> StatusMessage { get; set; }
 
     /// <summary>
+    /// Runtime-declared outputs whose names are not known at compile time.
+    /// Nodes can populate this during execution to emit additional output values
+    /// keyed by dynamic names (e.g. the variable name in SetVariableNode).
+    /// </summary>
+    public Dictionary<string, object?> DynamicOutputs { get; } = new();
+
+    /// <summary>
     /// Synchronous execute method. Override this for synchronous nodes.
     /// </summary>
     protected virtual void Execute(INodeContext context) { }
