@@ -91,6 +91,9 @@ public class NodeProcessor : INodeProcessor
             InitializeOutArguments(baseNode, nodeType);
             DebugLog($"Initialized out arguments for {nodeClassName}");
 
+            // Reset runtime-declared outputs from any previous execution (defensive, instances are normally fresh)
+            baseNode.DynamicOutputs.Clear();
+
             // 6. Execute the node
             var nodeContext = new NodeContext();
             DebugLog($"Calling InternalExecuteAsync on {nodeClassName}");
@@ -272,6 +275,22 @@ public class NodeProcessor : INodeProcessor
             // Add to flow context using the alias as the variable name
             var contextKey = outputAliasMap.TryGetValue(property.Name, out var ctxAlias) ? ctxAlias : property.Name;
             outputValues[contextKey] = value;
+        }
+
+        // Merge any runtime-declared outputs produced by the node (e.g. SetVariableNode).
+        // These are not declared as OutArgument<T> properties, so they are not subject
+        // to the enabled-output filter or alias map.
+        if (baseNode.DynamicOutputs is { Count: > 0 } dynamicOutputs)
+        {
+            foreach (var kv in dynamicOutputs)
+            {
+                if (kv.Value is null)
+                    continue;
+
+                var logKey = kv.Key;
+                outputLogs[logKey] = NodeLogHelper.ConvertValueForLogging(logKey, kv.Value, "Output", false);
+                outputValues[logKey] = kv.Value;
+            }
         }
     }
 

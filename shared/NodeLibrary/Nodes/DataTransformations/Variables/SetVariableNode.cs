@@ -16,9 +16,6 @@ public class SetVariableNode : BaseNode
     [DisplayName("Value To Set"), Description("The value (text, number, list, object, or arithmetic expression) to assign to the variable.")]
     public required InArgument<object> ValueToSet { get; set; }
 
-    // Hidden output argument to return the value of the variable. It should not be displayed in the config form
-    public OutArgument<object> OutVariableValue { get; set; } = new OutArgument<object>();
-
     protected override void Execute(INodeContext context)
     {
         var variableName = VariableName.Get(context);
@@ -37,6 +34,12 @@ public class SetVariableNode : BaseNode
             if (valueToSet == null)
             {
                 statusMessage = "Value to set cannot be null.";
+                isSuccess = false;
+            }
+
+            if (isSuccess && IsReservedVariableName(variableName))
+            {
+                statusMessage = $"Variable name '{variableName}' is reserved and cannot be used.";
                 isSuccess = false;
             }
 
@@ -65,7 +68,7 @@ public class SetVariableNode : BaseNode
 
             if (isSuccess)
             {
-                OutVariableValue.Set(context, finalValue);
+                DynamicOutputs[variableName] = finalValue;
                 statusMessage = $"Variable '{variableName}' set successfully with value: {finalValue}";
             }
 
@@ -88,5 +91,11 @@ public class SetVariableNode : BaseNode
             return false;
 
         return true;
+    }
+
+    static bool IsReservedVariableName(string name)
+    {
+        return string.Equals(name, "IsSuccess", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(name, "Status", StringComparison.OrdinalIgnoreCase);
     }
 }

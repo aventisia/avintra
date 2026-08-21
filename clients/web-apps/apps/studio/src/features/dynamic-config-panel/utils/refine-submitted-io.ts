@@ -3,7 +3,7 @@ import { NodeInputType, NodeOutputType, NodeOutputValueType } from "@/types/node
 import { stringifyIfValidJson } from "./valid-json-utils";
 
 export function refineSubmittedIO(
-  nodeUniqueName: string,
+  _nodeUniqueName: string,
   formData: Record<string, unknown>,
   inputKeys: string[],
   outputKeys: string[],
@@ -19,21 +19,6 @@ export function refineSubmittedIO(
     key,
     value: formData[key] as NodeOutputValueType,
   }));
-
-  // If nodeUniqueName is SetVariableActivity
-  if (nodeUniqueName === "SetVariableActivity") {
-    // Clear the outputs
-    outputs.length = 0;
-
-    // Add input VariableName as output
-    outputs.push({
-      key: "OutVariableValue",
-      value: {
-        value: formData["VariableName"]?.toString() || "VariableName not set",
-        enabled: true,
-      },
-    });
-  }
 
   return { inputs, outputs };
 }
