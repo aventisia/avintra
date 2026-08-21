@@ -21,7 +21,7 @@ public class OrchestratorHubClient : IOrchestratorHubClient
         query["username"] = MachineIdentity.Username;
         query["appVersion"] = MachineIdentity.AppVersion;
 
-        _hubUrl = $"{appBaseUrl.TrimEnd('/')}/orchestrator-hub?{query}";
+        _hubUrl = $"{appBaseUrl.TrimEnd('/')}/workspace/api/orchestrator-hub?{query}";
         _accessToken = accessToken;
         _logger = logger;
     }

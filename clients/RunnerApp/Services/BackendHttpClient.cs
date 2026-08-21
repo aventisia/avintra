@@ -77,7 +77,7 @@ public class BackendHttpClient : IBackendClient
             linkedUserAccountId = GetLinkedUserAccountId(),
         };
 
-        var response = await _httpClient.PostAsJsonAsync("accounts/api/machine-auth/register", payload, ct);
+        var response = await _httpClient.PostAsJsonAsync("workspace/api/machine-auth/register", payload, ct);
         var wrapper = await EnsureServiceSuccessAsync<MachineAuthResponseDto>(response, ct);
         if (wrapper?.Data is null)
             return null;
@@ -98,7 +98,7 @@ public class BackendHttpClient : IBackendClient
 
         // API-key authenticated registration: the key and tenant header let the backend
         // resolve the tenant without a user JWT, and the linked username resolves the user.
-        var request = new HttpRequestMessage(HttpMethod.Post, "accounts/api/machine-auth/register")
+        var request = new HttpRequestMessage(HttpMethod.Post, "workspace/api/machine-auth/register")
         {
             Content = JsonContent.Create(payload)
         };
