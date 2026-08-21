@@ -14,7 +14,7 @@ const nameProps: InputFieldProps = {
   label: "Unique Name",
   isRequired: true,
   description:
-    "Specify a **unique** name for this trigger.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Can be changed** after creation.",
+    "Specify a **unique** name for this trigger.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Cannot be changed** after creation.",
 };
 
 const webhookUrlProps: InputFieldProps = {
@@ -28,11 +28,13 @@ const webhookUrlProps: InputFieldProps = {
 const callbackUrlProps: InputFieldProps = {
   name: "callbackUrl",
   label: "Callback Url",
+  description: "Optional URL that the webhook calls back to after processing.",
 };
 
 const expectedPayloadSchemaProps: InputFieldProps = {
   name: "expectedPayloadSchema",
   label: "Input Arguments Schema",
+  description: "The expected input arguments schema that the webhook payload should conform to.",
 };
 
 const isDisabledProps: SwitchFieldProps = {

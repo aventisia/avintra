@@ -20,6 +20,7 @@ export const typeProps: SelectFieldProps = {
   name: "type",
   label: "Key Type",
   isRequired: true,
+  description: "The type of key being stored (e.g. API key, JSON, etc.).",
   selectOptions: enumToArray(KeyStoreTypesEnum),
 };
 
@@ -28,6 +29,7 @@ export const accessLevelProps: SelectFieldProps = {
   name: "accessLevel",
   label: "Access Level",
   isRequired: true,
+  description: "The access level for the key, controlling who can read or use it.",
   selectOptions: enumToArray(AccessLevelTypesEnum),
 };
 
@@ -46,6 +48,7 @@ export const valueProps: InputFieldProps = {
   name: "value",
   label: "Value",
   isRequired: true,
+  description: "The key value (e.g. an API key or configuration value).",
 };
 
 // Name
@@ -53,12 +56,14 @@ export const tagsProps: InputFieldProps = {
   name: "tags",
   label: "Tags",
   isRequired: false,
+  description: "Optional tags to help organize and find the key.",
 };
 
 // Description
 export const descriptionProps: TextareaFieldProps = {
   name: "description",
   label: "Description",
+  description: "A short summary of what the key is used for.",
   className: "min-h-[6rem]",
 };
 

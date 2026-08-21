@@ -28,12 +28,14 @@ const typeProps: SelectFieldProps = {
   selectOptions: enumToArray(PlanTypeEnum),
   defaultValue: "Pro",
   isRequired: true,
+  description: "The plan type (defaults to Pro).",
 };
 // Max Credits
 const maxCreditsProps: InputFieldProps = {
   name: "maxCredits",
   label: "No of credits",
   isRequired: true,
+  description: "The number of credits included in the plan.",
 };
 
 // Max Published Items
@@ -41,6 +43,7 @@ const maxPublishedItemsProps: InputFieldProps = {
   name: "maxPublishedItems",
   label: "Published Agents",
   isRequired: true,
+  description: "The maximum number of published agents allowed.",
 };
 
 // History Retention Days
@@ -48,6 +51,7 @@ const historyRetentionDaysProps: InputFieldProps = {
   name: "historyRetentionDays",
   label: "Insights & Workflow History (in Days)",
   isRequired: true,
+  description: "How many days of history to retain.",
 };
 
 // Max Spaces
@@ -55,6 +59,7 @@ const maxSpacesProps: InputFieldProps = {
   name: "maxSpaces",
   label: "Spaces",
   isRequired: true,
+  description: "The maximum number of spaces allowed.",
 };
 
 // Storage Limit MB
@@ -62,6 +67,7 @@ const storageLimitMBProps: InputFieldProps = {
   name: "storageLimitMB",
   label: "Storage Limit(in MB)",
   isRequired: true,
+  description: "The storage limit in megabytes.",
 };
 
 // Max Users
@@ -69,6 +75,7 @@ const maxUsersProps: InputFieldProps = {
   name: "maxUsers",
   label: "No of Users",
   isRequired: true,
+  description: "The maximum number of users allowed.",
 };
 
 // Yearly Charge
@@ -76,12 +83,14 @@ const yearlyPriceProps: InputFieldProps = {
   name: "yearlyPrice",
   label: "Yearly Charge (per Month)",
   isRequired: true,
+  description: "The yearly charge expressed per month.",
 };
 // Monthly Charge
 const monthlyPriceProps: InputFieldProps = {
   name: "monthlyPrice",
   label: "Monthly Charge",
   isRequired: true,
+  description: "The monthly charge.",
 };
 // Is Disabled
 const isDisabledProps: SwitchFieldProps = {

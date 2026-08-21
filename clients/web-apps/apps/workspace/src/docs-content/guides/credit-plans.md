@@ -9,15 +9,16 @@ Use this page to create and manage the credit plans available to tenants. Credit
 
 The page shows a table of credit plans with columns such as:
 
-- **Name** — the plan's name.
+- **Service Type** — the type of service the plan covers.
+- **Unit Type** — the unit the plan is priced in.
+- **One Unit** — the value of a single unit.
 - **Credits** — how many credits the plan provides.
-- **Price** — the plan's price.
-- **Status** — whether the plan is active.
 
 ## Row actions (the three dots)
 
 Each row has a **⋮** menu with actions such as:
 
+- **View** — see the plan's details.
 - **Edit** — change the plan's details.
 - **Delete** — remove the plan.
 
@@ -25,9 +26,9 @@ Each row has a **⋮** menu with actions such as:
 
 Click the **Create Plan** button. Fill in:
 
-- **Name** — the plan's name.
+- **Service Type** — the type of service.
+- **Unit Type** — the unit of pricing.
 - **Credits** — how many credits the plan provides.
-- **Price** — the plan's price.
 
 ## Tips
 

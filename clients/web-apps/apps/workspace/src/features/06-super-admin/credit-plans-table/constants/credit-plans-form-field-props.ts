@@ -16,6 +16,7 @@ const serviceTypeProps: SelectFieldProps = {
   name: "serviceType",
   label: "Service Type",
   isRequired: true,
+  description: "The type of service the plan covers.",
   selectOptions: enumToArray(ServiceTypeEnum),
   placeholder: "Select",
 };
@@ -25,6 +26,7 @@ const unitTypeProps: SelectFieldProps = {
   name: "unitType",
   label: "Unit Type",
   isRequired: true,
+  description: "The unit type used to measure consumption.",
   selectOptions: enumToArray(UnitTypeEnum),
   placeholder: "Select",
 };

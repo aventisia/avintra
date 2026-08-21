@@ -1,7 +1,5 @@
 import { Button } from "@avplatform/ui/buttons";
-import { Tooltip } from "@avplatform/ui/tooltip";
 import * as YAML from "js-yaml";
-import { Info } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { JsonEditor } from "@/components/json-editor/JsonEditor";
@@ -10,6 +8,7 @@ import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource
 import { isToolNameAvailable } from "../../apis/tools.apis";
 import { ComponentTypeEnum } from "../../enums/component-type-enum";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
+import { FieldLabel } from "./FieldLabel";
 
 interface StepIngestSpecProps {
   crudAction?: "create" | "read" | "update";
@@ -163,14 +162,11 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
   return (
     <div className="space-y-4">
       <div className="space-y-1.5">
-        <label className="flex items-center gap-1 text-sm font-medium">
-          Unique Name *
-          <Tooltip content="Name cannot be modified after creation.">
-            <span className="rounded hover:bg-slate-100 hover:text-primary">
-              <Info className="h-3.5 w-3.5" />
-            </span>
-          </Tooltip>
-        </label>
+        <FieldLabel
+          label="Unique Name"
+          isRequired
+          description={"A **unique** name for the tool.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** any characters (letters, numbers, spaces and symbols).\n- **Cannot be changed** after creation."}
+        />
         <input
           value={draftTool?.name ?? ""}
           onChange={(e) => updateDraft({ name: e.target.value })}
@@ -190,7 +186,10 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Description</label>
+        <FieldLabel
+          label="Description"
+          description="A short summary of what the tool does."
+        />
         <textarea
           value={draftTool?.description ?? ""}
           onChange={(e) => updateDraft({ description: e.target.value })}
@@ -201,7 +200,11 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Base URL *</label>
+        <FieldLabel
+          label="Base URL"
+          isRequired
+          description="The base URL of the external API the tool calls (e.g. https://api.example.com)."
+        />
         <input
           value={draftTool?.baseUrl ?? ""}
           onChange={(e) => updateDraft({ baseUrl: e.target.value })}
@@ -213,7 +216,11 @@ export const StepIngestSpec = ({ crudAction }: StepIngestSpecProps) => {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">OpenAPI Spec *</label>
+        <FieldLabel
+          label="OpenAPI Spec"
+          isRequired
+          description="Paste or upload the OpenAPI JSON or YAML specification that describes the API."
+        />
         <div className="flex gap-2">
           <Button
             variant={activeTab === "file" ? "default" : "outline"}

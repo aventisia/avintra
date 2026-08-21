@@ -11,22 +11,25 @@ The page shows a table of secrets with columns such as:
 
 - **Name** — the secret's name.
 - **Type** — the kind of secret (e.g. password, token).
-- **Description** — what the secret is used for.
-- **Created / Modified** — when the secret was created and last changed.
+- **Created By** — who created the secret.
+- **Created On** — when the secret was created.
 
 ## Row actions (the three dots)
 
 Each row has a **⋮** menu with actions such as:
 
+- **View** — open the secret details.
 - **Edit** — update the secret's value or description.
 - **Delete** — remove the secret.
 
-## Creating a secret
+## Adding a credential
 
-Click the **Create Secret** button. Fill in:
+Click the **Add Credential** button. Fill in:
 
 - **Name** — a unique name you will reference in agents.
-- **Value** — the secret value.
+- **User Name** — the username associated with the credential.
+- **Password** — the password for the credential.
+- **Confirm Password** — re-enter the password.
 - **Description** — optional, but recommended.
 
 > **Note:** Secrets in the Vault are encrypted and audited. For non-sensitive configuration values, use the **Key Store**.

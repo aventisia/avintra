@@ -9,22 +9,24 @@ Use this page to control who has access to your tenant and what they can do. Ass
 
 The page shows a table of users with columns such as:
 
-- **Name** — the user's name.
+- **First Name** — the user's first name.
+- **Last Name** — the user's last name.
 - **Email** — the user's email address.
 - **Role** — the user's role and permissions.
-- **Status** — whether the user is active or disabled.
+- **Spaces** — which spaces the user belongs to.
+- **Created On** — when the user was added.
 
 ## Row actions (the three dots)
 
 Each row has a **⋮** menu with actions such as:
 
+- **View** — see the user's details.
 - **Edit** — change the user's role or details.
-- **Disable / Enable** — stop or restore the user's access.
 - **Delete** — remove the user.
 
-## Creating a user
+## Inviting a user
 
-Click the **Create User** button. Fill in:
+Click the **Invite** button. Fill in:
 
 - **Name** — the user's name.
 - **Email** — the user's email address.

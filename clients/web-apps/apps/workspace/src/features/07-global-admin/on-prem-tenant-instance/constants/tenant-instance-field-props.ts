@@ -25,6 +25,7 @@ const typeProps: SelectFieldProps = {
   name: "type",
   label: "Instance Type",
   isRequired: true,
+  description: "The type of the instance.",
   selectOptions: enumToArray(OnPremInstanceTypesEnum),
 };
 

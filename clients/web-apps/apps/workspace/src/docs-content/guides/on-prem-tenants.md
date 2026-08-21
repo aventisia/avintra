@@ -10,13 +10,18 @@ Use this page to manage the tenant instances running in on-premises deployments.
 The page shows a table of on-prem tenants with columns such as:
 
 - **Name** — the tenant's name.
-- **Status** — whether the tenant instance is active.
-- **Instance** — the tenant instance details.
+- **Type** — the tenant instance type.
+- **Execution Time Allowed** — the allowed execution time.
+- **Consumed Execution Time** — how much execution time has been used.
+- **Contract Start / Renewal Date** — the contract period.
+- **Status** — whether any instance has failed.
+- **Created By** — who created the tenant.
 
 ## Row actions (the three dots)
 
 Each row has a **⋮** menu with actions such as:
 
+- **Open** — open the tenant instance in Studio.
 - **View** — open the tenant instance to see its details and data.
 - **Edit** — change the tenant's details.
 - **Delete** — remove the tenant.

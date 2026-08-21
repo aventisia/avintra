@@ -23,7 +23,7 @@ const nameProps: InputFieldProps = {
   label: "Unique Name",
   isRequired: true,
   description:
-    "Specify a **unique** name for this trigger.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Can be changed** after creation.",
+    "Specify a **unique** name for this trigger.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Cannot be changed** after creation.",
 };
 
 // Name
@@ -37,7 +37,7 @@ const referenceProps: InputFieldProps = {
 const resourceProps: SelectFieldProps = {
   name: "resource",
   label: "Resource",
-  description: "Resource",
+  description: "The message resource to watch (e.g. Teams).",
   selectOptions: teamsMessageResourceOptions,
 };
 
@@ -67,7 +67,7 @@ const resubscribeFrequencyProps: InputFieldProps = {
 const subscriptionIdProps: InputFieldProps = {
   name: "subscriptionId",
   label: "Subscription Id",
-  description: "SubscriptionId",
+  description: "The subscription identifier (optional).",
 };
 
 const credentialNameProps: InputFieldProps = {

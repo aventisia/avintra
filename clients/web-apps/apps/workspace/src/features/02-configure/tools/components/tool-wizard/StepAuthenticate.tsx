@@ -1,6 +1,7 @@
 import { ToolAuthenticationTypeEnum } from "../../enums/tool-authentication-type-enum";
 import { useFetchCustomApiCredentials } from "../../hooks/useFetchCustomApiCredentials.hook";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
+import { FieldLabel } from "./FieldLabel";
 
 const authOptions = [
   { label: "No authentication", value: ToolAuthenticationTypeEnum.None },
@@ -38,7 +39,10 @@ export const StepAuthenticate = () => {
   return (
     <div className="space-y-4">
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Authentication Type</label>
+        <FieldLabel
+          label="Authentication Type"
+          description="How the tool authenticates with the external API. Choose the method that matches the API."
+        />
         <select
           value={draftTool.authenticationType ?? ToolAuthenticationTypeEnum.None}
           onChange={(e) => handleAuthChange(e.target.value)}
@@ -53,7 +57,10 @@ export const StepAuthenticate = () => {
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium">Credential</label>
+        <FieldLabel
+          label="Credential"
+          description="Select a Custom API Tool credential to use for authentication, if required."
+        />
         <select
           value={draftTool.credentialName ?? ""}
           onChange={(e) => handleCredentialChange(e.target.value)}

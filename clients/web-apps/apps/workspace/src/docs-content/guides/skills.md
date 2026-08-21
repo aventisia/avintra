@@ -5,17 +5,16 @@ The **Skills** page lets you create and manage skills — reusable units of capa
 
 Skills encapsulate a specific capability or instruction set. Instead of repeating the same logic in every agent, define it once as a skill and have multiple agents call it. This keeps your automations consistent and easier to maintain.
 
-## The table
+## The cards
 
-The page shows a table of skills with columns such as:
+Skills are displayed as **cards** in a grid (not a table). Each card shows:
 
-- **Name** — the skill's name.
+- **Name** — the skill's name. Click the card to open it.
 - **Description** — what the skill does.
-- **Status** — whether the skill is enabled.
 
 ## Row actions (the three dots)
 
-Each row has a **⋮** menu with actions such as:
+Each card has a **⋮** menu with actions such as:
 
 - **Edit** — change the skill's instructions or prompt.
 - **Open** — view the skill details.
@@ -23,7 +22,7 @@ Each row has a **⋮** menu with actions such as:
 
 ## Creating a skill
 
-Click the **Create Skill** button. Fill in:
+Click the **Add** button. Fill in:
 
 - **Name** — a unique, descriptive name.
 - **Description** — optional, but recommended.

@@ -30,6 +30,7 @@ const typeProps: SelectFieldProps = {
   name: "type",
   label: "Type",
   isRequired: true,
+  description: "The on-premises tenant type.",
   selectOptions: enumToArray(OnPremTenantTypes),
 };
 
@@ -38,6 +39,7 @@ const executionTimeAllowedProps: InputFieldProps = {
   name: "executionTimeAllowed",
   label: "Execution Time Allowed (in Hours)",
   isRequired: true,
+  description: "The number of hours executions are allowed.",
 };
 
 // Contract Start Date
@@ -45,6 +47,7 @@ const contractStartDateProps: DateTimePickerFieldProps = {
   name: "contractStartDate",
   label: "Contract Start Date",
   isRequired: true,
+  description: "When the contract starts.",
   granularity: "minute",
 };
 
@@ -53,6 +56,7 @@ const contractRenewalDateProps: DateTimePickerFieldProps = {
   name: "contractRenewalDate",
   label: "Contract Renewal Date",
   isRequired: true,
+  description: "When the contract renews.",
   granularity: "minute",
 };
 

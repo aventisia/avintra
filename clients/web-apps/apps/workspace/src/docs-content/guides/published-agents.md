@@ -10,19 +10,20 @@ This page is the command center for your live agents. From here you can see whic
 The page shows a table of published agents with columns such as:
 
 - **Name** — the agent's name.
-- **Status** — whether the agent is enabled or disabled.
-- **Machines** — which machines the agent is assigned to run on.
-- **Users** — which users can access the agent.
+- **Type** — whether the agent is an **Automation Agent** or a **Chat Agent**.
+- **Machine Count** — the number of machines the agent is assigned to run on.
+- **Supported Platform** — where the agent can run.
+- **Status** — whether the agent is **Published**, **Deployed**, or **Disabled**.
+- **Created By** — who published the agent.
+- **Created On** — when the agent was published.
 
 ## Row actions (the three dots)
 
 Each row has a **⋮** menu with actions such as:
 
-- **Edit** — open the agent's configuration.
-- **Assign Machines** — choose which machines can run the agent.
-- **Assign Users** — choose which users can access the agent.
-- **Disable / Enable** — stop or start the agent.
-- **Delete** — remove the published agent.
+- **Assign Machine** — choose which machines can run the agent (or **Assign User** for chat agents).
+- **Config** — open the agent's configuration.
+- **Enable / Disable** — start or stop the agent.
 
 ## Tips
 

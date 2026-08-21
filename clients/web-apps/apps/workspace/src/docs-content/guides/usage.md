@@ -7,9 +7,16 @@ Use this page to track your resource consumption and credit balance. Understand 
 
 ## What you can see
 
-- **Credits** — your current credit balance.
-- **Usage charts** — how your usage has changed over time.
-- **Consumption breakdown** — which agents or features consume the most.
+- **Available Credits** — your current credit balance.
+- **Total Credits Used** — how many credits have been consumed in the selected period.
+- **Total Execution Time Credits** — credits used by agent executions.
+- **Total LLM Credits** — credits used by language model calls.
+
+## How to use it
+
+- Use the **space filter** to view usage for a specific space.
+- Use the **date range picker** to change the period shown.
+- Use **Export** to download the usage data.
 
 ## Tips
 

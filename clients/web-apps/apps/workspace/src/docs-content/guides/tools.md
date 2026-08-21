@@ -5,18 +5,16 @@ The **Tools** page lets you create and manage tools that connect agents to exter
 
 Tools extend what your agents can do by letting them interact with external services. For example, a tool might call a REST API, query a database, or send a message to another system.
 
-## The table
+## The cards
 
-The page shows a table of tools with columns such as:
+Tools are displayed as **cards** in a grid (not a table). Each card shows:
 
-- **Name** — the tool's name.
-- **Type** — the kind of tool (e.g. API, function).
+- **Name** — the tool's name. Click the card to open it.
 - **Description** — what the tool does.
-- **Status** — whether the tool is enabled.
 
 ## Row actions (the three dots)
 
-Each row has a **⋮** menu with actions such as:
+Each card has a **⋮** menu with actions such as:
 
 - **Edit** — change the tool's configuration.
 - **Open** — view the tool details.
@@ -27,9 +25,10 @@ Each row has a **⋮** menu with actions such as:
 Click the **Add** button. Fill in:
 
 - **Name** — a unique, descriptive name.
-- **Type** — the kind of tool to create.
-- **Endpoint / Configuration** — the connection details for the external system.
-- **Authentication** — how the tool authenticates (e.g. API key from the Key Store).
-- **Schema** — the input/output schema the tool expects.
+- **Description** — what the tool does.
+- **Base URL** — the external API the tool calls.
+- **OpenAPI Specification** — the JSON/YAML spec describing the API.
+- **Authentication Type** — how the tool authenticates.
+- **Credential** — the credential to use for authentication, if required.
 
 After creating the tool, call it from a node in your agent.

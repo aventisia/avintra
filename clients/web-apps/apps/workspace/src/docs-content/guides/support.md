@@ -9,21 +9,25 @@ Use this page to report issues, ask questions, and track the status of your supp
 
 The page shows a table of support tickets with columns such as:
 
-- **Subject** — the ticket's subject.
-- **Status** — the ticket's current state (e.g. open, in progress, resolved).
-- **Priority** — how urgent the ticket is.
-- **Created** — when the ticket was raised.
+- **Ticket** — the ticket's title and number.
+- **Type** — whether it is a Service Request or Change Request.
+- **Status** — the ticket's current state (e.g. New, In Progress, Closed).
+- **Created By** — who raised the ticket.
+- **Created On** — when the ticket was raised.
+- **Total Comments** — how many comments the ticket has.
+- **Total Attachments** — how many attachments the ticket has.
 
 ## Row actions (the three dots)
 
 Each row has a **⋮** menu with actions such as:
 
-- **View** — open the ticket to see its details and replies.
+- **Open** — open the ticket to see its details and replies.
 - **Edit** — update the ticket.
+- **Delete** — remove the ticket.
 
 ## Creating a ticket
 
-Click the **Create Ticket** button. Fill in:
+Click the **Create Support Ticket** button. Fill in:
 
 - **Subject** — a short summary of the issue.
 - **Description** — details of the issue.

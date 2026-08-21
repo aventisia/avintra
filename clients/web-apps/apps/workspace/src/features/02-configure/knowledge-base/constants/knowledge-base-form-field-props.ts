@@ -22,13 +22,14 @@ const nameProps: InputFieldProps = {
   label: "Unique Name",
   isRequired: true,
   description:
-    "A **unique** name for your knowledge base.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9) and underscore (`_`). Must start with a letter or underscore. No spaces or other special characters.\n- **Can be changed** after creation.",
+    "A **unique** name for your knowledge base.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9) and underscore (`_`). Must start with a letter or underscore. No spaces or other special characters.\n- **Cannot be changed** after creation.",
 };
 
 // Description
 const descriptionProps: TextareaFieldProps = {
   name: "description",
   label: "Description",
+  description: "A short summary of what the knowledge base contains.",
   className: "min-h-[6rem]",
 };
 

@@ -32,6 +32,10 @@ import subscriptionPlans from "./guides/subscription-plans.md?raw";
 import support from "./guides/support.md?raw";
 import tenant from "./guides/tenant.md?raw";
 import tenants from "./guides/tenants.md?raw";
+import timeTriggers from "./guides/time-triggers.md?raw";
+import emailTriggers from "./guides/email-triggers.md?raw";
+import messageTriggers from "./guides/message-triggers.md?raw";
+import webhookTriggers from "./guides/webhook-triggers.md?raw";
 import tools from "./guides/tools.md?raw";
 import triggers from "./guides/triggers.md?raw";
 import usage from "./guides/usage.md?raw";
@@ -73,6 +77,38 @@ const guides: HelpGuideContent[] = [
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
     content: triggers,
+  },
+  {
+    id: "time-triggers",
+    title: "Time Triggers",
+    summary: "Run an agent on a schedule.",
+    section: "configure",
+    docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
+    content: timeTriggers,
+  },
+  {
+    id: "email-triggers",
+    title: "Email Triggers",
+    summary: "Start an agent when an email is received.",
+    section: "configure",
+    docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
+    content: emailTriggers,
+  },
+  {
+    id: "message-triggers",
+    title: "Message Triggers",
+    summary: "Start an agent when a message arrives in a channel.",
+    section: "configure",
+    docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
+    content: messageTriggers,
+  },
+  {
+    id: "webhook-triggers",
+    title: "Webhook Triggers",
+    summary: "Start an agent when an external system calls a webhook URL.",
+    section: "configure",
+    docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/triggers",
+    content: webhookTriggers,
   },
   {
     id: "keystore",
