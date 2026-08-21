@@ -7,9 +7,14 @@ This page is the overview of your tenant. From here you can view and manage your
 
 ## What you can do
 
-- View your tenant's name and details.
-- Manage your subscription plan and billing.
-- Review usage and credits.
+The page is organised into tabs:
+
+- **Overview** — your tenant's name and key details.
+- **Payment Methods** — manage the cards used to pay for your plan.
+- **Billing History** — review past invoices and payments.
+- **Billing Details** — your company and billing address.
+- **Preferences** — tenant-level preferences.
+- **Notifications** — configure notification settings.
 
 ## Tips
 

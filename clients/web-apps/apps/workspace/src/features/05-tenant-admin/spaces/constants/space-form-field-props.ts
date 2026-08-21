@@ -22,6 +22,7 @@ const descriptionProps: TextareaFieldProps = {
   name: "description",
   label: "Brief Description",
   maxLength: 500,
+  description: "A short description of the space (max 500 characters).",
 };
 
 // Is Disabled

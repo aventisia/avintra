@@ -10,9 +10,14 @@ Use this page to oversee all tenants, review their plans and usage, and manage t
 The page shows a table of tenants with columns such as:
 
 - **Name** — the tenant's name.
-- **Plan** — the tenant's subscription plan.
-- **Status** — whether the tenant is active.
-- **Usage** — the tenant's resource consumption.
+- **Type** — the tenant's type.
+- **Active Plan** — the tenant's subscription plan.
+- **Renewal Date** — when the plan renews.
+- **Currency** — the tenant's billing currency.
+- **Resource Type** — the tenant's resource type.
+- **Effective Date / Expires On** — the plan's validity period.
+- **Domain, Country, Employees, Industry** — business details.
+- **Published Agents, Total Jobs, Total Users, Available Credits** — usage metrics.
 
 ## Row actions (the three dots)
 
@@ -20,6 +25,7 @@ Each row has a **⋮** menu with actions such as:
 
 - **View** — open the tenant's details.
 - **Edit** — change the tenant's plan or details.
+- **Switch** — switch to the tenant.
 - **Delete** — remove the tenant.
 
 ## Tips

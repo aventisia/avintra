@@ -75,6 +75,7 @@ export const statusProps: SelectFieldProps = {
   label: "Status",
   isRequired: true,
   selectOptions: enumToArray(JobStatusEnum),
+  description: "The current status of the job.",
 };
 
 export const closingStatusProps: SelectFieldProps = {

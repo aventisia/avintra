@@ -74,7 +74,7 @@ export const ToolCrudForm = ({
         label="Unique Name"
         placeholder="My Custom API"
         isRequired
-        description="A **unique** name for the tool.\n\n- **Max length:** 255 characters.\n- **Can be changed** after creation."
+        description="A **unique** name for the tool.\n\n- **Max length:** 255 characters.\n- **Cannot be changed** after creation."
         onChangeCapture={(e) => handleInputChange(e.currentTarget.value)}
         nonErrorMessage={availabilityMessage}
         autoFocus
@@ -85,6 +85,7 @@ export const ToolCrudForm = ({
         name="description"
         label="Description"
         placeholder="Describe what this tool does"
+        description="A short summary of what the tool does."
       />
 
       <InputField
@@ -92,6 +93,7 @@ export const ToolCrudForm = ({
         label="Base URL"
         placeholder="https://api.example.com"
         isRequired
+        description="The base URL of the external API the tool calls (e.g. \`https://api.example.com\`)."
       />
 
       <div className="space-y-1.5">
@@ -107,6 +109,7 @@ export const ToolCrudForm = ({
       <SelectField
         name="authenticationType"
         label="Authentication Type"
+        description="How the tool authenticates with the external API. Choose the method that matches the API."
         selectOptions={[
           { label: "No authentication", value: ToolAuthenticationTypeEnum.None },
           { label: "API Key (Header)", value: ToolAuthenticationTypeEnum.ApiKeyHeader },
@@ -120,6 +123,7 @@ export const ToolCrudForm = ({
         name="credentialName"
         label="Credential"
         placeholder="Select a Custom API Tool credential"
+        description="Select a Custom API Tool credential to use for authentication, if required."
         selectOptions={(customApiCredentials ?? []).map((cred) => ({
           label: cred.label,
           value: cred.value,

@@ -9,6 +9,7 @@ import { JsonEditor } from "@/components/json-editor/JsonEditor";
 import { testToolDirectly } from "../../apis/tools.apis";
 import { TestToolDto, TestToolResponseDto } from "../../dtos/index";
 import { useToolWizardStore } from "../../stores/tool-wizard.store";
+import { FieldLabel } from "./FieldLabel";
 
 const serializeResponseBody = (body: unknown): string => {
   if (body === undefined || body === null) return "{}";
@@ -95,7 +96,10 @@ export const StepPlayground = () => {
 
       {operations.length > 0 && (
         <div className="space-y-1.5">
-          <label className="text-sm font-medium">Operation</label>
+          <FieldLabel
+            label="Operation"
+            description="Select an operation from the OpenAPI spec to test."
+          />
           <select
             value={selectedOperation}
             onChange={(e) => {
@@ -120,7 +124,10 @@ export const StepPlayground = () => {
         <div className="space-y-2 rounded border p-3">
           <p className="text-xs font-medium">Parameters for {selectedOp.operationId}</p>
           <div className="space-y-1.5">
-            <label className="text-sm font-medium">Parameters (JSON)</label>
+            <FieldLabel
+              label="Parameters (JSON)"
+              description="The JSON payload to send for the operation, e.g. a key/value pair object."
+            />
             <JsonEditor
               value={parametersText}
               onChange={setParametersText}

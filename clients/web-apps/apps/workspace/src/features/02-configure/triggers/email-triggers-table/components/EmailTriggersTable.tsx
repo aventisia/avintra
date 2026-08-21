@@ -11,6 +11,7 @@ import {
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { QueryTabs } from "@/components/QueryTab";
+import { HelpButton } from "@/components/help/HelpButton";
 import ResourceShareDialog from "@/features/resource-share/components/ResourceShareDialog";
 
 import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
@@ -60,6 +61,7 @@ export const EmailTriggersTable = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
+              <HelpButton guideId="email-triggers" />
               <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
             </div>
             <div className="flex items-center gap-2">

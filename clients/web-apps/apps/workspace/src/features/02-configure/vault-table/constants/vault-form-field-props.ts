@@ -14,7 +14,7 @@ export const nameProps: InputFieldProps = {
   isRequired: true,
   placeholder: "exampleName",
   description:
-    "A **unique** name for the credential.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Can be changed** after creation.",
+    "A **unique** name for the credential.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Cannot be changed** after creation.",
 };
 
 // User Name
@@ -23,6 +23,7 @@ export const userNameProps: InputFieldProps = {
   label: "User Name",
   isRequired: true,
   placeholder: "exampleUserName",
+  description: "The username associated with the credential.",
 };
 
 // password
@@ -31,6 +32,7 @@ export const passwordProps: InputFieldProps = {
   label: "Password",
   isRequired: true,
   type: "password",
+  description: "The password for the credential.",
 };
 
 //confirm password
@@ -39,12 +41,14 @@ export const confirmPasswordProps: InputFieldProps = {
   label: "Confirm Password",
   isRequired: true,
   type: "password",
+  description: "Re-enter the password to confirm it matches.",
 };
 
 // Description
 export const descriptionProps: TextareaFieldProps = {
   name: "description",
   label: "Description",
+  description: "A short summary of what the credential is used for.",
   className: "min-h-[6rem]",
 };
 

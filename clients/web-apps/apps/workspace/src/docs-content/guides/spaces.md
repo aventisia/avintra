@@ -10,14 +10,19 @@ Use spaces to segment your tenant. For example, you might create separate spaces
 The page shows a table of spaces with columns such as:
 
 - **Name** — the space's name.
-- **Description** — what the space is for.
-- **Members** — how many users belong to the space.
+- **Total Users** — how many users belong to the space.
+- **Total Published Agents** — how many agents are published in the space.
+- **Total Execution Time** — the total time agents have run in the space.
+- **Total Machines Attached** — how many machines are attached to the space.
+- **Created On** — when the space was created.
 
 ## Row actions (the three dots)
 
 Each row has a **⋮** menu with actions such as:
 
+- **View** — see the space's details.
 - **Edit** — change the space's name or description.
+- **Share** — manage who has access to the space.
 - **Delete** — remove the space.
 
 ## Creating a space

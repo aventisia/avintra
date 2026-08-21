@@ -16,7 +16,7 @@ export const nameProps: InputFieldProps = {
   label: "Unique Name",
   isRequired: true,
   description:
-    "A **unique**, descriptive name for the queue.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Can be changed** after creation.",
+    "A **unique**, descriptive name for the queue.\n\n- **Max length:** 255 characters.\n- **Allowed characters:** letters (a-z, A-Z), numbers (0-9), underscore (`_`), hyphen (`-`) and space.\n- **Cannot be changed** after creation.",
 };
 
 // Is Disabled

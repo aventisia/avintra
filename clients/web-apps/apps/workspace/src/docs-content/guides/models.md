@@ -5,20 +5,17 @@ The **Models** page lets you configure the model providers used by your agents. 
 
 Use this page to manage the AI models your agents can use. Configure providers, set API keys, and select the default models for your tenant.
 
-## The table
+## The cards
 
-The page shows a table of model providers with columns such as:
+Model providers are displayed as **cards** in a grid (not a table). Each card shows:
 
-- **Name** — the provider's name.
-- **Model** — the model(s) available.
-- **Status** — whether the provider is active.
+- **Provider** — the provider's name and brand.
+- **Description** — what the provider offers.
+- **Enabled Models** — the models currently enabled for this provider.
 
-## Row actions (the three dots)
+## Setting up a provider
 
-Each row has a **⋮** menu with actions such as:
-
-- **Edit** — change the provider's configuration.
-- **Delete** — remove the provider.
+Click the **Setup** button on a provider card to open the configuration dialog. Follow the steps to connect the provider, set its API key, and enable the models you want to use.
 
 ## Tips
 

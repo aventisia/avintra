@@ -31,6 +31,7 @@ const emailProps: InputFieldProps = {
   label: "Email",
   isRequired: true,
   type: "email",
+  description: "The user's email address.",
 };
 
 // User roles
@@ -39,6 +40,7 @@ const userRolesProps: MultiSelectFieldProps = {
   label: "User Roles",
   isRequired: true,
   placeholder: "Select roles",
+  description: "Select the roles to assign to the user.",
   selectOptions: [],
 };
 
@@ -48,6 +50,7 @@ const userSpacesProps: MultiSelectFieldProps = {
   label: "Spaces",
   isRequired: true,
   placeholder: "Select spaces",
+  description: "Select the spaces the user belongs to.",
   selectOptions: [],
 };
 

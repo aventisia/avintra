@@ -5,21 +5,19 @@ The **Chats** page under **Assist** keeps a record of conversations you have had
 
 This page is your history of interactions with agents. Use it to pick up where you left off or to review past conversations.
 
-## The table
+## The layout
 
-The page shows a list of chats with columns such as:
+The page shows a list of your chat agents on the left. Selecting an agent shows its conversations, and selecting a conversation opens the chat on the right.
 
-- **Agent** — which agent you chatted with.
-- **Last Message** — a preview of the most recent message.
-- **Timestamp** — when the chat last had activity.
+Use the **Active** and **Archived** tabs to switch between current and archived conversations.
 
 ## How to use it
 
-1. Find the conversation you want to continue.
-2. Click it to reopen the chat.
+1. Select the agent you chatted with.
+2. Choose the conversation you want to continue.
 3. Continue the conversation or review the history.
 
 ## Tips
 
-- Use the search box to find a specific conversation.
 - Reopen past chats to continue work without starting over.
+- Use the **Archived** tab to find older conversations.

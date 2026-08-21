@@ -60,7 +60,7 @@ export const TriggersTable = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={TABLE_HEADING} />
-              <HelpButton guideId="triggers" />
+              <HelpButton guideId="time-triggers" />
               <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />{" "}
             </div>
             <div className="flex items-center gap-2">

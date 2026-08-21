@@ -28,6 +28,7 @@ export const roleDescriptionProps: TextareaFieldProps = {
   maxLength: 512,
   minLength: 0,
   className: "text-base resize-none",
+  description: "A short description of the role (max 512 characters).",
 };
 
 export const permissionFieldProps: CheckboxFieldProps[] = ACCESSES.map((access) => ({

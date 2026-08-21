@@ -30,6 +30,7 @@ export const nameProps: InputFieldProps = {
 export const typeProps: SelectFieldProps = {
   name: "type",
   label: "Type",
+  description: "The deployment type of the tenant.",
   selectOptions: enumToArray(DeploymentTypeEnum),
   isRequired: true,
 };
@@ -39,6 +40,7 @@ export const currencyProps: SelectFieldProps = {
   label: "Currency",
   placeholder: "Currency",
   isRequired: true,
+  description: "The tenant's currency.",
   selectOptions: enumToArray(CurrenciesEnum),
 };
 
@@ -46,6 +48,7 @@ export const effectiveOnProps: DateTimePickerFieldProps = {
   name: "effectiveDate",
   label: "Contract Effective Date",
   isRequired: true,
+  description: "When the contract takes effect.",
   granularity: "minute",
   hourCycle: 12,
 };
@@ -55,6 +58,7 @@ export const renewsOnProps: DateTimePickerFieldProps = {
   name: "renewalDate",
   label: "Contract Renewal Date",
   isRequired: true,
+  description: "When the contract renews.",
   granularity: "minute",
   hourCycle: 12,
 };
@@ -108,6 +112,7 @@ export const daysBeforePwdExpiresProps: InputFieldProps = {
   name: "daysBeforePwdExpires",
   label: "Days Before Password Expires",
   type: "number",
+  description: "The number of days before passwords expire.",
 };
 
 // Is Idle Session Timeout Enabled
@@ -122,6 +127,7 @@ export const idleSessionTimeoutMinutesProps: InputFieldProps = {
   name: "idleSessionTimeoutMinutes",
   label: "Idle Session Timeout (in Minutes)",
   type: "number",
+  description: "The inactivity period in minutes before timeout.",
 };
 
 // Database Option

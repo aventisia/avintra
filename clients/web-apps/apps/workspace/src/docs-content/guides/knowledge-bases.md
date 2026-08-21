@@ -5,18 +5,17 @@ The **Knowledge Bases** page lets you create and manage knowledge bases — corp
 
 A knowledge base gives your agents access to your documents, so they can answer questions and make decisions based on your data rather than only their training. Add files, configure chunking/embedding settings, and let your agents retrieve from the corpus.
 
-## The table
+## The cards
 
-The page shows a table of knowledge bases with columns such as:
+Knowledge bases are displayed as **cards** in a grid (not a table). Each card shows:
 
-- **Name** — the knowledge base's name.
+- **Name** — the knowledge base's name. Click the card to open it.
 - **Description** — what the knowledge base contains.
-- **Documents** — the number of documents uploaded.
-- **Status** — whether the knowledge base is ready to use.
+- **Created On** — when the knowledge base was created.
 
 ## Row actions (the three dots)
 
-Each row has a **⋮** menu with actions such as:
+Each card has a **⋮** menu with actions such as:
 
 - **Edit** — change the knowledge base's name or description.
 - **Open** — view the knowledge base details and manage its documents.
@@ -24,7 +23,7 @@ Each row has a **⋮** menu with actions such as:
 
 ## Creating a knowledge base
 
-Click the **Create Knowledge Base** button. Fill in:
+Click the **Add** button. Fill in:
 
 - **Name** — a unique, descriptive name.
 - **Description** — optional, but recommended.

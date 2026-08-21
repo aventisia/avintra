@@ -2,7 +2,7 @@ The **Agents** page is where you build, edit, and manage your AI agents. An agen
 
 ## Purpose
 
-This page is the starting point for creating automation. From here you can create new agents, open existing ones to edit their workflow, duplicate them, share them with teammates, and archive ones you no longer need.
+This page is the starting point for creating automation. From here you can create new agents, open existing ones to edit their workflow, share them with teammates, and remove ones you no longer need.
 
 ## The table
 
@@ -10,9 +10,10 @@ The page shows a table of your agents with the following key columns:
 
 - **Name** — the agent's name. Click it to open the agent editor.
 - **Type** — whether the agent is an **Automation Agent** (runs a workflow) or a **Chat Agent** (conversational assistant).
-- **Description** — a short summary of what the agent does.
-- **Status** — whether the agent is enabled or disabled. Disabled agents cannot be executed.
-- **Created / Modified** — when the agent was created and last changed.
+- **Supported Platform** — where the agent can run (e.g. Cloud & Windows).
+- **Comments** — the number of comments on the agent.
+- **Created By** — who created the agent.
+- **Created On** — when the agent was created.
 
 Use the **Personal** and **Shared** tabs to switch between agents you own and agents shared with you. Use the search box to filter by name.
 
@@ -20,9 +21,9 @@ Use the **Personal** and **Shared** tabs to switch between agents you own and ag
 
 Each row has a **⋮** (three-dot) menu with actions such as:
 
+- **View** — open the agent's details.
 - **Edit** — open the agent in the editor.
 - **Share** — share the agent with other users.
-- **Archive** — move the agent to the archive (it is no longer listed here).
 - **Delete** — permanently remove the agent.
 
 ## Creating an agent

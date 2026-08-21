@@ -9,10 +9,12 @@ Use this page to monitor and review how your agents interact with users. See wha
 
 The page shows a table of conversations with columns such as:
 
-- **User** — the user who had the conversation.
-- **Agent** — which agent was involved.
-- **Last Message** — a preview of the most recent message.
+- **Title** — a preview of the conversation. Click it to open the full transcript.
+- **Flow Name** — which agent was involved.
+- **Total Exchange** — the number of messages exchanged.
+- **Status** — the conversation's current state.
 - **Timestamp** — when the conversation last had activity.
+- **Username** — the user who had the conversation.
 
 ## Row actions
 
