@@ -78,6 +78,128 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.ToTable("worc_QueueTransactionEvents");
                 });
 
+            modelBuilder.Entity("WorkspaceAPIs.Entities.AgentRiskRegistry", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AgentName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AgentType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("AiModelsJson")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ApprovalJson")
+                        .HasColumnType("text");
+
+                    b.Property<string>("BusinessProcesses")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CompositeTier")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DataSensitivityScore")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DependencyComplexityScore")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("FlowId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("FlowVersionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("IntendedUse")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsConsumerFacing")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDisabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("IssuesJson")
+                        .HasColumnType("text");
+
+                    b.Property<string>("KnowledgeBasesJson")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("LastModifiedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastModifiedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("LastValidationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("NextReviewDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RisksJson")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ScopeScore")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SkillsJson")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("SpaceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SupervisoryImpactScore")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ThirdPartyToolsJson")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TierJustification")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("ValidatorUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<uint>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
+                    b.Property<int>("VersionNumber")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedByUserId");
+
+                    b.HasIndex("FlowVersionId")
+                        .IsUnique();
+
+                    b.HasIndex("LastModifiedByUserId");
+
+                    b.ToTable("worc_AgentRiskRegistry");
+                });
+
             modelBuilder.Entity("WorkspaceAPIs.Entities.ApiKey", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3032,6 +3154,25 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
 
                     b.Navigation("QueueTransaction");
+                });
+
+            modelBuilder.Entity("WorkspaceAPIs.Entities.AgentRiskRegistry", b =>
+                {
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "LastModifiedByUser")
+                        .WithMany()
+                        .HasForeignKey("LastModifiedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
+
+                    b.Navigation("LastModifiedByUser");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.ApiKey", b =>

@@ -46,6 +46,7 @@ namespace WorkspaceAPIs.Data
         public DbSet<Flow> Flows { get; set; }
         public DbSet<FlowVersion> FlowVersions { get; set; }
         public DbSet<FlowVersionHistory> FlowVersionHistories { get; set; }
+        public DbSet<AgentRiskRegistry> AgentRiskRegistries { get; set; }
         public DbSet<Machine> Machine { get; set; }
         public DbSet<Machine_FlowVersion> MachineFlowVersions { get; set; }
         public DbSet<Job> Jobs { get; set; }

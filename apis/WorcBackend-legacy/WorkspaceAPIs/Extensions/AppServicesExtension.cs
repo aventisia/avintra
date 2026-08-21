@@ -130,6 +130,7 @@ public static class AppServicesExtension
         services.AddScoped<IFlowVersionService, FlowVersionService>();
         services.AddScoped<ISearchByQueryService, SearchByQueryService>();
         services.AddScoped<IFlowVersionHistoryService, FlowVersionHistoryService>();
+        services.AddScoped<IAgentRiskRegistryService, AgentRiskRegistryService>();
         services.AddScoped<IMachinesTableService, MachinesTableService>();
         services.AddScoped<IMachineFlowService, MachineFlowService>();
         services.AddScoped<IAgentTableService, AgentTableService>();
