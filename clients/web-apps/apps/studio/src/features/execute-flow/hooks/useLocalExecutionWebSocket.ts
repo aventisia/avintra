@@ -1,5 +1,5 @@
-import { invoke } from "@tauri-apps/api/core";
 import { useQueryClient } from "@tanstack/react-query";
+import { invoke } from "@tauri-apps/api/core";
 import { useEffect, useRef } from "react";
 
 import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
@@ -87,6 +87,10 @@ export const useLocalExecutionWebSocket = () => {
 
   const jobId = useCurrentFlowStore((state) => state.currentFlow.jobId);
   const versionId = useCurrentFlowStore((state) => state.currentFlow.versionId);
+  // The root flow version that owns the run's logs. When executing the parent flow with
+  // sub-flows, sub-flow node logs are still persisted under the root (parent) version, so
+  // we must use this (not the current `versionId`) as the IndexedDB key.
+  const runVersionId = useCurrentFlowStore((state) => state.currentFlow.runVersionId);
   const { setShowRunResults } = useRunResultsQueryParams();
 
   // Keep the latest values in refs so the WebSocket connection effect only depends on
@@ -163,12 +167,16 @@ export const useLocalExecutionWebSocket = () => {
 
           // Persist the completed run (per-node logs + job outcome) to IndexedDB so a
           // refresh with ?showRunResults=1 can restore the colored canvas and panel.
+          // Logs are keyed by the ROOT run version (`rv`) — the engine records parent and
+          // sub-flow node logs under the job's root flow version, so using the current
+          // `versionId` would strand sub-flow logs under the sub-flow version.
           const nodeLogs = message.nodeLogs?.length
             ? message.nodeLogs.map(mapIncomingNodeLog)
             : Array.from(nodeLogsByNodeId.values());
-          if (versionIdRef.current && nodeLogs.length > 0) {
+          const persistVersionId = runVersionId || versionIdRef.current;
+          if (persistVersionId && nodeLogs.length > 0) {
             void saveCompletedExecutionLog(
-              versionIdRef.current,
+              persistVersionId,
               jobId,
               nodeLogs,
               message.status === "Completed",

@@ -20,6 +20,7 @@ export const FlowBreadcrumbs = () => {
     if (crumb.flowId) params.set("f", crumb.flowId);
     if (crumb.versionId) params.set("v", crumb.versionId);
     if (crumb.jobId) params.set("j", crumb.jobId); // Preserve job execution context
+    if (crumb.runVersionId) params.set("rv", crumb.runVersionId); // Preserve run-log owner version
 
     setSearchParams(params);
     sliceBreadcrumb(index);

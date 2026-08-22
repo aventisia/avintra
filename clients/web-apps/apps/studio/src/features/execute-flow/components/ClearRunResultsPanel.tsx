@@ -14,7 +14,7 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 const CANVAS_NODE_DETAIL_PANEL_ID = "canvas-node-detail";
 
 export const ClearRunResultsPanel = () => {
-  const { setShowRunResults, setJobId } = useRunResultsQueryParams();
+  const { setShowRunResults, setJobId, setRunVersionId } = useRunResultsQueryParams();
   const { resetLiveExecution, liveExecutionMap } = useLiveExecutionStore(
     useShallow((state) => ({
       resetLiveExecution: state.resetLiveExecution,
@@ -46,12 +46,19 @@ export const ClearRunResultsPanel = () => {
   const handleClear = () => {
     resetLiveExecution();
     resetJob();
-    setCurrentFlow({ ...currentFlow, jobId: undefined });
+    setCurrentFlow({ ...currentFlow, jobId: undefined, runVersionId: undefined });
     setShowRunResults(false);
     setJobId(undefined);
+    setRunVersionId(undefined);
     closePanel(CANVAS_NODE_DETAIL_PANEL_ID);
     // Wipe persisted run results for this flow from IndexedDB so a refresh won't restore them.
-    if (currentFlow.versionId) {
+    // When inside a sub-flow, logs live under the ROOT run version (`runVersionId`), so we
+    // clear that entry (and the sub-flow's own version) to fully reset the run.
+    const logVersionId = currentFlow.runVersionId || currentFlow.versionId;
+    if (logVersionId) {
+      void clearExecutionLogForVersion(logVersionId);
+    }
+    if (currentFlow.versionId && currentFlow.versionId !== logVersionId) {
       void clearExecutionLogForVersion(currentFlow.versionId);
     }
   };

@@ -18,6 +18,7 @@ import { useShallow } from "zustand/react/shallow";
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
+import { buildSubFlowNavigationParams } from "@/features/execute-flow/utils/sub-flow-navigation";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { useIsVersionHistoryRoute } from "@/features/version-history/hooks/useIsVersionHistoryRoute";
@@ -72,6 +73,8 @@ export const BlockNode = memo(
       const currentFlowId = searchParams.get("f") || currentFlow.id;
       const currentVersionId = searchParams.get("v") || currentFlow.versionId;
       const currentJobId = searchParams.get("j");
+      const currentRunVersionId = searchParams.get("rv") || currentFlow.runVersionId;
+      const showRunResults = searchParams.get("showRunResults") === "1";
       const currentFlowName = isExecutionLog ? name : currentFlow.name;
 
       if (currentFlowId) {
@@ -80,19 +83,19 @@ export const BlockNode = memo(
           versionId: currentVersionId,
           name: currentFlowName || "Main Flow",
           jobId: currentJobId || undefined,
+          runVersionId: currentRunVersionId || undefined,
         });
       }
 
-      const nextParams: Record<string, string> = {
-        f: block.flowId,
-        v: block.id,
-      };
-
-      if (isExecutionLog && currentJobId) {
-        nextParams.j = currentJobId;
-      }
-
-      setSearchParams(nextParams);
+      setSearchParams(
+        buildSubFlowNavigationParams({
+          targetFlowId: block.flowId,
+          targetVersionId: block.id,
+          showRunResults,
+          jobId: currentJobId || undefined,
+          runVersionId: currentRunVersionId || undefined,
+        }),
+      );
     };
 
     useEffect(() => {

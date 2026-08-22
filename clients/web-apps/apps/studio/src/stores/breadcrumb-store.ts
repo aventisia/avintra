@@ -6,6 +6,8 @@ export interface Breadcrumb {
   versionId?: string;
   name: string;
   jobId?: string;
+  /** Root flow version id that owns the local run's logs (carried through sub-flows). */
+  runVersionId?: string;
 }
 
 interface BreadcrumbState {
@@ -26,7 +28,8 @@ export const useBreadcrumbStore = create<BreadcrumbState>()(
           const isAlreadyLast =
             lastCrumb?.flowId === crumb.flowId &&
             lastCrumb?.versionId === crumb.versionId &&
-            lastCrumb?.jobId === crumb.jobId;
+            lastCrumb?.jobId === crumb.jobId &&
+            lastCrumb?.runVersionId === crumb.runVersionId;
 
           if (isAlreadyLast) return state;
           return { trail: [...state.trail, crumb] };
