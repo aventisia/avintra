@@ -32,6 +32,7 @@ import spaces from "./guides/spaces.md?raw";
 import subscriptionPlans from "./guides/subscription-plans.md?raw";
 import support from "./guides/support.md?raw";
 import tenant from "./guides/tenant.md?raw";
+import tenantNotifications from "./guides/tenant-notifications.md?raw";
 import tenants from "./guides/tenants.md?raw";
 import timeTriggers from "./guides/time-triggers.md?raw";
 import emailTriggers from "./guides/email-triggers.md?raw";
@@ -273,6 +274,14 @@ const guides: HelpGuideContent[] = [
     section: "tenant-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace/main-menu/support",
     content: support,
+  },
+  {
+    id: "tenant-notifications",
+    title: "Notifications",
+    summary: "Broadcast manual notifications and configure automatic notifications for your tenant.",
+    section: "tenant-admin",
+    docsSiteUrl: "https://docs.aventisia.com/workspace/admin",
+    content: tenantNotifications,
   },
   // Super Admin
   {
