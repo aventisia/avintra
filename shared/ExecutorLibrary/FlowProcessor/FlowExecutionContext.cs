@@ -125,7 +125,9 @@ public class FlowExecutionContext
                         return directValue;
                     }
 
-                    return stringValue + " Error: " + ex.Message; // Return original with error message if all resolution fails
+                    // Missing key / bad indexer: keep the original placeholder as-is so
+                    // the expression isn't lost when the referenced value doesn't exist.
+                    return stringValue;
                 }
             }
 
@@ -158,9 +160,14 @@ public class FlowExecutionContext
                 catch (Exception ex) when (ex is KeyNotFoundException || ex.InnerException is KeyNotFoundException
                                            || ex is Microsoft.CSharp.RuntimeBinder.RuntimeBinderException)
                 {
-                    // Surface missing key / bad indexer errors so users see the actual
-                    // template problem instead of the placeholder being left unresolved.
-                    throw;
+                    // Missing key / bad indexer: leave the original placeholder in place
+                    // so users see the template as-is rather than failing the whole node.
+                    if (_variables.TryGetValue(expr, out var value))
+                    {
+                        return ObjectToString(value);
+                    }
+
+                    return match.Value;
                 }
                 catch
                 {

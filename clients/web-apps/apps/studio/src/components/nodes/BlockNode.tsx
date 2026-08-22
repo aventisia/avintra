@@ -33,6 +33,7 @@ import OpenNodeLog from "../node-container/OpenNodeLog";
 import { NodeHeading } from "../node-container/node-header/NodeHeading";
 import { NodeImage } from "../node-container/node-header/NodeImage";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
+import { SubflowProgressPopup } from "./subflow-progress-popup/SubflowProgressPopup";
 
 type BlockNodeType = Node<NodeDataType, "blockNode">;
 
@@ -59,6 +60,14 @@ export const BlockNode = memo(
 
     const liveStatus = useLiveExecutionStore((state) =>
       data?.isDisabled ? undefined : state.liveExecutionMap[id],
+    );
+
+    // When this block is currently running a sub-flow the user hasn't navigated into, show
+    // the metadata of the sub-flow-internal node being processed ("Processing: <name>").
+    const subflowProgressNode = useLiveExecutionStore((state) =>
+      state.subflowProgressNodes.length > 0
+        ? state.subflowProgressNodes[state.subflowProgressNodes.length - 1]
+        : null,
     );
 
     const handleOpenSubFlow = () => {
@@ -158,6 +167,10 @@ export const BlockNode = memo(
             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">
               <CircleXIcon className="size-4 text-red-500" />
             </div>
+          )}
+
+          {subflowProgressNode && liveStatus === "running" && (
+            <SubflowProgressPopup node={subflowProgressNode} />
           )}
 
           <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>

@@ -1,16 +1,9 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  Edge,
-  Node,
-  OnSelectionChangeParams,
-  ReactFlow,
-  useOnViewportChange,
-  useReactFlow,
-} from "@xyflow/react";
+import { Edge, Node, OnSelectionChangeParams, ReactFlow, useOnViewportChange } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
@@ -38,6 +31,8 @@ import "../styles/override-edge-style.css";
 import "../styles/override-node-style.css";
 import "../styles/override-panel-style.css";
 import "../styles/remove-attribution.css";
+import { saveViewport } from "../utils/viewport-persistence";
+import { AutoFollowExecutingNode } from "./AutoFollowExecutingNode";
 import { BackgroundExt } from "./BackgroundExt";
 import { FlowBreadcrumbs } from "./FlowBreadcrumbs";
 import { MiniMapExt } from "./MiniMapExt";
@@ -115,16 +110,7 @@ export const ReactFlowExt = () => {
 
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
 
-  const { fitView } = useReactFlow();
-
   const recommendActions = useDefaultActions();
-
-  // Re-fit view when the right chat panel opens/closes so the canvas re-centers
-  // inside the newly sized container instead of staying offset.
-  useEffect(() => {
-    const timer = setTimeout(() => fitView({ duration: 200 }), 200);
-    return () => clearTimeout(timer);
-  }, [isTestChatOpen, fitView]);
 
   const calculateMenuPosition = (event: MouseEvent | React.MouseEvent<Element, MouseEvent>) => {
     const pane = reactFlowWrapper.current?.getBoundingClientRect();
@@ -139,9 +125,13 @@ export const ReactFlowExt = () => {
     };
   };
 
+  // Persist the user's viewport (position + zoom) to localStorage for the current flow
+  // version whenever they pan/zoom, so it can be restored on refresh and parent/sub-flow
+  // navigation instead of re-centering the canvas each time.
   useOnViewportChange({
     onChange: (viewport) => {
       setViewport(viewport);
+      saveViewport(currentFlow.versionId, viewport);
     },
   });
 
@@ -241,6 +231,7 @@ export const ReactFlowExt = () => {
             snapGrid={[16, 16]}
           >
             {flowType === FlowTypesEnum.ChatAgent && <TestChatAgent />}
+            <AutoFollowExecutingNode />
             <ViewControls />
             <ClearRunResultsPanel />
             <BackgroundExt />

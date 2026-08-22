@@ -7,7 +7,7 @@ import { useCurrentFlowStore } from "@/stores/current-flow-store";
 import { useReactFlowViewStore } from "@/stores/react-flow-view-store";
 
 export const FlowBreadcrumbs = () => {
-  const [, setSearchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { trail, sliceBreadcrumb } = useBreadcrumbStore();
 
   const currentFlow = useCurrentFlowStore((state) => state.currentFlow);
@@ -21,6 +21,12 @@ export const FlowBreadcrumbs = () => {
     if (crumb.versionId) params.set("v", crumb.versionId);
     if (crumb.jobId) params.set("j", crumb.jobId); // Preserve job execution context
     if (crumb.runVersionId) params.set("rv", crumb.runVersionId); // Preserve run-log owner version
+    // Preserve the run-results flag so returning to a parent flow keeps the execution-log
+    // panel alive. Without this, `showRunResults` is dropped and the panel + per-node logs
+    // stop rendering even though the colored node borders remain (those live in the store).
+    if (searchParams.get("showRunResults") === "1") {
+      params.set("showRunResults", "1");
+    }
 
     setSearchParams(params);
     sliceBreadcrumb(index);

@@ -11,6 +11,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { buildSubFlowNavigationParams } from "@/features/execute-flow/utils/sub-flow-navigation";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
@@ -25,6 +26,7 @@ import OpenNodeLog from "../node-container/OpenNodeLog";
 import { NodeHeading } from "../node-container/node-header/NodeHeading";
 import { NodeImage } from "../node-container/node-header/NodeImage";
 import { OpenNodeConfig } from "../node-container/node-header/OpenNodeConfig";
+import { SubflowProgressPopup } from "./subflow-progress-popup/SubflowProgressPopup";
 
 type CallAgentNode = Node<NodeDataType, "callAgentNode">;
 
@@ -41,6 +43,13 @@ export const CallAgentNode = memo(
     );
 
     const isExecutionLog = useIsExecutionLogsRoute();
+
+    const liveStatus = useLiveExecutionStore((state) => state.liveExecutionMap[id]);
+    const subflowProgressNode = useLiveExecutionStore((state) =>
+      state.subflowProgressNodes.length > 0
+        ? state.subflowProgressNodes[state.subflowProgressNodes.length - 1]
+        : null,
+    );
 
     const { updateNodeData } = useReactFlow();
     useEffect(() => {
@@ -168,6 +177,10 @@ export const CallAgentNode = memo(
               </Tooltip>
             )}
           </NodeToolbar>
+
+          {subflowProgressNode && liveStatus === "running" && (
+            <SubflowProgressPopup node={subflowProgressNode} />
+          )}
         </div>
       </OpenNodeLog>
     );

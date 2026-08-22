@@ -15,6 +15,7 @@ import { FlowVariablesObjectType } from "@/types/flow-variables-object-type";
 
 import { getFlowToLoad } from "../apis/react-flow-apis";
 import { deepParse } from "../utils/deepParse";
+import { getSavedViewport } from "../utils/viewport-persistence";
 
 export const useFetchFlowToLoad = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -62,8 +63,8 @@ export const useFetchFlowToLoad = () => {
     })),
   );
 
-  // Get react flow hook for fitView
-  const { fitView } = useReactFlow();
+  // Get react flow hook for fitView / setViewport
+  const { fitView, setViewport } = useReactFlow();
 
   const { isImport } = useImportStore(useShallow((state) => ({ isImport: state.upload })));
 
@@ -167,9 +168,19 @@ export const useFetchFlowToLoad = () => {
       // Store viewport reference
       setViewportState(flow.viewport);
 
-      // Fit view after render
+      // After render, restore the user's viewport for this flow version from localStorage
+      // (per-user, per-flow-version position + zoom) so back-and-forth navigation between
+      // parent/sub-flow and page refreshes keep the exact canvas view the developer was
+      // working on (e.g. the first few nodes of a 100-node flow) instead of re-centering.
+      // Only fit the view on the very first open by this user, and never zoom below 100%.
+      const savedViewport = getSavedViewport(flowData.versionId);
+
       setTimeout(() => {
-        fitView({ duration: ZOOM_ANIMATION_DURATION });
+        if (savedViewport) {
+          setViewport(savedViewport, { duration: ZOOM_ANIMATION_DURATION });
+        } else {
+          fitView({ duration: ZOOM_ANIMATION_DURATION, minZoom: 1 });
+        }
         setIsFlowLoading(false);
       }, 500);
     }
