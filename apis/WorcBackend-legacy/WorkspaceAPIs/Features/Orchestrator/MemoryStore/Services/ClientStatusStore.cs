@@ -123,6 +123,10 @@ public class ClientStatusStore : IClientStatusStore
         {
             existingClient.Status = clientDataStore.Status;
             existingClient.LastSeen = DateTimeOffset.UtcNow;
+            // Persist the job/agent association too. JobId doubles as the pending marker for a
+            // dispatched-but-not-started job, so it must survive an in-place update.
+            existingClient.AgentId = clientDataStore.AgentId;
+            existingClient.JobId = clientDataStore.JobId;
 
             // Persist the last check-in timestamp for machine clients.
             await UpdateMachineLastCheckedInAsync(existingClient);

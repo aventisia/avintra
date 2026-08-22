@@ -1,5 +1,5 @@
 import { HubConnection, HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * useWebSocket
@@ -26,12 +26,18 @@ export default function useWebSocket({
   // Indicates whether the WebSocket connection is ready.
   const [isReady, setIsReady] = useState(false);
 
+  // Track whether we are already building a connection for the current URL so
+  // the effect does not recreate one when connection state changes.
+  const isConnectingRef = useRef(false);
+
   useEffect(() => {
     // Skip if connection shouldn't be established.
     if (!shouldConnect) return;
 
     // Avoid creating multiple connections.
-    if (connection) return;
+    if (connection || isConnectingRef.current) return;
+
+    isConnectingRef.current = true;
 
     // Build the SignalR connection.
     const newConnection = new HubConnectionBuilder()
@@ -49,15 +55,19 @@ export default function useWebSocket({
         console.log("WebSocket Connected");
         setIsReady(true);
       })
-      .catch((err) => console.error("WebSocket connection failed:", err));
+      .catch((err) => {
+        console.error("WebSocket connection failed:", err);
+        isConnectingRef.current = false;
+      });
 
     // Cleanup when component unmounts or parameters change.
     return () => {
       newConnection.stop();
       setConnection(null);
       setIsReady(false);
+      isConnectingRef.current = false;
     };
-  }, [shouldConnect, url, connection]);
+  }, [shouldConnect, url]);
 
   return {
     connection,
