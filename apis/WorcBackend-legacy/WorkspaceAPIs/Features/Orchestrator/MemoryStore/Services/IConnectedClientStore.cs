@@ -72,4 +72,22 @@ public interface IClientStatusStore
     /// <param name="jobId">The unique identifier of the job associated with the client.</param>
     /// <returns> A task representing the asynchronous operation, containing the client's status information, or null if no client is associated with the specified job ID.  </returns>
     Task<ClientDataStore?> GetStatusByJobIdAsync(Guid jobId);
+
+    /// <summary>
+    /// Retrieves a snapshot of all currently online client presence entries for a tenant.
+    /// Used so a newly connected client can learn who is already online without receiving
+    /// its own connect event.
+    /// </summary>
+    /// <param name="tenantId">The identifier of the tenant whose presence snapshot is being retrieved.</param>
+    /// <returns>A task representing the asynchronous operation, containing the presence entries of all online clients for the tenant.</returns>
+    Task<IEnumerable<ClientDataStore>> GetPresenceAsync(Guid tenantId);
+
+    /// <summary>
+    /// Retrieves a machine client by its unique name (e.g. <c>[username]_os_osid</c>) within a tenant.
+    /// Used to resolve a machine identified by name (hub/websocket) to its internal store entry.
+    /// </summary>
+    /// <param name="tenantId">The identifier of the tenant.</param>
+    /// <param name="clientName">The unique machine name.</param>
+    /// <returns>The client status for the matching machine, or null if not found.</returns>
+    Task<ClientDataStore?> GetClientByNameAsync(Guid tenantId, string clientName);
 }

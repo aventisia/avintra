@@ -2,19 +2,38 @@ namespace WorkspaceAPIs.Services;
 
 public class ClientStatusStore : IClientStatusStore
 {
-    // Thread-safe dictionary to store client statuses, with the clientId as the key.
+    // Authoritative client status, keyed by ClientId. Job-execution logic reads this
+    // (machine Status/AgentId/JobId), so its per-client semantics are preserved.
     private readonly ConcurrentDictionary<Guid, ClientDataStore> ClientStore;
+
+    // Connection registry: maps an active SignalR ConnectionId to its owning ClientId.
+    // This makes the store connection-aware: a user with multiple tabs/connections holds
+    // multiple connections under the same ClientId, so disconnecting one no longer evicts
+    // the client's presence.
+    private readonly ConcurrentDictionary<string, Guid> ConnectionToClient;
+
+    // Live connection count per ClientId, used to decide when the last connection has left.
+    private readonly ConcurrentDictionary<Guid, int> ClientConnectionCounts;
+
     private readonly WorkspaceDbContext _workspaceDbContext;
     private readonly ILogger<ClientStatusStore> _logger;
 
-    public ClientStatusStore(ConcurrentDictionary<Guid, ClientDataStore> clientStore, WorkspaceDbContext workspaceDbContext, ILogger<ClientStatusStore> logger)
+    public ClientStatusStore(
+        ConcurrentDictionary<Guid, ClientDataStore> clientStore,
+        ConcurrentDictionary<string, Guid> connectionToClient,
+        ConcurrentDictionary<Guid, int> clientConnectionCounts,
+        WorkspaceDbContext workspaceDbContext,
+        ILogger<ClientStatusStore> logger)
     {
         ClientStore = clientStore;
+        ConnectionToClient = connectionToClient;
+        ClientConnectionCounts = clientConnectionCounts;
         _workspaceDbContext = workspaceDbContext;
         _logger = logger;
     }
 
-    // Adds or updates the client's status in the store.
+    // Adds or updates the client's status in the store. Registers the connection so a later
+    // disconnect only removes the client once its last connection is gone.
     public async Task AddOrUpdateStatusAsync(ClientDataStore req)
     {
         var client = new ClientDataStore
@@ -22,6 +41,7 @@ public class ClientStatusStore : IClientStatusStore
             TenantId = req.TenantId,
             ClientId = req.ClientId,
             ConnectionId = req.ConnectionId,
+            ClientName = req.ClientName,
             Type = req.Type,
             Status = req.Status,
             LastSeen = DateTimeOffset.UtcNow,
@@ -31,40 +51,60 @@ public class ClientStatusStore : IClientStatusStore
 
         ClientStore.AddOrUpdate(req.ClientId, client, (_, __) => client);
 
+        // Register the connection for this client so presence survives multiple connections.
+        if (ConnectionToClient.TryAdd(req.ConnectionId, req.ClientId))
+        {
+            ClientConnectionCounts.AddOrUpdate(req.ClientId, 1, (_, c) => c + 1);
+        }
+
         // Persist the last check-in timestamp for machine clients.
         await UpdateMachineLastCheckedInAsync(client);
     }
 
-    // Removes all clients from the store by their connection identifier.
+    // Removes the given connection from the store. The client's presence entry is only removed
+    // once its last connection has left.
     public async Task RemoveClientByConnectionAsync(string connectionId)
     {
-        // Find all clients with the matching connection ID
-        var clientsToRemove = ClientStore.Values
-            .Where(w => w.ConnectionId == connectionId)
-            .ToList();
+        if (!ConnectionToClient.TryRemove(connectionId, out var clientId))
+        {
+            // Unknown connection; nothing to remove.
+            return;
+        }
 
-        // If any clients are found, remove them from the store
-        foreach (var client in clientsToRemove)
+        var remaining = ClientConnectionCounts.AddOrUpdate(clientId, 0, (_, c) => Math.Max(0, c - 1));
+        if (remaining > 0)
+        {
+            // The client still has other live connections; keep its presence entry.
+            return;
+        }
+
+        // Last connection for this client is gone — remove its presence entry.
+        ClientConnectionCounts.TryRemove(clientId, out _);
+        if (ClientStore.TryRemove(clientId, out var removed))
         {
             // Persist the disconnect time for machine clients before removing them.
-            await UpdateMachineLastCheckedInAsync(client);
-
-            ClientStore.TryRemove(client.ClientId, out _);
+            await UpdateMachineLastCheckedInAsync(removed);
         }
     }
 
-    // Retrieves the status of a client by their client ID.
+    // Retrieves the status of a client by their connection ID. Resolves the owning ClientId
+    // through the connection registry so non-primary connections (e.g. a second browser tab)
+    // can still locate their client's presence entry.
     public Task<ClientDataStore?> GetStatusByConnectionIdAsync(string connectionId)
     {
-        // Find the client by its connection ID.
-        var clientData = ClientStore.Values
-            .FirstOrDefault(w => w.ConnectionId == connectionId
-                && (w.Type == ClientTypesEnum.AvintraMachine || w.Type != ClientTypesEnum.AvintraMachine));
-
-        // Return the client status by clientId if found.
-        if (clientData != null && ClientStore.TryGetValue(clientData.ClientId, out var clientDataStore))
+        if (ConnectionToClient.TryGetValue(connectionId, out var clientId)
+            && ClientStore.TryGetValue(clientId, out var clientDataStore))
         {
             return Task.FromResult<ClientDataStore?>(clientDataStore);
+        }
+
+        // Fallback for connections registered before the registry existed.
+        var clientData = ClientStore.Values
+            .FirstOrDefault(w => w.ConnectionId == connectionId);
+
+        if (clientData != null && ClientStore.TryGetValue(clientData.ClientId, out var fallbackStore))
+        {
+            return Task.FromResult<ClientDataStore?>(fallbackStore);
         }
 
         // Return null if no client found with the given connection ID.
@@ -142,6 +182,29 @@ public class ClientStatusStore : IClientStatusStore
 
         // Return the matching client if found; otherwise, return null.
         return Task.FromResult<ClientDataStore?>(client);
+    }
+
+    // Retrieves a snapshot of all online client presence entries for a tenant.
+    public Task<IEnumerable<ClientDataStore>> GetPresenceAsync(Guid tenantId)
+    {
+        var presence = ClientStore.Values
+            .Where(w => w.TenantId == tenantId)
+            .ToList();
+
+        return Task.FromResult<IEnumerable<ClientDataStore>>(presence);
+    }
+
+    // Retrieves a machine client by its unique name within a tenant.
+    public Task<ClientDataStore?> GetClientByNameAsync(Guid tenantId, string clientName)
+    {
+        var machine = ClientStore.Values
+            .FirstOrDefault(w =>
+                w.TenantId == tenantId &&
+                w.Type == ClientTypesEnum.AvintraMachine &&
+                !string.IsNullOrEmpty(w.ClientName) &&
+                string.Equals(w.ClientName, clientName, StringComparison.OrdinalIgnoreCase));
+
+        return Task.FromResult<ClientDataStore?>(machine);
     }
 
     // Persists the machine's LastCheckedIn timestamp to the database.

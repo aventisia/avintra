@@ -326,8 +326,8 @@ public class JobsTableService : IJobsTableService
             jobRecordDto.IsFlowVersionPublished = flowVersion.IsFlowVersionPublished;
 
             // Trigger job execution if a machine is available (published or desktop flow)
-            _logger.LogInformation("[MANUAL-JOB-DEBUG] InsertJobAsync: job {JobId} created (status={Status}, machineId={MachineId}, flowVersionId={FlowVersionId}, tenantId={TenantId}). Dispatching now.",
-                newJob.Id, newJob.Status, newJob.MachineId, newJob.FlowVersionId, newJob.TenantId);
+            _logger.LogInformation("[MANUAL-JOB-DEBUG] InsertJobAsync: job {JobId} created (status={Status}, machine={MachineId}, flowVersionId={FlowVersionId}, tenantId={TenantId}). Dispatching now.",
+                newJob.Id, newJob.Status, jobRecordDto.ExecutionLocation, newJob.FlowVersionId, newJob.TenantId);
             await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
             _logger.LogInformation("[MANUAL-JOB-DEBUG] InsertJobAsync: ExecuteJobCommandAsync returned for job {JobId}.", newJob.Id);
 
@@ -902,7 +902,7 @@ public class JobsTableService : IJobsTableService
                 var executionCommand = new ExecutionCommandDto
                 {
                     JobId = job.Id,
-                    MachineId = job.MachineId.Value,
+                    MachineName = job.ExecutedOn ?? job.MachineId.Value.ToString(),
                     AgentId = job.FlowVersionId,
                     TenantId = job.TenantId,
                     Command = ExecutionCommandTypesEnum.Abort

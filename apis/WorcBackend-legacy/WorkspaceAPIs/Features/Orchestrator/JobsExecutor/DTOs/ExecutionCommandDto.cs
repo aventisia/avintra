@@ -26,7 +26,8 @@ public class ExecutionCommandDto
     public Guid AgentId { get; set; }
 
     /// <summary>
-    /// The unique identifier of the machine where the agent is running.
+    /// The unique name of the machine where the agent is running (e.g. <c>[username]_os_osid</c>).
+    /// Used to identify the machine across the hub/websocket instead of the machine Guid id.
     /// </summary>
-    public Guid MachineId { get; set; }
+    public string? MachineName { get; set; }
 }
