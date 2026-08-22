@@ -155,7 +155,14 @@ export const AppLayout = () => {
     setAllowedRoutes([...allowedRoutes, "/account"]);
 
     setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
-  }, [isPending, selectedRoles, setAllowedRoutes, setSidebarMenuSections, setLandingUrl, userSession]);
+  }, [
+    isPending,
+    selectedRoles,
+    setAllowedRoutes,
+    setSidebarMenuSections,
+    setLandingUrl,
+    userSession,
+  ]);
 
   useEffect(() => {
     //Navigate user to first option of filteredSidebarMenu
@@ -185,10 +192,12 @@ export const AppLayout = () => {
     // If the user session is still pending, do not proceed
     if (isPending || !userSession) return;
 
-    // Check if the user has exactly one "TD" role
+    // Connect whenever the user has more than just the TD role. In a normal
+    // browser session osID is empty, but the web app still needs to listen for
+    // orchestrator broadcasts such as machine_status_update.
     const hasSingleTD = userSession.userRoles.includes("TD") && userSession.userRoles.length === 1;
-    setConnectWebsocket(!hasSingleTD && osID != "");
-  }, [isPending, osID, userSession]);
+    setConnectWebsocket(!hasSingleTD);
+  }, [isPending, userSession]);
 
   if (isAppLoading) return <AppLoader />;
 

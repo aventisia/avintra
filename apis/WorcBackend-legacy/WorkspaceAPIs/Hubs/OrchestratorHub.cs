@@ -161,10 +161,10 @@ public class OrchestratorHub : Hub
                     _workspaceInternalDbContext.Jobs.Update(job);
                     await _workspaceInternalDbContext.SaveChangesAsync();
 
-                    // Update the machine status to 'Running' as it is now working on the job
+                    // Keep the machine Online/Idle and record the job as a pending marker. The machine
+                    // flips to Running only when the runner actually starts the job via StartJob.
                     clientDataStore.AgentId = job.FlowVersionId;
                     clientDataStore.JobId = job.Id;
-                    clientDataStore.Status = MachineStatusEnum.Running;
                     await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
                     var executionRequest = new ExecutionCommandDto()
@@ -345,8 +345,8 @@ public class OrchestratorHub : Hub
             // If the machine is not running an agent, proceed to execute the agent
             if (clientDataStore.Status != MachineStatusEnum.Running)
             {
-                // Update machine status to "Running" to indicate the agent execution is in progress
-                clientDataStore.Status = MachineStatusEnum.Running;
+                // Keep the machine Online/Idle and record the job as a pending marker. The machine flips
+                // to Running only when the runner actually starts the job via the StartJob endpoint.
                 clientDataStore.LastSeen = DateTimeOffset.UtcNow;
                 clientDataStore.AgentId = agentId;
                 clientDataStore.JobId = job.Id;

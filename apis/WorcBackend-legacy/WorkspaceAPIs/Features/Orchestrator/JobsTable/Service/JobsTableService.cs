@@ -14,6 +14,8 @@ public class JobsTableService : IJobsTableService
     private readonly INodeExecutionLogService _nodeExecutionLogService;
     private readonly IClientContextResolver _clientContextResolver;
     private readonly IExecutionNotificationService _executionNotificationService;
+    private readonly IClientStatusStore _clientStatusStore;
+    private readonly IHubContext<OrchestratorHub> _orchestratorHubContext;
     private const int MaxRemarkLength = 2000;
 
     public JobsTableService(
@@ -26,7 +28,9 @@ public class JobsTableService : IJobsTableService
         EnvironmentConfig environmentConfig,
         INodeExecutionLogService nodeExecutionLogService,
         IClientContextResolver clientContextResolver,
-        IExecutionNotificationService executionNotificationService)
+        IExecutionNotificationService executionNotificationService,
+        IClientStatusStore clientStatusStore,
+        IHubContext<OrchestratorHub> orchestratorHubContext)
     {
         // Set the user ID from the HTTP context
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -46,6 +50,8 @@ public class JobsTableService : IJobsTableService
         _nodeExecutionLogService = nodeExecutionLogService;
         _clientContextResolver = clientContextResolver;
         _executionNotificationService = executionNotificationService;
+        _clientStatusStore = clientStatusStore;
+        _orchestratorHubContext = orchestratorHubContext;
     }
 
     /// <summary>
@@ -320,7 +326,10 @@ public class JobsTableService : IJobsTableService
             jobRecordDto.IsFlowVersionPublished = flowVersion.IsFlowVersionPublished;
 
             // Trigger job execution if a machine is available (published or desktop flow)
+            _logger.LogInformation("[MANUAL-JOB-DEBUG] InsertJobAsync: job {JobId} created (status={Status}, machineId={MachineId}, flowVersionId={FlowVersionId}, tenantId={TenantId}). Dispatching now.",
+                newJob.Id, newJob.Status, newJob.MachineId, newJob.FlowVersionId, newJob.TenantId);
             await _jobsExecutorService.ExecuteJobCommandAsync(newJob);
+            _logger.LogInformation("[MANUAL-JOB-DEBUG] InsertJobAsync: ExecuteJobCommandAsync returned for job {JobId}.", newJob.Id);
 
             // Return Success response
             return serviceResponse.Update("Job created", 201, jobRecordDto);
@@ -665,6 +674,11 @@ public class JobsTableService : IJobsTableService
             if (!await _unitOfWork.SaveAsync())
                 return serviceResponse.Update("Failed to save changes.", 500);
 
+            // The job has actually started, so the machine is now busy. This is the single source of
+            // truth for the machine's Running transition: dispatch leaves the machine Online/Idle
+            // (with a pending JobId) and only this method flips it to Running.
+            await UpdateMachineBusyStateAsync(job);
+
             // Return success response
             return serviceResponse.Update("Job started", 200, job.Adapt<JobRecordDto>());
         }
@@ -777,6 +791,10 @@ public class JobsTableService : IJobsTableService
                     job.RefId.Value, job.Id, job.Status, job.Remark);
             }
 
+            // The job is now finished, so the machine is free again. Reset it to Idle and broadcast
+            // so the UI reflects that it can take a new job.
+            await UpdateMachineIdleStateAsync(job);
+
             // Return success response
             return serviceResponse.Update("Job closed", 200, job.Adapt<JobRecordDto>());
         }
@@ -785,6 +803,53 @@ public class JobsTableService : IJobsTableService
             _logger.LogError(ex, "An error occurred while closing the job with ID {JobId}.", job.Id);
             return serviceResponse;
         }
+    }
+
+    // Flips the machine executing a job to Running and notifies the tenant group that it is busy.
+    // Called from StartJobAsync once the job has actually started.
+    private async Task UpdateMachineBusyStateAsync(Job job)
+    {
+        if (job.MachineId == null || job.MachineId == Guid.Empty)
+            return;
+
+        var machine = await _clientStatusStore.GetClientByIdAsync(job.MachineId.Value);
+        if (machine == null)
+        {
+            _logger.LogWarning("Cannot mark machine {MachineId} busy: not found in client status store.", job.MachineId);
+            return;
+        }
+
+        machine.Status = MachineStatusEnum.Running;
+        machine.JobId = job.Id;
+        machine.AgentId = job.FlowVersionId;
+        machine.LastSeen = DateTimeOffset.UtcNow;
+
+        await _clientStatusStore.UpdateClientStatusAsync(machine);
+        await _orchestratorHubContext.Clients.Group($"TENANT_{job.TenantId}").SendAsync("machine_status_update", "A machine is now busy.");
+        _logger.LogInformation("Machine {MachineId} is now running job {JobId}.", job.MachineId, job.Id);
+    }
+
+    // Resets a machine to Idle after its job completes and notifies the tenant group.
+    private async Task UpdateMachineIdleStateAsync(Job job)
+    {
+        if (job.MachineId == null || job.MachineId == Guid.Empty)
+            return;
+
+        var machine = await _clientStatusStore.GetClientByIdAsync(job.MachineId.Value);
+        if (machine == null)
+        {
+            _logger.LogWarning("Cannot reset machine {MachineId} idle: job {JobId} not in client status store.", job.MachineId, job.Id);
+            return;
+        }
+
+        machine.Status = MachineStatusEnum.Idle;
+        machine.JobId = null;
+        machine.AgentId = null;
+        machine.LastSeen = DateTimeOffset.UtcNow;
+
+        await _clientStatusStore.UpdateClientStatusAsync(machine);
+        await _orchestratorHubContext.Clients.Group($"TENANT_{job.TenantId}").SendAsync("machine_status_update", "A machine is now idle.");
+        _logger.LogInformation("Machine {MachineId} is now idle after job {JobId}.", job.MachineId, job.Id);
     }
 
     // Aborts a running job by transitioning it to Aborted, recording the end time, and sending an Abort command to the executing machine.

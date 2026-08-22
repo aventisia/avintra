@@ -55,17 +55,46 @@ public class JobsExecutorService : IJobsExecutorService
             // Determine the machine for job execution
             if (job.MachineId == null || job.MachineId == Guid.Empty)
             {
-                // Fetch machine statuses for the tenant
-                var machineList = await _clientStatusStore.GetMachineStatusesAsync(job.TenantId);
-                var clientDataStoreDto = machineList.FirstOrDefault(w => w.Status == MachineStatusEnum.Online);
+                _logger.LogInformation("Machine ID is null for Job ID: {JobId}, attempting to find an online machine.", job.Id);
+
+                // Fetch machine statuses for the tenant.
+                // Only pick a machine that is online and has no pending (dispatched-but-not-started) job.
+                var machineList = (await _clientStatusStore.GetMachineStatusesAsync(job.TenantId)).ToList();
+                _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: tenant {TenantId} has {Count} machine(s) in store.", job.TenantId, machineList.Count);
+                foreach (var m in machineList)
+                {
+                    _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync:   machine clientId={ClientId}, type={Type}, status={Status}, jobId={JobId}, connectionId={ConnectionId}", m.ClientId, m.Type, m.Status, m.JobId, m.ConnectionId);
+                }
+
+                // Pick the first machine that is online AND has no live pending job. A machine carrying a
+                // stale pending marker (its job no longer exists, is terminal, or was reassigned) is
+                // self-healed here so it is not blocked forever.
+                ClientDataStore? clientDataStoreDto = null;
+                foreach (var m in machineList)
+                {
+                    if (m.Status != MachineStatusEnum.Online)
+                        continue;
+
+                    if (await HasLivePendingJobAsync(m))
+                        continue;
+
+                    clientDataStoreDto = m;
+                    break;
+                }
 
                 if (clientDataStoreDto == null)
                 {
                     _logger.LogWarning("No online machine found for TenantId: {TenantId}.", job.TenantId);
+                    _logger.LogWarning("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: no eligible machine (Online + no live pending job) found for job {JobId}, tenant {TenantId}. Dispatch aborted.", job.Id, job.TenantId);
                     return;
                 }
 
                 job.MachineId = clientDataStoreDto.ClientId;
+                _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: picked machine {MachineId} for job {JobId} (connectionId={ConnectionId}).", clientDataStoreDto.ClientId, job.Id, clientDataStoreDto.ConnectionId);
+            }
+            else
+            {
+                _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: job {JobId} already has machineId {MachineId} assigned.", job.Id, job.MachineId);
             }
 
             // Create an ExecutionCommandDto to trigger the job execution
@@ -108,9 +137,13 @@ public class JobsExecutorService : IJobsExecutorService
             {
                 // Log warning if the machine cannot be found
                 _logger.LogWarning("Machine {MachineId} not found in the client status store.", executionCommandDto.MachineId);
+                _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineId} NOT FOUND in store for command {Command}, job {JobId}.", executionCommandDto.MachineId, executionCommandDto.Command, executionCommandDto.JobId);
                 await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Assigned machine not found", _userId);
                 return;
             }
+
+            _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineId} found. status={Status}, type={Type}, connectionId={ConnectionId}, jobId={JobId}.",
+                executionCommandDto.MachineId, clientDataStore.Status, clientDataStore.Type, clientDataStore.ConnectionId, clientDataStore.JobId);
 
             // Check machine's status before executing or resuming the job
             if ((executionCommandDto.Command == ExecutionCommandTypesEnum.Initiate || executionCommandDto.Command == ExecutionCommandTypesEnum.Resume) &&
@@ -118,8 +151,34 @@ public class JobsExecutorService : IJobsExecutorService
             {
                 // Log and notify if the machine is not online or idle
                 _logger.LogWarning("Machine {MachineId} is not online or idle. Job execution cannot be triggered.", executionCommandDto.MachineId);
+                _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineId} status is {Status} (expected Online/Idle) for command {Command}, job {JobId}. Dispatch aborted.",
+                    executionCommandDto.MachineId, clientDataStore.Status, executionCommandDto.Command, executionCommandDto.JobId);
                 await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Assigned machine is not online or idle", _userId);
                 return;
+            }
+
+            // Guard against double-dispatch: reject a new Initiate only while the machine already has a
+            // LIVE pending (dispatched-but-not-started) job. The machine stays Online/Idle until the
+            // runner actually starts the job, so a non-empty JobId here means a job is already in flight.
+            // A stale marker (job no longer live) is cleared so the machine is not blocked forever.
+            if (executionCommandDto.Command == ExecutionCommandTypesEnum.Initiate &&
+                clientDataStore.JobId.HasValue && clientDataStore.JobId.Value != Guid.Empty)
+            {
+                var pendingLive = await HasLivePendingJobAsync(clientDataStore);
+                if (pendingLive)
+                {
+                    _logger.LogWarning("Machine {MachineId} already has a pending job {PendingJobId}. Cannot initiate {JobId}.", executionCommandDto.MachineId, clientDataStore.JobId, executionCommandDto.JobId);
+                    _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: pending-job guard hit. Machine {MachineId} already has LIVE pending job {PendingJobId}; cannot initiate {JobId}. Dispatch aborted.",
+                        executionCommandDto.MachineId, clientDataStore.JobId, executionCommandDto.JobId);
+                    await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Machine already has a pending job.", _userId);
+                    return;
+                }
+
+                // Stale marker: the referenced job is no longer live. Clear it so this machine can be dispatched.
+                _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineId} pending job {PendingJobId} is STALE. Clearing marker so machine can accept job {JobId}.",
+                    executionCommandDto.MachineId, clientDataStore.JobId, executionCommandDto.JobId);
+                clientDataStore.JobId = null;
+                await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
             }
 
             // Check if the machine is running before stopping, pausing, or cleaning up
@@ -141,10 +200,15 @@ public class JobsExecutorService : IJobsExecutorService
             clientDataStore.JobId = executionCommandDto.JobId;
             clientDataStore.AgentId = executionCommandDto.AgentId;
 
-            // Update machine status based on the execution command
+            // Update machine status based on the execution command.
+            // NOTE: Initiate no longer flips the machine to Running. The machine stays Online/Idle with
+            // the JobId acting as a pending marker until the runner actually calls StartJob, which is the
+            // single source of truth for the Running transition.
             switch (executionCommandDto.Command)
             {
                 case ExecutionCommandTypesEnum.Initiate:
+                    break;
+
                 case ExecutionCommandTypesEnum.Execute:
                 case ExecutionCommandTypesEnum.Resume:
                     clientDataStore.Status = MachineStatusEnum.Running;
@@ -167,11 +231,22 @@ public class JobsExecutorService : IJobsExecutorService
             // Persist the updated machine status
             await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
 
+            _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: about to send trigger_agent command={Command}, job={JobId}, agent={AgentId}, machine={MachineId}, tenant={TenantId} to connectionId={ConnectionId}.",
+                executionCommandDto.Command, executionCommandDto.JobId, executionCommandDto.AgentId, executionCommandDto.MachineId, executionCommandDto.TenantId, clientDataStore.ConnectionId);
+
             // Send the execution command to the client machine
             await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
 
-            // Search for an active job associated with the machine if it's idle or online
-            if (clientDataStore.Status == MachineStatusEnum.Online || clientDataStore.Status == MachineStatusEnum.Idle)
+            // Log successful execution of the job
+            _logger.LogInformation("Job {JobId} successfully executed on machine {MachineId}.", executionCommandDto.JobId, executionCommandDto.MachineId);
+            _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: trigger_agent SENT to connectionId={ConnectionId} for job {JobId}.", clientDataStore.ConnectionId, executionCommandDto.JobId);
+
+            // A machine can pull the next pending job only when it is free (no job dispatched/in-flight).
+            var isMachineFree = !clientDataStore.JobId.HasValue || clientDataStore.JobId.Value == Guid.Empty;
+
+            // Search for an active job associated with the machine if it's idle/online and not busy.
+            // A machine with a pending job falls through to the busy broadcast below.
+            if ((clientDataStore.Status == MachineStatusEnum.Online || clientDataStore.Status == MachineStatusEnum.Idle) && isMachineFree)
             {
                 // Retrieve all FlowVersionIds associated with the current machine from the Machine_FlowVersion table
                 var flowVersionIds = await _unitOfWork.Machine_FlowVersionRepo
@@ -197,9 +272,9 @@ public class JobsExecutorService : IJobsExecutorService
                     _unitOfWork.JobRepo.Update(job);
                     await _unitOfWork.SaveAsync();
 
-                    // Update the machine's status to 'Running' as it is now processing the job
+                    // Mark the machine with a pending job; status flips to Running only when the runner starts it.
                     clientDataStore.AgentId = job.FlowVersionId;
-                    clientDataStore.Status = MachineStatusEnum.Running;
+                    clientDataStore.JobId = job.Id;
                     await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
                     // Prepare the execution command with necessary job and machine details, and send it to the client machine for processing.
@@ -210,6 +285,7 @@ public class JobsExecutorService : IJobsExecutorService
 
                     // Send execution command to the machine
                     await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
+                    _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync (reassign): sent trigger_agent for reassigned job {JobId} to connectionId={ConnectionId}.", job.Id, clientDataStore.ConnectionId);
                 }
                 else
                 {
@@ -234,6 +310,28 @@ public class JobsExecutorService : IJobsExecutorService
             // Log any errors encountered during job execution
             _logger.LogError(ex, "An error occurred while executing job {JobId}.", executionCommandDto?.JobId);
         }
+    }
+
+    /// <summary>
+    /// Determines whether a machine's pending JobId still refers to a live, un-started job that is still
+    /// assigned to that machine. A job is "live" while it is still in Created status. If the job no longer
+    /// exists, is terminal, or was reassigned to a different machine, the pending marker is stale and the
+    /// machine should be treated as free.
+    /// </summary>
+    private async Task<bool> HasLivePendingJobAsync(ClientDataStore machine)
+    {
+        if (machine == null || !machine.JobId.HasValue || machine.JobId.Value == Guid.Empty)
+            return false;
+
+        var pendingJob = await _unitOfWork.JobRepo
+            .GetByConditionAsync(w => w.Id == machine.JobId.Value)
+            .Select(s => new { s.Status, s.MachineId })
+            .FirstOrDefaultAsync();
+
+        // Live = still Created AND still assigned to this machine.
+        return pendingJob != null &&
+               pendingJob.Status == JobStatusEnum.Created &&
+               (pendingJob.MachineId == machine.ClientId || pendingJob.MachineId == null);
     }
 
     public async Task ExecuteCommanByIdsdAsync(List<Guid> jobIds)
