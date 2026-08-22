@@ -53,6 +53,11 @@ public class ApprovalStateDto
     public string? DecidedBy { get; set; }
 
     /// <summary>
+    /// The designated approver's user id (server-authoritative for the guard).
+    /// </summary>
+    public Guid? DecidedByUserId { get; set; }
+
+    /// <summary>
     /// When the decision was made.
     /// </summary>
     public string? DecidedOn { get; set; }
@@ -66,4 +71,9 @@ public class ApprovalStateDto
     /// Exceptions allowed with the approval.
     /// </summary>
     public List<ApprovalExceptionDto> Exceptions { get; set; } = new();
+
+    /// <summary>
+    /// Whether the submitter confirmed the information is accurate.
+    /// </summary>
+    public bool IsInformationAccurate { get; set; }
 }

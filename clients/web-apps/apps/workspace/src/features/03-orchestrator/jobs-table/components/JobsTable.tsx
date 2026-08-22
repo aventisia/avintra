@@ -11,6 +11,7 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
+import { CalendarClock, History, Play } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -29,7 +30,11 @@ import {
   useFetchJobsList,
 } from "..";
 
-const tabs = ["Current", "Scheduled", "History"];
+const tabs = [
+  { label: "Current", value: "Current", icon: Play },
+  { label: "Scheduled", value: "Scheduled", icon: CalendarClock },
+  { label: "History", value: "History", icon: History },
+];
 
 /**
  * Renders a table of jobs.
@@ -40,8 +45,9 @@ export const JobsTable = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get("t");
   const defaultTab = "History";
+  const tabValues = tabs.map((tab) => tab.value);
   const [tabValue, setTabValue] = useState(
-    tabParam && tabs.includes(tabParam) ? tabParam : defaultTab,
+    tabParam && tabValues.includes(tabParam) ? tabParam : defaultTab,
   );
 
   const handleTabParamChange = useCallback(
@@ -56,12 +62,12 @@ export const JobsTable = () => {
 
   // Sync tab selection with URL param on mount and when param changes
   useEffect(() => {
-    if (tabParam && tabs.includes(tabParam)) {
+    if (tabParam && tabValues.includes(tabParam)) {
       setTabValue(tabParam);
     } else if (!tabParam) {
       handleTabParamChange(defaultTab);
     }
-  }, [defaultTab, handleTabParamChange, tabParam]);
+  }, [defaultTab, handleTabParamChange, tabParam, tabValues]);
 
   const handleTabSelect = (tab: string) => {
     setTabValue(tab);
@@ -105,12 +111,22 @@ export const JobsTable = () => {
               <DTHeading heading={TABLE_HEADING} />
               <HelpButton guideId="jobs" />
               <Tabs value={tabValue} onValueChange={handleTabSelect}>
-                <TabsList className="h-fit w-full rounded-lg px-1.5 py-1">
-                  {tabs.map((tab) => (
-                    <TabsTrigger value={tab} key={tab} className="w-full rounded-lg py-0.5">
-                      {tab}
-                    </TabsTrigger>
-                  ))}
+                <TabsList className="h-fit w-full gap-1 rounded-lg px-1.5 py-1.5">
+                  {tabs.map((tab) => {
+                    const TabIcon = tab.icon;
+                    return (
+                      <TabsTrigger
+                        value={tab.value}
+                        key={tab.value}
+                        className="inline-flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 data-[state=inactive]:hover:bg-accent data-[state=inactive]:hover:text-accent-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                      >
+                        {TabIcon && (
+                          <TabIcon className="size-4 shrink-0" aria-hidden="true" />
+                        )}
+                        <span>{tab.label}</span>
+                      </TabsTrigger>
+                    );
+                  })}
                 </TabsList>
               </Tabs>
             </div>

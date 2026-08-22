@@ -17,4 +17,9 @@ public interface IAgentRiskRegistryService
     /// persists the AI-model and third-party-tool lists from the flow config.
     /// </summary>
     Task<ServiceResponse<AgentRiskRegistryDto>> UpsertAsync(AgentRiskRegistryUpsertDto dto);
+
+    /// <summary>
+    /// Retrieves the registry rows that are pending the current user's approval.
+    /// </summary>
+    Task<ServiceResponse<IEnumerable<AgentRiskRegistryRowDto>>> GetPendingApprovalsAsync();
 }

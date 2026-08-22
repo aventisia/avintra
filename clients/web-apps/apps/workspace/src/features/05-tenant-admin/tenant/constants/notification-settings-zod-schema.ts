@@ -5,6 +5,7 @@ const notificationSettingsSchema = z.object({
   lowCredits: z.boolean(),
   subscription: z.boolean(),
   publishAgent: z.boolean(),
+  agentRiskAssessmentApproval: z.boolean(),
   // Required numeric configuration. Must be at least 1; null/0/negative are rejected.
   subscriptionRenewalReminderDays: z.coerce
     .number()

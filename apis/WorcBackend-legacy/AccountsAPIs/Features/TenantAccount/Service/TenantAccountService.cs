@@ -451,6 +451,7 @@ public class TenantAccountService : ITenantAccountService
             settings.LowCredits = settingsDto.LowCredits;
             settings.Subscription = settingsDto.Subscription;
             settings.PublishAgent = settingsDto.PublishAgent;
+            settings.AgentRiskAssessmentApproval = settingsDto.AgentRiskAssessmentApproval;
             settings.SubscriptionRenewalReminderDays = settingsDto.SubscriptionRenewalReminderDays;
             settings.LowCreditThreshold = settingsDto.LowCreditThreshold;
             settings.DeliveryChannel = settingsDto.DeliveryChannel;
@@ -505,6 +506,7 @@ public class TenantAccountService : ITenantAccountService
             LowCredits = effective.LowCredits,
             Subscription = effective.Subscription,
             PublishAgent = effective.PublishAgent,
+            AgentRiskAssessmentApproval = effective.AgentRiskAssessmentApproval,
             SubscriptionRenewalReminderDays = effective.SubscriptionRenewalReminderDays,
             LowCreditThreshold = effective.LowCreditThreshold,
             DeliveryChannel = effective.DeliveryChannel

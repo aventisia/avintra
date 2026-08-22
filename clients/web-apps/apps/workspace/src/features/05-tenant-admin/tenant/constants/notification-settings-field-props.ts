@@ -37,6 +37,13 @@ const publishAgentProps: SwitchFieldProps = {
   description: "Notify orchestrator managers when an agent is published and ready for use",
 };
 
+// Agent Risk Assessment Approval
+const agentRiskAssessmentApprovalProps: SwitchFieldProps = {
+  name: "agentRiskAssessmentApproval",
+  label: "Agent Risk Assessment Approval",
+  description: "Notify the designated approver when an agent risk assessment is submitted for approval",
+};
+
 // Delivery Channel
 const deliveryChannelProps: Omit<SelectFieldProps, "selectOptions"> = {
   name: "deliveryChannel",
@@ -51,5 +58,6 @@ export {
   subscriptionProps,
   subscriptionRenewalReminderDaysProps,
   publishAgentProps,
+  agentRiskAssessmentApprovalProps,
   deliveryChannelProps,
 };

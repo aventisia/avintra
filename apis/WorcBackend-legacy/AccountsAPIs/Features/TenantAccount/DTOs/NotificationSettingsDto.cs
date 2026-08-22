@@ -40,6 +40,13 @@ public class NotificationSettingsDto
     public bool PublishAgent { get; set; }
 
     /// <summary>
+    /// Gets or sets a value indicating whether the "Agent Risk Assessment Approval" automatic
+    /// notification is enabled for the tenant. When enabled, the designated approver is
+    /// notified when an agent risk assessment is submitted for approval.
+    /// </summary>
+    public bool AgentRiskAssessmentApproval { get; set; }
+
+    /// <summary>
     /// Gets or sets the number of days before the subscription renewal date at which the
     /// renewal reminder starts being sent to the Tenant Admin. Required and must be greater
     /// than zero. Defaults to 7.

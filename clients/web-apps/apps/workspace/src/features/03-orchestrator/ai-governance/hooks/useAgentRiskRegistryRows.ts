@@ -89,8 +89,8 @@ export const useAgentRiskRegistryRows = () => {
           live?.issues?.filter((i) => i.status === "open" || i.status === "investigating").length ??
           existing?.openIssues ??
           0,
-        lastValidationDate: live?.lastValidationDate ?? existing?.lastValidationDate ?? "",
-        nextReviewDate: live?.nextReviewDate ?? existing?.nextReviewDate ?? "",
+        reviewDate: live?.approval?.requestedOn ?? existing?.reviewDate ?? "",
+        approvalDate: live?.approval?.decidedOn ?? existing?.approvalDate ?? "",
       };
     });
   }, [agentsQuery.data?.data, registryQuery.data?.data, assessments]);

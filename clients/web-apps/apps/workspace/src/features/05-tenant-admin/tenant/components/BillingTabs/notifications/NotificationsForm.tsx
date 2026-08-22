@@ -14,6 +14,7 @@ import {
   publishAgentProps,
   subscriptionRenewalReminderDaysProps,
   subscriptionProps,
+  agentRiskAssessmentApprovalProps,
 } from "@/features/05-tenant-admin/tenant/constants/notification-settings-field-props";
 import { notificationSettingsSchema } from "@/features/05-tenant-admin/tenant/constants/notification-settings-zod-schema";
 import { useDefineNotificationSettingsForm } from "@/features/05-tenant-admin/tenant/hooks/useDefineNotificationSettingsForm";
@@ -73,17 +74,38 @@ const NotificationsForm = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-3">
-            <SwitchField {...lowCreditsProps} />
-            {lowCreditsEnabled && <InputField {...lowCreditThresholdProps} />}
-          </div>
+          {/* All four notification type switches aligned in one line */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {/* Low Credit */}
+            <div className="rounded-lg border p-4 pt-3.5">
+              <div className="flex items-center justify-between gap-x-4">
+                <SwitchField {...lowCreditsProps} showBorder={false} />
+              </div>
+              {lowCreditsEnabled && (
+                <InputField {...lowCreditThresholdProps} className="mt-3 w-full" />
+              )}
+            </div>
 
-          <div className="space-y-3">
-            <SwitchField {...subscriptionProps} />
-            {subscriptionEnabled && <InputField {...subscriptionRenewalReminderDaysProps} />}
-          </div>
+            {/* Subscription */}
+            <div className="rounded-lg border p-4 pt-3.5">
+              <div className="flex items-center justify-between gap-x-4">
+                <SwitchField {...subscriptionProps} showBorder={false} />
+              </div>
+              {subscriptionEnabled && (
+                <InputField {...subscriptionRenewalReminderDaysProps} className="mt-3 w-full" />
+              )}
+            </div>
 
-          <SwitchField {...publishAgentProps} />
+            {/* Publish Agent */}
+            <div className="rounded-lg border p-4 pt-3.5">
+              <SwitchField {...publishAgentProps} showBorder={false} />
+            </div>
+
+            {/* Agent Risk Assessment Approval */}
+            <div className="rounded-lg border p-4 pt-3.5">
+              <SwitchField {...agentRiskAssessmentApprovalProps} showBorder={false} />
+            </div>
+          </div>
         </CardContent>
       </Card>
 

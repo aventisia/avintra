@@ -84,22 +84,29 @@ export const buildAgentRiskRegistryColumns = (
       <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Agent Name" />
     ),
     cell: ({ row }) => (
-      <button
-        type="button"
-        className="cursor-pointer font-medium text-primary underline-offset-4 hover:underline"
-        onClick={() =>
-          onOpenAgent({
-            flowVersionId: row.original.flowVersionId,
-            flowId: row.original.flowId,
-            name: row.original.name,
-            agentType: row.original.agentType,
-            versionNumber: row.original.versionNumber,
-            publishedOn: row.original.publishedOn,
-          })
-        }
-      >
-        {row.original.name}
-      </button>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className="cursor-pointer font-medium text-primary underline-offset-4 hover:underline"
+          onClick={() =>
+            onOpenAgent({
+              flowVersionId: row.original.flowVersionId,
+              flowId: row.original.flowId,
+              name: row.original.name,
+              agentType: row.original.agentType,
+              versionNumber: row.original.versionNumber,
+              publishedOn: row.original.publishedOn,
+            })
+          }
+        >
+          {row.original.name}
+        </button>
+        {row.original.versionNumber > 0 && (
+          <Badge variant="outline" className="shrink-0">
+            v{row.original.versionNumber}
+          </Badge>
+        )}
+      </div>
     ),
   },
   {
@@ -135,22 +142,18 @@ export const buildAgentRiskRegistryColumns = (
       ),
   },
   {
-    accessorKey: "lastValidationDate",
+    accessorKey: "reviewDate",
     header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={AI_GOVERNANCE_TABLE_KEY}
-        column={column}
-        title="Last Validation Date"
-      />
+      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Reviewed On" />
     ),
-    cell: ({ row }) => renderDate(row.original.lastValidationDate),
+    cell: ({ row }) => renderDate(row.original.reviewDate),
   },
   {
-    accessorKey: "nextReviewDate",
+    accessorKey: "approvalDate",
     header: ({ column }) => (
-      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Next Review Date" />
+      <DTColumnHeader tableKey={AI_GOVERNANCE_TABLE_KEY} column={column} title="Approved On" />
     ),
-    cell: ({ row }) => renderDate(row.original.nextReviewDate),
+    cell: ({ row }) => renderDate(row.original.approvalDate),
   },
   {
     id: "issues",

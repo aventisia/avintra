@@ -10,6 +10,7 @@ import type { HelpGuideContent } from "./types";
 
 // Guides are imported statically (as raw strings) so they are bundled with the
 // app and render instantly.
+import agentRiskRegistry from "./guides/agent-risk-registry.md?raw";
 import agents from "./guides/agents.md?raw";
 import apiKeys from "./guides/api-keys.md?raw";
 import assistAgents from "./guides/assist-agents.md?raw";
@@ -151,6 +152,14 @@ const guides: HelpGuideContent[] = [
     content: tools,
   },
   // Orchestrator
+  {
+    id: "agent-risk-registry",
+    title: "Agent Risk Registry",
+    summary: "Assess, review, and govern the AI agents published in your workspace.",
+    section: "orchestrator",
+    docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator",
+    content: agentRiskRegistry,
+  },
   {
     id: "published-agents",
     title: "Published Agents",

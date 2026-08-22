@@ -22,6 +22,13 @@ public class AgentRiskRegistryController : BaseApiController
         return ResultHelper(await _service.GetAllRowsAsync());
     }
 
+    // Retrieves the registry rows pending the current user's approval.
+    [HttpGet("pending-approvals")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentRiskRegistryRowDto>>>> GetPendingApprovals()
+    {
+        return ResultHelper(await _service.GetPendingApprovalsAsync());
+    }
+
     // Retrieves the full registry record for a flow version (agent).
     [HttpGet("flow-version/{flowVersionId}")]
     public async Task<ActionResult<ServiceResponse<AgentRiskRegistryDto>>> GetByFlowVersion(Guid flowVersionId)

@@ -9,8 +9,11 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
+import { HelpButton } from "@/components/help/HelpButton";
+
 import { AI_GOVERNANCE_TABLE_KEY } from "../constants";
 import { columnDisplayNames, columnVisibilityState } from "../constants/registry-columns";
+import { usePendingApprovals } from "../hooks/usePendingApprovals";
 import { useAgentRiskRegistryRows } from "../hooks/useAgentRiskRegistryRows";
 import { createEmptyAssessment, useAiGovernanceStore } from "../stores/ai-governance-store";
 import { buildAgentRiskRegistryColumns } from "./AgentRiskRegistryColumns";
@@ -34,6 +37,7 @@ export const AgentRiskRegistryTable = () => {
   );
 
   const { rows, isLoading } = useAgentRiskRegistryRows();
+  const { rows: pendingApprovals } = usePendingApprovals();
 
   const handleOpen = (ref: {
     flowVersionId: string;
@@ -93,6 +97,7 @@ export const AgentRiskRegistryTable = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <DTHeading heading="Agent Risk Registry" />
+          <HelpButton guideId="agent-risk-registry" />
         </div>
 
         <div className="flex items-center gap-2">
@@ -106,6 +111,25 @@ export const AgentRiskRegistryTable = () => {
           />
         </div>
       </div>
+
+      {pendingApprovals.length > 0 && (
+        <div className="flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-sm">
+          <span className="font-semibold text-amber-700">
+            {pendingApprovals.length} assessment{pendingApprovals.length > 1 ? "s" : ""} awaiting
+            your approval
+          </span>
+          <button
+            type="button"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+            onClick={() => {
+              const first = pendingApprovals[0];
+              if (first) handleOpen({ flowVersionId: first.flowVersionId, flowId: first.flowId, name: first.name });
+            }}
+          >
+            Review
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-col gap-2">
         <DataTable table={table} columnsLength={columns.length} />

@@ -26,10 +26,14 @@ export interface ApprovalStateDto {
   decision: string;
   /** Who made the decision (display name). */
   decidedBy: string;
+  /** The designated approver's user id (server-authoritative). */
+  decidedByUserId: string;
   /** When the decision was made. */
   decidedOn: string;
   /** Notes accompanying the decision. */
   decisionNotes: string;
   /** Exceptions allowed with the approval. */
   exceptions: ApprovalExceptionDto[];
+  /** Whether the submitter confirmed the information is accurate. */
+  isInformationAccurate: boolean;
 }

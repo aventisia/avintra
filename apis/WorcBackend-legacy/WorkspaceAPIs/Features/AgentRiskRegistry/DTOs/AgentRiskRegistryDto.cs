@@ -134,6 +134,12 @@ public class AgentRiskRegistryDto
     public ApprovalStateDto Approval { get; set; } = new();
 
     /// <summary>
+    /// Whether the current user is the designated approver and may approve/reject
+    /// the pending submission.
+    /// </summary>
+    public bool CanApprove { get; set; }
+
+    /// <summary>
     /// Manually recorded issues / violations.
     /// </summary>
     public List<AgentRiskIssueDto> Issues { get; set; } = new();
