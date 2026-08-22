@@ -9,18 +9,24 @@ public class AgentRiskRegistryService : IAgentRiskRegistryService
     private readonly ILogger<AgentRiskRegistryService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly INotificationService _notificationService;
+    private readonly TenantDbContext _tenantDbContext;
     private readonly Guid _userId;
 
     public AgentRiskRegistryService(
         ILogger<AgentRiskRegistryService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        INotificationService notificationService,
+        TenantDbContext tenantDbContext)
     {
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
         _logger = logger;
         _unitOfWork = unitOfWork;
         _currentTenantService = currentTenantService;
+        _notificationService = notificationService;
+        _tenantDbContext = tenantDbContext;
     }
 
     public async Task<ServiceResponse<IEnumerable<AgentRiskRegistryRowDto>>> GetAllRowsAsync()
@@ -35,26 +41,7 @@ public class AgentRiskRegistryService : IAgentRiskRegistryService
         {
             var records = await _unitOfWork.AgentRiskRegistryRepo.GetAllAsync().ToListAsync();
 
-            response.Data = records.Select(r =>
-            {
-                var issues = Deserialize<List<AgentRiskIssueDto>>(r.IssuesJson);
-                var openIssues = issues.Count(i =>
-                    !string.IsNullOrEmpty(i.Status) &&
-                    (i.Status.Equals("open", StringComparison.OrdinalIgnoreCase) ||
-                     i.Status.Equals("investigating", StringComparison.OrdinalIgnoreCase)));
-
-                return new AgentRiskRegistryRowDto
-                {
-                    FlowVersionId = r.FlowVersionId,
-                    FlowId = r.FlowId,
-                    Name = r.AgentName,
-                    CompositeTier = r.CompositeTier,
-                    Status = r.Status,
-                    LastValidationDate = r.LastValidationDate,
-                    NextReviewDate = r.NextReviewDate,
-                    OpenIssues = openIssues,
-                };
-            }).ToList();
+            response.Data = records.Select(MapRow).ToList();
             response.StatusCode = 200;
             response.Message = "Agent risk registry rows retrieved successfully.";
         }
@@ -64,6 +51,65 @@ public class AgentRiskRegistryService : IAgentRiskRegistryService
         }
 
         return response;
+    }
+
+    public async Task<ServiceResponse<IEnumerable<AgentRiskRegistryRowDto>>> GetPendingApprovalsAsync()
+    {
+        var response = new ServiceResponse<IEnumerable<AgentRiskRegistryRowDto>>
+        {
+            Data = null,
+            Message = "Unable to retrieve pending approvals.",
+        };
+
+        try
+        {
+            var records = await _unitOfWork.AgentRiskRegistryRepo.GetAllAsync().ToListAsync();
+
+            response.Data = records
+                .Where(r =>
+                {
+                    var approval = Deserialize<ApprovalStateDto>(r.ApprovalJson) ?? new ApprovalStateDto();
+                    return approval.IsSubmitted &&
+                           string.Equals(approval.Decision, "pending", StringComparison.OrdinalIgnoreCase) &&
+                           ParseGuid(approval.RequestedToUserId) == _userId;
+                })
+                .Select(r => MapRow(r))
+                .ToList();
+            response.StatusCode = 200;
+            response.Message = "Pending approvals retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Exception occurred in GetPendingApprovalsAsync.");
+        }
+
+        return response;
+    }
+
+    /// <summary>
+    /// Maps an entity to a registry table row DTO.
+    /// </summary>
+    private static AgentRiskRegistryRowDto MapRow(AgentRiskRegistry r)
+    {
+        var issues = Deserialize<List<AgentRiskIssueDto>>(r.IssuesJson);
+        var openIssues = issues.Count(i =>
+            !string.IsNullOrEmpty(i.Status) &&
+            (i.Status.Equals("open", StringComparison.OrdinalIgnoreCase) ||
+             i.Status.Equals("investigating", StringComparison.OrdinalIgnoreCase)));
+
+        var approval = Deserialize<ApprovalStateDto>(r.ApprovalJson) ?? new ApprovalStateDto();
+
+        return new AgentRiskRegistryRowDto
+        {
+            FlowVersionId = r.FlowVersionId,
+            FlowId = r.FlowId,
+            Name = r.AgentName,
+            CompositeTier = r.CompositeTier,
+            Status = r.Status,
+            OpenIssues = openIssues,
+            ReviewDate = ParseIsoDate(approval.RequestedOn),
+            ApprovalDate = ParseIsoDate(approval.DecidedOn),
+        };
     }
 
     public async Task<ServiceResponse<AgentRiskRegistryDto>> GetByFlowVersionAsync(Guid flowVersionId)
@@ -167,6 +213,10 @@ public class AgentRiskRegistryService : IAgentRiskRegistryService
                 await _unitOfWork.AgentRiskRegistryRepo.InsertAsync(record);
             }
 
+            // Capture the previously persisted approval state BEFORE it is overwritten.
+            var priorApproval = Deserialize<ApprovalStateDto>(record.ApprovalJson) ?? new ApprovalStateDto();
+
+            // Apply all other human-input fields.
             ApplyHumanInput(record, dto);
 
             // Merge human-entered assessment fields onto the resolved model/tool lists.
@@ -185,7 +235,22 @@ public class AgentRiskRegistryService : IAgentRiskRegistryService
             record.LastModifiedByUserId = _userId;
             record.LastModifiedOn = DateTimeOffset.UtcNow;
 
+            // Enforce the approval workflow guard before saving.
+            var approval = dto.Approval ?? new ApprovalStateDto();
+            var (canApprove, guardMessage) = await EnforceApprovalDecisionAsync(priorApproval, approval);
+            if (!canApprove)
+            {
+                response.StatusCode = 403;
+                response.Message = guardMessage;
+                return response;
+            }
+            // Persist the (possibly server-authoritative) approval state.
+            record.ApprovalJson = System.Text.Json.JsonSerializer.Serialize(approval);
+
             await _unitOfWork.SaveAsync();
+
+            // Notify the designated approver when the assessment is newly submitted.
+            await NotifyApproverOnSubmissionAsync(record, priorApproval, approval);
 
             response.Data = ToDto(record);
             response.StatusCode = 200;
@@ -197,6 +262,126 @@ public class AgentRiskRegistryService : IAgentRiskRegistryService
         }
 
         return response;
+    }
+
+    /// <summary>
+    /// Enforces the approval authorization guard. Only the designated approver may
+    /// make a decision (approve/reject/returned); the decided-by identity is set
+    /// server-authoritatively from the authenticated user rather than trusting the
+    /// client-supplied name.
+    /// </summary>
+    /// <returns>True when the decision is allowed, false otherwise.</returns>
+    private async Task<(bool allowed, string message)> EnforceApprovalDecisionAsync(ApprovalStateDto priorApproval, ApprovalStateDto approval)
+    {
+        var incomingDecisionChanged = !string.Equals(approval.Decision, priorApproval.Decision, StringComparison.OrdinalIgnoreCase);
+
+        // Only enforce when an actual decision (non-pending) transition is attempted.
+        if (string.Equals(approval.Decision, "pending", StringComparison.OrdinalIgnoreCase) || !incomingDecisionChanged)
+        {
+            return (true, string.Empty);
+        }
+
+        // Resolve the designated approver id from the submitted state.
+        var approverId = ParseGuid(approval.RequestedToUserId);
+        if (approverId == Guid.Empty || approverId != _userId)
+        {
+            return (false, "Only the designated approver can make an approval decision.");
+        }
+
+        // Server-authoritative: stamp the actual authenticated user as the decision maker.
+        approval.DecidedByUserId = _userId;
+        approval.DecidedBy = await GetUserDisplayNameAsync(_userId);
+        approval.DecidedOn = DateTimeOffset.UtcNow.ToString("o");
+
+        return (true, string.Empty);
+    }
+
+    /// <summary>
+    /// Sends an in-app notification to the designated approver when an assessment
+    /// transitions to submitted for the first time. Gated by the tenant's
+    /// "Agent Risk Assessment Approval" notification setting (enabled by default).
+    /// </summary>
+    private async Task NotifyApproverOnSubmissionAsync(AgentRiskRegistry record, ApprovalStateDto priorApproval, ApprovalStateDto approval)
+    {
+        if (!approval.IsSubmitted || string.IsNullOrWhiteSpace(approval.RequestedToUserId)) return;
+        if (priorApproval.IsSubmitted) return;
+
+        var approverId = ParseGuid(approval.RequestedToUserId);
+        if (approverId == Guid.Empty) return;
+
+        try
+        {
+            // Respect the tenant-level enable/disable for this notification type.
+            var enabled = await IsNotificationAgentRiskApprovalEnabledAsync();
+            if (!enabled) return;
+
+            var agentName = record.AgentName ?? "Agent";
+            var createNotification = new CreateNotificationDto
+            {
+                Title = "Agent Risk Review",
+                Message = $"A risk assessment for '{agentName}' is pending your approval.",
+                Type = NotificationTypesEnum.Information,
+                DeliveryChannel = DeliveryChannelEnum.Platform,
+                AudienceScope = AudienceScopeEnum.SelectedUsers,
+                TargetUserIds = new List<Guid> { approverId },
+            };
+            await _notificationService.InsertNotificationAsync(createNotification);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to notify approver for agent risk assessment {FlowVersionId}", record.FlowVersionId);
+        }
+    }
+
+    /// <summary>
+    /// Returns whether the tenant's "Agent Risk Assessment Approval" notification is
+    /// enabled. Defaults to true when no settings are stored.
+    /// </summary>
+    private async Task<bool> IsNotificationAgentRiskApprovalEnabledAsync()
+    {
+        try
+        {
+            var tenant = await _tenantDbContext.ReadOnlyTenants
+                .Where(t => t.Id == _currentTenantService.CurrentTenantId)
+                .Select(t => t.NotificationSettings)
+                .SingleOrDefaultAsync();
+
+            return tenant?.AgentRiskAssessmentApproval ?? new NotificationSettings().AgentRiskAssessmentApproval;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to read agent risk approval notification setting; defaulting to enabled.");
+            return new NotificationSettings().AgentRiskAssessmentApproval;
+        }
+    }
+
+
+    /// <summary>
+    /// Parses a string into a Guid, returning Guid.Empty when invalid.
+    /// </summary>
+    private static Guid ParseGuid(string? value)
+    {
+        return Guid.TryParse(value, out var parsed) ? parsed : Guid.Empty;
+    }
+
+    /// <summary>
+    /// Resolves the display name for a workspace user, or null when not found.
+    /// </summary>
+    private async Task<string?> GetUserDisplayNameAsync(Guid userId)
+    {
+        try
+        {
+            var user = await _unitOfWork.WorkspaceUserRepo
+                .GetByConditionAsync(w => w.Id == userId)
+                .Select(s => new { s.FirstName, s.LastName })
+                .SingleOrDefaultAsync();
+            return user == null ? null : $"{user.FirstName} {user.LastName}".Trim();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving display name for user {UserId}", userId);
+            return null;
+        }
     }
 
     /// <summary>
@@ -350,7 +535,6 @@ public class AgentRiskRegistryService : IAgentRiskRegistryService
         record.NextReviewDate = dto.NextReviewDate;
         record.ValidatorUserId = dto.ValidatorUserId;
         record.RisksJson = System.Text.Json.JsonSerializer.Serialize(dto.Risks);
-        record.ApprovalJson = System.Text.Json.JsonSerializer.Serialize(dto.Approval ?? new ApprovalStateDto());
         record.IssuesJson = System.Text.Json.JsonSerializer.Serialize(dto.Issues ?? new List<AgentRiskIssueDto>());
     }
 
@@ -443,13 +627,37 @@ public class AgentRiskRegistryService : IAgentRiskRegistryService
             KnowledgeBases = Deserialize<List<string>>(record.KnowledgeBasesJson),
             Risks = Deserialize<List<RiskRegisterRowDto>>(record.RisksJson),
             Approval = Deserialize<ApprovalStateDto>(record.ApprovalJson) ?? new ApprovalStateDto(),
+            CanApprove = CanCurrentUserApprove(record),
             Issues = Deserialize<List<AgentRiskIssueDto>>(record.IssuesJson),
         };
+    }
+
+    /// <summary>
+    /// Returns true when the current user is the designated approver for a pending
+    /// submission and may approve/reject it.
+    /// </summary>
+    private bool CanCurrentUserApprove(AgentRiskRegistry record)
+    {
+        var approval = Deserialize<ApprovalStateDto>(record.ApprovalJson) ?? new ApprovalStateDto();
+        if (!approval.IsSubmitted) return false;
+        if (!string.Equals(approval.Decision, "pending", StringComparison.OrdinalIgnoreCase)) return false;
+
+        var approverId = ParseGuid(approval.RequestedToUserId);
+        return approverId != Guid.Empty && approverId == _userId;
     }
 
     private static T Deserialize<T>(string? json)
     {
         if (string.IsNullOrWhiteSpace(json)) return System.Text.Json.JsonSerializer.Deserialize<T>("[]") ?? default!;
         return System.Text.Json.JsonSerializer.Deserialize<T>(json) ?? default!;
+    }
+
+    /// <summary>
+    /// Parses an ISO-8601 date string into a DateTimeOffset, or null if invalid/empty.
+    /// </summary>
+    private static DateTimeOffset? ParseIsoDate(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        return DateTimeOffset.TryParse(value, out var parsed) ? parsed : (DateTimeOffset?)null;
     }
 }

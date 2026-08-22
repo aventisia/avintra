@@ -1,3 +1,5 @@
+import { Library, User, Users } from "lucide-react";
+
 import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource-access-type-enum";
 
 export type ToolTableColumnKey =
@@ -46,9 +48,9 @@ export const DATA_QUERY_KEY = ["tools"];
 export const DETAIL_DATA_QUERY_KEY = ["tool-details"];
 
 export const TABLE_VIEW_TABS = [
-  { label: "Personal", value: "personal" },
-  { label: "Shared", value: "shared" },
-  { label: "Library", value: "library" },
+  { label: "Personal", value: "personal", icon: User },
+  { label: "Shared", value: "shared", icon: Users },
+  { label: "Library", value: "library", icon: Library },
 ] as const;
 
 export type ToolTabValue = (typeof TABLE_VIEW_TABS)[number]["value"];

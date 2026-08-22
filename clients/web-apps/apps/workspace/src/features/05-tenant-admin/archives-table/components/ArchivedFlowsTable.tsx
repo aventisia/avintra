@@ -9,6 +9,7 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
+import { HelpButton } from "@/components/help/HelpButton";
 import { QueryTabs } from "@/components/QueryTab";
 
 import { TABLE_HEADING, TABLE_KEY, TABLE_TAB_QUERY_PARAM, TABLE_VIEW_TABS } from "../constants";
@@ -50,7 +51,12 @@ export const ArchivedFlowsTable = ({ isPersonal = false }: { isPersonal?: boolea
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <DTHeading heading={isPersonal ? "Agents" : TABLE_HEADING} />
-              {isPersonal && <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />}{" "}
+              {isPersonal && (
+                <>
+                  <HelpButton guideId="agents" />
+                  <QueryTabs tabs={TABLE_VIEW_TABS} key={TABLE_TAB_QUERY_PARAM} />
+                </>
+              )}{" "}
             </div>{" "}
             <div className="flex items-center gap-2">
               <DTSearchBox table={table} searchColumns={["name"]} placeholder="Search agents..." />

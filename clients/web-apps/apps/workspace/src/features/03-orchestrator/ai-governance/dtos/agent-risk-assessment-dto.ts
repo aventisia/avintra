@@ -62,6 +62,9 @@ export interface AgentRiskAssessmentDto {
   // Approval workflow state.
   approval: ApprovalStateDto;
 
+  /** Whether the current user is the designated approver and may act on a pending submission. */
+  canApprove: boolean;
+
   // Manually recorded issues / violations during execution.
   issues: AgentRiskIssueDto[];
 }

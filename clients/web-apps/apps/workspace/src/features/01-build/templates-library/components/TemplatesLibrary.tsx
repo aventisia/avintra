@@ -31,17 +31,17 @@ const TemplateLibrary = () => {
         <div className="">
           <div className="mx-auto max-w-7xl px-4 py-8">
             <div className="mx-auto mb-6 max-w-3xl text-center">
-              <h2 className="text-[4rem] font-semibold tracking-wide">
-                Avintra <span className="text-primary">Library</span>
-              </h2>
+              <div className="flex items-center justify-center gap-2">
+                <h2 className="text-[4rem] font-semibold tracking-wide">
+                  Avintra <span className="text-primary">Library</span>
+                </h2>
+                <HelpButton guideId="library" />
+              </div>
               <p className="text-base text-muted-foreground">
                 The Avintra Library brings together a rich catalog of ready-to-use automations and
                 AI blueprints, empowering teams to build faster, work smarter, and scale without
                 starting from scratch.
               </p>
-              <div className="mt-3 flex justify-center">
-                <HelpButton guideId="library" />
-              </div>
             </div>
 
             {/* Search Bar for filtering templates */}

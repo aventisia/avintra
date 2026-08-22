@@ -24,8 +24,8 @@ export interface AgentRiskRegistryRowDto {
   status: RiskLifecycleStatus;
   /** Number of open (unresolved) issues for this agent. */
   openIssues: number;
-  /** Last validation date. */
-  lastValidationDate: string;
-  /** Next review date. */
-  nextReviewDate: string;
+  /** Date the agent's assessment was submitted for review/approval. */
+  reviewDate: string;
+  /** Date the agent's assessment was approved by the approver. */
+  approvalDate: string;
 }

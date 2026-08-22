@@ -1,11 +1,13 @@
 import { cn } from "@avplatform/ui/lib";
 import { Tabs, TabsList, TabsTrigger } from "@avplatform/ui/tabs";
+import { type LucideIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export interface QueryTabItem {
   label: string;
   value: string;
+  icon?: LucideIcon;
 }
 
 interface QueryTabsProps {
@@ -68,16 +70,25 @@ export const QueryTabs = ({
 
   return (
     <Tabs value={tabValue} onValueChange={handleTabSelect} className={className}>
-      <TabsList className={cn("h-fit w-full rounded-lg px-1.5 py-1", listClassName)}>
-        {tabs.map((tab) => (
-          <TabsTrigger
-            key={tab.value}
-            value={tab.value}
-            className={cn("w-full rounded-lg py-0.5", triggerClassName)}
-          >
-            {tab.label}
-          </TabsTrigger>
-        ))}
+      <TabsList
+        className={cn("h-fit w-full gap-1 rounded-lg px-1.5 py-1.5", listClassName)}
+      >
+        {tabs.map((tab) => {
+          const TabIcon = tab.icon;
+          return (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              className={cn(
+                "inline-flex w-full items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 data-[state=inactive]:hover:bg-accent data-[state=inactive]:hover:text-accent-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm",
+                triggerClassName,
+              )}
+            >
+              {TabIcon && <TabIcon className="size-4 shrink-0" aria-hidden="true" />}
+              <span>{tab.label}</span>
+            </TabsTrigger>
+          );
+        })}
       </TabsList>
     </Tabs>
   );

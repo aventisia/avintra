@@ -41,10 +41,13 @@ export const createEmptyAssessment = (): AgentRiskAssessmentDto => ({
     requestedOn: "",
     decision: "pending",
     decidedBy: "",
+    decidedByUserId: "",
     decidedOn: "",
     decisionNotes: "",
     exceptions: [],
+    isInformationAccurate: false,
   },
+  canApprove: false,
   issues: [],
 });
 

@@ -39,12 +39,12 @@ public class AgentRiskRegistryRowDto
     public int OpenIssues { get; set; }
 
     /// <summary>
-    /// Last validation date.
+    /// Date the agent's assessment was submitted for review/approval.
     /// </summary>
-    public DateTimeOffset? LastValidationDate { get; set; }
+    public DateTimeOffset? ReviewDate { get; set; }
 
     /// <summary>
-    /// Next review date.
+    /// Date the agent's assessment was approved by the approver.
     /// </summary>
-    public DateTimeOffset? NextReviewDate { get; set; }
+    public DateTimeOffset? ApprovalDate { get; set; }
 }

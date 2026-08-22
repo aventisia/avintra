@@ -1,4 +1,5 @@
 import { DialogCrudAction } from "@avplatform/ui/types";
+import { Library, User, Users } from "lucide-react";
 
 import { QueryTabItem } from "@/components/QueryTab";
 
@@ -25,9 +26,9 @@ const TABLE_TAB_QUERY_PARAM = "tab";
  * Tabs to be used in tables tab.
  */
 const TABLE_VIEW_TABS = [
-  { label: "Personal", value: "personal" },
-  { label: "Shared", value: "shared" },
-  { label: "Library", value: "library" },
+  { label: "Personal", value: "personal", icon: User },
+  { label: "Shared", value: "shared", icon: Users },
+  { label: "Library", value: "library", icon: Library },
 ] as QueryTabItem[];
 
 const getDialogHeadingDescription = (crudAction: DialogCrudAction) => {

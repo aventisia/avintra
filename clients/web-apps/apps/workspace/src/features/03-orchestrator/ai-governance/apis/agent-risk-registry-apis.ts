@@ -21,6 +21,17 @@ export const getAgentRiskRegistryRows = (): Promise<IHttpResponse<AgentRiskRegis
 };
 
 /**
+ * Retrieves the registry rows pending the current user's approval.
+ */
+export const getPendingApprovals = (): Promise<IHttpResponse<AgentRiskRegistryRowDto[]>> => {
+  return axiosInstance
+    .get<IHttpResponse<AgentRiskRegistryRowDto[]>>(`${baseAPIURL}/pending-approvals`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
  * Retrieves the full registry record for a flow version (agent).
  */
 export const getAgentRiskRegistryByFlowVersion = (

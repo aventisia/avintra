@@ -6,8 +6,8 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "compositeTier", value: "Composite Risk Tier" },
   { key: "status", value: "Status" },
   { key: "openIssues", value: "Open Issues" },
-  { key: "lastValidationDate", value: "Last Validation Date" },
-  { key: "nextReviewDate", value: "Next Review Date" },
+  { key: "reviewDate", value: "Reviewed On" },
+  { key: "approvalDate", value: "Approved On" },
 ];
 
 /** Column visibility initial state for the registry table. */
@@ -16,8 +16,8 @@ export const columnVisibilityState = {
   compositeTier: true,
   status: true,
   openIssues: true,
-  lastValidationDate: true,
-  nextReviewDate: true,
+  reviewDate: true,
+  approvalDate: true,
 };
 
 // Get the column display name for the given column key.

@@ -61,10 +61,26 @@ const validateSection = (id: number, a: AgentRiskAssessmentDto): string | null =
     case 4:
       return null;
     case 5:
+      if (!a.approval?.isInformationAccurate)
+        return "Please confirm that the information provided is accurate.";
+      if (!a.approval?.requestedToName?.trim())
+        return "Please select an approver to submit for approval.";
       return null;
     default:
       return null;
   }
+};
+
+/**
+ * Validates every mandatory field across all six sections.
+ * Returns the first warning message found, or null if the record is complete.
+ */
+const validateAllSections = (a: AgentRiskAssessmentDto): string | null => {
+  for (const section of GOVERNANCE_SECTIONS) {
+    const missing = validateSection(section.id, a);
+    if (missing) return missing;
+  }
+  return null;
 };
 
 /**
@@ -134,7 +150,10 @@ export const AiGovernanceWizard = () => {
   }
 
   const handleNext = () => {
-    const missing = validateSection(activeSection, assessment);
+    // On the final step, validate ALL mandatory fields across every section.
+    const missing = isLast
+      ? validateAllSections(assessment)
+      : validateSection(activeSection, assessment);
     if (missing) {
       // Persist the partial data silently so nothing is lost, but do not
       // advance and do not show a success toast (only the warning).

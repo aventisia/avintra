@@ -1,13 +1,11 @@
 import { Button } from "@avplatform/ui/buttons";
+import { Checkbox } from "@avplatform/ui";
 import { useState } from "react";
 
 import { useDebounce } from "../../../agents-table/hooks/useDebounce";
 import { useSearchUsersList } from "../../../agents-table/hooks/user/useSearchUsersList";
 import { ApprovalStateDto } from "../../dtos/approval-state-dto";
-import { AgentRiskTier } from "../../enums/risk-tier-enum";
 import { useAiGovernanceStore, useSelectedAssessment } from "../../stores/ai-governance-store";
-import { computeAgentRiskTier } from "../../utils/tiering-engine";
-import { DateInput } from "./DateInput";
 import { Field } from "./Field";
 import { SectionLayout } from "./SectionLayout";
 
@@ -18,15 +16,17 @@ const EMPTY_APPROVAL: ApprovalStateDto = {
   requestedOn: "",
   decision: "pending",
   decidedBy: "",
+  decidedByUserId: "",
   decidedOn: "",
   decisionNotes: "",
   exceptions: [],
+  isInformationAccurate: false,
 };
 
 /**
  * Section 06 - Validation & Approval.
- * Includes a workflow where the submitter selects an approver by name and the
- * approver approves/rejects or requests changes.
+ * Confirm the information is accurate, select an approver by name, and submit
+ * for approval. The approver approves/rejects or requests changes.
  */
 export const ValidationApprovalSection = () => {
   const selectedAgentId = useAiGovernanceStore((state) => state.selectedAgentId);
@@ -40,13 +40,6 @@ export const ValidationApprovalSection = () => {
 
   if (!assessment || !selectedAgentId) return null;
 
-  const tier = computeAgentRiskTier({
-    scopeScore: assessment.scopeScore,
-    dataSensitivityScore: assessment.dataSensitivityScore,
-    dependencyComplexityScore: assessment.dependencyComplexityScore,
-    supervisoryImpactScore: assessment.supervisoryImpactScore,
-  });
-
   const update = (patch: Partial<typeof assessment>) => {
     updateAssessment(selectedAgentId, { ...assessment, ...patch });
   };
@@ -57,13 +50,6 @@ export const ValidationApprovalSection = () => {
 
   const approval = assessment.approval ?? EMPTY_APPROVAL;
 
-  const approvalRoute =
-    tier === AgentRiskTier.High
-      ? "Elevated review / approval (mandatory)"
-      : tier
-        ? "Delegated review authority"
-        : "Complete the risk tiering first";
-
   const approvers = approverResults?.data ?? [];
   const showApproverDropdown = approverSearch.trim().length > 0;
 
@@ -71,45 +57,24 @@ export const ValidationApprovalSection = () => {
     <SectionLayout
       eyebrow="Section 06"
       title="Validation & Approval"
-      description="Closes the loop from validation through ongoing review and approval."
+      description="Confirm the information provided is accurate, select an approver, and submit for approval."
     >
       <div className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-          <Field
-            label="Last Validation Date"
-            info="Enter the date this agent was last validated. Leave blank if it has not been validated yet."
-          >
-            <DateInput
-              value={assessment.lastValidationDate}
-              onChange={(date) => update({ lastValidationDate: date })}
-            />
-          </Field>
-          <Field
-            label="Next Review Due"
-            info="Enter the date of the next scheduled review. Higher-risk agents should be reviewed more frequently."
-          >
-            <DateInput
-              value={assessment.nextReviewDate}
-              onChange={(date) => update({ nextReviewDate: date })}
-            />
-          </Field>
-        </div>
-
-        <Field
-          label="Approval Route"
-          info="Auto-derived from the composite risk tier. High-risk agents require elevated review; medium/low may use delegated authority."
-        >
-          <div className="rounded-lg border border-primary bg-gradient-to-br from-primary/15 to-primary/5 p-4">
-            <div className="text-xs leading-relaxed text-muted-foreground">
-              Based on the composite risk tier, this agent routes to:{" "}
-              <strong className="text-foreground">{approvalRoute}</strong>
-            </div>
-          </div>
-        </Field>
+        {/* Accuracy confirmation */}
+        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-muted/20 p-4">
+          <Checkbox
+            checked={approval.isInformationAccurate}
+            onCheckedChange={(checked) => updateApproval({ isInformationAccurate: !!checked })}
+          />
+          <span className="text-sm leading-relaxed text-muted-foreground">
+            I confirm that the information provided in this record is accurate to
+            the best of my knowledge.
+          </span>
+        </label>
 
         {/* Approver selection */}
         <div className="rounded-lg border border-border bg-muted/20 p-4">
-          <div className="mb-3 text-sm font-semibold">Approval</div>
+          <div className="mb-3 text-sm font-semibold">Select Approver &amp; Submit</div>
 
           {approval.isSubmitted ? (
             <div className="space-y-2 text-sm">
@@ -212,47 +177,51 @@ export const ValidationApprovalSection = () => {
                   onChange={(e) => updateApproval({ decisionNotes: e.target.value })}
                 />
               </Field>
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    updateApproval({
-                      decision: "approved",
-                      decidedBy: approval.requestedToName,
-                      decidedOn: new Date().toISOString(),
-                    })
-                  }
-                >
-                  Approve
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    updateApproval({
-                      decision: "rejected",
-                      decidedBy: approval.requestedToName,
-                      decidedOn: new Date().toISOString(),
-                    })
-                  }
-                >
-                  Reject
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    updateApproval({
-                      decision: "returned",
-                      decidedBy: approval.requestedToName,
-                      decidedOn: new Date().toISOString(),
-                    })
-                  }
-                >
-                  Request Changes
-                </Button>
-              </div>
+
+              {assessment.canApprove ? (
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      updateApproval({
+                        decision: "approved",
+                        decidedOn: new Date().toISOString(),
+                      })
+                    }
+                  >
+                    Approve
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      updateApproval({
+                        decision: "rejected",
+                        decidedOn: new Date().toISOString(),
+                      })
+                    }
+                  >
+                    Reject
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      updateApproval({
+                        decision: "returned",
+                        decidedOn: new Date().toISOString(),
+                      })
+                    }
+                  >
+                    Request Changes
+                  </Button>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">
+                  Only the designated approver can make a decision on this submission.
+                </p>
+              )}
             </div>
           )}
 
