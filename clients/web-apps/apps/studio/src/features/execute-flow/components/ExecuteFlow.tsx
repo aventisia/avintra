@@ -73,7 +73,7 @@ const ExecuteFlow = () => {
 
   const { isPending: isSaving, saveData, isSavePending } = useSaveFlow();
   const { executeFlowOnWebMutationAsync } = useExecuteFlowMutation();
-  const { setShowRunResults, setJobId, setRunVersionId } = useRunResultsQueryParams();
+  const { setShowRunResults, setRunContext } = useRunResultsQueryParams();
 
   // Live local (desktop) execution progress: subscribes to the Tauri WebSocket whenever a
   // job is active and dispatches per-node status into the live-execution store. No-op in
@@ -218,9 +218,14 @@ const ExecuteFlow = () => {
           jobId: jobRes.data.id,
           runVersionId: currentFlow.versionId,
         });
-        setJobId(jobRes.data.id);
-        setRunVersionId(currentFlow.versionId);
-        setShowRunResults(true);
+        // Set the whole run context atomically so `j`, `rv` and `showRunResults` are all
+        // present in the URL immediately (not only after completion). This lets sub-flow
+        // navigation retain the live execution log while the run is still in progress.
+        setRunContext({
+          jobId: jobRes.data.id,
+          runVersionId: currentFlow.versionId,
+          showRunResults: true,
+        });
         updateField("startTime", executionStartTime);
 
         // Launch the runner app as a sidecar to run the flow on this machine.

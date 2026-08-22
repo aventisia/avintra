@@ -74,9 +74,9 @@ export const useReactFlowViewData = () => {
       setFlowVariablesObject(flowVarObjs || []);
       //set viewport state for react flow oject ext(only for reference its not for ReactFLow)
       setViewportState(flow.viewport);
-      // Fit view
+      // Fit view (never zoom below 100% so nodes stay readable)
       setTimeout(() => {
-        fitView({ duration: ZOOM_ANIMATION_DURATION });
+        fitView({ duration: ZOOM_ANIMATION_DURATION, minZoom: 1 });
       }, ZOOM_ANIMATION_DURATION);
     } else {
       setNodes([]);

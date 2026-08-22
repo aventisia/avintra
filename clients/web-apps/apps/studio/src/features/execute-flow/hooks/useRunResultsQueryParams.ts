@@ -52,6 +52,37 @@ export function useRunResultsQueryParams() {
     [searchParams, setSearchParams],
   );
 
+  /**
+   * Sets the whole run context (job id + root run version + show-run-results flag) in a
+   * single `setSearchParams` call. Setting them separately is racy: each setter rebuilds
+   * from the same stale `searchParams` closure, so the later calls would drop the params
+   * written by the earlier ones. This is used when a local run starts so the run context
+   * is present in the URL immediately (not only after completion), letting sub-flow
+   * navigation retain the live execution log.
+   */
+  const setRunContext = useCallback(
+    (context: { jobId?: string; runVersionId?: string; showRunResults?: boolean }) => {
+      const params = new URLSearchParams(searchParams);
+      if (context.jobId) {
+        params.set(JOB_ID_PARAM, context.jobId);
+      } else {
+        params.delete(JOB_ID_PARAM);
+      }
+      if (context.runVersionId) {
+        params.set(RUN_VERSION_ID_PARAM, context.runVersionId);
+      } else {
+        params.delete(RUN_VERSION_ID_PARAM);
+      }
+      if (context.showRunResults) {
+        params.set(SHOW_RUN_RESULTS_PARAM, "1");
+      } else {
+        params.delete(SHOW_RUN_RESULTS_PARAM);
+      }
+      setSearchParams(params, { replace: true });
+    },
+    [searchParams, setSearchParams],
+  );
+
   return {
     showRunResults,
     jobId,
@@ -59,5 +90,6 @@ export function useRunResultsQueryParams() {
     setShowRunResults,
     setJobId,
     setRunVersionId,
+    setRunContext,
   };
 }

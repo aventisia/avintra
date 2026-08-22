@@ -1187,6 +1187,16 @@ public class FlowProcessor
             return true;
         }
 
+        // A JSON object (DynamicJson) is a single item, not a collection of key-value pairs.
+        // DynamicJson implements IDictionary<string, object?> (and therefore IEnumerable), so
+        // without this guard the loop would iterate over the object's KeyValuePair entries and
+        // break downstream expressions like CurrentItem["Client Name"] (KeyValuePair has no indexer).
+        if (listObj is DynamicJson)
+        {
+            enumerable = new List<object?> { listObj };
+            return true;
+        }
+
         if (listObj is System.Collections.IEnumerable en && listObj is not string)
         {
             enumerable = en;

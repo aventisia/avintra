@@ -6,6 +6,7 @@ import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-con
 import { NodeExecutionLogType } from "@/features/execute-flow/types/execution-log-types";
 import { saveCompletedExecutionLog } from "@/features/execute-flow/utils/save-node-execution-log";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
+import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 
 import { useLiveExecutionStore } from "../stores/live-execution-store";
 import { useRunResultsQueryParams } from "./useRunResultsQueryParams";
@@ -93,6 +94,16 @@ export const useLocalExecutionWebSocket = () => {
   const runVersionId = useCurrentFlowStore((state) => state.currentFlow.runVersionId);
   const { setShowRunResults } = useRunResultsQueryParams();
 
+  // Current canvas node ids. We keep them in a ref (mirroring the versionId pattern) so the
+  // WebSocket effect can stay keyed on `jobId` only. A nodeProgress message whose nodeId is
+  // NOT in this set refers to a sub-flow-internal node (the sub-flow graph is not loaded in
+  // this canvas), which we surface as "Processing: <name>" on the active sub-flow caller.
+  const nodes = useReactFlowExtStore((state) => state.nodes);
+  const canvasNodeIdsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    canvasNodeIdsRef.current = new Set(nodes.map((n) => n.id));
+  }, [nodes]);
+
   // Keep the latest values in refs so the WebSocket connection effect only depends on
   // `jobId`. Calling `setShowRunResults` on job completion changes the callback identity
   // (URL search params change), which would otherwise re-run the effect and trigger its
@@ -116,6 +127,12 @@ export const useLocalExecutionWebSocket = () => {
     // Accumulate per-node outcomes during the run so we can persist them on completion,
     // even if the RunnerApp does not include full nodeLogs in the jobCompleted payload.
     const nodeLogsByNodeId = new Map<string, NodeExecutionLogType>();
+
+    // Friendly metadata for sub-flow-internal nodes, keyed by nodeId. The runner sends the raw
+    // nodeId as the "nodeName" on running messages, so we capture the friendlier name/type from
+    // each completed log and reuse them the next time that node runs (e.g. the next iteration
+    // of a loop inside the sub-flow).
+    const subflowNodeMetaByNodeId = new Map<string, { nodeName: string; nodeType: string }>();
 
     const connect = async () => {
       let port: number | null = null;
@@ -145,10 +162,35 @@ export const useLocalExecutionWebSocket = () => {
 
         if (message.type === "nodeProgress") {
           useLiveExecutionStore.getState().setNodeStatus(message.nodeId, message.status);
+
+          // Sub-flow-internal node detection: a progress node whose id is NOT present in the
+          // currently loaded canvas belongs to a sub-flow the user has not navigated into. We
+          // track its metadata so the block/call-agent node can show "Processing: <name>"
+          // while the sub-flow runs, instead of leaving the user blind inside the sub-flow.
+          if (!canvasNodeIdsRef.current.has(message.nodeId)) {
+            // Prefer the friendly metadata cached from a completed log; otherwise fall back to
+            // the message's own name (the runner sends the raw id as the name on running).
+            const cached = subflowNodeMetaByNodeId.get(message.nodeId);
+            const node: { nodeId: string; nodeName: string; nodeType: string } = {
+              nodeId: message.nodeId,
+              nodeName: cached?.nodeName || message.nodeName || message.nodeId,
+              nodeType: cached?.nodeType || "",
+            };
+            if (message.status === "running") {
+              useLiveExecutionStore.getState().pushSubflowProgressNode(node);
+            } else {
+              useLiveExecutionStore.getState().popSubflowProgressNode(message.nodeId);
+            }
+          }
+
           // Capture the final outcome + full log (when provided) so we can persist it.
           if (message.status !== "running" && message.nodeLog) {
             const mappedLog = mapIncomingNodeLog(message.nodeLog);
             nodeLogsByNodeId.set(message.nodeId, mappedLog);
+            subflowNodeMetaByNodeId.set(message.nodeId, {
+              nodeName: message.nodeLog.nodeName || message.nodeId,
+              nodeType: message.nodeLog.nodeUniqueName || "",
+            });
             useLiveExecutionStore.getState().setNodeLog(message.nodeId, mappedLog);
           }
         } else if (message.type === "edgeTraversed") {
@@ -160,6 +202,8 @@ export const useLocalExecutionWebSocket = () => {
           // back to the green play state here.
           useCurrentFlowStore.getState().setExecutionState("stopped");
           setShowRunResultsRef.current(true);
+          // No sub-flow is running anymore once the job ends — drop any lingering progress.
+          useLiveExecutionStore.getState().clearSubflowProgress();
 
           // Credits are consumed server-side when the job closes; refresh the header
           // balance so it updates without needing a manual page reload.
