@@ -2,7 +2,9 @@ namespace WorkspaceAPIs.Hubs;
 
 /// <summary>
 /// Handles AI chat connections and LLM execution.
+/// All clients must present a valid JWT before connecting.
 /// </summary>
+[Authorize]
 public class AgentBuilderHub : Hub
 {
     private readonly IAgentBuilderStore _chatStore;

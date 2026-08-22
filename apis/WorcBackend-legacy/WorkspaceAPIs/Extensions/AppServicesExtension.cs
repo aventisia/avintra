@@ -153,6 +153,8 @@ public static class AppServicesExtension
         services.AddScoped<IFlowUserService, FlowUserService>();
         services.AddScoped<IAppSecretService, AppSecretService>();
         services.AddSingleton<ConcurrentDictionary<Guid, ClientDataStore>>();
+        services.AddSingleton<ConcurrentDictionary<string, Guid>>();
+        services.AddSingleton<ConcurrentDictionary<Guid, int>>();
         services.AddScoped<IClientStatusStore, ClientStatusStore>();
         services.AddScoped<IJobsExecutorService, JobsExecutorService>();
         services.AddScoped<IPromptTemplateService, PromptTemplateService>();

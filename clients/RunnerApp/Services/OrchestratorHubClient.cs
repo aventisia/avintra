@@ -20,6 +20,12 @@ public class OrchestratorHubClient : IOrchestratorHubClient
         query["osId"] = MachineIdentity.OsId;
         query["username"] = MachineIdentity.Username;
         query["appVersion"] = MachineIdentity.AppVersion;
+        // Mirror the backend's MachinesTableHelpers.BuildMachineName format so the presence
+        // layer can validate the sent name against the DB record:
+        //   [{serviceAccount}_{osToken}_{osId}]
+        var operatingSystem = OperatingSystem.IsWindows() ? "windows" : "linux";
+        var machineName = $"[{MachineIdentity.ServiceAccountUsername.Trim().ToLowerInvariant()}]_{operatingSystem}_{MachineIdentity.OsId.Trim().ToLowerInvariant()}";
+        query["machineName"] = machineName;
 
         _hubUrl = $"{appBaseUrl.TrimEnd('/')}/workspace/api/orchestrator-hub?{query}";
         _accessToken = accessToken;

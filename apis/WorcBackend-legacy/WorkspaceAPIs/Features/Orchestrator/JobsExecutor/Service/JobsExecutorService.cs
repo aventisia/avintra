@@ -52,10 +52,15 @@ public class JobsExecutorService : IJobsExecutorService
                 return;
             }
 
-            // Determine the machine for job execution
-            if (job.MachineId == null || job.MachineId == Guid.Empty)
+            // Determine the machine for job execution. A machine name is already set (job was assigned
+            // to a specific machine) unless the job originated from a non-machine source ("Desktop App",
+            // "Agent Builder", "Web Server"), in which case we pick an online machine.
+            var machineNeedsSelection = string.IsNullOrEmpty(job.ExecutedOn)
+                || (!job.ExecutedOn.StartsWith("Desktop App") && !job.ExecutedOn.StartsWith("Agent Builder"));
+
+            if (machineNeedsSelection)
             {
-                _logger.LogInformation("Machine ID is null for Job ID: {JobId}, attempting to find an online machine.", job.Id);
+                _logger.LogInformation("Machine name is null for Job ID: {JobId}, attempting to find an online machine.", job.Id);
 
                 // Fetch machine statuses for the tenant.
                 // Only pick a machine that is online and has no pending (dispatched-but-not-started) job.
@@ -63,7 +68,7 @@ public class JobsExecutorService : IJobsExecutorService
                 _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: tenant {TenantId} has {Count} machine(s) in store.", job.TenantId, machineList.Count);
                 foreach (var m in machineList)
                 {
-                    _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync:   machine clientId={ClientId}, type={Type}, status={Status}, jobId={JobId}, connectionId={ConnectionId}", m.ClientId, m.Type, m.Status, m.JobId, m.ConnectionId);
+                    _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync:   machine name={ClientName}, type={Type}, status={Status}, jobId={JobId}, connectionId={ConnectionId}", m.ClientName ?? m.ClientId.ToString(), m.Type, m.Status, m.JobId, m.ConnectionId);
                 }
 
                 // Pick the first machine that is online AND has no live pending job. A machine carrying a
@@ -72,7 +77,7 @@ public class JobsExecutorService : IJobsExecutorService
                 ClientDataStore? clientDataStoreDto = null;
                 foreach (var m in machineList)
                 {
-                    if (m.Status != MachineStatusEnum.Online)
+                    if (m.Status != MachineStatusEnum.Online && m.Status != MachineStatusEnum.Idle)
                         continue;
 
                     if (await HasLivePendingJobAsync(m))
@@ -89,12 +94,15 @@ public class JobsExecutorService : IJobsExecutorService
                     return;
                 }
 
+                // The job now executes on the chosen machine. Keep the internal Guid FK (MachineId) for
+                // DB dispatch, and persist the machine NAME in ExecutedOn for identification across the hub.
                 job.MachineId = clientDataStoreDto.ClientId;
-                _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: picked machine {MachineId} for job {JobId} (connectionId={ConnectionId}).", clientDataStoreDto.ClientId, job.Id, clientDataStoreDto.ConnectionId);
+                job.ExecutedOn = clientDataStoreDto.ClientName ?? clientDataStoreDto.ClientId.ToString();
+                _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: picked machine {MachineName} for job {JobId} (connectionId={ConnectionId}).", job.ExecutedOn, job.Id, clientDataStoreDto.ConnectionId);
             }
             else
             {
-                _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: job {JobId} already has machineId {MachineId} assigned.", job.Id, job.MachineId);
+                _logger.LogInformation("[MANUAL-JOB-DEBUG] ExecuteJobCommandAsync: job {JobId} already has machine name {MachineName} assigned.", job.Id, job.ExecutedOn);
             }
 
             // Create an ExecutionCommandDto to trigger the job execution
@@ -103,7 +111,7 @@ public class JobsExecutorService : IJobsExecutorService
                 JobId = job.Id,
                 Command = ExecutionCommandTypesEnum.Initiate,
                 AgentId = jobDetails.FlowVersionId,
-                MachineId = job.MachineId.Value,
+                MachineName = job.ExecutedOn,
                 TenantId = job.TenantId
             };
 
@@ -130,29 +138,34 @@ public class JobsExecutorService : IJobsExecutorService
     {
         try
         {
-            // Retrieve the current status of the assigned machine
-            var clientDataStore = await _clientStatusStore.GetClientByIdAsync(executionCommandDto.MachineId);
+            // Resolve the machine by its unique NAME (hub/websocket contract) to its internal entry.
+            // Dispatch internally still keys by ClientId (Guid); the name is the public identifier.
+            var machineName = executionCommandDto.MachineName;
+            var clientDataStore = await _clientStatusStore.GetClientByNameAsync(executionCommandDto.TenantId, machineName);
 
             if (clientDataStore == null)
             {
                 // Log warning if the machine cannot be found
-                _logger.LogWarning("Machine {MachineId} not found in the client status store.", executionCommandDto.MachineId);
-                _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineId} NOT FOUND in store for command {Command}, job {JobId}.", executionCommandDto.MachineId, executionCommandDto.Command, executionCommandDto.JobId);
+                _logger.LogWarning("Machine {MachineName} not found in the client status store.", machineName);
+                _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineName} NOT FOUND in store for command {Command}, job {JobId}.", machineName, executionCommandDto.Command, executionCommandDto.JobId);
                 await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Assigned machine not found", _userId);
                 return;
             }
 
-            _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineId} found. status={Status}, type={Type}, connectionId={ConnectionId}, jobId={JobId}.",
-                executionCommandDto.MachineId, clientDataStore.Status, clientDataStore.Type, clientDataStore.ConnectionId, clientDataStore.JobId);
+            _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineName} found. status={Status}, type={Type}, connectionId={ConnectionId}, jobId={JobId}.",
+                machineName, clientDataStore.Status, clientDataStore.Type, clientDataStore.ConnectionId, clientDataStore.JobId);
+
+            // The machine's internal Guid id, used for DB job reassignment comparisons (Job.MachineId FK).
+            var machineClientId = clientDataStore.ClientId;
 
             // Check machine's status before executing or resuming the job
             if ((executionCommandDto.Command == ExecutionCommandTypesEnum.Initiate || executionCommandDto.Command == ExecutionCommandTypesEnum.Resume) &&
                 clientDataStore.Status != MachineStatusEnum.Online && clientDataStore.Status != MachineStatusEnum.Idle)
             {
                 // Log and notify if the machine is not online or idle
-                _logger.LogWarning("Machine {MachineId} is not online or idle. Job execution cannot be triggered.", executionCommandDto.MachineId);
-                _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineId} status is {Status} (expected Online/Idle) for command {Command}, job {JobId}. Dispatch aborted.",
-                    executionCommandDto.MachineId, clientDataStore.Status, executionCommandDto.Command, executionCommandDto.JobId);
+                _logger.LogWarning("Machine {MachineName} is not online or idle. Job execution cannot be triggered.", machineName);
+                _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineName} status is {Status} (expected Online/Idle) for command {Command}, job {JobId}. Dispatch aborted.",
+                    machineName, clientDataStore.Status, executionCommandDto.Command, executionCommandDto.JobId);
                 await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Assigned machine is not online or idle", _userId);
                 return;
             }
@@ -167,16 +180,16 @@ public class JobsExecutorService : IJobsExecutorService
                 var pendingLive = await HasLivePendingJobAsync(clientDataStore);
                 if (pendingLive)
                 {
-                    _logger.LogWarning("Machine {MachineId} already has a pending job {PendingJobId}. Cannot initiate {JobId}.", executionCommandDto.MachineId, clientDataStore.JobId, executionCommandDto.JobId);
-                    _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: pending-job guard hit. Machine {MachineId} already has LIVE pending job {PendingJobId}; cannot initiate {JobId}. Dispatch aborted.",
-                        executionCommandDto.MachineId, clientDataStore.JobId, executionCommandDto.JobId);
+                    _logger.LogWarning("Machine {MachineName} already has a pending job {PendingJobId}. Cannot initiate {JobId}.", machineName, clientDataStore.JobId, executionCommandDto.JobId);
+                    _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: pending-job guard hit. Machine {MachineName} already has LIVE pending job {PendingJobId}; cannot initiate {JobId}. Dispatch aborted.",
+                        machineName, clientDataStore.JobId, executionCommandDto.JobId);
                     await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Machine already has a pending job.", _userId);
                     return;
                 }
 
                 // Stale marker: the referenced job is no longer live. Clear it so this machine can be dispatched.
-                _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineId} pending job {PendingJobId} is STALE. Clearing marker so machine can accept job {JobId}.",
-                    executionCommandDto.MachineId, clientDataStore.JobId, executionCommandDto.JobId);
+                _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineName} pending job {PendingJobId} is STALE. Clearing marker so machine can accept job {JobId}.",
+                    machineName, clientDataStore.JobId, executionCommandDto.JobId);
                 clientDataStore.JobId = null;
                 await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
             }
@@ -190,7 +203,7 @@ public class JobsExecutorService : IJobsExecutorService
                 clientDataStore.Status != MachineStatusEnum.Running)
             {
                 // Log and notify if the machine is not running when it should be
-                _logger.LogWarning("Machine {MachineId} is not running. Cannot perform actions like pause, stop, cancel, or cleanup.", executionCommandDto.MachineId);
+                _logger.LogWarning("Machine {MachineName} is not running. Cannot perform actions like pause, stop, cancel, or cleanup.", machineName);
                 await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Machine is not running", _userId);
                 return;
             }
@@ -231,14 +244,14 @@ public class JobsExecutorService : IJobsExecutorService
             // Persist the updated machine status
             await _clientStatusStore.UpdateClientStatusAsync(clientDataStore);
 
-            _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: about to send trigger_agent command={Command}, job={JobId}, agent={AgentId}, machine={MachineId}, tenant={TenantId} to connectionId={ConnectionId}.",
-                executionCommandDto.Command, executionCommandDto.JobId, executionCommandDto.AgentId, executionCommandDto.MachineId, executionCommandDto.TenantId, clientDataStore.ConnectionId);
+            _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: about to send trigger_agent command={Command}, job={JobId}, agent={AgentId}, machine={MachineName}, tenant={TenantId} to connectionId={ConnectionId}.",
+                executionCommandDto.Command, executionCommandDto.JobId, executionCommandDto.AgentId, machineName, executionCommandDto.TenantId, clientDataStore.ConnectionId);
 
             // Send the execution command to the client machine
             await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
 
             // Log successful execution of the job
-            _logger.LogInformation("Job {JobId} successfully executed on machine {MachineId}.", executionCommandDto.JobId, executionCommandDto.MachineId);
+            _logger.LogInformation("Job {JobId} successfully executed on machine {MachineName}.", executionCommandDto.JobId, machineName);
             _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: trigger_agent SENT to connectionId={ConnectionId} for job {JobId}.", clientDataStore.ConnectionId, executionCommandDto.JobId);
 
             // A machine can pull the next pending job only when it is free (no job dispatched/in-flight).
@@ -259,7 +272,7 @@ public class JobsExecutorService : IJobsExecutorService
                         w.TenantId == executionCommandDto.TenantId &&
                         w.Status == JobStatusEnum.Created &&
                         flowVersionIds.Contains(w.FlowVersionId) &&
-                        (w.MachineId == null || w.MachineId == executionCommandDto.MachineId)
+                        (w.MachineId == null || w.MachineId == machineClientId)
                     )
                     .OrderByDescending(o => o.CreatedOn)
                     .FirstOrDefaultAsync();
@@ -267,8 +280,10 @@ public class JobsExecutorService : IJobsExecutorService
                 // If a job is found, assign it to the machine and update status
                 if (job != null)
                 {
-                    // Assign job to this machine
-                    job.MachineId = executionCommandDto.MachineId;
+                    // Assign job to this machine. Keep the internal Guid FK (MachineId) for DB dispatch,
+                    // and persist the machine NAME in ExecutedOn for identification across the hub.
+                    job.MachineId = machineClientId;
+                    job.ExecutedOn = machineName;
                     _unitOfWork.JobRepo.Update(job);
                     await _unitOfWork.SaveAsync();
 
@@ -281,7 +296,7 @@ public class JobsExecutorService : IJobsExecutorService
                     executionCommandDto.JobId = job.Id;
                     executionCommandDto.Command = ExecutionCommandTypesEnum.Initiate;
                     executionCommandDto.AgentId = job.FlowVersionId;
-                    executionCommandDto.MachineId = job.MachineId.Value;
+                    executionCommandDto.MachineName = machineName;
 
                     // Send execution command to the machine
                     await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
@@ -391,6 +406,7 @@ public class JobsExecutorService : IJobsExecutorService
                         if (onlineMachine != null && !jobsNeedToUpdate.Any(j => j.MachineId == onlineMachine.ClientId))
                         {
                             job.MachineId = onlineMachine.ClientId;
+                            job.ExecutedOn = onlineMachine.ClientName ?? onlineMachine.ClientId.ToString();
                             jobsNeedToUpdate.Add(job);
                         }
                         else
@@ -415,7 +431,7 @@ public class JobsExecutorService : IJobsExecutorService
                     JobId = job.Id,
                     Command = ExecutionCommandTypesEnum.Initiate,
                     AgentId = job.FlowVersionId,
-                    MachineId = job.MachineId ?? Guid.Empty,
+                    MachineName = job.ExecutedOn,
                     TenantId = job.TenantId
                 };
 
@@ -482,7 +498,7 @@ public class JobsExecutorService : IJobsExecutorService
             {
                 JobId = job.Id,
                 AgentId = clientDataStore.AgentId ?? Guid.Empty,
-                MachineId = clientDataStore.ClientId,
+                MachineName = clientDataStore.ClientName ?? clientDataStore.ClientId.ToString(),
                 TenantId = clientDataStore.TenantId,
                 Command = ExecutionCommandTypesEnum.Killed
             };

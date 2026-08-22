@@ -21,6 +21,13 @@ public class ClientDataStore
     public Guid ClientId { get; set; }
 
     /// <summary>
+    /// Gets or sets the human-facing identifier for the client (e.g. the unique machine name
+    /// <c>[username]_os_osid</c>). Used in presence broadcasts and the presence snapshot.
+    /// For non-machine clients this may be null and the ClientId is used instead.
+    /// </summary>
+    public string? ClientName { get; set; }
+
+    /// <summary>
     /// Gets or sets the unique identifier for the agent.
     /// </summary>
     public Guid? AgentId { get; set; }
