@@ -92,12 +92,16 @@ export const CanvasNodeDetailPanel = () => {
   const [nodeTimingMap, setNodeTimingMap] = useState<Record<string, NodeTiming>>({});
 
   // Restore colors, job status and per-node logs from IndexedDB when the page refreshes
-  // with the run-results flag, so the panel still works after a reload.
+  // with the run-results flag, so the panel still works after a reload. Sub-flow node logs
+  // are stored under the ROOT run version (`runVersionId`), so that is what we look up here
+  // rather than the sub-flow's own `versionId`.
   useEffect(() => {
-    if (!showRunResults || !currentFlow?.versionId) return;
+    if (!showRunResults) return;
+    const logVersionId = currentFlow?.runVersionId || currentFlow?.versionId;
+    if (!logVersionId) return;
 
     const restore = async () => {
-      const executions = await getLocalExecutionLog(currentFlow.versionId);
+      const executions = await getLocalExecutionLog(logVersionId);
       if (!executions || executions.length === 0) return;
 
       const latestExecution = executions[executions.length - 1];
@@ -135,7 +139,7 @@ export const CanvasNodeDetailPanel = () => {
     };
 
     void restore();
-  }, [showRunResults, currentFlow?.versionId, setJob]);
+  }, [showRunResults, currentFlow?.runVersionId, currentFlow?.versionId, setJob]);
 
   // Track per-node start/end timing as live RunnerApp status updates arrive.
   useEffect(() => {

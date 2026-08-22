@@ -17,6 +17,12 @@ interface ICurrentFlowDetails {
   accessType?: string;
   inputOutputObject?: string;
   jobId?: string;
+  /**
+   * Root flow version id that owns the current local run's logs. Set when a run starts,
+   * and carried through sub-flow navigation so sub-flow nodes can restore/persist logs
+   * against the parent version (sub-flow logs are stored under the root run version).
+   */
+  runVersionId?: string;
   /** ID of the space this flow belongs to (null/undefined = Central). */
   spaceId?: string | null;
 }
@@ -89,6 +95,7 @@ export const useCurrentFlowStore = create<State & Actions>((set) => ({
     description: "",
     inputOutputObject: "",
     jobId: "",
+    runVersionId: "",
     spaceId: null,
   },
 

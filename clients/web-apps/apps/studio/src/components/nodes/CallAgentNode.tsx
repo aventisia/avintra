@@ -11,6 +11,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { buildSubFlowNavigationParams } from "@/features/execute-flow/utils/sub-flow-navigation";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { useNodeHover } from "@/hooks/useNodeHover";
@@ -76,6 +77,8 @@ export const CallAgentNode = memo(
       const currentFlowId = searchParams.get("f") || currentFlow.id;
       const currentVersionId = searchParams.get("v") || currentFlow.versionId;
       const currentJobId = searchParams.get("j");
+      const currentRunVersionId = searchParams.get("rv") || currentFlow.runVersionId;
+      const showRunResults = searchParams.get("showRunResults") === "1";
       const currentFlowName = isExecutionLog ? name : currentFlow.name;
 
       if (currentFlowId) {
@@ -84,21 +87,19 @@ export const CallAgentNode = memo(
           versionId: currentVersionId,
           name: currentFlowName || "Main Flow",
           jobId: currentJobId || undefined,
+          runVersionId: currentRunVersionId || undefined,
         });
       }
 
-      // Base params for Agent Builder route
-      const nextParams: Record<string, string> = {
-        f: agentData.flowId,
-        v: agentData.id || "",
-      };
-
-      // Append Job execution ID if we are traversing logs
-      if (isExecutionLog) {
-        nextParams.j = String(currentJobId);
-      }
-
-      setSearchParams(nextParams);
+      setSearchParams(
+        buildSubFlowNavigationParams({
+          targetFlowId: agentData.flowId,
+          targetVersionId: agentData.id || "",
+          showRunResults,
+          jobId: currentJobId || undefined,
+          runVersionId: currentRunVersionId || undefined,
+        }),
+      );
     };
     return (
       <OpenNodeLog nodeId={id} isDisabled={data?.isDisabled}>
