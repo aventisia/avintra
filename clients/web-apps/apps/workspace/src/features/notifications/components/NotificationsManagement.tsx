@@ -1,14 +1,11 @@
-import { cn } from "@avplatform/ui/lib";
 import { useDocumentTitle } from "@avplatform/ui/hooks";
-import { Mail, Settings2 } from "lucide-react";
-import { useState } from "react";
-
-import NotificationSettingsPanel from "@/features/05-tenant-admin/tenant/components/BillingTabs/notifications/NotificationSettingsPanel";
+import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 
 import { NotificationsTable } from "./NotificationsTable";
 
 /** Top-level view mode for the Notifications page. */
-type NotificationsMode = "manual" | "auto";
+export type NotificationsMode = "manual" | "auto";
 
 /**
  * Management view for notifications within the current tenant.
@@ -22,39 +19,26 @@ export const NotificationsManagement = () => {
 
   const [mode, setMode] = useState<NotificationsMode>("manual");
 
-  return (
-    <div className="space-y-6 py-4">
-      {/* Manual / Auto switch */}
-      <div className="inline-flex items-center gap-1 rounded-lg bg-muted px-1.5 py-1.5">
-        <button
-          type="button"
-          onClick={() => setMode("manual")}
-          className={cn(
-            "inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200",
-            mode === "manual"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-          )}
-        >
-          <Mail className="size-4 shrink-0" aria-hidden="true" />
-          Manual Notifications
-        </button>
-        <button
-          type="button"
-          onClick={() => setMode("auto")}
-          className={cn(
-            "inline-flex items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200",
-            mode === "auto"
-              ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
-          )}
-        >
-          <Settings2 className="size-4 shrink-0" aria-hidden="true" />
-          Auto Notifications
-        </button>
-      </div>
+  const location = useLocation();
 
-      {mode === "auto" ? <NotificationSettingsPanel /> : <NotificationsTable />}
+  // Reset to the "Manual" mode on any client-side navigation to this page (e.g.
+  // clicking the sidebar menu item, even when already on this route). A full
+  // page refresh keeps the persisted mode so in-progress work is not lost —
+  // React Router sets location.key to "default" on a fresh load, and to a new
+  // random key on client-side navigation.
+  const prevKey = useRef(location.key);
+  useEffect(() => {
+    if (prevKey.current !== location.key) {
+      setMode("manual");
+    }
+    prevKey.current = location.key;
+  }, [location.key]);
+
+  return (
+    <div className="space-y-4 pb-4 pt-[17px]">
+      <NotificationsTable mode={mode} onModeChange={setMode} />
     </div>
   );
 };
+
+
