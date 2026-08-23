@@ -7,6 +7,7 @@ namespace RunnerApp;
 public class RunnerAppService : BackgroundService
 {
     private readonly RunnerAppOptions _options;
+    private readonly INotificationService _notifications;
     private readonly ILogger<RunnerAppService> _logger;
     private readonly ILoggerFactory _loggerFactory;
 
@@ -15,10 +16,12 @@ public class RunnerAppService : BackgroundService
 
     public RunnerAppService(
         RunnerAppOptions options,
+        INotificationService notifications,
         ILogger<RunnerAppService> logger,
         ILoggerFactory loggerFactory)
     {
         _options = options;
+        _notifications = notifications;
         _logger = logger;
         _loggerFactory = loggerFactory;
     }
@@ -49,7 +52,7 @@ public class RunnerAppService : BackgroundService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Worker cycle failed. Retrying in 15 seconds.");
+                    _logger.LogError(ex, "Service worker cycle failed. Retrying in 15 seconds...");
                     await Task.Delay(TimeSpan.FromSeconds(15), cts.Token);
                 }
             }
@@ -112,14 +115,21 @@ public class RunnerAppService : BackgroundService
             }
         };
 
+        hubClient.Reconnected += (_, _) =>
+        {
+            _logger.LogInformation("Service reconnected to OrchestratorHub after a temporary disconnect.");
+        };
+
         hubClient.Disconnected += (_, reason) =>
         {
-            _logger.LogWarning("SignalR disconnected: {Reason}.", reason);
+            _logger.LogWarning("Service is OFFLINE — SignalR disconnected: {Reason}.", reason);
             commandReceived.TrySetResult(null);
         };
 
         // Connect (with retry) and wait for the next job command.
         await ConnectHubWithRetryAsync(hubClient, cancellationToken);
+
+        _logger.LogInformation("Service is ONLINE — connected to OrchestratorHub.");
 
         if (_options.JobId.HasValue)
         {
@@ -132,7 +142,12 @@ public class RunnerAppService : BackgroundService
         var command = await WaitForCommandAsync(commandReceived, hubClient, cancellationToken);
         if (command != null)
         {
+            _logger.LogInformation("Job request received: {JobId}. Starting execution...", command.JobId);
             await ExecuteJobAsync(backendClient, engine, hubClient, command.JobId, cancellationToken);
+        }
+        else
+        {
+            _logger.LogInformation("No job request received; disconnecting from OrchestratorHub until next cycle.");
         }
 
         await hubClient.DisconnectAsync();
@@ -178,7 +193,7 @@ public class RunnerAppService : BackgroundService
         IOrchestratorHubClient hubClient,
         CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Waiting for a job command from the OrchestratorHub...");
+        _logger.LogInformation("Service ONLINE and waiting for a job request from the OrchestratorHub...");
         var command = await commandReceived.Task.WaitAsync(cancellationToken);
 
         // If the hub disconnected before a command arrived, attempt to reconnect.
@@ -226,6 +241,7 @@ public class RunnerAppService : BackgroundService
             try
             {
                 await backendClient.StartJobAsync(targetJobId, cancellationToken);
+                _notifications.NotifyJobStarted(targetJobId, graph.FlowName);
             }
             catch (Exception ex)
             {
@@ -304,7 +320,9 @@ public class RunnerAppService : BackgroundService
 
             await hubClient.ReportCompletionAsync(targetJobId, jobStatus, result.ErrorMessage, cancellationToken);
 
-            _logger.LogInformation("Execution finished for job {JobId}: {Status}.", targetJobId, result.Status);
+            var outcome = result.IsSuccess ? "completed successfully" : "failed";
+            _notifications.NotifyJobFinished(targetJobId, graph.FlowName, jobStatus, result.ErrorMessage);
+            _logger.LogInformation("Job {JobId} {Outcome}. Execution finished with status {Status}.", targetJobId, outcome, result.Status);
         }
         finally
         {

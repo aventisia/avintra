@@ -354,11 +354,11 @@ public static class WorkspaceDbInitialSeed
 
         foreach (var machine in machines)
         {
-            // Update the MachineName for each machine record
+            // Rebuild the machine name from hostname so it follows the [hostname]_os_osid format.
             machine.Name = MachinesTableHelpers.BuildMachineName(
                 machine.OperatingSystem,
                 machine.OsID,
-                machine.Username);
+                machine.Hostname);
         }
 
         await workspaceDbContext.SaveChangesAsync();

@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.17763</TargetFramework>
+
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>RunnerApp</AssemblyName>
     <RootNamespace>RunnerApp</RootNamespace>
-    <Version>0.2.11</Version>
-    <InformationalVersion>0.2.11</InformationalVersion>
+    <Version>0.2.12</Version>
+    <InformationalVersion>0.2.12</InformationalVersion>
 
     <!--
       Self-contained publish.
@@ -17,21 +18,20 @@
 
       Single-file publish remains disabled to keep deployment consistent with
       prior releases and to simplify COM/Office late-binding diagnostics.
-
-      RuntimeIdentifiers is plural so local-dev scripts can publish for either
-      win-x64 or linux-x64 by passing -r <rid>. CI still defaults to win-x64.
     -->
     <SelfContained>true</SelfContained>
-    <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <PublishSingleFile>false</PublishSingleFile>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" Condition="'$(RuntimeIdentifier)' == 'win-x64'" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="8.0.10" />
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
   </ItemGroup>
 
   <ItemGroup>
