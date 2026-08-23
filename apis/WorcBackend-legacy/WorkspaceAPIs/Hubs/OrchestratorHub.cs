@@ -45,7 +45,6 @@ public class OrchestratorHub : Hub
             // Retrieve additional query parameters (OSId, Username, AppVersion, machineName)
             string? osId = httpContext.Request.Query["osId"];
             string? username = httpContext.Request.Query["username"];
-            string? hostname = httpContext.Request.Query["hostname"];
             string? appVersion = httpContext.Request.Query["appVersion"];
             string? sentMachineName = httpContext.Request.Query["machineName"];
 
@@ -55,17 +54,17 @@ public class OrchestratorHub : Hub
                 ? ClientTypesEnum.WebBrowser
                 : ClientTypesEnum.AvintraDesktopApp;
 
-            // The machine identity is derived from a DB lookup (tenant + osId + hostname), which is
+            // The machine identity is derived from a DB lookup (tenant + osId + username), which is
             // authoritative and cannot be forged through a 'clientType' query parameter alone.
             string? clientName = null;
-            if (!string.IsNullOrEmpty(osId) && !string.IsNullOrEmpty(hostname))
+            if (!string.IsNullOrEmpty(osId) && !string.IsNullOrEmpty(username))
             {
-                // Try to find a machine based on OSId and Hostname
+                // Try to find a machine based on OSId and Username
                 var machine = await _workspaceInternalDbContext.Machine
                     .Where(w =>
                         w.TenantId == tenantId &&
                         w.OsID.ToLower() == osId.ToLower() &&
-                        w.Hostname.ToLower() == hostname.ToLower()
+                        w.Username.ToLower() == username.ToLower()
                     )
                     .SingleOrDefaultAsync();
 
@@ -83,15 +82,15 @@ public class OrchestratorHub : Hub
                         && !string.Equals(sentMachineName.Trim(), machine.Name, StringComparison.OrdinalIgnoreCase))
                     {
                         _logger.LogWarning(
-                            "Machine name mismatch for OSId: {OSId}, Hostname: {Hostname}. Sent '{SentName}' but DB name is '{DbName}'. Using DB name.",
-                            osId, hostname, sentMachineName, machine.Name);
+                            "Machine name mismatch for OSId: {OSId}, Username: {Username}. Sent '{SentName}' but DB name is '{DbName}'. Using DB name.",
+                            osId, username, sentMachineName, machine.Name);
                     }
                 }
                 else
                 {
                     // If no machine is found, default clientType to DesktopApp
                     clientType = ClientTypesEnum.AvintraDesktopApp;
-                    _logger.LogWarning("No machine found for OSId: {OSId}, Hostname: {Hostname}. Defaulting to client type {ClientType}.", osId, hostname, clientType);
+                    _logger.LogWarning("No machine found for OSId: {OSId}, Username: {Username}. Defaulting to client type {ClientType}.", osId, username, clientType);
                 }
             }
 
@@ -188,7 +187,16 @@ public class OrchestratorHub : Hub
                     clientDataStore.JobId = job.Id;
                     await _clientStatusStore.AddOrUpdateStatusAsync(clientDataStore);
 
-                    await Clients.Caller.SendAsync("trigger_agent", job.Id.ToString());
+                    var executionRequest = new ExecutionCommandDto()
+                    {
+                        JobId = job.Id,
+                        Command = ExecutionCommandTypesEnum.Initiate,
+                        AgentId = job.FlowVersionId,
+                        MachineName = clientName ?? clientDataStore.ClientId.ToString(),
+                        TenantId = tenantId
+                    };
+
+                    await Clients.Caller.SendAsync("trigger_agent", executionRequest);
                 }
                 else
                 {
@@ -407,7 +415,16 @@ public class OrchestratorHub : Hub
                 // Trigger the agent execution on the assigned machine
                 if (!string.IsNullOrEmpty(clientDataStore.ConnectionId))
                 {
-                    await Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", job.Id.ToString());
+                    var executionRequest = new ExecutionCommandDto()
+                    {
+                        JobId = job.Id,
+                        Command = ExecutionCommandTypesEnum.Initiate,
+                        AgentId = job.FlowVersionId,
+                        MachineName = clientDataStore.ClientName ?? machineName,
+                        TenantId = tenantId,
+                    };
+
+                    await Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionRequest);
                 }
                 else
                 {
