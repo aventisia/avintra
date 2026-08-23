@@ -81,7 +81,7 @@ const PromptConfigField = ({ name, rows, disabled }: PromptConfigFieldProps) => 
       });
     }
 
-    setValue("json_schema", "");
+    setValue("JsonSchema", "");
   };
 
   const handleOptionChange = (templateId: string) => {

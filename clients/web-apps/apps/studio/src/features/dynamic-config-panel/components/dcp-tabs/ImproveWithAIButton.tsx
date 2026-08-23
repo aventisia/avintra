@@ -46,7 +46,7 @@ const ImproveWithAIButton = ({
           outputSchema: unknown;
         };
         form.setValue(name, outputJson.refinedPrompt);
-        form.setValue("json_schema", JSON.stringify(outputJson.outputSchema));
+        form.setValue("JsonSchema", JSON.stringify(outputJson.outputSchema));
       } catch {
         console.error("ImproveWithAI: Invalid LLM structured output");
       }
