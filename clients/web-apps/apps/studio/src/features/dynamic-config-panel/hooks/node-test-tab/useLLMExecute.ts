@@ -125,7 +125,7 @@ export function useLLMExecute(
       input: buildLLMInput(systemPrompt, userPrompt, followUpPrompt),
       files: dataUrlFiles,
       is_json_output: modelConfig.is_json_output,
-      json_schema: formData.useJSONSchema ? (formData.json_schema as string) : null,
+      json_schema: formData.useJSONSchema ? (formData.JsonSchema as string) : null,
       max_output_tokens: modelConfig.max_output_tokens ?? null,
       is_byok_enabled: modelConfig.is_byok_enabled,
       credential_name: modelConfig.credential_name || null,

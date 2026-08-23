@@ -22,6 +22,9 @@ public class ProcessLLMRequestNode : BaseNode
     [DisplayName("Skills Configuration")]
     public InArgument<JsonElement> SkillsConfig { get; set; } = new InArgument<JsonElement>();
 
+    [DisplayName("Output JSON Schema")]
+    public InArgument<JsonElement> JsonSchema { get; set; } = new InArgument<JsonElement>();
+
     [DisplayName("Memory Configuration")]
     public InArgument<JsonElement> MemoryConfig { get; set; } = new InArgument<JsonElement>();
 
@@ -49,6 +52,7 @@ public class ProcessLLMRequestNode : BaseNode
             var filesList = Files.Get(context);
             var kbConfig = KbConfig.Get(context);
             var skillsConfig = SkillsConfig.Get(context);
+            var jsonSchema = JsonSchema.Get(context);
             var memoryConfig = MemoryConfig.Get(context);
             var toolsConfig = ToolsConfig.Get(context);
             var recommendedActionsConfig = RecommendedActionsConfig.Get(context);
@@ -81,6 +85,8 @@ public class ProcessLLMRequestNode : BaseNode
             // otherwise using the standalone prompt with optional follow-up instructions.
             object inputPayload = BuildInputPayload(inputPrompt, threadMessages, userInput, followUpMessagePrompt);
 
+            var resolvedJsonSchema = FormatJsonSchema(jsonSchema, modelConfig);
+
             var requestObj = new
             {
                 provider = GetStringProperty(modelConfig, "provider"),
@@ -88,7 +94,7 @@ public class ProcessLLMRequestNode : BaseNode
                 input = inputPayload,
                 files = formattedFilesList,
                 is_json_output = GetBoolProperty(modelConfig, "is_json_output") ?? false,
-                json_schema = GetStringProperty(modelConfig, "json_schema"),
+                json_schema = resolvedJsonSchema,
                 max_output_tokens = GetLongProperty(modelConfig, "max_output_tokens") ?? 0L,
                 is_byok_enabled = GetBoolProperty(modelConfig, "is_byok_enabled") ?? false,
                 // Canonical key is credential_name; legacy flows may still carry a credential_id (back-compat).
@@ -138,6 +144,59 @@ public class ProcessLLMRequestNode : BaseNode
         if (element.ValueKind is JsonValueKind.Undefined or JsonValueKind.Null)
             return null;
         return element.TryGetProperty(propertyName, out var prop) ? prop.GetString() : null;
+    }
+
+    /// <summary>
+    /// Resolves the JSON schema to send to the LLM pipeline.
+    ///
+    /// The dedicated JsonSchema node input may arrive in one of these shapes:
+    ///   1. A bare JSON schema string, e.g. {"type":"array","items":...}
+    ///      (JsonElement.ValueKind == String) — the value is the schema text.
+    ///   2. An object wrapping the schema under a "value" key (json-editor field).
+    ///   3. An object wrapping the schema under a "json_schema" key.
+    ///   4. The schema itself as a JSON object, e.g. {"type":"array","items":...}
+    ///      (JsonElement.ValueKind == Object with a "type" property).
+    ///   5. Legacy: a "json_schema" key embedded inside the ModelConfig object.
+    ///
+    /// The schema is returned as a string so it can be forwarded verbatim to the API.
+    /// </summary>
+    private static string? FormatJsonSchema(JsonElement jsonSchema, JsonElement modelConfig)
+    {
+        // Case 1: the JsonElement is itself the schema text (a JSON string).
+        if (jsonSchema.ValueKind == JsonValueKind.String)
+        {
+            var direct = jsonSchema.GetString();
+            if (!string.IsNullOrWhiteSpace(direct))
+            {
+                return direct;
+            }
+        }
+
+        // Case 2: schema wrapped under a "value" key.
+        var schemaFromValue = GetStringProperty(jsonSchema, "value");
+        if (!string.IsNullOrWhiteSpace(schemaFromValue))
+        {
+            return schemaFromValue;
+        }
+
+        // Case 3: schema wrapped under a "json_schema" key.
+        var raw = GetStringProperty(jsonSchema, "json_schema");
+        if (!string.IsNullOrWhiteSpace(raw))
+        {
+            return raw;
+        }
+
+        // Case 4: the JsonElement is the schema object itself (has a "type" key).
+        if (jsonSchema.ValueKind == JsonValueKind.Object &&
+            jsonSchema.TryGetProperty("type", out var typeProp) &&
+            typeProp.ValueKind == JsonValueKind.String &&
+            !string.IsNullOrWhiteSpace(typeProp.GetString()))
+        {
+            return jsonSchema.GetRawText();
+        }
+
+        // Case 5 (legacy): a "json_schema" key embedded inside the ModelConfig.
+        return GetStringProperty(modelConfig, "json_schema");
     }
 
     // Reads a credential reference from a config object. Accepts the canonical

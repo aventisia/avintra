@@ -93,7 +93,7 @@
     {
       "direction": "Input",
       "type": "json-editor",
-      "name": "json_schema",
+      "name": "JsonSchema",
       "label": "Output Schema (JSON)",
       "description": "Define the expected response structure using valid JSON Schema. The model will strictly follow this format when generating output. Make sure the schema is valid to avoid request failures.",
       "defaultValue": "",
