@@ -7,19 +7,24 @@ import { useAssignMachineStore } from "../../stores/assign-machine-store";
 
 interface DTEditRowActionProps {
   rowId: string;
+  flowName?: string | null;
+  flowVersionNumber?: number;
   size?: "sm" | "md";
   isDisabled: boolean;
 }
 
 export const AssignMachineRowAction: React.FC<DTEditRowActionProps> = ({
   rowId,
+  flowName,
+  flowVersionNumber,
   size = "md",
   isDisabled,
 }) => {
-  const { setOpen, setFlowVersionId } = useAssignMachineStore(
+  const { setOpen, setFlowVersionId, setFlowMetadata } = useAssignMachineStore(
     useShallow((s) => ({
       setOpen: s.setShowDialog,
       setFlowVersionId: s.setFlowVersionId,
+      setFlowMetadata: s.setFlowMetadata,
     })),
   );
 
@@ -32,6 +37,7 @@ export const AssignMachineRowAction: React.FC<DTEditRowActionProps> = ({
       Icon={MonitorCheck}
       onClick={() => {
         setFlowVersionId(rowId);
+        setFlowMetadata(flowName ?? "", flowVersionNumber ?? 0);
         setOpen(true);
       }}
     />
