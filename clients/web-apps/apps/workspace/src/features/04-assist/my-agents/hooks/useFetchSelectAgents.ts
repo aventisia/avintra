@@ -2,18 +2,17 @@ import { toast } from "@avplatform/ui/sonner";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { getMachineAgents } from "../apis/agents-assist-apis";
+import { getMyAgents } from "../apis/agents-assist-apis";
 
 /**
  * Custom hook to fetch agents using react query.
  * @returns An object containing the fetched data, isFetching flag, and isLoading flag.
  */
-export const useFetchSelectTableAgents = (machineId: string) => {
+export const useFetchSelectTableAgents = () => {
   // Get agents using react query
   const { data, isFetching, isLoading, isError, error } = useQuery({
-    queryKey: ["agents-assist", machineId],
-    queryFn: () => getMachineAgents(machineId),
-    enabled: !!machineId,
+    queryKey: ["agents-assist"],
+    queryFn: getMyAgents,
   });
 
   // Show toast on fetch error

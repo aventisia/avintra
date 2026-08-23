@@ -7,7 +7,6 @@ import {
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { HelpButton } from "@/components/help/HelpButton";
-import { DUMMY_MACHINE_ID } from "@/constants/machine-identity";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -23,15 +22,13 @@ import { ExecutionAction } from "./assign-agent-item-actions/ExecutionAction";
  * @returns The rendered ConfigsTable component.
  */
 export const AgentsAssistTable = () => {
-  const machineId = DUMMY_MACHINE_ID;
-
   // Set the document title
   useDocumentTitle(TABLE_HEADING);
 
   // Get data-table preferences from local storage
   const { columnVisibility, sortState } = getDataTablePreferences(TABLE_KEY, columnVisibilityState);
 
-  const { data, isLoading } = useFetchSelectTableAgents(machineId);
+  const { data, isLoading } = useFetchSelectTableAgents();
 
   // Create a React table for configs data
   const table = useDataTable(
@@ -77,12 +74,16 @@ export const AgentsAssistTable = () => {
                   <div className="flex items-center gap-2">
                     <ExecutionAction
                       executionState={row.original.status}
-                      isDisabled={false}
                       rowId={row.original.id}
+                      flowName={row.original.name}
+                      flowVersionNumber={row.original.versionNumber}
                       jobId={row.original.jobId}
                     />
                     {/* Actions container */}
-                    <AgentsListItemActions id={row.original.id || ""} />
+                    <AgentsListItemActions
+                      id={row.original.id || ""}
+                      machineIds={row.original.assignedMachineIds}
+                    />
                   </div>
                 </div>
               ))}

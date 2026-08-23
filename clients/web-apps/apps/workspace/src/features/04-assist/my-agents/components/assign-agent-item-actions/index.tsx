@@ -6,12 +6,13 @@ import { AgentsRemoveAction } from "./AgentsRemoveAction";
 
 interface AgentsListItemActionsProps {
   id: string;
+  machineIds?: string[];
 }
 
 /**
  * Renders the actions dropdown menu for a flow list item in the flows list.
  */
-export const AgentsListItemActions = ({ id }: AgentsListItemActionsProps) => {
+export const AgentsListItemActions = ({ id, machineIds }: AgentsListItemActionsProps) => {
   return (
     // Dropdown menu for flow table row action
     <DropdownMenu>
@@ -20,7 +21,7 @@ export const AgentsListItemActions = ({ id }: AgentsListItemActionsProps) => {
 
       {/* Dropdown menu content */}
       <DropdownMenuContent align="end" className="w-[6rem] min-w-[6rem]">
-        <AgentsRemoveAction agentId={id} />
+        <AgentsRemoveAction agentId={id} machineIds={machineIds ?? []} />
       </DropdownMenuContent>
     </DropdownMenu>
   );

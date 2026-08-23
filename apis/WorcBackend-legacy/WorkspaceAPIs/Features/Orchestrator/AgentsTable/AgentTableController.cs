@@ -105,4 +105,11 @@ public class AgentTableController : BaseApiController
     {
         return ResultHelper(await _agentTableService.GetArchivedFlowVersionsAsync(false));
     }
+
+    // Retrieves the published agents assigned to the machines linked with the current user.
+    [HttpGet("my-agents")]
+    public async Task<ActionResult<ServiceResponse<IEnumerable<AgentTableDto>>>> GetMyAgents()
+    {
+        return ResultHelper(await _agentTableService.GetMyAgentsAsync());
+    }
 }
