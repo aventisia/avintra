@@ -1,0 +1,68 @@
+{
+  "name": "TrimTextNode",
+  "label": "Trim Text",
+  "description": "Removes specified characters from the start, end, or both ends of a text string.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OriginalText",
+      "label": "Original Text",
+      "description": "The original text from which characters will be trimmed.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "TrimMode",
+      "label": "Trim Mode",
+      "description": "Specifies whether to trim characters from the beginning, end, or both sides of the text.",
+      "defaultValue": "TrimStart",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Whitespace Characters from the Beginning",
+          "value": "TrimStart",
+          "description": "Trims specified characters from the start of the text."
+        },
+        {
+          "label": "Whitespace Characters from the End",
+          "value": "TrimEnd",
+          "description": "Trims specified characters from the end of the text."
+        },
+        {
+          "label": "Whitespace Characters from Both Ends",
+          "value": "TrimBoth",
+          "description": "Trims specified characters from both ends of the text."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "CharactersToTrim",
+      "label": "What to Trim",
+      "description": "A string containing the characters to remove. Leave empty to trim only whitespace (space, tab, newline).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "TrimmedText",
+      "label": "Trimmed Text",
+      "description": "The resulting text after trimming.",
+      "defaultValue": {
+        "value": "TrimmedText",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

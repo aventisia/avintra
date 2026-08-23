@@ -47,14 +47,12 @@
     },
     {
       "direction": "Input",
-      "type": "number",
+      "type": "text",
       "name": "Threshold",
       "label": "Threshold",
       "description": "The minimum similarity score (0-1) to accept a match. Defaults to 0.7.",
       "defaultValue": 0.7,
-      "required": false,
-      "min": 0,
-      "max": 1
+      "required": false
     },
     {
       "direction": "Input",
@@ -70,8 +68,8 @@
       "type": "text",
       "name": "ScoreColumnName",
       "label": "Score Column Name",
-      "description": "The name of the similarity score column. Defaults to 'MatchScore'.",
-      "defaultValue": "",
+      "description": "The name of the similarity score column. Defaults to \u0027MatchScore\u0027.",
+      "defaultValue": "MatchScore",
       "required": false
     },
     {

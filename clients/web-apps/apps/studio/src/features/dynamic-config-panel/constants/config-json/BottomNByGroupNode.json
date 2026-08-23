@@ -47,13 +47,12 @@
     },
     {
       "direction": "Input",
-      "type": "number",
+      "type": "text",
       "name": "N",
       "label": "N",
       "description": "The number of bottom rows to keep per group. Defaults to 1.",
       "defaultValue": 1,
-      "required": false,
-      "min": 1
+      "required": false
     },
     {
       "direction": "Output",

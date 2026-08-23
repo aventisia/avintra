@@ -1,7 +1,7 @@
 {
   "name": "OneHotEncodeNode",
   "label": "One-Hot Encode",
-  "description": "Creates one new binary (0/1) column for each distinct value in the source column. Optionally drops the original column.",
+  "description": "Creates one new binary (0/1) column for each distinct value in the source column. Optionally drops the original column. Produces one row per distinct value unless a single row is selected for the whole table.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": ["cloud"],

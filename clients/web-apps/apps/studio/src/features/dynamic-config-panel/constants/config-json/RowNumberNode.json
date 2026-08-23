@@ -32,7 +32,7 @@
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the row number column. Defaults to 'RowNumber'.",
+      "description": "The name of the row number column. Defaults to \u0027RowNumber\u0027.",
       "defaultValue": "",
       "required": false
     },

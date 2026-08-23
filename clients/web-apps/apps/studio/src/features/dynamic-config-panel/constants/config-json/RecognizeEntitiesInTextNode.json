@@ -1,0 +1,205 @@
+{
+  "name": "RecognizeEntitiesInTextNode",
+  "label": "Recognize Entities in Text",
+  "description": "Identifies specific entities in text, such as dates, numbers, emails, URLs, etc., across multiple languages.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TextToAnalyze",
+      "label": "Text To Analyze",
+      "description": "The text from which entities will be recognized.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "EntityType",
+      "label": "Entity Type",
+      "description": "Specifies the type of entities to recognize (e.g., Date, Number, Email).",
+      "defaultValue": "DateTime",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Date Time",
+          "value": "DateTime",
+          "description": "Recognizes date and time values."
+        },
+        {
+          "label": "Dimension",
+          "value": "Dimension",
+          "description": "Recognizes dimensions like \u002710 cm\u0027, \u00275 inches\u0027."
+        },
+        {
+          "label": "Temperature",
+          "value": "Temperature",
+          "description": "Recognizes temperature values like \u002725\u00B0C\u0027, \u002777\u00B0F\u0027."
+        },
+        {
+          "label": "Currency",
+          "value": "Currency",
+          "description": "Recognizes currency amounts like \u0027$100\u0027, \u0027\u20AC500\u0027."
+        },
+        {
+          "label": "Number Range",
+          "value": "NumberRange",
+          "description": "Recognizes number ranges like \u00271-10\u0027, \u002720-30\u0027."
+        },
+        {
+          "label": "Number",
+          "value": "Number",
+          "description": "Recognizes numeric values."
+        },
+        {
+          "label": "Ordinal",
+          "value": "Ordinal",
+          "description": "Recognizes ordinal numbers like \u00271st\u0027, \u00272nd\u0027."
+        },
+        {
+          "label": "Percentage",
+          "value": "Percentage",
+          "description": "Recognizes percentage values like \u002750%\u0027, \u002775%\u0027."
+        },
+        {
+          "label": "Phone Number",
+          "value": "PhoneNumber",
+          "description": "Recognizes phone numbers like \u0027\u002B1 (123) 456-7890\u0027."
+        },
+        {
+          "label": "Email",
+          "value": "Email",
+          "description": "Recognizes email addresses."
+        },
+        {
+          "label": "IP Address",
+          "value": "IPAddress",
+          "description": "Recognizes IP addresses."
+        },
+        {
+          "label": "Mention",
+          "value": "Mention",
+          "description": "Recognizes mentions like \u0027@username\u0027."
+        },
+        {
+          "label": "URL",
+          "value": "URL",
+          "description": "Recognizes web URLs."
+        },
+        {
+          "label": "Hashtag",
+          "value": "Hashtag",
+          "description": "Recognizes hashtags."
+        },
+        {
+          "label": "Quoted Text",
+          "value": "QuotedText",
+          "description": "Recognizes text enclosed in quotes."
+        },
+        {
+          "label": "GUID",
+          "value": "GUID",
+          "description": "Recognizes globally unique identifiers (GUIDs)."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Language",
+      "label": "Language",
+      "description": "The language of the text. Optional, but can improve recognition accuracy.",
+      "defaultValue": "English",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "English",
+          "value": "English",
+          "description": "English language."
+        },
+        {
+          "label": "Chinese (Simplified)",
+          "value": "ChineseSimplified",
+          "description": "Simplified Chinese language."
+        },
+        {
+          "label": "Spanish",
+          "value": "Spanish",
+          "description": "Spanish language (Generic)."
+        },
+        {
+          "label": "Spanish (Mexico)",
+          "value": "SpanishMexico",
+          "description": "Spanish language as spoken in Mexico."
+        },
+        {
+          "label": "Portuguese",
+          "value": "Portuguese",
+          "description": "Portuguese language (Generic)."
+        },
+        {
+          "label": "French",
+          "value": "French",
+          "description": "French language."
+        },
+        {
+          "label": "German",
+          "value": "German",
+          "description": "German language."
+        },
+        {
+          "label": "Italian",
+          "value": "Italian",
+          "description": "Italian language."
+        },
+        {
+          "label": "Japanese",
+          "value": "Japanese",
+          "description": "Japanese language."
+        },
+        {
+          "label": "Dutch",
+          "value": "Dutch",
+          "description": "Dutch language."
+        },
+        {
+          "label": "Korean",
+          "value": "Korean",
+          "description": "Korean language."
+        },
+        {
+          "label": "Swedish",
+          "value": "Swedish",
+          "description": "Swedish language."
+        },
+        {
+          "label": "Turkish",
+          "value": "Turkish",
+          "description": "Turkish language."
+        },
+        {
+          "label": "Hindi",
+          "value": "Hindi",
+          "description": "Hindi language."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "RecognizedEntities",
+      "label": "Recognized Entities",
+      "description": "Returns the list of recognized entities based on the specified entity type.",
+      "defaultValue": {
+        "value": "RecognizedEntities",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

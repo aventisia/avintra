@@ -32,7 +32,7 @@
       "type": "text",
       "name": "OutputFormat",
       "label": "Output Format",
-      "description": "The .NET date format string for the output, e.g. 'yyyy-MM-dd' or 'MM/dd/yyyy'. Defaults to 'yyyy-MM-dd'.",
+      "description": "The .NET date format string for the output, e.g. \u0027yyyy-MM-dd\u0027 or \u0027MM/dd/yyyy\u0027. Defaults to \u0027yyyy-MM-dd\u0027.",
       "defaultValue": "yyyy-MM-dd",
       "required": false
     },

@@ -7,6 +7,7 @@
   "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
+  "badge": "Beta",
   "fields": [
     {
       "direction": "Input",
@@ -102,6 +103,51 @@
           "label": "Last",
           "value": "Last",
           "description": "Returns the last non-null value."
+        },
+        {
+          "label": "Mode",
+          "value": "Mode",
+          "description": "Returns the most frequently occurring value."
+        },
+        {
+          "label": "Percentile",
+          "value": "Percentile",
+          "description": "Returns the value below which a given percentage of the data falls."
+        },
+        {
+          "label": "Weighted Average",
+          "value": "WeightedAverage",
+          "description": "Returns the weighted arithmetic mean of the numeric values."
+        },
+        {
+          "label": "Geometric Mean",
+          "value": "GeometricMean",
+          "description": "Returns the geometric mean of the numeric values."
+        },
+        {
+          "label": "Harmonic Mean",
+          "value": "HarmonicMean",
+          "description": "Returns the harmonic mean of the numeric values."
+        },
+        {
+          "label": "Variance",
+          "value": "Variance",
+          "description": "Returns the sample variance of the numeric values."
+        },
+        {
+          "label": "Population Standard Deviation",
+          "value": "PopulationStandardDeviation",
+          "description": "Returns the population standard deviation of the numeric values."
+        },
+        {
+          "label": "Skewness",
+          "value": "Skewness",
+          "description": "Returns the sample skewness of the numeric values."
+        },
+        {
+          "label": "Kurtosis",
+          "value": "Kurtosis",
+          "description": "Returns the sample excess kurtosis of the numeric values."
         }
       ]
     },

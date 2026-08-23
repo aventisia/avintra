@@ -20,14 +20,12 @@
     },
     {
       "direction": "Input",
-      "type": "number",
+      "type": "text",
       "name": "MaxMissingRatio",
       "label": "Max Missing Ratio",
-      "description": "Columns with a missing-value ratio greater than this threshold are removed. Defaults to 0.8 (removes columns >80% missing).",
+      "description": "Columns with a missing-value ratio greater than this threshold are removed. Defaults to 0.8 (removes columns \u003E80% missing).",
       "defaultValue": 0.8,
-      "required": false,
-      "min": 0,
-      "max": 1
+      "required": false
     },
     {
       "direction": "Output",

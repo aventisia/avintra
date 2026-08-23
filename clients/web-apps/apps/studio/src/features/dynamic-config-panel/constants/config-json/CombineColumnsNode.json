@@ -41,8 +41,8 @@
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the combined column. Defaults to 'Combined'.",
-      "defaultValue": "",
+      "description": "The name of the combined column. Defaults to \u0027Combined\u0027.",
+      "defaultValue": "Combined",
       "required": false
     },
     {

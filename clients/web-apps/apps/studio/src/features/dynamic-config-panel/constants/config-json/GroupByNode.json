@@ -1,7 +1,7 @@
 {
   "name": "GroupByNode",
   "label": "Group By",
-  "description": "Groups rows by one or more columns and applies multiple aggregation functions to one or more value columns.",
+  "description": "Groups rows by one or more columns and applies multiple aggregation functions to one or more value columns. Aggregations are specified as JSON, e.g. [{\u0022Column\u0022:\u0022Sales\u0022,\u0022Aggregation\u0022:\u0022Sum\u0022,\u0022Result\u0022:\u0022TotalSales\u0022}].",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": ["cloud"],
@@ -29,10 +29,10 @@
     },
     {
       "direction": "Input",
-      "type": "json-editor",
+      "type": "text",
       "name": "AggregationsJson",
       "label": "Aggregations (JSON)",
-      "description": "JSON array of aggregation definitions: [{ \"Column\": string, \"Aggregation\": string, \"Result\": string }].",
+      "description": "JSON array of aggregation definitions: [{ \u0022Column\u0022: string, \u0022Aggregation\u0022: string, \u0022Result\u0022: string }].",
       "defaultValue": "",
       "required": true
     },

@@ -1,0 +1,77 @@
+{
+  "name": "JoinDataTablesNode",
+  "label": "Join Data Tables",
+  "description": "Joins two data tables based on the specified join rule.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FirstDataTable",
+      "label": "First Data Table",
+      "description": "The first DataTable to be joined.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SecondDataTable",
+      "label": "Second Data Table",
+      "description": "The second DataTable to be joined.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "JoinOperation",
+      "label": "Join Operation",
+      "description": "Specifies the type of join operation (Inner, Left, Full).",
+      "defaultValue": "Inner",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Inner Join",
+          "value": "Inner",
+          "description": "Returns only rows that have matching values in both tables."
+        },
+        {
+          "label": "Left Join",
+          "value": "Left",
+          "description": "Returns all rows from the first table, and matching rows from the second table."
+        },
+        {
+          "label": "Full Join",
+          "value": "Full",
+          "description": "Returns all rows from both tables, matching where possible."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "JoinRules",
+      "label": "Join Rules",
+      "description": "Specifies the join condition (e.g., \u0027FirstTable.ID = SecondTable.ID\u0027).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "JoinedDataTable",
+      "label": "Joined Data Table",
+      "description": "The resulting DataTable after performing the join operation.",
+      "defaultValue": {
+        "value": "JoinedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

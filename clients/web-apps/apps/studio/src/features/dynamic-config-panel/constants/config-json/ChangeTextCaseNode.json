@@ -1,0 +1,64 @@
+{
+  "name": "ChangeTextCaseNode",
+  "label": "Change Text Case",
+  "description": "Converts the input text to the specified case format.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "TextToConvert",
+      "label": "Text to Convert",
+      "description": "The text to convert.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "ConvertTo",
+      "label": "Convert To",
+      "description": "Specify the target case style: Upper, Lower, Title, or Sentence.",
+      "defaultValue": "Uppercase",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "UPPERCASE",
+          "value": "Uppercase",
+          "description": "Convert text to all uppercase letters."
+        },
+        {
+          "label": "lowercase",
+          "value": "Lowercase",
+          "description": "Convert text to all lowercase letters."
+        },
+        {
+          "label": "Sentence case",
+          "value": "SentenceCase",
+          "description": "Convert text to sentence case (capitalize the first letter)."
+        },
+        {
+          "label": "Title Case",
+          "value": "TitleCase",
+          "description": "Convert text to title case (capitalize each word)."
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "The converted text based on selected case style.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

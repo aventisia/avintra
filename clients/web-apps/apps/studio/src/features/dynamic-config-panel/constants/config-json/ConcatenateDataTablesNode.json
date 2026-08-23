@@ -7,6 +7,7 @@
   "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
+  "badge": "Beta",
   "fields": [
     {
       "direction": "Input",

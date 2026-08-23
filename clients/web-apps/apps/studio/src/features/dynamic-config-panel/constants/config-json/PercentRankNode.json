@@ -50,7 +50,7 @@
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the percent rank column. Defaults to 'PercentRank'.",
+      "description": "The name of the percent rank column. Defaults to \u0027PercentRank\u0027.",
       "defaultValue": "",
       "required": false
     },

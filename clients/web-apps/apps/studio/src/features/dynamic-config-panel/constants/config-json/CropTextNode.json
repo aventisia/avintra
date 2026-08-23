@@ -1,0 +1,106 @@
+{
+  "name": "CropTextNode",
+  "label": "Crop Text",
+  "description": "Extracts text before, after, or between specified flags.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OriginalText",
+      "label": "Original Text",
+      "description": "The full text value from which to extract a portion.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "Mode",
+      "label": "Mode",
+      "description": "Specifies how to crop the text relative to the flag(s).",
+      "defaultValue": "BeforeFlag",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "Before Flag",
+          "value": "BeforeFlag",
+          "description": "Get text before the first occurrence of the flag."
+        },
+        {
+          "label": "After Flag",
+          "value": "AfterFlag",
+          "description": "Get text after the last occurrence of the flag."
+        },
+        {
+          "label": "Between Flags",
+          "value": "BetweenFlags",
+          "description": "Get text between two flags."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Flag",
+      "label": "Flag",
+      "description": "The flag used to locate the text to extract. Required in \u0027Before Flag\u0027 and \u0027After Flag\u0027 modes.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SecondFlag",
+      "label": "Second Flag",
+      "description": "The second flag used in \u0027Between Flags\u0027 mode to mark the end of the extracted text.",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "Mode",
+            "equals": "BetweenFlags"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "IgnoreCase",
+      "label": "Ignore Case",
+      "description": "When true, ignores case when matching flags.",
+      "defaultValue": true,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "CroppedText",
+      "label": "Cropped Text",
+      "description": "The extracted portion of the original text based on the specified mode.",
+      "defaultValue": {
+        "value": "CroppedText",
+        "enabled": true
+      },
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "IsFlagFound",
+      "label": "Is Flag Found",
+      "description": "Indicates whether the specified flag(s) were found in the original text.",
+      "defaultValue": {
+        "value": "IsFlagFound",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

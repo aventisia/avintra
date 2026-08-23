@@ -20,34 +20,12 @@
     },
     {
       "direction": "Input",
-      "type": "select",
+      "type": "text",
       "name": "CaseStyle",
       "label": "Case Style",
-      "description": "The target case style: 'snake', 'camel', 'pascal', or 'title'. Defaults to 'snake'.",
+      "description": "The target case style: \u0027snake\u0027, \u0027camel\u0027, \u0027pascal\u0027, or \u0027title\u0027. Defaults to \u0027snake\u0027.",
       "defaultValue": "snake",
-      "required": false,
-      "selectOptions": [
-        {
-          "label": "snake_case",
-          "value": "snake",
-          "description": "lowercase words separated by underscores."
-        },
-        {
-          "label": "camelCase",
-          "value": "camel",
-          "description": "lowercase first word, capitalized subsequent words."
-        },
-        {
-          "label": "PascalCase",
-          "value": "pascal",
-          "description": "every word capitalized with no separators."
-        },
-        {
-          "label": "Title Case",
-          "value": "title",
-          "description": "every word capitalized with spaces."
-        }
-      ]
+      "required": false
     },
     {
       "direction": "Input",

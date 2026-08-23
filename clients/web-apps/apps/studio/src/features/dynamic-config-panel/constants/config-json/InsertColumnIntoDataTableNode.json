@@ -1,0 +1,126 @@
+{
+  "name": "InsertColumnIntoDataTableNode",
+  "label": "Insert Column Into Data Table",
+  "description": "Inserts a new column into the data table either at the end or before a specific column index.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to modify.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnName",
+      "label": "Column Name",
+      "description": "The name of the new column.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "DataType",
+      "label": "Data Type",
+      "description": "Data type of the new column (e.g., String, Int, Decimal, etc).",
+      "defaultValue": "String",
+      "required": true,
+      "selectOptions": [
+        {
+          "label": "String",
+          "value": "String",
+          "description": "Represents a string (text) value."
+        },
+        {
+          "label": "Integer",
+          "value": "Int",
+          "description": "Represents an integer (whole number) value."
+        },
+        {
+          "label": "Double",
+          "value": "Double",
+          "description": "Represents a double-precision floating-point number."
+        },
+        {
+          "label": "Decimal",
+          "value": "Decimal",
+          "description": "Represents a high-precision decimal number, typically used for financial calculations."
+        },
+        {
+          "label": "Float",
+          "value": "Float",
+          "description": "Represents a single-precision floating-point number."
+        },
+        {
+          "label": "DateTime",
+          "value": "DateTime",
+          "description": "Represents a date and time value."
+        },
+        {
+          "label": "Boolean",
+          "value": "Boolean",
+          "description": "Represents a true or false logical value."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "InsertLocation",
+      "label": "Insert Location",
+      "description": "Position where the new column will be inserted.",
+      "defaultValue": "EndOfDataTable",
+      "required": false,
+      "selectOptions": [
+        {
+          "label": "End of Data Table",
+          "value": "EndOfDataTable",
+          "description": "Insert at the end of the data table."
+        },
+        {
+          "label": "Before Column Index",
+          "value": "BeforeColumnIndex",
+          "description": "Insert before a specific column index."
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ColumnIndex",
+      "label": "Column Index",
+      "description": "Index to insert column at (used only if \u0027Before Column Index\u0027).",
+      "defaultValue": "",
+      "required": false,
+      "renderIf": {
+        "conditions": [
+          {
+            "field": "InsertLocation",
+            "equals": "BeforeColumnIndex"
+          }
+        ]
+      }
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ModifiedDataTable",
+      "label": "Modified Data Table",
+      "description": "The updated data table with the new column.",
+      "defaultValue": {
+        "value": "ModifiedDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

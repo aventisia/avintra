@@ -1,7 +1,7 @@
 {
   "name": "LeadNode",
   "label": "Lead",
-  "description": "Adds a column with the value of a source column from a row that is offset rows later within each partition.",
+  "description": "Adds a column with the value of a source column from a row that is offset rows later within each partition. Rows without a later row get the default value.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": ["cloud"],
@@ -29,13 +29,12 @@
     },
     {
       "direction": "Input",
-      "type": "number",
+      "type": "text",
       "name": "Offset",
       "label": "Offset",
       "description": "The number of rows to look ahead. Defaults to 1.",
       "defaultValue": 1,
-      "required": false,
-      "min": 0
+      "required": false
     },
     {
       "direction": "Input",
@@ -60,7 +59,7 @@
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the lead column. Defaults to '<SourceColumn>_Lead<Offset>'.",
+      "description": "The name of the lead column. Defaults to \u0027\u003CSourceColumn\u003E_Lead\u003COffset\u003E\u0027.",
       "defaultValue": "",
       "required": false
     },
