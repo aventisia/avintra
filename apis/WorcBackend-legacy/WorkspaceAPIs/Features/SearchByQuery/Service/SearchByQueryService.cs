@@ -6,6 +6,7 @@ public class SearchByQueryService : ISearchByQueryService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IClientStatusStore _clientStatusStore;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly Guid _userId;
 
     public SearchByQueryService(
@@ -13,6 +14,7 @@ public class SearchByQueryService : ISearchByQueryService
         IUnitOfWork unitOfWork,
         IClientStatusStore clientStatusStore,
         ICurrentTenantService currentTenantService,
+        IUserManagementGuardService userManagementGuardService,
         IHttpContextAccessor httpContextAccessor)
     {
         // Set _userId
@@ -22,6 +24,7 @@ public class SearchByQueryService : ISearchByQueryService
         _unitOfWork = unitOfWork;
         _clientStatusStore = clientStatusStore;
         _currentTenantService = currentTenantService;
+        _userManagementGuardService = userManagementGuardService;
     }
 
     // Searches flow versions
@@ -103,11 +106,16 @@ public class SearchByQueryService : ISearchByQueryService
             if (string.IsNullOrWhiteSpace(trimmedSearchKey) && !flowVersionId.HasValue)
                 return serviceResponse.Update("Either machine name or agent identifier is required", 400);
 
-            // Build base query from machines
+            // Build base query from machines. OM/SA/TA roles may search any machine in the
+            // tenant; all other roles are restricted to the machines linked with the
+            // currently logged-in user.
             var machinesQuery = _unitOfWork.MachineRepo
                 .GetAllAsync()
                 .OrderBy(o => o.Name)
                 .AsQueryable();
+
+            if (!HasTenantWideMachineAccess())
+                machinesQuery = machinesQuery.Where(w => w.UserId == _userId);
 
             // Apply machine name filter only when search key is provided
             if (!string.IsNullOrWhiteSpace(trimmedSearchKey))
@@ -142,5 +150,14 @@ public class SearchByQueryService : ISearchByQueryService
             _logger.LogError(ex, "Error occurred while searching machines.");
             return serviceResponse;
         }
+    }
+
+    // Determines whether the current user can search all machines in the tenant
+    // (OM/SA/TA roles), as opposed to being restricted to their own machines.
+    private bool HasTenantWideMachineAccess()
+    {
+        return _userManagementGuardService.HasRole(CustomRolesEnum.OM.ToString()) ||
+               _userManagementGuardService.HasRole(CustomRolesEnum.SA.ToString()) ||
+               _userManagementGuardService.HasRole(CustomRolesEnum.TA.ToString());
     }
 }

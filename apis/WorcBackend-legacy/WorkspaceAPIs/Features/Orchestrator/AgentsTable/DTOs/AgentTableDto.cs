@@ -110,4 +110,23 @@ public class AgentTableDto
     /// This property is intended for use in responses only and should not be included in requests.
     /// </summary>
     public DateTimeOffset? LastModifiedOn { get; set; }
+
+    /// <summary>
+    /// Gets or sets the live execution status of the machine hosting the agent.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public MachineStatusEnum? Status { get; set; }
+
+    /// <summary>
+    /// Gets or sets the Id of the currently running job on the machine hosting the agent, if any.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public Guid? JobId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the list of machine Ids the agent (flow version) is assigned to
+    /// among the currently logged-in user's machines.
+    /// This property is intended for use in responses only and should not be included in requests.
+    /// </summary>
+    public List<Guid>? AssignedMachineIds { get; set; }
 }

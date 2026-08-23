@@ -6,27 +6,28 @@ import { getSpaceHeaders } from "@/utils/space-headers";
 import { AgentsAssistDto } from "../dtos/agent-assist-dto";
 import { RemoveAgentsDto } from "../dtos/remove-agents-dto";
 
-const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/machine`;
+const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/agent`;
 
 /**
- * Retrieves list of agents of machine.
+ * Retrieves the agents (published flow versions) assigned to the machines
+ * linked with the currently logged-in user.
  */
-export const getMachineAgents = (machineId: string) => {
+export const getMyAgents = () => {
   return axiosInstance
-    .get<IHttpResponse<AgentsAssistDto[]>>(`${baseAPIURL}/${machineId}/agents`, {
+    .get<IHttpResponse<AgentsAssistDto[]>>(`${baseAPIURL}/my-agents`, {
       headers: getSpaceHeaders(),
     })
     .then((res) => res.data);
 };
 
 /**
- * Remove agents to the machine.
+ * Removes the agent (flow version) from the machines it is assigned to.
  */
-export const removeAgents = (assignAgentDto: RemoveAgentsDto) => {
+export const removeAgents = (removeAgentsDto: RemoveAgentsDto) => {
   return axiosInstance
     .post<IHttpResponse<boolean>>(
-      `${baseAPIURL}/${assignAgentDto.machineId}/remove-agents`,
-      assignAgentDto.agentIds,
+      `${baseAPIURL}/${removeAgentsDto.agentId}/remove-machines`,
+      removeAgentsDto.machineIds,
       { headers: getSpaceHeaders() },
     )
     .then((res) => res.data);

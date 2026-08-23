@@ -1,8 +1,6 @@
 import { toast } from "@avplatform/ui/sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { DUMMY_MACHINE_ID } from "@/constants/machine-identity";
-
 import { removeAgents } from "../apis/agents-assist-apis";
 
 export const useRemoveAssignedAgentsMutation = () => {
@@ -16,7 +14,7 @@ export const useRemoveAssignedAgentsMutation = () => {
         className: "sonner-toaster-sm",
       });
 
-      queryClient.invalidateQueries({ queryKey: ["agents-assist", DUMMY_MACHINE_ID] });
+      queryClient.invalidateQueries({ queryKey: ["agents-assist"] });
     },
 
     onError: (error) => {

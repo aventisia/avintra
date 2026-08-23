@@ -675,4 +675,79 @@ public class AgentTableService : IAgentTableService
         return serviceResponse;
     }
 
+    // Retrieves the published agents (flow versions) assigned to all machines linked with the
+    // currently logged-in user, together with the live status and running job of each machine.
+    public async Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetMyAgentsAsync()
+    {
+        // Initialize ServiceResponse to indicate failure by default.
+        var serviceResponse = new ServiceResponse<IEnumerable<AgentTableDto>>
+        {
+            Data = null,
+            Message = "Failed to retrieve my agents. Please try again."
+        };
+
+        try
+        {
+            // Fetch all machines owned by the currently logged-in user, together with their
+            // assigned flow versions. Global query filters scope by tenant and current space.
+            var machines = await _unitOfWork.MachineRepo
+                .GetByConditionAsync(w => w.UserId == _userId)
+                .Include(i => i.MachineFlowVersions)
+                    .ThenInclude(i => i.FlowVersion)
+                .Include(i => i.MachineFlowVersions)
+                    .ThenInclude(i => i.FlowVersion!.Flow)
+                .Include(i => i.MachineFlowVersions)
+                    .ThenInclude(i => i.FlowVersion!.CreatedByUser)
+                .AsNoTracking()
+                .ToListAsync();
+
+            // Collect all flow versions assigned to the user's machines, keeping only
+            // published and non-archived agents (flow versions).
+            var flowVersions = machines
+                .SelectMany(m => m.MachineFlowVersions)
+                .Select(mf => mf.FlowVersion)
+                .Where(fv => fv != null && fv.IsPublished && !fv.IsArchived && fv.Flow!.Type != FlowTypesEnum.Block)
+                .DistinctBy(fv => fv!.Id)
+                .ToList();
+
+            // Map the flow versions to DTOs.
+            var agentDtos = flowVersions.Adapt<List<AgentTableDto>>();
+
+            // Enrich each agent with the live status and running job of the machine hosting it.
+            var clientStatuses = await _clientStatusStore.GetMachineStatusesAsync(_currentTenantService.CurrentTenantId);
+
+            foreach (var agent in agentDtos)
+            {
+                // The machines that host this agent among the user's machines.
+                var hostingMachines = machines
+                    .Where(m => m.MachineFlowVersions.Any(mf => mf.FlowVersionId == agent.Id))
+                    .ToList();
+
+                if (hostingMachines.Count == 0)
+                    continue;
+
+                // Record the machine ids the agent is assigned to (used by the remove action).
+                agent.AssignedMachineIds = hostingMachines.Select(m => m.Id).ToList();
+
+                var hostingMachine = hostingMachines.First();
+                var clientStatus = clientStatuses.FirstOrDefault(status => status.ClientId == hostingMachine.Id);
+
+                agent.Status = clientStatus != null ? clientStatus.Status : MachineStatusEnum.Offline;
+                agent.JobId = (clientStatus?.Status == MachineStatusEnum.Running) ? clientStatus.JobId : null;
+            }
+
+            serviceResponse.Data = agentDtos;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "My agents retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            // Log any exception and return the default service response.
+            _logger.LogError(ex, "An unexpected error occurred while retrieving my agents for user {UserId}.", _userId);
+        }
+
+        // Return the service response.
+        return serviceResponse;
+    }
+
 }

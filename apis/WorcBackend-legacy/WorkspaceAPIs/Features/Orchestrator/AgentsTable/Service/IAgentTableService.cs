@@ -1,4 +1,5 @@
 namespace WorkspaceAPIs.Services;
+
 public interface IAgentTableService
 {
     /// <summary>
@@ -82,4 +83,16 @@ public interface IAgentTableService
     /// A <see cref="ServiceResponse{T}"/> with the count of published flow versions.
     /// </returns>
     Task<ServiceResponse<int>> GetTotalPublishedFlowVersionsAsync();
+
+    /// <summary>
+    /// Retrieves the agents (published flow versions) assigned to all machines linked
+    /// with the currently logged-in user. Only published, non-archived flow versions
+    /// are returned, together with the live execution status and running job id (if any)
+    /// of the machine each agent is hosted on.
+    /// </summary>
+    /// <returns>
+    /// A <see cref="ServiceResponse{T}"/> containing the list of agents assigned to the
+    /// current user's machines.
+    /// </returns>
+    Task<ServiceResponse<IEnumerable<AgentTableDto>>> GetMyAgentsAsync();
 }

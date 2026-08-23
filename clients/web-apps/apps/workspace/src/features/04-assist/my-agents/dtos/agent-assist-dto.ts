@@ -54,4 +54,9 @@ export interface AgentsAssistDto {
   isAssigned: boolean;
 
   jobId?: string;
+
+  /**
+   * Gets or sets the list of machine ids the agent is assigned to.
+   */
+  assignedMachineIds?: string[];
 }
