@@ -34,7 +34,6 @@ if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsSe
         .ConfigureServices((_, services) =>
         {
             services.AddSingleton(options);
-            services.AddSingleton(NotificationServiceFactory.Create());
             services.AddHostedService<RunnerAppService>();
         })
         .ConfigureLogging(logging =>
@@ -60,7 +59,6 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     using var httpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
     var backendClient = new BackendHttpClient(httpClient, options.AccessToken);
     var engine = new DesktopExecutionEngine(options.AccessToken, options.AppBaseUrl);
-    var notifications = NotificationServiceFactory.Create();
 
     var cts = new CancellationTokenSource();
     var abortRequested = false;
@@ -210,7 +208,6 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     try
     {
         await backendClient.StartJobAsync(targetJobId);
-        notifications.NotifyJobStarted(targetJobId, graph.FlowName);
     }
     catch (Exception ex)
     {
@@ -374,7 +371,6 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     if (hubClient is not null)
         await hubClient.ReportCompletionAsync(targetJobId, jobStatus, result.ErrorMessage);
 
-    notifications.NotifyJobFinished(targetJobId, graph.FlowName, jobStatus, result.ErrorMessage);
     Console.WriteLine($"Execution finished: {result.Status}");
     return result.IsSuccess ? 0 : 1;
 }
