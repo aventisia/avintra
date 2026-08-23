@@ -250,6 +250,5 @@ AvintraRunnerService.exe --run --service --appBaseUrl <url> --apiKey <key> --ten
 
 ## Related
 
-- `local-runner-app-plan.md` — Full migration plan and phase breakdown
 - `apis/WorcBackend-legacy/WorkspaceAPIs/Features/ExecuteFlow/` — Backend execution APIs
 - `apis/WorcBackend-legacy/WorkspaceAPIs/Hubs/OrchestratorHub.cs` — SignalR hub for machine communication
