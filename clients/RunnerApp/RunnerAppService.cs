@@ -7,7 +7,6 @@ namespace RunnerApp;
 public class RunnerAppService : BackgroundService
 {
     private readonly RunnerAppOptions _options;
-    private readonly INotificationService _notifications;
     private readonly ILogger<RunnerAppService> _logger;
     private readonly ILoggerFactory _loggerFactory;
 
@@ -16,12 +15,10 @@ public class RunnerAppService : BackgroundService
 
     public RunnerAppService(
         RunnerAppOptions options,
-        INotificationService notifications,
         ILogger<RunnerAppService> logger,
         ILoggerFactory loggerFactory)
     {
         _options = options;
-        _notifications = notifications;
         _logger = logger;
         _loggerFactory = loggerFactory;
     }
@@ -241,7 +238,6 @@ public class RunnerAppService : BackgroundService
             try
             {
                 await backendClient.StartJobAsync(targetJobId, cancellationToken);
-                _notifications.NotifyJobStarted(targetJobId, graph.FlowName);
             }
             catch (Exception ex)
             {
@@ -321,7 +317,6 @@ public class RunnerAppService : BackgroundService
             await hubClient.ReportCompletionAsync(targetJobId, jobStatus, result.ErrorMessage, cancellationToken);
 
             var outcome = result.IsSuccess ? "completed successfully" : "failed";
-            _notifications.NotifyJobFinished(targetJobId, graph.FlowName, jobStatus, result.ErrorMessage);
             _logger.LogInformation("Job {JobId} {Outcome}. Execution finished with status {Status}.", targetJobId, outcome, result.Status);
         }
         finally
