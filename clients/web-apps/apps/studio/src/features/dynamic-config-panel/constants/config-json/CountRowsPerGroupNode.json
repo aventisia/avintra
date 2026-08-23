@@ -1,7 +1,7 @@
 {
   "name": "CountRowsPerGroupNode",
   "label": "Count Rows Per Group",
-  "description": "Adds a column with the number of rows in each group, optionally counting distinct values of a column.",
+  "description": "Adds a column with the number of rows in each group, optionally counting distinct values of a column. If no group columns are given, a single count is produced for the whole table.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": ["cloud"],
@@ -41,7 +41,7 @@
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the result column. Defaults to 'RowCount'.",
+      "description": "The name of the result column. Defaults to \u0027RowCount\u0027.",
       "defaultValue": "",
       "required": false
     },

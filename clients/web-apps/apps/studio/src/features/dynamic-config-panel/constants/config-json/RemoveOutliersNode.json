@@ -29,34 +29,21 @@
     },
     {
       "direction": "Input",
-      "type": "select",
+      "type": "text",
       "name": "Method",
       "label": "Method",
-      "description": "The detection method: 'IQR' or 'ZScore'. Defaults to 'IQR'.",
+      "description": "The detection method: \u0027IQR\u0027 or \u0027ZScore\u0027. Defaults to \u0027IQR\u0027.",
       "defaultValue": "IQR",
-      "required": false,
-      "selectOptions": [
-        {
-          "label": "IQR",
-          "value": "IQR",
-          "description": "Uses the interquartile range with a configurable multiplier."
-        },
-        {
-          "label": "ZScore",
-          "value": "ZScore",
-          "description": "Uses the Z-score with a configurable cutoff."
-        }
-      ]
+      "required": false
     },
     {
       "direction": "Input",
-      "type": "number",
+      "type": "text",
       "name": "Threshold",
       "label": "Threshold",
       "description": "The IQR multiplier (e.g. 1.5) or Z-score cutoff (e.g. 3) depending on method. Defaults to 1.5.",
       "defaultValue": 1.5,
-      "required": false,
-      "min": 0
+      "required": false
     },
     {
       "direction": "Input",

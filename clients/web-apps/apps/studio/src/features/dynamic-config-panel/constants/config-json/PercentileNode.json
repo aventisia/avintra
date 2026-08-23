@@ -29,14 +29,12 @@
     },
     {
       "direction": "Input",
-      "type": "number",
+      "type": "text",
       "name": "Percentile",
       "label": "Percentile",
       "description": "The percentile to compute (0-100). Defaults to 50 (median).",
       "defaultValue": 50,
-      "required": false,
-      "min": 0,
-      "max": 100
+      "required": false
     },
     {
       "direction": "Input",
@@ -52,7 +50,7 @@
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the result column. Defaults to '<ValueColumn>_Percentile'.",
+      "description": "The name of the result column. Defaults to \u0027\u003CValueColumn\u003E_Percentile\u0027.",
       "defaultValue": "",
       "required": false
     },

@@ -29,7 +29,7 @@
     },
     {
       "direction": "Input",
-      "type": "number",
+      "type": "text",
       "name": "Minimum",
       "label": "Minimum",
       "description": "The lower bound of the target range. Defaults to 0.",
@@ -38,7 +38,7 @@
     },
     {
       "direction": "Input",
-      "type": "number",
+      "type": "text",
       "name": "Maximum",
       "label": "Maximum",
       "description": "The upper bound of the target range. Defaults to 1.",

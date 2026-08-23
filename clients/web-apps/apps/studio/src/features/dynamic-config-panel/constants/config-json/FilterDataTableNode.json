@@ -1,0 +1,51 @@
+{
+  "name": "FilterDataTableNode",
+  "label": "Filter Data Table",
+  "description": "Filters the data table rows based on the applied rules.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "DataTable",
+      "label": "Data Table",
+      "description": "The data table to filter.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "FilterExpression",
+      "label": "Filter Expression",
+      "description": "The filter expression (e.g., \u0022Age \u003E 30\u0022).",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "MatchCase",
+      "label": "Match Case",
+      "description": "If true, performs a case-sensitive filter.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "FilteredDataTable",
+      "label": "Filtered Data Table",
+      "description": "The filtered data table.",
+      "defaultValue": {
+        "value": "FilteredDataTable",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

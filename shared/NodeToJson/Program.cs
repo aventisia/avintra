@@ -168,6 +168,12 @@ internal class Program
                         continue;
                     }
 
+                    // The icon value can be either a file path (e.g. "/assets/Shaping.svg") rendered as an image,
+                    // or a named icon key (e.g. "CallAgentIcon") resolved through the frontend iconMapper.
+                    // Paths go into Img; named keys go into Icon.
+                    var nodeIcon = nodeMetaData?.Icon ?? "/function.png";
+                    var isIconPath = nodeIcon.StartsWith("/") || nodeIcon.Contains(".");
+
                     // Add the node to the level 2 category
                     nodeL2Category.Actions.Add(new NodeMetadataModel
                     {
@@ -175,8 +181,8 @@ internal class Program
                         Name = nodeType.Name,
                         Label = nodeDisplayName.DisplayName,
                         Description = nodeDescription.Description,
-                        Icon = null,
-                        Img = nodeMetaData?.Icon ?? "/function.png",
+                        Icon = isIconPath ? null : nodeIcon,
+                        Img = isIconPath ? nodeIcon : null,
                         DocsLink = nodeMetaData?.DocsLink ?? "https://docs.aventisia.com",
                         SupportedPlatforms = nodeSupportedPlatforms,
                         DoNotRenderIf = nodeMetaData?.DoNotRenderIf != null ? nodeMetaData?.DoNotRenderIf.Split(',').ToList() : null,
@@ -253,7 +259,9 @@ internal class Program
                 var generatedL2 = generatedL1.ActionCategories.FirstOrDefault(g => string.Equals(g.Label, existingL2.Label, StringComparison.OrdinalIgnoreCase));
                 if (generatedL2 != null)
                 {
-                    mergedL2Categories.Add(generatedL2);
+                    // A generated L2 category exists. Merge its actions with the existing (legacy) actions so that
+                    // actions not yet migrated to NodeLibrary (e.g. ConditionalActivity, LoopActivity) are preserved.
+                    mergedL2Categories.Add(MergeL2Actions(existingL2, generatedL2));
                     replacedL2Labels.Add(generatedL2.Label);
                 }
                 else
@@ -290,6 +298,39 @@ internal class Program
         }
 
         return mergedL1Categories;
+    }
+
+    // Merges a generated L2 category with an existing (legacy) one, preserving actions that have not yet been
+    // migrated to NodeLibrary (e.g. ConditionalActivity, LoopActivity). Generated actions win on name collision.
+    static NodeL2CategoryModel MergeL2Actions(NodeL2CategoryModel existingL2, NodeL2CategoryModel generatedL2)
+    {
+        var mergedActions = new List<NodeMetadataModel>();
+
+        // Keep existing legacy actions that are not replaced by a generated action with the same name.
+        foreach (var existingAction in existingL2.Actions ?? [])
+        {
+            var generatedAction = generatedL2.Actions?.FirstOrDefault(a => string.Equals(a.Name, existingAction.Name, StringComparison.OrdinalIgnoreCase));
+            if (generatedAction == null)
+            {
+                mergedActions.Add(existingAction);
+            }
+        }
+
+        // Append all generated actions.
+        if (generatedL2.Actions != null)
+        {
+            mergedActions.AddRange(generatedL2.Actions);
+        }
+
+        return new NodeL2CategoryModel
+        {
+            Label = generatedL2.Label,
+            Description = generatedL2.Description,
+            Icon = generatedL2.Icon,
+            Img = generatedL2.Img,
+            DoNotRenderIf = generatedL2.DoNotRenderIf,
+            Actions = mergedActions,
+        };
     }
 
     // Helper method to delete the legacy Activity.json file when a NodeLibrary node has been migrated from Activity to Node naming.

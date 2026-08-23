@@ -1,7 +1,7 @@
 {
   "name": "RankRowsNode",
   "label": "Rank Rows",
-  "description": "Adds a column with the rank of rows within partitions based on an ordering column.",
+  "description": "Adds a column with the rank of rows within partitions based on an ordering column. Supports ascending/descending order and dense or standard ranking.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": ["cloud"],
@@ -59,7 +59,7 @@
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the rank column. Defaults to 'Rank'.",
+      "description": "The name of the rank column. Defaults to \u0027Rank\u0027.",
       "defaultValue": "",
       "required": false
     },

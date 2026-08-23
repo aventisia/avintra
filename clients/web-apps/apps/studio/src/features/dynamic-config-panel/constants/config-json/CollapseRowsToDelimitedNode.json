@@ -59,7 +59,7 @@
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the concatenated column. Defaults to '<TargetColumn>_Collapsed'.",
+      "description": "The name of the concatenated column. Defaults to \u0027\u003CTargetColumn\u003E_Collapsed\u0027.",
       "defaultValue": "",
       "required": false
     },

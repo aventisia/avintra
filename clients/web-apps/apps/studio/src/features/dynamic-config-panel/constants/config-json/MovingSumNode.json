@@ -29,13 +29,12 @@
     },
     {
       "direction": "Input",
-      "type": "number",
+      "type": "text",
       "name": "WindowSize",
       "label": "Window Size",
       "description": "The number of rows in the sliding window. Defaults to 3.",
       "defaultValue": 3,
-      "required": false,
-      "min": 1
+      "required": false
     },
     {
       "direction": "Input",
@@ -51,7 +50,7 @@
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the moving sum column. Defaults to '<ValueColumn>_MovingSum'.",
+      "description": "The name of the moving sum column. Defaults to \u0027\u003CValueColumn\u003E_MovingSum\u0027.",
       "defaultValue": "",
       "required": false
     },

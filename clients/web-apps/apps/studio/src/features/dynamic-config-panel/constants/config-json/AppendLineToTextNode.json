@@ -1,0 +1,42 @@
+{
+  "name": "AppendLineToTextNode",
+  "label": "Append Line to Text",
+  "description": "Appends a new line of text to the original text.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OriginalText",
+      "label": "Original Text",
+      "description": "The original text to which a new line will be appended.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "NewLine",
+      "label": "New Line",
+      "description": "The new line of text to append.",
+      "defaultValue": "",
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ResultOutput",
+      "label": "Result",
+      "description": "The resulting text after appending the new line.",
+      "defaultValue": {
+        "value": "ResultOutput",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

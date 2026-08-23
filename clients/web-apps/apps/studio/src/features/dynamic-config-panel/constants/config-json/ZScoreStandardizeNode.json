@@ -1,7 +1,7 @@
 {
   "name": "ZScoreStandardizeNode",
   "label": "Z-Score Standardize",
-  "description": "Standardizes one or more numeric columns to have zero mean and unit variance (sample standard deviation) using each column's global statistics.",
+  "description": "Standardizes one or more numeric columns to have zero mean and unit variance (sample standard deviation) using each column\u0027s global statistics.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": ["cloud"],

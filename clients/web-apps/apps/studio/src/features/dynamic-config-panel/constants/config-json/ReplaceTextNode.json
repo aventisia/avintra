@@ -1,0 +1,78 @@
+{
+  "name": "ReplaceTextNode",
+  "label": "Replace Text",
+  "description": "Replaces all occurrences of a specified subtext with another text. It can also be used with regular expressions.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": ["cloud", "windows"],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "OriginalText",
+      "label": "Original Text",
+      "description": "The original text to modify.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "SearchPattern",
+      "label": "Search Pattern",
+      "description": "The subtext or regular expression pattern to replace.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ReplacementText",
+      "label": "Replacement Text",
+      "description": "The replacement text.",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "UseRegex",
+      "label": "Use Regular Expressions",
+      "description": "If true, treats \u0027Search Pattern\u0027 as a regular expression.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "IgnoreCase",
+      "label": "Ignore Case",
+      "description": "If true, performs a case-insensitive search.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "ActivateEscapeSequences",
+      "label": "Activate Escape Sequences",
+      "description": "If true, interprets escape sequences in the replacement text.",
+      "defaultValue": false,
+      "required": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "ReplacedText",
+      "label": "Replaced Text",
+      "description": "The resulting text after replacement.",
+      "defaultValue": {
+        "value": "ReplacedText",
+        "enabled": true
+      },
+      "required": false
+    }
+  ]
+}

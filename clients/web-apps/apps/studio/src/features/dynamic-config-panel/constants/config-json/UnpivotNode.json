@@ -32,8 +32,8 @@
       "type": "text",
       "name": "NameColumn",
       "label": "Name Column",
-      "description": "The name of the column that will hold the original column names. Defaults to 'Column'.",
-      "defaultValue": "",
+      "description": "The name of the column that will hold the original column names. Defaults to \u0027Column\u0027.",
+      "defaultValue": "Column",
       "required": false
     },
     {
@@ -41,8 +41,8 @@
       "type": "text",
       "name": "ValueColumn",
       "label": "Value Column",
-      "description": "The name of the column that will hold the cell values. Defaults to 'Value'.",
-      "defaultValue": "",
+      "description": "The name of the column that will hold the cell values. Defaults to \u0027Value\u0027.",
+      "defaultValue": "Value",
       "required": false
     },
     {

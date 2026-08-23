@@ -23,7 +23,7 @@
       "type": "text",
       "name": "FilterExpressions",
       "label": "Filter Expressions",
-      "description": "Semicolon-separated row filter expressions, e.g. \"Age > 18; Age <= 18\". The first matching condition wins per row.",
+      "description": "Semicolon-separated row filter expressions, e.g. \u0022Age \u003E 18; Age \u003C= 18\u0022. The first matching condition wins per row.",
       "defaultValue": "",
       "required": true
     },
@@ -32,7 +32,7 @@
       "type": "text",
       "name": "OutputNames",
       "label": "Output Names",
-      "description": "Semicolon-separated names for each output data table, e.g. \"Adults;Minors\". Must match the number of filter expressions.",
+      "description": "Semicolon-separated names for each output data table, e.g. \u0022Adults;Minors\u0022. Must match the number of filter expressions.",
       "defaultValue": "",
       "required": true
     },
@@ -41,8 +41,8 @@
       "type": "text",
       "name": "DefaultOutputName",
       "label": "Default Output Name",
-      "description": "The name of the output that receives rows matching no condition. Defaults to 'Default'.",
-      "defaultValue": "",
+      "description": "The name of the output that receives rows matching no condition. Defaults to \u0027Default\u0027.",
+      "defaultValue": "Default",
       "required": false
     },
     {

@@ -58,6 +58,12 @@ public static class NodeToJsonHelper
             ["testScreenType"] = nodeMetaDataAttr.TestScreenType
         };
 
+        // Only include the badge if it is present on the node
+        if (!string.IsNullOrWhiteSpace(nodeMetaDataAttr.Badge))
+        {
+            nodeJson["badge"] = nodeMetaDataAttr.Badge;
+        }
+
         // Get input and output arguments using reflection
         var props = nodeType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
         var fields = new List<object>();

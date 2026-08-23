@@ -1,7 +1,7 @@
 {
   "name": "StackColumnsNode",
   "label": "Stack Columns",
-  "description": "Stacks the values of multiple columns vertically into a single column. Each source column's values become additional rows, keeping the remaining (identifier) columns.",
+  "description": "Stacks the values of multiple columns vertically into a single column. Each source column\u0027s values become additional rows, keeping the remaining (identifier) columns. Optionally adds a source column name column.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": ["cloud"],
@@ -32,8 +32,8 @@
       "type": "text",
       "name": "ResultColumn",
       "label": "Result Column",
-      "description": "The name of the column that holds the stacked values. Defaults to 'StackedValue'.",
-      "defaultValue": "",
+      "description": "The name of the column that holds the stacked values. Defaults to \u0027StackedValue\u0027.",
+      "defaultValue": "StackedValue",
       "required": false
     },
     {

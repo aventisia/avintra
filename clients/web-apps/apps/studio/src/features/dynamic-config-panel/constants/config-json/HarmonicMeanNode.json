@@ -41,7 +41,7 @@
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the result column. Defaults to '<ValueColumn>_HarmonicMean'.",
+      "description": "The name of the result column. Defaults to \u0027\u003CValueColumn\u003E_HarmonicMean\u0027.",
       "defaultValue": "",
       "required": false
     },

@@ -1,7 +1,7 @@
 {
   "name": "BinValuesNode",
   "label": "Bin Values",
-  "description": "Bins numeric values into equal-width buckets. Adds a column containing the bin label (e.g. '1', '2') and optionally the lower bound of each bin.",
+  "description": "Bins numeric values into equal-width buckets. Adds a column containing the bin label (e.g. \u00271\u0027, \u00272\u0027) and optionally the lower bound of each bin.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": ["cloud"],
@@ -29,20 +29,19 @@
     },
     {
       "direction": "Input",
-      "type": "number",
+      "type": "text",
       "name": "NumberOfBins",
       "label": "Number Of Bins",
       "description": "The number of equal-width bins. Defaults to 4.",
       "defaultValue": 4,
-      "required": false,
-      "min": 1
+      "required": false
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "ResultColumnName",
       "label": "Result Column Name",
-      "description": "The name of the bin column. Defaults to '<ValueColumn>_Bin'.",
+      "description": "The name of the bin column. Defaults to \u0027\u003CValueColumn\u003E_Bin\u0027.",
       "defaultValue": "",
       "required": false
     },
