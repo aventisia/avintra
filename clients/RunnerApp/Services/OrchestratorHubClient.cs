@@ -19,13 +19,12 @@ public class OrchestratorHubClient : IOrchestratorHubClient
         query["clientType"] = "AvintraMachine";
         query["osId"] = MachineIdentity.OsId;
         query["username"] = MachineIdentity.Username;
-        query["hostname"] = MachineIdentity.Hostname;
         query["appVersion"] = MachineIdentity.AppVersion;
         // Mirror the backend's MachinesTableHelpers.BuildMachineName format so the presence
         // layer can validate the sent name against the DB record:
-        //   [hostname]_os_osid
+        //   [{serviceAccount}_{osToken}_{osId}]
         var operatingSystem = OperatingSystem.IsWindows() ? "windows" : "linux";
-        var machineName = $"[{MachineIdentity.Hostname.Trim().ToLowerInvariant()}]_{operatingSystem}_{MachineIdentity.OsId.Trim().ToLowerInvariant()}";
+        var machineName = $"[{MachineIdentity.ServiceAccountUsername.Trim().ToLowerInvariant()}]_{operatingSystem}_{MachineIdentity.OsId.Trim().ToLowerInvariant()}";
         query["machineName"] = machineName;
 
         _hubUrl = $"{appBaseUrl.TrimEnd('/')}/workspace/api/orchestrator-hub?{query}";
@@ -111,31 +110,43 @@ public class OrchestratorHubClient : IOrchestratorHubClient
         GC.SuppressFinalize(this);
     }
 
-    private void OnTriggerAgentReceived(string rawJobId)
+    private void OnTriggerAgentReceived(string rawJson)
     {
         try
         {
-            if (!Guid.TryParse(rawJobId, out var jobId))
+            using var doc = JsonDocument.Parse(rawJson);
+            var root = doc.RootElement;
+
+            var commandText = root.GetProperty("command").GetString() ?? "Unknown";
+            var jobId = root.GetProperty("jobId").GetGuid();
+            var agentId = root.GetProperty("agentId").GetGuid();
+            var tenantId = root.GetProperty("tenantId").GetGuid();
+
+            var command = commandText switch
             {
-                _logger.LogError("Failed to parse trigger_agent job id: {RawJobId}", rawJobId);
-                return;
-            }
+                "Initiate" => ExecutorCommand.Initiate,
+                "Abort" => ExecutorCommand.Abort,
+                "Pause" => ExecutorCommand.Pause,
+                "Resume" => ExecutorCommand.Resume,
+                "Killed" => ExecutorCommand.Killed,
+                _ => ExecutorCommand.Unknown
+            };
 
             _logger.LogInformation(
-                "Received command Initiate for job {JobId}.",
-                jobId);
+                "Received command {Command} for job {JobId}, agent {AgentId}.",
+                command, jobId, agentId);
 
             CommandReceived?.Invoke(this, new ExecutorCommandReceivedEventArgs
             {
-                Command = ExecutorCommand.Initiate,
+                Command = command,
                 JobId = jobId,
-                AgentId = Guid.Empty,
-                TenantId = Guid.Empty
+                AgentId = agentId,
+                TenantId = tenantId
             });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to handle trigger_agent job id: {RawJobId}", rawJobId);
+            _logger.LogError(ex, "Failed to parse trigger_agent payload: {RawJson}", rawJson);
         }
     }
 

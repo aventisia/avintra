@@ -74,7 +74,7 @@ public class BackendHttpClient : IBackendClient
             osID = osId,
             username,
             hostname,
-            serviceAccountUsername = MachineIdentity.Hostname,
+            serviceAccountUsername = MachineIdentity.ServiceAccountUsername,
             linkedUserAccountId = GetLinkedUserAccountId(),
         };
 
@@ -94,7 +94,7 @@ public class BackendHttpClient : IBackendClient
             osID = osId,
             username,
             hostname,
-            serviceAccountUsername = MachineIdentity.Hostname,
+            serviceAccountUsername = MachineIdentity.ServiceAccountUsername,
             linkedUserAccountId = linkedUsername,
         };
 

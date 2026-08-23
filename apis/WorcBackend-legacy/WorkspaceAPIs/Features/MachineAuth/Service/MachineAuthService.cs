@@ -46,21 +46,23 @@ public class MachineAuthService : IMachineAuthService
             var osId = machineAuthReqDto.OsID.Trim().ToLowerInvariant();
             var username = machineAuthReqDto.Username.Trim().ToLowerInvariant();
             var hostname = machineAuthReqDto.Hostname.Trim().ToLowerInvariant();
+            var serviceAccountUsername = string.IsNullOrWhiteSpace(machineAuthReqDto.ServiceAccountUsername)
+                ? username
+                : machineAuthReqDto.ServiceAccountUsername.Trim().ToLowerInvariant();
 
-            // Machines are matched by hostname (not username) so the same physical box is
-            // identified regardless of which user account the runner service runs under.
+            // Look for an existing machine with the same OS ID and username in the tenant
             var machine = await _workspaceDbContext.Machines
                 .FirstOrDefaultAsync(m =>
                     m.TenantId == tenantId &&
                     m.OsID.ToLower() == osId &&
-                    m.Hostname.ToLower() == hostname);
+                    m.Username.ToLower() == username);
 
             // Create the machine if it does not exist yet
             if (machine == null)
             {
                 machine = new Machine
                 {
-                    Name = MachinesTableHelpers.BuildMachineName(machineAuthReqDto.OperatingSystem, osId, hostname),
+                    Name = MachinesTableHelpers.BuildMachineName(machineAuthReqDto.OperatingSystem, osId, serviceAccountUsername),
                     OperatingSystem = machineAuthReqDto.OperatingSystem,
                     OsID = osId,
                     Username = username,
@@ -75,11 +77,8 @@ public class MachineAuthService : IMachineAuthService
             }
             else
             {
-                // Refresh the mutable identity fields of the existing machine.
-                // Rebuild the name from hostname so it stays in sync if the hostname changes.
-                machine.Name = MachinesTableHelpers.BuildMachineName(machineAuthReqDto.OperatingSystem, osId, hostname);
+                // Refresh the mutable identity fields of the existing machine
                 machine.OperatingSystem = machineAuthReqDto.OperatingSystem;
-                machine.Username = username;
                 machine.Hostname = hostname;
                 machine.UserId = linkedUser.Id;
                 machine.LastCheckedIn = DateTime.UtcNow;
@@ -119,15 +118,14 @@ public class MachineAuthService : IMachineAuthService
 
             // Trim and normalize the machine identity fields
             var osId = machineAuthReqDto.OsID.Trim().ToLowerInvariant();
-            var hostname = machineAuthReqDto.Hostname.Trim().ToLowerInvariant();
+            var username = machineAuthReqDto.Username.Trim().ToLowerInvariant();
 
-            // Validate using hostname so the same physical machine is recognized regardless
-            // of the OS user account presented by the runner.
+            // Look for a registered machine with the same OS ID and username in the tenant
             var machine = await _workspaceDbContext.Machines
                 .FirstOrDefaultAsync(m =>
                     m.TenantId == tenantId &&
                     m.OsID.ToLower() == osId &&
-                    m.Hostname.ToLower() == hostname);
+                    m.Username.ToLower() == username);
 
             // Machine not found, return
             if (machine == null)

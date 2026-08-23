@@ -32,22 +32,22 @@ public static class MachinesTableHelpers
     }
 
     /// <summary>
-    /// Builds a machine name based on the provided operating system, OS ID, and hostname.
-    /// The machine name is constructed in the format: "[hostname]_[os]_[osId]".
+    /// Builds a machine name based on the provided operating system, OS ID, and username.
+    /// The machine name is constructed in the format: "[username]_[os]_[osId]".
     /// </summary>
     /// <param name="operatingSystem"></param>
     /// <param name="osId"></param>
-    /// <param name="hostname"></param>
+    /// <param name="username"></param>
     /// <returns></returns>
     public static string BuildMachineName(
         OsTypesEnum operatingSystem,
         string osId,
-        string hostname)
+        string username)
     {
-        var normalizedHostname = hostname.Trim().ToLowerInvariant();
+        var normalizedUsername = username.Trim().ToLowerInvariant();
         var osToken = operatingSystem.ToString().ToLowerInvariant();
         var normalizedOsId = osId.Trim().ToLowerInvariant();
 
-        return $"[{normalizedHostname}]_{osToken}_{normalizedOsId}";
+        return $"[{normalizedUsername}]_{osToken}_{normalizedOsId}";
     }
 }
