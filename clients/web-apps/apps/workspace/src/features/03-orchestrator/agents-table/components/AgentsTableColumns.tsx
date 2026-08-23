@@ -167,6 +167,8 @@ export const agentsTableColumns: ColumnDef<AgentsTableDto>[] = [
         rowId={row.id}
         isDisabled={row.isDisabled}
         type={row.type}
+        flowName={row.name}
+        flowVersionNumber={row.versionNumber}
       />
     ),
   }),

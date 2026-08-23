@@ -54,14 +54,18 @@ const MachinesList = () => {
                   value={`${val.id}`}
                   className="group/CommandItem cursor-pointer rounded-lg p-1"
                 >
-                  <div className={"flex w-full items-center gap-3 rounded-lg px-0.5 py-0.5 pl-2"}>
+                  <div className={"flex w-full justify-between items-center gap-3 rounded-lg px-0.5 py-0.5 pl-2"}>
                     {/* Content container */}
-                    <p className="grow">{val.name}</p>
+                    <p title={val.name} className="max-w-60 truncate">
+                      {val.name}
+                    </p>
+
                     <div className="flex items-center gap-2">
                       <ExecutionAction
                         executionState={val.status}
                         isDisabled={false}
                         rowId={val.id}
+                        machineName={val.name}
                         jobId={val.jobId}
                       />
                       <MachinesListItemActions id={val.id} />

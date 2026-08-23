@@ -1,45 +1,52 @@
-import { LoadingSpinner } from "@avplatform/ui";
 import { Button } from "@avplatform/ui/buttons";
+import { useCrudDialogUrlState } from "@avplatform/ui/data-table";
 import { MachineStatusEnum } from "@avplatform/ui/enums/machine-status-enum";
-import { cn } from "@avplatform/ui/lib";
-import { toast } from "@avplatform/ui/sonner";
-import { useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { PlayIcon, StopIcon } from "@heroicons/react/24/solid";
 import { useShallow } from "zustand/react/shallow";
 
-import { useCreateJobMutation } from "@/features/03-orchestrator/agents-table/hooks/useCreateJobMutation";
 import { useAbortJobExecutionMutation } from "@/features/execute-flow/hooks/useAbortJobExecutionMutation";
 
 import { useAssignMachineStore } from "../../stores/assign-machine-store";
 
 type ExecutionActionProps = {
   rowId: string;
+  machineName: string;
   isDisabled?: boolean;
   jobId?: string;
   executionState: MachineStatusEnum;
 };
 
-export const ExecutionAction = ({ rowId, executionState, jobId }: ExecutionActionProps) => {
-  const { flowVersionId } = useAssignMachineStore(
+export const ExecutionAction = ({
+  rowId,
+  machineName,
+  executionState,
+  jobId,
+}: ExecutionActionProps) => {
+  const { flowVersionId, flowName, flowVersionNumber } = useAssignMachineStore(
     useShallow((s) => ({
       flowVersionId: s.flowVersionId,
-      setMachineIds: s.setMachineIds,
+      flowName: s.flowName,
+      flowVersionNumber: s.flowVersionNumber,
     })),
   );
 
-  const { userSession } = useUserSessionStore(
-    useShallow((state) => ({
-      userSession: state.userSession,
-    })),
-  );
-
-  const isEnterprise = userSession?.deploymentType == "Enterprise";
-  const hasActivePlan = userSession?.planType == "Active";
-
-  const { createJobMutation, isPending } = useCreateJobMutation();
+  const { openCrudDialog } = useCrudDialogUrlState();
 
   const { abortJobMutation } = useAbortJobExecutionMutation();
+
+  // Open the create job form pre-filled with this machine and flow version.
+  const handleCreateJob = () => {
+    openCrudDialog({
+      entity: "job",
+      crudAction: "create",
+      rowId: window.crypto.randomUUID(),
+      extraParams: {
+        mid: `${rowId}||${machineName}`,
+        fv: `${flowVersionId}||${flowName} v${flowVersionNumber}`,
+      },
+    });
+  };
 
   return (
     <div className="flex items-center gap-2">
@@ -62,29 +69,9 @@ export const ExecutionAction = ({ rowId, executionState, jobId }: ExecutionActio
             variant="ghost"
             size="icon7"
             className="hover:bg-slate-200"
-            onClick={() => {
-              // Check plan for enterprise
-              if (isEnterprise && !hasActivePlan) {
-                // Show toast notification for inactive plan
-                toast.error(
-                  "This action is currently unavailable. Please contact your administrator or support.",
-                );
-                return;
-              }
-
-              createJobMutation({
-                flowVersionId: flowVersionId,
-                machineId: rowId,
-              });
-            }}
+            onClick={handleCreateJob}
           >
-            {isPending ? (
-              <LoadingSpinner className="h-[1rem] w-[1rem] animate-spin text-primary" />
-            ) : (
-              <>
-                <PlayIcon className={cn("h-[1.125rem] w-[1.125rem] text-green-500/80")} />
-              </>
-            )}
+            <PlayIcon className="h-[1.125rem] w-[1.125rem] text-green-500/80" />
           </Button>
         </Tooltip>
       )}
