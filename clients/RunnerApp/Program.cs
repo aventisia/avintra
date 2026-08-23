@@ -34,6 +34,7 @@ if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsSe
         .ConfigureServices((_, services) =>
         {
             services.AddSingleton(options);
+            services.AddSingleton(NotificationServiceFactory.Create());
             services.AddHostedService<RunnerAppService>();
         })
         .ConfigureLogging(logging =>
@@ -59,6 +60,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     using var httpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
     var backendClient = new BackendHttpClient(httpClient, options.AccessToken);
     var engine = new DesktopExecutionEngine(options.AccessToken, options.AppBaseUrl);
+    var notifications = NotificationServiceFactory.Create();
 
     var cts = new CancellationTokenSource();
     var abortRequested = false;
@@ -208,6 +210,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     try
     {
         await backendClient.StartJobAsync(targetJobId);
+        notifications.NotifyJobStarted(targetJobId, graph.FlowName);
     }
     catch (Exception ex)
     {
@@ -371,6 +374,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     if (hubClient is not null)
         await hubClient.ReportCompletionAsync(targetJobId, jobStatus, result.ErrorMessage);
 
+    notifications.NotifyJobFinished(targetJobId, graph.FlowName, jobStatus, result.ErrorMessage);
     Console.WriteLine($"Execution finished: {result.Status}");
     return result.IsSuccess ? 0 : 1;
 }
@@ -625,13 +629,11 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
 {
     // Local dev defaults are intentionally null — pass credentials via CLI args
     // (--appBaseUrl, --accessToken, --jobId) or environment variables:
-    //   RUNNER_APP_BASE_URL, RUNNER_ACCESS_TOKEN, RUNNER_JOB_ID
+    //   RUNNER_APP_BASE_URL, RUNNER_ACCESS_TOKEN
     // Never hardcode JWTs or tenant secrets in source.
     string? appBaseUrl = Environment.GetEnvironmentVariable("RUNNER_APP_BASE_URL");
     string? accessToken = Environment.GetEnvironmentVariable("RUNNER_ACCESS_TOKEN");
-    Guid? jobId = Environment.GetEnvironmentVariable("RUNNER_JOB_ID") is string jid && Guid.TryParse(jid, out var parsedJobId)
-        ? parsedJobId
-        : null;
+    Guid? jobId = null;
     string? apiKey = null;
     string? tenantId = null;
     string? linkedUsername = null;

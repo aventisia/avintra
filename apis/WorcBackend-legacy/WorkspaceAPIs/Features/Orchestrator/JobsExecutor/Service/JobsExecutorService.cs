@@ -248,7 +248,7 @@ public class JobsExecutorService : IJobsExecutorService
                 executionCommandDto.Command, executionCommandDto.JobId, executionCommandDto.AgentId, machineName, executionCommandDto.TenantId, clientDataStore.ConnectionId);
 
             // Send the execution command to the client machine
-            await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
+            await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto.JobId.ToString());
 
             // Log successful execution of the job
             _logger.LogInformation("Job {JobId} successfully executed on machine {MachineName}.", executionCommandDto.JobId, machineName);
@@ -299,7 +299,7 @@ public class JobsExecutorService : IJobsExecutorService
                     executionCommandDto.MachineName = machineName;
 
                     // Send execution command to the machine
-                    await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto);
+                    await _hubContext.Clients.Client(clientDataStore.ConnectionId).SendAsync("trigger_agent", executionCommandDto.JobId.ToString());
                     _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync (reassign): sent trigger_agent for reassigned job {JobId} to connectionId={ConnectionId}.", job.Id, clientDataStore.ConnectionId);
                 }
                 else
@@ -505,7 +505,7 @@ public class JobsExecutorService : IJobsExecutorService
 
             await _hubContext.Clients
                 .Client(clientDataStore.ConnectionId)
-                .SendAsync("trigger_agent", executionRequest);
+                .SendAsync("trigger_agent", executionRequest.JobId.ToString());
         }
         catch (Exception ex)
         {
