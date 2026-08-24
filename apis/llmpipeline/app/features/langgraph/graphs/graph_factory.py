@@ -26,6 +26,7 @@ from app.features.langgraph.services.tool_skill_selector import (
 from app.features.langgraph.skills.skill_loader import load_user_skills_from_db
 from app.features.langgraph.skills.skill_registry import SkillRegistry
 from app.features.langgraph.tools.tool_registry import ToolRegistry
+from app.features.llm_providers.services.corsair_sidecar_service import is_corsair_tool
 from app.features.llm_providers.chat_agent_response_schema import (
     CHAT_AGENT_RESPONSE_SCHEMA,
 )
@@ -189,7 +190,29 @@ def _create_agent_selector_node(
             tenant_id=tenant_id,
         )
 
-        logger.debug(
+        # Corsair tools live on the sidecar, not in the legacy registry. Keep
+        # any explicitly-provided dotted names in the selection even though the
+        # planner catalog never contained them.
+        if explicit_tool_names:
+            corsair_explicit = [
+                name for name in explicit_tool_names if is_corsair_tool(name)
+            ]
+            selected_tool_names = list(
+                dict.fromkeys(selected_tool_names + corsair_explicit)
+            )
+
+        # Corsair tools live on the sidecar, not in the legacy registry. Keep
+        # any explicitly-provided dotted names in the selection even though the
+        # planner catalog never contained them.
+        if explicit_tool_names:
+            corsair_explicit = [
+                name for name in explicit_tool_names if is_corsair_tool(name)
+            ]
+            selected_tool_names = list(
+                dict.fromkeys(selected_tool_names + corsair_explicit)
+            )
+
+        logger.info(
             "Agent identified tools/skills. tools=%s skills=%s",
             selected_tool_names,
             [skill.name for skill in selected_skills]
@@ -226,9 +249,10 @@ def _create_dynamic_model_node(
         node_model = model
 
         # Load only tools selected by agent selector
-        tools = _resolve_tools(
+        tools = await _resolve_tools(
             tool_registry,
             selected_tool_names,
+            llm_request,
         )
 
         # Enable tool calling when tools are available
@@ -294,26 +318,93 @@ def _create_dynamic_tool_node(tool_registry: ToolRegistry, request: LLMRequest):
         selected_tool_names = metadata.get("selected_tool_names")
 
         # Resolve selected tool names into executable tools
-        tools = tool_registry.get_by_names(selected_tool_names or [])
+        tools = await _resolve_tools(tool_registry, selected_tool_names or [], request)
 
         return await create_tool_node(tools, request)(state)
 
     return tool_node_factory
 
-def _resolve_tools(
+async def _resolve_tools(
     tool_registry: ToolRegistry,
     selected_tool_names: list[str] | None,
+    llm_request: LLMRequest | None = None,
 ) -> list[BaseTool]:
     """Resolve selected tool names to concrete tool instances."""
 
     if not selected_tool_names:
         return []
 
-    tools = tool_registry.get_by_names(selected_tool_names)
-    if tools is None:
-        return []
+    legacy_names = [name for name in selected_tool_names if not is_corsair_tool(name)]
+    corsair_names = [name for name in selected_tool_names if is_corsair_tool(name)]
+
+    tools = []
+    if legacy_names:
+        resolved_legacy = tool_registry.get_by_names(legacy_names)
+        if resolved_legacy:
+            tools.extend(resolved_legacy)
+
+    if corsair_names and llm_request is not None:
+        corsair_tools = await _build_corsair_tools_for_names(corsair_names, llm_request)
+        tools.extend(corsair_tools)
 
     return tools
+
+
+async def _build_corsair_tools_for_names(
+    tool_names: list[str],
+    llm_request: LLMRequest,
+) -> list[BaseTool]:
+    """Fetch sidecar schemas and build bindable Corsair tools.
+
+    Only actions that are explicitly allowed by ``llm_request.tool_config``
+    are fetched so the model cannot call unconfigured Corsair actions.
+    """
+    from app.features.langgraph.tools.corsair.corsair_tool_factory import (
+        build_corsair_tools_from_schemas,
+    )
+    from app.features.llm_providers.services.corsair_sidecar_service import (
+        fetch_corsair_schemas,
+        parse_corsair_tool_name,
+    )
+
+    configs = llm_request.tool_config or []
+    allowed: dict[str, set[str]] = {}
+    for config in configs:
+        if isinstance(config, dict):
+            tool = config.get("tool", "")
+            actions = {a.get("action", "") for a in config.get("actions", [])}
+        else:
+            tool = config.tool
+            actions = {a.action for a in config.actions}
+        allowed.setdefault(tool, set()).update(actions)
+
+    fetch_configs = []
+    for name in tool_names:
+        plugin, action = parse_corsair_tool_name(name)
+        if action in allowed.get(plugin, set()):
+            fetch_configs.append({"tool": plugin, "actions": [{"action": action}]})
+        else:
+            logger.warning(
+                "Skipping unconfigured Corsair tool %s (plugin=%s action=%s)",
+                name,
+                plugin,
+                action,
+            )
+
+    if not fetch_configs:
+        return []
+
+    try:
+        schemas = await fetch_corsair_schemas(fetch_configs)
+    except Exception:
+        logger.exception("Failed to fetch Corsair schemas for tool binding")
+        return []
+
+    # Filter schemas to only the requested names so the returned list is tight.
+    wanted = set(tool_names)
+    schemas = [s for s in schemas if s.get("name") in wanted]
+
+    return build_corsair_tools_from_schemas(schemas)
 
 
 def _resolve_skill_configs(

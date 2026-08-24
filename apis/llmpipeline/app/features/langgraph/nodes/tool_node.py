@@ -1,5 +1,7 @@
 """Tool node that normalizes tool calls before invoking the LangGraph ToolNode."""
 
+import json
+
 from langchain_core.messages import AIMessage, ToolMessage
 from langchain_core.tools import BaseTool
 from langgraph.prebuilt import ToolNode
@@ -9,6 +11,10 @@ from app.features.auth.authenticated_user import User
 from app.features.langgraph.schemas.graph_state import ChatState
 from app.features.langgraph.tools.outlook.outlook_client import send_email_via_outlook
 from app.features.llm_providers.llm_providers_schemas import LLMRequest, ToolConfig
+from app.features.llm_providers.services.corsair_sidecar_service import (
+    invoke_corsair_tool,
+    is_corsair_tool,
+)
 
 
 def _normalize_tool_calls(message: AIMessage) -> AIMessage:
@@ -167,6 +173,51 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
             tool_name = tool_call.get("name", "")
             tool_call_id = tool_call.get("id", "")
             args = tool_call.get("args", {})
+
+            # Corsair sidecar tools: dotted names like "github.issues.create" are
+            # routed to the sidecar directly, using credentials from the request.
+            if is_corsair_tool(tool_name) and request is not None:
+                if not isinstance(user, User):
+                    connector_results[tool_call_id] = ToolMessage(
+                        content="User authentication context missing for Corsair tool.",
+                        tool_call_id=tool_call_id,
+                        name=tool_name,
+                        status="error",
+                    )
+                    continue
+
+                try:
+                    result = await invoke_corsair_tool(
+                        tool_name=tool_name,
+                        arguments=args,
+                        llm_request=request,
+                        user=user,
+                    )
+
+                    if result.get("success"):
+                        content = json.dumps(result.get("data")) if result.get("data") is not None else "Corsair tool executed successfully."
+                        connector_results[tool_call_id] = ToolMessage(
+                            content=content,
+                            tool_call_id=tool_call_id,
+                            name=tool_name,
+                            status="success",
+                        )
+                    else:
+                        connector_results[tool_call_id] = ToolMessage(
+                            content=f"Corsair tool failed: {result.get('error') or result.get('message') or result}",
+                            tool_call_id=tool_call_id,
+                            name=tool_name,
+                            status="error",
+                        )
+                except Exception as exc:
+                    logger.exception("Corsair sidecar tool failed for %s", tool_name)
+                    connector_results[tool_call_id] = ToolMessage(
+                        content=f"Error invoking Corsair tool {tool_name}: {exc}",
+                        tool_call_id=tool_call_id,
+                        name=tool_name,
+                        status="error",
+                    )
+                continue
 
             if tool_name == "outlook_send_email" and request is not None:
                 credential_name = _resolve_outlook_credential_name(request)

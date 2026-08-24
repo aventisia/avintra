@@ -81,6 +81,12 @@ class Settings(BaseSettings):
     ELEVENLABS_API_URL: str = "https://api.elevenlabs.io/v1"
     ELEVENLABS_API_KEY: str = ""
 
+    # Corsair sidecar configuration
+    # URL of the Corsair sidecar (llmpipeline calls this directly for Corsair tools).
+    CORSAIR_SIDECAR_URL: str = ""
+    # Shared secret for X-Corsair-Api-Key header; leave empty to skip sending it.
+    CORSAIR_API_KEY: str = ""
+
     model_config = SettingsConfigDict(
         env_file=env_files, # System env vars take precedence over these files
         env_file_encoding='utf-8',

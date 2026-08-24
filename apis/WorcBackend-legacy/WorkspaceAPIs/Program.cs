@@ -59,6 +59,10 @@ builder.Services.AddQuartzJobs();
 builder.Services.AddStringEncryptionService();
 builder.Services.AddUploadFileService();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("Corsair", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 builder.Services.AddAzureBlobStorageService();
 /*--Configure the HTTP request pipeline.--*/
 var app = builder.Build();
