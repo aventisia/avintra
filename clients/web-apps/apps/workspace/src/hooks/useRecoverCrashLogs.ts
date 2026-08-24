@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 
 import { JobStatusEnum } from "@/features/03-orchestrator/jobs-table/enums/job-status-enum";
 import { AgentExecutionLogType, EXECUTION_LOG_KEY, markLogAsSynced } from "@/features/execute-flow";
-import { closeJob, getJobById } from "@/features/execute-flow/apis/job-trigger-apis";
+import { closeJob } from "@/features/execute-flow/apis/job-trigger-apis";
 
 /**
  * Scans IndexedDB on app boot for unsynced logs from crashed executions,
@@ -31,16 +31,7 @@ export const useRecoverCrashLogs = (): void => {
           console.warn(`Recovery: Found stranded log data for Job ${log.jobId}. Syncing...`);
 
           try {
-            // 1. Fetch original job details from server
-            const jobResponse = await getJobById(log.jobId);
-            const jobData = jobResponse?.data;
-
-            if (!jobData) {
-              console.warn(`Recovery: Could not find job data on server for Job ${log.jobId}`);
-              continue;
-            }
-
-            // 2. Close the crashed job as Failed. The backend calculates and records consumed credits.
+            // Close the crashed job as Failed. The backend calculates and records consumed credits.
             await closeJob({
               id: log.jobId,
               closingStatus: JobStatusEnum.Failed,

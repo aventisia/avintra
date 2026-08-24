@@ -10,15 +10,6 @@ import { JobStartDto } from "../dtos/job-start-dto";
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/job`;
 
 /**
- * Retrieves Job data.
- */
-export const getJobById = (id: string) => {
-  return axiosInstance
-    .get<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}/detail/${id}`)
-    .then((res) => res.data);
-};
-
-/**
  * Starts a job, transitioning it from Created to Running.
  */
 export const startJob = (data: JobStartDto) => {
@@ -34,15 +25,6 @@ export const startJob = (data: JobStartDto) => {
 export const closeJob = (data: JobCloseDto) => {
   return axiosInstance
     .post<IHttpResponse<JobRecordDto>>(`${baseAPIURL}/close`, data)
-    .then((res) => res.data);
-};
-
-/**
- * Updates an existing job. Prefer startJob/closeJob for lifecycle transitions.
- */
-export const updateJobData = (data: JobDetailsDto) => {
-  return axiosInstance
-    .put<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}`, data)
     .then((res) => res.data);
 };
 

@@ -6,7 +6,7 @@ import { CreditServicesEnum } from "@/features/credits-management/constants/cred
 import { UsageSourceTypesEnum } from "@/features/credits-management/constants/usage-source-types-enum";
 import { usePostCreditConsumptionMutation } from "@/features/credits-management/hooks/usePostCreditConsumptionMutation";
 import { AgentExecutionLogType, EXECUTION_LOG_KEY, markLogAsSynced } from "@/features/execute-flow";
-import { getJobById, updateJobData } from "@/features/execute-flow/apis/jobs-table-apis";
+import { updateJobData } from "@/features/execute-flow/apis/jobs-table-apis";
 import { insertNodeExecutionLogs } from "@/features/execute-flow/apis/node-execution-log-apis";
 import { NodeExecutionLogDto } from "@/features/execute-flow/dtos/node-execution-log-dto";
 import { JobStatusEnum } from "@/features/execute-flow/enums/job-status-enum";
@@ -38,18 +38,7 @@ export const useRecoverCrashLogs = (): void => {
           console.warn(`Recovery: Found stranded log data for Job ${log.jobId}. Syncing...`);
 
           try {
-            // 1. Fetch original job details from server
-            const jobResponse = await getJobById(log.jobId);
-            const jobData = jobResponse?.data;
-
-            if (!jobData) {
-              console.warn(`Recovery: Could not find job data on server for Job ${log.jobId}`);
-              continue;
-            }
-
-            const startTime = jobData.startTime ? new Date(jobData.startTime) : new Date();
-
-            // 2. Calculate true execution duration by summing up the durations of completed nodes
+            // 1. Calculate true execution duration by summing up the durations of completed nodes
             const totalNodeDuration = (log.versionLog || []).reduce(
               (acc, node) => acc + (node.duration || 0),
               0,
@@ -58,15 +47,14 @@ export const useRecoverCrashLogs = (): void => {
             // Ensure a minimum of 1 second duration even if it crashed instantly
             const duration = Math.max(1, totalNodeDuration);
 
-            // Calculate the exact end time based on the start time and node execution sum
-            const endTime = new Date(startTime.getTime() + duration * 1000);
+            // Approximate start/end times locally; the backend already has the real start time.
+            const endTime = new Date();
+            const startTime = new Date(endTime.getTime() - duration * 1000);
 
-            // 3. Push final logs and update status to Failed
+            // 2. Push final logs and update status to Failed
             await updateJobData({
               id: log.jobId,
-              flowId: jobData.flowId,
               flowVersionId: log.versionId,
-              machineId: jobData.machineId,
               duration,
               status: JobStatusEnum.Failed,
               startTime,
@@ -96,10 +84,10 @@ export const useRecoverCrashLogs = (): void => {
                 serviceType: CreditServicesEnum[CreditServicesEnum.AgentExecutionTime],
                 consumedUnit: duration,
                 refType: UsageSourceTypesEnum[UsageSourceTypesEnum.Agent],
-                refId: jobData.flowId || "",
-                refName: jobData.name || "Agent",
+                refId: "",
+                refName: "Agent",
                 action: ActionTypesEnum[ActionTypesEnum.AgentExecution],
-                triggeredByAgent: jobData.name || "Agent",
+                triggeredByAgent: "Agent",
               },
             ]);
 
