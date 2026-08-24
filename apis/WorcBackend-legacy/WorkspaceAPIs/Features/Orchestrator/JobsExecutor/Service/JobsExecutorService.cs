@@ -141,6 +141,15 @@ public class JobsExecutorService : IJobsExecutorService
             // Resolve the machine by its unique NAME (hub/websocket contract) to its internal entry.
             // Dispatch internally still keys by ClientId (Guid); the name is the public identifier.
             var machineName = executionCommandDto.MachineName;
+
+            // Local Desktop App runs (initiated from Studio dev mode) handle execution on the
+            // runner side without joining the backend WebSocket hub, so skip hub dispatch entirely.
+            if (!string.IsNullOrEmpty(machineName) && machineName.StartsWith("Desktop App", StringComparison.OrdinalIgnoreCase))
+            {
+                _logger.LogInformation("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineName} is a local Desktop App runner; skipping hub dispatch for job {JobId}.", machineName, executionCommandDto.JobId);
+                return;
+            }
+
             var clientDataStore = await _clientStatusStore.GetClientByNameAsync(executionCommandDto.TenantId, machineName);
 
             if (clientDataStore == null)
