@@ -2,73 +2,84 @@ import { Separator } from "@avplatform/ui";
 import { Badge } from "@avplatform/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@avplatform/ui/cards";
 import { ArrowRightIcon, LockClosedIcon } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
 
 interface AtlasApp {
   title: string;
   description: string;
-  route: string;
+  /** Full URL or internal path for the app. External URLs should include the origin. */
+  url: string;
   icon: string;
   /** When true, the card is shown in a disabled "Coming Soon" state. */
   comingSoon?: boolean;
 }
 
+/** Determine if a URL already contains an origin. */
+const hasOrigin = (url: string) => /^https?:\/\//i.test(url) || url.startsWith("//");
+
+/** Resolve a path-style app URL to an absolute URL using the current origin. */
+const resolveAppUrl = (url: string) => {
+  if (hasOrigin(url)) return url;
+  const origin = window.location.origin;
+  const path = url.startsWith("/") ? url : `/${url}`;
+  return `${origin}${path}`;
+};
+
 /**
  * The list of Avintra applications surfaced on the Atlas home grid.
  *
- * - `Avintra Agents` redirects to the Workspace app.
+ * - `Avintra Agents` links to the Workspace app via a full URL.
  * - Cards marked `comingSoon` are shown disabled for now.
  */
 const atlasApps: AtlasApp[] = [
   {
     title: "Avintra Agents",
     description: "Build, orchestrate and manage your AI agents.",
-    route: import.meta.env.VITE_WORKSPACE_PATH,
+    url: import.meta.env.VITE_WORKSPACE_PATH,
     icon: "GenerativeModel.svg",
   },
   {
     title: "Avintra Sales",
     description: "Track pipelines, deals and sales performance.",
-    route: "/sales",
+    url: "/sales",
     icon: "DataTable.svg",
   },
   {
     title: "Avintra Projects",
     description: "Plan, execute and monitor your projects.",
-    route: "/projects",
+    url: "/projects",
     icon: "Folder.svg",
   },
   {
     title: "Avintra HR",
     description: "Manage people, hiring and employee records.",
-    route: "/hr",
+    url: "/hr",
     icon: "System.svg",
   },
   {
     title: "Avintra Legal",
     description: "Centralise contracts, matters and compliance.",
-    route: "/legal",
+    url: "/legal",
     icon: "File.svg",
     comingSoon: true,
   },
   {
     title: "Avintra Operations",
     description: "Streamline workflows and daily operations.",
-    route: "/operations",
+    url: "/operations",
     icon: "Workstation.svg",
     comingSoon: true,
   },
   {
     title: "Avintra Finance",
     description: "Manage budgets, expenses and financial reporting.",
-    route: "/finance",
+    url: "/finance",
     icon: "Clipboard.svg",
     comingSoon: true,
   },
   {
     title: "Avintra Apps",
     description: "Discover and manage your Avintra applications.",
-    route: "/apps",
+    url: "/apps",
     icon: "BlockNodeIcon.svg",
     comingSoon: true,
   },
@@ -94,7 +105,7 @@ export const HomePage = () => {
           if (isComingSoon) {
             return (
               <div
-                key={app.route}
+                key={app.url}
                 className="group cursor-not-allowed focus:outline-none"
                 aria-disabled="true"
               >
@@ -142,36 +153,47 @@ export const HomePage = () => {
             );
           }
 
-          return (
-            <Link key={app.route} to={app.route} className="group focus:outline-none">
-              <Card className="flex h-full cursor-pointer flex-col justify-between rounded-2xl border-primary-50 shadow-none transition-all hover:border-primary-200 hover:bg-slate-50">
-                <CardHeader className="pb-4">
-                  <div className="rounded-lg bg-accent p-2 md:p-2.5">
-                    <img src={basePath + "assets/" + app.icon} alt={app.title} className="h-9 w-9" />
-                  </div>
-                </CardHeader>
-                <div>
-                  <CardContent className="space-y-3 pb-1">
-                    <CardTitle
-                      title={app.title}
-                      className="truncate text-[0.9rem] font-semibold capitalize"
-                    >
-                      {app.title}
-                    </CardTitle>
-                    <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">
-                      {app.description}
-                    </p>
-                  </CardContent>
-                  <Separator className="mx-4 mb-3 mt-2.5 h-[0.5px] w-auto" />
-
-                  <CardFooter className="flex items-center justify-end !pb-4">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <ArrowRightIcon className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-                    </div>
-                  </CardFooter>
+          const card = (
+            <Card className="flex h-full cursor-pointer flex-col justify-between rounded-2xl border-primary-50 shadow-none transition-all hover:border-primary-200 hover:bg-slate-50">
+              <CardHeader className="pb-4">
+                <div className="rounded-lg bg-accent p-2 md:p-2.5">
+                  <img src={basePath + "assets/" + app.icon} alt={app.title} className="h-9 w-9" />
                 </div>
-              </Card>
-            </Link>
+              </CardHeader>
+              <div>
+                <CardContent className="space-y-3 pb-1">
+                  <CardTitle
+                    title={app.title}
+                    className="truncate text-[0.9rem] font-semibold capitalize"
+                  >
+                    {app.title}
+                  </CardTitle>
+                  <p className="line-clamp-2 text-xs leading-5 text-muted-foreground">
+                    {app.description}
+                  </p>
+                </CardContent>
+                <Separator className="mx-4 mb-3 mt-2.5 h-[0.5px] w-auto" />
+
+                <CardFooter className="flex items-center justify-end !pb-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <ArrowRightIcon className="h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                  </div>
+                </CardFooter>
+              </div>
+            </Card>
+          );
+
+          const href = resolveAppUrl(app.url);
+
+          return (
+            <a
+              key={app.url}
+              href={href}
+              className="group focus:outline-none"
+              rel="noopener noreferrer"
+            >
+              {card}
+            </a>
           );
         })}
       </div>

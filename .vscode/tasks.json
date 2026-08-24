@@ -11,6 +11,15 @@
       "isBackground": true
     },
     {
+      "label": "atlas",
+      "type": "shell",
+      "command": "npx turbo run dev --filter=atlas",
+      "options": {
+        "cwd": "${workspaceFolder}/clients/web-apps/apps/atlas"
+      },
+      "isBackground": true
+    },
+    {
       "label": "workspace",
       "type": "shell",
       "command": "npx turbo run dev --filter=workspace",
@@ -87,7 +96,7 @@
     },
     {
       "label": "Run Frontends",
-      "dependsOn": ["accounts", "workspace", "studio"]
+      "dependsOn": ["accounts", "workspace", "studio", "atlas"]
     },
     {
       "label": "Run Backends",
