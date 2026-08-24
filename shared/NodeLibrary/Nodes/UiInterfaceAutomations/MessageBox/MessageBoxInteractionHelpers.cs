@@ -33,8 +33,18 @@ internal static class MessageBoxInteractionHelpers
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     private static extern int MessageBoxW(IntPtr hWnd, string text, string caption, uint type);
 
+    // Environment flag set by the service-spawned worker when the --unattended switch is used.
+    // In unattended mode we intentionally fail fast for UI-dependent nodes.
+    private static readonly bool IsUnattended =
+        bool.TryParse(Environment.GetEnvironmentVariable("AVINTRA_UNATTENDED"), out var unattended) && unattended;
+
     public static bool IsInteractivePromptAvailable()
     {
+        if (IsUnattended)
+        {
+            return false;
+        }
+
         if (!Environment.UserInteractive)
         {
             return false;

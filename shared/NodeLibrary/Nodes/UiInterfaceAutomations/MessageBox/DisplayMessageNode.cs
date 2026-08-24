@@ -49,6 +49,11 @@ public class DisplayMessageNode : BaseNode
             var autoClose = AutoClose.Get(context);
             var timeout = Timeout.Get(context);
 
+            if (!MessageBoxInteractionHelpers.IsInteractivePromptAvailable())
+            {
+                throw new InvalidOperationException("Interactive message dialogs are not available in the current execution context.");
+            }
+
             var shown = MessageBoxInteractionHelpers.TryShowNativeMessage(
                 title,
                 messageText,
@@ -60,11 +65,6 @@ public class DisplayMessageNode : BaseNode
 
             if (!shown)
             {
-                if (!MessageBoxInteractionHelpers.IsInteractivePromptAvailable())
-                {
-                    throw new InvalidOperationException("Interactive message dialogs are not available in the current execution context.");
-                }
-
                 Console.WriteLine($"[{title}] {messageText}");
                 Console.WriteLine("Press Enter to continue...");
                 Console.ReadLine();
