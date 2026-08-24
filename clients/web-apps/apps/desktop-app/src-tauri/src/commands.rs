@@ -126,7 +126,8 @@ pub fn launch_runner_app(
 }
 
 /// Opens (creates/append) the runner debug log file used by the runner itself
-/// (%LOCALAPPDATA%\AvintraDesktopApp\logs\runner-debug.log) for stdout/stderr redirection.
+/// (%LOCALAPPDATA%\AvintraDesktopApp\logs\runner-debug-yyyy-MM-dd.log) for stdout/stderr redirection.
+/// A new file is created each calendar day so no single log file grows unbounded.
 fn open_runner_log() -> Result<std::fs::File, String> {
     let dir: PathBuf = dirs::data_local_dir()
         .ok_or("Cannot resolve local app data directory")?
@@ -134,11 +135,21 @@ fn open_runner_log() -> Result<std::fs::File, String> {
         .join("logs");
     std::fs::create_dir_all(&dir)
         .map_err(|e| format!("Failed to create logs directory {}: {}", dir.display(), e))?;
+
+    let today = chrono::Local::now().format("%Y-%m-%d").to_string();
+    let log_path = dir.join(format!("runner-debug-{}.log", today));
+
     OpenOptions::new()
         .create(true)
         .append(true)
-        .open(dir.join("runner-debug.log"))
-        .map_err(|e| format!("Failed to open runner debug log: {}", e))
+        .open(&log_path)
+        .map_err(|e| {
+            format!(
+                "Failed to open runner debug log {}: {}",
+                log_path.display(),
+                e
+            )
+        })
 }
 
 #[tauri::command]
