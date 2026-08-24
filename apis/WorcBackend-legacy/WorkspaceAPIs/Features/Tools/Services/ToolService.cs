@@ -1,3 +1,4 @@
+using System.Text.Json;
 using WorkspaceAPIs.Features.Tools.Helpers;
 
 namespace WorkspaceAPIs.Services;
@@ -9,6 +10,7 @@ public class ToolService : IToolService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IResourceShareService _resourceShareService;
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ICorsairSidecarService _corsairSidecarService;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly ICurrentTenantService _currentTenantService;
     private readonly Guid _currentUserId;
@@ -20,6 +22,7 @@ public class ToolService : IToolService
         IHttpContextAccessor httpContextAccessor,
         IResourceShareService resourceShareService,
         IHttpClientFactory httpClientFactory,
+        ICorsairSidecarService corsairSidecarService,
         EnvironmentConfig environmentConfig,
         ICurrentTenantService currentTenantService)
     {
@@ -28,6 +31,7 @@ public class ToolService : IToolService
         _httpContextAccessor = httpContextAccessor;
         _resourceShareService = resourceShareService;
         _httpClientFactory = httpClientFactory;
+        _corsairSidecarService = corsairSidecarService;
         _environmentConfig = environmentConfig;
         _currentTenantService = currentTenantService;
         _currentUserId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -777,7 +781,10 @@ public class ToolService : IToolService
 
         try
         {
-            // Step 1: Load platform-managed tools.
+            // Step 1: Lazy-seed platform-managed tools from the Corsair sidecar.
+            await SeedCorsairLibraryToolsAsync();
+
+            // Step 2: Load platform-managed tools.
             var libraryTools = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Type == ComponentTypeEnum.Platform)
                 .OrderByDescending(o => o.CreatedOn)
@@ -786,7 +793,7 @@ public class ToolService : IToolService
                 .IgnoreQueryFilters()
                 .ToListAsync();
 
-            // Step 2: Map to DTOs and assign view access.
+            // Step 3: Map to DTOs and assign view access.
             var mappedTools = libraryTools.Adapt<IEnumerable<ToolDto>>().ToList();
             mappedTools.ForEach(toolDto => toolDto.AccessLevel = ResourceAccessTypeEnum.View);
 
@@ -801,6 +808,93 @@ public class ToolService : IToolService
         }
 
         return serviceResponse;
+    }
+
+    private async Task SeedCorsairLibraryToolsAsync()
+    {
+        var tenantId = _currentTenantService.CurrentTenantId;
+        if (tenantId == Guid.Empty)
+        {
+            _logger.LogWarning("Skipping Corsair library seed: no current tenant resolved.");
+            return;
+        }
+
+        var descriptors = await _corsairSidecarService.GetToolsAsync();
+        if (descriptors.Count == 0)
+        {
+            return;
+        }
+
+        var existingTools = await _unitOfWork.ToolRepo
+            .GetByConditionAsync(w => w.Type == ComponentTypeEnum.Platform)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+
+        var existingByName = existingTools.ToDictionary(e => e.Name, StringComparer.OrdinalIgnoreCase);
+
+        foreach (var descriptor in descriptors)
+        {
+            var toolName = descriptor.Path;
+            if (string.IsNullOrWhiteSpace(toolName))
+            {
+                continue;
+            }
+
+            var schema = new Dictionary<string, object?>
+            {
+                ["plugin"] = descriptor.Plugin,
+                ["path"] = descriptor.Path,
+                ["description"] = descriptor.Description,
+                ["input"] = descriptor.Input?.ToString(),
+                ["output"] = descriptor.Output?.ToString()
+            };
+            var schemaJson = System.Text.Json.JsonSerializer.Serialize(schema, JsonSerializerOptions.Web);
+
+            if (existingByName.TryGetValue(toolName, out var existing))
+            {
+                var shouldUpdate = false;
+
+                if (existing.ParsedSchema?.RootElement.GetRawText() != schemaJson)
+                {
+                    existing.ParsedSchema = JsonDocument.Parse(schemaJson);
+                    shouldUpdate = true;
+                }
+
+                if (!existing.IsActive)
+                {
+                    existing.IsActive = true;
+                    shouldUpdate = true;
+                }
+
+                if (shouldUpdate)
+                {
+                    _unitOfWork.ToolRepo.Update(existing);
+                }
+
+                continue;
+            }
+
+            var tool = new Tool
+            {
+                Id = Guid.NewGuid(),
+                TenantId = tenantId,
+                Name = toolName,
+                Description = descriptor.Description,
+                Type = ComponentTypeEnum.Platform,
+                BaseUrl = descriptor.Plugin,
+                ParsedSchema = JsonDocument.Parse(schemaJson),
+                AuthenticationType = ToolAuthenticationTypeEnum.None,
+                IsActive = true,
+                IsVerified = true,
+                IsTenantWideAccess = true,
+                CreatedByUserId = _currentUserId,
+                LastModifiedByUserId = _currentUserId
+            };
+
+            await _unitOfWork.ToolRepo.InsertAsync(tool);
+        }
+
+        await _unitOfWork.SaveAsync();
     }
 
 }

@@ -1,0 +1,29 @@
+meta {
+  name: Invoke Tool
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{CORSAIR_SIDECAR_URL}}/corsair/invoke
+  body: json
+  auth: none
+}
+
+headers {
+  X-Corsair-Api-Key: {{CORSAIR_API_KEY}}
+}
+
+body:json {
+  {
+    "connectionId": "{{CORSAIR_CONNECTION_ID}}",
+    "plugin": "{{CORSAIR_PLUGIN}}",
+    "action": "{{CORSAIR_ACTION}}",
+    "payload": {{CORSAIR_PAYLOAD}}
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains "success"
+}

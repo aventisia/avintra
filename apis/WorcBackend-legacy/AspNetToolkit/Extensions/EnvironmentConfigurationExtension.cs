@@ -75,6 +75,8 @@ public static class EnvironmentConfigurationExtension
         var WORKSPACE_API_BASE_URL = Environment.GetEnvironmentVariable("WORKSPACE_API_BASE_URL") ?? config["EnvironmentConfig:WorkspaceApiBaseUrl"] ?? "http://workspace-apis:4001";
         var LLMPIPELINE_API_BASE_URL = Environment.GetEnvironmentVariable("LLMPIPELINE_API_BASE_URL") ?? config["EnvironmentConfig:LlmPipelineApiBaseUrl"] ?? "http://llmpipeline-apis:4003";
         var CAMEL_API_BASE_URL = Environment.GetEnvironmentVariable("CAMEL_API_BASE_URL") ?? config["EnvironmentConfig:CamelApiBaseUrl"] ?? "http://camel-connector-harness:4005";
+        var CORSAIR_SIDECAR_URL = Environment.GetEnvironmentVariable("CORSAIR_SIDECAR_URL") ?? config["EnvironmentConfig:CorsairSidecarUrl"] ?? "http://corsair:3456";
+        var CORSAIR_API_KEY = Environment.GetEnvironmentVariable("CORSAIR_API_KEY") ?? config["EnvironmentConfig:CorsairApiKey"] ?? string.Empty;
 
         // Sales and support emails environment variable
         var SALES_EMAILS = Environment.GetEnvironmentVariable("SALES_EMAILS") ?? config["EnvironmentConfig:SalesEmails"] ?? string.Empty;
@@ -187,6 +189,8 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:WorkspaceApiBaseUrl", WORKSPACE_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:LlmPipelineApiBaseUrl", LLMPIPELINE_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:CamelApiBaseUrl", CAMEL_API_BASE_URL.TrimEnd('/') },
+                    { "EnvironmentConfig:CorsairSidecarUrl", CORSAIR_SIDECAR_URL.TrimEnd('/') },
+                    { "EnvironmentConfig:CorsairApiKey", CORSAIR_API_KEY },
 
                     { "EnvironmentConfig:SalesEmails", SALES_EMAILS },
 

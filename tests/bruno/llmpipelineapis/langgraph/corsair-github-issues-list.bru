@@ -1,0 +1,57 @@
+meta {
+  name: Corsair GitHub issues list
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{LLM_PIPELINE_APIS_BASE_URL}}/chat/completions
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "provider": "openai",
+    "model": "gpt-4o-mini",
+    "input": "List open issues in the worc-platform repository owned by aventisia",
+    "files": null,
+    "tool_config": [
+      {
+        "tool": "github",
+        "credential_id": "{{GITHUB_CORSAIR_CONNECTION_ID}}",
+        "actions": [
+          {
+            "approval": "auto",
+            "action": "api.issues.list"
+          }
+        ]
+      }
+    ],
+    "skill_names": [],
+    "is_temp_chat": true,
+    "is_json_output": false,
+    "json_schema": null,
+    "max_output_tokens": 500,
+    "is_byok_enabled": false,
+    "credential_id": null,
+    "temperature": "0.2",
+    "top_p": "1.0",
+    "stream": false,
+    "ref_type": "Agent",
+    "ref_id": "corsair-github-test",
+    "ref_name": "Corsair GitHub Test",
+    "action": "AgentExecution",
+    "is_chat_agent": false,
+    "generate_followup_messages": false
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

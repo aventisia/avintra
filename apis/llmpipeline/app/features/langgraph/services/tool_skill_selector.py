@@ -212,19 +212,43 @@ def _expand_tool_config(tool_config: list[Any]) -> list[str]:
     """Expand Studio tool config entries into LangGraph tool names.
 
     Studio format: { tool: "outlook", actions: [{ action: "send_email" }] }
-    LangGraph name: "outlook_send_email"
+    Legacy LangGraph name: "outlook_send_email"
+    Corsair LangGraph name: "github.api.issues.create"
+
+    For Corsair, the Studio ``tool`` field is the plugin root (e.g. ``github``)
+    and the action is the remaining dotted path (e.g. ``api.issues.create``),
+    so the emitted LangGraph name is ``<tool>.<action>``.
+
+    For legacy platform tools, the action is a single capability word (e.g.
+    ``send_email``) and the emitted name remains ``<tool>_<action>``.
     """
     names: list[str] = []
     for config in tool_config:
         tool = getattr(config, "tool", None) or config.get("tool", "")
         actions = getattr(config, "actions", None) or config.get("actions", [])
+        # If the tool name already contains a dot, emit dotted names directly.
+        if "." in tool:
+            for action in actions:
+                action_name = getattr(action, "action", None) or action.get("action", "")
+                if tool and action_name:
+                    names.append(f"{tool}.{action_name}")
+            if not actions and tool:
+                names.append(tool)
+            continue
         for action in actions:
             action_name = getattr(action, "action", None) or action.get("action", "")
             if tool and action_name:
-                names.append(f"{tool}_{action_name}")
+                # Dotted actions like "api.issues.create" identify Corsair tools.
+                if "." in action_name:
+                    names.append(f"{tool}.{action_name}")
+                else:
+                    names.append(f"{tool}_{action_name}")
         if not actions and tool:
             names.append(tool)
     return names
+
+
+
 
 
 def _resolve_skill_configs(
