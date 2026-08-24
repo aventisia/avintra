@@ -63,18 +63,12 @@ public class SpaceTableService : ISpaceTableService
                 .GroupBy(g => g.SpaceId)
                 .ToDictionary(g => g.Key, g => g.Select(x => x.UserId).Distinct().ToHashSet());
 
-            // A Tenant Administrator (TA) has implicit access to every space in the tenant,
-            // regardless of whether they have explicit SpaceUser assignments. So a TA
-            // must be counted as a user of every space.
-            var tenantAdminUserIds = (await _unitOfWork.AccountUserRepo
-                    .GetByConditionAsync(w => w.TenantId == _tenantId && !w.IsDefault)
-                    .Select(w => new { w.Id, w.UserRoles })
-                    .ToListAsync())
-                .Where(u => u.UserRoles.Any(ur =>
-                    ur.Role != null && (ur.Role.Name == CustomRolesEnum.TA.ToString() || ur.Role.FullName == "Tenant administrator")))
-                .Select(u => u.Id)
-                .Distinct()
-                .ToHashSet();
+            // The default "Central" space is accessible by every user in the tenant by default,
+            // regardless of explicit SpaceUser assignments. So its user count equals the total
+            // number of non-default users in the tenant.
+            var totalTenantUserCount = await _unitOfWork.AccountUserRepo
+                .GetByConditionAsync(w => w.TenantId == _tenantId && !w.IsDefault)
+                .CountAsync();
 
             // Fetch aggregate usage metrics (published agents, execution time, machines) from WorkspaceAPIs,
             // keyed by SpaceId. The Central space has a null SpaceId in WorkspaceAPIs.
@@ -86,12 +80,18 @@ public class SpaceTableService : ISpaceTableService
                 var spaceEntity = spaceEntities.FirstOrDefault(s => s.Id == spaceDto.Id);
                 if (spaceEntity == null) continue;
 
-                // Total users associated with the space = distinct users from SpaceUser
-                // unioned with the Tenant Administrators who implicitly have access to every space.
-                userIdsBySpace.TryGetValue(spaceDto.Id, out var explicitUserIds);
-                var allUserIds = new HashSet<Guid>(explicitUserIds ?? Enumerable.Empty<Guid>());
-                allUserIds.UnionWith(tenantAdminUserIds);
-                spaceDto.TotalUsers = allUserIds.Count;
+                // The default "Central" space is accessible by every tenant user by default,
+                // so its user count reflects all users in the tenant. Non-default spaces only
+                // count the users explicitly assigned via the SpaceUser membership table.
+                if (spaceDto.IsDefault)
+                {
+                    spaceDto.TotalUsers = totalTenantUserCount;
+                }
+                else
+                {
+                    userIdsBySpace.TryGetValue(spaceDto.Id, out var explicitUserIds);
+                    spaceDto.TotalUsers = explicitUserIds?.Count ?? 0;
+                }
 
                 // Aggregate metrics fetched from WorkspaceAPIs.
                 // The Central space (IsDefault) maps to a null SpaceId in WorkspaceAPIs.
@@ -251,22 +251,29 @@ public class SpaceTableService : ISpaceTableService
                 return serviceResponse;
             }
 
-            // Create space-user associations and save them to the database
-            var spaceUsers = spaceDto.UserIds.Select(userId => new SpaceUser
+            // Create space-user associations only when users were selected, then save them.
+            // Skipping the empty case avoids a redundant SaveAsync that reports failure (0 changes)
+            // even though the space itself was already created successfully.
+            if (spaceDto.UserIds.Count > 0)
             {
-                UserId = userId,
-                SpaceId = newSpace.Id,
-                CreatedByUserId = _userId,
-                LastModifiedByUserId = _userId
-            });
+                var spaceUsers = spaceDto.UserIds.Select(userId => new SpaceUser
+                {
+                    UserId = userId,
+                    SpaceId = newSpace.Id,
+                    TenantId = _tenantId,
+                    IsActive = true,
+                    CreatedByUserId = _userId,
+                    LastModifiedByUserId = _userId
+                });
 
-            await _unitOfWork.SpaceUserRepo.InsertAsync(spaceUsers);
+                await _unitOfWork.SpaceUserRepo.InsertAsync(spaceUsers);
 
-            // Persist changes for the space-users
-            if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogError("Error occurred while saving space-users for space: {SpaceName}", spaceDto.Name);
-                return serviceResponse;
+                // Persist changes for the space-users
+                if (!await _unitOfWork.SaveAsync())
+                {
+                    _logger.LogError("Error occurred while saving space-users for space: {SpaceName}", spaceDto.Name);
+                    return serviceResponse;
+                }
             }
 
             // Map result and prepare response
