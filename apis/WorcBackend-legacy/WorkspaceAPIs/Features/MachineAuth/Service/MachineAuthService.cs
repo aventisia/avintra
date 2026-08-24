@@ -50,8 +50,19 @@ public class MachineAuthService : IMachineAuthService
                 ? username
                 : machineAuthReqDto.ServiceAccountUsername.Trim().ToLowerInvariant();
 
-            // Look for an existing machine with the same OS ID and username in the tenant
+            var machineName = MachinesTableHelpers.BuildMachineName(machineAuthReqDto.OperatingSystem, osId, serviceAccountUsername);
+
+            // Look for an existing machine by its unique stable name first. This handles the
+            // common case where the same physical machine re-registers with a different
+            // username (e.g. desktop app vs. Windows service running as LocalSystem).
             var machine = await _workspaceDbContext.Machines
+                .FirstOrDefaultAsync(m =>
+                    m.TenantId == tenantId &&
+                    m.Name.ToLower() == machineName.ToLower());
+
+            // Fallback to the legacy (OsID, Username) lookup for records created before
+            // the unique-name upsert behavior was introduced.
+            machine ??= await _workspaceDbContext.Machines
                 .FirstOrDefaultAsync(m =>
                     m.TenantId == tenantId &&
                     m.OsID.ToLower() == osId &&
@@ -62,7 +73,7 @@ public class MachineAuthService : IMachineAuthService
             {
                 machine = new Machine
                 {
-                    Name = MachinesTableHelpers.BuildMachineName(machineAuthReqDto.OperatingSystem, osId, serviceAccountUsername),
+                    Name = machineName,
                     OperatingSystem = machineAuthReqDto.OperatingSystem,
                     OsID = osId,
                     Username = username,
@@ -78,10 +89,14 @@ public class MachineAuthService : IMachineAuthService
             else
             {
                 // Refresh the mutable identity fields of the existing machine
+                machine.Name = machineName;
                 machine.OperatingSystem = machineAuthReqDto.OperatingSystem;
+                machine.OsID = osId;
+                machine.Username = username;
                 machine.Hostname = hostname;
                 machine.UserId = linkedUser.Id;
                 machine.LastCheckedIn = DateTime.UtcNow;
+                machine.IsDisabled = false;
             }
 
             // Persist changes; an unchanged machine (idempotent re-registration) is still a success
