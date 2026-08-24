@@ -46,6 +46,15 @@ public static class MachineIdentity
 
     private static string GetUsername()
     {
+        // If the service launcher explicitly passed the interactive username, use it.
+        // This keeps worker identity consistent with the user session even though the
+        // worker process is created by the Windows service.
+        var launchedUsername = Environment.GetEnvironmentVariable("AVINTRA_INTERACTIVE_USERNAME");
+        if (!string.IsNullOrWhiteSpace(launchedUsername))
+        {
+            return launchedUsername;
+        }
+
         if (OperatingSystem.IsWindows())
         {
             try

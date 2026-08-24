@@ -4,6 +4,12 @@
 
 ## Architecture
 
+RunnerApp operates in three distinct modes:
+
+1. **Local desktop mode** — launched directly by the Tauri desktop app for single-shot, under-development flows.
+2. **Windows service mode** — a long-lived SignalR listener that receives job assignments and spawns short-lived worker processes to execute them.
+3. **Worker mode** — a short-lived per-job executor process launched by the service (or another launcher).
+
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────┐
 │                              Desktop app (Tauri + React)                                 │
@@ -15,26 +21,39 @@
 │  └────────────────────────┘    └──────────────────────────┘    └─────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
                                           │
+                                          │ local WebSocket (single job)
                                           ▼
 ┌──────────────────────────────┐      ┌──────────────────────┐      ┌─────────────────┐
-│     WorkspaceAPIs (.NET 8)    │◄────►│   RunnerApp (.NET 8)  │      │  Office / UI    │
-│  - execution graph endpoint    │      │  - fetches graph      │◄────►│  automation     │
+│     WorkspaceAPIs (.NET 8)    │◄────►│   RunnerApp (.NET 8)  │◄────►│  Office / UI    │
+│  - execution graph endpoint    │      │  - fetches graph      │      │  automation     │
 │  - job start/close             │      │  - runs flow          │      │  (Excel, etc.)  │
 │  - node execution logs         │      │  - pushes WS progress │      │                 │
 │  - SignalR command routing*    │      │  - closes job         │      │                 │
 └──────────────────────────────┘      └──────────────────────┘      └─────────────────┘
+
+Windows service (hybrid model)
+┌─────────────────────────────────────────────────────────────────────────────────────────┐
+│  Service process (session 0)                                                             │
+│  ┌──────────────────────┐    ┌──────────────────────┐    ┌──────────────────────┐    │
+│  │ Register machine     │───►│ OrchestratorHub      │◄───│ Abort / Initiate     │    │
+│  │ Listen for commands  │    │ SignalR connection    │    │ commands from backend │    │
+│  └──────────────────────┘    └──────────────────────┘    └──────────────────────┘    │
+│           │                                                                              │
+│           │ on Initiate: spawn worker per job                                             │
+│           ▼                                                                              │
+│  ┌─────────────────────────────────────────────────────────────────────────────────┐    │
+│  │ Worker process (active interactive user session by default)                    │    │
+│  │  - receives machine JWT via AVINTRA_MACHINE_JWT environment variable            │    │
+│  │  - fetches graph, executes flow, reports progress/completion, exits             │    │
+│  │  - can display MessageBox / Office dialogs because it runs in an interactive     │    │
+│  │    user session                                                                │    │
+│  └─────────────────────────────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-\* SignalR / server-mode command routing is present in the codebase but is **not used by the
-local desktop flow**. For local desktop runs, the Tauri app launches RunnerApp in local mode
-(`--jobId`, `--accessToken`, `--websocketPort`) and all control/progress messages travel over
-the in-process Tauri WebSocket. Server mode remains available but is **not validated** — do not
-use it in production without testing.
+\* SignalR / server-mode command routing is used only by the **Windows service** flow. For local desktop runs, the Tauri app launches RunnerApp in local mode (`--jobId`, `--accessToken`, `--websocketPort`) and all control/progress messages travel over the in-process Tauri WebSocket.
 
-The executor supports backend `OrchestratorHub` (SignalR) commands (`Initiate`, `Abort`, `Pause`,
-`Resume`, `Killed`) in **server/service mode**. If SignalR is unavailable in that mode, it falls back to HTTP
-polling with a 30-second timeout. The local desktop sidecar path does not use SignalR or HTTP polling; it
-receives abort control and sends progress over the in-process Tauri WebSocket.
+The service is a **hybrid** listener + worker-spawner: the service itself stays in session 0 and keeps a stable SignalR identity, while each job runs in a separate `RunnerApp.exe --worker` process. By default the worker is launched into the active interactive user session so UI-dependent nodes (MessageBox, Office dialogs, etc.) can display. With `--unattended` the worker stays in session 0 and suppresses UI.
 
 ## Prerequisites
 
@@ -85,11 +104,18 @@ dotnet run --project clients/RunnerApp/RunnerApp.csproj -- \
 `osId`, `username`, and `hostname` are detected at runtime from the local machine and are no
 longer accepted as CLI arguments.
 
-## Run as Windows Service
+## Run as Windows Service (hybrid model)
 
-> **WARNING — UNVALIDATED.** Windows-service / SignalR mode is implemented but has **not been
-> tested or validated** in this sprint. Only the local desktop (console) mode is verified. Do not
-> run service mode in production without a dedicated validation pass.
+The Windows service is a long-lived SignalR listener. It registers the machine with the backend,
+connects to `OrchestratorHub`, and waits for `Initiate` commands. When a job arrives it spawns a
+short-lived `RunnerApp.exe --worker` process to execute the job, then reports completion.
+
+By default, the worker process is launched into the **active interactive user session** so UI-dependent
+nodes (MessageBox, Office dialogs, etc.) work. Use the `-Unattended` switch (or `--unattended` CLI flag)
+to keep the worker in the service's non-interactive session 0 and suppress UI.
+
+> **Note:** The interactive-session launch path is validated by build only; full runtime validation
+> across user sessions is recommended before production use.
 
 ### Prerequisites
 
@@ -138,6 +164,19 @@ Available parameters:
 | `InstallDir`     | `C:\Program Files\AvintraRunnerService` | Directory to extract the runner to.                                                                                |
 | `ServiceName`    | `AvintraRunnerService`                  | Name of the Windows service.                                                                                       |
 | `DoNotStart`     | `$false`                                | Install the service but do not start it.                                                                           |
+| `Unattended`     | `$false`                                | Pass `--unattended` to the service; spawned workers stay in session 0 and suppress UI.                             |
+
+### Reinstall from local build
+
+During development, use `reinstall-service.ps1` to stop the service, republish the project, and re-install from the local `./Published` folder:
+
+```powershell
+.\reinstall-service.ps1 -AppBaseUrl https://your-backend -ApiKey <key> -TenantId <guid> -LinkedUsername <user>
+```
+
+Add `-Unattended` to install in unattended mode.
+
+> **Important:** The service must be stopped before publishing to `./Published` because the running service locks its DLLs.
 
 ### Manual install
 
@@ -189,7 +228,40 @@ AvintraRunnerService.exe --service \
   --linkedUsername <user>
 ```
 
+Append `--unattended` to run spawned workers in session 0 without UI.
+
+### Service command routing
+
+The service supports backend `OrchestratorHub` (SignalR) commands:
+
+- `Initiate` — spawns a worker process for the given job
+- `Abort` / `Killed` — cancels the running worker via its `CancellationToken`
+- `Pause` / `Resume` — not yet wired in the hybrid worker model
+
+The service keeps its own SignalR connection while the worker has its own short-lived connection to report progress/completion. The backend machine identity is stable because the service registers the machine; the worker is only an executor.
+
+### Worker mode
+
+A worker is launched by the service (or any launcher) with the `--worker` flag:
+
+```powershell
+AvintraRunnerService.exe --worker --launcher service --appBaseUrl <url> --accessToken <jwt> --jobId <guid>
+```
+
+In practice you do not run this by hand; the service builds the command line and passes the machine JWT through the `AVINTRA_MACHINE_JWT` environment variable. The worker:
+
+1. Reads `AVINTRA_MACHINE_JWT` and creates a backend client.
+2. Fetches the execution graph for `jobId`.
+3. Marks the job running (`POST /job/start`).
+4. Executes the flow in-process.
+5. Reports progress and completion over SignalR.
+6. Exits with code `0` for success, non-zero for failure/aborted.
+
+If `AVINTRA_UNATTENDED=true` is set, UI-dependent nodes such as `DisplayMessageNode` detect the non-interactive environment and fail fast instead of blocking.
+
 ## How It Works
+
+### Local desktop mode
 
 1. **Connect** — Connects to `OrchestratorHub` via SignalR as an `AvintraMachine` (identified by `osId` + `username`).
 2. **Wait for command** — Listens for `Initiate` command from the hub. Falls back to HTTP polling after 30s if no command arrives.
@@ -203,15 +275,32 @@ AvintraRunnerService.exe --service \
 7. **Close job** — Calls `POST /job/close` with the final status (`Completed`, `Aborted`, or `Failed`).
 8. **Report** — Sends completion notification via SignalR `ReportCompletionAsync`.
 
+### Windows service (hybrid) mode
+
+1. **Register machine** — On start, calls the backend to register this machine and obtains a machine JWT.
+2. **Connect** — Connects to `OrchestratorHub` as the registered machine.
+3. **Wait for command** — Listens for `Initiate` with an `ExecutionCommandDto` containing `jobId`.
+4. **Start job** — Marks the job running via `POST /job/start`.
+5. **Spawn worker** — Uses `WorkerProcessManager` + `WorkerProcessLauncher` to start `RunnerApp.exe --worker`.
+   - Default: launches the worker in the active interactive user session (`WTSGetActiveConsoleSessionId` + `CreateProcessAsUser`) so UI nodes work.
+   - `--unattended`: launches the worker in the service's own session 0 with `CreateNoWindow`.
+6. **Monitor** — Waits for the worker to exit, translating exit code to `Completed`, `Aborted`, or `Failed`.
+7. **Close job** — Calls `POST /job/close` with the worker's final status.
+8. **Report** — Sends completion notification via the service's SignalR connection.
+9. **Abort handling** — If `Abort` or `Killed` arrives while a worker is running, the service kills the worker process and reports `Aborted`.
+
 ## Project Structure
 
 ```
 clients/RunnerApp/
-├── RunnerApp.csproj          # Project file
-├── RunnerAppOptions.cs       # CLI argument model
-├── RunnerAppService.cs       # BackgroundService for Windows service mode
+├── RunnerApp.csproj                # Project file
+├── RunnerAppOptions.cs             # CLI argument model and mode flags
+├── RunnerAppService.cs             # Long-lived Windows service SignalR listener + worker spawner
 ├── ExecutionGraphDto.cs            # DTO matching backend response
-├── Program.cs                      # Entry point (console + service modes)
+├── Program.cs                      # Entry point: console, service, worker routing
+├── Install-AvintraRunnerService.ps1 # Provisioning script
+├── reinstall-service.ps1           # Local stop/publish/reinstall helper
+├── publish.sh                      # CI publish to self-contained single-file binary
 └── Services/
     ├── BackendFlowGraphProvider.cs # IFlowGraphProvider using cached graph
     ├── BackendHttpClient.cs        # REST client for backend APIs
@@ -219,7 +308,9 @@ clients/RunnerApp/
     ├── IBackendClient.cs           # Backend client interface
     ├── IExecutionEngine.cs         # Execution engine interface
     ├── IOrchestratorHubClient.cs   # SignalR hub client interface + enums
-    └── OrchestratorHubClient.cs    # SignalR hub client implementation
+    ├── OrchestratorHubClient.cs    # SignalR hub client implementation
+    ├── WorkerProcessLauncher.cs    # Launch worker in active session or session 0
+    └── WorkerProcessManager.cs     # Track, kill, and wait for a spawned worker
 ```
 
 ## Dependencies
@@ -240,15 +331,24 @@ clients/RunnerApp/
 AvintraRunnerApp.exe --appBaseUrl <url> --accessToken <token> --jobId <guid> [--websocketPort <port>]
 ```
 
-**Service mode (UNVALIDATED — see warning above):**
+**Windows service (hybrid model):**
 
 ```powershell
 AvintraRunnerService.exe --install
 AvintraRunnerService.exe --uninstall
-AvintraRunnerService.exe --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> [options]
+AvintraRunnerService.exe --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> [options]
+```
+
+Add `--unattended` to keep spawned workers in the service's session 0 and suppress UI.
+
+**Worker mode (normally launched by the service):**
+
+```powershell
+AvintraRunnerService.exe --worker --launcher <launcher> --appBaseUrl <url> --accessToken <jwt> --jobId <guid> [--unattended]
 ```
 
 ## Related
 
 - `apis/WorcBackend-legacy/WorkspaceAPIs/Features/ExecuteFlow/` — Backend execution APIs
 - `apis/WorcBackend-legacy/WorkspaceAPIs/Hubs/OrchestratorHub.cs` — SignalR hub for machine communication
+- `shared/NodeLibrary/Nodes/UiInterfaceAutomations/MessageBox/MessageBoxInteractionHelpers.cs` — Unattended / interactive prompt guard

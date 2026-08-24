@@ -47,6 +47,18 @@ if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsSe
     return 0;
 }
 
+// Worker mode: short-lived per-job executor launched by the service (or another launcher).
+if (options.IsWorkerMode)
+{
+    if (!options.JobId.HasValue)
+    {
+        Console.Error.WriteLine("Worker mode requires --jobId.");
+        PrintUsage();
+        return 1;
+    }
+    return await RunWorkerAsync(options);
+}
+
 // Console mode: run directly
 return await RunConsoleAsync(options);
 
@@ -54,6 +66,10 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
 {
     var isLocal = !options.IsServiceMode;
     var targetJobId = options.JobId!.Value;
+
+    // Each execution gets its own log file under %PROGRAMDATA%\Avintra\Runner\logs\jobs\{jobId}.
+    // The shared service log continues to rotate daily via DebugLog static methods.
+    using var logSession = DebugLog.StartJobSession(targetJobId);
 
     // Backend REST client + execution engine are shared by both modes.
     using var httpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
@@ -77,7 +93,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
 
     if (isLocal)
     {
-        DebugLog.Info($"Running in LOCAL mode for job {targetJobId} " +
+        logSession.Info($"Running in LOCAL mode for job {targetJobId} " +
                       $"with websocket port {options.WebsocketPort}.");
 
         localWs!.CommandReceived += (_, command) =>
@@ -85,7 +101,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
             switch (command)
             {
                 case LocalControlCommand.Abort:
-                    DebugLog.Info("Received Abort via local WebSocket.");
+                    logSession.Info("Received Abort via local WebSocket.");
                     abortRequested = true;
                     pauseResume.Set();
                     cts.Cancel();
@@ -96,20 +112,20 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
                     // POC: the Tauri WebSocket is a simple broadcast bus and pause coordination
                     // across the Studio UI + runner process is not yet hardened. Only Abort is
                     // honored; Pause/Resume are logged and ignored.
-                    DebugLog.Info($"Received {command} via local WebSocket. Ignoring in local mode.");
+                    logSession.Info($"Received {command} via local WebSocket. Ignoring in local mode.");
                     break;
             }
         };
 
         localWs.Disconnected += (_, reason) =>
-            DebugLog.Warn($"Local WebSocket disconnected: {reason}");
+            logSession.Warn($"Local WebSocket disconnected: {reason}");
 
         await localWs.ConnectAsync();
     }
     else
     {
         // Register the machine with the backend and obtain its machine JWT.
-        DebugLog.Info("Running in SERVER mode.");
+        logSession.Info("Running in SERVER mode.");
 
         MachineRegistrationResult? registration;
         if (options.IsServiceMode)
@@ -248,11 +264,11 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
                 var node = parsedFlow.Nodes.FirstOrDefault(n => n.Id == nodeId);
                 if (node?.Data?.IsDisabled == true)
                 {
-                    DebugLog.Info($"Node progress (running) skipped because node is disabled: {nodeId}");
+                    logSession.Info($"Node progress (running) skipped because node is disabled: {nodeId}");
                     return;
                 }
 
-                DebugLog.Info($"Node progress (running): {nodeId}");
+                logSession.Info($"Node progress (running): {nodeId}");
                 _ = localWs.PushNodeProgressAsync(nodeId, "running", nodeId, null);
             }
         },
@@ -264,7 +280,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
             if (localWs is not null)
             {
                 var status = nodeLog.IsSuccess ? "success" : "failed";
-                DebugLog.Info($"Node progress ({status}): {nodeLog.NodeId}");
+                logSession.Info($"Node progress ({status}): {nodeLog.NodeId}");
                 _ = localWs.PushNodeProgressAsync(nodeLog.NodeId, status, nodeLog.NodeName, nodeLog);
             }
 
@@ -279,7 +295,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
                 var status = nodeLog.Outputs is not null && nodeLog.Outputs.TryGetValue("Status", out var s)
                     ? s
                     : "no status";
-                DebugLog.Warn($"Node '{nodeLog.NodeName}' ({nodeLog.NodeId}) failed after {nodeLog.Duration:F0}ms. Inputs: {inputs}. Status: {status}");
+                logSession.Warn($"Node '{nodeLog.NodeName}' ({nodeLog.NodeId}) failed after {nodeLog.Duration:F0}ms. Inputs: {inputs}. Status: {status}");
             }
         },
         // Local mode: push exactly which edge was traversed so Studio can highlight the
@@ -288,7 +304,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         {
             if (localWs is not null)
             {
-                DebugLog.Info($"Edge traversed: {edgeId} -> {targetNodeId}");
+                logSession.Info($"Edge traversed: {edgeId} -> {targetNodeId}");
                 _ = localWs.PushEdgeTraversedAsync(edgeId, targetNodeId);
             }
         });
@@ -334,7 +350,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         foreach (var log in result.NodeLogs)
         {
             var status = log.IsSuccess ? "success" : "failed";
-            DebugLog.Info($"Node progress ({status}): {log.NodeId}");
+            logSession.Info($"Node progress ({status}): {log.NodeId}");
             await localWs.PushNodeProgressAsync(log.NodeId, status, log.NodeName, log);
         }
     }
@@ -344,7 +360,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     // which local runs do not emit.
     if (localWs is not null)
     {
-        DebugLog.Info($"Job completed ({jobStatus})");
+        logSession.Info($"Job completed ({jobStatus})");
         await localWs.PushJobCompletedAsync(jobStatus, result.ErrorMessage, result.NodeLogs?.ToList());
     }
 
@@ -353,12 +369,12 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     {
         var closeRemarks = result.Status switch
         {
-            FlowExecutionStatus.Failed => BackendHttpClient.BuildFailedNodeRemark(result.NodeLogs.ToList(), result.ErrorMessage),
+            FlowExecutionStatus.Failed => BackendHttpClient.BuildFailedNodeRemark(result.NodeLogs?.ToList() ?? [], result.ErrorMessage),
             FlowExecutionStatus.Aborted => "Job aborted by runner.",
             _ => null,
         };
 
-        await backendClient.CloseJobAsync(targetJobId, result.Status, result.NodeLogs.ToList(), closeRemarks);
+        await backendClient.CloseJobAsync(targetJobId, result.Status, result.NodeLogs?.ToList() ?? [], closeRemarks);
     }
     catch (Exception ex)
     {
@@ -373,6 +389,168 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
 
     Console.WriteLine($"Execution finished: {result.Status}");
     return result.IsSuccess ? 0 : 1;
+}
+
+/// <summary>
+/// Worker mode: short-lived per-job executor launched by the Windows service.
+/// Reads the machine JWT from AVINTRA_MACHINE_JWT, executes exactly one job, and exits.
+/// The long-lived service owns SignalR connectivity, job start/close lifecycle, and completion
+/// reporting; the worker only fetches the graph and executes it.
+/// </summary>
+static async Task<int> RunWorkerAsync(RunnerAppOptions options)
+{
+    var targetJobId = options.JobId!.Value;
+
+    // Each worker execution gets its own log file under %PROGRAMDATA%\Avintra\Runner\logs\jobs\{jobId}.
+    using var logSession = DebugLog.StartJobSession(targetJobId);
+
+    try
+    {
+        logSession.Info($"Worker started for job {targetJobId}. Launcher={options.Launcher}, Unattended={options.Unattended}, BaseUrl={options.AppBaseUrl}");
+
+        // Prefer the JWT passed by the service launcher; fall back to explicit --accessToken
+        // if the worker is invoked directly from the command line.
+        var jwtFromEnv = Environment.GetEnvironmentVariable("AVINTRA_MACHINE_JWT");
+        var accessToken = jwtFromEnv ?? options.AccessToken;
+
+        logSession.Info($"Access token source: {(jwtFromEnv is not null ? "AVINTRA_MACHINE_JWT" : (options.AccessToken is not null ? "--accessToken" : "none"))}, length={accessToken?.Length ?? 0}");
+
+        if (string.IsNullOrWhiteSpace(accessToken))
+        {
+            logSession.Error("Worker mode requires an access token via --accessToken or the AVINTRA_MACHINE_JWT environment variable.");
+            return 1;
+        }
+
+        if (options.Unattended)
+        {
+            Environment.SetEnvironmentVariable("AVINTRA_UNATTENDED", "true", EnvironmentVariableTarget.Process);
+            logSession.Info($"Worker running in unattended mode for job {targetJobId}.");
+        }
+
+        using var httpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
+        var backendClient = new BackendHttpClient(httpClient, accessToken);
+        var engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl);
+        logSession.Info($"Created execution engine with AppBaseUrl={options.AppBaseUrl}.");
+
+        var cts = new CancellationTokenSource();
+
+        // The service is the only SignalR participant. The worker is a headless executor:
+        // it uses the passed machine JWT only for REST calls (graph fetch + node execution).
+        // Progress and completion are reported by the service once the worker exits.
+        logSession.Info($"Fetching execution graph for job {targetJobId}...");
+        ExecutionGraphDto? graph;
+        try
+        {
+            graph = await backendClient.GetExecutionGraphAsync(targetJobId, cts.Token);
+        }
+        catch (Exception ex)
+        {
+            logSession.Error($"Failed to fetch execution graph for job {targetJobId}.", ex);
+            return 1;
+        }
+
+        if (graph is null)
+        {
+            logSession.Error("Execution graph not found.");
+            return 1;
+        }
+
+        logSession.Info($"Received execution graph: FlowVersionId={graph.FlowVersionId}, FlowName={graph.FlowName}, TenantId={graph.TenantId}");
+
+        try
+        {
+            _ = ReactFlowHelper.Parse(graph.ReactFlowObject)
+                ?? throw new InvalidOperationException("Failed to parse execution graph ReactFlow object.");
+        }
+        catch (Exception ex)
+        {
+            logSession.Error($"Failed to parse ReactFlow object for job {targetJobId}.", ex);
+            return 1;
+        }
+
+        // The long-lived service already started the job before spawning the worker.
+        // Do not call StartJobAsync here to avoid 409 conflicts and lifecycle double-ownership.
+
+        FlowExecutionResult result;
+
+        try
+        {
+            logSession.Info("Executing flow...");
+            result = await engine.ExecuteAsync(graph, cts.Token, nodeId =>
+            {
+                logSession.Info($"Worker node progress (running): {nodeId}");
+            });
+            logSession.Info($"Execution engine completed with status {result.Status}.");
+        }
+        catch (OperationCanceledException)
+        {
+            logSession.Warn("Execution was cancelled.");
+            result = new FlowExecutionResult
+            {
+                IsSuccess = false,
+                Status = FlowExecutionStatus.Aborted,
+                StartTime = DateTimeOffset.UtcNow,
+                EndTime = DateTimeOffset.UtcNow,
+                ErrorMessage = "Execution cancelled.",
+                NodeLogs = []
+            };
+        }
+        catch (Exception ex)
+        {
+            logSession.Error($"Execution failed for job {targetJobId}.", ex);
+            result = new FlowExecutionResult
+            {
+                IsSuccess = false,
+                Status = FlowExecutionStatus.Failed,
+                StartTime = DateTimeOffset.UtcNow,
+                EndTime = DateTimeOffset.UtcNow,
+                ErrorMessage = ex.ToString(),
+                NodeLogs = []
+            };
+        }
+
+        if (!string.IsNullOrWhiteSpace(result.ErrorMessage))
+        {
+            logSession.Info($"Execution error message: {result.ErrorMessage}");
+        }
+
+        if (result.NodeLogs is not null)
+        {
+            foreach (var nodeLog in result.NodeLogs)
+            {
+                var status = nodeLog.IsSuccess ? "success" : "failed";
+                logSession.Info($"Node '{nodeLog.NodeName}' ({nodeLog.NodeId}) {status} in {nodeLog.Duration:F0}ms.");
+                if (!nodeLog.IsSuccess)
+                {
+                    var inputs = nodeLog.Inputs is not null && nodeLog.Inputs.Count > 0
+                        ? string.Join(", ", nodeLog.Inputs.Select(kvp => $"{kvp.Key}={kvp.Value}"))
+                        : "none";
+                    var outputs = nodeLog.Outputs is not null && nodeLog.Outputs.Count > 0
+                        ? string.Join(", ", nodeLog.Outputs.Select(kvp => $"{kvp.Key}={kvp.Value}"))
+                        : "none";
+                    logSession.Error($"Failed node details: Node='{nodeLog.NodeName}', Inputs=[{inputs}], Outputs=[{outputs}]");
+                }
+            }
+        }
+
+        var jobStatus = result.Status switch
+        {
+            FlowExecutionStatus.Completed => "Completed",
+            FlowExecutionStatus.Aborted => "Aborted",
+            _ => "Failed"
+        };
+
+        // The service closes the job after the worker exits. The worker must not close it here
+        // to avoid duplicate close calls and 409 conflicts.
+
+        logSession.Info($"Execution finished: {result.Status}");
+        return result.IsSuccess ? 0 : 1;
+    }
+    catch (Exception ex)
+    {
+        logSession.Error($"Unhandled worker failure for job {targetJobId}.", ex);
+        throw;
+    }
 }
 
 static ExecutorMode ParseMode(string[] args)
@@ -634,6 +812,9 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
     string? tenantId = null;
     string? linkedUsername = null;
     int websocketPort = 0;
+    var isWorkerMode = false;
+    var unattended = false;
+    var launcher = "cli";
 
     for (int i = 0; i < args.Length; i++)
     {
@@ -660,11 +841,39 @@ static RunnerAppOptions? ParseRunArguments(string[] args)
             case "--websocketport":
                 if (++i < args.Length && int.TryParse(args[i], out var port)) websocketPort = port;
                 break;
+            case "--worker":
+                isWorkerMode = true;
+                break;
+            case "--unattended":
+                unattended = true;
+                break;
+            case "--launcher":
+                if (++i < args.Length) launcher = args[i];
+                break;
         }
     }
 
     if (string.IsNullOrWhiteSpace(appBaseUrl))
         return null;
+
+    // Worker mode only needs the app base URL and a job ID. The JWT is passed via the
+    // AVINTRA_MACHINE_JWT environment variable from the service launcher.
+    if (isWorkerMode)
+    {
+        if (jobId is null)
+            return null;
+
+        return new RunnerAppOptions
+        {
+            AppBaseUrl = appBaseUrl,
+            JobId = jobId,
+            AccessToken = accessToken ?? string.Empty,
+            WebsocketPort = websocketPort,
+            IsWorkerMode = true,
+            Launcher = launcher,
+            Unattended = unattended,
+        };
+    }
 
     // Service mode requires a tenant API key, tenant ID, and linked username. If the user
     // explicitly passed --service we must enforce those values; otherwise we fall back to
@@ -705,8 +914,17 @@ static void PrintUsage()
     Console.Error.WriteLine("  --jobId <guid>           Job ID to execute (required)");
     Console.Error.WriteLine("  --websocketPort <port>   Local Tauri WebSocket port (node progress + abort control)");
     Console.Error.WriteLine("");
+    Console.Error.WriteLine("WORKER MODE (launched by the service, normally not invoked manually):");
+    Console.Error.WriteLine("  AvintraRunnerApp --worker --launcher service --appBaseUrl <url> --jobId <guid> [--unattended]");
+    Console.Error.WriteLine("");
+    Console.Error.WriteLine("Worker options:");
+    Console.Error.WriteLine("  --worker                 Run as short-lived per-job worker process");
+    Console.Error.WriteLine("  --launcher <service|studio|cli>  Who launched the worker");
+    Console.Error.WriteLine("  --unattended             Run in the service session (session 0) and suppress UI");
+    Console.Error.WriteLine("  --jobId <guid>           Job ID to execute");
+    Console.Error.WriteLine("");
     Console.Error.WriteLine("SERVICE MODE (UNVALIDATED - do not use in production without testing):");
-    Console.Error.WriteLine("  AvintraRunnerApp --install [--appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>]");
+    Console.Error.WriteLine("  AvintraRunnerApp --install [--appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user> --unattended]");
     Console.Error.WriteLine("                                Install as Windows service (interactive or silent)");
     Console.Error.WriteLine("  AvintraRunnerApp --uninstall  Uninstall Windows service");
     Console.Error.WriteLine("  AvintraRunnerApp --run --service --appBaseUrl <url> --apiKey <key> --tenantId <id> --linkedUsername <user>");

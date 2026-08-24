@@ -56,6 +56,11 @@
 .PARAMETER DoNotStart
     Install the service but do not start it immediately.
 
+.PARAMETER Unattended
+    Launch spawned worker processes in session 0 without UI instead of the default
+    active interactive session. Use this for headless servers or when the runner must
+    never show UI. UI-dependent nodes will fail fast instead of blocking.
+
 .EXAMPLE
     Set $env variables then pipe the script from the web directly into PowerShell.
     The latest runner version is resolved automatically from the backend:
@@ -99,7 +104,10 @@ param (
     [string]$ServiceName = "AvintraRunnerService",
 
     [Parameter(Mandatory = $false)]
-    [switch]$DoNotStart
+    [switch]$DoNotStart,
+
+    [Parameter(Mandatory = $false)]
+    [switch]$Unattended
 )
 
 $ErrorActionPreference = "Stop"
@@ -216,7 +224,8 @@ function Install-Service {
         [string]$AppBaseUrl,
         [string]$ApiKey,
         [string]$TenantId,
-        [string]$LinkedUsername
+        [string]$LinkedUsername,
+        [switch]$Unattended
     )
 
     Write-Step "Registering Windows service '$ServiceName'..."
@@ -228,6 +237,10 @@ function Install-Service {
         "--tenantId", $TenantId,
         "--linkedUsername", $LinkedUsername
     )
+
+    if ($Unattended) {
+        $arguments += "--unattended"
+    }
 
     $psi = [System.Diagnostics.ProcessStartInfo]::new()
     $psi.FileName = $ExecutablePath
@@ -288,7 +301,7 @@ if (-not (Test-Path $runnerExe)) {
     throw "Runner executable not found at $runnerExe. The archive may be invalid."
 }
 
-Install-Service -ExecutablePath $runnerExe -AppBaseUrl $AppBaseUrl -ApiKey $ApiKey -TenantId $TenantId -LinkedUsername $LinkedUsername
+Install-Service -ExecutablePath $runnerExe -AppBaseUrl $AppBaseUrl -ApiKey $ApiKey -TenantId $TenantId -LinkedUsername $LinkedUsername -Unattended:$Unattended
 
 Start-ServiceIfRequested -Name $ServiceName
 
