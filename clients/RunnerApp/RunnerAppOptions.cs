@@ -26,6 +26,27 @@ public class RunnerAppOptions
     public Guid? JobId { get; set; }
 
     /// <summary>
+    /// Set by the --worker command-line flag. A worker is a short-lived per-job executor process
+    /// spawned by the service (or, in future, by another launcher). It executes exactly one job,
+    /// reports progress/completion to the backend, and exits.
+    /// </summary>
+    public bool IsWorkerMode { get; set; }
+
+    /// <summary>
+    /// Who launched the worker: "service" (Windows service), "studio" (Tauri desktop app),
+    /// or "cli" (command line). Used to decide whether to connect to the local Tauri WebSocket,
+    /// which only makes sense when launched from Studio.
+    /// </summary>
+    public string Launcher { get; set; } = "cli";
+
+    /// <summary>
+    /// When true the worker runs in the service's own non-interactive session (session 0) and
+    /// must suppress all UI. The default is false, meaning the service launches the worker into
+    /// the active interactive user session so MessageBox/Office dialogs can appear.
+    /// </summary>
+    public bool Unattended { get; set; }
+
+    /// <summary>
     /// True when running as the long-lived Windows service (tenant apiKey + tenantId + linkedUsername present):
     /// machine registration + server SignalR over the backend OrchestratorHub. False for local
     /// single-shot execution of an unpublished, under-development flow, where progress and

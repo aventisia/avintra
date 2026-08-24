@@ -13,6 +13,9 @@ public class RunnerAppService : BackgroundService
     // Cancellation source for the job currently being executed; cancelled when an Abort/Killed command arrives.
     private CancellationTokenSource? _activeJobCts;
 
+    // Process manager for the current worker; null when no job is running.
+    private WorkerProcessManager? _workerManager;
+
     public RunnerAppService(
         RunnerAppOptions options,
         ILogger<RunnerAppService> logger,
@@ -26,33 +29,25 @@ public class RunnerAppService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("RunnerAppService started in {Mode} mode.", _options.IsServiceMode ? "service" : "single-shot");
+        DebugLog.Info($"RunnerAppService started in {(_options.IsServiceMode ? "service" : "single-shot")} mode. Logs: {DebugLog.CurrentLogFilePath}");
 
         var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
 
         try
         {
-            while (!cts.Token.IsCancellationRequested)
-            {
-                try
-                {
-                    await RunWorkerCycleAsync(cts.Token);
-
-                    // In single-shot mode (fixed JobId) run exactly one job and exit.
-                    if (_options.JobId.HasValue)
-                        break;
-
-                    _logger.LogInformation("Worker cycle completed. Waiting for the next job assignment...");
-                }
-                catch (OperationCanceledException) when (cts.IsCancellationRequested)
-                {
-                    break;
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex, "Service worker cycle failed. Retrying in 15 seconds...");
-                    await Task.Delay(TimeSpan.FromSeconds(15), cts.Token);
-                }
-            }
+            // Connect once and stay connected for the lifetime of the service. Job execution
+            // is handled inside the hub command handler, so the service remains online and
+            // ready for Abort/Killed commands between jobs.
+            await RunHubListenerAsync(cts.Token);
+        }
+        catch (OperationCanceledException) when (cts.IsCancellationRequested)
+        {
+            // Expected on service stop.
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "RunnerAppService hub listener failed unexpectedly.");
+            DebugLog.Error("RunnerAppService hub listener failed unexpectedly.", ex);
         }
         finally
         {
@@ -62,14 +57,14 @@ public class RunnerAppService : BackgroundService
         _logger.LogInformation("RunnerAppService stopped.");
     }
 
-    // One cycle: register machine, connect to hub, wait for a job command, execute it, report completion.
-    private async Task RunWorkerCycleAsync(CancellationToken cancellationToken)
+    // Long-lived listener: registers the machine, connects to the hub, and stays connected.
+    // Commands are dispatched directly to ExecuteJobAsync; the connection is only rebuilt when
+    // it drops.
+    private async Task RunHubListenerAsync(CancellationToken cancellationToken)
     {
         using var registerHttpClient = new HttpClient { BaseAddress = new Uri(_options.AppBaseUrl) };
         var registerClient = new BackendHttpClient(registerHttpClient, _options.AccessToken);
 
-        // Register the machine and obtain a machine JWT. Long-lived (API-key) registration is
-        // refreshed each cycle; JWT registration is used for single-shot console runs.
         var registration = await RegisterMachineAsync(registerClient, cancellationToken);
         var accessToken = registration?.Jwt ?? _options.AccessToken;
         if (registration != null)
@@ -79,16 +74,22 @@ public class RunnerAppService : BackgroundService
 
         using var httpClient = new HttpClient { BaseAddress = new Uri(_options.AppBaseUrl) };
         var backendClient = new BackendHttpClient(httpClient, accessToken);
-        var engine = new DesktopExecutionEngine(accessToken, _options.AppBaseUrl);
 
         var hubLogger = _loggerFactory.CreateLogger<OrchestratorHubClient>();
+
+        // Service mode has no reliable interactive session, so use the service account username
+        // for hub identity. This keeps the machine identity stable across session changes.
+        var hubUsername = _options.IsServiceMode
+            ? MachineIdentity.ServiceAccountUsername
+            : null;
+
         await using var hubClient = new OrchestratorHubClient(
             _options.AppBaseUrl,
             accessToken,
-            hubLogger);
+            hubLogger,
+            hubUsername);
 
         var commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var pauseResume = new ManualResetEventSlim(true);
 
         hubClient.CommandReceived += (_, e) =>
         {
@@ -98,17 +99,18 @@ public class RunnerAppService : BackgroundService
             }
             else if (e.Command == ExecutorCommand.Abort || e.Command == ExecutorCommand.Killed)
             {
-                pauseResume.Set();
                 _activeJobCts?.Cancel();
+                _workerManager?.KillWorker();
                 commandReceived.TrySetResult(null);
             }
             else if (e.Command == ExecutorCommand.Pause)
             {
-                pauseResume.Reset();
+                // Pause/resume is not forwarded to the worker in this version.
+                _logger.LogInformation("Pause command received but not implemented for worker processes.");
             }
             else if (e.Command == ExecutorCommand.Resume)
             {
-                pauseResume.Set();
+                _logger.LogInformation("Resume command received but not implemented for worker processes.");
             }
         };
 
@@ -120,48 +122,57 @@ public class RunnerAppService : BackgroundService
         hubClient.Disconnected += (_, reason) =>
         {
             _logger.LogWarning("Service is OFFLINE — SignalR disconnected: {Reason}.", reason);
+            DebugLog.Warn($"SignalR disconnected: {reason}");
             commandReceived.TrySetResult(null);
         };
 
-        // Connect (with retry) and wait for the next job command.
         await ConnectHubWithRetryAsync(hubClient, cancellationToken);
 
         _logger.LogInformation("Service is ONLINE — connected to OrchestratorHub.");
+        DebugLog.Info($"Service is ONLINE — connected to OrchestratorHub as {MachineIdentity.ServiceAccountUsername} ({hubUsername}).");
 
         if (_options.JobId.HasValue)
         {
-            // Single-shot mode: execute the explicitly requested job.
-            await ExecuteJobAsync(backendClient, engine, hubClient, _options.JobId.Value, cancellationToken);
+            // Single-shot mode: execute the explicitly requested job and exit.
+            await ExecuteJobAsync(backendClient, hubClient, _options.JobId.Value, accessToken, cancellationToken);
             return;
         }
 
-        // Service mode: wait for an Initiate command, execute the assigned job, then loop.
-        var command = await WaitForCommandAsync(commandReceived, hubClient, cancellationToken);
-        if (command != null)
+        // Service mode: keep listening for commands and execute each assigned job.
+        while (!cancellationToken.IsCancellationRequested)
         {
-            _logger.LogInformation("Job request received: {JobId}. Starting execution...", command.JobId);
-            await ExecuteJobAsync(backendClient, engine, hubClient, command.JobId, cancellationToken);
-        }
-        else
-        {
-            _logger.LogInformation("No job request received; disconnecting from OrchestratorHub until next cycle.");
-        }
+            commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>(TaskCreationOptions.RunContinuationsAsynchronously);
+            var command = await WaitForCommandAsync(commandReceived, hubClient, cancellationToken);
+            if (command == null)
+            {
+                _logger.LogInformation("No job request received or connection lost. Waiting for next command...");
+                continue;
+            }
 
-        await hubClient.DisconnectAsync();
+            _logger.LogInformation("Job request received: {JobId}. Starting execution...", command.JobId);
+            DebugLog.Info($"Job request received: {command.JobId}. Starting execution...");
+            await ExecuteJobAsync(backendClient, hubClient, command.JobId, accessToken, cancellationToken);
+        }
     }
 
     private async Task<MachineRegistrationResult?> RegisterMachineAsync(BackendHttpClient registerClient, CancellationToken cancellationToken)
     {
+        // Service mode has no reliable interactive session; use the service account username
+        // (e.g. THINKPAD$) so the backend machine lookup stays stable.
+        var registrationUsername = _options.IsServiceMode
+            ? MachineIdentity.ServiceAccountUsername
+            : MachineIdentity.Username;
+
         if (_options.IsServiceMode)
         {
             // Long-lived registration using the tenant API key. Refreshed each cycle.
             return await registerClient.RegisterMachineWithApiKeyAsync(
-                "Windows", MachineIdentity.OsId, MachineIdentity.Username, MachineIdentity.Hostname,
+                "Windows", MachineIdentity.OsId, registrationUsername, MachineIdentity.Hostname,
                 _options.TenantId, _options.ApiKey, _options.LinkedUsername, cancellationToken);
         }
 
         return await registerClient.RegisterMachineAsync(
-            "Windows", MachineIdentity.OsId, MachineIdentity.Username, MachineIdentity.Hostname, cancellationToken);
+            "Windows", MachineIdentity.OsId, registrationUsername, MachineIdentity.Hostname, cancellationToken);
     }
 
     private async Task ConnectHubWithRetryAsync(IOrchestratorHubClient hubClient, CancellationToken cancellationToken)
@@ -217,24 +228,31 @@ public class RunnerAppService : BackgroundService
 
     private async Task ExecuteJobAsync(
         BackendHttpClient backendClient,
-        IExecutionEngine engine,
         IOrchestratorHubClient hubClient,
         Guid targetJobId,
+        string accessToken,
         CancellationToken cancellationToken)
     {
+        using var jobLog = DebugLog.StartJobSession(targetJobId);
         var jobCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _activeJobCts = jobCts;
+        WorkerProcessManager? manager = null;
+
         try
         {
             _logger.LogInformation("Fetching execution graph for job {JobId}...", targetJobId);
+            jobLog.Info($"Fetching execution graph for job {targetJobId}...");
             var graph = await backendClient.GetExecutionGraphAsync(targetJobId, cancellationToken);
             if (graph is null)
             {
                 _logger.LogError("Execution graph not found for job {JobId}.", targetJobId);
+                jobLog.Error("Execution graph not found.");
+                await hubClient.ReportCompletionAsync(targetJobId, "Failed", "Execution graph not found.", cancellationToken);
                 return;
             }
 
             _logger.LogInformation("Marking job {JobId} as running...", targetJobId);
+            jobLog.Info($"Marking job {targetJobId} as running...");
             try
             {
                 await backendClient.StartJobAsync(targetJobId, cancellationToken);
@@ -242,87 +260,94 @@ public class RunnerAppService : BackgroundService
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Failed to mark job {JobId} as running. Continuing execution anyway.", targetJobId);
+                jobLog.Warn($"Failed to mark job {targetJobId} as running. Continuing execution anyway: {ex.Message}");
             }
 
-            FlowExecutionResult result;
-            var lastReportedNode = string.Empty;
-            using var progressCts = CancellationTokenSource.CreateLinkedTokenSource(jobCts.Token);
-            var progressTask = RunProgressReporterAsync(
-                hubClient,
-                targetJobId,
-                () => lastReportedNode,
-                TimeSpan.FromSeconds(15),
-                progressCts.Token);
+            // Spawn a worker process to execute the job. The service stays connected to the hub
+            // so it can receive Abort/Killed commands and relay completion to the user.
+            var executablePath = Environment.ProcessPath
+                ?? throw new InvalidOperationException("Cannot determine the runner executable path.");
 
+            manager = new WorkerProcessManager(executablePath, _options.Unattended);
+            _workerManager = manager;
+            jobLog.Info($"Starting worker process for job {targetJobId}.");
+            manager.StartWorker(targetJobId, _options.AppBaseUrl, accessToken);
+
+            var outcome = "Completed";
+            string? outcomeMessage = null;
+            WorkerExitResult? workerResult = null;
             try
             {
-                _logger.LogInformation("Executing flow for job {JobId}...", targetJobId);
-                result = await engine.ExecuteAsync(graph, jobCts.Token, nodeId => lastReportedNode = nodeId);
+                workerResult = await manager.WaitForExitAsync(jobCts.Token);
+                outcome = workerResult.SuggestedStatus;
+                outcomeMessage = workerResult.Summary;
+                jobLog.Info($"Worker exited with code {workerResult.ExitCode}, suggested status {outcome}.");
             }
             catch (OperationCanceledException)
             {
                 _logger.LogInformation("Execution cancelled for job {JobId}.", targetJobId);
-                result = new FlowExecutionResult
-                {
-                    IsSuccess = false,
-                    Status = FlowExecutionStatus.Aborted,
-                    StartTime = DateTimeOffset.UtcNow,
-                    EndTime = DateTimeOffset.UtcNow,
-                    ErrorMessage = "Execution aborted.",
-                    NodeLogs = []
-                };
+                jobLog.Warn($"Execution cancelled for job {targetJobId}.");
+                outcome = "Aborted";
+                outcomeMessage = "Execution aborted by runner.";
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Execution failed for job {JobId}.", targetJobId);
-                result = new FlowExecutionResult
-                {
-                    IsSuccess = false,
-                    Status = FlowExecutionStatus.Failed,
-                    StartTime = DateTimeOffset.UtcNow,
-                    EndTime = DateTimeOffset.UtcNow,
-                    ErrorMessage = ex.Message,
-                    NodeLogs = []
-                };
+                jobLog.Error($"Execution failed for job {targetJobId}: {ex.Message}");
+                outcome = "Failed";
+                outcomeMessage = ex.Message;
             }
 
-            var jobStatus = result.Status switch
+            // Log whatever the worker printed so we can diagnose short/cryptic exits.
+            if (workerResult is not null)
             {
-                FlowExecutionStatus.Completed => "Completed",
-                FlowExecutionStatus.Aborted => "Aborted",
-                _ => "Failed"
+                if (!string.IsNullOrWhiteSpace(workerResult.StandardOutput))
+                    jobLog.Info($"Worker stdout for job {targetJobId}:\n{workerResult.StandardOutput.Trim()}");
+                if (!string.IsNullOrWhiteSpace(workerResult.StandardError))
+                    jobLog.Warn($"Worker stderr for job {targetJobId}:\n{workerResult.StandardError.Trim()}");
+            }
+
+            var flowStatus = outcome switch
+            {
+                "Completed" => FlowExecutionStatus.Completed,
+                "Aborted" => FlowExecutionStatus.Aborted,
+                _ => FlowExecutionStatus.Failed,
             };
 
-            progressCts.Cancel();
-            try { await progressTask; }
-            catch (OperationCanceledException) { /* expected when execution finishes */ }
-
-            _logger.LogInformation("Closing job {JobId} with status {Status}.", targetJobId, jobStatus);
+            _logger.LogInformation("Closing job {JobId} with status {Status}.", targetJobId, outcome);
+            jobLog.Info($"Closing job {targetJobId} with status {outcome}.");
             try
             {
-                var closeRemarks = result.Status switch
-                {
-                    FlowExecutionStatus.Failed => BackendHttpClient.BuildFailedNodeRemark(result.NodeLogs.ToList(), result.ErrorMessage),
-                    FlowExecutionStatus.Aborted => "Job aborted by runner.",
-                    _ => null,
-                };
+                var closeRemarks = flowStatus == FlowExecutionStatus.Failed
+                    ? outcomeMessage
+                    : flowStatus == FlowExecutionStatus.Aborted
+                        ? "Job aborted by runner."
+                        : null;
 
-                await backendClient.CloseJobAsync(targetJobId, result.Status, result.NodeLogs.ToList(), closeRemarks, cancellationToken);
+                await backendClient.CloseJobAsync(targetJobId, flowStatus, [], closeRemarks, cancellationToken);
             }
             catch (Exception ex)
             {
                 _logger.LogWarning(ex, "Failed to close job {JobId}.", targetJobId);
+                jobLog.Warn($"Failed to close job {targetJobId}: {ex.Message}");
             }
 
-            await hubClient.ReportCompletionAsync(targetJobId, jobStatus, result.ErrorMessage, cancellationToken);
+            await hubClient.ReportCompletionAsync(targetJobId, outcome, outcomeMessage, cancellationToken);
 
-            var outcome = result.IsSuccess ? "completed successfully" : "failed";
-            _logger.LogInformation("Job {JobId} {Outcome}. Execution finished with status {Status}.", targetJobId, outcome, result.Status);
+            var logOutcome = outcome == "Completed" ? "completed successfully" : "failed";
+            _logger.LogInformation("Job {JobId} {Outcome}.", targetJobId, logOutcome);
+            jobLog.Info($"Job {targetJobId} {logOutcome}.");
         }
         finally
         {
             _activeJobCts = null;
+            _workerManager = null;
             jobCts.Dispose();
+
+            if (manager is not null)
+            {
+                await manager.DisposeAsync();
+            }
         }
     }
 

@@ -78,14 +78,25 @@ public class DesktopExecutionEngine : IExecutionEngine
 
             try
             {
+                DebugLog.Info("STA execution thread started; invoking flow work.");
                 work().ContinueWith(t =>
                 {
                     if (t.IsFaulted && t.Exception is not null)
-                        tcs.TrySetException(t.Exception.InnerException ?? t.Exception);
+                    {
+                        var ex = t.Exception.InnerException ?? t.Exception;
+                        DebugLog.Error("Flow work faulted on STA thread.", ex);
+                        tcs.TrySetException(ex);
+                    }
                     else if (t.IsCanceled)
+                    {
+                        DebugLog.Warn("Flow work cancelled on STA thread.");
                         tcs.TrySetCanceled();
+                    }
                     else
+                    {
+                        DebugLog.Info("Flow work completed on STA thread.");
                         tcs.TrySetResult(t.Result);
+                    }
 
                     // Stop pumping once the flow has completed so the STA thread can exit.
                     syncContext.Stop();
@@ -93,13 +104,24 @@ public class DesktopExecutionEngine : IExecutionEngine
             }
             catch (Exception ex)
             {
+                DebugLog.Error("Fatal exception starting flow work on STA thread.", ex);
                 tcs.TrySetException(ex);
                 syncContext.Stop();
                 return;
             }
 
             // Pump the synchronization context so awaited continuations run on this STA thread.
-            syncContext.Run();
+            try
+            {
+                syncContext.Run();
+            }
+            catch (Exception ex)
+            {
+                DebugLog.Error("STA message loop threw an unhandled exception.", ex);
+                tcs.TrySetException(ex);
+            }
+
+            DebugLog.Info("STA execution thread ending.");
         })
         {
             IsBackground = true,
