@@ -10,6 +10,7 @@ import {
   PWD_EXPIRED,
   TWO_FA_ENABLED,
 } from "@/constants/variables";
+import { getPostLoginDestination } from "@/constants/post-login-destination";
 
 import { authenticateUser } from "../apis/login-apis";
 import { useLoginStore } from "../stores/login-store";
@@ -69,14 +70,14 @@ export const useAuthenticateUserMutation = () => {
         resetLoginProcess();
 
         // Set authenticated user locally
-        setUserSessionLocally(data);
+        const userSession = setUserSessionLocally(data);
 
-        // Redirect to workspace app
+        // Redirect to Atlas (Aventisia employees) or Workspace app
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get("redirect");
         const destination = redirect
           ? decodeURIComponent(redirect)
-          : import.meta.env.VITE_WORKSPACE_PATH;
+          : getPostLoginDestination(userSession.email);
 
         navigate("/redirect?msg=Logging in...&url=" + destination);
       }

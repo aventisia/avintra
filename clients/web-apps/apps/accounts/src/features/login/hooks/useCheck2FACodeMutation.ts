@@ -4,6 +4,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
+import { getPostLoginDestination } from "@/constants/post-login-destination";
+
 import { checkTwoFAVerificationCode } from "../apis/login-apis";
 import { useLoginStore } from "../stores/login-store";
 
@@ -26,10 +28,10 @@ export const useCheck2FACodeMutation = () => {
       resetLoginProcess();
 
       // Set authenticated user locally
-      setUserSessionLocally(data);
+      const userSession = setUserSessionLocally(data);
 
-      // Redirect to workspace app
-      navigate("/redirect?msg=Logging in...&url=" + import.meta.env.VITE_WORKSPACE_PATH);
+      // Redirect to Atlas (Aventisia employees) or Workspace app
+      navigate("/redirect?msg=Logging in...&url=" + getPostLoginDestination(userSession.email));
     },
     onError: (error) => {
       toast.error(error.toString());

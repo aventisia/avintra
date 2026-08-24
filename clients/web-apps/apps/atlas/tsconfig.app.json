@@ -1,0 +1,21 @@
+{
+  "extends": "@avplatform/typescript-config/vite.json",
+  "compilerOptions": {
+    "incremental": true,
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": false,
+    "baseUrl": ".",
+    "paths": {
+      "@/react-toolkit/*": ["./react-toolkit/*"],
+      "@/ui/*": ["../../packages/ui/src/*"],
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": [
+    "src",
+    "react-toolkit",
+    "../../packages/ui/src/**/*",
+    "../../packages/layout/src/**/*"
+  ]
+}
