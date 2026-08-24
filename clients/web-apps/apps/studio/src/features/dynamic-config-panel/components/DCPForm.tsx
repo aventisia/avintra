@@ -109,10 +109,7 @@ export const DCPForm = () => {
           <DCPTabsListWrapper>
             <DCPTabsList>
               {tabKeys
-                ?.filter(
-                  (key) =>
-                    import.meta.env.MODE !== "production" || (key !== "Tools" && key !== "Schema"),
-                )
+                ?.filter((key) => import.meta.env.MODE !== "production" || key !== "Tools")
                 ?.map((key) => (
                   <DCPTabsTrigger
                     tabValue={key}
