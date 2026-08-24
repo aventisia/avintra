@@ -289,7 +289,17 @@ const RunnerInstallRow = ({
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
-                Step 2: Run the provisioning one-liner
+                Step 2: Allow local scripts to run
+              </p>
+              <p className="mb-2 text-sm text-slate-500">
+                PowerShell blocks unsigned scripts by default. Run the command below once in the
+                same Administrator session so the downloaded provisioning script can execute.
+              </p>
+              <OneLinerBlock command="Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser" />
+            </li>
+            <li>
+              <p className="mb-2 text-sm font-semibold text-slate-700">
+                Step 3: Run the provisioning one-liner
               </p>
               <p className="mb-2 text-sm text-slate-500">
                 Paste and run the block below. It sets your environment variables, downloads the
@@ -305,31 +315,31 @@ const RunnerInstallRow = ({
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
-                Step 3: Verify the service was created
+                Step 4: Verify the service was created
               </p>
               <OneLinerBlock command='sc qc "AvintraRunnerService"' />
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
-                Step 4: Check service status
+                Step 5: Check service status
               </p>
               <OneLinerBlock command='sc query "AvintraRunnerService"' />
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
-                Step 5: Restart the service
+                Step 6: Restart the service
               </p>
               <OneLinerBlock
                 command={`sc stop "AvintraRunnerService"\nsc start "AvintraRunnerService"`}
               />
             </li>
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">Step 6: Stop the service</p>
+              <p className="mb-2 text-sm font-semibold text-slate-700">Step 7: Stop the service</p>
               <OneLinerBlock command='sc stop "AvintraRunnerService"' />
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
-                Step 7: Or install manually from the runner zip
+                Step 8: Or install manually from the runner zip
               </p>
               <p className="mb-2 text-sm text-slate-500">
                 Download the runner zip and extract it to{" "}
@@ -344,7 +354,7 @@ const RunnerInstallRow = ({
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
-                Step 8: Uninstall the service
+                Step 9: Uninstall the service
               </p>
               <p className="mb-2 text-sm text-slate-500">
                 If you ever need to remove the runner from this machine, run this from an
