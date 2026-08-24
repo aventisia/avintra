@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useShallow } from "zustand/react/shallow";
 
 import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
+import { getPostLoginDestination } from "@/constants/post-login-destination";
 import { useOnboardingStore } from "@/features/on-boarding/stores/on-boarding-store";
 
 /**
@@ -41,7 +42,8 @@ export const useValidateUserSession = () => {
       // ----------User is authenticated Now----------
 
       // Set authenticated user locally and session obj in store
-      setUserSession(setUserSessionLocally(data.data));
+      const userSession = setUserSessionLocally(data.data);
+      setUserSession(userSession);
 
       // Check if backend message indicates incomplete tenant setup
       if (data.message.includes(ADD_TENANT)) {
@@ -49,12 +51,12 @@ export const useValidateUserSession = () => {
       } else if (data.message.includes(NO_ACTIVE_SUBSCRIPTION)) {
         setOnBoardingStep("choose-plan");
       } else {
-        //User already onboarded. Redirect url in redirect query or default to wroc
+        //User already onboarded. Redirect url in redirect query or default to Atlas/Workspace
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get("redirect");
         const destination = redirect
           ? decodeURIComponent(redirect)
-          : import.meta.env.VITE_WORKSPACE_PATH;
+          : getPostLoginDestination(userSession.email);
 
         navigate("/redirect?msg=Logging In...&url=" + destination);
       }

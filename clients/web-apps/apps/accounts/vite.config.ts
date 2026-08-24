@@ -12,6 +12,17 @@ export default defineConfig((): UserConfig => {
         { find: "@", replacement: path.resolve(__dirname, "./src") },
       ],
     },
+    server: {
+      proxy: {
+        // Forward API calls to the AccountsAPIs backend in dev. In production
+        // nginx handles this routing (see deploy/nginx/sites-available).
+        "/accounts/api": {
+          target: "http://localhost:4000",
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/accounts\/api/, "/api"),
+        },
+      },
+    },
   };
 
   return mergeConfig(baseConfig as UserConfig, config);

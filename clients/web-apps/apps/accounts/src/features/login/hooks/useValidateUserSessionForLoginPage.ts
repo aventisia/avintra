@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ADD_TENANT, NO_ACTIVE_SUBSCRIPTION } from "@/constants/variables";
+import { getPostLoginDestination } from "@/constants/post-login-destination";
 
 /**
  * Custom hook to validate the user session for the login page.
@@ -25,7 +26,7 @@ export const useValidateUserSessionForLoginPage = () => {
       if (!httpResponse) return;
 
       // Set authenticated user locally
-      setUserSessionLocally(httpResponse.data);
+      const userSession = setUserSessionLocally(httpResponse.data);
 
       // Check if backend message indicates incomplete tenant setup
       if (
@@ -34,12 +35,12 @@ export const useValidateUserSessionForLoginPage = () => {
       ) {
         window.location.href = import.meta.env.VITE_ACCOUNTS_PATH + "onboarding";
       } else {
-        //User already onboarded. Redirect url in redirect query or default to wroc
+        //User already onboarded. Redirect url in redirect query or default to Atlas/Workspace
         const params = new URLSearchParams(window.location.search);
         const redirect = params.get("redirect");
         const destination = redirect
           ? decodeURIComponent(redirect)
-          : import.meta.env.VITE_WORKSPACE_PATH;
+          : getPostLoginDestination(userSession.email);
 
         navigate("/redirect?msg=Loading...&url=" + destination);
       }
