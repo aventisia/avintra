@@ -1,5 +1,7 @@
 namespace RunnerApp;
 
+using RunnerApp.Services;
+
 /// <summary>
 /// Continuous worker that keeps the machine registered with the backend, stays connected to the
 /// OrchestratorHub, and executes any job it is assigned. Runs for the lifetime of the Windows service.
@@ -234,6 +236,7 @@ public class RunnerAppService : BackgroundService
         CancellationToken cancellationToken)
     {
         using var jobLog = DebugLog.StartJobSession(targetJobId);
+        WorkerResultSerializer.Delete(targetJobId);
         var jobCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         _activeJobCts = jobCts;
         WorkerProcessManager? manager = null;
@@ -307,24 +310,58 @@ public class RunnerAppService : BackgroundService
                     jobLog.Warn($"Worker stderr for job {targetJobId}:\n{workerResult.StandardError.Trim()}");
             }
 
+            // Try to load the full execution result the worker wrote. If present, use its node
+            // logs and error message when closing the job so the orchestrator shows per-node
+            // outcomes and the failed node's status. Fall back to the process-exit summary when
+            // the result file is missing (e.g., worker crash or abnormal termination).
+            FlowExecutionResult? workerFlowResult = null;
+            try
+            {
+                workerFlowResult = await WorkerResultSerializer.LoadAsync(targetJobId);
+                if (workerFlowResult is not null)
+                {
+                    jobLog.Info($"Loaded worker result for job {targetJobId}: {workerFlowResult.NodeLogs.Count} node logs, status {workerFlowResult.Status}.");
+                }
+                else
+                {
+                    jobLog.Warn($"No worker result file found for job {targetJobId}; using process exit summary.");
+                }
+            }
+            catch (Exception ex)
+            {
+                jobLog.Warn($"Failed to load worker result for job {targetJobId}: {ex.Message}");
+            }
+
+            var nodeLogs = workerFlowResult?.NodeLogs?.ToList() ?? new List<NodeExecutionLog>();
+
             var flowStatus = outcome switch
             {
                 "Completed" => FlowExecutionStatus.Completed,
                 "Aborted" => FlowExecutionStatus.Aborted,
-                _ => FlowExecutionStatus.Failed,
+                _ => workerFlowResult?.Status ?? FlowExecutionStatus.Failed,
             };
 
             _logger.LogInformation("Closing job {JobId} with status {Status}.", targetJobId, outcome);
             jobLog.Info($"Closing job {targetJobId} with status {outcome}.");
             try
             {
-                var closeRemarks = flowStatus == FlowExecutionStatus.Failed
-                    ? outcomeMessage
-                    : flowStatus == FlowExecutionStatus.Aborted
-                        ? "Job aborted by runner."
-                        : null;
+                string? closeRemarks;
+                if (flowStatus == FlowExecutionStatus.Failed)
+                {
+                    closeRemarks = workerFlowResult is not null
+                        ? BackendHttpClient.BuildFailedNodeRemark(nodeLogs, workerFlowResult.ErrorMessage)
+                        : outcomeMessage;
+                }
+                else if (flowStatus == FlowExecutionStatus.Aborted)
+                {
+                    closeRemarks = "Job aborted by runner.";
+                }
+                else
+                {
+                    closeRemarks = null;
+                }
 
-                await backendClient.CloseJobAsync(targetJobId, flowStatus, [], closeRemarks, cancellationToken);
+                await backendClient.CloseJobAsync(targetJobId, flowStatus, nodeLogs, closeRemarks, cancellationToken);
             }
             catch (Exception ex)
             {

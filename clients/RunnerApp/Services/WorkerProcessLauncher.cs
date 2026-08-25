@@ -40,6 +40,22 @@ public static class WorkerProcessLauncher
     [DllImport("kernel32.dll", SetLastError = true)]
     private static extern bool CloseHandle(IntPtr hObject);
 
+    [DllImport("userenv.dll", SetLastError = true)]
+    private static extern bool CreateEnvironmentBlock(out IntPtr lpEnvironment, IntPtr hToken, bool bInherit);
+
+    [DllImport("userenv.dll", SetLastError = true)]
+    private static extern bool DestroyEnvironmentBlock(IntPtr lpEnvironment);
+
+    [DllImport("advapi32.dll", SetLastError = true)]
+    private static extern bool GetTokenInformation(
+        IntPtr TokenHandle,
+        int TokenInformationClass,
+        IntPtr TokenInformation,
+        int TokenInformationLength,
+        out int ReturnLength);
+
+    private const int TokenUser = 1;
+
     [StructLayout(LayoutKind.Sequential)]
     private struct STARTUPINFO
     {
@@ -98,9 +114,8 @@ public static class WorkerProcessLauncher
         var activeSessionId = WTSGetActiveConsoleSessionId();
         if (activeSessionId == unchecked((uint)-1))
         {
-            var message = "No active console session found and unattended mode is disabled. Failing the job.";
-            DebugLog.Error(message);
-            throw new InvalidOperationException(message);
+            DebugLog.Warn($"No active console session for job {workerOptions.JobId}; falling back to session-0 (service account).");
+            return LaunchInCurrentSession(executablePath, workerOptions, machineJwt);
         }
 
         DebugLog.Info($"Launching worker for job {workerOptions.JobId} in active session {activeSessionId}.");
@@ -125,8 +140,8 @@ public static class WorkerProcessLauncher
             var message = error == ERROR_NO_TOKEN
                 ? $"Cannot query user token for session {sessionId}: the session is not interactive or the caller lacks permission."
                 : $"WTSQueryUserToken failed for session {sessionId} (win32 error {error}).";
-            DebugLog.Error(message);
-            throw new InvalidOperationException(message);
+            DebugLog.Warn($"{message} Falling back to session-0 launch for job {workerOptions.JobId}.");
+            return LaunchInCurrentSession(executablePath, workerOptions, machineJwt);
         }
 
         try
@@ -147,10 +162,13 @@ public static class WorkerProcessLauncher
 
             // We pass AVINTRA_MACHINE_JWT as an environment variable so it does not appear in
             // command-line arguments that are visible to other users via Task Manager / WMI.
-            var environment = BuildEnvironmentBlock(machineJwt, MachineIdentity.Username);
-            var envPtr = environment != null
-                ? Marshal.StringToHGlobalUni(environment)
-                : IntPtr.Zero;
+            // Use the actual username from the token/session so the flow's GetWindowsEnvironmentVariable
+            // node reads the logged-in user instead of the service account.
+            var sessionUsername = GetUsernameFromToken(userToken) ?? MachineIdentity.Username;
+            DebugLog.Info($"Launching worker for job {workerOptions.JobId} as user '{sessionUsername}' in session {sessionId}.");
+
+            var environment = BuildEnvironmentBlockFromToken(userToken, machineJwt, sessionUsername);
+            var envPtr = environment;
 
             try
             {
@@ -200,13 +218,66 @@ public static class WorkerProcessLauncher
             finally
             {
                 if (envPtr != IntPtr.Zero)
-                    Marshal.FreeHGlobal(envPtr);
+                    DestroyEnvironmentBlock(envPtr);
             }
         }
         finally
         {
             CloseHandle(userToken);
         }
+    }
+
+    private static string? GetUsernameFromToken(IntPtr token)
+    {
+        try
+        {
+            if (!OperatingSystem.IsWindows())
+                return null;
+
+            // Determine required buffer size.
+            if (!GetTokenInformation(token, TokenUser, IntPtr.Zero, 0, out var size) && size == 0)
+                return null;
+
+            var buffer = Marshal.AllocHGlobal(size);
+            try
+            {
+                if (!GetTokenInformation(token, TokenUser, buffer, size, out _))
+                    return null;
+
+                // TOKEN_USER contains a pointer to SID_AND_ATTRIBUTES.
+                var tokenUser = Marshal.PtrToStructure<TOKEN_USER>(buffer);
+                var ntAccount = new System.Security.Principal.SecurityIdentifier(tokenUser.User.Sid)
+                    .Translate(typeof(System.Security.Principal.NTAccount))
+                    .Value;
+
+                // Return only the username part (e.g. "Gaurav"), not "DOMAIN\Gaurav",
+                // so Environment.GetEnvironmentVariable("USERNAME") matches normal Windows behavior.
+                var separatorIndex = ntAccount.LastIndexOf('\\');
+                return separatorIndex >= 0 ? ntAccount.Substring(separatorIndex + 1) : ntAccount;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(buffer);
+            }
+        }
+        catch (Exception ex)
+        {
+            DebugLog.Warn($"Failed to resolve username from token: {ex.Message}");
+            return null;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct TOKEN_USER
+    {
+        public SID_AND_ATTRIBUTES User;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct SID_AND_ATTRIBUTES
+    {
+        public IntPtr Sid;
+        public uint Attributes;
     }
 
     /// <summary>
@@ -280,36 +351,65 @@ public static class WorkerProcessLauncher
         return sb.ToString();
     }
 
-    private static string? BuildEnvironmentBlock(string? machineJwt, string interactiveUsername)
+    private static IntPtr BuildEnvironmentBlockFromToken(IntPtr token, string? machineJwt, string interactiveUsername)
     {
-        if (string.IsNullOrWhiteSpace(machineJwt) && string.IsNullOrWhiteSpace(interactiveUsername))
-            return null;
+        if (!OperatingSystem.IsWindows())
+            return IntPtr.Zero;
 
-        // CreateProcessAsUser expects a double-null-terminated block of KEY=VALUE\0 pairs.
-        // We copy the current process environment and append our JWT and interactive username.
-        var entries = new Dictionary<string, string>(Environment.GetEnvironmentVariables().Cast<System.Collections.DictionaryEntry>()
-            .ToDictionary(e => (string)e.Key, e => (string)e.Value!));
-
-        if (!string.IsNullOrWhiteSpace(machineJwt))
+        if (!CreateEnvironmentBlock(out var envBlock, token, false))
         {
-            entries["AVINTRA_MACHINE_JWT"] = machineJwt;
+            var error = Marshal.GetLastWin32Error();
+            DebugLog.Warn($"CreateEnvironmentBlock failed (win32 error {error}); worker will inherit service environment.");
+            return IntPtr.Zero;
         }
 
-        if (!string.IsNullOrWhiteSpace(interactiveUsername))
+        try
         {
+            var entries = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            // Read the token's environment block and copy it.
+            var current = envBlock;
+            while (true)
+            {
+                var entry = Marshal.PtrToStringUni(current);
+                if (string.IsNullOrEmpty(entry))
+                    break;
+
+                var separatorIndex = entry.IndexOf('=');
+                if (separatorIndex > 0)
+                {
+                    var key = entry.Substring(0, separatorIndex);
+                    var value = entry.Substring(separatorIndex + 1);
+                    entries[key] = value;
+                }
+
+                current = IntPtr.Add(current, (entry.Length + 1) * 2);
+            }
+
+            if (!string.IsNullOrWhiteSpace(machineJwt))
+            {
+                entries["AVINTRA_MACHINE_JWT"] = machineJwt;
+            }
+
             entries["AVINTRA_INTERACTIVE_USERNAME"] = interactiveUsername;
-        }
+            entries["USERNAME"] = interactiveUsername;
 
-        var sb = new System.Text.StringBuilder();
-        foreach (var kvp in entries)
-        {
-            sb.Append(kvp.Key);
-            sb.Append('=');
-            sb.Append(kvp.Value);
+            var sb = new System.Text.StringBuilder();
+            foreach (var kvp in entries)
+            {
+                sb.Append(kvp.Key);
+                sb.Append('=');
+                sb.Append(kvp.Value);
+                sb.Append('\0');
+            }
             sb.Append('\0');
+
+            return Marshal.StringToHGlobalUni(sb.ToString());
         }
-        sb.Append('\0');
-        return sb.ToString();
+        finally
+        {
+            DestroyEnvironmentBlock(envBlock);
+        }
     }
 
     private static string Quote(string value)
