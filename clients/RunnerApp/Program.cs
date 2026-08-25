@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using RunnerApp;
+using RunnerApp.Services;
 
 var mode = ParseMode(args);
 if (mode == ExecutorMode.Install)
@@ -540,8 +541,18 @@ static async Task<int> RunWorkerAsync(RunnerAppOptions options)
             _ => "Failed"
         };
 
-        // The service closes the job after the worker exits. The worker must not close it here
-        // to avoid duplicate close calls and 409 conflicts.
+        // Persist the full execution result so the service can close the job with per-node logs
+        // and a meaningful failed-node remark. The service owns job lifecycle and SignalR, so the
+        // worker must not call CloseJobAsync here to avoid duplicate close calls and 409 conflicts.
+        try
+        {
+            logSession.Info($"Saving execution result for job {targetJobId} ({result.NodeLogs?.Count ?? 0} node logs, status {result.Status}).");
+            await WorkerResultSerializer.SaveAsync(targetJobId, result);
+        }
+        catch (Exception ex)
+        {
+            logSession.Warn($"Failed to save worker result file for job {targetJobId}: {ex.Message}");
+        }
 
         logSession.Info($"Execution finished: {result.Status}");
         return result.IsSuccess ? 0 : 1;
@@ -675,6 +686,7 @@ static RunnerAppOptions? TryParseInstallArguments(string[] args)
     string? apiKey = null;
     string? tenantId = null;
     string? linkedUsername = null;
+    var unattended = false;
 
     for (int i = 0; i < args.Length; i++)
     {
@@ -691,6 +703,9 @@ static RunnerAppOptions? TryParseInstallArguments(string[] args)
                 break;
             case "--linkedusername":
                 if (++i < args.Length) linkedUsername = args[i];
+                break;
+            case "--unattended":
+                unattended = true;
                 break;
         }
     }
@@ -746,13 +761,28 @@ static RunnerAppOptions? PromptForInstallParameters()
         return null;
     }
 
+    var unattended = PromptYesNo("Run workers unattended (session 0 / service account)? (y/n): ");
+
     return new RunnerAppOptions
     {
         AppBaseUrl = appBaseUrl,
         ApiKey = apiKey,
         TenantId = tenantId,
         LinkedUsername = linkedUsername,
+        Unattended = unattended,
     };
+}
+
+static bool PromptYesNo(string message)
+{
+    while (true)
+    {
+        Console.Write(message);
+        var input = Console.ReadLine()?.Trim().ToLowerInvariant();
+        if (input == "y" || input == "yes") return true;
+        if (input == "n" || input == "no") return false;
+        Console.WriteLine("Please enter y or n.");
+    }
 }
 
 static string Prompt(string message)
@@ -771,6 +801,11 @@ static string BuildServiceBinPath(string executablePath, RunnerAppOptions option
         $"--tenantId {QuoteForSc(options.TenantId)}",
         $"--linkedUsername {QuoteForSc(options.LinkedUsername)}",
     };
+
+    if (options.Unattended)
+    {
+        arguments.Add("--unattended");
+    }
 
     var argsLine = string.Join(" ", arguments);
     return $"\"{executablePath}\" {argsLine}";

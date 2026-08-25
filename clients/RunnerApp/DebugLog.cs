@@ -18,15 +18,24 @@ namespace RunnerApp;
 /// </summary>
 public static class DebugLog
 {
-    private static readonly string BaseLogDir =
+    /// <summary>
+    /// Base log directory: %PROGRAMDATA%\Avintra\Runner\logs.
+    /// </summary>
+    public static string LogBaseDirectory { get; } =
         Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
             "Avintra",
             "Runner",
             "logs");
 
+    /// <summary>
+    /// Returns the per-job log/result directory for the given job id.
+    /// </summary>
+    public static string GetJobDirectory(Guid jobId) =>
+        Path.Combine(LogBaseDirectory, "jobs", jobId.ToString("D"));
+
     private static string ServiceLogFilePath =>
-        Path.Combine(BaseLogDir, $"runner-debug-{DateTimeOffset.Now:yyyy-MM-dd}.log");
+        Path.Combine(LogBaseDirectory, $"runner-debug-{DateTimeOffset.Now:yyyy-MM-dd}.log");
 
     private static readonly object Gate = new();
 
@@ -51,7 +60,7 @@ public static class DebugLog
     /// </summary>
     public static Session StartJobSession(Guid jobId)
     {
-        var jobDir = Path.Combine(BaseLogDir, "jobs", jobId.ToString("D"));
+        var jobDir = GetJobDirectory(jobId);
         var logPath = Path.Combine(jobDir, "runner-debug.log");
 
         PruneOldJobSessions();
@@ -67,7 +76,7 @@ public static class DebugLog
     {
         try
         {
-            var jobsDir = Path.Combine(BaseLogDir, "jobs");
+            var jobsDir = Path.Combine(LogBaseDirectory, "jobs");
             if (!Directory.Exists(jobsDir))
                 return;
 
