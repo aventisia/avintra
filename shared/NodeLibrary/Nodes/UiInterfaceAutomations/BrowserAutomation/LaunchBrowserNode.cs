@@ -52,7 +52,9 @@ public sealed class LaunchBrowserNode : BaseNode
                     Thread.Sleep(2000);
                     KillProcesses("msedge");
 
-                    new DriverManager().SetUpDriver(new EdgeConfig());
+                    var edgeExecutablePath = FindBrowserExecutable(BrowserTypeEnum.MicrosoftEdge);
+                    var edgeVersion = GetBrowserVersion(edgeExecutablePath);
+                    new DriverManager().SetUpDriver(new EdgeConfig(), version: edgeVersion);
 
                     var edgeUserDataDir = Path.Combine(appDataFolder, "Microsoft", "Edge", "User Data");
                     var edgeService = EdgeDriverService.CreateDefaultService();
@@ -61,12 +63,16 @@ public sealed class LaunchBrowserNode : BaseNode
                     edgeOptions.AddArgument($"--user-data-dir={edgeUserDataDir}");
                     edgeOptions.AddArgument("--profile-directory=Default");
                     if (browsingMode == BrowsingModeEnum.Private) edgeOptions.AddArgument("--inprivate");
+                    edgeOptions.BinaryLocation = edgeExecutablePath;
                     webDriver = new EdgeDriver(edgeService, edgeOptions);
                     break;
 
                 case BrowserTypeEnum.GoogleChrome:
                     KillProcesses("chromedriver");
-                    new DriverManager().SetUpDriver(new ChromeConfig());
+
+                    var chromeExecutablePath = FindBrowserExecutable(BrowserTypeEnum.GoogleChrome);
+                    var chromeVersion = GetBrowserVersion(chromeExecutablePath);
+                    new DriverManager().SetUpDriver(new ChromeConfig(), version: chromeVersion);
 
                     var chromeUserDataDir = Path.Combine(appDataFolder, "Google", "Chrome", "User Data");
                     var chromePort = GetPortOfRunningChromiumWithRemoteDebugging(processName, chromeUserDataDir);
@@ -79,8 +85,9 @@ public sealed class LaunchBrowserNode : BaseNode
                             arguments += " --incognito";
 
                         var process = new Process();
-                        process.StartInfo.FileName = "chrome.exe";
+                        process.StartInfo.FileName = chromeExecutablePath;
                         process.StartInfo.Arguments = arguments;
+                        process.StartInfo.UseShellExecute = false;
                         process.Start();
                     }
 
@@ -100,15 +107,7 @@ public sealed class LaunchBrowserNode : BaseNode
             if (webDriver != null && !string.IsNullOrWhiteSpace(launchUrl))
                 webDriver.Navigate().GoToUrl(launchUrl);
 
-            switch (windowState)
-            {
-                case WindowStateEnum.Maximized:
-                    webDriver.Manage().Window.Maximize();
-                    break;
-                case WindowStateEnum.Minimized:
-                    webDriver.Manage().Window.Minimize();
-                    break;
-            }
+            ApplyWindowState(webDriver, windowState);
 
             WebBrowserInstance.Set(context, webDriver);
             IsSuccess.Set(context, true);
@@ -210,6 +209,109 @@ public sealed class LaunchBrowserNode : BaseNode
             BrowserTypeEnum.GoogleChrome => "chrome.exe",
             _ => "Not Supported"
         };
+    }
+
+    private static void ApplyWindowState(IWebDriver? webDriver, WindowStateEnum windowState)
+    {
+        if (webDriver == null)
+            return;
+
+        // Allow the browser window a moment to finish initializing before changing state.
+        Thread.Sleep(500);
+
+        var window = webDriver.Manage().Window;
+        if (windowState == WindowStateEnum.Minimized)
+        {
+            try
+            {
+                window.Minimize();
+            }
+            catch
+            {
+                // Ignore window-state failures and continue.
+            }
+            return;
+        }
+
+        if (windowState == WindowStateEnum.Maximized)
+        {
+            // Retry maximize a couple of times; Chrome may report it is already maximized.
+            for (int i = 0; i < 3; i++)
+            {
+                try
+                {
+                    window.Maximize();
+                    return;
+                }
+                catch (Exception ex) when (ex.Message.Contains("failed to change window state"))
+                {
+                    if (i == 2) return; // Already in target state or transient; ignore.
+                    Thread.Sleep(200);
+                }
+                catch
+                {
+                    // Other errors are not retried.
+                    return;
+                }
+            }
+        }
+    }
+
+    private static string? GetBrowserVersion(string executablePath)
+    {
+        try
+        {
+            var info = FileVersionInfo.GetVersionInfo(executablePath);
+            return info.FileVersion;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static string FindBrowserExecutable(BrowserTypeEnum browserType)
+    {
+        string fileName = browserType switch
+        {
+            BrowserTypeEnum.MicrosoftEdge => "msedge.exe",
+            BrowserTypeEnum.GoogleChrome => "chrome.exe",
+            _ => throw new ArgumentException($"Unsupported browser type: {browserType}")
+        };
+
+        string[] candidatePaths = browserType switch
+        {
+            BrowserTypeEnum.MicrosoftEdge => new[]
+            {
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Microsoft", "Edge", "Application", "msedge.exe"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Microsoft", "Edge", "Application", "msedge.exe"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "Edge", "Application", "msedge.exe")
+            },
+            BrowserTypeEnum.GoogleChrome => new[]
+            {
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Google", "Chrome", "Application", "chrome.exe"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Google", "Chrome", "Application", "chrome.exe"),
+                Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Google", "Chrome", "Application", "chrome.exe")
+            },
+            _ => Array.Empty<string>()
+        };
+
+        foreach (var path in candidatePaths)
+        {
+            if (File.Exists(path))
+                return path;
+        }
+
+        // Fall back to PATH resolution
+        var pathEnv = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
+        foreach (var dir in pathEnv.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
+        {
+            var path = Path.Combine(dir.Trim(), fileName);
+            if (File.Exists(path))
+                return path;
+        }
+
+        throw new FileNotFoundException($"Could not locate {fileName}. Please ensure {browserType} is installed and its directory is on the system PATH.", fileName);
     }
 
     private static string? GetPortOfRunningChromiumWithRemoteDebugging(string processName, string userDataDir)
