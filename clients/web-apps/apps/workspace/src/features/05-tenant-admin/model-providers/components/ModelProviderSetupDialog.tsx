@@ -147,10 +147,20 @@ export const ModelProviderSetupDialog = () => {
 
   const handleSave = () => {
     if (!provider) return;
-    if (!selectedCredentialName) return;
+
+    // When the credential dropdown was not re-selected (e.g. the stored credential
+    // is a GUID that doesn't match any name-based option after a provider was
+    // disabled), fall back to the previously saved credential so a disabled
+    // provider can still be re-enabled.
+    const credentialName = selectedCredentialName || config?.credentialName || "";
+    const credentialId = config?.credentialId ?? null;
+
+    if (!credentialName && !credentialId) return;
+
     upsertMutation.mutate({
       providerType: provider.value,
-      credentialName: selectedCredentialName,
+      credentialName,
+      credentialId,
       enabledModelIds,
       isDisabled,
     });
@@ -327,7 +337,10 @@ export const ModelProviderSetupDialog = () => {
                   </Button>
                   <Button
                     onClick={handleSave}
-                    disabled={upsertMutation.isPending || !selectedCredentialName}
+                    disabled={
+                      upsertMutation.isPending ||
+                      (!selectedCredentialName && !config?.credentialId)
+                    }
                   >
                     {upsertMutation.isPending ? "Saving..." : "Save"}
                   </Button>

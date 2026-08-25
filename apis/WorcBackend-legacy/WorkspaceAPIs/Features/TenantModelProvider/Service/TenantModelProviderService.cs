@@ -49,6 +49,10 @@ public class TenantModelProviderService : ITenantModelProviderService
                 .ProjectToType<TenantModelProviderDto>()
                 .ToListAsync();
 
+            // Resolve each stored credential Id to its display name so the Agent
+            // Builder can pre-select the previously chosen credential.
+            await PopulateCredentialNamesAsync(modelProviders);
+
             serviceResponse.Data = modelProviders;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Model providers retrieved successfully.";
@@ -86,6 +90,10 @@ public class TenantModelProviderService : ITenantModelProviderService
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
             }
+
+            // Resolve the stored credential Id to its display name so the Agent
+            // Builder can pre-select the currently configured credential.
+            await PopulateCredentialNamesAsync(new[] { modelProvider });
 
             serviceResponse.Data = modelProvider;
             serviceResponse.StatusCode = 200;
@@ -246,5 +254,35 @@ public class TenantModelProviderService : ITenantModelProviderService
             .FirstOrDefaultAsync();
 
         return credential?.Id ?? existingCredentialId;
+    }
+
+    // Resolves the stored CredentialId of each provider to its display name,
+    // populating the DTO's CredentialName so the Agent Builder can show and
+    // pre-select the currently configured credential.
+    private async Task PopulateCredentialNamesAsync(IEnumerable<TenantModelProviderDto> providers)
+    {
+        var credentialIds = providers
+            .Select(p => p.CredentialId)
+            .Where(id => id.HasValue)
+            .Select(id => id!.Value)
+            .Distinct()
+            .ToList();
+
+        if (credentialIds.Count == 0) return;
+
+        var credentials = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(w => credentialIds.Contains(w.Id) && w.EnvType == _currentTenantService.CurrentEnvType)
+            .Select(w => new { w.Id, w.Name })
+            .ToListAsync();
+
+        var nameById = credentials.ToDictionary(c => c.Id, c => c.Name);
+
+        foreach (var provider in providers)
+        {
+            if (provider.CredentialId.HasValue && nameById.TryGetValue(provider.CredentialId.Value, out var name))
+            {
+                provider.CredentialName = name;
+            }
+        }
     }
 }
