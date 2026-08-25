@@ -29,6 +29,9 @@ export function useAutoLogout() {
   const handleLogout = async () => {
     try {
       await logOffFromCurrentSession();
+      // Clear the Super Admin tenant-switch flag so the next session refresh is not
+      // mistakenly routed to the tenant-switch endpoint.
+      localStorage.removeItem("tenant_switch");
       localStorage.setItem("logout", "true");
       setUserSession(null);
       navigate("/redirect?msg=Logging out...&url=" + import.meta.env.VITE_ACCOUNTS_PATH);

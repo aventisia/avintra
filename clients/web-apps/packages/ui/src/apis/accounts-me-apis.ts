@@ -23,10 +23,18 @@ const getMySession = () => {
     });
 };
 
-/** Refreshes user session using cookies */
+/** Refreshes user session using cookies. When a Super Admin has switched into a
+ *  tenant to view it (read-only), the session must be refreshed against the
+ *  tenant-switch endpoint so the JWT carries the "access_mode: read_only" claim. */
 const refreshSession = () => {
+  const isTenantSwitch = localStorage.getItem("tenant_switch") == "true";
+
   return axiosInstance
-    .put<IHttpResponse<UserSessionDto>>(`${baseAPIURL}/refresh-session`)
+    .put<IHttpResponse<UserSessionDto>>(
+      isTenantSwitch
+        ? `${import.meta.env.VITE_ACCOUNTS_API_PATH}/sa/tenants/auth/tokens/refresh`
+        : `${baseAPIURL}/refresh-session`,
+    )
     .then((res) => res.data)
     .catch((error) => {
       // Show error toast

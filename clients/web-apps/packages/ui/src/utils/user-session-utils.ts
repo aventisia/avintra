@@ -29,6 +29,9 @@ const setUserSessionLocally = (userSession: UserSessionDto): IUserSessionStore =
     platformVersion: userSession.platformVersion,
     planType: decodedJwt?.plan,
     deploymentType: decodedJwt.type,
+
+    // Access mode used for Super Admin tenant viewing ("read_only" / "read_write").
+    access_mode: decodedJwt.access_mode,
   };
 };
 

@@ -133,6 +133,15 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
     [name],
   );
 
+  // Whether the currently selected provider has at least one model enabled for
+  // this tenant. When BYOK is ON, the provider / credentials dropdowns must not
+  // render for providers that have no enabled models.
+  const currentProviderHasEnabledModels = useMemo(() => {
+    if (!is_byok_enabled) return true;
+    const config = enabledConfigByProvider[providerValue];
+    return Boolean(config && (config.enabledModelIds?.length ?? 0) > 0);
+  }, [is_byok_enabled, enabledConfigByProvider, providerValue]);
+
   // 3. Filtered Data
   const filteredProviders = useMemo(() => {
     const requiredSpecialties = getSpecialtyFromNode(nodeKey);
@@ -214,8 +223,20 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
       setValue(fieldNames.credential_name, "", { shouldDirty: true });
       setValue(fieldNames.model, "", { shouldDirty: true });
       setByokModels([]);
+
+      // When BYOK is turned ON, the provider dropdown only lists providers that
+      // have enabled models for this tenant. If the previously selected provider
+      // is not among them, clear it so a stale provider (e.g. OpenAI) does not
+      // remain visible and leak its API-key credential dropdown.
+      if (is_byok_enabled) {
+        const config = enabledConfigByProvider[providerValue];
+        const hasModels = Boolean(config && (config.enabledModelIds?.length ?? 0) > 0);
+        if (!hasModels) {
+          setValue(fieldNames.provider, "", { shouldDirty: true });
+        }
+      }
     }
-  }, [is_byok_enabled, providerValue, isInitialized, setValue, fieldNames]);
+  }, [is_byok_enabled, providerValue, isInitialized, setValue, fieldNames, enabledConfigByProvider]);
 
   // 6. Fetch BYOK Models on Credential Change
   useEffect(() => {
@@ -325,7 +346,7 @@ const ModelConfigField = ({ name }: ModelConfigFieldProps) => {
         label="Model Provider"
       />
 
-      {is_byok_enabled && (
+      {is_byok_enabled && currentProviderHasEnabledModels && (
         <CredentialsSelectField
           name={fieldNames.credential_name}
           size="sm"

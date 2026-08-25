@@ -42,6 +42,9 @@ interface IJwtPayload {
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string[];
   plan: string;
   type: DeploymentType;
+
+  /** Access mode claim for tenant switching (e.g. "read_only", "read_write"). */
+  access_mode?: string;
 }
 
 export type { IUserSessionStore, IJwtPayload };
