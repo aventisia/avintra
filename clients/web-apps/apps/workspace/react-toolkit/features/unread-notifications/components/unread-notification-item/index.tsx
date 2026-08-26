@@ -5,6 +5,7 @@ import { memo } from "react";
 import { UNIActions } from "@/react-toolkit/features/unread-notifications/components/unread-notification-item/UNIActions";
 import { UNTypeIcon } from "@/react-toolkit/features/unread-notifications/components/unread-notification-item/UNTypeIcon";
 import { UnreadNotificationDto } from "@/react-toolkit/features/unread-notifications/dtos/unread-notification-dto";
+import { extractNotificationUrl } from "@/react-toolkit/features/unread-notifications/utils/extract-notification-url";
 
 interface UnreadNotificationItemProps {
   /** Index of the notification item in the list */
@@ -27,13 +28,18 @@ export const UnreadNotificationItem = memo(({ data }: UnreadNotificationItemProp
     addSuffix: true,
   });
 
+  // Resolve the navigation target. Prefer the dedicated action URL, but fall
+  // back to any URL embedded in the message body so clicking a notification
+  // always takes the user somewhere useful.
+  const targetUrl = data.actionUrl || extractNotificationUrl(data.message);
+
   // Return the notification item
   return (
     <a
-      href={data.actionUrl}
+      href={targetUrl}
       className={cn(
         "group relative mx-3 flex gap-3 rounded-xl p-2.5 leading-[1.1rem] hover:bg-accent",
-        data.actionUrl && "cursor-pointer",
+        targetUrl && "cursor-pointer",
       )}
     >
       {/* Mark as read Button with Tooltip */}

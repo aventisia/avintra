@@ -5,6 +5,7 @@ import { memo } from "react";
 
 import { UNTypeIcon } from "@/react-toolkit/features/unread-notifications/components/unread-notification-item/UNTypeIcon";
 import { NotificationHistoryDto } from "@/react-toolkit/features/unread-notifications/dtos/notification-history.dto";
+import { extractNotificationUrl } from "@/react-toolkit/features/unread-notifications/utils/extract-notification-url";
 
 interface NotificationHistoryItemProps {
   /** Index of the history item in the list */
@@ -27,13 +28,18 @@ export const NotificationHistoryItem = memo(({ data }: NotificationHistoryItemPr
     addSuffix: true,
   });
 
+  // Resolve the navigation target. Prefer the dedicated action URL, but fall
+  // back to any URL embedded in the message body so clicking a notification
+  // always takes the user somewhere useful.
+  const targetUrl = data.actionUrl || extractNotificationUrl(data.message);
+
   // Return the history item
   return (
     <a
-      href={data.actionUrl}
+      href={targetUrl}
       className={cn(
         "group relative mx-3 flex gap-3 rounded-xl p-2.5 leading-[1.1rem] hover:bg-accent",
-        data.actionUrl && "cursor-pointer",
+        targetUrl && "cursor-pointer",
       )}
     >
       {/* Notification type icon */}
