@@ -10,11 +10,13 @@ public class DesktopExecutionEngine : IExecutionEngine
 {
     private readonly string _accessToken;
     private readonly string _appBaseUrl;
+    private readonly IBackendClient _backendClient;
 
-    public DesktopExecutionEngine(string accessToken, string appBaseUrl)
+    public DesktopExecutionEngine(string accessToken, string appBaseUrl, IBackendClient backendClient)
     {
         _accessToken = accessToken;
         _appBaseUrl = appBaseUrl;
+        _backendClient = backendClient;
     }
 
     public async Task<FlowExecutionResult> ExecuteAsync(
@@ -24,6 +26,11 @@ public class DesktopExecutionEngine : IExecutionEngine
         Action<NodeExecutionLog>? onNodeCompleted = null,
         Action<string, string>? onEdgeTraversed = null)
     {
+        // Pre-resolve {{__config__KeyName}} placeholders from the parent flow and any sub-flows
+        // before execution begins. This was historically done in the frontend, but now that
+        // RunnerApp owns graph fetching the resolution must happen here.
+        var configKeyVariables = await ConfigKeyResolver.MergeConfigKeyValuesAsync(graph, _backendClient, ct);
+
         var flow = ReactFlowHelper.Parse(graph.ReactFlowObject)
             ?? throw new InvalidOperationException("Failed to parse parent flow graph.");
         DebugLog.Info($"Parsed parent flow graph: {flow.Nodes.Count} nodes, {flow.Edges.Count} edges.");
@@ -55,6 +62,14 @@ public class DesktopExecutionEngine : IExecutionEngine
                 InputArguments = ParseInputArguments(graph.InputArgumentsJson)
             }
         };
+
+        // The template engine resolves {{__config__KeyName}} by looking up a top-level context
+        // variable with that exact name. Seed the resolved config keys here so placeholders in
+        // node inputs are substituted correctly. Values are also kept in _job.InputArguments.
+        foreach (var kvp in configKeyVariables)
+        {
+            initialVariables[kvp.Key] = kvp.Value;
+        }
 
         var processor = new FlowProcessor(new NodeProcessor(), flowGraphProvider: provider);
 
