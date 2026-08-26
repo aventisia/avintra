@@ -21,6 +21,7 @@ PROVIDER_ALIASES: dict[str, str] = {
     "google": "gemini",
     "google_gemini": "gemini",
     "googleai": "gemini",
+    "googlegemini": "gemini",
     "vertex": "vertex_ai",
 }
 
