@@ -759,7 +759,11 @@ namespace NodeExecutor.Services
                 if (targetType.IsArray && inputValue is string arrStr)
                 {
                     var elemType = targetType.GetElementType();
-                    var items = arrStr.Split(',').Select(s => ConvertArgument(s.Trim(), elemType)).ToArray();
+                    var stringItems = TryParseJsonArray(arrStr);
+                    if (stringItems == null)
+                        stringItems = arrStr.Split(',');
+
+                    var items = stringItems.Select(s => ConvertArgument(s.Trim(), elemType)).ToArray();
                     var array = Array.CreateInstance(elemType, items.Length);
                     for (int i = 0; i < items.Length; i++)
                         array.SetValue(items[i], i);
@@ -772,7 +776,11 @@ namespace NodeExecutor.Services
                     var elemType = targetType.GetGenericArguments()[0];
                     if (inputValue is string listStr)
                     {
-                        var items = listStr.Split(',').Select(s => ConvertArgument(s.Trim(), elemType)).ToList();
+                        var stringItems = TryParseJsonArray(listStr);
+                        if (stringItems == null)
+                            stringItems = listStr.Split(',');
+
+                        var items = stringItems.Select(s => ConvertArgument(s.Trim(), elemType)).ToList();
                         var list = (IList)Activator.CreateInstance(targetType);
                         foreach (var item in items)
                             list.Add(item);
@@ -803,6 +811,26 @@ namespace NodeExecutor.Services
             {
                 return inputValue;
             }
+        }
+
+        private static string[]? TryParseJsonArray(string value)
+        {
+            var trimmed = value.Trim();
+            if (!trimmed.StartsWith("[") || !trimmed.EndsWith("]"))
+                return null;
+
+            try
+            {
+                var token = JToken.Parse(trimmed);
+                if (token is JArray array)
+                    return array.Select(t => t.ToString()).ToArray();
+            }
+            catch
+            {
+                // Not a valid JSON array, fall back to comma split
+            }
+
+            return null;
         }
 
         private static object InferType(string value)

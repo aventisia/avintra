@@ -68,14 +68,22 @@ public static class NodeArgumentHelper
             return secureString;
         }
 
-        // Handle string source — try parsing for known types
-        if (value is string str)
-            return ConvertFromString(str, targetType);
-
-        // Handle arrays from comma-separated string (legacy ActivityExecutorService behavior)
+        // Handle arrays from comma-separated string or JSON array (legacy ActivityExecutorService behavior)
         if (targetType.IsArray && value is string arrStr)
         {
             var elemType = targetType.GetElementType()!;
+            var trimmed = arrStr.Trim();
+            if (trimmed.StartsWith("["))
+            {
+                try
+                {
+                    var deserialized = JsonSerializer.Deserialize(arrStr, targetType);
+                    if (deserialized is not null)
+                        return deserialized;
+                }
+                catch { /* fall through to comma-split */ }
+            }
+
             var items = arrStr.Split(',').Select(s => ConvertToType(s.Trim(), elemType)).ToArray();
             var array = Array.CreateInstance(elemType, items.Length);
             for (int i = 0; i < items.Length; i++)
@@ -83,7 +91,7 @@ public static class NodeArgumentHelper
             return array;
         }
 
-        // Handle List<T> from comma-separated string or IEnumerable (legacy behavior)
+        // Handle List<T> from comma-separated string, JSON array, or IEnumerable (legacy behavior)
         if (targetType.IsGenericType && targetType.GetGenericTypeDefinition() == typeof(List<>))
         {
             var elemType = targetType.GetGenericArguments()[0];
@@ -91,6 +99,18 @@ public static class NodeArgumentHelper
 
             if (value is string listStr)
             {
+                var trimmed = listStr.Trim();
+                if (trimmed.StartsWith("["))
+                {
+                    try
+                    {
+                        var deserialized = JsonSerializer.Deserialize(listStr, targetType);
+                        if (deserialized is not null)
+                            return deserialized;
+                    }
+                    catch { /* fall through to comma-split */ }
+                }
+
                 foreach (var item in listStr.Split(','))
                     list.Add(ConvertToType(item.Trim(), elemType));
                 return list;
@@ -103,6 +123,12 @@ public static class NodeArgumentHelper
                 return list;
             }
         }
+
+        // Handle string source — try parsing for known types (must run after collection
+        // handling so a single plain string like a file path can become a one-item List<T>).
+        if (value is string str)
+            return ConvertFromString(str, targetType);
+
 
         // Try Convert.ChangeType for primitives
         try
