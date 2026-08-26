@@ -15,6 +15,7 @@ import httpx
 
 from app.core.config import settings
 from app.core.logger import logger
+from app.core.vault_manager import VaultManager
 from app.features.auth.authenticated_user import User
 from app.features.llm_providers.llm_providers_schemas import LLMRequest, ToolConfig
 
@@ -152,12 +153,20 @@ def _corsair_kind_to_json_schema(value: Any) -> Any:
 def _resolve_corsair_credential_id(
     tool_name: str,
     llm_request: LLMRequest,
+    user: User,
 ) -> str | None:
     """Find the credential id for a Corsair tool from ``tool_config``.
 
     Corsair tools are stored in ``tool_config`` using the plugin name (the first
     segment of the dotted tool path). For example, ``github.issues.create`` is
     looked up under tool ``github``.
+
+    The frontend sends the credential by NAME (consistent with every other
+    feature). Corsair, however, keys connections by the credential ID (the
+    AppSecret Id), which it uses as the tenant/connection identifier. So when
+    only a ``credential_name`` is supplied we resolve it to its Id via the
+    vault. An explicit ``credential_id`` is still honored for backward
+    compatibility.
     """
     if not llm_request.tool_config:
         return None
@@ -166,15 +175,67 @@ def _resolve_corsair_credential_id(
 
     for config in llm_request.tool_config:
         if isinstance(config, dict):
-            if config.get("tool", "").lower() == plugin.lower():
-                return config.get("credential_id")
+            if config.get("tool", "").lower() != plugin.lower():
+                continue
+            credential_id = config.get("credential_id")
+            if credential_id:
+                return credential_id
+            credential_name = config.get("credential_name")
+            if credential_name:
+                return _resolve_credential_id_by_name(credential_name, user)
         elif isinstance(config, ToolConfig):
-            if config.tool.lower() == plugin.lower():
+            if config.tool.lower() != plugin.lower():
+                continue
+            if config.credential_id:
                 return config.credential_id
+            if config.credential_name:
+                return _resolve_credential_id_by_name(config.credential_name, user)
 
-    # TODO: Once the sidecar supports per-call tenant/caller identity, pass it
-    # here alongside the credential_id so the sidecar can authorize the lookup.
     return None
+
+
+def _resolve_credential_id_by_name(
+    credential_name: str,
+    user: User,
+) -> str | None:
+    """Resolve a credential NAME to its AppSecret Id via the vault.
+
+    Corsair uses the credential Id as the ``connectionId`` (tenant identifier),
+    but the frontend only sends the credential name. Look the secret up by name
+    and return its ``Id``.
+    """
+    try:
+        vault = VaultManager()
+        credential = vault.get_vault_secret_by_name(
+            credential=credential_name,
+            jwt=user.access_token,
+            env_type=user.env_type,
+            tenant_id=str(user.tenant_id) if user.tenant_id else None,
+            space_id=user.space_id,
+        )
+    except Exception:
+        logger.exception(
+            "Failed to resolve credential id for Corsair tool. credential_name=%s",
+            credential_name,
+        )
+        return None
+
+    if not credential:
+        logger.warning(
+            "No credential found for Corsair tool. credential_name=%s",
+            credential_name,
+        )
+        return None
+
+    credential_id = credential.get("Id")
+    if not credential_id:
+        logger.warning(
+            "Credential has no Id for Corsair tool. credential_name=%s",
+            credential_name,
+        )
+        return None
+
+    return str(credential_id)
 
 
 def _sidecar_headers() -> dict[str, str]:
@@ -215,7 +276,7 @@ async def invoke_corsair_tool(
 
     plugin, action = parse_corsair_tool_name(tool_name)
     sidecar_action = to_sidecar_action(action)
-    credential_id = _resolve_corsair_credential_id(tool_name, llm_request)
+    credential_id = _resolve_corsair_credential_id(tool_name, llm_request, user)
     if not credential_id:
         raise CorsairSidecarServiceError(
             f"No credential configured for Corsair tool {tool_name}"

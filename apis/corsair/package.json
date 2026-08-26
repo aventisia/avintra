@@ -5,6 +5,10 @@
   "type": "module",
   "description": "Corsair sidecar hosting API-key plugins for the WORC Platform.",
   "scripts": {
+    "migrate": "tsx src/migrate.ts",
+    "migrate:prod": "node dist/migrate.js",
+    "predev": "npm run migrate",
+    "prestart": "npm run migrate",
     "dev": "tsx watch src/main.ts",
     "start": "tsx src/main.ts",
     "typecheck": "tsc --noEmit",

@@ -19,7 +19,8 @@ class ToolAction(BaseModel):
 
 class ToolConfig(BaseModel):
     tool: str    # Name of the tool or external service (e.g. "gmail")
-    credential_name: str = Field(validation_alias='credential_name', serialization_alias='credential_name')    # Credential reference (unique name) used to access the tool
+    credential_name: Optional[str] = Field(default=None, validation_alias='credential_name', serialization_alias='credential_name')    # Credential reference (unique name) used to access the tool
+    credential_id: Optional[str] = Field(default=None, validation_alias='credential_id', serialization_alias='credential_id')    # Credential reference (unique id) used to access the tool
     actions: List[ToolAction]    # List of permitted actions for this tool
 
 
@@ -41,10 +42,10 @@ class LLMRequest(BaseModel):
     stream: Optional[bool] = False
     is_chat_agent: Optional[bool] = False   # Whether the request originates from a chat agent
     generate_followup_messages: Optional[bool] = False  # Indicates whether follow-up messages should be generated for requests originating from a dynamic action or workflow.
-    ref_type: str # Type of the reference (e.g., "Agent", "Workflow")
-    ref_id: str # Identifier to link back to Agent/Workflow
-    ref_name: str # Name of the reference (e.g., name of the Agent/Workflow)
-    action: str # Action being performed (e.g., "AgentExecution", "WorkflowExecution")
+    ref_type: str = "" # Type of the reference (e.g., "Agent", "Workflow")
+    ref_id: str = "" # Identifier to link back to Agent/Workflow
+    ref_name: str = "" # Name of the reference (e.g., name of the Agent/Workflow)
+    action: str = "" # Action being performed (e.g., "AgentExecution", "WorkflowExecution")
     agent_name: Optional[str] = None  # Knowledge base retrieval (optional)
     kb_names: Optional[List[str]] = None  # Knowledge base names used to scope KB chunk retrieval
     top_k: Optional[int] = Field(default=5, ge=1, le=100)  # Number of top chunks to retrieve from the knowledge base
