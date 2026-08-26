@@ -1,0 +1,49 @@
+meta {
+  name: create - subscription
+  type: http
+  seq: 252
+}
+
+post {
+  url: {{BASE_URL}}/connectors/m365
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "m365",
+    "operation": "subscription.create",
+    "configuration": {
+      "baseUrl": "{{M365_BASE_URL}}"
+    },
+    "auth": {
+      "type": "accessToken",
+      "token": "{{M365_TOKEN}}"
+    },
+    "payload": {
+      "changeType": "created,updated",
+      "notificationUrl": "{{M365_NOTIFICATION_URL}}",
+      "resource": "/users",
+      "expirationDateTime": "2026-09-01T00:00:00Z"
+    }
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('m365');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

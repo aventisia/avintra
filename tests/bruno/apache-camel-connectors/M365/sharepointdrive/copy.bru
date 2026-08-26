@@ -1,0 +1,52 @@
+meta {
+  name: copy - sharepoint drive item
+  type: http
+  seq: 140
+}
+
+post {
+  url: {{BASE_URL}}/connectors/m365
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "m365",
+    "operation": "sharepointdrive.copy",
+    "configuration": {
+      "baseUrl": "{{M365_BASE_URL}}",
+      "siteId": "{{M365_SITE_ID}}",
+      "itemId": "{{M365_ITEM_ID}}"
+    },
+    "auth": {
+      "type": "accessToken",
+      "token": "{{M365_TOKEN}}"
+    },
+    "payload": {
+      "parentReference": {
+        "siteId": "{{M365_SITE_ID}}",
+        "driveId": "b!"
+      },
+      "name": "copy.txt"
+    }
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('m365');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

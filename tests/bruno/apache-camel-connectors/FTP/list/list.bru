@@ -1,0 +1,48 @@
+meta {
+  name: list - remote directory
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{BASE_URL}}/connectors/ftp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "ftp",
+    "operation": "list",
+    "configuration": {
+      "scheme": "ftp",
+      "host": "{{FTP_HOST}}",
+      "port": "{{FTP_PORT}}",
+      "directoryName": "."
+    },
+    "auth": {
+      "type": "basic",
+      "username": "{{FTP_USERNAME}}",
+      "password": "{{FTP_PASSWORD}}"
+    },
+    "payload": null
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('ftp');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

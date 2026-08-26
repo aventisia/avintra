@@ -1,0 +1,17 @@
+meta {
+  name: All schemas - list every connector
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{BASE_URL}}/connectors/schemas
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

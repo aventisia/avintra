@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: camel-connector-harness
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+camel:
+  springboot:
+    main-run-controller: true
+  component:
+    jms:
+      connection-factory: "#artemisConnectionFactory"
+
+server:
+  port: 8080
+
+logging:
+  level:
+    camel.harness: INFO
+    org.apache.camel: INFO

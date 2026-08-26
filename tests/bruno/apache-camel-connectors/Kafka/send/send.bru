@@ -1,0 +1,49 @@
+meta {
+  name: send - publish record to events
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/connectors/kafka
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "kafka",
+    "operation": "send",
+    "configuration": {
+      "topic": "{{KAFKA_TOPIC}}",
+      "brokers": "{{KAFKA_BROKERS}}",
+      "key": "order-123"
+    },
+    "auth": {
+      "type": "basic",
+      "username": "{{KAFKA_USERNAME}}",
+      "password": "{{KAFKA_PASSWORD}}"
+    },
+    "payload": {
+      "status": "created"
+    }
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('kafka');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

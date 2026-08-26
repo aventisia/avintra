@@ -1,0 +1,81 @@
+# ============================================
+# Maven build output
+# ============================================
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ============================================
+# Camel JBang local runtime files
+# ============================================
+.camel-jbang/
+
+# ============================================
+# IDE / Editor files
+# ============================================
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.factorypath
+*.launch
+
+# ============================================
+# OS files
+# ============================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*~
+
+# ============================================
+# Logs
+# ============================================
+*.log
+logs/
+*.pid
+
+# ============================================
+# Environment / secrets (never commit)
+# ============================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.jks
+secrets/
+credentials/
+
+# ============================================
+# Compiled / generated files
+# ============================================
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+
+# ============================================
+# Test / coverage reports
+# ============================================
+test-output/
+*.dump
+*.hprof
+coverage/
+.nyc_output/

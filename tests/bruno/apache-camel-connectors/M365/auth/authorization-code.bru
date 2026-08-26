@@ -1,0 +1,50 @@
+meta {
+  name: authorization code - get access token
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/connectors/m365
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "m365",
+    "operation": "auth.authorization-code",
+    "configuration": {
+      "baseUrl": "{{M365_BASE_URL}}",
+      "authorizationCode": "{{M365_AUTHORIZATION_CODE}}",
+      "redirectUri": "{{M365_REDIRECT_URI}}"
+    },
+    "auth": {
+      "type": "authorization_code",
+      "tenantId": "{{M365_TENANT_ID}}",
+      "clientId": "{{M365_CLIENT_ID}}",
+      "clientSecret": "{{M365_CLIENT_SECRET}}",
+      "tokenUrl": "{{M365_TOKEN_URL}}",
+      "scopes": "{{M365_SCOPES}}"
+    },
+    "payload": null
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('m365');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

@@ -1,0 +1,42 @@
+meta {
+  name: accessToken - get current user
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/connectors/m365
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "m365",
+    "operation": "user.get",
+    "configuration": {
+      "baseUrl": "{{M365_BASE_URL}}",
+      "userId": "{{M365_USER_ID}}",
+      "$select": "id,displayName,mail"
+    },
+    "auth": {
+      "type": "accessToken",
+      "token": "{{M365_TOKEN}}"
+    },
+    "payload": null
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('m365');
+  });
+}

@@ -1,0 +1,47 @@
+meta {
+  name: upload - sharepoint drive
+  type: http
+  seq: 136
+}
+
+post {
+  url: {{BASE_URL}}/connectors/m365
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "m365",
+    "operation": "sharepointdrive.upload",
+    "configuration": {
+      "baseUrl": "{{M365_BASE_URL}}",
+      "siteId": "{{M365_SITE_ID}}",
+      "parentId": "root",
+      "filename": "hello.txt"
+    },
+    "auth": {
+      "type": "accessToken",
+      "token": "{{M365_TOKEN}}"
+    },
+    "payload": "Hello from M365 harness"
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('m365');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

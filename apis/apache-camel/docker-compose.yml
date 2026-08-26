@@ -1,0 +1,17 @@
+services:
+  artemis:
+    image: apache/activemq-artemis:2.41.0-alpine
+    environment:
+      ARTEMIS_USER: camel
+      ARTEMIS_PASSWORD: camel
+      ANONYMOUS_LOGIN: "false"
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+
+  mock-http:
+    image: wiremock/wiremock:3.13.1
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./docker/wiremock:/home/wiremock

@@ -1,0 +1,43 @@
+meta {
+  name: verify - webhook signature
+  type: http
+  seq: 118
+}
+
+post {
+  url: {{BASE_URL}}/connectors/github
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "github",
+    "operation": "webhook.event.verify",
+    "configuration": {
+      "baseUrl": "{{GITHUB_BASE_URL}}",
+      "event": "push",
+      "signature": "sha256=0000000000000000000000000000000000000000000000000000000000000000"
+    },
+    "auth": null,
+    "payload": "{\"action\":\"opened\"}"
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('github');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

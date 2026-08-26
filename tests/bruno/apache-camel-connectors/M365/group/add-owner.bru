@@ -1,0 +1,47 @@
+meta {
+  name: add owner - group
+  type: http
+  seq: 43
+}
+
+post {
+  url: {{BASE_URL}}/connectors/m365
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "m365",
+    "operation": "group.add-owner",
+    "configuration": {
+      "baseUrl": "{{M365_BASE_URL}}",
+      "groupId": "{{M365_GROUP_ID}}"
+    },
+    "auth": {
+      "type": "accessToken",
+      "token": "{{M365_TOKEN}}"
+    },
+    "payload": {
+      "@odata.id": "https://graph.microsoft.com/v1.0/directoryObjects/{{M365_USER_ID}}"
+    }
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('m365');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

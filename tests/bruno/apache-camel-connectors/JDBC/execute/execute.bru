@@ -1,0 +1,48 @@
+meta {
+  name: execute - run raw statement
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{BASE_URL}}/connectors/jdbc
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "jdbc",
+    "operation": "execute",
+    "configuration": {
+      "dataSourceName": "postgresDS"
+    },
+    "auth": {
+      "type": "database",
+      "properties": {
+        "url": "jdbc:postgresql://{{POSTGRES_HOST}}:{{POSTGRES_PORT}}/{{POSTGRES_DB}}",
+        "username": "{{POSTGRES_USER}}",
+        "password": "{{POSTGRES_PASSWORD}}"
+      }
+    },
+    "payload": "SELECT * FROM users"
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('jdbc');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

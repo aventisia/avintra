@@ -1,0 +1,49 @@
+meta {
+  name: write - data.txt to upload
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/connectors/ftp
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "ftp",
+    "operation": "write",
+    "configuration": {
+      "scheme": "sftp",
+      "host": "{{FTP_HOST}}",
+      "port": "{{SFTP_PORT}}",
+      "directoryName": "upload",
+      "fileName": "data.txt"
+    },
+    "auth": {
+      "type": "basic",
+      "username": "{{FTP_USERNAME}}",
+      "password": "{{FTP_PASSWORD}}"
+    },
+    "payload": "SFTP file content"
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('ftp');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

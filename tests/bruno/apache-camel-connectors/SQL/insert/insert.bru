@@ -1,0 +1,51 @@
+meta {
+  name: insert - create a user
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{BASE_URL}}/connectors/sql
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "sql",
+    "operation": "insert",
+    "configuration": {
+      "query": "INSERT INTO users(name) VALUES (:#name)"
+    },
+    "auth": {
+      "type": "database",
+      "properties": {
+        "url": "jdbc:postgresql://{{POSTGRES_HOST}}:{{POSTGRES_PORT}}/{{POSTGRES_DB}}",
+        "username": "{{POSTGRES_USER}}",
+        "password": "{{POSTGRES_PASSWORD}}"
+      }
+    },
+    "headers": {
+      "name": "alice"
+    },
+    "payload": null
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('sql');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}
