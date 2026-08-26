@@ -34,6 +34,10 @@ public enum CreditServicesEnum
     Gemini25FlashLiteInput,
     Gemini25FlashLiteOutput,
     Gemini25FlashLiteCached,
+    // gemini-3.1-flash-lite
+    Gemini31FlashLiteInput,
+    Gemini31FlashLiteOutput,
+    Gemini31FlashLiteCached,
     // anthropic/claude-4.5-sonnet-20250929
     Claude45SonnetInput,
     Claude45SonnetOutput,

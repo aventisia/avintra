@@ -599,6 +599,11 @@ class GeminiProvider(BaseLLMProvider):
                 "output": "Gemini25FlashLiteOutput",
                 "cache": "Gemini25FlashLiteCached",
             },
+            "gemini-3.1-flash-lite": {
+                "input": "Gemini31FlashLiteInput",
+                "output": "Gemini31FlashLiteOutput",
+                "cache": "Gemini31FlashLiteCached",
+            },
         }
 
         # Resolve service mapping
@@ -675,6 +680,11 @@ class GeminiProvider(BaseLLMProvider):
                 "input": "Gemini25FlashLiteInput",
                 "output": "Gemini25FlashLiteOutput",
                 "cache": "Gemini25FlashLiteCached",
+            },
+            "gemini-3.1-flash-lite": {
+                "input": "Gemini31FlashLiteInput",
+                "output": "Gemini31FlashLiteOutput",
+                "cache": "Gemini31FlashLiteCached",
             },
         }
 

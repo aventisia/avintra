@@ -53,7 +53,7 @@ export const openAiModelList: Model[] = [
   {
     label: "gpt-5.1",
     value: "gpt-5.1",
-    available: true,
+    available: false,
     specialty: ["text", "vision"],
   },
   {
@@ -65,7 +65,7 @@ export const openAiModelList: Model[] = [
   {
     label: "gpt-5-mini",
     value: "gpt-5-mini",
-    available: true,
+    available: false,
     specialty: ["text", "vision"],
   },
   {
@@ -243,7 +243,7 @@ export const openAiModelList: Model[] = [
   {
     label: "gpt-4o",
     value: "gpt-4o",
-    available: true,
+    available: false,
     specialty: ["text", "vision", "realtime"],
   },
   {
@@ -446,6 +446,12 @@ export const googleModelList: Model[] = [
     specialty: ["text", "vision", "realtime"],
   },
   {
+    label: "Gemini 3.1 Flash-Lite",
+    value: "gemini-3.1-flash-lite",
+    available: true,
+    specialty: ["text", "vision"],
+  },
+  {
     label: "Gemini 3 Pro Image (Nano Banana Pro)",
     value: "gemini-3-pro-image-preview",
     available: false,
@@ -468,7 +474,7 @@ export const googleModelList: Model[] = [
   {
     label: "Gemini 2.5 Flash-Lite",
     value: "gemini-2.5-flash-lite",
-    available: true,
+    available: false,
     specialty: ["text", "vision"],
   },
   {
@@ -582,7 +588,7 @@ export const openRouterModelList: Model[] = [
   {
     label: "anthropic/claude-4.5-sonnet-20250929",
     value: "anthropic/claude-4.5-sonnet-20250929",
-    available: true,
+    available: false,
     specialty: ["text", "vision", "deep-search"],
   },
   {
@@ -600,7 +606,7 @@ export const openRouterModelList: Model[] = [
   {
     label: "x-ai/grok-3-mini",
     value: "x-ai/grok-3-mini",
-    available: true,
+    available: false,
     specialty: ["text", "deep-search"],
   },
 
@@ -614,7 +620,7 @@ export const openRouterModelList: Model[] = [
   {
     label: "qwen/qwen3-vl-32b-instruct",
     value: "qwen/qwen3-vl-32b-instruct",
-    available: true,
+    available: false,
     specialty: ["vision", "text"],
   },
   {
@@ -666,7 +672,7 @@ export const openRouterModelList: Model[] = [
   {
     label: "anthropic/claude-4.5-haiku-20251001",
     value: "anthropic/claude-4.5-haiku-20251001",
-    available: true,
+    available: false,
     specialty: ["text", "realtime"],
   },
   {
@@ -708,37 +714,37 @@ export const modelProviders: Provider[] = [
   {
     value: "anthropic",
     label: "Anthropic",
-    isEnabled: true,
+    isEnabled: false,
     models: [],
   },
   {
     value: "openrouter",
     label: "OpenRouter",
-    isEnabled: true,
+    isEnabled: false,
     models: openRouterModelList,
   },
   {
     value: "ollama",
     label: "Ollama On-prem",
-    isEnabled: true,
+    isEnabled: false,
     models: [],
   },
   {
     value: "ollamacloud",
     label: "Ollama Cloud",
-    isEnabled: true,
+    isEnabled: false,
     models: [],
   },
   {
     value: "groq",
     label: "Groq",
-    isEnabled: true,
+    isEnabled: false,
     models: [],
   },
   {
     value: "mistral",
     label: "Mistral",
-    isEnabled: true,
+    isEnabled: false,
     models: [],
   },
 ];

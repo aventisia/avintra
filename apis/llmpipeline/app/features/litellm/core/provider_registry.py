@@ -167,6 +167,7 @@ PROVIDER_MODEL_MAP: dict[str, dict[str, dict[str, str | None]]] = {
     "gemini": {
         "gemini-2.5-flash": {"input": "Gemini25FlashInput", "output": "Gemini25FlashOutput", "cache": "Gemini25FlashCached"},
         "gemini-2.5-flash-lite": {"input": "Gemini25FlashLiteInput", "output": "Gemini25FlashLiteOutput", "cache": "Gemini25FlashLiteCached"},
+        "gemini-3.1-flash-lite": {"input": "Gemini31FlashLiteInput", "output": "Gemini31FlashLiteOutput", "cache": "Gemini31FlashLiteCached"},
     },
     "ollama": {
         "llama3.1": {"input": None, "output": None, "cache": None},

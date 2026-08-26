@@ -95,6 +95,11 @@ GEMINI_MODEL_MAP: dict[str, CreditServiceMap] = {
         output="Gemini25FlashLiteOutput",
         cache="Gemini25FlashLiteCached",
     ),
+    "gemini-3.1-flash-lite": CreditServiceMap(
+        input="Gemini31FlashLiteInput",
+        output="Gemini31FlashLiteOutput",
+        cache="Gemini31FlashLiteCached",
+    ),
 }
 
 ANTHROPIC_FALLBACK_MAP = CreditServiceMap(
