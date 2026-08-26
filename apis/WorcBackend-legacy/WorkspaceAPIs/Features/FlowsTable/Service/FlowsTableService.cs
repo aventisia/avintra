@@ -5,6 +5,7 @@ public class FlowsTableService : IFlowsTableService
     private readonly ILogger<FlowsTableService> _logger;
     private readonly IUnitOfWork _unitOfWork;
     private readonly Guid _userId;
+    private readonly ICurrentTenantService _currentTenantService;
     private readonly IFlowVersionService _flowVersionService;
     private readonly IFlowUserService _flowUserService;
     private readonly IResourceShareService _resourceShareService;
@@ -13,6 +14,7 @@ public class FlowsTableService : IFlowsTableService
         ILogger<FlowsTableService> logger,
         IUnitOfWork unitOfWork,
         IHttpContextAccessor httpContextAccessor,
+        ICurrentTenantService currentTenantService,
         IFlowVersionService flowVersionService,
         IFlowUserService flowUserService,
         IResourceShareService resourceShareService)
@@ -22,6 +24,7 @@ public class FlowsTableService : IFlowsTableService
 
         _logger = logger;
         _unitOfWork = unitOfWork;
+        _currentTenantService = currentTenantService;
         _flowVersionService = flowVersionService;
         _flowUserService = flowUserService;
         _resourceShareService = resourceShareService;
@@ -124,11 +127,14 @@ public class FlowsTableService : IFlowsTableService
 
         try
         {
-            // Validate flow uniqueness
+            // Validate flow uniqueness at the tenant level.
+            // The DB unique index is (TenantId, Name), so the check must bypass the
+            // space-scoped global query filter and match on the current tenant only.
             var flowAlreadyExists = await _unitOfWork.FlowRepo
                                                      .GetByConditionAsync(w =>
-                                                        w.CreatedByUserId == _userId &&
+                                                        w.TenantId == _currentTenantService.CurrentTenantId &&
                                                         w.Name.ToLower() == checkAvailabilityDto.UserInput.Trim().ToLower())
+                                                     .IgnoreQueryFilters()
                                                      .FirstOrDefaultAsync();
 
             // Flow already exists
@@ -166,11 +172,14 @@ public class FlowsTableService : IFlowsTableService
 
         try
         {
-            // Validate flow name uniqueness
+            // Validate flow name uniqueness at the tenant level.
+            // The DB unique index is (TenantId, Name), so the check must bypass the
+            // space-scoped global query filter and match on the current tenant only.
             var flowAlreadyExists = await _unitOfWork.FlowRepo
                                                      .GetByConditionAsync(w =>
-                                                        w.Name.ToLower() == flowsTableDto.Name.ToLower() &&
-                                                        w.CreatedByUserId == _userId)
+                                                        w.TenantId == _currentTenantService.CurrentTenantId &&
+                                                        w.Name.ToLower() == flowsTableDto.Name.ToLower())
+                                                     .IgnoreQueryFilters()
                                                      .FirstOrDefaultAsync();
 
             // Flow already exists
