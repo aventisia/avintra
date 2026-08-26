@@ -127,6 +127,27 @@ public static class DynamicJsonTestHarness
             AssertEqual("""{"x":1,"y":"two"}""", result);
         });
 
+        failures += Run("NodeArgumentHelperSingleFilePathToList", () =>
+        {
+            var path = "C:\\Users\\Gaurav\\Gitea\\Aventisia\\assets\\demo-files\\sendgrid-invoice.pdf";
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(path, typeof(List<string>));
+            AssertTrue(result is List<string> list && list.Count == 1 && list[0] == path);
+        });
+
+        failures += Run("NodeArgumentHelperJsonArrayStringToList", () =>
+        {
+            var json = """["C:\\a.pdf","C:\\b.pdf"]""";
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(json, typeof(List<string>));
+            AssertTrue(result is List<string> list && list.Count == 2 && list[0] == "C:\\a.pdf" && list[1] == "C:\\b.pdf");
+        });
+
+        failures += Run("NodeArgumentHelperCommaSeparatedStringToList", () =>
+        {
+            var csv = "C:\\a.pdf,C:\\b.pdf";
+            var result = ExecutorLibrary.Helpers.NodeArgumentHelper.ConvertToType(csv, typeof(List<string>));
+            AssertTrue(result is List<string> list && list.Count == 2 && list[0] == "C:\\a.pdf" && list[1] == "C:\\b.pdf");
+        });
+
         Console.WriteLine($"\nResults: {(failures == 0 ? "ALL PASSED" : $"{failures} FAILED")}");
         return failures;
     }
