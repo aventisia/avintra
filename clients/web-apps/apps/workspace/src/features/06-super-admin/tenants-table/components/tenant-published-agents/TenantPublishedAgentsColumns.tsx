@@ -18,11 +18,17 @@ export const tenantPublishedAgentsColumns: ColumnDef<TenantPublishedAgentDto>[] 
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title="Agent Name" />
     ),
-    cell: ({ row }) => (
-      <div className="truncate max-w-72 font-medium" title={row.getValue("name") ?? ""}>
-        {row.getValue("name") ?? "—"}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const { name, versionNumber } = row.original;
+      return (
+        <div className="inline-flex items-center gap-1" title={name ?? ""}>
+          <span className="truncate max-w-72 font-medium">{name ?? "—"}</span>
+          <span className="bg-slate-100 border text-2xs rounded-xl h-[1.1rem] px-1.5 text-muted-foreground">
+            v{versionNumber}
+          </span>
+        </div>
+      );
+    },
   },
 
   // PUBLISHED ON

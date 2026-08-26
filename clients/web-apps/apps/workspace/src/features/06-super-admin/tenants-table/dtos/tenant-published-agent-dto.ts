@@ -12,6 +12,9 @@ export interface TenantPublishedAgentDto {
   /** The name of the agent (flow). */
   name?: string | null;
 
+  /** The version number of the flow version (agent). */
+  versionNumber: number;
+
   /** The date and time when the agent was published. */
   publishedOn: Date | string;
 

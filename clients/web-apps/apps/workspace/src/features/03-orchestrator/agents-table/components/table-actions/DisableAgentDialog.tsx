@@ -7,6 +7,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
+
 import { DATA_QUERY_KEY } from "../../constants";
 import { AgentsTableDto } from "../../dtos/agents-table-dto";
 import { useUpdateAgentMutation } from "../../hooks/useUpdateAgentMutation";
@@ -32,9 +34,15 @@ const DisableAgentDialog = () => {
     })),
   );
 
+  // The agents data is cached under a space-scoped key (see useFetchAgents)
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
   const agentsData = queryClient.getQueryData<{
     data: AgentsTableDto[];
-  }>(DATA_QUERY_KEY);
+  }>([...DATA_QUERY_KEY, currentSpace?.id]);
 
   // Get agent data by id
   const agentData = agentsData?.data.find((item) => item.id === flowVersionId);

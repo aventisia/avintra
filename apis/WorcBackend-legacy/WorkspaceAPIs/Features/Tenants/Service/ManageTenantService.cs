@@ -341,6 +341,7 @@ public class ManageTenantService : IManageTenantService
                         Id = agent.Id,
                         RefId = agent.FlowId,
                         Name = agent.Flow?.Name,
+                        VersionNumber = agent.VersionNumber,
                         PublishedOn = agent.LastModifiedOn,
                         DailyAverageCredits = dailyAverageCredits,
                         DailyAverageRuntime = dailyAverageRuntime,
