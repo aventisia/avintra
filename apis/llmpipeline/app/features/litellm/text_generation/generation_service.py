@@ -28,6 +28,7 @@ from ..core.credit_utils import (
 from ..core.litellm_service import litellm_service
 from ..core.provider_registry import (
     get_credit_service_type,
+    normalize_provider,
     should_post_usage,
     validate_model,
     validate_provider,
@@ -253,6 +254,9 @@ class GenerationService:
         self._litellm = litellm_service
 
     async def generate(self, req: LLMGenerationRequest, user: User) -> LLMGenerationResponse:
+        # Normalize legacy provider aliases (e.g. "googlegemini" -> "gemini")
+        # so the v2 route accepts the same names the legacy provider used.
+        req.provider = normalize_provider(req.provider)
         validate_provider(req.provider, req.is_byok_enabled, req.credential_name)
         validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_name)
         check_sufficient_credits(req.is_byok_enabled, req.credential_name, req.provider, user.access_token)
@@ -314,6 +318,9 @@ class GenerationService:
         When the stream finishes, a final `LLMGenerationResponse` is emitted and
         credit usage is posted (only for platform, non-BYOK requests).
         """
+        # Normalize legacy provider aliases (e.g. "googlegemini" -> "gemini")
+        # so the v2 route accepts the same names the legacy provider used.
+        req.provider = normalize_provider(req.provider)
         validate_provider(req.provider, req.is_byok_enabled, req.credential_name)
         validate_model(req.provider, req.model, req.is_byok_enabled, req.credential_name)
         check_sufficient_credits(req.is_byok_enabled, req.credential_name, req.provider, user.access_token)

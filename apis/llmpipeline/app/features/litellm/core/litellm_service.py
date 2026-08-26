@@ -56,6 +56,9 @@ class LiteLLMService:
                 "temperature": request.temperature or 1.0,
                 "top_p": request.top_p or 1.0,
                 "stream": request.stream,
+                # OpenAI gpt-5-* models reject top_p; let LiteLLM drop params
+                # that the provider/model does not support instead of failing.
+                "drop_params": True,
             }
         )
         if request.max_output_tokens:
