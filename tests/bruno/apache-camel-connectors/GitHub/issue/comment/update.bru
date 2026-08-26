@@ -1,0 +1,49 @@
+meta {
+  name: update comment - issue
+  type: http
+  seq: 67
+}
+
+post {
+  url: {{BASE_URL}}/connectors/github
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "github",
+    "operation": "issue.comment.update",
+    "configuration": {
+      "baseUrl": "{{GITHUB_BASE_URL}}",
+      "owner": "{{GITHUB_OWNER}}",
+      "repo": "{{GITHUB_REPO}}",
+      "commentId": "1"
+    },
+    "auth": {
+      "type": "accessToken",
+      "token": "{{GITHUB_TOKEN}}"
+    },
+    "payload": {
+      "body": "Updated comment text"
+    }
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('github');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

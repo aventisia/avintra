@@ -1,0 +1,51 @@
+meta {
+  name: POST - send JSON payload
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/connectors/http
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "http",
+    "operation": "POST",
+    "configuration": {
+      "host": "{{HTTP_HOST}}:{{HTTP_PORT}}",
+      "path": "echo",
+      "httpMethod": "POST"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "auth": {
+      "type": "bearer",
+      "token": "{{API_KEY}}"
+    },
+    "payload": {
+      "message": "hello"
+    }
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('http');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

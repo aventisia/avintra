@@ -1,0 +1,51 @@
+meta {
+  name: request - request/reply on orders
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/connectors/jms
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "jms",
+    "operation": "request",
+    "configuration": {
+      "destinationName": "{{JMS_DESTINATION}}",
+      "replyTo": "{{JMS_REPLY_TO}}"
+    },
+    "auth": {
+      "type": "basic",
+      "username": "{{JMS_USERNAME}}",
+      "password": "{{JMS_PASSWORD}}",
+      "properties": {
+        "brokerUrl": "{{JMS_BROKER_URL}}"
+      }
+    },
+    "payload": {
+      "orderId": "ORD-124"
+    }
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('jms');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

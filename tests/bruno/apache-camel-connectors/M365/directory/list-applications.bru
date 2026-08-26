@@ -1,0 +1,45 @@
+meta {
+  name: list applications - directory
+  type: http
+  seq: 200
+}
+
+post {
+  url: {{BASE_URL}}/connectors/m365
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "m365",
+    "operation": "directory.list-applications",
+    "configuration": {
+      "baseUrl": "{{M365_BASE_URL}}",
+      "$top": 10
+    },
+    "auth": {
+      "type": "accessToken",
+      "token": "{{M365_TOKEN}}"
+    },
+    "payload": null
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('m365');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

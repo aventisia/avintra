@@ -1,0 +1,50 @@
+meta {
+  name: create - issue label
+  type: http
+  seq: 59
+}
+
+post {
+  url: {{BASE_URL}}/connectors/github
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "github",
+    "operation": "issue.label.create",
+    "configuration": {
+      "baseUrl": "{{GITHUB_BASE_URL}}",
+      "owner": "{{GITHUB_OWNER}}",
+      "repo": "{{GITHUB_REPO}}"
+    },
+    "auth": {
+      "type": "accessToken",
+      "token": "{{GITHUB_TOKEN}}"
+    },
+    "payload": {
+      "name": "bug",
+      "color": "d73a4a",
+      "description": "Something isn't working"
+    }
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('github');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

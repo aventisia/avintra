@@ -1,0 +1,19 @@
+- rest:
+    path: /camel
+    post:
+      - path: /{connector}
+        to: direct:dispatch
+
+- from:
+    uri: direct:dispatch
+    steps:
+      - unmarshal:
+          json: {}
+      - setProperty:
+          name: targetUri
+          simple: "${body[uri]}"
+      - toD:
+          uri: "${exchangeProperty.targetUri}"
+      - setHeader:
+          name: Content-Type
+          constant: application/json

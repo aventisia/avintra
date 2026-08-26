@@ -1,0 +1,41 @@
+meta {
+  name: write - hello.txt
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/connectors/file
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "file",
+    "operation": "write",
+    "configuration": {
+      "directoryName": "{{FILE_DIRECTORY}}",
+      "fileName": "hello.txt"
+    },
+    "payload": "Hello from Camel file component"
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('file');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

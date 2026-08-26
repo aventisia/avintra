@@ -1,0 +1,47 @@
+meta {
+  name: search - inbox via imap
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{BASE_URL}}/connectors/mail
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "mail",
+    "operation": "search",
+    "configuration": {
+      "scheme": "imap",
+      "host": "{{IMAP_HOST}}",
+      "port": "{{IMAP_PORT}}"
+    },
+    "auth": {
+      "type": "basic",
+      "username": "{{MAIL_USERNAME}}",
+      "password": "{{MAIL_PASSWORD}}"
+    },
+    "payload": null
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('mail');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}

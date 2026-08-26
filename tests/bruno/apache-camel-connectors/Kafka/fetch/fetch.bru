@@ -1,0 +1,48 @@
+meta {
+  name: fetch - read records from events
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{BASE_URL}}/connectors/kafka
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connector": "kafka",
+    "operation": "fetch",
+    "configuration": {
+      "topic": "{{KAFKA_TOPIC}}",
+      "brokers": "{{KAFKA_BROKERS}}",
+      "groupId": "{{KAFKA_GROUP_ID}}",
+      "offset": "earliest"
+    },
+    "auth": {
+      "type": "basic",
+      "username": "{{KAFKA_USERNAME}}",
+      "password": "{{KAFKA_PASSWORD}}"
+    },
+    "payload": null
+  }
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response ok is true", function() {
+    expect(res.body.ok).to.equal(true);
+  });
+
+  test("response identifies the connector", function() {
+    expect(res.body.connector).to.equal('kafka');
+  });
+
+  test("response includes targetUri", function() {
+    expect(res.body.targetUri).to.be.a('string');
+  });
+}
