@@ -12,7 +12,9 @@ camel:
       connection-factory: "#artemisConnectionFactory"
 
 server:
-  port: 8080
+  port: 4004
+  servlet:
+    context-path: /api
 
 logging:
   level:

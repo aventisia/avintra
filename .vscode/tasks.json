@@ -95,12 +95,40 @@
       "isBackground": true
     },
     {
+      "label": "apache_camel_apis",
+      "type": "shell",
+      "command": ".\\mvnw.cmd",
+      "args": ["spring-boot:run"],
+      "options": {
+        "cwd": "${workspaceFolder}/apis/apache-camel"
+      },
+      "windows": {
+        "command": ".\\mvnw.cmd",
+        "options": {
+          "cwd": "${workspaceFolder}/apis/apache-camel"
+        }
+      },
+      "linux": {
+        "command": "./mvnw",
+        "options": {
+          "cwd": "${workspaceFolder}/apis/apache-camel"
+        }
+      },
+      "osx": {
+        "command": "./mvnw",
+        "options": {
+          "cwd": "${workspaceFolder}/apis/apache-camel"
+        }
+      },
+      "isBackground": true
+    },
+    {
       "label": "Run Frontends",
       "dependsOn": ["accounts", "workspace", "studio", "atlas"]
     },
     {
       "label": "Run Backends",
-      "dependsOn": ["accounts_apis", "workspace_apis", "llmpipeline_apis"]
+      "dependsOn": ["accounts_apis", "workspace_apis", "llmpipeline_apis", "apache_camel_apis"]
     },
     {
       "label": "Run All",

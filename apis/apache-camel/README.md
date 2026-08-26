@@ -54,7 +54,7 @@ docker compose up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-The REST endpoint is `POST http://localhost:8080/connectors/{connector}`. The connector path must match the URI scheme in `targetUri`; this makes requests easy to identify while retaining the deliberately dynamic nature of the harness.
+The REST endpoint is `POST http://localhost:4004/api/connectors/{connector}`. The connector path must match the URI scheme in `targetUri`; this makes requests easy to identify while retaining the deliberately dynamic nature of the harness.
 
 ## JBang YAML runtime
 
@@ -104,11 +104,11 @@ Put endpoint values such as host, port, database, queue, path, and query paramet
 For HTTP GET and DELETE, set `CamelHttpMethod` and put URL query parameters directly in the URI:
 
 ```powershell
-curl.exe -X POST http://localhost:8080/connectors/http `
+curl.exe -X POST http://localhost:4004/api/connectors/http `
   -H "Content-Type: application/json" `
   -d '{\"targetUri\":\"http://localhost:8081/echo?item=42&bridgeEndpoint=true\",\"headers\":{\"CamelHttpMethod\":\"GET\"},\"body\":null}'
 
-curl.exe -X POST http://localhost:8080/connectors/http `
+curl.exe -X POST http://localhost:4004/api/connectors/http `
   -H "Content-Type: application/json" `
   -d '{\"targetUri\":\"http://localhost:8081/echo?item=42&bridgeEndpoint=true\",\"headers\":{\"CamelHttpMethod\":\"DELETE\"},\"body\":null}'
 ```
@@ -128,7 +128,7 @@ For a database query, put the SQL statement and datasource reference in `targetU
 ### SQL
 
 ```powershell
-curl.exe -X POST http://localhost:8080/connectors/sql `
+curl.exe -X POST http://localhost:4004/api/connectors/sql `
   -H "Content-Type: application/json" `
   -d '{\"targetUri\":\"sql:insert into connector_events(message) values (:#message)\",\"headers\":{\"message\":\"hello from curl\"},\"body\":null,\"db\":{\"url\":\"jdbc:postgresql://localhost:5432/your_database\",\"username\":\"your_user\",\"password\":\"your_password\"}}'
 ```
@@ -140,7 +140,7 @@ request-specific datasource automatically.
 ### HTTP / WireMock
 
 ```powershell
-curl.exe -X POST http://localhost:8080/connectors/http `
+curl.exe -X POST http://localhost:4004/api/connectors/http `
   -H "Content-Type: application/json" `
   -d '{\"targetUri\":\"http://localhost:8081/echo?bridgeEndpoint=true\",\"headers\":{\"Content-Type\":\"application/json\"},\"body\":{\"message\":\"hello\"}}'
 ```
@@ -150,7 +150,7 @@ Expected response body contains `received: true` and `message: hello`. WireMock 
 ### JMS / Artemis
 
 ```powershell
-curl.exe -X POST http://localhost:8080/connectors/jms `
+curl.exe -X POST http://localhost:4004/api/connectors/jms `
   -H "Content-Type: application/json" `
   -d '{\"targetUri\":\"jms:queue:connector-tests\",\"body\":\"hello from curl\"}'
 ```
@@ -186,7 +186,7 @@ $request = @{
   }
 } | ConvertTo-Json -Compress
 
-curl.exe -X POST http://localhost:8080/connectors/mail `
+curl.exe -X POST http://localhost:4004/api/connectors/mail `
   -H "Content-Type: application/json" `
   -d $request
 ```
@@ -208,7 +208,7 @@ $request = @{
   }
 } | ConvertTo-Json -Compress
 
-curl.exe -X POST http://localhost:8080/connectors/mail `
+curl.exe -X POST http://localhost:4004/api/connectors/mail `
   -H "Content-Type: application/json" `
   -d $request
 ```

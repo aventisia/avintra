@@ -24,7 +24,7 @@ The harness exposes JSON Schema endpoints so clients can discover the expected p
 Example:
 
 ```bash
-curl http://localhost:8080/connectors/http/schema
+curl http://localhost:4004/api/connectors/http/schema
 ```
 
 ## Common Request Format
@@ -1086,6 +1086,6 @@ The harness exposes JSON Schema endpoints so clients can discover the expected p
 Example:
 
 ```bash
-curl http://localhost:8080/connectors/http/schema
+curl http://localhost:4004/api/connectors/http/schema
 ```
 
