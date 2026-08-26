@@ -24,6 +24,15 @@ public class BackendHttpClient : IBackendClient
         return wrapper?.Data;
     }
 
+    public async Task<IReadOnlyDictionary<string, string>> FetchConfigKeyValuePairsAsync(IEnumerable<string> keys, CancellationToken ct = default)
+    {
+        var response = await _httpClient.PostAsJsonAsync("workspace/api/key-store/fetch", keys, ct);
+        var wrapper = await EnsureServiceSuccessAsync<IEnumerable<ConfigKeyValueDto>>(response, ct);
+
+        return wrapper?.Data?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase)
+            ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+    }
+
     public async Task StartJobAsync(Guid jobId, CancellationToken ct = default)
     {
         var response = await _httpClient.PostAsJsonAsync($"workspace/api/execution/job/{jobId}/start", new { }, ct);

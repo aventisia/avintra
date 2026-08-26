@@ -75,7 +75,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
     // Backend REST client + execution engine are shared by both modes.
     using var httpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
     var backendClient = new BackendHttpClient(httpClient, options.AccessToken);
-    var engine = new DesktopExecutionEngine(options.AccessToken, options.AppBaseUrl);
+    var engine = new DesktopExecutionEngine(options.AccessToken, options.AppBaseUrl, backendClient);
 
     var cts = new CancellationTokenSource();
     var abortRequested = false;
@@ -149,7 +149,7 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
 
         // Use the machine JWT (if any) for subsequent backend + hub calls.
         backendClient = new BackendHttpClient(httpClient, accessToken);
-        engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl);
+        engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl, backendClient);
 
         var commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>();
 
@@ -430,7 +430,7 @@ static async Task<int> RunWorkerAsync(RunnerAppOptions options)
 
         using var httpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
         var backendClient = new BackendHttpClient(httpClient, accessToken);
-        var engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl);
+        var engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl, backendClient);
         logSession.Info($"Created execution engine with AppBaseUrl={options.AppBaseUrl}.");
 
         var cts = new CancellationTokenSource();
