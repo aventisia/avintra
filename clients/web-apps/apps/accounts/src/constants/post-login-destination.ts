@@ -5,15 +5,31 @@
 const AVENTISIA_EMAIL_DOMAIN = "@aventisia.com";
 
 /**
- * Determines the post-login destination app path based on the user's email domain.
+ * Indicates whether the app is running inside the Tauri desktop shell.
  *
- * - Emails ending in `@aventisia.com` (Aventisia employees) → Atlas app
- * - All other users → Workspace app
+ * Tauri v2 injects the `__TAURI_INTERNALS__` global into the webview, so this is
+ * the reliable signal (the older `"isTauri" in window` check is not set by Tauri v2).
+ */
+const isTauri = (): boolean =>
+  typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
+
+/**
+ * Determines the post-login destination app path.
+ *
+ * - When running inside the Tauri desktop app → Workspace app (straight to workspace)
+ * - Otherwise (browser):
+ *   - Emails ending in `@aventisia.com` (Aventisia employees) → Atlas app
+ *   - All other users → Workspace app
  *
  * @param email The user's email address (from the decoded JWT `uname`).
  * @returns The base path of the destination app (e.g. `/atlas/` or `/workspace/`).
  */
 const getPostLoginDestination = (email: string): string => {
+  // Desktop (Tauri) users always go straight to the workspace app.
+  if (isTauri()) {
+    return import.meta.env.VITE_WORKSPACE_PATH;
+  }
+
   const normalizedEmail = email?.toLowerCase() ?? "";
   return normalizedEmail.endsWith(AVENTISIA_EMAIL_DOMAIN)
     ? import.meta.env.VITE_ATLAS_PATH
