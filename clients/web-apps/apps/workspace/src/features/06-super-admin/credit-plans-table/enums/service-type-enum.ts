@@ -28,6 +28,10 @@ export enum ServiceTypeEnum {
   Gemini25FlashLiteInput = "Gemini 2.5 Flash Lite-input",
   Gemini25FlashLiteOutput = "Gemini 2.5 Flash Lite-output",
   Gemini25FlashLiteCached = "Gemini 2.5 Flash Lite-cached",
+  // gemini-3.1-flash-lite
+  Gemini31FlashLiteInput = "Gemini 3.1 Flash Lite-input",
+  Gemini31FlashLiteOutput = "Gemini 3.1 Flash Lite-output",
+  Gemini31FlashLiteCached = "Gemini 3.1 Flash Lite-cached",
   // anthropic/claude-4.5-sonnet-20250929
   Claude45SonnetInput = "Claude 4.5 Sonnet-input",
   Claude45SonnetOutput = "Claude 4.5 Sonnet-output",

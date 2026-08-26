@@ -446,6 +446,12 @@ export const googleModelList: Model[] = [
     specialty: ["text", "vision", "realtime"],
   },
   {
+    label: "Gemini 3.1 Flash-Lite",
+    value: "gemini-3.1-flash-lite",
+    available: false,
+    specialty: ["text", "vision"],
+  },
+  {
     label: "Gemini 3 Pro Image (Nano Banana Pro)",
     value: "gemini-3-pro-image-preview",
     available: false,
