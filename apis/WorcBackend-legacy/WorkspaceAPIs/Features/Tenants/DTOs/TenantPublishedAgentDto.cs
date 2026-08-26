@@ -22,6 +22,11 @@ public class TenantPublishedAgentDto
     public string? Name { get; set; }
 
     /// <summary>
+    /// Gets or sets the version number of the flow version (agent).
+    /// </summary>
+    public int VersionNumber { get; set; }
+
+    /// <summary>
     /// Gets or sets the date and time when the agent was published.
     /// </summary>
     public DateTimeOffset PublishedOn { get; set; }

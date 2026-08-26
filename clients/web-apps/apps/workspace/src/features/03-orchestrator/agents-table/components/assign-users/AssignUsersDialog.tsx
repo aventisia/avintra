@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import CustomCheckbox from "@/components/CustomCheckbox";
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { DATA_QUERY_KEY } from "../../constants";
 import { AgentsTableDto } from "../../dtos/agents-table-dto";
@@ -23,6 +24,13 @@ const AssignUsersDialog = () => {
   // Get query client
   const queryClient = useQueryClient();
 
+  // The agents data is cached under a space-scoped key (see useFetchAgents)
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
+
   // The draft state (Checkbox)
   const [assignAll, setAssignAll] = useState(false);
   // The backend truth state
@@ -32,7 +40,7 @@ const AssignUsersDialog = () => {
     if (open) {
       const flowsData = queryClient.getQueryData<{
         data: AgentsTableDto[];
-      }>(DATA_QUERY_KEY);
+      }>([...DATA_QUERY_KEY, currentSpace?.id]);
 
       const flowData = flowsData?.data.find((item) => item.id === flowVersionId);
       const isAssignedToAll = !!flowData?.isAssignedToAllUsers;
@@ -40,7 +48,7 @@ const AssignUsersDialog = () => {
       setAssignAll(isAssignedToAll);
       setSavedAssignAll(isAssignedToAll);
     }
-  }, [open, flowVersionId, queryClient]);
+  }, [open, flowVersionId, queryClient, currentSpace?.id]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

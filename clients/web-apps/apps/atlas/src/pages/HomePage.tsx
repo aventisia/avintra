@@ -40,7 +40,7 @@ const atlasApps: AtlasApp[] = [
   {
     title: "Avintra Sales",
     description: "Track pipelines, deals and sales performance.",
-    url: "/sales",
+    url: "/crm",
     icon: "DataTable.svg",
   },
   {
@@ -188,6 +188,7 @@ export const HomePage = () => {
           return (
             <a
               key={app.url}
+              target="_blank"
               href={href}
               className="group focus:outline-none"
               rel="noopener noreferrer"
