@@ -1,0 +1,117 @@
+{
+  "name": "Execute",
+  "description": "Executes the execute operation through the Apache Camel jdbc connector.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud",
+    "windows"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__ConnectionString",
+      "label": "JDBC Credential",
+      "description": "The JDBC credential used to authenticate API requests.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "operation",
+      "label": "Operation",
+      "description": "The jdbc operation to execute.",
+      "defaultValue": "execute",
+      "selectOptions": [
+        {
+          "label": "Execute",
+          "value": "execute",
+          "description": "execute"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "dataSourceName",
+      "label": "Datasourcename",
+      "description": "Required: dataSourceName",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "readSize",
+      "label": "Readsize",
+      "description": "Optional: readSize",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "outputClass",
+      "label": "Outputclass",
+      "description": "Optional: outputClass",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "url",
+      "label": "Url",
+      "description": "Required auth: url",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "dbUsername",
+      "label": "Database Username",
+      "description": "Database username (used with the ConnectionString credential).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "password",
+      "name": "dbPassword",
+      "label": "Database Password",
+      "description": "Database password (used with the ConnectionString credential).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "parameters",
+      "label": "Parameters",
+      "description": "Request body / payload for the execute operation (JSON).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ],
+  "camel": {
+    "connector": "jdbc",
+    "authType": "database",
+    "bodyField": "parameters",
+    "configKeys": [
+      "dataSourceName",
+      "readSize",
+      "outputClass",
+      "url",
+      "dbUsername",
+      "dbPassword"
+    ]
+  }
+}

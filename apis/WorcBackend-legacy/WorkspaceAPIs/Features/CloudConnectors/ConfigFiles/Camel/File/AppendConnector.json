@@ -1,0 +1,110 @@
+{
+  "name": "Append",
+  "description": "Executes the append operation through the Apache Camel file connector.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud",
+    "windows"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "operation",
+      "label": "Operation",
+      "description": "The file operation to execute.",
+      "defaultValue": "append",
+      "selectOptions": [
+        {
+          "label": "Read",
+          "value": "read",
+          "description": "read"
+        },
+        {
+          "label": "Write",
+          "value": "write",
+          "description": "write"
+        },
+        {
+          "label": "Append",
+          "value": "append",
+          "description": "append"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "directoryName",
+      "label": "Directoryname",
+      "description": "Required: directoryName",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "fileName",
+      "label": "Filename",
+      "description": "Optional: fileName",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "doneFileName",
+      "label": "Donefilename",
+      "description": "Optional: doneFileName",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "flatten",
+      "label": "Flatten",
+      "description": "Optional: flatten",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "charset",
+      "label": "Charset",
+      "description": "Optional: charset",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "content",
+      "label": "Content",
+      "description": "Request body / payload for the append operation (JSON).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ],
+  "camel": {
+    "connector": "file",
+    "authType": "none",
+    "bodyField": "content",
+    "configKeys": [
+      "directoryName",
+      "fileName",
+      "doneFileName",
+      "flatten",
+      "charset"
+    ]
+  }
+}

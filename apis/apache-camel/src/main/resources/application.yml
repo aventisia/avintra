@@ -12,7 +12,7 @@ camel:
       connection-factory: "#artemisConnectionFactory"
 
 server:
-  port: 4004
+  port: 4005
   servlet:
     context-path: /api
 

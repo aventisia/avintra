@@ -1,0 +1,49 @@
+{
+  "name": "ExecuteQuery",
+  "description": "Executes a raw SQL query through the Apache Camel sql connector.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud",
+    "windows"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__ConnectionString",
+      "label": "Credential",
+      "description": "The PostgreSQL connection string credential used to connect.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "query",
+      "label": "Query",
+      "description": "The raw SQL query to execute.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ],
+  "camel": {
+    "connector": "sql",
+    "operation": "query",
+    "authType": "database",
+    "configKeys": [
+      "query"
+    ]
+  }
+}

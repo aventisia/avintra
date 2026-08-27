@@ -55,6 +55,7 @@
     - password
   notes:
     - "Use auth.type=database with url, username, password."
+    - "Credentials may be embedded in the URL userinfo (postgresql://user:pass@host/db); percent-encoded characters are decoded."
     - "Use payload to provide query parameters as a List or Map."
 
 - name: jdbc
@@ -75,6 +76,7 @@
     - password
   notes:
     - "Use auth.type=database with url, username, password."
+    - "Credentials may be embedded in the URL userinfo (postgresql://user:pass@host/db); percent-encoded characters are decoded."
     - "dataSourceName is the bean name exposed to the Camel registry."
 
 - name: file

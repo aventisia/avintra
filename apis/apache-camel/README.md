@@ -54,7 +54,7 @@ docker compose up -d
 .\mvnw.cmd spring-boot:run
 ```
 
-The REST endpoint is `POST http://localhost:4004/api/connectors/{connector}`. The connector path must match the URI scheme in `targetUri`; this makes requests easy to identify while retaining the deliberately dynamic nature of the harness.
+The REST endpoint is `POST http://localhost:4005/api/connectors/{connector}`. The connector path must match the URI scheme in `targetUri`; this makes requests easy to identify while retaining the deliberately dynamic nature of the harness.
 
 ## JBang YAML runtime
 
@@ -99,16 +99,21 @@ For PostgreSQL, credentials can be supplied per request with a `db` block. Do no
 
 When `db` is present, the harness creates or reuses a pooled datasource and automatically adds `dataSource=#requestDataSource_<fingerprint>` to the SQL URI. The password is never returned in the response.
 
+Credentials may also be embedded in the connection string URL userinfo
+(`postgresql://user:pass@host:port/db`). Percent-encoded characters in the
+userinfo (e.g. `%40` for `@`, `%25` for `%`) are decoded automatically, and
+separately supplied `username`/`password` take precedence over the URL values.
+
 Put endpoint values such as host, port, database, queue, path, and query parameters in `targetUri`. Put runtime protocol values such as HTTP method, authorization, content type, or component headers in `headers`. For SQL, supply the database URL, username, and password through the `db` block; do not place credentials in the request body or URI.
 
 For HTTP GET and DELETE, set `CamelHttpMethod` and put URL query parameters directly in the URI:
 
 ```powershell
-curl.exe -X POST http://localhost:4004/api/connectors/http `
+curl.exe -X POST http://localhost:4005/api/connectors/http `
   -H "Content-Type: application/json" `
   -d '{\"targetUri\":\"http://localhost:8081/echo?item=42&bridgeEndpoint=true\",\"headers\":{\"CamelHttpMethod\":\"GET\"},\"body\":null}'
 
-curl.exe -X POST http://localhost:4004/api/connectors/http `
+curl.exe -X POST http://localhost:4005/api/connectors/http `
   -H "Content-Type: application/json" `
   -d '{\"targetUri\":\"http://localhost:8081/echo?item=42&bridgeEndpoint=true\",\"headers\":{\"CamelHttpMethod\":\"DELETE\"},\"body\":null}'
 ```
@@ -128,7 +133,7 @@ For a database query, put the SQL statement and datasource reference in `targetU
 ### SQL
 
 ```powershell
-curl.exe -X POST http://localhost:4004/api/connectors/sql `
+curl.exe -X POST http://localhost:4005/api/connectors/sql `
   -H "Content-Type: application/json" `
   -d '{\"targetUri\":\"sql:insert into connector_events(message) values (:#message)\",\"headers\":{\"message\":\"hello from curl\"},\"body\":null,\"db\":{\"url\":\"jdbc:postgresql://localhost:5432/your_database\",\"username\":\"your_user\",\"password\":\"your_password\"}}'
 ```
@@ -140,7 +145,7 @@ request-specific datasource automatically.
 ### HTTP / WireMock
 
 ```powershell
-curl.exe -X POST http://localhost:4004/api/connectors/http `
+curl.exe -X POST http://localhost:4005/api/connectors/http `
   -H "Content-Type: application/json" `
   -d '{\"targetUri\":\"http://localhost:8081/echo?bridgeEndpoint=true\",\"headers\":{\"Content-Type\":\"application/json\"},\"body\":{\"message\":\"hello\"}}'
 ```
@@ -150,7 +155,7 @@ Expected response body contains `received: true` and `message: hello`. WireMock 
 ### JMS / Artemis
 
 ```powershell
-curl.exe -X POST http://localhost:4004/api/connectors/jms `
+curl.exe -X POST http://localhost:4005/api/connectors/jms `
   -H "Content-Type: application/json" `
   -d '{\"targetUri\":\"jms:queue:connector-tests\",\"body\":\"hello from curl\"}'
 ```
@@ -186,7 +191,7 @@ $request = @{
   }
 } | ConvertTo-Json -Compress
 
-curl.exe -X POST http://localhost:4004/api/connectors/mail `
+curl.exe -X POST http://localhost:4005/api/connectors/mail `
   -H "Content-Type: application/json" `
   -d $request
 ```
@@ -208,7 +213,7 @@ $request = @{
   }
 } | ConvertTo-Json -Compress
 
-curl.exe -X POST http://localhost:4004/api/connectors/mail `
+curl.exe -X POST http://localhost:4005/api/connectors/mail `
   -H "Content-Type: application/json" `
   -d $request
 ```

@@ -74,6 +74,7 @@ public static class EnvironmentConfigurationExtension
         var ACCOUNTS_API_BASE_URL = Environment.GetEnvironmentVariable("ACCOUNTS_API_BASE_URL") ?? config["EnvironmentConfig:AccountsApiBaseUrl"] ?? "http://accounts-apis:4000";
         var WORKSPACE_API_BASE_URL = Environment.GetEnvironmentVariable("WORKSPACE_API_BASE_URL") ?? config["EnvironmentConfig:WorkspaceApiBaseUrl"] ?? "http://workspace-apis:4001";
         var LLMPIPELINE_API_BASE_URL = Environment.GetEnvironmentVariable("LLMPIPELINE_API_BASE_URL") ?? config["EnvironmentConfig:LlmPipelineApiBaseUrl"] ?? "http://llmpipeline-apis:4003";
+        var CAMEL_API_BASE_URL = Environment.GetEnvironmentVariable("CAMEL_API_BASE_URL") ?? config["EnvironmentConfig:CamelApiBaseUrl"] ?? "http://camel-connector-harness:4005";
 
         // Sales and support emails environment variable
         var SALES_EMAILS = Environment.GetEnvironmentVariable("SALES_EMAILS") ?? config["EnvironmentConfig:SalesEmails"] ?? string.Empty;
@@ -185,6 +186,7 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:AccountsApiBaseUrl", ACCOUNTS_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:WorkspaceApiBaseUrl", WORKSPACE_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:LlmPipelineApiBaseUrl", LLMPIPELINE_API_BASE_URL.TrimEnd('/') },
+                    { "EnvironmentConfig:CamelApiBaseUrl", CAMEL_API_BASE_URL.TrimEnd('/') },
 
                     { "EnvironmentConfig:SalesEmails", SALES_EMAILS },
 

@@ -24,7 +24,7 @@ The harness exposes JSON Schema endpoints so clients can discover the expected p
 Example:
 
 ```bash
-curl http://localhost:4004/api/connectors/http/schema
+curl http://localhost:4005/api/connectors/http/schema
 ```
 
 ## Common Request Format
@@ -67,6 +67,11 @@ Every connector request uses the following JSON envelope. Legacy aliases (`targe
 | `accessToken` | `token` | github (GitHub PATs) |
 | `oauth2` | `clientId`, `clientSecret`, `refreshToken`, `tokenUrl`, `authorizationUrl`, `scopes` | github |
 | `database` | `properties.url`, `properties.username`, `properties.password` | sql, jdbc |
+
+For `database` auth, `properties.username`/`properties.password` are optional
+when the connection string embeds credentials in the URL userinfo
+(`postgresql://user:pass@host/db`). Percent-encoded characters in the userinfo
+are decoded automatically, and separately supplied credentials take precedence.
 | `aws` | `accessKey`, `secretKey`, `region` | AWS components (when added) |
 | `azure` | `tenantId`, `clientId`, `clientSecret`, `subscriptionId` | Azure components (when added) |
 | `gcp` | `projectId`, token/service-account | Google components (when added) |
@@ -202,9 +207,38 @@ Required when the legacy `db` block is not used. Use `auth.type=database` with:
 
 | Field | Description |
 |---|---|
-| `properties.url` | JDBC URL, currently `jdbc:postgresql://...` |
-| `properties.username` | Database username |
-| `properties.password` | Database password |
+| `properties.url` | JDBC URL (`jdbc:postgresql://...`) **or** URL-style connection string (`postgresql://user:pass@host:port/db`) |
+| `properties.username` | Database username (optional when embedded in the URL userinfo) |
+| `properties.password` | Database password (optional when embedded in the URL userinfo) |
+
+URL-style connection strings are normalized to JDBC URLs automatically, and
+credentials embedded in the URL userinfo (`postgresql://user:pass@host:port/db`)
+are extracted when `username`/`password` are not supplied separately. The
+userinfo is split on the last `@`, so passwords containing `@` are supported.
+
+Percent-encoded characters in the URL userinfo are decoded before the driver
+receives them (e.g. `%40` → `@`, `%25` → `%`). This lets you embed credentials
+that contain reserved characters without breaking the URL:
+
+```json
+{
+  "connector": "sql",
+  "operation": "query",
+  "configuration": {
+    "query": "SELECT * FROM users"
+  },
+  "auth": {
+    "type": "database",
+    "properties": {
+      "url": "postgresql://user%40domain:p%40ss%25word@localhost:5432/WorkspaceDb"
+    }
+  }
+}
+```
+
+Separately supplied `properties.username`/`properties.password` always take
+precedence over credentials embedded in the URL userinfo. When only one of them
+is missing, the missing value is filled in from the URL userinfo.
 
 ### Sample request
 
@@ -224,6 +258,24 @@ Required when the legacy `db` block is not used. Use `auth.type=database` with:
     }
   },
   "payload": [1]
+}
+```
+
+### Sample request (URL-style connection string)
+
+```json
+{
+  "connector": "sql",
+  "operation": "query",
+  "configuration": {
+    "query": "SELECT * FROM users"
+  },
+  "auth": {
+    "type": "database",
+    "properties": {
+      "url": "postgresql://postgres:Post@123@localhost:5432/WorkspaceDb"
+    }
+  }
 }
 ```
 
@@ -279,7 +331,7 @@ Required when the legacy `db` block is not used. Use `auth.type=database` with:
 
 ### Authentication
 
-Use `auth.type=database` to bind a per-request datasource, or pre-register a `DataSource` bean and reference it by `dataSourceName`.
+Use `auth.type=database` to bind a per-request datasource, or pre-register a `DataSource` bean and reference it by `dataSourceName`. As with the SQL connector, credentials may be embedded in the URL userinfo (`postgresql://user:pass@host/db`); percent-encoded characters are decoded automatically and separately supplied `username`/`password` take precedence.
 
 ### Sample request
 
@@ -1086,6 +1138,6 @@ The harness exposes JSON Schema endpoints so clients can discover the expected p
 Example:
 
 ```bash
-curl http://localhost:4004/api/connectors/http/schema
+curl http://localhost:4005/api/connectors/http/schema
 ```
 
