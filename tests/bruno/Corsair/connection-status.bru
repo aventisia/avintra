@@ -1,0 +1,27 @@
+meta {
+  name: Connection Status
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{CORSAIR_SIDECAR_URL}}/connect/status
+  body: json
+  auth: none
+}
+
+headers {
+  X-Corsair-Api-Key: {{CORSAIR_API_KEY}}
+}
+
+body:json {
+  {
+    "tenantId": "{{CORSAIR_CONNECTION_ID}}",
+    "plugin": "outlook"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains "connected"
+}

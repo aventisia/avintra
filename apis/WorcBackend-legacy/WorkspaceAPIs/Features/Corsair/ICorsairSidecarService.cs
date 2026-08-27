@@ -63,4 +63,57 @@ public interface ICorsairSidecarService
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns><c>true</c> when the sidecar acknowledged the delete.</returns>
     Task<bool> DeleteCredentialAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Stores tenant-scoped OAuth integration keys (client_id, client_secret, redirect_url)
+    /// for a plugin in the Corsair sidecar.
+    /// </summary>
+    /// <param name="connectionId">Stable connection handle (AppSecret Id) used as the Corsair tenant.</param>
+    /// <param name="plugin">Target plugin identifier.</param>
+    /// <param name="clientId">OAuth client id.</param>
+    /// <param name="clientSecret">OAuth client secret.</param>
+    /// <param name="redirectUrl">Platform-managed OAuth redirect URL.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns><c>true</c> when the sidecar acknowledged the keys.</returns>
+    Task<bool> StoreIntegrationKeysAsync(Guid connectionId, string plugin, string clientId, string clientSecret, string redirectUrl, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Mints a connect link for a tenant/plugin so the user can complete OAuth consent.
+    /// </summary>
+    /// <param name="connectionId">Stable connection handle (AppSecret Id) used as the Corsair tenant.</param>
+    /// <param name="plugin">Target plugin identifier.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The connect URL and expiry, or <c>null</c> on failure.</returns>
+    Task<CorsairConnectLink?> CreateConnectLinkAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Checks whether a tenant has connected a plugin (OAuth consent completed).
+    /// </summary>
+    /// <param name="connectionId">Stable connection handle (AppSecret Id) used as the Corsair tenant.</param>
+    /// <param name="plugin">Target plugin identifier.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The connection status, or <c>null</c> on failure.</returns>
+    Task<CorsairConnectionStatus?> GetConnectionStatusAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Result of minting a Corsair connect link.
+/// </summary>
+public sealed class CorsairConnectLink
+{
+    public string Plugin { get; set; } = string.Empty;
+    public Guid ConnectionId { get; set; }
+    public string ConnectUrl { get; set; } = string.Empty;
+    public DateTimeOffset? ExpiresAt { get; set; }
+}
+
+/// <summary>
+/// Connection status for a Corsair plugin/tenant.
+/// </summary>
+public sealed class CorsairConnectionStatus
+{
+    public string Plugin { get; set; } = string.Empty;
+    public Guid ConnectionId { get; set; }
+    public string State { get; set; } = string.Empty;
+    public bool Connected { get; set; }
 }

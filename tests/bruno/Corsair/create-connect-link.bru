@@ -1,0 +1,27 @@
+meta {
+  name: Create Connect Link
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{CORSAIR_SIDECAR_URL}}/connect/link
+  body: json
+  auth: none
+}
+
+headers {
+  X-Corsair-Api-Key: {{CORSAIR_API_KEY}}
+}
+
+body:json {
+  {
+    "tenantId": "{{CORSAIR_CONNECTION_ID}}",
+    "plugin": "outlook"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains "connectUrl"
+}

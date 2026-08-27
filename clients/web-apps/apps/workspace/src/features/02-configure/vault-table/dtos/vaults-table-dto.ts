@@ -75,4 +75,11 @@ export interface VaultsTableDto {
    * Gets or sets the last modified date and time.
    */
   lastModifiedOn?: Date | string;
+
+  /**
+   * Gets or sets the Corsair OAuth connect URL returned after create/update for
+   * OAuth-capable credential types (e.g. M365). The frontend opens this URL to
+   * complete OAuth consent.
+   */
+  oauthConnectUrl?: string;
 }

@@ -95,4 +95,18 @@ public class AppSecretController : BaseApiController
     {
         return ResultHelper(await _appSecretService.GetAppSecretDetailByNameAsync(appSecretName));
     }
+
+    // Mint a Corsair OAuth connect link for an App Secret.
+    [HttpPost("{appSecretId}/connect-link")]
+    public async Task<ActionResult<ServiceResponse<CorsairConnectLink>>> CreateOAuthConnectLink(Guid appSecretId)
+    {
+        return ResultHelper(await _appSecretService.CreateOAuthConnectLinkAsync(appSecretId));
+    }
+
+    // Get the Corsair OAuth connection status for an App Secret.
+    [HttpGet("{appSecretId}/oauth-status")]
+    public async Task<ActionResult<ServiceResponse<CorsairConnectionStatus>>> GetOAuthConnectionStatus(Guid appSecretId)
+    {
+        return ResultHelper(await _appSecretService.GetOAuthConnectionStatusAsync(appSecretId));
+    }
 }

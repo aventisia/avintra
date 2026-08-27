@@ -128,9 +128,177 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
         }
     }
 
+    /// <inheritdoc />
+    public async Task<bool> StoreIntegrationKeysAsync(Guid connectionId, string plugin, string clientId, string clientSecret, string redirectUrl, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(plugin) || string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret) || string.IsNullOrWhiteSpace(redirectUrl))
+        {
+            return false;
+        }
+
+        try
+        {
+            var body = new
+            {
+                plugin = plugin.ToLowerInvariant(),
+                tenantId = connectionId.ToString(),
+                clientId,
+                clientSecret,
+                redirectUrl
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
+            using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
+            var response = await _httpClient.PostAsync("/integration-keys", content, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            _logger.LogInformation(
+                "Stored OAuth integration keys for plugin {Plugin} tenant {ConnectionId} in Corsair sidecar.",
+                plugin,
+                connectionId);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to store OAuth integration keys for plugin {Plugin} tenant {ConnectionId} in Corsair sidecar.",
+                plugin,
+                connectionId);
+            return false;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<CorsairConnectLink?> CreateConnectLinkAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(plugin))
+        {
+            return null;
+        }
+
+        try
+        {
+            var body = new
+            {
+                tenantId = connectionId.ToString(),
+                plugin = plugin.ToLowerInvariant()
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
+            using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
+            var response = await _httpClient.PostAsync("/connect/link", content, cancellationToken);
+            var rawBody = await response.Content.ReadAsStringAsync(cancellationToken);
+            _logger.LogInformation(
+                "Corsair /connect/link status {Status} body: {Body}",
+                (int)response.StatusCode,
+                rawBody);
+            response.EnsureSuccessStatusCode();
+
+            var payload = System.Text.Json.JsonSerializer.Deserialize<CorsairConnectLinkResponse>(rawBody, JsonSerializerOptions.Web);
+            if (payload is null || string.IsNullOrWhiteSpace(payload.ConnectUrl))
+            {
+                _logger.LogWarning(
+                    "Corsair /connect/link returned no connectUrl for plugin {Plugin} tenant {ConnectionId}. Payload: {Payload}",
+                    plugin,
+                    connectionId,
+                    rawBody);
+                return null;
+            }
+
+            return new CorsairConnectLink
+            {
+                Plugin = payload.Plugin,
+                ConnectionId = connectionId,
+                ConnectUrl = payload.ConnectUrl,
+                ExpiresAt = payload.ExpiresAt
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to create connect link for plugin {Plugin} tenant {ConnectionId} in Corsair sidecar.",
+                plugin,
+                connectionId);
+            return null;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<CorsairConnectionStatus?> GetConnectionStatusAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(plugin))
+        {
+            return null;
+        }
+
+        try
+        {
+            var body = new
+            {
+                tenantId = connectionId.ToString(),
+                plugin = plugin.ToLowerInvariant()
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
+            using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
+            var response = await _httpClient.PostAsync("/connect/status", content, cancellationToken);
+            response.EnsureSuccessStatusCode();
+
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            var payload = await System.Text.Json.JsonSerializer.DeserializeAsync<CorsairConnectionStatusResponse>(stream, JsonSerializerOptions.Web, cancellationToken);
+            if (payload is null)
+            {
+                return null;
+            }
+
+            return new CorsairConnectionStatus
+            {
+                Plugin = payload.Plugin,
+                ConnectionId = connectionId,
+                State = payload.State,
+                Connected = payload.Connected
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to get connection status for plugin {Plugin} tenant {ConnectionId} from Corsair sidecar.",
+                plugin,
+                connectionId);
+            return null;
+        }
+    }
+
     private sealed class CorsairToolsResponse
     {
         [JsonPropertyName("tools")]
         public List<CorsairToolDescriptor> Tools { get; set; } = [];
+    }
+
+    private sealed class CorsairConnectLinkResponse
+    {
+        [JsonPropertyName("plugin")]
+        public string Plugin { get; set; } = string.Empty;
+
+        [JsonPropertyName("connectUrl")]
+        public string ConnectUrl { get; set; } = string.Empty;
+
+        [JsonPropertyName("expiresAt")]
+        public DateTimeOffset? ExpiresAt { get; set; }
+    }
+
+    private sealed class CorsairConnectionStatusResponse
+    {
+        [JsonPropertyName("plugin")]
+        public string Plugin { get; set; } = string.Empty;
+
+        [JsonPropertyName("state")]
+        public string State { get; set; } = string.Empty;
+
+        [JsonPropertyName("connected")]
+        public bool Connected { get; set; }
     }
 }

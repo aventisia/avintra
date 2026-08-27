@@ -10,6 +10,7 @@ import { twilio } from "@corsair-dev/twilio";
 import { notion } from "@corsair-dev/notion";
 import { hubspot } from "@corsair-dev/hubspot";
 import { openweathermap } from "@corsair-dev/openweathermap";
+import { outlook } from "@corsair-dev/outlook";
 
 // Load defaults first, then allow .env.local to override with real local values.
 dotenv.config({ path: ".env" });
@@ -41,6 +42,7 @@ export const plugins = [
   notion(),
   hubspot(),
   openweathermap(),
+  outlook(),
 ] as const;
 
 export const corsair = createCorsair({
@@ -53,6 +55,37 @@ export const corsair = createCorsair({
     redirectUri: `${process.env.APP_URL}/api/oauth/callback`,
   },
 });
+
+/** Plugin metadata exposed by the Corsair SDK. */
+type PluginMeta = {
+  id: string;
+  name: string;
+  oauthConfig?: {
+    providerName?: string;
+    scopes?: string[];
+    authUrl?: string;
+    tokenUrl?: string;
+  };
+};
+
+/** Return every registered plugin that ships an oauthConfig. */
+export function getOAuthPlugins(): PluginMeta[] {
+  return plugins
+    .map((p) => p as unknown as PluginMeta)
+    .filter((p) => p.oauthConfig !== undefined);
+}
+
+/** True if a registered plugin supports OAuth. */
+export function isOAuthPlugin(pluginId: string): boolean {
+  return getOAuthPlugins().some((p) => p.id === pluginId.toLowerCase());
+}
+
+/** Resolve a plugin id to its metadata, or undefined if unknown. */
+export function getPluginMeta(pluginId: string): PluginMeta | undefined {
+  return plugins
+    .map((p) => p as unknown as PluginMeta)
+    .find((p) => p.id === pluginId.toLowerCase());
+}
 
 /**
  * Idempotent: creates integration rows in the Corsair DB for all registered

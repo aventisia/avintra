@@ -6,6 +6,7 @@ public class AppSecretService : IAppSecretService
     private readonly ILogger<AppSecretService> _logger;
     private readonly IStringEncryptionService _encryptionService;
     private readonly ICorsairSidecarService _corsairSidecarService;
+    private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
     private readonly IResourceShareService _resourceShareService;
     private readonly ICurrentTenantService _currentTenantService;
@@ -16,13 +17,15 @@ public class AppSecretService : IAppSecretService
         IStringEncryptionService encryptionService,
         IResourceShareService resourceShareService,
         ICurrentTenantService currentTenantService,
-        ICorsairSidecarService corsairSidecarService
+        ICorsairSidecarService corsairSidecarService,
+        EnvironmentConfig environmentConfig
     )
     {
         _unitOfWork = unitOfWork;
         _logger = logger;
         _encryptionService = encryptionService;
         _corsairSidecarService = corsairSidecarService;
+        _environmentConfig = environmentConfig;
 
         // Extract user ID from the HTTP context, if available
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -439,8 +442,23 @@ public class AppSecretService : IAppSecretService
             // Mirror the credential to the Corsair sidecar for supported API-key plugins.
             await MirrorCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
 
+            // Mirror OAuth credentials (e.g. M365 -> outlook) to the Corsair sidecar.
+            await MirrorOAuthCredentialToCorsairAsync(newAppSecret, validateData.EncryptedValues);
+
             // Adapt the entity to DTO and return success response
             serviceResponse.Data = newAppSecret.Adapt<AppSecretDto>();
+
+            // For OAuth-capable credential types, mint a connect link so the frontend can
+            // complete consent immediately after creation.
+            if (MapAppSecretTypeToCorsairOAuthPlugin(newAppSecret.Type) is not null)
+            {
+                var link = await _corsairSidecarService.CreateConnectLinkAsync(newAppSecret.Id, MapAppSecretTypeToCorsairOAuthPlugin(newAppSecret.Type)!);
+                if (link != null)
+                {
+                    serviceResponse.Data.OAuthConnectUrl = link.ConnectUrl;
+                }
+            }
+
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential created successfully.";
         }
@@ -673,10 +691,23 @@ public class AppSecretService : IAppSecretService
             if (isDataChanged && validateData != null)
             {
                 await MirrorCredentialToCorsairAsync(existingAppSecret, validateData.EncryptedValues);
+                await MirrorOAuthCredentialToCorsairAsync(existingAppSecret, validateData.EncryptedValues);
             }
 
             // Return success response
             serviceResponse.Data = existingAppSecret.Adapt<AppSecretDto>();
+
+            // For OAuth-capable credential types, mint a connect link so the frontend can
+            // complete (or re-complete) consent after an update.
+            if (MapAppSecretTypeToCorsairOAuthPlugin(existingAppSecret.Type) is not null)
+            {
+                var link = await _corsairSidecarService.CreateConnectLinkAsync(existingAppSecret.Id, MapAppSecretTypeToCorsairOAuthPlugin(existingAppSecret.Type)!);
+                if (link != null)
+                {
+                    serviceResponse.Data.OAuthConnectUrl = link.ConnectUrl;
+                }
+            }
+
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credential updated successfully.";
         }
@@ -1035,6 +1066,104 @@ public class AppSecretService : IAppSecretService
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while retrieving Credential with name: {AppSecretName}", appSecretName);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
+    /// Mints a Corsair OAuth connect link for an App Secret so the user can complete consent.
+    /// </summary>
+    public async Task<ServiceResponse<CorsairConnectLink>> CreateOAuthConnectLinkAsync(Guid appSecretId)
+    {
+        var serviceResponse = new ServiceResponse<CorsairConnectLink>
+        {
+            Data = null,
+            Message = "Failed to create OAuth connect link."
+        };
+
+        try
+        {
+            var appSecret = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w => w.Id == appSecretId)
+                .SingleOrDefaultAsync();
+
+            if (appSecret == null)
+            {
+                serviceResponse.Message = "Credential not found.";
+                return serviceResponse;
+            }
+
+            var plugin = MapAppSecretTypeToCorsairOAuthPlugin(appSecret.Type);
+            if (string.IsNullOrWhiteSpace(plugin))
+            {
+                serviceResponse.Message = "This credential type does not support OAuth connect.";
+                return serviceResponse;
+            }
+
+            var link = await _corsairSidecarService.CreateConnectLinkAsync(appSecret.Id, plugin);
+            if (link == null)
+            {
+                serviceResponse.Message = "Failed to create OAuth connect link in Corsair.";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = link;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "OAuth connect link created successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error occurred while creating OAuth connect link for credential ID: {AppSecretId}", appSecretId);
+        }
+
+        return serviceResponse;
+    }
+
+    /// <summary>
+    /// Checks the Corsair OAuth connection status for an App Secret.
+    /// </summary>
+    public async Task<ServiceResponse<CorsairConnectionStatus>> GetOAuthConnectionStatusAsync(Guid appSecretId)
+    {
+        var serviceResponse = new ServiceResponse<CorsairConnectionStatus>
+        {
+            Data = null,
+            Message = "Failed to get OAuth connection status."
+        };
+
+        try
+        {
+            var appSecret = await _unitOfWork.AppSecretRepo
+                .GetByConditionAsync(w => w.Id == appSecretId)
+                .SingleOrDefaultAsync();
+
+            if (appSecret == null)
+            {
+                serviceResponse.Message = "Credential not found.";
+                return serviceResponse;
+            }
+
+            var plugin = MapAppSecretTypeToCorsairOAuthPlugin(appSecret.Type);
+            if (string.IsNullOrWhiteSpace(plugin))
+            {
+                serviceResponse.Message = "This credential type does not support OAuth connect.";
+                return serviceResponse;
+            }
+
+            var status = await _corsairSidecarService.GetConnectionStatusAsync(appSecret.Id, plugin);
+            if (status == null)
+            {
+                serviceResponse.Message = "Failed to get OAuth connection status from Corsair.";
+                return serviceResponse;
+            }
+
+            serviceResponse.Data = status;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "OAuth connection status retrieved successfully.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while getting OAuth connection status for credential ID: {AppSecretId}", appSecretId);
         }
 
         return serviceResponse;
@@ -3769,6 +3898,28 @@ public class AppSecretService : IAppSecretService
     }
 
     /// <summary>
+    /// Maps an <see cref="AppSecretTypesEnum"/> to the corresponding Corsair OAuth plugin identifier.
+    /// Returns <c>null</c> when the type does not correspond to a Corsair-supported OAuth plugin.
+    /// </summary>
+    /// <remarks>
+    /// To add a new OAuth-capable credential:
+    /// 1. Add the Corsair OAuth plugin to the sidecar (<c>apis/corsair/src/corsair.ts</c>).
+    /// 2. Add the <c>AppSecretTypesEnum</c> case below pointing to that plugin id.
+    /// 3. Add a frontend form config JSON under <c>clients/web-apps/apps/workspace/src/features/dynamic-config-panel/constants/config-json/</c>
+    ///    with the OAuth client fields the sidecar needs (typically ClientId and ClientSecret).
+    /// 4. Ensure <c>MirrorOAuthCredentialToCorsairAsync</c> sends the fields the plugin expects.
+    /// </remarks>
+    private static string? MapAppSecretTypeToCorsairOAuthPlugin(AppSecretTypesEnum type)
+    {
+        return type switch
+        {
+            // M365 credentials carry ClientId/ClientSecret and map to the Corsair Outlook plugin.
+            AppSecretTypesEnum.M365 => "outlook",
+            _ => null
+        };
+    }
+
+    /// <summary>
     /// Returns the decrypted credential value that should be sent to the Corsair sidecar for the
     /// given plugin. Returns <c>null</c> when the plugin is unsupported or the expected key is missing.
     /// </summary>
@@ -3825,6 +3976,66 @@ public class AppSecretService : IAppSecretService
         }
 
         await _corsairSidecarService.MirrorCredentialAsync(appSecret.Id, plugin, apiKey);
+    }
+
+    /// <summary>
+    /// Mirrors an OAuth credential (ClientId + ClientSecret) to the Corsair sidecar as tenant-scoped
+    /// integration keys when the credential type maps to a supported OAuth plugin.
+    /// Best-effort: failures are logged but do not fail the create/update operation.
+    /// </summary>
+    private async Task MirrorOAuthCredentialToCorsairAsync(AppSecret appSecret, Dictionary<string, string> encryptedValues)
+    {
+        var plugin = MapAppSecretTypeToCorsairOAuthPlugin(appSecret.Type);
+        if (string.IsNullOrWhiteSpace(plugin))
+        {
+            return;
+        }
+
+        var decryptedValues = encryptedValues.ToDictionary(
+            kv => kv.Key,
+            kv => _encryptionService.DecryptString(kv.Value));
+
+        var clientSecret = decryptedValues.GetValueOrDefault("ClientSecret");
+        if (string.IsNullOrWhiteSpace(clientSecret))
+        {
+            _logger.LogInformation(
+                "Skipping Corsair OAuth mirror for credential {AppSecretId}: no client secret found for plugin {Plugin}.",
+                appSecret.Id,
+                plugin);
+            return;
+        }
+
+        // ClientId and RedirectUrl are stored in the sanitized JSON (not encrypted).
+        var clientId = GetSanitized(appSecret.Data, "ClientId");
+        var redirectUrl = _environmentConfig.CorsairRedirectUri;
+
+        if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(redirectUrl))
+        {
+            _logger.LogInformation(
+                "Skipping Corsair OAuth mirror for credential {AppSecretId}: missing client id or redirect url for plugin {Plugin}.",
+                appSecret.Id,
+                plugin);
+            return;
+        }
+
+        await _corsairSidecarService.StoreIntegrationKeysAsync(appSecret.Id, plugin, clientId, clientSecret, redirectUrl);
+    }
+
+    /// <summary>
+    /// Reads a top-level string property from a sanitized credential JSON payload.
+    /// </summary>
+    private static string? GetSanitized(string dataJson, string propertyName)
+    {
+        try
+        {
+            var node = JsonNode.Parse(dataJson);
+            var value = node?[propertyName]?.GetValue<string>();
+            return string.IsNullOrWhiteSpace(value) ? null : value;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     // Updates the properties of an object using a dictionary of key-value pairs, where the keys are property names and the values are their new values.

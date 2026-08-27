@@ -77,6 +77,7 @@ public static class EnvironmentConfigurationExtension
         var CAMEL_API_BASE_URL = Environment.GetEnvironmentVariable("CAMEL_API_BASE_URL") ?? config["EnvironmentConfig:CamelApiBaseUrl"] ?? "http://camel-connector-harness:4005";
         var CORSAIR_SIDECAR_URL = Environment.GetEnvironmentVariable("CORSAIR_SIDECAR_URL") ?? config["EnvironmentConfig:CorsairSidecarUrl"] ?? "http://corsair:3456";
         var CORSAIR_API_KEY = Environment.GetEnvironmentVariable("CORSAIR_API_KEY") ?? config["EnvironmentConfig:CorsairApiKey"] ?? string.Empty;
+        var CORSAIR_REDIRECT_URI = Environment.GetEnvironmentVariable("CORSAIR_REDIRECT_URI") ?? config["EnvironmentConfig:CorsairRedirectUri"] ?? string.Empty;
 
         // Sales and support emails environment variable
         var SALES_EMAILS = Environment.GetEnvironmentVariable("SALES_EMAILS") ?? config["EnvironmentConfig:SalesEmails"] ?? string.Empty;
@@ -191,6 +192,7 @@ public static class EnvironmentConfigurationExtension
                     { "EnvironmentConfig:CamelApiBaseUrl", CAMEL_API_BASE_URL.TrimEnd('/') },
                     { "EnvironmentConfig:CorsairSidecarUrl", CORSAIR_SIDECAR_URL.TrimEnd('/') },
                     { "EnvironmentConfig:CorsairApiKey", CORSAIR_API_KEY },
+                    { "EnvironmentConfig:CorsairRedirectUri", CORSAIR_REDIRECT_URI },
 
                     { "EnvironmentConfig:SalesEmails", SALES_EMAILS },
 
