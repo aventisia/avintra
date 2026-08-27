@@ -217,10 +217,10 @@ const ExecuteFlow = () => {
       let isDesktopOnlyFlow = doesFlowContainAnyDesktopOnlyNode(nodes as Node<NodeDataType>[]);
       if (IS_TAURI) isDesktopOnlyFlow = true;
 
-      // if (!IS_TAURI && isDesktopOnlyFlow) {
-      //   toast.error("Flow contains desktop nodes which cannot be executed via web.");
-      //   return;
-      // }
+      if (!IS_TAURI && isDesktopOnlyFlow) {
+        toast.error("Flow contains desktop nodes which cannot be executed via web.");
+        return;
+      }
 
       const flowGraphError = isValidFlowGraph(nodes as Node<NodeDataType>[], edges);
       if (flowGraphError) {
