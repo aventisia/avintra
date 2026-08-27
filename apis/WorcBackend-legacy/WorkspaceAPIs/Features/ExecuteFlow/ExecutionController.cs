@@ -52,4 +52,15 @@ public class ExecutionController : BaseApiController
         var response = await _jobsTableService.CloseJobAsync(jobCloseDto);
         return ResultHelper(response);
     }
+
+    // Pull-based job dispatch for runner apps. Returns the next Created job attached to the
+    // requested machine's FlowVersions, already assigned to the machine. Returns an empty
+    // successful response (204 from ResultHelper) when nothing is pending. Machine JWT only.
+    [HttpGet("machine/{machineId}/next-pending-job")]
+    [AllowAnonymous, ApiKeyAuthorize("machineAuth", allowJwtAuth: true)]
+    public async Task<ActionResult<ServiceResponse<JobRecordDto?>>> GetNextPendingJob(Guid machineId)
+    {
+        var response = await _jobsTableService.GetAndAssignNextPendingJobForMachineAsync(machineId);
+        return ResultHelper(response);
+    }
 }

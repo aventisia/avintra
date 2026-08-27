@@ -39,6 +39,13 @@ public class BackendHttpClient : IBackendClient
         await EnsureServiceSuccessAsync<object>(response, ct);
     }
 
+    public async Task<Guid?> GetNextPendingJobAsync(Guid machineId, CancellationToken ct = default)
+    {
+        var response = await _httpClient.GetAsync($"workspace/api/execution/machine/{machineId}/next-pending-job", ct);
+        var wrapper = await EnsureServiceSuccessAsync<NextPendingJobDto>(response, ct);
+        return wrapper?.Data?.JobId;
+    }
+
     public async Task CloseJobAsync(Guid jobId, FlowExecutionStatus status, List<NodeExecutionLog> logs, string? remarks = null, CancellationToken ct = default)
     {
         var dtos = MapLogsToDtos(logs);
@@ -213,6 +220,12 @@ public class BackendHttpClient : IBackendClient
 
         [JsonPropertyName("machineId")]
         public Guid MachineId { get; set; }
+    }
+
+    private class NextPendingJobDto
+    {
+        [JsonPropertyName("id")]
+        public Guid JobId { get; set; }
     }
 
     private class NodeExecutionLogDto
