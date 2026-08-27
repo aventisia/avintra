@@ -1,6 +1,7 @@
 namespace AccountsAPIs.Services;
 
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using Newtonsoft.Json;
 
 public class SpaceTableService : ISpaceTableService
@@ -251,6 +252,14 @@ public class SpaceTableService : ISpaceTableService
                 return serviceResponse;
             }
 
+            // Always include the creator as a member of the space so they show up
+            // in the Tenant Admin Users table's Spaces column. Dedupe in case the
+            // creator was already selected explicitly.
+            if (!spaceDto.UserIds.Contains(_userId))
+            {
+                spaceDto.UserIds.Add(_userId);
+            }
+
             // Create space-user associations only when users were selected, then save them.
             // Skipping the empty case avoids a redundant SaveAsync that reports failure (0 changes)
             // even though the space itself was already created successfully.
@@ -275,6 +284,10 @@ public class SpaceTableService : ISpaceTableService
                     return serviceResponse;
                 }
             }
+
+            // Grant the creator Owner access in the WorkspaceAPIs ResourceShare table so
+            // the creator's name appears in the Share dialog's "Shared User(s)" list.
+            await AssignSpaceOwnerAsync(newSpace.Id);
 
             // Map result and prepare response
             serviceResponse.Data = newSpace.Adapt<SpaceTableDto>();
@@ -545,6 +558,51 @@ public class SpaceTableService : ISpaceTableService
         {
             _logger.LogError(ex, "Error while retrieving space summaries from WorkspaceAPIs.");
             return new List<SpaceSummaryDto>();
+        }
+    }
+
+    // Grants the space creator Owner access in the WorkspaceAPIs ResourceShare table
+    // so the creator's name appears in the Share dialog's "Shared User(s)" list.
+    private async Task AssignSpaceOwnerAsync(Guid spaceId)
+    {
+        try
+        {
+            // Get the JWT of the current request to authenticate the cross-service call.
+            var jwt = GetJwtOfRequestUtil.GetJwtOfRequest(_httpContextAccessor.HttpContext);
+
+            var httpClient = new HttpClient(CreateInsecureHttpClientHandler());
+            if (!string.IsNullOrEmpty(jwt) && jwt != "jwt-not-found")
+            {
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt);
+            }
+
+            // POST to the WorkspaceAPIs resource-share endpoint. The WorkspaceAPIs
+            // derives the tenant from the forwarded JWT's "tntid" claim and returns
+            // 409 if the creator already has access (idempotent), so no special
+            // handling is required here.
+            var payload = new
+            {
+                resourceType = "Space",
+                resourceId = spaceId,
+                accessLevel = "Owner",
+                userId = _userId
+            };
+
+            var response = await httpClient.PostAsJsonAsync(
+                $"{_environmentConfig.WorkspaceApiBaseUrl}/api/resource-share",
+                payload);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Failed to assign space owner for space {SpaceId}. Status: {Status}",
+                    spaceId,
+                    response.StatusCode);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while assigning space owner for space {SpaceId}.", spaceId);
         }
     }
 
