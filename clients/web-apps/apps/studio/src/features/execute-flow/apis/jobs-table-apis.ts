@@ -1,6 +1,8 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { JobDetailsDto } from "../dtos/jobs-details-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/job`;
@@ -10,7 +12,9 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/job`;
  */
 export const insertJob = (newJob: JobDetailsDto) => {
   return axiosInstance
-    .post<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}`, newJob)
+    .post<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}`, newJob, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
