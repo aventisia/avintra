@@ -19,8 +19,10 @@ import { useTauriMachineIdentity } from "@/hooks/useTauriMachineIdentity";
 import useWebSocket from "@/hooks/useWebSocket";
 import { ChatAssistant } from "@/react-toolkit/features/chat/ChatAssistant";
 import { useValidateUserSession } from "@/react-toolkit/hooks/useValidateUserSession";
+import { ROLE_TA } from "@/constants/roles";
 import { useAllowedRoutesStore } from "@/stores/allowed-routes-auth-store";
 import { useAppLoaderStore } from "@/stores/app-loader-store";
+import { useOnboardingStore } from "@/stores/onboarding-store";
 import { getWebSocketUrl } from "@/utils/get-websocket-url";
 
 import AppHeader from "./AppHeader";
@@ -90,6 +92,13 @@ export const AppLayout = () => {
   // Validate user session
   const { isPending, userSession } = useValidateUserSession();
 
+  const { isOnboardingComplete, rehydrateOnboarding } = useOnboardingStore(
+    useShallow((state) => ({
+      isOnboardingComplete: state.isComplete,
+      rehydrateOnboarding: state.rehydrateForUser,
+    })),
+  );
+
   // Establish websocket connection and expose ref
   const { connection, isReady } = useWebSocket({
     url: getWebSocketUrl({
@@ -140,6 +149,7 @@ export const AppLayout = () => {
     const filteredSidebarMenu = getSidebarMenuBasedOnPermissions(
       selectedRoles,
       userSession?.deploymentType,
+      isOnboardingComplete,
     );
     // Set the sidebar menu sections
     setSidebarMenuSections(filteredSidebarMenu);
@@ -156,6 +166,7 @@ export const AppLayout = () => {
 
     setLandingUrl(filteredSidebarMenu[0]?.menuItems[0]?.route);
   }, [
+    isOnboardingComplete,
     isPending,
     selectedRoles,
     setAllowedRoutes,
@@ -164,12 +175,25 @@ export const AppLayout = () => {
     userSession,
   ]);
 
+  // Re-hydrate the onboarding progress for the current user once a session is available.
+  useEffect(() => {
+    if (isPending || !userSession) return;
+    rehydrateOnboarding();
+  }, [isPending, rehydrateOnboarding, userSession]);
+
   useEffect(() => {
     //Navigate user to first option of filteredSidebarMenu
     if (location?.pathname == "/") {
+      // First-run redirect: a Tenant Admin who has not yet completed the Get
+      // Started guide is sent to it before the normal landing page.
+      const isTenantAdmin = userSession?.userRoles?.includes(ROLE_TA);
+      if (isTenantAdmin && !isOnboardingComplete) {
+        navigate("/tenant/get-started");
+        return;
+      }
       navigate(landingUrl);
     }
-  }, [landingUrl, location?.pathname, navigate]);
+  }, [isOnboardingComplete, landingUrl, location?.pathname, navigate, userSession]);
 
   // Routes protection by getting allowed routes form side bar menu section
   useEffect(() => {

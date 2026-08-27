@@ -18,6 +18,7 @@ import assistChats from "./guides/assist-chats.md?raw";
 import assistQueues from "./guides/assist-queues.md?raw";
 import conversations from "./guides/conversations.md?raw";
 import creditPlans from "./guides/credit-plans.md?raw";
+import getStarted from "./guides/get-started.md?raw";
 import jobs from "./guides/jobs.md?raw";
 import keystore from "./guides/keystore.md?raw";
 import knowledgeBases from "./guides/knowledge-bases.md?raw";
@@ -48,11 +49,21 @@ import vault from "./guides/vault.md?raw";
 const guides: HelpGuideContent[] = [
   // Build
   {
+    id: "get-started",
+    title: "Get Started",
+    summary: "The five-step setup for new tenants: users, spaces, vault, models, and your first agent.",
+    section: "tenant-admin",
+    docsSiteUrl: "https://docs.aventisia.com/workspace",
+    related: ["users", "spaces", "vault", "models", "agents"],
+    content: getStarted,
+  },
+  {
     id: "agents",
     title: "Agents",
     summary: "Build, edit, and manage your AI agents.",
     section: "build",
     docsSiteUrl: "https://docs.aventisia.com/workspace/main-menu/agents",
+    related: ["get-started"],
     content: agents,
   },
   {
@@ -126,6 +137,7 @@ const guides: HelpGuideContent[] = [
     summary: "Store and manage encrypted secrets that are protected and audited.",
     section: "configure",
     docsSiteUrl: "https://docs.aventisia.com/workspace/orchestrator/vault",
+    related: ["get-started"],
     content: vault,
   },
   {
@@ -241,6 +253,7 @@ const guides: HelpGuideContent[] = [
     summary: "Invite, manage, and remove users and assign roles.",
     section: "tenant-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace/admin/users",
+    related: ["get-started"],
     content: users,
   },
   {
@@ -249,6 +262,7 @@ const guides: HelpGuideContent[] = [
     summary: "Organize users and resources into spaces.",
     section: "tenant-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace/admin",
+    related: ["get-started"],
     content: spaces,
   },
   {
@@ -257,6 +271,7 @@ const guides: HelpGuideContent[] = [
     summary: "Configure the model providers used by your agents.",
     section: "tenant-admin",
     docsSiteUrl: "https://docs.aventisia.com/workspace/admin",
+    related: ["get-started"],
     content: models,
   },
   {
