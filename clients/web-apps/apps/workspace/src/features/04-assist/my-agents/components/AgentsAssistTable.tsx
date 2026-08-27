@@ -7,6 +7,7 @@ import {
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 
 import { HelpButton } from "@/components/help/HelpButton";
+import { NoAgentsAvailable } from "@/features/04-assist/my-chats/components/NoAgentsAvailable";
 
 import { TABLE_HEADING, TABLE_KEY } from "../constants";
 import { columnVisibilityState } from "../constants/column-visibility-state";
@@ -89,9 +90,7 @@ export const AgentsAssistTable = () => {
               ))}
             </div>
           ) : (
-            <div className="flex h-24 flex-col items-center justify-center gap-3 rounded-lg border bg-white px-2.5 py-3">
-              <p className="text-sm text-muted-foreground">No agents found.</p>
-            </div>
+            <NoAgentsAvailable includeChat={false} />
           )}
           {/* Data table Pagination component */}
           <DTPagination table={table} singularLabel="agent" pluralLabel="agents" />
