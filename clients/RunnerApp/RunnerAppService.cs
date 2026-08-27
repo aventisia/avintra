@@ -140,20 +140,76 @@ public class RunnerAppService : BackgroundService
             return;
         }
 
+        var machineId = registration?.MachineId ?? Guid.Empty;
+
+        // Drain any jobs that became pending while this runner was offline.
+        await DrainPendingJobsAsync(backendClient, hubClient, machineId, accessToken, cancellationToken);
+
         // Service mode: keep listening for commands and execute each assigned job.
+        // Also poll periodically for pending work so missed SignalR events and new
+        // time-trigger jobs do not sit idle.
         while (!cancellationToken.IsCancellationRequested)
         {
-            commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>(TaskCreationOptions.RunContinuationsAsynchronously);
-            var command = await WaitForCommandAsync(commandReceived, hubClient, cancellationToken);
+            var command = await WaitForCommandAsync(commandReceived, hubClient, TimeSpan.FromSeconds(30), cancellationToken);
             if (command == null)
             {
-                _logger.LogInformation("No job request received or connection lost. Waiting for next command...");
+                _logger.LogInformation("No job request received; polling for pending jobs.");
+                await DrainPendingJobsAsync(backendClient, hubClient, machineId, accessToken, cancellationToken);
                 continue;
             }
+
+            // Reset the command source before executing so that any new Initiate
+            // commands received during execution are captured for the next loop.
+            commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _logger.LogInformation("Job request received: {JobId}. Starting execution...", command.JobId);
             DebugLog.Info($"Job request received: {command.JobId}. Starting execution...");
             await ExecuteJobAsync(backendClient, hubClient, command.JobId, accessToken, cancellationToken);
+
+            // After finishing a job, keep pulling any additional pending jobs until none remain.
+            await DrainPendingJobsAsync(backendClient, hubClient, machineId, accessToken, cancellationToken);
+        }
+    }
+
+    // Repeatedly asks the backend for the next pending job for this machine and executes it
+    // until the queue for this machine is empty. This is the primary drain mechanism that
+    // handles burst-created time-trigger jobs and missed SignalR events.
+    private async Task DrainPendingJobsAsync(
+        BackendHttpClient backendClient,
+        IOrchestratorHubClient hubClient,
+        Guid machineId,
+        string accessToken,
+        CancellationToken cancellationToken)
+    {
+        if (machineId == Guid.Empty)
+        {
+            _logger.LogWarning("Cannot drain pending jobs: machine ID is empty.");
+            return;
+        }
+
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            Guid? nextJobId;
+            try
+            {
+                nextJobId = await backendClient.GetNextPendingJobAsync(machineId, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to query next pending job for machine {MachineId}.", machineId);
+                DebugLog.Warn($"Failed to query next pending job for machine {machineId}: {ex.Message}");
+                break;
+            }
+
+            if (!nextJobId.HasValue || nextJobId.Value == Guid.Empty)
+            {
+                _logger.LogInformation("No pending jobs remaining for machine {MachineId}.", machineId);
+                break;
+            }
+
+            _logger.LogInformation("Draining pending job {JobId} for machine {MachineId}.", nextJobId.Value, machineId);
+            DebugLog.Info($"Draining pending job {nextJobId.Value} for machine {machineId}.");
+            await ExecuteJobAsync(backendClient, hubClient, nextJobId.Value, accessToken, cancellationToken);
         }
     }
 
@@ -201,10 +257,24 @@ public class RunnerAppService : BackgroundService
     private async Task<ExecutorCommandReceivedEventArgs?> WaitForCommandAsync(
         TaskCompletionSource<ExecutorCommandReceivedEventArgs?> commandReceived,
         IOrchestratorHubClient hubClient,
+        TimeSpan pollInterval,
         CancellationToken cancellationToken)
     {
         _logger.LogInformation("Service ONLINE and waiting for a job request from the OrchestratorHub...");
-        var command = await commandReceived.Task.WaitAsync(cancellationToken);
+
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCts.CancelAfter(pollInterval);
+
+        ExecutorCommandReceivedEventArgs? command;
+        try
+        {
+            command = await commandReceived.Task.WaitAsync(timeoutCts.Token);
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            // Polling interval elapsed with no command; return null so the caller can drain.
+            return null;
+        }
 
         // If the hub disconnected before a command arrived, attempt to reconnect.
         while (command is null && hubClient.ConnectionState == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Disconnected)

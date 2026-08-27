@@ -851,86 +851,66 @@ public class JobsTableService : IJobsTableService
         await _orchestratorHubContext.Clients.Group($"TENANT_{job.TenantId}").SendAsync("machine_status_update", "A machine is now idle.");
         _logger.LogInformation("Machine {MachineId} is now idle after job {JobId}.", job.MachineId, job.Id);
 
-        // The machine is free again — try to pull the next pending job that is attached to it.
-        await TryDispatchNextPendingJobAsync(machine);
+        // The runner polls for pending jobs after each completion, so no SignalR push is needed here.
     }
 
-    // Looks for a Created job attached to the given machine's FlowVersions and dispatches it.
-    private async Task TryDispatchNextPendingJobAsync(ClientDataStore machine)
+    /// <summary>
+    /// Finds the oldest Created job attached to the given machine's FlowVersions, assigns it to the
+    /// machine, and returns the job record. Returns a successful response with null data when none
+    /// is available.
+    /// </summary>
+    public async Task<ServiceResponse<JobRecordDto?>> GetAndAssignNextPendingJobForMachineAsync(Guid machineId)
     {
-        if (machine == null || machine.ClientId == Guid.Empty)
-            return;
+        var serviceResponse = ServiceResponse<JobRecordDto?>.Create("Failed to fetch next pending job", 500);
 
         try
         {
-            var machineClientId = machine.ClientId;
-            var tenantId = machine.TenantId;
+            var machine = await _unitOfWork.MachineRepo
+                .GetByConditionAsync(w => w.Id == machineId)
+                .FirstOrDefaultAsync();
 
-            // Determine which agents/flows are attached to this machine.
+            if (machine == null)
+                return serviceResponse.Update("Machine not found.", 404);
+
             var flowVersionIds = await _unitOfWork.Machine_FlowVersionRepo
-                .GetByConditionAsync(w => w.MachineId == machineClientId && w.TenantId == tenantId)
+                .GetByConditionAsync(w => w.MachineId == machineId && w.TenantId == machine.TenantId)
                 .Select(s => s.FlowVersionId)
                 .ToListAsync();
 
             if (flowVersionIds.Count == 0)
-            {
-                _logger.LogInformation("No attached FlowVersions for machine {MachineId}; skipping next-pending dispatch.", machineClientId);
-                return;
-            }
+                return serviceResponse.Update(null, 200, null);
 
             // Find the oldest unassigned or already-assigned Created job for this machine.
             var nextJob = await _unitOfWork.JobRepo
                 .GetByConditionAsync(w =>
-                    w.TenantId == tenantId &&
+                    w.TenantId == machine.TenantId &&
                     w.Status == JobStatusEnum.Created &&
                     flowVersionIds.Contains(w.FlowVersionId) &&
-                    (w.MachineId == null || w.MachineId == machineClientId))
+                    (w.MachineId == null || w.MachineId == machineId))
+                .Include(i => i.FlowVersion)
+                    .ThenInclude(i2 => i2!.Flow)
                 .OrderByDescending(o => o.CreatedOn)
                 .FirstOrDefaultAsync();
 
             if (nextJob == null)
-            {
-                _logger.LogInformation("No pending Created job for machine {MachineId} after idle transition.", machineClientId);
-                return;
-            }
+                return serviceResponse.Update(null, 200, null);
 
-            // Assign the job to this machine and save so it cannot be picked by another dispatch path.
-            nextJob.MachineId = machineClientId;
-            nextJob.ExecutedOn = machine.ClientName ?? machineClientId.ToString();
+            // Assign the job to this machine so it cannot be picked by another dispatch path.
+            nextJob.MachineId = machineId;
+            nextJob.ExecutedOn = machine.Name ?? machineId.ToString();
             _unitOfWork.JobRepo.Update(nextJob);
             if (!await _unitOfWork.SaveAsync())
-            {
-                _logger.LogWarning("Failed to save assignment for next pending job {JobId} to machine {MachineId}.", nextJob.Id, machineClientId);
-                return;
-            }
+                return serviceResponse.Update("Failed to assign pending job.", 500);
 
-            if (string.IsNullOrWhiteSpace(machine.ConnectionId))
-            {
-                _logger.LogWarning("Machine {MachineId} has no SignalR connection; cannot dispatch pending job {JobId}.", machineClientId, nextJob.Id);
-                return;
-            }
-
-            // Mark the machine with a pending job. The status flips to Running only when the runner
-            // actually starts the job via StartJob, consistent with the OnConnectedAsync path.
-            machine.AgentId = nextJob.FlowVersionId;
-            machine.JobId = nextJob.Id;
-            await _clientStatusStore.UpdateClientStatusAsync(machine);
-
-            var executionCommandDto = new ExecutionCommandDto
-            {
-                JobId = nextJob.Id,
-                Command = ExecutionCommandTypesEnum.Initiate,
-                AgentId = nextJob.FlowVersionId,
-                MachineName = machine.ClientName ?? machineClientId.ToString(),
-                TenantId = tenantId
-            };
-
-            _logger.LogInformation("Dispatching next pending job {JobId} to machine {MachineName} after idle transition.", nextJob.Id, executionCommandDto.MachineName);
-            await _jobsExecutorService.TriggerExecutionAsync(executionCommandDto);
+            // Mapping profile fills FlowName/FlowVersionNumber/FlowType/IsFlowVersionPublished from
+            // the included FlowVersion + Flow navigation properties.
+            var jobRecordDto = nextJob.Adapt<JobRecordDto>();
+            return serviceResponse.Update("Pending job found", 200, jobRecordDto);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while dispatching the next pending job for machine {MachineId}.", machine?.ClientId);
+            _logger.LogError(ex, "An error occurred while fetching the next pending job for machine {MachineId}.", machineId);
+            return serviceResponse;
         }
     }
 

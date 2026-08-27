@@ -60,6 +60,15 @@ public interface IJobsTableService
     Task<ServiceResponse<JobRecordDto>> StartJobAsync(JobStartDto jobStartDto);
 
     /// <summary>
+    /// Atomically finds the oldest Created job attached to this machine's FlowVersions, assigns it
+    /// to the machine, and returns the job record. Returns an empty successful response when no
+    /// pending job exists.
+    /// </summary>
+    /// <param name="machineId">The machine client ID to assign a pending job to.</param>
+    /// <returns>A service response containing the assigned job record, or null data when no job is pending.</returns>
+    Task<ServiceResponse<JobRecordDto?>> GetAndAssignNextPendingJobForMachineAsync(Guid machineId);
+
+    /// <summary>
     /// Closes a job in a terminal status, records the end time and per-node execution logs, and tracks consumed credits.
     /// </summary>
     /// <param name="jobCloseDto">The data required to close the job.</param>
