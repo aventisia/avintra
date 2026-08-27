@@ -86,11 +86,14 @@ export const ModelProviderSetupDialog = () => {
 
         // Pre-select the saved credential and its enabled models when re-configuring.
         if (config) {
-          setSelectedCredentialName(config.credentialName ?? config.credentialId ?? "");
+          const savedCredential = config.credentialName ?? config.credentialId ?? "";
+          setSelectedCredentialName(savedCredential);
           setEnabledModelIds(config.enabledModelIds ?? []);
           setIsDisabled(Boolean(config.isDisabled));
-          // Skip straight to the models step so existing state is shown.
+          // Skip straight to the models step so existing state is shown, and
+          // load the provider's models so the list is populated.
           setStep("models");
+          void loadProviderModels(savedCredential);
         }
       })
       .catch((err) => {
@@ -119,7 +122,7 @@ export const ModelProviderSetupDialog = () => {
   // (`/v2/llm/models?provider=X`). The provider name is sent in lowercase.
   // For ollama providers the selected credential id is forwarded so the pipeline
   // echoes it back on each returned model.
-  const loadProviderModels = async () => {
+  const loadProviderModels = async (credentialName?: string) => {
     if (!provider) return;
     setIsProvidersLoading(true);
     setProviderModels([]);
@@ -128,7 +131,7 @@ export const ModelProviderSetupDialog = () => {
       const modelsRes = await getLlmModelsV2(
         provider.value.toLowerCase(),
         undefined,
-        selectedCredentialName,
+        credentialName ?? selectedCredentialName,
       );
       setProviderModels(modelsRes?.models ?? []);
     } catch (err) {
