@@ -12,18 +12,25 @@ internal static class KeyboardHelper
     private const ushort VkControl = 0x11;
     private const ushort VkMenu = 0x12;
 
-    [StructLayout(LayoutKind.Sequential)]
+    // Windows INPUT is a union of MOUSEINPUT/HARDWAREINPUT/KEYBDINPUT.
+    // On x64 the union is 32 bytes, so INPUT is 40 bytes (4 type + 4 padding + 32).
+    // On x86 the union is 24 bytes, so INPUT is 28 bytes (4 + 24).
+    // We include a dummy padding member to make Marshal.SizeOf return the full
+    // native size regardless of process bitness.
+    [StructLayout(LayoutKind.Explicit)]
     private struct INPUT
     {
-        public uint type;
-        public InputUnion U;
-    }
-
-    [StructLayout(LayoutKind.Explicit)]
-    private struct InputUnion
-    {
         [FieldOffset(0)]
+        public uint type;
+
+        [FieldOffset(8)]
         public KEYBDINPUT ki;
+
+        [FieldOffset(8)]
+        private MOUSEINPUT _mousePadding;
+
+        [FieldOffset(8)]
+        private HARDWAREINPUT _hardwarePadding;
     }
 
     [StructLayout(LayoutKind.Sequential)]
@@ -34,6 +41,25 @@ internal static class KeyboardHelper
         public uint dwFlags;
         public uint time;
         public nint dwExtraInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MOUSEINPUT
+    {
+        public int dx;
+        public int dy;
+        public uint mouseData;
+        public uint dwFlags;
+        public uint time;
+        public nint dwExtraInfo;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct HARDWAREINPUT
+    {
+        public uint uMsg;
+        public ushort wParamL;
+        public ushort wParamH;
     }
 
     [DllImport("user32.dll", SetLastError = true)]
@@ -134,16 +160,13 @@ internal static class KeyboardHelper
             new INPUT
             {
                 type = InputKeyboard,
-                U = new InputUnion
+                ki = new KEYBDINPUT
                 {
-                    ki = new KEYBDINPUT
-                    {
-                        wVk = virtualKey,
-                        wScan = scanCode,
-                        dwFlags = flags,
-                        time = 0,
-                        dwExtraInfo = nint.Zero
-                    }
+                    wVk = virtualKey,
+                    wScan = scanCode,
+                    dwFlags = flags,
+                    time = 0,
+                    dwExtraInfo = nint.Zero
                 }
             }
         };
