@@ -1,8 +1,10 @@
 import dotenv from "dotenv";
 import express from "express";
 import { toExpressHandler, PermissionRequiredError, AuthMissingError, listOperations, getStructuredSchema } from "corsair";
+import { createIntegrationKeyManager } from "corsair/core";
+import { createCorsairDatabase } from "corsair/db";
 import { fetch as undiciFetch, ProxyAgent } from "undici";
-import { corsair, provision, plugins, pool } from "./corsair.js";
+import { corsair, provision, plugins, pool, isOAuthPlugin, getPluginMeta } from "./corsair.js";
 
 // Load defaults first, then allow .env.local to override with real local values.
 dotenv.config({ path: ".env" });
@@ -22,6 +24,7 @@ if (proxyAgent) {
 const app = express();
 const port = Number(process.env.PORT || 3456);
 const appUrl = process.env.APP_URL || `http://localhost:${port}`;
+const workspaceAppUrl = process.env.WORKSPACE_APP_URL || appUrl;
 const apiKey = process.env.CORSAIR_API_KEY;
 
 // REQUIRED: express.json() must run BEFORE the Corsair route.
@@ -67,31 +70,122 @@ app.get("/api/corsair/tools", requireApiKey, async (_req, res) => {
 app.use("/api/corsair", toExpressHandler(corsair, { basePath: "/api/corsair" }));
 
 // --- Connect page (manual.baseUrl) ---
-// Browser lands here with ?state=... after createLink. Resolve to the OAuth URL.
+// Browser lands here with ?state=... after createLink. Resolve to the OAuth URL
+// and render a minimal consent page before sending the user to the provider.
 app.get("/connect", async (req, res) => {
   const state = req.query.state as string | undefined;
   if (!state) return res.status(400).send("Missing state.");
   try {
-    const { oauthUrl } = await corsair.manage.connect.resolve(state);
-    res.redirect(oauthUrl);
+    const resolved = await corsair.manage.connect.resolve(state);
+    const pluginId = (resolved as any).plugin as string | undefined;
+    const oauthUrl = (resolved as any).oauthUrl as string | undefined;
+    if (!pluginId || !oauthUrl) {
+      return res.status(400).send("Invalid connect state: missing plugin or OAuth URL.");
+    }
+
+    const meta = getPluginMeta(pluginId);
+    if (!meta?.oauthConfig) {
+      return res.status(400).send(`Plugin ${pluginId} does not support OAuth.`);
+    }
+
+    const providerName = meta.oauthConfig.providerName ?? meta.name ?? pluginId;
+    const scopes = meta.oauthConfig.scopes ?? [];
+    const cancelUrl = `${workspaceAppUrl}/configure/vault/oauth-callback?oauth_cancelled=true&plugin=${encodeURIComponent(pluginId)}&credentialId=${encodeURIComponent((resolved as any).tenantId ?? "")}`;
+
+    res.send(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect to ${escapeHtml(providerName)}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; background: #f4f6f8; color: #1f2937; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .card { background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 32px; max-width: 420px; width: 100%; }
+    h1 { font-size: 20px; margin: 0 0 8px; }
+    p { margin: 0 0 16px; color: #4b5563; line-height: 1.5; }
+    .scopes { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; margin-bottom: 24px; }
+    .scopes ul { margin: 8px 0 0; padding-left: 20px; }
+    .scopes li { margin-bottom: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; color: #374151; }
+    .actions { display: flex; gap: 12px; }
+    button, a.button { flex: 1; text-align: center; border-radius: 8px; padding: 12px 16px; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; }
+    button { background: #111827; color: #fff; border: none; }
+    button:hover { background: #374151; }
+    a.button { background: #fff; color: #374151; border: 1px solid #d1d5db; }
+    a.button:hover { background: #f9fafb; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Connect to ${escapeHtml(providerName)}</h1>
+    <p>The workspace wants to access the following permissions on your behalf. You can revoke access at any time from the vault.</p>
+    <div class="scopes">
+      <strong>Requested permissions</strong>
+      <ul>${scopes.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>
+    </div>
+    <div class="actions">
+      <a class="button" href="${escapeHtml(cancelUrl)}">Cancel</a>
+      <button onclick="location.href='${escapeHtml(oauthUrl)}'">Connect</button>
+    </div>
+  </div>
+</body>
+</html>`);
   } catch (err) {
     res.status(400).send(err instanceof Error ? err.message : String(err));
   }
 });
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 // --- OAuth callback (manual.redirectUri) ---
 // Provider redirects here with ?code=...&state=...; Corsair stores tokens per tenant.
+// We then redirect the browser back to the workspace app with the result.
 app.get("/api/oauth/callback", async (req, res) => {
   const code = req.query.code as string | undefined;
   const state = req.query.state as string | undefined;
   if (!code || !state) return res.status(400).send("Missing code or state.");
   try {
     const result = await corsair.manage.connect.oauthCallback({ code, state });
-    res.redirect(`/dashboard?connected=${encodeURIComponent(result.plugin)}`);
+    const pluginId = result.plugin;
+    const tenantId = result.tenantId;
+    const redirectUrl = `${workspaceAppUrl}/configure/vault/oauth-callback?oauth_success=true&plugin=${encodeURIComponent(pluginId)}&credentialId=${encodeURIComponent(tenantId)}`;
+    res.redirect(redirectUrl);
   } catch (err) {
-    res.status(500).send(err instanceof Error ? err.message : String(err));
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("OAuth callback failed:", err);
+    // Best-effort decode of plugin/tenant from the signed state for a useful redirect.
+    let pluginId = "unknown";
+    let tenantId = "unknown";
+    try {
+      const resolved = await corsair.manage.connect.resolve(state);
+      pluginId = (resolved as any).plugin ?? pluginId;
+      tenantId = (resolved as any).tenantId ?? tenantId;
+    } catch {
+      // ignore state decode errors; we already have the failure message
+    }
+    const redirectUrl = `${workspaceAppUrl}/configure/vault/oauth-callback?oauth_error=${encodeURIComponent(message)}&plugin=${encodeURIComponent(pluginId)}&credentialId=${encodeURIComponent(tenantId)}`;
+    res.redirect(redirectUrl);
   }
 });
+
+// --- Suppress Corsair hub warnings for internal sidecar usage ---
+// The SDK logs a warning when BYO subscribe is used without a configured hub.
+// We don't use the real-time hub in this sidecar, so downgrade it to a debug log.
+const originalStderr = process.stderr.write.bind(process.stderr);
+process.stderr.write = (chunk: any, ...args: any[]) => {
+  const text = typeof chunk === "string" ? chunk : chunk?.toString?.() ?? "";
+  if (text.includes("[corsair:oauth] BYO subscribe failed") && text.includes("HubNotConfiguredError")) {
+    console.debug("[corsair:oauth] hub not configured (expected for internal sidecar; real-time features disabled)");
+    return true;
+  }
+  return originalStderr(chunk, ...(args as [any]));
+};
 
 // --- Mint a connect link for a tenant (called by the .NET backend) ---
 // OAuth plugins only; API-key plugins use POST /credentials instead.
@@ -99,10 +193,14 @@ app.post("/connect/link", requireApiKey, async (req, res) => {
   const { tenantId, plugin } = req.body ?? {};
   if (!tenantId) return res.status(400).json({ error: "tenantId required" });
   if (!plugin) return res.status(400).json({ error: "plugin required" });
+  const pluginId = String(plugin).toLowerCase();
+  if (!isOAuthPlugin(pluginId)) {
+    return res.status(400).json({ error: `Plugin ${pluginId} does not support OAuth` });
+  }
   try {
-    const link = await corsair.manage.connect.createLink({ plugin, tenantId });
+    const link = await corsair.manage.connect.createLink({ plugin: pluginId, tenantId });
     res.json({
-      plugin,
+      plugin: pluginId,
       tenantId,
       // The tenantId is the stable connection handle the backend persists.
       connectionId: tenantId,
@@ -131,6 +229,41 @@ app.post("/connect/status", requireApiKey, async (req, res) => {
     });
   } catch (err: any) {
     res.status(500).json({ error: err?.code ?? "unknown", message: err?.message });
+  }
+});
+
+// --- Store tenant-scoped OAuth integration keys for a plugin ---
+// These are the client_id / client_secret / redirect_url used by Corsair to
+// drive the OAuth flow and refresh tokens for this specific tenant.
+app.post("/integration-keys", requireApiKey, async (req, res) => {
+  const { plugin, tenantId, clientId, clientSecret, redirectUrl } = req.body ?? {};
+  if (!plugin || !tenantId || !clientId || !clientSecret || !redirectUrl) {
+    return res.status(400).json({
+      error: "plugin, tenantId, clientId, clientSecret, and redirectUrl required",
+    });
+  }
+
+  const pluginId = String(plugin).toLowerCase();
+  if (!isOAuthPlugin(pluginId)) {
+    return res.status(400).json({ error: `Plugin ${pluginId} does not support OAuth` });
+  }
+
+  try {
+    const keyManager = createIntegrationKeyManager({
+      authType: "oauth_2",
+      integrationName: pluginId,
+      kek: process.env.CORSAIR_KEK!,
+      database: createCorsairDatabase(pool),
+    });
+
+    await keyManager.set_client_id(clientId);
+    await keyManager.set_client_secret(clientSecret);
+    await keyManager.set_redirect_url(redirectUrl);
+
+    res.json({ success: true, plugin: pluginId, tenantId });
+  } catch (err: any) {
+    console.error("Failed to store integration keys:", err);
+    res.status(500).json({ error: err?.message ?? String(err) });
   }
 });
 

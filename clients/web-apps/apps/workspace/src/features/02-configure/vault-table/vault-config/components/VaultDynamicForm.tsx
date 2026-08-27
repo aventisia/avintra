@@ -3,6 +3,7 @@ import { SubmitButton } from "@avplatform/ui/buttons";
 import { useCrudDialogDirty } from "@avplatform/ui/data-table";
 import { Form, InputField, SwitchField } from "@avplatform/ui/form";
 import { type CrudActionType } from "@avplatform/ui/types";
+import { Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Controller } from "react-hook-form";
 import { z } from "zod";
@@ -16,6 +17,7 @@ import {
   customApiToolSchema,
 } from "../constants/custom-api-tool-schema";
 import { vaultAppsSelectOptions } from "../constants/vault-app-select-options";
+import { OAUTH_CREDENTIAL_TYPES } from "../constants/oauth-credential-types";
 import { useAddCredMutation } from "../hooks/useAddCredMutation";
 import { useUpdateCredMutation } from "../hooks/useUpdateCredMutation";
 import { useVaultDynamicForm } from "../hooks/useVaultDynamicForm";
@@ -64,16 +66,17 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
     setShowOutputFields(renderedOutputFields.map((field) => field.name).length > 0);
   }, [isFormReady, vaultConfig, watchedValues]);
 
-  const { mutate, isSuccess: isCreateSuccess } = useAddCredMutation();
+  const { mutate, isComplete: isCreateComplete } = useAddCredMutation();
 
   const {
     mutate: updateMutation,
     isPending: isUpdating,
-    isSuccess: isUpdateSuccess,
+    isComplete: isUpdateComplete,
   } = useUpdateCredMutation();
 
   const isType = watch("selectedType")?.value;
   const isCustomApiToolSelected = isType === "CustomApiTool" || vaultData?.type === "CustomApiTool";
+  const isOAuthCredential = Boolean(isType && OAUTH_CREDENTIAL_TYPES.has(isType));
 
   // Define submit handler
   const onSubmit = (formData: z.infer<typeof vaultConfigZodSchema>) => {
@@ -136,10 +139,10 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
 
   // Close dialog after successful create or update
   useEffect(() => {
-    if ((action === "create" && isCreateSuccess) || (action === "update" && isUpdateSuccess)) {
+    if ((action === "create" && isCreateComplete) || (action === "update" && isUpdateComplete)) {
       onCloseConfirmed();
     }
-  }, [action, isCreateSuccess, isUpdateSuccess, onCloseConfirmed]);
+  }, [action, isCreateComplete, isUpdateComplete, onCloseConfirmed]);
 
   const isReadOnly = action == "read";
 
@@ -255,6 +258,18 @@ const VaultDynamicForm = ({ rowId, crudAction }: VaultDynamicFormProps) => {
             )}
           </>
         ) : null}
+
+        {/* OAuth consent notice */}
+        {isType && !isReadOnly && isOAuthCredential && (
+          <div className="flex items-start gap-2 rounded-lg border bg-blue-50 px-3 py-2 text-sm text-blue-900">
+            <Info className="mt-0.5 h-4 w-4 shrink-0" />
+            <p>
+              After saving, a popup will open to ask for permission to access
+              your {isType} account. You must complete the consent flow before the
+              credential can be used.
+            </p>
+          </div>
+        )}
 
         {/* Save button */}
         {isType && !isReadOnly && (

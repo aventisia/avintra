@@ -1,0 +1,17 @@
+meta {
+  name: Connect Consent Page
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{CORSAIR_SIDECAR_URL}}/connect?state={{CORSAIR_CONNECT_STATE}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains "Connect to"
+  res.body: contains "Requested permissions"
+}

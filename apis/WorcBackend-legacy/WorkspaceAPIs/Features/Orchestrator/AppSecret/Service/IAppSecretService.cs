@@ -101,4 +101,18 @@ public interface IAppSecretService
     /// A task that represents the asynchronous operation. The task result contains a <see cref="ServiceResponse{AppSecretDto}"/> with the App Secret details.
     /// </returns>
     Task<ServiceResponse<AppSecretDto>> GetAppSecretDetailByNameAsync(string appSecretName);
+
+    /// <summary>
+    /// Mints a Corsair OAuth connect link for an App Secret so the user can complete consent.
+    /// </summary>
+    /// <param name="appSecretId">The App Secret Id (used as the Corsair tenant).</param>
+    /// <returns>A service response containing the connect URL.</returns>
+    Task<ServiceResponse<CorsairConnectLink>> CreateOAuthConnectLinkAsync(Guid appSecretId);
+
+    /// <summary>
+    /// Checks the Corsair OAuth connection status for an App Secret.
+    /// </summary>
+    /// <param name="appSecretId">The App Secret Id (used as the Corsair tenant).</param>
+    /// <returns>A service response containing the connection status.</returns>
+    Task<ServiceResponse<CorsairConnectionStatus>> GetOAuthConnectionStatusAsync(Guid appSecretId);
 }

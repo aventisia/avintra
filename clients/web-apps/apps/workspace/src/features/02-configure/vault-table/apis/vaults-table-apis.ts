@@ -86,6 +86,28 @@ export const deleteVaults = (ids: string[]) => {
 };
 
 /**
+ * Mints a Corsair OAuth connect link for an App Secret.
+ */
+export const createOAuthConnectLink = (id: string) => {
+  return axiosInstance
+    .post<IHttpResponse<{ connectUrl: string }>>(`${baseAPIURL}/${id}/connect-link`, undefined, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
+ * Gets the Corsair OAuth connection status for an App Secret.
+ */
+export const getOAuthConnectionStatus = (id: string) => {
+  return axiosInstance
+    .get<IHttpResponse<{ connected: boolean; state: string }>>(`${baseAPIURL}/${id}/oauth-status`, {
+      headers: getSpaceHeaders(),
+    })
+    .then((res) => res.data);
+};
+
+/**
  * Performs an optimistic mutation on a config based on the provided CRUD action.
  *
  * @param {IOptimisticMutation<VaultsTableDto | string | string[]>} options - The options for the optimistic mutation.
