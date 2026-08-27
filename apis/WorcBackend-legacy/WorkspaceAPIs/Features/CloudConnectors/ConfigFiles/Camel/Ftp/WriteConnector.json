@@ -1,0 +1,190 @@
+{
+  "name": "Write",
+  "description": "Executes the write operation through the Apache Camel ftp connector.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud",
+    "windows"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__GeneralCredentials",
+      "label": "FTP Credential",
+      "description": "The FTP credential used to authenticate API requests.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "operation",
+      "label": "Operation",
+      "description": "The ftp operation to execute.",
+      "defaultValue": "write",
+      "selectOptions": [
+        {
+          "label": "Read",
+          "value": "read",
+          "description": "read"
+        },
+        {
+          "label": "Write",
+          "value": "write",
+          "description": "write"
+        },
+        {
+          "label": "Append",
+          "value": "append",
+          "description": "append"
+        },
+        {
+          "label": "Delete",
+          "value": "delete",
+          "description": "delete"
+        },
+        {
+          "label": "List",
+          "value": "list",
+          "description": "list"
+        },
+        {
+          "label": "Check",
+          "value": "check",
+          "description": "check"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "host",
+      "label": "Host",
+      "description": "Required: host",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "directoryName",
+      "label": "Directoryname",
+      "description": "Required: directoryName",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "port",
+      "label": "Port",
+      "description": "Optional: port",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "fileName",
+      "label": "Filename",
+      "description": "Optional: fileName",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "passiveMode",
+      "label": "Passivemode",
+      "description": "Optional: passiveMode",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "binary",
+      "label": "Binary",
+      "description": "Optional: binary",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "switch",
+      "name": "strictHostKeyChecking",
+      "label": "Stricthostkeychecking",
+      "description": "Optional: strictHostKeyChecking",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "appendPosition",
+      "label": "Appendposition",
+      "description": "Optional: appendPosition",
+      "defaultValue": "end",
+      "selectOptions": [
+        {
+          "label": "End",
+          "value": "end",
+          "description": "end"
+        },
+        {
+          "label": "Start",
+          "value": "start",
+          "description": "start"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "privateKey",
+      "label": "Privatekey",
+      "description": "Required auth: privateKey",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "privateKeyPassphrase",
+      "label": "Privatekeypassphrase",
+      "description": "Required auth: privateKeyPassphrase",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "content",
+      "label": "Content",
+      "description": "Request body / payload for the write operation (JSON).",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ],
+  "camel": {
+    "connector": "ftp",
+    "authType": "basic",
+    "bodyField": "content",
+    "configKeys": [
+      "host",
+      "directoryName",
+      "port",
+      "fileName",
+      "passiveMode",
+      "binary",
+      "strictHostKeyChecking",
+      "appendPosition",
+      "privateKey",
+      "privateKeyPassphrase"
+    ]
+  }
+}

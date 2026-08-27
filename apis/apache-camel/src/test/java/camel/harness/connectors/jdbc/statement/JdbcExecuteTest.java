@@ -47,4 +47,19 @@ class JdbcExecuteTest {
         String uri = configurer.resolveEndpoint(exchange, request, null);
         assertTrue(uri.startsWith("sql:SELECT%201?dataSource=#requestDataSource_"));
     }
+
+    @Test
+    void urlStyleConnectionStringBindsDatasource() {
+        Exchange exchange = new DefaultExchange(new DefaultCamelContext());
+        // URL-style connection string with credentials embedded in the userinfo.
+        Map<String, String> props = Map.of(
+            "url", "postgresql://postgres:Post@123@localhost:5432/WorkspaceDb");
+        ConnectorRequest request = new ConnectorRequest(null, null, "jdbc", "execute",
+            Map.of("query", "SELECT 1"),
+            new AuthConfiguration("database", null, null, null, null, null,
+                null, null, null, null, null, null, null, null, null, null, null, null, props),
+            null, null, null, null);
+        String uri = configurer.resolveEndpoint(exchange, request, null);
+        assertTrue(uri.startsWith("sql:SELECT%201?dataSource=#requestDataSource_"));
+    }
 }

@@ -65,6 +65,9 @@ public class EnvironmentConfig
     public string WorkspaceApiBaseUrl { get; set; } = string.Empty;
     public string LlmPipelineApiBaseUrl { get; set; } = string.Empty;
 
+    // Apache Camel connector harness (internal)
+    public string CamelApiBaseUrl { get; set; } = string.Empty;
+
     // Sales emails
     public string SalesEmails { get; set; } = string.Empty;
 

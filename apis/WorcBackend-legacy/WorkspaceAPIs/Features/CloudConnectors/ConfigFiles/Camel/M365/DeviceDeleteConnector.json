@@ -1,0 +1,58 @@
+{
+  "name": "DeviceDelete",
+  "description": "Microsoft 365 / Microsoft Graph connector. Use operation=<service>.<action>, e.g. user.get or mail.send. Operation: device.delete.",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud",
+    "windows"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__M365",
+      "label": "M365 Credential",
+      "description": "The M365 credential used to authenticate API requests.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "deviceId",
+      "label": "Deviceid",
+      "description": "Required path parameter: deviceId.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "payload",
+      "label": "Payload",
+      "description": "Request body as JSON (optional).",
+      "defaultValue": "{}"
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ],
+  "camel": {
+    "connector": "m365",
+    "operation": "device.delete",
+    "authType": "client_credentials",
+    "bodyField": "payload",
+    "configKeys": [
+      "deviceId"
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 using WorkspaceAPIs.Features.CloudConnectors.Azure;
+using WorkspaceAPIs.Features.CloudConnectors.Camel;
 using WorkspaceAPIs.Features.CloudConnectors.Email;
 using WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 using WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
@@ -190,6 +191,8 @@ public static class AppServicesExtension
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
+        services.AddSingleton<CamelConnectorsConfigRepository>();
+        services.AddScoped<ICamelConnectorsService, CamelConnectorsService>();
         services.AddScoped<IM365ConnectorsService, M365ConnectorsService>();
         services.AddScoped<IM365ExcelConnectorsService, M365ExcelConnectorsService>();
         services.AddScoped<ISendGridConnectorsService, SendGridConnectorsService>();
