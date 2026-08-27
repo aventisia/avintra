@@ -235,6 +235,13 @@ public class TenantsTableDto
     public int TotalUsers { get; set; }
 
     /// <summary>
+    /// Gets or sets the date and time when the tenant was last used by any of its users.
+    /// This is derived from the most recent session activity (active session refresh or
+    /// session termination) across all users belonging to the tenant.
+    /// </summary>
+    public DateTimeOffset? LastLoginDate { get; set; }
+
+    /// <summary>
     /// Gets or sets the available credits for the tenant.
     /// </summary>
     public decimal AvailableCredits { get; set; }

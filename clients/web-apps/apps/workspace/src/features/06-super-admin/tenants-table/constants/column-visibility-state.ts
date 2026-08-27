@@ -27,6 +27,7 @@ export const columnVisibilityState = {
   consumedCredits: true,
   totalExecutionTime: true,
   storageSize: false,
+  lastLoginDate: true,
 
   // Flags
   isDisabled: false,

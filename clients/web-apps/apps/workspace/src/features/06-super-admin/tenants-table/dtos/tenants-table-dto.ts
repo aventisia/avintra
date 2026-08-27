@@ -68,4 +68,6 @@ export interface TenantsTableDto {
   activePlan?: string;
 
   storageSize: number;
+
+  lastLoginDate?: Date | string;
 }

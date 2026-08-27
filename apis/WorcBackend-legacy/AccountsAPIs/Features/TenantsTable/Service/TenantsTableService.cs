@@ -64,6 +64,24 @@ public class TenantsTableService : ITenantsTableService
                 .GetByConditionAsync(w => w.TenantId != null && tenantIds.Contains(w.TenantId.Value))
                 .ToListAsync();
 
+            // Extract the user ids belonging to the tenants so we can look up their session activity.
+            var tenantUserIds = accountUsers.Select(s => s.Id).ToList();
+
+            // Fetch the most recent session activity (active session refresh or session
+            // termination) for the tenant's users. This is used to derive the tenant's
+            // "last used" date.
+            var activeSessionLastUsed = await _unitOfWork.ActiveSessionRepo
+                .GetByConditionAsync(w => tenantUserIds.Contains(w.UserId))
+                .GroupBy(g => g.UserId)
+                .Select(s => new { UserId = s.Key, LastUsed = s.Max(x => x.LastRefreshOn) })
+                .ToDictionaryAsync(td => td.UserId, td => td.LastUsed);
+
+            var sessionLogLastUsed = await _unitOfWork.SessionLogRepo
+                .GetByConditionAsync(w => tenantUserIds.Contains(w.UserId))
+                .GroupBy(g => g.UserId)
+                .Select(s => new { UserId = s.Key, LastUsed = s.Max(x => x.SessionTerminatedOn) })
+                .ToDictionaryAsync(td => td.UserId, td => td.LastUsed);
+
             var tenantSubscriptions = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w => tenantIds.Contains(w.TenantId) && w.IsActive)
                 .Include(i => i.Plan)
@@ -169,6 +187,26 @@ public class TenantsTableService : ITenantsTableService
                 tenantsTableDto.TotalExecutionTime = summary?.ExecutionTime ?? 0;
                 tenantsTableDto.PublishAgent = summary?.PublishAgent ?? 0;
                 tenantsTableDto.TotalJobs = summary?.TotalJobs ?? 0;
+
+                // Determine the tenant's last used date as the most recent session activity
+                // (active session refresh or session termination) across all of its users.
+                var tenantUserIds = accountUsers
+                    .Where(w => w.TenantId == tenantsTableDto.Id)
+                    .Select(w => w.Id)
+                    .ToList();
+
+                var lastUsedDates = new List<DateTimeOffset>();
+                foreach (var userId in tenantUserIds)
+                {
+                    if (activeSessionLastUsed.TryGetValue(userId, out var activeLastUsed))
+                        lastUsedDates.Add(activeLastUsed);
+                    if (sessionLogLastUsed.TryGetValue(userId, out var logLastUsed))
+                        lastUsedDates.Add(logLastUsed);
+                }
+
+                tenantsTableDto.LastLoginDate = lastUsedDates.Count > 0
+                    ? lastUsedDates.Max()
+                    : null;
 
                 return tenantsTableDto;
             }).ToList();
