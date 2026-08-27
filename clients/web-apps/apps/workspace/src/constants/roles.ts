@@ -12,6 +12,9 @@ export const ROLE_LABELS: Record<string, string> = {
   TU: "User",
 };
 
+/** System role code for the Tenant Admin role. */
+export const ROLE_TA = "TA";
+
 /**
  * Returns the human-readable label for a role code, falling back to the raw code
  * when the role is unknown.

@@ -45,6 +45,7 @@ import SupportTicketsV2Page from "./pages/05-tenant-admin/SupportTicketsV2Page";
 import { TenantPage } from "./pages/05-tenant-admin/TenantPage";
 import { TenantTemplatesApprovalPage } from "./pages/05-tenant-admin/TenantTemplatesApprovalPage";
 import { UsersPage } from "./pages/05-tenant-admin/UsersPage";
+import { GetStartedPageLazy } from "./pages/05-tenant-admin/GetStartedPage";
 import { CreditPlansPage } from "./pages/06-super-admin/CreditPlansPage";
 import { PublicTemplatesApprovalPage } from "./pages/06-super-admin/PublicTemplatesApprovalPage";
 import { SaNotificationsPage } from "./pages/06-super-admin/SaNotificationsPage";
@@ -254,6 +255,10 @@ const routerConfig: RouteObject[] = [
           {
             path: "overview",
             element: <TenantPage />,
+          },
+          {
+            path: "get-started",
+            element: <GetStartedPageLazy />,
           },
           {
             path: "preferences",

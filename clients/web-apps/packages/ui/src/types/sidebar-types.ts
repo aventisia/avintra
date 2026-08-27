@@ -20,6 +20,11 @@ type SidebarMenuItemType = {
   badge?: string;
   subMenuItems?: SidebarSubMenuItemType[];
   type?: DeploymentType[];
+  /**
+   * When true, the item is hidden once the user has completed the Get Started
+   * onboarding guide. Used for the Tenant Admin "Get Started" menu item.
+   */
+  hideWhenOnboardingComplete?: boolean;
 };
 
 type SidebarSubMenuItemType = {
