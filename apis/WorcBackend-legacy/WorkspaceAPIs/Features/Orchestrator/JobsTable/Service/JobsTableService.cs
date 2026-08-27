@@ -850,6 +850,88 @@ public class JobsTableService : IJobsTableService
         await _clientStatusStore.UpdateClientStatusAsync(machine);
         await _orchestratorHubContext.Clients.Group($"TENANT_{job.TenantId}").SendAsync("machine_status_update", "A machine is now idle.");
         _logger.LogInformation("Machine {MachineId} is now idle after job {JobId}.", job.MachineId, job.Id);
+
+        // The machine is free again — try to pull the next pending job that is attached to it.
+        await TryDispatchNextPendingJobAsync(machine);
+    }
+
+    // Looks for a Created job attached to the given machine's FlowVersions and dispatches it.
+    private async Task TryDispatchNextPendingJobAsync(ClientDataStore machine)
+    {
+        if (machine == null || machine.ClientId == Guid.Empty)
+            return;
+
+        try
+        {
+            var machineClientId = machine.ClientId;
+            var tenantId = machine.TenantId;
+
+            // Determine which agents/flows are attached to this machine.
+            var flowVersionIds = await _unitOfWork.Machine_FlowVersionRepo
+                .GetByConditionAsync(w => w.MachineId == machineClientId && w.TenantId == tenantId)
+                .Select(s => s.FlowVersionId)
+                .ToListAsync();
+
+            if (flowVersionIds.Count == 0)
+            {
+                _logger.LogInformation("No attached FlowVersions for machine {MachineId}; skipping next-pending dispatch.", machineClientId);
+                return;
+            }
+
+            // Find the oldest unassigned or already-assigned Created job for this machine.
+            var nextJob = await _unitOfWork.JobRepo
+                .GetByConditionAsync(w =>
+                    w.TenantId == tenantId &&
+                    w.Status == JobStatusEnum.Created &&
+                    flowVersionIds.Contains(w.FlowVersionId) &&
+                    (w.MachineId == null || w.MachineId == machineClientId))
+                .OrderByDescending(o => o.CreatedOn)
+                .FirstOrDefaultAsync();
+
+            if (nextJob == null)
+            {
+                _logger.LogInformation("No pending Created job for machine {MachineId} after idle transition.", machineClientId);
+                return;
+            }
+
+            // Assign the job to this machine and save so it cannot be picked by another dispatch path.
+            nextJob.MachineId = machineClientId;
+            nextJob.ExecutedOn = machine.ClientName ?? machineClientId.ToString();
+            _unitOfWork.JobRepo.Update(nextJob);
+            if (!await _unitOfWork.SaveAsync())
+            {
+                _logger.LogWarning("Failed to save assignment for next pending job {JobId} to machine {MachineId}.", nextJob.Id, machineClientId);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(machine.ConnectionId))
+            {
+                _logger.LogWarning("Machine {MachineId} has no SignalR connection; cannot dispatch pending job {JobId}.", machineClientId, nextJob.Id);
+                return;
+            }
+
+            // Mark the machine with a pending job. The status flips to Running only when the runner
+            // actually starts the job via StartJob, consistent with the OnConnectedAsync path.
+            machine.AgentId = nextJob.FlowVersionId;
+            machine.JobId = nextJob.Id;
+            await _clientStatusStore.UpdateClientStatusAsync(machine);
+
+            var executionCommandDto = new ExecutionCommandDto
+            {
+                JobId = nextJob.Id,
+                Command = ExecutionCommandTypesEnum.Initiate,
+                AgentId = nextJob.FlowVersionId,
+                MachineName = machine.ClientName ?? machineClientId.ToString(),
+                TenantId = tenantId
+            };
+
+            _logger.LogInformation("Dispatching next pending job {JobId} to machine {MachineName} after idle transition.", nextJob.Id, executionCommandDto.MachineName);
+            await _jobsExecutorService.TriggerExecutionAsync(executionCommandDto);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while dispatching the next pending job for machine {MachineId}.", machine?.ClientId);
+        }
     }
 
     // Aborts a running job by transitioning it to Aborted, recording the end time, and sending an Abort command to the executing machine.

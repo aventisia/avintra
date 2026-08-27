@@ -183,8 +183,11 @@ public class JobsExecutorService : IJobsExecutorService
             // LIVE pending (dispatched-but-not-started) job. The machine stays Online/Idle until the
             // runner actually starts the job, so a non-empty JobId here means a job is already in flight.
             // A stale marker (job no longer live) is cleared so the machine is not blocked forever.
+            // If the pending JobId matches the requested JobId, this is an intentional chained dispatch
+            // from UpdateMachineIdleStateAsync — allow it through.
             if (executionCommandDto.Command == ExecutionCommandTypesEnum.Initiate &&
-                clientDataStore.JobId.HasValue && clientDataStore.JobId.Value != Guid.Empty)
+                clientDataStore.JobId.HasValue && clientDataStore.JobId.Value != Guid.Empty &&
+                clientDataStore.JobId.Value != executionCommandDto.JobId)
             {
                 var pendingLive = await HasLivePendingJobAsync(clientDataStore);
                 if (pendingLive)
