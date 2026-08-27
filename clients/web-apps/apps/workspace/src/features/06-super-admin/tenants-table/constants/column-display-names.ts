@@ -30,6 +30,7 @@ export const columnDisplayNames: KeyValueLookupType[] = [
   { key: "storageSize", value: "Storage" },
   { key: "publishAgent", value: "Publish Agent" },
   { key: "totalJobs", value: "Jobs" },
+  { key: "lastLoginDate", value: "Last Login Date" },
 
   //  Flags
   { key: "isDisabled", value: "Disabled" },

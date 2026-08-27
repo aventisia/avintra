@@ -232,6 +232,13 @@ export const tenantsTableColumns: ColumnDef<TenantsTableDto>[] = [
     ),
     cell: ({ row }) => formatBytes(row.getValue("storageSize") || 0),
   },
+  {
+    accessorKey: "lastLoginDate",
+    header: ({ column }) => (
+      <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("lastLoginDate")} />
+    ),
+    cell: ({ row }) => formatDate(row.getValue<Date>("lastLoginDate")),
+  },
 
   // FLAGS
   {
