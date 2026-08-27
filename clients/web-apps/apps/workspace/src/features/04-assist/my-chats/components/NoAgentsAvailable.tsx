@@ -2,7 +2,7 @@ import NewAgentIcon from "@/components/NewAgentIcon";
 
 // import { SlashIcon } from "lucide-react";
 
-export function NoAgentsAvailable() {
+export function NoAgentsAvailable({ includeChat = true }: { includeChat?: boolean }) {
   return (
     <div className="flex flex-col items-center justify-center h-[calc(100vh-4*var(--header-height))] gap-4 text-center">
       <div className="relative w-16 h-16 flex items-center justify-center opacity-65">
@@ -12,8 +12,8 @@ export function NoAgentsAvailable() {
       <div className="space-y-1.5">
         <h3 className="text-lg font-medium text-foreground">No agents assigned</h3>
         <p className="text-sm text-muted-foreground max-w-96 leading-relaxed">
-          You don't have any chat agents assigned to you. Please contact your administrator to
-          request access.
+          You don't have any {includeChat ? "chat " : ""}agents assigned to you. Please contact
+          your administrator to request access.
         </p>
       </div>
     </div>

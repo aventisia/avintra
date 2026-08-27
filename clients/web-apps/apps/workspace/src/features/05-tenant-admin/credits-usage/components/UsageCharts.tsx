@@ -41,7 +41,7 @@ const UsageCharts = () => {
         className="col-span-2"
       />
       <ChartLineInteractive
-        title="Total Execution Time Credits"
+        title="Total Execution Credits"
         total={data?.data.usageSummary.totalExecutionCredits || 0}
         data={executionCreditChartData}
         chartConfig={totalCreditsChartConfig}
