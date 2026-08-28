@@ -22,17 +22,6 @@ import { type Platform, detectPlatform } from "../utils/detect-platform.util";
 // repository is published and releases are tagged there.
 const RELEASE_NOTES_URL = "https://github.com/aventisia/avintra-platform/releases";
 
-const buildExecutorServiceCommand = (
-  baseUrl: string,
-  tenantId: string | undefined,
-  linkedUsername: string | undefined,
-) => {
-  const appBaseUrl = baseUrl.replace(/\/$/, "");
-  const t = tenantId ?? "<TENANT_ID>";
-  const u = linkedUsername ?? "<LINKED_USERNAME>";
-  return `.\\AvintraRunnerService.exe --install --appBaseUrl "${appBaseUrl}" --apiKey "<API_KEY>" --tenantId "${t}" --linkedUsername "${u}"`;
-};
-
 const buildOllamaStylePowerShellCommand = (
   baseUrl: string,
   scriptUrl: string,
@@ -112,7 +101,7 @@ const OneLinerBlock = ({ command, label = "PowerShell" }: { command: string; lab
         <CopyButton
           isCopied={isCopied}
           onClick={handleCopy}
-          className="border border-slate-700 bg-slate-800 text-white hover:bg-slate-700 hover:text-white"
+          className="border opacity-80 border-slate-900 bg-slate-900 text-white hover:bg-slate-700 hover:text-white"
         />
       </div>
 
@@ -213,7 +202,6 @@ interface RunnerInstallRowProps {
   iconClass: string;
   hoverClass: string;
   powershellOneLiner: string;
-  installCommand: string;
 }
 
 /**
@@ -230,7 +218,6 @@ const RunnerInstallRow = ({
   iconClass,
   hoverClass,
   powershellOneLiner,
-  installCommand,
 }: RunnerInstallRowProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const hasInstall = !!artifact?.url;
@@ -304,69 +291,57 @@ const RunnerInstallRow = ({
               <p className="mb-2 text-sm text-slate-500">
                 Paste and run the block below. It sets your environment variables, downloads the
                 provisioning script, and runs it. The script downloads the runner, registers it as a
-                Windows service, and starts it. No additional runtime is required.
-              </p>
-              <OneLinerBlock command={powershellOneLiner} />
-              <p className="mb-3 mt-1 text-sm text-slate-500">
-                Replace{" "}
+                Windows service, and starts it. No additional runtime is required. Replace{" "}
                 <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">&lt;API_KEY&gt;</code>{" "}
                 with your tenant API key (see FAQ).
               </p>
+              <OneLinerBlock command={powershellOneLiner} />
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
                 Step 4: Verify the service was created
               </p>
-              <OneLinerBlock command='sc qc "AvintraRunnerService"' />
+              <OneLinerBlock command="sc.exe qc AvintraRunnerService" />
             </li>
             <li>
               <p className="mb-2 text-sm font-semibold text-slate-700">
                 Step 5: Check service status
               </p>
-              <OneLinerBlock command='sc query "AvintraRunnerService"' />
+              <OneLinerBlock command="sc.exe query AvintraRunnerService" />
             </li>
+          </ol>
+
+          {/* Separator: install steps above, maintenance commands below */}
+          <div className="mt-8 mb-6 flex items-center gap-3" aria-hidden="true">
+            <span className="h-px flex-1 bg-slate-200" />
+            <span className="text-2xs font-normal text-muted-foreground uppercase tracking-wider text-s">
+              Other useful commands
+            </span>
+            <span className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <ul className="space-y-5">
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">
-                Step 6: Restart the service
-              </p>
+              <p className="mb-2 text-sm font-semibold text-slate-700">Restart the service</p>
               <OneLinerBlock
-                command={`sc stop "AvintraRunnerService"\nsc start "AvintraRunnerService"`}
+                command={`net stop AvintraRunnerService\nnet start AvintraRunnerService`}
               />
             </li>
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">Step 7: Stop the service</p>
-              <OneLinerBlock command='sc stop "AvintraRunnerService"' />
+              <p className="mb-2 text-sm font-semibold text-slate-700">Stop the service</p>
+              <OneLinerBlock command="net stop AvintraRunnerService" />
             </li>
             <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">
-                Step 8: Or install manually from the runner zip
-              </p>
+              <p className="mb-2 text-sm font-semibold text-slate-700">Uninstall the service</p>
               <p className="mb-2 text-sm text-slate-500">
-                Download the runner zip and extract it to{" "}
-                <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
-                  C:\Program Files\AvintraRunnerService
-                </code>
-                , then run the command below from an Administrator PowerShell in that directory. The
-                script and the exe both call the same registration path, so use one or the other —
-                don't combine them.
+                If you ever need to remove the runner from your machine, run the below commands from
+                an Administrator PowerShell:
               </p>
-              <OneLinerBlock command={installCommand} />
+              <OneLinerBlock
+                command={`cd "C:\\Program Files\\AvintraRunnerService"\n.\\AvintraRunnerService.exe --uninstall\ncd ..\nRemove-Item -Recurse -Force "C:\\Program Files\\AvintraRunnerService"`}
+              />
             </li>
-            <li>
-              <p className="mb-2 text-sm font-semibold text-slate-700">
-                Step 9: Uninstall the service
-              </p>
-              <p className="mb-2 text-sm text-slate-500">
-                If you ever need to remove the runner from this machine, run this from an
-                Administrator PowerShell in{" "}
-                <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
-                  C:\Program Files\AvintraRunnerService
-                </code>
-                . The exe handles both stopping the service and removing its registration:
-              </p>
-              <OneLinerBlock command=".\AvintraRunnerService.exe --uninstall" />
-            </li>
-          </ol>
+          </ul>
         </div>
       ) : null}
     </div>
@@ -430,10 +405,6 @@ const DownloadContent: React.FC<{
     return `${origin}${path.startsWith("/") ? "" : "/"}${path}`;
   }, []);
 
-  const installCommand = useMemo(
-    () => buildExecutorServiceCommand(apiBaseUrl, tenantId, linkedUsername),
-    [apiBaseUrl, tenantId, linkedUsername],
-  );
   const powershellOneLiner = useMemo(
     () =>
       buildOllamaStylePowerShellCommand(
@@ -508,7 +479,7 @@ const DownloadContent: React.FC<{
               <DownloadRow
                 artifact={desktopAppArtifact}
                 title="Desktop App"
-                description="The builder app for creating, editing, and testing flows on your local machine."
+                description="The builder app for creating, editing, and testing agents on your local machine."
                 metadata={buildArtifactMetadata(desktopAppArtifact, desktopAppVersion)}
                 icon={<Monitor className="h-5 w-5" />}
                 iconClass="bg-primary-50 text-primary-500"
@@ -517,17 +488,16 @@ const DownloadContent: React.FC<{
               <RunnerInstallRow
                 artifact={runnerAppArtifact}
                 title="Runner App"
-                description="Headless Windows service that runs published flows in the background on this machine."
+                description="Headless Windows service that runs published agents in the background on your machine."
                 metadata={buildArtifactMetadata(runnerAppArtifact, runnerAppVersion)}
                 icon={<Terminal className="h-5 w-5" />}
                 iconClass="bg-slate-100 text-slate-600"
                 hoverClass="hover:border-slate-300 hover:bg-slate-100"
                 powershellOneLiner={powershellOneLiner}
-                installCommand={installCommand}
               />
             </div>
-
-            <p className="mt-6 text-sm text-slate-400">
+            {/* TODO: Unhide the release notes once repo is hosted in github and release notes are there */}
+            <p className="hidden mt-6 text-sm text-slate-400">
               Release notes &middot;{" "}
               <a
                 href={RELEASE_NOTES_URL}
@@ -549,7 +519,7 @@ const DownloadContent: React.FC<{
               <FAQItem
                 value="what-is-runner"
                 question="What is the Runner App and how is it different from the Desktop App?"
-                answer="The Desktop App is the interactive builder you use to create, edit, and test flows. The Runner App is a lightweight Windows service that runs published flows in the background on this machine, so they keep executing even when the builder is closed."
+                answer="The Desktop App is the interactive builder you use to create, edit, and test agents. The Runner App is a lightweight Windows service that runs published agents in the background on your machine, so they keep executing even when the builder is closed."
               />
               <FAQItem
                 value="api-key"
@@ -557,7 +527,7 @@ const DownloadContent: React.FC<{
                 answer={
                   <>
                     User with Orchestrator manager access can create an API key with Machine
-                    Authentication permission. You'll need it when running the install command —
+                    Authentication permission. You'll need it when running the install command -
                     replace the{" "}
                     <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">
                       &lt;API_KEY&gt;
