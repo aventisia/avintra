@@ -62,6 +62,12 @@ server
 		include /etc/nginx/conf.d/common_api_config.conf;
 	}
 
+	# ----------------- /apache-camel -----------------
+	location /apache-camel/api/ {
+		proxy_pass http://camel-apis:4005/api/;
+		include /etc/nginx/conf.d/common_api_config.conf;
+	}
+
 	# ----------------- /workspace -----------------
 	location ~ ^/workspace/api/(app-secret) {
         gzip off;
