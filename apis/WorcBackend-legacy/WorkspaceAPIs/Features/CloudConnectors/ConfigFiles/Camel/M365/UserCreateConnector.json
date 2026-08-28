@@ -1,6 +1,6 @@
 {
-  "name": "UserCreate",
-  "description": "Microsoft 365 / Microsoft Graph connector. Use operation=<service>.<action>, e.g. user.get or mail.send. Operation: user.create.",
+  "name": "Microsoft 365 — User Create",
+  "description": "User create through the Microsoft 365 connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__M365",
       "label": "M365 Credential",
       "description": "The M365 credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -24,7 +25,12 @@
       "name": "payload",
       "label": "Payload",
       "description": "Request body as JSON (optional).",
-      "defaultValue": "{}"
+      "defaultValue": "{}",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "payload"
+      }
     },
     {
       "direction": "Output",
@@ -35,13 +41,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "m365",
-    "operation": "user.create",
-    "authType": "client_credentials",
-    "bodyField": "payload"
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__M365",
+    "type": "credentials-select"
   }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "CommitList",
-  "description": "GitHub REST API connector. Use operation=<service>.<action>, e.g. repository.create or pullrequest.merge. Operation: commit.list.",
+  "name": "GitHub — Commit List",
+  "description": "Commit list through the GitHub connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__GitHub",
       "label": "GitHub Credential",
       "description": "The GitHub credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -24,7 +25,12 @@
       "name": "owner",
       "label": "Owner",
       "description": "Required path parameter: owner.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "path",
+        "name": "owner"
+      }
     },
     {
       "direction": "Input",
@@ -32,7 +38,12 @@
       "name": "repo",
       "label": "Repo",
       "description": "Required path parameter: repo.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "path",
+        "name": "repo"
+      }
     },
     {
       "direction": "Input",
@@ -40,7 +51,12 @@
       "name": "sha",
       "label": "Sha",
       "description": "Optional query parameter: sha.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "sha"
+      }
     },
     {
       "direction": "Input",
@@ -48,7 +64,12 @@
       "name": "path",
       "label": "Path",
       "description": "Optional query parameter: path.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "path"
+      }
     },
     {
       "direction": "Input",
@@ -56,7 +77,12 @@
       "name": "author",
       "label": "Author",
       "description": "Optional query parameter: author.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "author"
+      }
     },
     {
       "direction": "Input",
@@ -64,7 +90,12 @@
       "name": "since",
       "label": "Since",
       "description": "Optional query parameter: since.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "since"
+      }
     },
     {
       "direction": "Input",
@@ -72,7 +103,12 @@
       "name": "until",
       "label": "Until",
       "description": "Optional query parameter: until.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "until"
+      }
     },
     {
       "direction": "Input",
@@ -80,7 +116,12 @@
       "name": "per_page",
       "label": "Per Page",
       "description": "Optional query parameter: per_page.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "per_page"
+      }
     },
     {
       "direction": "Input",
@@ -88,7 +129,12 @@
       "name": "page",
       "label": "Page",
       "description": "Optional query parameter: page.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "page"
+      }
     },
     {
       "direction": "Input",
@@ -96,7 +142,12 @@
       "name": "payload",
       "label": "Payload",
       "description": "Request body as JSON (optional).",
-      "defaultValue": "{}"
+      "defaultValue": "{}",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "payload"
+      }
     },
     {
       "direction": "Output",
@@ -107,24 +158,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "github",
-    "operation": "commit.list",
-    "authType": "accessToken",
-    "bodyField": "payload",
-    "configKeys": [
-      "owner",
-      "repo",
-      "sha",
-      "path",
-      "author",
-      "since",
-      "until",
-      "per_page",
-      "page"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__GitHub",
+    "type": "credentials-select"
   }
 }

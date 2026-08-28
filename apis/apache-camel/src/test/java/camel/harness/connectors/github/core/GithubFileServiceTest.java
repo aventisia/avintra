@@ -34,7 +34,7 @@ class GithubFileServiceTest {
     private final GithubFileService service = new GithubFileService(client);
 
     private Exchange exchange(Map<String, Object> config, Map<String, Object> payload) {
-        ConnectorRequest request = new ConnectorRequest(null, null, "github", "file.delete",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "github", "file.delete",
             config, null, null, payload, null, null);
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         exchange.setProperty(GithubConfigurer.PROP_REQUEST, request);

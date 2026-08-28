@@ -34,7 +34,7 @@ class GithubCommitServiceTest {
     private final GithubCommitService service = new GithubCommitService(client);
 
     private Exchange exchange(Map<String, Object> config, Map<String, Object> payload) {
-        ConnectorRequest request = new ConnectorRequest(null, null, "github", "commit.list-files",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "github", "commit.list-files",
             config, null, null, payload, null, null);
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         exchange.setProperty(GithubConfigurer.PROP_REQUEST, request);

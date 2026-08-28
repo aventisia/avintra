@@ -193,9 +193,9 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "alex@contoso.com"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertEquals("direct:m365.user.get", response.getBody().get("targetUri"));
-        assertTrue(response.getBody().get("body").toString().contains("alex@contoso.com"));
+        assertEquals(true, response.getBody().get("success"));
+        assertEquals("user.get", response.getBody().get("operation"));
+        assertTrue(response.getBody().get("data").toString().contains("alex@contoso.com"));
     }
 
     @Test
@@ -203,9 +203,9 @@ class M365ConnectorIntegrationTest {
         ResponseEntity<Map> response = post("user.list", Map.of(),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("body").toString().contains("Alex"));
-        assertTrue(response.getBody().get("body").toString().contains("Sam"));
+        assertEquals(true, response.getBody().get("success"));
+        assertTrue(response.getBody().get("data").toString().contains("Alex"));
+        assertTrue(response.getBody().get("data").toString().contains("Sam"));
     }
 
     @Test
@@ -214,8 +214,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.accessToken("graph_test"),
             Map.of("displayName", "New Hire", "userPrincipalName", "new@contoso.com"));
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("body").toString().contains("New Hire"));
+        assertEquals(true, response.getBody().get("success"));
+        assertTrue(response.getBody().get("data").toString().contains("New Hire"));
     }
 
     @Test
@@ -225,12 +225,12 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.accessToken("graph_test"),
             Map.of("message", Map.of("subject", "Hello", "toRecipients", java.util.List.of())));
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertEquals("direct:m365.mail.send", response.getBody().get("targetUri"));
+        assertEquals(true, response.getBody().get("success"));
+        assertEquals("mail.send", response.getBody().get("operation"));
         // The client must have sent Content-Type: application/json, otherwise the
         // stub (mirroring real Graph's RequestBodyRead rejection) would have
         // returned 400.
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertEquals("application/json", body.get("contentType"));
     }
 
@@ -241,7 +241,7 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.accessToken("graph_test"),
             Map.of("@odata.id", "https://graph.microsoft.com/v1.0/directoryObjects/u9"));
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
+        assertEquals(true, response.getBody().get("success"));
     }
 
     @Test
@@ -250,8 +250,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("itemId", "i1"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("body").toString().contains("contentBytes"));
+        assertEquals(true, response.getBody().get("success"));
+        assertTrue(response.getBody().get("data").toString().contains("contentBytes"));
     }
 
     @Test
@@ -260,9 +260,9 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "missing"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(404, response.getStatusCode().value());
-        assertEquals(false, response.getBody().get("ok"));
-        assertEquals("M365ApiException", response.getBody().get("type"));
-        assertTrue(response.getBody().get("error").toString().contains("User not found"));
+        assertEquals(false, response.getBody().get("success"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertTrue(error.get("message").toString().contains("User not found"));
     }
 
     @Test
@@ -271,8 +271,9 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "missing"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(404, response.getStatusCode().value());
-        assertEquals("not_found", response.getBody().get("errorType"));
-        assertEquals("Request_ResourceNotFound", response.getBody().get("graphCode"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertEquals("not_found", error.get("code"));
+        assertEquals("Request_ResourceNotFound", error.get("graphCode"));
     }
 
     @Test
@@ -281,9 +282,10 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "denied"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(403, response.getStatusCode().value());
-        assertEquals(false, response.getBody().get("ok"));
-        assertEquals("insufficient_permissions", response.getBody().get("errorType"));
-        assertEquals("Authorization_RequestDenied", response.getBody().get("graphCode"));
+        assertEquals(false, response.getBody().get("success"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertEquals("insufficient_permissions", error.get("code"));
+        assertEquals("Authorization_RequestDenied", error.get("graphCode"));
     }
 
     @Test
@@ -292,9 +294,10 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "ratelimited"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(429, response.getStatusCode().value());
-        assertEquals(false, response.getBody().get("ok"));
-        assertEquals("rate_limited", response.getBody().get("errorType"));
-        assertTrue(response.getBody().containsKey("retryAfterSeconds"));
+        assertEquals(false, response.getBody().get("success"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertEquals("rate_limited", error.get("code"));
+        assertTrue(error.containsKey("retryAfterSeconds"));
     }
 
     @Test
@@ -303,7 +306,7 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "alex@contoso.com"),
             M365ServiceTestSupport.oauth2("tenant", "cid", "secret"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
+        assertEquals(true, response.getBody().get("success"));
     }
 
     @Test
@@ -312,8 +315,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("q", "quarterly"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("body").toString().contains("Doc"));
+        assertEquals(true, response.getBody().get("success"));
+        assertTrue(response.getBody().get("data").toString().contains("Doc"));
     }
 
     @Test
@@ -321,9 +324,9 @@ class M365ConnectorIntegrationTest {
         ResponseEntity<Map> response = post("auth.get-token", Map.of(),
             M365ServiceTestSupport.clientCredentials("tenant", "cid-auth", "secret"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertEquals("direct:m365.auth.get-token", response.getBody().get("targetUri"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        assertEquals("auth.get-token", response.getBody().get("operation"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertEquals("integration_token", body.get("access_token"));
         assertEquals("client_credentials", body.get("grant"));
         assertEquals(false, body.get("cached"));
@@ -336,8 +339,8 @@ class M365ConnectorIntegrationTest {
                 "clientSecret", "secret"),
             null, null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertEquals("integration_token", body.get("access_token"));
         assertEquals(false, body.get("cached"));
     }
@@ -346,8 +349,9 @@ class M365ConnectorIntegrationTest {
     void authGetTokenMissingCredentialsFails() {
         ResponseEntity<Map> response = post("auth.get-token", Map.of(), null, null);
         assertEquals(400, response.getStatusCode().value());
-        assertEquals(false, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("error").toString().contains("client"));
+        assertEquals(false, response.getBody().get("success"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertTrue(error.get("message").toString().contains("client"));
     }
 
     @Test
@@ -357,9 +361,9 @@ class M365ConnectorIntegrationTest {
                 "code-1", "http://localhost:8080/callback"),
             null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertEquals("direct:m365.auth.authorization-code", response.getBody().get("targetUri"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        assertEquals("auth.authorization-code", response.getBody().get("operation"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertEquals("integration_token", body.get("access_token"));
         assertEquals("authorization_code", body.get("grant"));
     }
@@ -370,8 +374,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.refreshToken("tenant", "cid-refresh", "secret", "refresh-1"),
             null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertEquals("integration_token", body.get("access_token"));
         assertEquals("refresh_token", body.get("grant"));
     }
@@ -382,8 +386,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.deviceCode("tenant", "cid-device", "secret", null),
             null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertEquals("device_code", body.get("grant"));
         assertEquals("dev-1", body.get("device_code"));
         assertEquals("ABCD-EFGH", body.get("user_code"));
@@ -395,8 +399,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.deviceCode("tenant", "cid-device-poll", "secret", "dev-1"),
             null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertEquals("integration_token", body.get("access_token"));
         assertEquals("device_code", body.get("grant"));
     }
@@ -407,8 +411,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.onBehalfOf("tenant", "cid-obo", "secret", "caller-jwt"),
             null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertEquals("integration_token", body.get("access_token"));
         assertEquals("on_behalf_of", body.get("grant"));
     }
@@ -419,9 +423,9 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "alex@contoso.com"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertEquals("direct:m365.user.get-profile", response.getBody().get("targetUri"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        assertEquals("user.get-profile", response.getBody().get("operation"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertEquals("u1", body.get("id"));
         assertEquals("Alex", body.get("displayName"));
     }
@@ -432,8 +436,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "alex@contoso.com"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertEquals("UTC", body.get("timeZone"));
     }
 
@@ -443,8 +447,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "alex@contoso.com"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         assertTrue(body.get("value").toString().contains("ENTERPRISEPREMIUM"));
     }
 
@@ -458,8 +462,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userPrincipalName", "alex@contoso.com"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("body").toString().contains("User mail"));
+        assertEquals(true, response.getBody().get("success"));
+        assertTrue(response.getBody().get("data").toString().contains("User mail"));
     }
 
     @Test
@@ -467,8 +471,8 @@ class M365ConnectorIntegrationTest {
         ResponseEntity<Map> response = post("mail.list", Map.of(),
             M365ServiceTestSupport.accessToken(delegatedUserToken()), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("body").toString().contains("Me mail"));
+        assertEquals(true, response.getBody().get("success"));
+        assertTrue(response.getBody().get("data").toString().contains("Me mail"));
     }
 
     @Test
@@ -476,9 +480,10 @@ class M365ConnectorIntegrationTest {
         ResponseEntity<Map> response = post("mail.list", Map.of(),
             M365ServiceTestSupport.clientCredentials("tenant", "cid", "secret"), null);
         assertEquals(400, response.getStatusCode().value());
-        assertEquals(false, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("error").toString().contains("userPrincipalName"));
-        assertEquals("missing_parameter", response.getBody().get("errorType"));
+        assertEquals(false, response.getBody().get("success"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertTrue(error.get("message").toString().contains("userPrincipalName"));
+        assertEquals("missing_parameter", error.get("code"));
     }
 
     @Test
@@ -490,8 +495,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "paged@contoso.com"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        String body = response.getBody().get("body").toString();
+        assertEquals(true, response.getBody().get("success"));
+        String body = response.getBody().get("data").toString();
         assertTrue(body.contains("Page one"));
         assertTrue(body.contains("Page two"));
     }
@@ -505,8 +510,8 @@ class M365ConnectorIntegrationTest {
             M365ServiceTestSupport.configMap("userId", "alex@contoso.com", "$select", "id,displayName"),
             M365ServiceTestSupport.accessToken("graph_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        Map<?, ?> body = (Map<?, ?>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        Map<?, ?> body = (Map<?, ?>) response.getBody().get("data");
         String query = String.valueOf(body.get("query"));
         // The stub echoes the decoded query string; it must contain the OData
         // $select param and must NOT contain camel-http component options.

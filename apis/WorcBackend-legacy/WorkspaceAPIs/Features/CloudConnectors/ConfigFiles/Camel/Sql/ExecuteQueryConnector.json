@@ -1,6 +1,6 @@
 {
-  "name": "ExecuteQuery",
-  "description": "Executes a raw SQL query through the Apache Camel sql connector.",
+  "name": "SQL — Query Execute",
+  "description": "Query execute through the SQL connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,15 +16,21 @@
       "name": "__CredentialName__ConnectionString",
       "label": "Credential",
       "description": "The PostgreSQL connection string credential used to connect.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "query",
       "label": "Query",
-      "description": "The raw SQL query to execute.",
-      "defaultValue": ""
+      "description": "Sets the SQL query to perform. You can externalize the query by using file: or classpath: as prefix and specify the location of the file.",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "query"
+      }
     },
     {
       "direction": "Output",
@@ -35,15 +41,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "sql",
-    "operation": "query",
-    "authType": "database",
-    "configKeys": [
-      "query"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__ConnectionString",
+    "type": "credentials-select"
   }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "TeamschatDelete",
-  "description": "Microsoft 365 / Microsoft Graph connector. Use operation=<service>.<action>, e.g. user.get or mail.send. Operation: teamschat.delete.",
+  "name": "Microsoft 365 — Teamschat Delete",
+  "description": "Teamschat delete through the Microsoft 365 connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__M365",
       "label": "M365 Credential",
       "description": "The M365 credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -24,7 +25,12 @@
       "name": "chatId",
       "label": "Chatid",
       "description": "Required path parameter: chatId.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "path",
+        "name": "chatId"
+      }
     },
     {
       "direction": "Input",
@@ -32,7 +38,12 @@
       "name": "payload",
       "label": "Payload",
       "description": "Request body as JSON (optional).",
-      "defaultValue": "{}"
+      "defaultValue": "{}",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "payload"
+      }
     },
     {
       "direction": "Output",
@@ -43,16 +54,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "m365",
-    "operation": "teamschat.delete",
-    "authType": "client_credentials",
-    "bodyField": "payload",
-    "configKeys": [
-      "chatId"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__M365",
+    "type": "credentials-select"
   }
 }

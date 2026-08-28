@@ -60,22 +60,25 @@ public class GithubRoutes extends RouteBuilder {
             Throwable failure = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class);
             int status = 502;
             String message = "GitHub connector failure";
-            String type = "Exception";
+            String code = "GITHUB_FAILURE";
             if (failure instanceof GithubException github) {
                 status = github.statusCode();
-                type = github.getClass().getSimpleName();
+                code = github.getClass().getSimpleName().toUpperCase();
                 message = GithubSecretSanitizer.sanitize(github.getMessage());
             } else if (failure != null) {
-                type = failure.getClass().getSimpleName();
+                code = "GITHUB_FAILURE";
                 message = GithubSecretSanitizer.sanitize(failure.getMessage() != null
-                    ? failure.getMessage() : type);
+                    ? failure.getMessage() : failure.getClass().getSimpleName());
             }
             Map<String, Object> response = new LinkedHashMap<>();
-            response.put("ok", false);
+            response.put("success", false);
             response.put("connector", "github");
-            response.put("targetUri", exchange.getProperty("targetUri"));
-            response.put("error", message);
-            response.put("type", type);
+            response.put("operation", exchange.getProperty("operation"));
+            response.put("data", null);
+            Map<String, Object> error = new LinkedHashMap<>();
+            error.put("code", code);
+            error.put("message", message);
+            response.put("error", error);
             exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, status);
             exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, "application/json");
             exchange.getMessage().setBody(objectMapper.writeValueAsString(response));

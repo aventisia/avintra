@@ -1,6 +1,6 @@
 {
-  "name": "TagCreate",
-  "description": "GitHub REST API connector. Use operation=<service>.<action>, e.g. repository.create or pullrequest.merge. Operation: tag.create.",
+  "name": "GitHub — Tag Create",
+  "description": "Tag create through the GitHub connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__GitHub",
       "label": "GitHub Credential",
       "description": "The GitHub credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -24,7 +25,12 @@
       "name": "owner",
       "label": "Owner",
       "description": "Required path parameter: owner.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "path",
+        "name": "owner"
+      }
     },
     {
       "direction": "Input",
@@ -32,7 +38,12 @@
       "name": "repo",
       "label": "Repo",
       "description": "Required path parameter: repo.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "path",
+        "name": "repo"
+      }
     },
     {
       "direction": "Input",
@@ -40,7 +51,12 @@
       "name": "payload",
       "label": "Payload",
       "description": "Request body as JSON (optional).",
-      "defaultValue": "{}"
+      "defaultValue": "{}",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "payload"
+      }
     },
     {
       "direction": "Output",
@@ -51,17 +67,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "github",
-    "operation": "tag.create",
-    "authType": "accessToken",
-    "bodyField": "payload",
-    "configKeys": [
-      "owner",
-      "repo"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__GitHub",
+    "type": "credentials-select"
   }
 }

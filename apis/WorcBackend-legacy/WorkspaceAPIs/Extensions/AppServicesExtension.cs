@@ -196,8 +196,9 @@ public static class AppServicesExtension
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
+        // Generic configuration-driven Camel connector service (all families)
         services.AddSingleton<CamelConnectorsConfigRepository>();
-        services.AddScoped<ICamelConnectorsService, CamelConnectorsService>();
+        services.AddScoped<CamelConnectorService>();
         services.AddScoped<IM365ConnectorsService, M365ConnectorsService>();
         services.AddScoped<IM365ExcelConnectorsService, M365ExcelConnectorsService>();
         services.AddScoped<ISendGridConnectorsService, SendGridConnectorsService>();

@@ -1,6 +1,6 @@
 {
-  "name": "WebhookEventRouteEvent",
-  "description": "github REST API operation: webhook.event.route-event.",
+  "name": "GitHub — Webhook Event Route Event",
+  "description": "Webhook event route event through the GitHub connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__GitHub",
       "label": "GitHub Credential",
       "description": "The GitHub credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -24,7 +25,12 @@
       "name": "payload",
       "label": "Payload",
       "description": "Request body as JSON (optional).",
-      "defaultValue": "{}"
+      "defaultValue": "{}",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "payload"
+      }
     },
     {
       "direction": "Output",
@@ -35,13 +41,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "github",
-    "operation": "webhook.event.route-event",
-    "authType": "accessToken",
-    "bodyField": "payload"
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__GitHub",
+    "type": "credentials-select"
   }
 }

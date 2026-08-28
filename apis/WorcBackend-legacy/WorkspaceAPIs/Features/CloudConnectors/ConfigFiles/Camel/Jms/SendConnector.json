@@ -1,6 +1,6 @@
 {
-  "name": "Send",
-  "description": "Executes the send operation through the Apache Camel jms connector.",
+  "name": "JMS — Send",
+  "description": "Send through the JMS connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__GeneralCredentials",
       "label": "JMS Credential",
       "description": "The JMS credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -41,30 +42,41 @@
           "value": "browse",
           "description": "browse"
         }
-      ]
+      ],
+      "required": false
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "destinationName",
-      "label": "Destinationname",
-      "description": "Required: destinationName",
-      "defaultValue": ""
+      "label": "Destination Name",
+      "description": "Name of the queue or topic to use as destination",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "destinationName"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "connectionFactory",
-      "label": "Connectionfactory",
-      "description": "Optional: connectionFactory",
-      "defaultValue": ""
+      "label": "Connection Factory",
+      "description": "The connection factory to be use. A connection factory must be configured either on the component or endpoint.",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "connectionFactory"
+      }
     },
     {
       "direction": "Input",
       "type": "select",
       "name": "deliveryMode",
-      "label": "Deliverymode",
-      "description": "Optional: deliveryMode",
+      "label": "Delivery Mode",
+      "description": "Specifies the delivery mode to be used. Possible values are those defined by jakarta.jms.DeliveryMode. NON_PERSISTENT = 1 and PERSISTENT = 2.",
       "defaultValue": "PERSISTENT",
       "selectOptions": [
         {
@@ -77,23 +89,38 @@
           "value": "NON_PERSISTENT",
           "description": "NON_PERSISTENT"
         }
-      ]
+      ],
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "deliveryMode"
+      }
     },
     {
       "direction": "Input",
       "type": "number",
       "name": "timeToLive",
-      "label": "Timetolive",
-      "description": "Optional: timeToLive",
-      "defaultValue": ""
+      "label": "Time To Live",
+      "description": "When sending messages, specifies the time-to-live of the message (in milliseconds).",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "timeToLive"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "replyTo",
-      "label": "Replyto",
-      "description": "Optional: replyTo",
-      "defaultValue": ""
+      "label": "Reply To",
+      "description": "Provides an explicit ReplyTo destination (overrides any incoming value of Message.getJMSReplyTo() in consumer).",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "replyTo"
+      }
     },
     {
       "direction": "Input",
@@ -101,7 +128,12 @@
       "name": "brokerUrl",
       "label": "Brokerurl",
       "description": "Required auth: brokerUrl",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "brokerUrl"
+      }
     },
     {
       "direction": "Input",
@@ -109,7 +141,12 @@
       "name": "message",
       "label": "Message",
       "description": "Request body / payload for the send operation (JSON).",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "message"
+      }
     },
     {
       "direction": "Output",
@@ -120,20 +157,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "jms",
-    "authType": "basic",
-    "bodyField": "message",
-    "configKeys": [
-      "destinationName",
-      "connectionFactory",
-      "deliveryMode",
-      "timeToLive",
-      "replyTo",
-      "brokerUrl"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__GeneralCredentials",
+    "type": "credentials-select"
   }
 }

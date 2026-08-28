@@ -1,6 +1,6 @@
 {
-  "name": "Send",
-  "description": "Executes the send operation through the Apache Camel mail connector.",
+  "name": "Mail — Send",
+  "description": "Send through the Mail connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__GeneralCredentials",
       "label": "MAIL Credential",
       "description": "The MAIL credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -46,54 +47,80 @@
           "value": "delete",
           "description": "delete"
         }
-      ]
+      ],
+      "required": false
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "host",
       "label": "Host",
-      "description": "Required: host",
-      "defaultValue": ""
+      "description": "The mail server host name",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "host"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "to",
       "label": "To",
-      "description": "Required: to",
-      "defaultValue": ""
+      "description": "Sets the destination email address. Separate multiple email addresses with comma.",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "to"
+      }
     },
     {
       "direction": "Input",
       "type": "number",
       "name": "port",
       "label": "Port",
-      "description": "Optional: port",
-      "defaultValue": ""
+      "description": "The port number of the mail server",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "port"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "subject",
       "label": "Subject",
-      "description": "Optional: subject",
-      "defaultValue": ""
+      "description": "The Subject of the message being sent. Note: Setting the subject in the header takes precedence over this option.",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "subject"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "from",
       "label": "From",
-      "description": "Optional: from",
-      "defaultValue": ""
+      "description": "The from email address",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "from"
+      }
     },
     {
       "direction": "Input",
       "type": "select",
       "name": "contentType",
-      "label": "Contenttype",
-      "description": "Optional: contentType",
+      "label": "Content Type",
+      "description": "The mail message content type. Use text/html for HTML mails.",
       "defaultValue": "text",
       "selectOptions": [
         {
@@ -106,7 +133,12 @@
           "value": "html",
           "description": "html"
         }
-      ]
+      ],
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "contentType"
+      }
     },
     {
       "direction": "Input",
@@ -114,7 +146,12 @@
       "name": "message",
       "label": "Message",
       "description": "Request body / payload for the send operation (JSON).",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "message"
+      }
     },
     {
       "direction": "Output",
@@ -125,20 +162,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "mail",
-    "authType": "basic",
-    "bodyField": "message",
-    "configKeys": [
-      "host",
-      "to",
-      "port",
-      "subject",
-      "from",
-      "contentType"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__GeneralCredentials",
+    "type": "credentials-select"
   }
 }

@@ -34,7 +34,7 @@ class SqlConfigurerTest {
             "url", "jdbc:postgresql://localhost/testdb",
             "username", "test",
             "password", "test");
-        ConnectorRequest request = new ConnectorRequest(null, null, "sql", "select",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "sql", "select",
             Map.of("query", "SELECT 1"),
             new AuthConfiguration("database", null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, props),
@@ -49,7 +49,7 @@ class SqlConfigurerTest {
         // URL-style connection string with credentials embedded in the userinfo.
         Map<String, String> props = Map.of(
             "url", "postgresql://postgres:Post@123@localhost:5432/WorkspaceDb");
-        ConnectorRequest request = new ConnectorRequest(null, null, "sql", "query",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "sql", "query",
             Map.of("query", "SELECT 1"),
             new AuthConfiguration("database", null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, props),
@@ -63,7 +63,7 @@ class SqlConfigurerTest {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         Map<String, String> props = Map.of(
             "url", "postgresql://localhost:5432/WorkspaceDb");
-        ConnectorRequest request = new ConnectorRequest(null, null, "sql", "query",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "sql", "query",
             Map.of("query", "SELECT 1"),
             new AuthConfiguration("database", null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, props),
@@ -80,7 +80,7 @@ class SqlConfigurerTest {
         // %40 decodes to '@', %25 decodes to '%' in the URL userinfo.
         Map<String, String> props = Map.of(
             "url", "postgresql://user%40domain:p%40ss%25word@localhost:5432/WorkspaceDb");
-        ConnectorRequest request = new ConnectorRequest(null, null, "sql", "query",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "sql", "query",
             Map.of("query", "SELECT 1"),
             new AuthConfiguration("database", null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, props),
@@ -109,7 +109,7 @@ class SqlConfigurerTest {
             "url", "postgresql://urluser:urlpass@localhost:5432/WorkspaceDb",
             "username", "explicit",
             "password", "explicit-pass");
-        ConnectorRequest request = new ConnectorRequest(null, null, "sql", "query",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "sql", "query",
             Map.of("query", "SELECT 1"),
             new AuthConfiguration("database", null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, props),
@@ -134,7 +134,7 @@ class SqlConfigurerTest {
         Map<String, String> props = Map.of(
             "url", "postgresql://urluser:p%40ss@localhost:5432/WorkspaceDb",
             "username", "explicit");
-        ConnectorRequest request = new ConnectorRequest(null, null, "sql", "query",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "sql", "query",
             Map.of("query", "SELECT 1"),
             new AuthConfiguration("database", null, null, null, null, null,
                 null, null, null, null, null, null, null, null, null, null, null, null, props),

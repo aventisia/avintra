@@ -25,7 +25,7 @@ class DirectoryReadWriteTest {
 
     private String resolve(String operation, Map<String, Object> config) {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "file", operation, config,
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "file", operation, config,
             null, null, null, null, null);
         return configurer.resolveEndpoint(exchange, request, null);
     }

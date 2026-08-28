@@ -26,7 +26,7 @@ class GithubConfigurerTest {
     @Test
     void mapsOperationToDirectRoute() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "github", "repository.create",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "github", "repository.create",
             Map.of("owner", "acme", "repo", "demo"), null, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);
         assertEquals("direct:github.repository.create", uri);
@@ -40,7 +40,7 @@ class GithubConfigurerTest {
         Map<String, Object> config = new LinkedHashMap<>();
         config.put("service", "pullrequest");
         config.put("action", "merge");
-        ConnectorRequest request = new ConnectorRequest(null, null, "github", null, config,
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "github", null, config,
             null, null, null, null, null);
         assertEquals("direct:github.pullrequest.merge",
             configurer.resolveEndpoint(exchange, request, null));
@@ -49,7 +49,7 @@ class GithubConfigurerTest {
     @Test
     void missingOperationThrows() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "github", null,
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "github", null,
             Map.of(), null, null, null, null, null);
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
             () -> configurer.resolveEndpoint(exchange, request, null));
@@ -59,7 +59,7 @@ class GithubConfigurerTest {
     @Test
     void unknownOperationThrows() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "github", "unknown.action",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "github", "unknown.action",
             Map.of(), null, null, null, null, null);
         assertThrows(IllegalArgumentException.class,
             () -> configurer.resolveEndpoint(exchange, request, null));
@@ -68,7 +68,7 @@ class GithubConfigurerTest {
     @Test
     void localActionsResolveWithoutBaseUrl() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "github", "webhook.event.verify",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "github", "webhook.event.verify",
             Map.of(), null, null, null, null, null);
         assertEquals("direct:github.webhook.event.verify",
             configurer.resolveEndpoint(exchange, request, null));
