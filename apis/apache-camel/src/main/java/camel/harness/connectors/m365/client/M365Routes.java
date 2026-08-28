@@ -62,14 +62,12 @@ public class M365Routes extends RouteBuilder {
             Throwable failure = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class);
             int status = 502;
             String message = "M365 connector failure";
-            String type = "Exception";
-            String errorType = M365ErrorType.UNKNOWN.code();
+            String code = M365ErrorType.UNKNOWN.code();
             String graphCode = null;
             long retryAfterSeconds = 0;
             if (failure instanceof M365Exception m365) {
                 status = m365.statusCode();
-                type = m365.getClass().getSimpleName();
-                errorType = m365.errorType().code();
+                code = m365.errorType().code();
                 message = M365SecretSanitizer.sanitize(m365.getMessage());
                 if (failure instanceof M365ApiException api) {
                     graphCode = api.code();
@@ -78,23 +76,25 @@ public class M365Routes extends RouteBuilder {
                     retryAfterSeconds = rate.retryAfterSeconds();
                 }
             } else if (failure != null) {
-                type = failure.getClass().getSimpleName();
+                code = M365ErrorType.UNKNOWN.code();
                 message = M365SecretSanitizer.sanitize(failure.getMessage() != null
-                    ? failure.getMessage() : type);
+                    ? failure.getMessage() : failure.getClass().getSimpleName());
             }
             Map<String, Object> response = new LinkedHashMap<>();
-            response.put("ok", false);
+            response.put("success", false);
             response.put("connector", "m365");
-            response.put("targetUri", exchange.getProperty("targetUri"));
-            response.put("error", message);
-            response.put("type", type);
-            response.put("errorType", errorType);
+            response.put("operation", exchange.getProperty("operation"));
+            response.put("data", null);
+            Map<String, Object> error = new LinkedHashMap<>();
+            error.put("code", code);
+            error.put("message", message);
             if (graphCode != null) {
-                response.put("graphCode", graphCode);
+                error.put("graphCode", graphCode);
             }
             if (retryAfterSeconds > 0) {
-                response.put("retryAfterSeconds", retryAfterSeconds);
+                error.put("retryAfterSeconds", retryAfterSeconds);
             }
+            response.put("error", error);
             exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, status);
             exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, "application/json");
             exchange.getMessage().setBody(objectMapper.writeValueAsString(response));

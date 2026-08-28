@@ -1,6 +1,6 @@
 {
-  "name": "Poll",
-  "description": "Executes the poll operation through the Apache Camel kafka connector.",
+  "name": "Kafka — Poll",
+  "description": "Poll through the Kafka connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__GeneralCredentials",
       "label": "KAFKA Credential",
       "description": "The KAFKA credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -41,47 +42,73 @@
           "value": "fetch",
           "description": "fetch"
         }
-      ]
+      ],
+      "required": false
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "topic",
       "label": "Topic",
-      "description": "Required: topic",
-      "defaultValue": ""
+      "description": "Name of the topic to use. On the consumer you can use comma to separate multiple topics. A producer can only send a message to a single topic.",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "topic"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "brokers",
       "label": "Brokers",
-      "description": "Required: brokers",
-      "defaultValue": ""
+      "description": "URL of the Kafka brokers to use. The format is host1:port1,host2:port2, and the list can be a subset of brokers or a VIP pointing to a subset of brokers. This option is known as bootstrap.servers in the Kafka documentation.",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "brokers"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "groupId",
-      "label": "Groupid",
-      "description": "Optional: groupId",
-      "defaultValue": ""
+      "label": "Group Id",
+      "description": "A string that uniquely identifies the group of consumer processes to which this consumer belongs. By setting the same group id, multiple processes can indicate that they are all part of the same consumer group. This option is required for consumers.",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "groupId"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "key",
       "label": "Key",
-      "description": "Optional: key",
-      "defaultValue": ""
+      "description": "The record key (or null if no key is specified). If this option has been configured then it take precedence over header KafkaConstants#KEY",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "key"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "partitionKey",
-      "label": "Partitionkey",
-      "description": "Optional: partitionKey",
-      "defaultValue": ""
+      "label": "Partition Key",
+      "description": "The partition to which the record will be sent (or null if no partition was specified). If this option has been configured then it take precedence over header KafkaConstants#PARTITION_KEY",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "partitionKey"
+      }
     },
     {
       "direction": "Input",
@@ -89,23 +116,38 @@
       "name": "offset",
       "label": "Offset",
       "description": "Optional: offset",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "offset"
+      }
     },
     {
       "direction": "Input",
       "type": "switch",
       "name": "autoCommitEnable",
-      "label": "Autocommitenable",
-      "description": "Optional: autoCommitEnable",
-      "defaultValue": false
+      "label": "Auto Commit Enable",
+      "description": "If true, periodically commit to ZooKeeper the offset of messages already fetched by the consumer. This committed offset will be used when the process fails as the position from which the new consumer will begin.",
+      "defaultValue": false,
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "autoCommitEnable"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "saslMechanism",
-      "label": "Saslmechanism",
-      "description": "Required auth: saslMechanism",
-      "defaultValue": ""
+      "label": "Sasl Mechanism",
+      "description": "The Simple Authentication and Security Layer (SASL) Mechanism used. For the valid values see http://www.iana.org/assignments/sasl-mechanisms/sasl-mechanisms.xhtml",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "saslMechanism"
+      }
     },
     {
       "direction": "Input",
@@ -113,7 +155,12 @@
       "name": "message",
       "label": "Message",
       "description": "Request body / payload for the poll operation (JSON).",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "message"
+      }
     },
     {
       "direction": "Output",
@@ -124,22 +171,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "kafka",
-    "authType": "basic",
-    "bodyField": "message",
-    "configKeys": [
-      "topic",
-      "brokers",
-      "groupId",
-      "key",
-      "partitionKey",
-      "offset",
-      "autoCommitEnable",
-      "saslMechanism"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__GeneralCredentials",
+    "type": "credentials-select"
   }
 }

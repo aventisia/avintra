@@ -33,7 +33,7 @@ public abstract class M365ServiceTestSupport {
      */
     protected String resolveRoute(String operation) {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "m365", operation,
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "m365", operation,
             Map.of(), null, null, null, null, null);
         return configurer.resolveEndpoint(exchange, request, null);
     }

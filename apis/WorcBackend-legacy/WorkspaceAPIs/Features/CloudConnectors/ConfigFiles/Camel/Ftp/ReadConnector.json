@@ -1,6 +1,6 @@
 {
-  "name": "Read",
-  "description": "Executes the read operation through the Apache Camel ftp connector.",
+  "name": "FTP — Read",
+  "description": "Read through the FTP connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__GeneralCredentials",
       "label": "FTP Credential",
       "description": "The FTP credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -56,63 +57,99 @@
           "value": "check",
           "description": "check"
         }
-      ]
+      ],
+      "required": false
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "host",
       "label": "Host",
-      "description": "Required: host",
-      "defaultValue": ""
+      "description": "Hostname of the FTP server",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "host"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "directoryName",
-      "label": "Directoryname",
-      "description": "Required: directoryName",
-      "defaultValue": ""
+      "label": "Directory Name",
+      "description": "The starting directory",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "directoryName"
+      }
     },
     {
       "direction": "Input",
       "type": "number",
       "name": "port",
       "label": "Port",
-      "description": "Optional: port",
-      "defaultValue": ""
+      "description": "Port of the FTP server",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "port"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "fileName",
-      "label": "Filename",
-      "description": "Optional: fileName",
-      "defaultValue": ""
+      "label": "File Name",
+      "description": "Use Expression such as File Language to dynamically set the filename. For consumers, it's used as a filename filter. For producers, it's used to evaluate the filename to write. If an expression is set, it take precedence over the CamelFileName header. (Note: The header itself can also be an Expression). The expression options support both String and Expression types. If the expression is a String type, it is always evaluated using the File Language. If the expression is an Expression type, the specified Expression type is used - this allows you, for instance, to use OGNL expressions. For the consumer, you can use it to filter filenames, so you can for instance consume today's file using the File Language syntax: mydata-${date:now:yyyyMMdd}.txt. The producers support the CamelOverruleFileName header which takes precedence over any existing CamelFileName header; the CamelOverruleFileName is a header that is used only once, and makes it easier as this avoids to temporary store CamelFileName and have to restore it afterwards.",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "fileName"
+      }
     },
     {
       "direction": "Input",
       "type": "switch",
       "name": "passiveMode",
-      "label": "Passivemode",
-      "description": "Optional: passiveMode",
-      "defaultValue": false
+      "label": "Passive Mode",
+      "description": "Sets passive mode connections. Default is active mode connections.",
+      "defaultValue": false,
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "passiveMode"
+      }
     },
     {
       "direction": "Input",
       "type": "switch",
       "name": "binary",
       "label": "Binary",
-      "description": "Optional: binary",
-      "defaultValue": false
+      "description": "Specifies the file transfer mode, BINARY or ASCII. Default is ASCII (false).",
+      "defaultValue": false,
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "binary"
+      }
     },
     {
       "direction": "Input",
       "type": "switch",
       "name": "strictHostKeyChecking",
-      "label": "Stricthostkeychecking",
-      "description": "Optional: strictHostKeyChecking",
-      "defaultValue": false
+      "label": "Strict Host Key Checking",
+      "description": "Sets whether to use strict host key checking.",
+      "defaultValue": false,
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "strictHostKeyChecking"
+      }
     },
     {
       "direction": "Input",
@@ -132,23 +169,38 @@
           "value": "start",
           "description": "start"
         }
-      ]
+      ],
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "appendPosition"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "privateKey",
-      "label": "Privatekey",
-      "description": "Required auth: privateKey",
-      "defaultValue": ""
+      "label": "Private Key",
+      "description": "Set the private key as byte so that the SFTP endpoint can do private key verification.",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "privateKey"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "privateKeyPassphrase",
-      "label": "Privatekeypassphrase",
-      "description": "Required auth: privateKeyPassphrase",
-      "defaultValue": ""
+      "label": "Private Key Passphrase",
+      "description": "Set the private key file passphrase so that the SFTP endpoint can do private key verification.",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "privateKeyPassphrase"
+      }
     },
     {
       "direction": "Input",
@@ -156,7 +208,12 @@
       "name": "content",
       "label": "Content",
       "description": "Request body / payload for the read operation (JSON).",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "content"
+      }
     },
     {
       "direction": "Output",
@@ -167,24 +224,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "ftp",
-    "authType": "basic",
-    "bodyField": "content",
-    "configKeys": [
-      "host",
-      "directoryName",
-      "port",
-      "fileName",
-      "passiveMode",
-      "binary",
-      "strictHostKeyChecking",
-      "appendPosition",
-      "privateKey",
-      "privateKeyPassphrase"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__GeneralCredentials",
+    "type": "credentials-select"
   }
 }

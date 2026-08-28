@@ -1,6 +1,6 @@
 {
-  "name": "MailfolderDelete",
-  "description": "Microsoft 365 / Microsoft Graph connector. Use operation=<service>.<action>, e.g. user.get or mail.send. Operation: mailfolder.delete.",
+  "name": "Microsoft 365 — Mailfolder Delete",
+  "description": "Mailfolder delete through the Microsoft 365 connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__M365",
       "label": "M365 Credential",
       "description": "The M365 credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -24,7 +25,12 @@
       "name": "userId",
       "label": "Userid",
       "description": "Required path parameter: userId.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "path",
+        "name": "userId"
+      }
     },
     {
       "direction": "Input",
@@ -32,7 +38,12 @@
       "name": "mailFolderId",
       "label": "Mailfolderid",
       "description": "Required path parameter: mailFolderId.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "path",
+        "name": "mailFolderId"
+      }
     },
     {
       "direction": "Input",
@@ -40,7 +51,12 @@
       "name": "payload",
       "label": "Payload",
       "description": "Request body as JSON (optional).",
-      "defaultValue": "{}"
+      "defaultValue": "{}",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "payload"
+      }
     },
     {
       "direction": "Output",
@@ -51,17 +67,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "m365",
-    "operation": "mailfolder.delete",
-    "authType": "client_credentials",
-    "bodyField": "payload",
-    "configKeys": [
-      "userId",
-      "mailFolderId"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__M365",
+    "type": "credentials-select"
   }
 }

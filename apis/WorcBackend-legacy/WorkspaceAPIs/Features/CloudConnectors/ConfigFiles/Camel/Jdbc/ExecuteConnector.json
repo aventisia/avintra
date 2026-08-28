@@ -1,6 +1,6 @@
 {
-  "name": "Execute",
-  "description": "Executes the execute operation through the Apache Camel jdbc connector.",
+  "name": "JDBC — Execute",
+  "description": "Execute through the JDBC connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__ConnectionString",
       "label": "JDBC Credential",
       "description": "The JDBC credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -31,31 +32,47 @@
           "value": "execute",
           "description": "execute"
         }
-      ]
+      ],
+      "required": false
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "dataSourceName",
-      "label": "Datasourcename",
-      "description": "Required: dataSourceName",
-      "defaultValue": ""
+      "label": "Data Source Name",
+      "description": "Name of DataSource to lookup in the Registry. If the name is dataSource or default, then Camel will attempt to lookup a default DataSource from the registry, meaning if there is a only one instance of DataSource found, then this DataSource will be used.",
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "dataSourceName"
+      }
     },
     {
       "direction": "Input",
       "type": "number",
       "name": "readSize",
-      "label": "Readsize",
-      "description": "Optional: readSize",
-      "defaultValue": ""
+      "label": "Read Size",
+      "description": "The default maximum number of rows that can be read by a polling query. The default value is 0.",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "readSize"
+      }
     },
     {
       "direction": "Input",
       "type": "text",
       "name": "outputClass",
-      "label": "Outputclass",
-      "description": "Optional: outputClass",
-      "defaultValue": ""
+      "label": "Output Class",
+      "description": "Specify the full package and class name to use as conversion when outputType=SelectOne or SelectList.",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "outputClass"
+      }
     },
     {
       "direction": "Input",
@@ -63,7 +80,12 @@
       "name": "url",
       "label": "Url",
       "description": "Required auth: url",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "url"
+      }
     },
     {
       "direction": "Input",
@@ -71,7 +93,12 @@
       "name": "dbUsername",
       "label": "Database Username",
       "description": "Database username (used with the ConnectionString credential).",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "dbUsername"
+      }
     },
     {
       "direction": "Input",
@@ -79,15 +106,25 @@
       "name": "dbPassword",
       "label": "Database Password",
       "description": "Database password (used with the ConnectionString credential).",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "dbPassword"
+      }
     },
     {
       "direction": "Input",
       "type": "json-editor",
       "name": "parameters",
       "label": "Parameters",
-      "description": "Request body / payload for the execute operation (JSON).",
-      "defaultValue": ""
+      "description": "Optional parameters to the java.sql.Statement. For example to set maxRows, fetchSize etc. This is a multi-value option with prefix: statement.",
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "parameters"
+      }
     },
     {
       "direction": "Output",
@@ -98,20 +135,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "jdbc",
-    "authType": "database",
-    "bodyField": "parameters",
-    "configKeys": [
-      "dataSourceName",
-      "readSize",
-      "outputClass",
-      "url",
-      "dbUsername",
-      "dbPassword"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__ConnectionString",
+    "type": "credentials-select"
   }
 }

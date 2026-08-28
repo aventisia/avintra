@@ -162,9 +162,9 @@ class GithubConnectorIntegrationTest {
     void repositoryListReturnsBody() {
         ResponseEntity<Map> response = post("repository.list", Map.of(), accessToken("ghp_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
+        assertEquals(true, response.getBody().get("success"));
         assertEquals("github", response.getBody().get("connector"));
-        assertTrue(response.getBody().get("body").toString().contains("acme/demo"));
+        assertTrue(response.getBody().get("data").toString().contains("acme/demo"));
     }
 
     @Test
@@ -172,9 +172,9 @@ class GithubConnectorIntegrationTest {
         ResponseEntity<Map> response = post("repository.get",
             Map.of("owner", "acme", "repo", "demo"), accessToken("ghp_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertEquals("direct:github.repository.get", response.getBody().get("targetUri"));
-        assertTrue(response.getBody().get("body").toString().contains("acme/demo"));
+        assertEquals(true, response.getBody().get("success"));
+        assertEquals("repository.get", response.getBody().get("operation"));
+        assertTrue(response.getBody().get("data").toString().contains("acme/demo"));
     }
 
     @Test
@@ -183,8 +183,8 @@ class GithubConnectorIntegrationTest {
             Map.of("owner", "acme", "repo", "demo"), accessToken("ghp_test"),
             Map.of("title", "Integration bug", "body", "details"));
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("body").toString().contains("Integration bug"));
+        assertEquals(true, response.getBody().get("success"));
+        assertTrue(response.getBody().get("data").toString().contains("Integration bug"));
     }
 
     @Test
@@ -193,8 +193,8 @@ class GithubConnectorIntegrationTest {
             Map.of("owner", "acme", "repo", "demo"), accessToken("ghp_test"),
             Map.of("archived", true));
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        Map<String, Object> body = (Map<String, Object>) response.getBody().get("body");
+        assertEquals(true, response.getBody().get("success"));
+        Map<String, Object> body = (Map<String, Object>) response.getBody().get("data");
         assertEquals(true, body.get("archived"));
     }
 
@@ -203,7 +203,7 @@ class GithubConnectorIntegrationTest {
         ResponseEntity<Map> response = post("repository.delete",
             Map.of("owner", "acme", "repo", "demo"), accessToken("ghp_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
+        assertEquals(true, response.getBody().get("success"));
     }
 
     @Test
@@ -213,11 +213,11 @@ class GithubConnectorIntegrationTest {
             accessToken("ghp_test"),
             Map.of("message", "Delete hello.txt", "branch", "main"));
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertEquals("direct:github.file.delete", response.getBody().get("targetUri"));
+        assertEquals(true, response.getBody().get("success"));
+        assertEquals("file.delete", response.getBody().get("operation"));
         // The DELETE body (with the SHA resolved from the GET) must actually reach
         // GitHub; the stub echoes the sha it received.
-        Map<String, Object> body = (Map<String, Object>) response.getBody().get("body");
+        Map<String, Object> body = (Map<String, Object>) response.getBody().get("data");
         assertNotNull(body);
         assertEquals("abc123", body.get("sha"));
         assertEquals(true, body.get("deleted"));
@@ -230,12 +230,13 @@ class GithubConnectorIntegrationTest {
             accessToken("ghp_test"),
             Map.of("message", "Delete hello.txt"));
         assertEquals(404, response.getStatusCode().value());
-        assertEquals(false, response.getBody().get("ok"));
+        assertEquals(false, response.getBody().get("success"));
         // The 404 from the contents GET (file does not exist) propagates as an
         // API error carrying GitHub's real message.
-        assertEquals("GithubApiException", response.getBody().get("type"));
-        assertTrue(response.getBody().get("error").toString().contains("404"));
-        assertTrue(response.getBody().get("error").toString().contains("Not Found"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertEquals("GITHUBAPIEXCEPTION", error.get("code"));
+        assertTrue(error.get("message").toString().contains("404"));
+        assertTrue(error.get("message").toString().contains("Not Found"));
     }
 
     @Test
@@ -243,8 +244,8 @@ class GithubConnectorIntegrationTest {
         ResponseEntity<Map> response = post("search.repositories",
             Map.of("q", "camel"), accessToken("ghp_test"), null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("body").toString().contains("total_count"));
+        assertEquals(true, response.getBody().get("success"));
+        assertTrue(response.getBody().get("data").toString().contains("total_count"));
     }
 
     @Test
@@ -252,8 +253,9 @@ class GithubConnectorIntegrationTest {
         ResponseEntity<Map> response = post("repository.get",
             Map.of("owner", "acme"), accessToken("ghp_test"), null);
         assertEquals(400, response.getStatusCode().value());
-        assertEquals(false, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("error").toString().contains("repo"));
+        assertEquals(false, response.getBody().get("success"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertTrue(error.get("message").toString().contains("repo"));
     }
 
     @Test
@@ -261,10 +263,11 @@ class GithubConnectorIntegrationTest {
         ResponseEntity<Map> response = post("repository.get",
             Map.of("owner", "acme", "repo", "missing"), accessToken("ghp_test"), null);
         assertEquals(404, response.getStatusCode().value());
-        assertEquals(false, response.getBody().get("ok"));
-        assertEquals("GithubApiException", response.getBody().get("type"));
-        assertTrue(response.getBody().get("error").toString().contains("404"));
-        assertTrue(response.getBody().get("error").toString().contains("Not Found"));
+        assertEquals(false, response.getBody().get("success"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertEquals("GITHUBAPIEXCEPTION", error.get("code"));
+        assertTrue(error.get("message").toString().contains("404"));
+        assertTrue(error.get("message").toString().contains("Not Found"));
     }
 
     @Test
@@ -272,9 +275,10 @@ class GithubConnectorIntegrationTest {
         ResponseEntity<Map> response = post("repository.get",
             Map.of("owner", "acme", "repo", "rate"), accessToken("ghp_test"), null);
         assertEquals(429, response.getStatusCode().value());
-        assertEquals(false, response.getBody().get("ok"));
-        assertEquals("GithubRateLimitException", response.getBody().get("type"));
-        assertTrue(response.getBody().get("error").toString().contains("rate limit"));
+        assertEquals(false, response.getBody().get("success"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertEquals("GITHUBRATELIMITEXCEPTION", error.get("code"));
+        assertTrue(error.get("message").toString().contains("rate limit"));
     }
 
     @Test
@@ -283,7 +287,8 @@ class GithubConnectorIntegrationTest {
         // Metadata validation runs in the harness prepareRequest phase, which
         // reports unsupported operations through the shared 502 error envelope.
         assertEquals(502, response.getStatusCode().value());
-        assertTrue(response.getBody().get("error").toString().contains("Unsupported operation"));
+        Map<?, ?> error = (Map<?, ?>) response.getBody().get("error");
+        assertTrue(error.get("message").toString().contains("Unsupported operation"));
     }
 
     @Test
@@ -293,7 +298,7 @@ class GithubConnectorIntegrationTest {
             baseUrl + "/oauth/token", "repo", null);
         ResponseEntity<Map> response = post("user.get-current", Map.of(), oauth, null);
         assertEquals(200, response.getStatusCode().value());
-        assertEquals(true, response.getBody().get("ok"));
-        assertTrue(response.getBody().get("body").toString().contains("octocat"));
+        assertEquals(true, response.getBody().get("success"));
+        assertTrue(response.getBody().get("data").toString().contains("octocat"));
     }
 }

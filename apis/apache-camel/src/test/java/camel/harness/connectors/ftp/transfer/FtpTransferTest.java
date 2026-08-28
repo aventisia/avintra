@@ -26,7 +26,7 @@ class FtpTransferTest {
 
     private String resolve(String operation, Map<String, Object> config, AuthConfiguration auth) {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "ftp", operation, config,
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "ftp", operation, config,
             auth, null, null, null, null);
         return configurer.resolveEndpoint(exchange, request, null);
     }

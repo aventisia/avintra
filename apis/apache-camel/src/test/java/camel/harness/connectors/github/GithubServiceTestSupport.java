@@ -35,7 +35,7 @@ public abstract class GithubServiceTestSupport {
      */
     protected String resolveRoute(String operation) {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "github", operation,
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "github", operation,
             Map.of(), null, null, null, null, null);
         return configurer.resolveEndpoint(exchange, request, null);
     }

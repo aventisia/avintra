@@ -1,6 +1,6 @@
 {
-  "name": "GET",
-  "description": "Executes the GET operation through the Apache Camel http connector.",
+  "name": "HTTP — GET",
+  "description": "Get through the HTTP connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__GeneralCredentials",
       "label": "HTTP Credential",
       "description": "The HTTP credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -61,7 +62,8 @@
           "value": "OPTIONS",
           "description": "OPTIONS"
         }
-      ]
+      ],
+      "required": false
     },
     {
       "direction": "Input",
@@ -69,7 +71,12 @@
       "name": "host",
       "label": "Host",
       "description": "Required: host",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "property",
+        "name": "host"
+      }
     },
     {
       "direction": "Input",
@@ -77,7 +84,12 @@
       "name": "path",
       "label": "Path",
       "description": "Optional: path",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "path"
+      }
     },
     {
       "direction": "Input",
@@ -85,14 +97,19 @@
       "name": "queryParameters",
       "label": "Queryparameters",
       "description": "Optional: queryParameters",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "queryParameters"
+      }
     },
     {
       "direction": "Input",
       "type": "select",
       "name": "httpMethod",
-      "label": "Httpmethod",
-      "description": "Optional: httpMethod",
+      "label": "Http Method",
+      "description": "Configure the HTTP method to use. The HttpMethod header cannot override this option if set.",
       "defaultValue": "GET",
       "selectOptions": [
         {
@@ -130,7 +147,12 @@
           "value": "OPTIONS",
           "description": "OPTIONS"
         }
-      ]
+      ],
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "httpMethod"
+      }
     },
     {
       "direction": "Input",
@@ -138,7 +160,12 @@
       "name": "payload",
       "label": "Payload",
       "description": "Request body / payload for the GET operation (JSON).",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "payload"
+      }
     },
     {
       "direction": "Output",
@@ -149,18 +176,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "http",
-    "authType": "basic",
-    "bodyField": "payload",
-    "configKeys": [
-      "host",
-      "path",
-      "queryParameters",
-      "httpMethod"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__GeneralCredentials",
+    "type": "credentials-select"
   }
 }

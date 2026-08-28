@@ -1,6 +1,6 @@
 {
-  "name": "PlannerListTasks",
-  "description": "Microsoft 365 / Microsoft Graph connector. Use operation=<service>.<action>, e.g. user.get or mail.send. Operation: planner.list-tasks.",
+  "name": "Microsoft 365 — Planner List Tasks",
+  "description": "Planner list tasks through the Microsoft 365 connector.",
   "version": "1.0.0",
   "author": "@aventisia",
   "supportedPlatforms": [
@@ -16,7 +16,8 @@
       "name": "__CredentialName__M365",
       "label": "M365 Credential",
       "description": "The M365 credential used to authenticate API requests.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false
     },
     {
       "direction": "Input",
@@ -24,7 +25,12 @@
       "name": "planId",
       "label": "Planid",
       "description": "Required path parameter: planId.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": true,
+      "camel": {
+        "location": "path",
+        "name": "planId"
+      }
     },
     {
       "direction": "Input",
@@ -32,7 +38,12 @@
       "name": "$filter",
       "label": "$Filter",
       "description": "Optional query parameter: $filter.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "$filter"
+      }
     },
     {
       "direction": "Input",
@@ -40,7 +51,12 @@
       "name": "$select",
       "label": "$Select",
       "description": "Optional query parameter: $select.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "$select"
+      }
     },
     {
       "direction": "Input",
@@ -48,7 +64,12 @@
       "name": "$expand",
       "label": "$Expand",
       "description": "Optional query parameter: $expand.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "$expand"
+      }
     },
     {
       "direction": "Input",
@@ -56,7 +77,12 @@
       "name": "$orderby",
       "label": "$Orderby",
       "description": "Optional query parameter: $orderby.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "$orderby"
+      }
     },
     {
       "direction": "Input",
@@ -64,7 +90,12 @@
       "name": "$top",
       "label": "$Top",
       "description": "Optional query parameter: $top.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "$top"
+      }
     },
     {
       "direction": "Input",
@@ -72,7 +103,12 @@
       "name": "$skiptoken",
       "label": "$Skiptoken",
       "description": "Optional query parameter: $skiptoken.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "$skiptoken"
+      }
     },
     {
       "direction": "Input",
@@ -80,7 +116,12 @@
       "name": "$search",
       "label": "$Search",
       "description": "Optional query parameter: $search.",
-      "defaultValue": ""
+      "defaultValue": "",
+      "required": false,
+      "camel": {
+        "location": "query",
+        "name": "$search"
+      }
     },
     {
       "direction": "Input",
@@ -88,7 +129,12 @@
       "name": "payload",
       "label": "Payload",
       "description": "Request body as JSON (optional).",
-      "defaultValue": "{}"
+      "defaultValue": "{}",
+      "required": false,
+      "camel": {
+        "location": "property",
+        "name": "payload"
+      }
     },
     {
       "direction": "Output",
@@ -99,23 +145,18 @@
       "defaultValue": {
         "value": "Result",
         "enabled": true
-      }
+      },
+      "required": false
     }
   ],
-  "camel": {
-    "connector": "m365",
-    "operation": "planner.list-tasks",
-    "authType": "client_credentials",
-    "bodyField": "payload",
-    "configKeys": [
-      "planId",
-      "$filter",
-      "$select",
-      "$expand",
-      "$orderby",
-      "$top",
-      "$skiptoken",
-      "$search"
-    ]
+  "connector": {
+    "name": null,
+    "operation": null,
+    "authType": null
+  },
+  "credentials": {
+    "required": true,
+    "fieldName": "__CredentialName__M365",
+    "type": "credentials-select"
   }
 }

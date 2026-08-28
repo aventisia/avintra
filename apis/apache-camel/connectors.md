@@ -27,6 +27,47 @@ Example:
 curl http://localhost:4005/api/connectors/http/schema
 ```
 
+## Structured Execute Endpoint
+
+The primary entry point for the .NET Cloud Connector service is the
+configuration-driven execute endpoint:
+
+| Endpoint | Description |
+|---|---|
+| `POST /connectors/execute` | Executes a connector operation from a structured request |
+
+The .NET service maps each connector field to a location (path/query/header/
+body/property) using the connector config's per-field `camel` block and sends a
+generic request:
+
+```json
+{
+  "connector": "github",
+  "operation": "branch.list",
+  "authentication": {
+    "type": "accessToken",
+    "credential": {
+      "name": "GitHubCredential",
+      "value": { "token": "ghp_secret" }
+    }
+  },
+  "parameters": {
+    "owner": "acme",
+    "repo": "widgets"
+  },
+  "query": {
+    "per_page": 20,
+    "page": 1
+  },
+  "headers": {},
+  "body": null,
+  "properties": {}
+}
+```
+
+The harness converts this into the internal flat envelope and dispatches to the
+appropriate Camel connector. Optional fields are omitted when not provided.
+
 ## Common Request Format
 
 Every connector request uses the following JSON envelope. Legacy aliases (`targetUri`, `uri`, `headers`, `body`, `db`) are still accepted.
@@ -82,11 +123,11 @@ are decoded automatically, and separately supplied credentials take precedence.
 
 ```json
 {
-  "ok": true,
+  "success": true,
   "connector": "http",
-  "targetUri": "http://localhost:8081/echo",
-  "body": { "message": "hello" },
-  "headers": { "Content-Type": "application/json" }
+  "operation": "GET",
+  "data": { "message": "hello" },
+  "error": null
 }
 ```
 
@@ -94,13 +135,18 @@ are decoded automatically, and separately supplied credentials take precedence.
 
 ```json
 {
-  "ok": false,
+  "success": false,
   "connector": "http",
-  "targetUri": "http://unknown-host/echo",
-  "error": "Connection refused",
-  "type": "java.net.ConnectException"
+  "operation": "GET",
+  "data": null,
+  "error": {
+    "code": "CONNECTOR_FAILURE",
+    "message": "Connection refused"
+  }
 }
 ```
+
+Sensitive credential information is never included in the response.
 
 ---
 
