@@ -42,7 +42,7 @@ def hasChangesInPath(path) {
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, and studio apps (desktop-app excluded).')
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,apachecamel_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, and studio apps (desktop-app excluded).')
     }
     stages {
         stage('Detect Changes') {
@@ -59,6 +59,7 @@ pipeline {
                         env.BUILD_ACCOUNTS_API = reposToBuild.contains('accounts_api') ? 'true' : 'false'
                         env.BUILD_WORKSPACE_API = reposToBuild.contains('workspace_api') ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = reposToBuild.contains('llmpipeline_api') ? 'true' : 'false'
+                        env.BUILD_APACHECAMEL_API = reposToBuild.contains('apachecamel_api') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace') || reposToBuild.contains('studio') || reposToBuild.contains('atlas')) ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = reposToBuild.contains('runner_app') ? 'true' : 'false'
@@ -72,6 +73,7 @@ pipeline {
                         env.BUILD_ACCOUNTS_API = (hasChangesInPath('apis/WorcBackend-legacy/AccountsAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
                         env.BUILD_WORKSPACE_API = (hasChangesInPath('apis/WorcBackend-legacy/WorkspaceAPIs') || aspnetToolkitChanged) ? 'true' : 'false'
                         env.BUILD_LLMPIPELINE_API = hasChangesInPath('apis/llmpipeline') ? 'true' : 'false'
+                        env.BUILD_APACHECAMEL_API = hasChangesInPath('apis/apache-camel') ? 'true' : 'false'
                         env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = hasChangesInPath('clients/web-apps') ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = hasChangesInPath('clients/RunnerApp') ? 'true' : 'false'
@@ -82,6 +84,7 @@ pipeline {
                     - Accounts API: ${env.BUILD_ACCOUNTS_API}
                     - Workspace API: ${env.BUILD_WORKSPACE_API}
                     - LLM Pipeline API: ${env.BUILD_LLMPIPELINE_API}
+                    - Apache Camel API: ${env.BUILD_APACHECAMEL_API}
                     - Docs Client: ${env.BUILD_DOCS_CLIENT}
                     - Web Apps: ${env.BUILD_WEB_APPS}
                     - Runner App: ${env.BUILD_RUNNER_APP}
@@ -125,6 +128,45 @@ pipeline {
             }
         }
 
+        // ======================
+        // Apache Camel API Build Stage
+        // ======================
+        
+        stage('Apache Camel API') {
+            when {
+                expression { env.BUILD_APACHECAMEL_API == 'true' }
+            }
+            stages {
+                stage('Build - Apache Camel API') {
+                    steps {
+                        dir('apis/apache-camel') {
+                            echo 'Building Apache Camel API...'
+                            withEnv(['JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64']) {
+                                sh '/opt/maven/bin/mvn clean package -DskipTests'
+                            }
+                        }
+                    }
+                }
+                stage('Deploy - Apache Camel API') {
+                    steps {
+                        script {
+                            sshagent(credentials: ['aventisia_vps_ssh']) {
+                                def targetServers = getTargetServers(env.BRANCH_NAME)
+                                echo "Deploying Apache Camel API to ${targetServers.size()} server(s)..."
+                                
+                                targetServers.each { server ->
+                                    sh "rsync -avz --delete ${WORKSPACE}/apis/apache-camel/target/camel-connector-harness-*.jar admin@${server}:/var/www/aventisia.com/apis/apachecamel/camel-connector-harness-staging.jar"
+                                    sh "ssh admin@${server} 'mv /var/www/aventisia.com/apis/apachecamel/camel-connector-harness-staging.jar /var/www/aventisia.com/apis/apachecamel/camel-connector-harness.jar'"
+                                    sh "ssh admin@${server} 'sudo systemctl restart apachecamel_apis.service'"
+                                    echo "Successfully deployed Apache Camel API to ${server}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
         // ======================
         // .NET APIs Build Stages
         // ======================
