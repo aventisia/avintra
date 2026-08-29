@@ -176,13 +176,13 @@ public class EmailConnectorsService : IEmailConnectorsService
                         {
                             client.ServerCertificateValidationCallback = (_, _, _, _) => true;
                         }
-                        
+
                         await client.ConnectAsync(smtpServer, serverPort, secureOption);
                         if (needsAuth)
                         {
                             await client.AuthenticateAsync(username, password);
                         }
-                
+
                         await client.SendAsync(message);
                         await client.DisconnectAsync(true);
 
@@ -202,7 +202,7 @@ public class EmailConnectorsService : IEmailConnectorsService
                         var acceptUntrusted = GetValue<bool>(dict, "acceptUntrusted");
                         var useSsl = GetValue<bool>(dict, "useSsl");
                         var folderName = GetValue<string>(dict, "mailFolder");
-                        var retrieveModeStr = dict.TryGetValue("retrieveMode", out var modeObj) ? modeObj?.ToString()?? "AllEmails" : "AllEmails";
+                        var retrieveModeStr = dict.TryGetValue("retrieveMode", out var modeObj) ? modeObj?.ToString() ?? "AllEmails" : "AllEmails";
                         var topNInput = GetValue<int>(dict, "topN");
                         var topN = Math.Min(10, Math.Max(1, topNInput));
                         var markAsRead = GetValue<bool>(dict, "markAsRead");
@@ -238,6 +238,12 @@ public class EmailConnectorsService : IEmailConnectorsService
                                 client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
                             client.Timeout = 60 * 1000;
+
+                            if (string.IsNullOrWhiteSpace(imapServer))
+                                return new { Error = "'imapServer' is required." };
+
+                            if (string.IsNullOrWhiteSpace(folderName))
+                                return new { Error = "'mailFolder' is required." };
 
                             await client.ConnectAsync(imapServer, imapPort, secureOption);
                             await client.AuthenticateAsync(username, password);
@@ -317,7 +323,7 @@ public class EmailConnectorsService : IEmailConnectorsService
                         // Parse message UIDs
 
                         var uidsList = new List<uint>();
-                        if (messageUidsObj is System.Collections.IEnumerable enumerable && !(messageUidsObj is string))
+                        if (messageUidsObj is System.Collections.IEnumerable enumerable)
                         {
                             foreach (var item in enumerable)
                             {
@@ -456,7 +462,7 @@ public class EmailConnectorsService : IEmailConnectorsService
         {
             return typeof(T) switch
             {
-                var t when t == typeof(string) => (T)(object?)je.GetString(),
+                var t when t == typeof(string) => (T?)(object?)je.GetString(),
                 var t when t == typeof(int) => (T)(object)je.GetInt32(),
                 var t when t == typeof(bool) => (T)(object)je.GetBoolean(),
                 _ => JsonSerializer.Deserialize<T>(je.GetRawText())

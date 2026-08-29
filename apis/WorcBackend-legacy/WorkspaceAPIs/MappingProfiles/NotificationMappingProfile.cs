@@ -2,6 +2,7 @@ namespace WorkspaceAPIs.MappingProfiles;
 
 public class NotificationMappingProfile : IRegister
 {
+#pragma warning disable CS8603
     public void Register(TypeAdapterConfig config)
     {
         // Response mapping for a notification record or records
@@ -31,4 +32,5 @@ public class NotificationMappingProfile : IRegister
             .Map(dest => dest.ActionUrl, src => src.Notification.ActionUrl)
             .Map(dest => dest.CreatedOn, src => src.Notification.CreatedOn);
     }
+#pragma warning restore CS8603
 }

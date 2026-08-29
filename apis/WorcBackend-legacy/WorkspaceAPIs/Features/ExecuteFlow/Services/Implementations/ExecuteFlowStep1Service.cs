@@ -125,7 +125,7 @@ public class ExecuteFlowStep1Service : IExecuteFlowStep1Service
                 IsPublished = flowVersion.IsPublished,
                 InputArgumentsJson = requestDto.InputArgumentsJson?.ToJsonString(),
                 OutputDataJson = null,
-                NodeExecutionLogs = null,
+                NodeExecutionLogs = new List<JobNodeExecutionLog>(),
                 FlowVersionHistoryId = flowVersion.FlowVersionHistories
                     .OrderByDescending(o => o.CreatedOn)
                     .Select(s => (Guid?)s.Id)

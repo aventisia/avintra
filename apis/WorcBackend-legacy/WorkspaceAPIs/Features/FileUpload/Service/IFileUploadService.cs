@@ -7,7 +7,7 @@ public interface IFileUploadService
     /// </summary>
     /// <param name="files">List of files</param>
     /// <returns></returns>
-    Task<ServiceResponse<string[]>> UploadFilesAsync(IFormFile[] files, bool isTemp = true);
+    Task<ServiceResponse<string[]>> UploadFilesAsync(IFormFile[]? files, bool isTemp = true);
 
     /// <summary>
     /// Upload single file

@@ -1,5 +1,5 @@
-# Build stage: Maven + JDK 17
-FROM maven:3.9-eclipse-temurin-17 AS build
+# Build stage: Maven + JDK 21
+FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /workspace
 COPY pom.xml .
 # Resolve dependencies first for better layer caching
@@ -7,8 +7,8 @@ RUN mvn -B -ntp dependency:go-offline || true
 COPY src ./src
 RUN mvn -B -ntp clean package -DskipTests
 
-# Runtime stage: JRE 17
-FROM eclipse-temurin:17-jre
+# Runtime stage: JRE 21
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /workspace/target/camel-connector-harness-0.1.0-SNAPSHOT.jar /app/app.jar
 

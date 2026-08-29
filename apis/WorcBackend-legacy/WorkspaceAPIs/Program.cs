@@ -79,8 +79,6 @@ if (!isEnvironmentLocalhost) app.UseHsts();
 
 app.UseSerilogRequestLogging();
 
-app.UseStaticFiles();
-
 app.UseCookiePolicy();
 
 app.UsePathBase(new PathString("/api"));

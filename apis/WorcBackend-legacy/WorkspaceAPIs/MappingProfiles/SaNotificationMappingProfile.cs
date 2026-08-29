@@ -2,6 +2,7 @@ namespace WorkspaceAPIs.MappingProfiles;
 
 public class SaNotificationMappingProfile : IRegister
 {
+#pragma warning disable CS8603
     public void Register(TypeAdapterConfig config)
     {
         // Response mapping for a Super Admin notification record or records
@@ -24,4 +25,5 @@ public class SaNotificationMappingProfile : IRegister
             .Ignore(dest => dest.IsSuperAdminNotification)
             .IgnoreNullValues(true);
     }
+#pragma warning restore CS8603
 }

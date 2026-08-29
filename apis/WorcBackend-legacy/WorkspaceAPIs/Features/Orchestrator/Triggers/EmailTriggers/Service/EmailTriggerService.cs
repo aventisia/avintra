@@ -1045,7 +1045,7 @@ public class EmailTriggerService : IEmailTriggerService
             case TriggerProviderTypesEnum.M365:
                 {
                     // Acquire access token for Microsoft Graph API
-                    var accessToken = await GetM365AccessTokenAsync(emailTriggerModel.CredentialName);
+                    var accessToken = await GetM365AccessTokenAsync(emailTriggerModel.CredentialName ?? string.Empty);
 
                     // Attach authorization header for all outgoing requests
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);

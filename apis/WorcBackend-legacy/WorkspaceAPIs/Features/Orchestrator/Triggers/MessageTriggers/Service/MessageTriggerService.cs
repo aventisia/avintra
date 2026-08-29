@@ -1035,7 +1035,7 @@ public class MessageTriggerService : IMessageTriggerService
             case TriggerProviderTypesEnum.M365:
                 {
                     // Acquire access token for Microsoft Graph
-                    var accessToken = await GetM365AccessTokenAsync(messageTriggerModel.CredentialName);
+                    var accessToken = await GetM365AccessTokenAsync(messageTriggerModel.CredentialName ?? string.Empty);
 
                     // Set authorization header for API requests
                     httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);

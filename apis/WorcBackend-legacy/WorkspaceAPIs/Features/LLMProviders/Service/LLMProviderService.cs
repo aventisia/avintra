@@ -36,7 +36,7 @@ public class LLMProviderService : ILLMProviderService
                 ? requestDto.CredentialId
                 : requestDto.CredentialName;
 
-            var credential = await _appSecretService.GetAppSecretDetailByNameAsync(credentialName);
+            var credential = await _appSecretService.GetAppSecretDetailByNameAsync(credentialName ?? string.Empty);
 
             // If credentials are not valid, return the error message.
             if (credential.StatusCode != 200)
