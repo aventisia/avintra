@@ -1,7 +1,7 @@
 import { useReactFlow } from "@xyflow/react";
 import { useShallow } from "zustand/react/shallow";
 
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { broadcastNodeUpdate, useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { NodeInputType, NodeOutputType } from "@/types/node-data-type";
 
 import { useDynamicConfigPanelStore } from "../stores/dcp-store";
@@ -13,11 +13,11 @@ export const useUpdateNodeDataIO = () => {
   const { updateNodeData } = useReactFlow();
 
   // Get ReactFlowExt store state & actions
-  const { flowVariablesObject, setFlowVariablesObject } = useReactFlowExtStore(
+  const { nodes, setNodes, flowVariablesObject, setFlowVariablesObject } = useReactFlowExtStore(
     useShallow((state) => ({
       nodes: state.nodes,
-      flowVariablesObject: state.flowVariablesObject,
       setNodes: state.setNodes,
+      flowVariablesObject: state.flowVariablesObject,
       setFlowVariablesObject: state.setFlowVariablesObject,
     })),
   );
@@ -61,6 +61,27 @@ export const useUpdateNodeDataIO = () => {
       ...(selectedBlock !== undefined && { selectedBlock }), //  block add if defined
       ...(selectedModel !== undefined && { selectedModel }), //  model add if defined
     });
+
+    // Keep the ReactFlowExt store in sync (React Flow's updateNodeData bypasses the
+    // store's onNodesChange path) and broadcast the change to collaborators in real time.
+    const updatedNodes = nodes.map((node) =>
+      node.id === nodeId
+        ? {
+            ...node,
+            data: {
+              ...node.data,
+              inputs: newInputs,
+              outputs: newOutputs,
+              ...(validNodeLabel && { label: validNodeLabel }),
+              ...(selectedAgent !== undefined && { selectedAgent }),
+              ...(selectedBlock !== undefined && { selectedBlock }),
+              ...(selectedModel !== undefined && { selectedModel }),
+            },
+          }
+        : node,
+    );
+    setNodes(updatedNodes);
+    broadcastNodeUpdate(nodeId);
   };
 
   /**

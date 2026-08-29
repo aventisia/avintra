@@ -12,7 +12,9 @@ public class FlowBuilderService : IFlowBuilderService
     private readonly IResourceShareService _resourceShareService;
     private readonly INotificationEventService _notificationEventService;
     private readonly ICurrentTenantService _currentTenantService;
+    private readonly ICollaborationStore _collaborationStore;
     private readonly Guid _userId;
+    private readonly string _userHolderId;
 
     public FlowBuilderService(
         ILogger<FlowBuilderService> logger,
@@ -22,10 +24,16 @@ public class FlowBuilderService : IFlowBuilderService
         IFlowVersionHistoryService flowVersionHistoryService,
         IResourceShareService resourceShareService,
         INotificationEventService notificationEventService,
-        ICurrentTenantService currentTenantService)
+        ICurrentTenantService currentTenantService,
+        ICollaborationStore collaborationStore)
     {
         // Set _userId
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
+        // Collaboration locks are attributed by email (matches the studio frontend and the
+        // AgentBuilderHub HolderId), so conflict checks must compare against the email.
+        _userHolderId = httpContextAccessor.HttpContext?.User?.FindFirstValue("email")
+            ?? httpContextAccessor.HttpContext?.User?.FindFirstValue("uname")
+            ?? _userId.ToString();
 
         _logger = logger;
         _unitOfWork = unitOfWork;
@@ -34,6 +42,7 @@ public class FlowBuilderService : IFlowBuilderService
         _resourceShareService = resourceShareService;
         _notificationEventService = notificationEventService;
         _currentTenantService = currentTenantService;
+        _collaborationStore = collaborationStore;
     }
 
     // Fetch the parent flow details of given parent flow version id
@@ -273,6 +282,16 @@ public class FlowBuilderService : IFlowBuilderService
                 return serviceResponse;
             }
 
+            // Collaboration guard: publishing is a flow-level action. Block if another
+            // user holds a flow-action lock, or any node/edge lock, on this version.
+            var publishLock = await GetConflictingLockAsync(flowVersion.Id, flowVersion.ReactFlowObject);
+            if (publishLock != null)
+            {
+                serviceResponse.Message = $"Another user ({publishLock.HolderDisplayName ?? "someone"}) is editing this agent. Publishing is blocked until they finish.";
+                serviceResponse.StatusCode = 409;
+                return serviceResponse;
+            }
+
             // Verify the user has any access to the flow (owner, edit, or view).
             var (canAccess, accessLevel) = await _resourceShareService.GetResourceAccessAsync(
                 _userId,
@@ -459,6 +478,16 @@ public class FlowBuilderService : IFlowBuilderService
                 return serviceResponse;
             }
 
+            // Collaboration guard: reject the save if another user holds a lock on any
+            // node/edge that is being modified, or if a flow-level action lock is held.
+            var conflictingLock = await GetConflictingLockAsync(flowVersion.Id, flowSilentUpdateDto.ReactFlowObject);
+            if (conflictingLock != null)
+            {
+                serviceResponse.Message = $"Another user ({conflictingLock.HolderDisplayName ?? "someone"}) is editing this agent. Please wait for them to finish.";
+                serviceResponse.StatusCode = 409;
+                return serviceResponse;
+            }
+
             flowSilentUpdateDto.VersionId = flowVersion.Id;
 
 
@@ -491,6 +520,43 @@ public class FlowBuilderService : IFlowBuilderService
         }
 
         return serviceResponse;
+    }
+
+    /// <summary>
+    /// Checks whether another user holds a lock that conflicts with the incoming save.
+    /// A conflict exists if a flow-level action lock is held by another user, or if any
+    /// node/edge in the incoming ReactFlowObject is locked by another user.
+    /// </summary>
+    private async Task<LockDto?> GetConflictingLockAsync(Guid flowVersionId, string? reactFlowObject)
+    {
+        var locks = await _collaborationStore.GetLocksForFlowAsync(flowVersionId);
+
+        // Flow-level action lock held by another user blocks any save.
+        var actionLock = locks.FirstOrDefault(l =>
+            l.TargetType == LockTargetType.FlowAction && l.HolderUserId != _userHolderId);
+        if (actionLock != null) return actionLock;
+
+        // Collect the node/edge ids present in the incoming object.
+        var incomingIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        try
+        {
+            var flow = ReactFlowHelper.Parse(reactFlowObject);
+            if (flow?.Nodes != null)
+                foreach (var node in flow.Nodes)
+                    if (!string.IsNullOrEmpty(node.Id)) incomingIds.Add(node.Id);
+            if (flow?.Edges != null)
+                foreach (var edge in flow.Edges)
+                    if (!string.IsNullOrEmpty(edge.Id)) incomingIds.Add(edge.Id);
+        }
+        catch
+        {
+            // If parsing fails, fall back to a conservative check on all node/edge locks.
+        }
+
+        return locks.FirstOrDefault(l =>
+            (l.TargetType == LockTargetType.Node || l.TargetType == LockTargetType.Edge) &&
+            l.HolderUserId != _userHolderId &&
+            (incomingIds.Count == 0 || incomingIds.Contains(l.TargetId)));
     }
 
     /// <summary>

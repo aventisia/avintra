@@ -8,6 +8,9 @@ import { Edge, Node, Viewport, getIncomers } from "@xyflow/react";
 import { RocketIcon } from "lucide-react";
 import { useLocation } from "react-router-dom";
 
+import { FlowActionType } from "@/features/collaboration/dtos/collaboration-dtos";
+import { broadcastFlowActionEvent } from "@/features/collaboration/hooks/useCollaboration";
+
 import { LoadFlowDto } from "../react-flow/dtos/load-flow-dto";
 import { usePublishFlowMutation } from "../react-flow/hooks/usePublishFlow";
 import { deepParse } from "../react-flow/utils/deepParse";
@@ -26,7 +29,7 @@ const PublishFlow = () => {
   const flowQueryKey = ["flow", flowId, versionId];
   const flowData = queryClient.getQueryData<{ data: LoadFlowDto }>(flowQueryKey)?.data;
 
-  const { mutate: publish, isPending } = usePublishFlowMutation();
+  const { mutate: publish, isPending, publishLocked } = usePublishFlowMutation();
   const { showCustomAlertDialog } = useShowAlertHandler();
 
   const handlePublish = () => {
@@ -53,7 +56,7 @@ const PublishFlow = () => {
     return precedingNodes.some((node) => node.type === "aiNode");
   };
 
-  const isDisabled = !flowData || flowData.isPublished || isPending;
+  const isDisabled = !flowData || flowData.isPublished || isPending || publishLocked;
 
   const type = flowData?.type?.replace(/([a-z])([A-Z])/g, "$1 $2");
 
@@ -80,6 +83,9 @@ const PublishFlow = () => {
             return;
           }
         }
+        // Notify collaborators that publishing is in progress so they can't publish
+        // concurrently (their Publish button becomes disabled / banner shows).
+        broadcastFlowActionEvent(FlowActionType.Publish);
         showCustomAlertDialog({
           confirmActionFn: handlePublish,
           confirmBtnText: "Publish",

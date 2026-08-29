@@ -168,6 +168,9 @@ public static class AppServicesExtension
         services.AddScoped<IQueueWorkItemService, QueueWorkItemService>();
         services.AddScoped<IAgentBuilderStore, AgentBuilderStore>();
         services.AddSingleton<ConcurrentDictionary<Guid, AgentBuilderModel>>();
+        // Collaboration state (presence + locks) must be shared across requests and
+        // SignalR connections, so it is registered as a singleton.
+        services.AddSingleton<ICollaborationStore, CollaborationStore>();
         services.AddScoped<IFlowVersionUserService, FlowVersionUserService>();
         services.AddScoped<IAssistChatService, AssistChatService>();
         services.AddScoped<IConversationService, ConversationService>();
@@ -221,6 +224,15 @@ public static class AppServicesExtension
 
             // Optional: Set maximum size for received messages in bytes (uncomment and adjust if needed)
             // options.MaximumReceiveMessageSize = 102_400; // 100 KB
+        })
+        // Configure the JSON protocol so enums are serialized/deserialized as strings.
+        // The frontend sends lock target types (e.g. "Node") and flow action types as
+        // strings; without this, SignalR's default numeric enum binding throws
+        // InvalidDataException on hub methods taking those DTOs.
+        .AddJsonProtocol(options =>
+        {
+            options.PayloadSerializerOptions.Converters.Add(
+                new System.Text.Json.Serialization.JsonStringEnumConverter());
         });
     }
     // Method to configure and register Quartz jobs along with their triggers
