@@ -174,7 +174,6 @@ public class QueueTableService : IQueueTableService
             var queues = await _unitOfWork.QueueRepo
                 .GetByConditionAsync(w =>
                     w.EnvType == _currentTenantService.CurrentEnvType &&
-                    w.QueueFlowVersions != null &&
                     w.QueueFlowVersions.Any(qf => qf.FlowVersionId == flowVersionId))
                 .OrderByDescending(o => o.CreatedOn)
                 .Include(i => i.QueueTransactions)

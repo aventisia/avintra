@@ -78,7 +78,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             // Extract fields from payload
 
             // Required
-            string? model = root.GetProperty("model").GetString() ?? "gpt-4o-mini";
+            string model = root.GetProperty("model").GetString() ?? "gpt-4o-mini";
 
             // Input: Union[str, List[LLMMessage]]
             object inputMessages;
@@ -125,7 +125,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
                 {
                     if (file.ValueKind == JsonValueKind.String)
                     {
-                        files.Add(file.GetString());
+                        files.Add(file.GetString() ?? string.Empty);
                     }
                 }
             }
@@ -134,17 +134,17 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             string? payloadCredentialName = ReadCredentialName(root) ?? cloudConnectorReqDto.CredentialName;
 
             // Build FINAL Payload for Internal LLM Pipeline API
-            var llmPipelinePayload = new Dictionary<string, object>
+            var llmPipelinePayload = new Dictionary<string, object?>
             {
                 ["provider"] = provider.ToString().ToLowerInvariant(),
                 ["model"] = model,
                 ["input"] = inputMessages,
-                ["files"] = files,
+                ["files"] = files ?? new List<string>(),
                 ["is_json_output"] = isJsonOutput,
                 ["json_schema"] = jsonSchema,
                 ["max_output_tokens"] = maxOutputTokens,
                 ["is_byok_enabled"] = isByokEnabled,
-                ["credential_name"] = payloadCredentialName,
+                ["credential_name"] = payloadCredentialName ?? string.Empty,
                 ["temperature"] = temperature,
                 ["top_p"] = topP,
                 ["stream"] = stream
@@ -184,7 +184,7 @@ public class LLMProviderConnectorsService : ILLMProviderConnectorsService
             var finalResponse = new JsonObject
             {
                 ["provider"] = provider.ToString().ToLowerInvariant(),
-                ["credential_name"] = payloadCredentialName,
+                ["credential_name"] = payloadCredentialName ?? string.Empty,
                 ["created_on"] = DateTime.UtcNow.ToString("o"),
                 ["action"] = cloudConnectorReqDto.Action
             };

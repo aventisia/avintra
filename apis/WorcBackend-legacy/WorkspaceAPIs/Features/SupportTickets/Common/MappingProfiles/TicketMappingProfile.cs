@@ -4,6 +4,7 @@ public class TicketMappingProfile : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
+#pragma warning disable CS8603
         config.NewConfig<Ticket, TicketDto>()
             .Map(dest => dest.CommentCount,
                 src => src.Comments != null ? src.Comments.Count : 0)
@@ -14,11 +15,11 @@ public class TicketMappingProfile : IRegister
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
-                    : null)
+                    : null!)
             .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null)
+                    : null!)
             .Map(dest => dest.Comments,
                 src => src.Comments != null
                     ? src.Comments.Select(s => new TicketCommentDto()
@@ -27,18 +28,18 @@ public class TicketMappingProfile : IRegister
                         TicketId = s.TicketId,
                         Message = s.Message,
                         UserId = s.CreatedByUserId,
-                        UserFullName = s.CreatedByUser != null
+                        UserFullName = (s.CreatedByUser != null
                             ? s.CreatedByUser.FirstName + " " + s.CreatedByUser.LastName
-                            : null,
-                        UserName = s.CreatedByUser != null
+                            : null)!,
+                        UserName = (s.CreatedByUser != null
                             ? s.CreatedByUser.UserName
-                            : null,
-                        AvatarSrc = s.CreatedByUser != null
+                            : null)!,
+                        AvatarSrc = (s.CreatedByUser != null
                             ? s.CreatedByUser.AvatarSrc
-                            : null,
-                        Initials = s.CreatedByUser != null
+                            : null)!,
+                        Initials = (s.CreatedByUser != null
                             ? s.CreatedByUser.FirstName.Substring(0, 1) + s.CreatedByUser.LastName.Substring(0, 1)
-                            : null,
+                            : null)!,
                         IsEdited = s.IsEdited,
                         IsDisabled = s.IsDisabled,
                         CreatedOn = s.CreatedOn,
@@ -70,11 +71,11 @@ public class TicketMappingProfile : IRegister
             .Map(dest => dest.CreatedBy,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
-                    : null)
+                    : null!)
             .Map(dest => dest.LastModifiedBy,
                 src => src.LastModifiedByUser != null
                     ? src.LastModifiedByUser.FirstName + " " + src.LastModifiedByUser.LastName
-                    : null);
+                    : null!);
 
         config.NewConfig<TicketTableDto, Ticket>()
             .Ignore(dest => dest.Id)
@@ -94,19 +95,19 @@ public class TicketMappingProfile : IRegister
             .Map(dest => dest.UserFullName,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName + " " + src.CreatedByUser.LastName
-                    : null)
+                    : null!)
             .Map(dest => dest.UserName,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.UserName
-                    : null)
+                    : null!)
             .Map(dest => dest.AvatarSrc,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.AvatarSrc
-                    : null)
+                    : null!)
             .Map(dest => dest.Initials,
                 src => src.CreatedByUser != null
                     ? src.CreatedByUser.FirstName.Substring(0, 1) + src.CreatedByUser.LastName.Substring(0, 1)
-                    : null);
+                    : null!);
 
         config.NewConfig<TicketCommentDto, TicketComment>()
             .Ignore(dest => dest.Id)
@@ -130,5 +131,6 @@ public class TicketMappingProfile : IRegister
             .Ignore(dest => dest.UploadedOn)
             .Ignore(dest => dest.Ticket)
             .IgnoreNullValues(true);
+#pragma warning restore CS8603
     }
 }

@@ -150,14 +150,14 @@ public class JobsExecutorService : IJobsExecutorService
                 return;
             }
 
-            var clientDataStore = await _clientStatusStore.GetClientByNameAsync(executionCommandDto.TenantId, machineName);
+            var clientDataStore = await _clientStatusStore.GetClientByNameAsync(executionCommandDto.TenantId, machineName ?? string.Empty);
 
             if (clientDataStore == null)
             {
                 // Log warning if the machine cannot be found
                 _logger.LogWarning("Machine {MachineName} not found in the client status store.", machineName);
                 _logger.LogWarning("[MANUAL-JOB-DEBUG] TriggerExecutionAsync: machine {MachineName} NOT FOUND in store for command {Command}, job {JobId}.", machineName, executionCommandDto.Command, executionCommandDto.JobId);
-                await _hubContext.Clients.User(clientDataStore.ConnectionId).SendAsync("error", "Assigned machine not found", _userId);
+                await _hubContext.Clients.User(_userId.ToString()).SendAsync("error", "Assigned machine not found", _userId);
                 return;
             }
 

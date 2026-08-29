@@ -30,7 +30,7 @@ The harness can also dispatch to any other Camel component whose Spring Boot sta
 
 ## Prerequisites
 
-- JDK 17 or newer
+- JDK 21 or newer
 - Maven 3.9 or newer (the project wrapper also supplies Maven)
 - Docker Desktop with Compose (for ActiveMQ Artemis and WireMock)
 - An Apache Camel checkout when building a custom component locally
@@ -63,22 +63,22 @@ export PATH=/opt/maven/bin:$PATH
 
 ### macOS
 
-Install OpenJDK 17 (or newer) and Maven via Homebrew:
+Install OpenJDK 21 (or newer) and Maven via Homebrew:
 
 ```bash
-brew install openjdk@17 maven
+brew install openjdk@21 maven
 ```
 
 Symlink the JDK so the macOS Java wrappers can locate it:
 
 ```bash
-sudo ln -sfn $(brew --prefix)/opt/openjdk@17/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-17.jdk
+sudo ln -sfn $(brew --prefix)/opt/openjdk@21/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk-21.jdk
 ```
 
 Set `JAVA_HOME` in your shell configuration:
 
 ```bash
-echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 17)' >> ~/.zshrc
+echo 'export JAVA_HOME=$(/usr/libexec/java_home -v 21)' >> ~/.zshrc
 source ~/.zshrc
 ```
 
@@ -86,10 +86,10 @@ Homebrew currently ships Maven 3.9.x, which satisfies the requirement.
 
 ### Windows
 
-Install Temurin 17 (or newer) and Maven via winget, then restart your terminal:
+Install Temurin 21 (or newer) and Maven via winget, then restart your terminal:
 
 ```powershell
-winget install --id EclipseAdoptium.Temurin.17.JDK --exact
+winget install --id EclipseAdoptium.Temurin.21.JDK --exact
 winget install Apache.Maven
 ```
 
@@ -97,7 +97,7 @@ If the installer does not set `JAVA_HOME` automatically, point the current Power
 
 ```powershell
 $jdk = Get-ChildItem "C:\Program Files\Eclipse Adoptium" -Directory |
-  Where-Object Name -like "jdk-17*" |
+  Where-Object Name -like "jdk-21*" |
   Sort-Object Name -Descending |
   Select-Object -First 1
 $env:JAVA_HOME = $jdk.FullName
@@ -113,7 +113,7 @@ Run the following command on any operating system:
 mvn -v
 ```
 
-The output must report **Maven 3.9+** and **Java 17 or newer**. The project also ships a Maven wrapper (`mvnw.cmd`), but only for Windows; on Linux/macOS use a system Maven install or add the wrapper manually.
+The output must report **Maven 3.9+** and **Java 21 or newer**. The project also ships a Maven wrapper (`mvnw.cmd`), but only for Windows; on Linux/macOS use a system Maven install or add the wrapper manually.
 
 On the Linux build server we use:
 
@@ -124,11 +124,11 @@ export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 
 ## Project configuration
 
-The [pom.xml](pom.xml) enforces Java 17, Spring Boot 3.5.5, and Apache Camel 4.18.4:
+The [pom.xml](pom.xml) enforces Java 21, Spring Boot 3.5.5, and Apache Camel 4.18.4:
 
 ```xml
 <properties>
-    <java.version>17</java.version>
+    <java.version>21</java.version>
     <camel.version>4.18.4</camel.version>
 </properties>
 
@@ -156,7 +156,7 @@ Version requirements:
 
 | Tool / Framework | Required Version         | Configuration Source                     | Notes                                                                 |
 | ---------------- | ------------------------ | ---------------------------------------- | --------------------------------------------------------------------- |
-| Java             | 17+ (build target is 17) | `pom.xml` → `java.version`, `Dockerfile` | Java 21 is verified on the Jenkins build server                       |
+| Java             | 21+ (build target is 21) | `pom.xml` → `java.version`, `Dockerfile` | Java 21 is verified on the Jenkins build server                       |
 | Maven            | 3.9+                     | `.mvn/wrapper/maven-wrapper.properties`  | Ubuntu package `maven` is 3.8.x and will fail; use 3.9.11 from Apache |
 | Spring Boot      | 3.5.5                    | `pom.xml` parent                         |                                                                       |
 | Apache Camel     | 4.18.4                   | `pom.xml` → `camel.version`              |                                                                       |

@@ -23,7 +23,7 @@ public class NotificationRecipientResolver : INotificationRecipientResolver
 
         var query = _tenantDbContext.ReadOnlyAccountUsers
             .Where(u => !u.IsDisabled && !u.IsDefault)
-            .Where(u => u.UserRoles != null && u.UserRoles.Any(ur => ur.Role != null && roleNames.Contains(ur.Role.FullName)));
+            .Where(u => u.UserRoles != null && u.UserRoles.Any(ur => ur.Role != null && !string.IsNullOrEmpty(ur.Role.FullName) && roleNames.Contains(ur.Role.FullName)));
 
         if (tenantId.HasValue)
             query = query.Where(u => u.TenantId == tenantId.Value);

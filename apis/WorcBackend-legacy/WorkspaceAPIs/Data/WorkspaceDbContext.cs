@@ -154,9 +154,9 @@ public class WorkspaceDbContext : DbContext
                 v => System.Text.Json.JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null) ?? new List<string>())
             .Metadata.SetValueComparer(
                 new Microsoft.EntityFrameworkCore.ChangeTracking.ValueComparer<List<string>>(
-                    (a, b) => a.SequenceEqual(b),
-                    c => c.Aggregate(0, (acc, s) => HashCode.Combine(acc, s.GetHashCode())),
-                    c => c.ToList()));
+                    (a, b) => (a ?? Enumerable.Empty<string>()).SequenceEqual(b ?? Enumerable.Empty<string>()),
+                    c => (c ?? Enumerable.Empty<string>()).Aggregate(0, (acc, s) => HashCode.Combine(acc, s.GetHashCode())),
+                    c => (c ?? new List<string>()).ToList()));
         modelBuilder.Entity<Conversation>().Property(e => e.Status).HasConversion(new EnumToStringConverter<ConversationStatusEnum>());
         modelBuilder.Entity<ConversationMessage>().Property(e => e.Role).HasConversion(new EnumToStringConverter<ConversationMessageSenderEnum>());
         modelBuilder.Entity<KnowledgeBase>().Property(e => e.VectorStore).HasConversion(new EnumToStringConverter<VectorStoreEnum>());

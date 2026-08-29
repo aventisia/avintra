@@ -180,10 +180,10 @@ public class AzureConnectorsService : IAzureConnectorsService
                             return new { IsSuccess = false, Message = "'fileStream' is required in payload." };
 
                         // Convert base64 string to Stream
-                        Stream fileStream = null;
+                        Stream? fileStream = null;
                         try
                         {
-                            string base64Content = fileStreamObj.ToString();
+                            string base64Content = fileStreamObj.ToString() ?? string.Empty;
                             byte[] fileBytes = Convert.FromBase64String(base64Content);
                             fileStream = new MemoryStream(fileBytes);
                         }
@@ -291,12 +291,11 @@ public class AzureConnectorsService : IAzureConnectorsService
                         }
 
                         var directoryPath = Path.GetDirectoryName(localSavePath);
-                        if (!Directory.Exists(directoryPath))
+                        if (!string.IsNullOrEmpty(directoryPath) && !Directory.Exists(directoryPath))
                         {
                             Directory.CreateDirectory(directoryPath);
                         }
 
-                       
                         await blobClient.DownloadToAsync(localSavePath);
 
                         return new

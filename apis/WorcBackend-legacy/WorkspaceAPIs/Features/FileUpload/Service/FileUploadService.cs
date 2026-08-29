@@ -14,7 +14,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
 
     // Uploads multiple files for a given step and returns the saved file URLs.
 
-    public async Task<ServiceResponse<string[]>> UploadFilesAsync(IFormFile[] files, bool isTemp = true)
+    public async Task<ServiceResponse<string[]>> UploadFilesAsync(IFormFile[]? files, bool isTemp = true)
     {
         // Initialize ServiceResponse with a failed response
         var serviceResponse = new ServiceResponse<string[]>
@@ -196,7 +196,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
         {
             // Get the list of files where the Path is not null, not empty, and starts with "/"
             var files = await _unitOfWork.TemplateResourceRepo
-                .GetByConditionAsync(w => !string.IsNullOrEmpty(w.Path) && w.Path.StartsWith("/"))
+                .GetByConditionAsync(w => !string.IsNullOrEmpty(w.Path) && w.Path.StartsWith("/") && w.TenantId.HasValue)
                 .AsNoTracking()
                 .ToListAsync();
 
@@ -205,7 +205,7 @@ public class FileUploadService(ILogger<FileUploadService> logger, IUploadFileSer
             // Iterate through files and attempt to upload each
             foreach (var file in files)
             {
-                var response = await _uploadFileService.UploadFileToBlobAsync(file.Path, file.TenantId.Value);
+                var response = await _uploadFileService.UploadFileToBlobAsync(file.Path, file.TenantId!.Value);
 
                 if (response.StatusCode == 200)
                 {

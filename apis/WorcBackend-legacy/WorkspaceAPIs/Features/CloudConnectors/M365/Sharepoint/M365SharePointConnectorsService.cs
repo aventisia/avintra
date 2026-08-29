@@ -394,7 +394,7 @@ public class M365SharePointConnectorsService : IM365SharePointConnectorsService
                     var requestUrl = $"{GRAPH_BASE_URL}/drives/{driveId}/items/{itemId}/checkout";
 
                     // Execute POST request to check out the file
-                    return await HttpClientHelper.PostAsync(requestUrl, null, accessToken);
+                    return await HttpClientHelper.PostAsync(requestUrl, (object?)null!, accessToken);
                 }
 
             case nameof(M365SharePointActionsEnum.CheckInFile):
