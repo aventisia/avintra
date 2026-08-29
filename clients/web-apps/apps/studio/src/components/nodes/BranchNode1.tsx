@@ -5,6 +5,8 @@ import { memo } from "react";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNodeOverlay";
+import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
@@ -31,6 +33,10 @@ export const BranchNode1 = memo(
       nodeData?.isDisabled ? undefined : state.liveExecutionMap[nodeId],
     );
 
+    // Collaboration: branch nodes render outside NodeContainer, so apply the same
+    // lock protection here (block interaction + overlay) when another user holds the lock.
+    const { lockedByOther } = useNodeLockedByOther(nodeId);
+
     const totalHits = branchStats[nodeId] || 0;
 
     const pillBorderClass =
@@ -54,33 +60,41 @@ export const BranchNode1 = memo(
               showBorder={false}
               isDisabled={nodeData?.isDisabled}
             >
-              <OpenNodeConfig {...{ nodeData, nodeId }}>
-                <div
-                  className={cn(
-                    "flex  justify-center relative",
-                    nodeData?.isDisabled && "opacity-50",
-                  )}
-                >
-                  {isExecutionLog && totalHits > 0 && showBranchStats && (
-                    <div className="absolute top-[0.2rem] -left-2  bg-primary text-white text-[9px] px-1.5 rounded-full font-bold border-2  z-20">
-                      {totalHits}
-                    </div>
-                  )}
+              <div
+                className={cn(
+                  "relative",
+                  lockedByOther && "pointer-events-none opacity-70",
+                )}
+              >
+                <OpenNodeConfig {...{ nodeData, nodeId }}>
                   <div
                     className={cn(
-                      "grid h-6 w-12 place-items-center rounded-full border bg-slate-200 px-2 text-sm hover:ring hover:ring-ring",
-                      selected && "border-primary",
-                      nodeData?.isCut && "border-red-400 opacity-60",
-                      pillBorderClass,
+                      "flex  justify-center relative",
+                      nodeData?.isDisabled && "opacity-50",
                     )}
                   >
-                    <GitBranchIcon className="h-3.5 w-3.5 scale-x-[-1] rotate-180" />{" "}
-                    <NodeHeading className="top-7">{nodeData.label}</NodeHeading>
-                    <InputHandle position={targetPosition} className="rounded-full opacity-0" />
-                    <OutputHandle position={sourcePosition} />
+                    {isExecutionLog && totalHits > 0 && showBranchStats && (
+                      <div className="absolute top-[0.2rem] -left-2  bg-primary text-white text-[9px] px-1.5 rounded-full font-bold border-2  z-20">
+                        {totalHits}
+                      </div>
+                    )}
+                    <div
+                      className={cn(
+                        "grid h-6 w-12 place-items-center rounded-full border bg-slate-200 px-2 text-sm hover:ring hover:ring-ring",
+                        selected && "border-primary",
+                        nodeData?.isCut && "border-red-400 opacity-60",
+                        pillBorderClass,
+                      )}
+                    >
+                      <GitBranchIcon className="h-3.5 w-3.5 scale-x-[-1] rotate-180" />{" "}
+                      <NodeHeading className="top-7">{nodeData.label}</NodeHeading>
+                      <InputHandle position={targetPosition} className="rounded-full opacity-0" />
+                      <OutputHandle position={sourcePosition} />
+                    </div>
                   </div>
-                </div>
-              </OpenNodeConfig>
+                </OpenNodeConfig>
+                {lockedByOther && <LockedNodeOverlay nodeId={nodeId} />}
+              </div>
             </OpenNodeLog>
           ) : (
             <div

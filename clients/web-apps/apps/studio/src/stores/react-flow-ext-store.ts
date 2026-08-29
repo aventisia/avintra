@@ -23,6 +23,87 @@ import { HistoryState } from "@/utils/history-equality-checker";
 
 const MAX_HISTORY_STEPS = 100;
 
+// ─── Collaboration broadcast plumbing ───────────────────────────────────────
+// The collaboration hook registers these callbacks so the store can broadcast
+// local node/edge edits to other collaborators. They are module-level to avoid
+// circular imports between the store and the collaboration feature.
+type BroadcastNodeChangeFn = (nodeId: string, node: string) => void;
+type BroadcastEdgeChangeFn = (edgeId: string, edge: string) => void;
+type BroadcastGraphChangeFn = (nodes: string, edges: string) => void;
+
+let broadcastNodeChangeFn: BroadcastNodeChangeFn | null = null;
+let broadcastEdgeChangeFn: BroadcastEdgeChangeFn | null = null;
+let broadcastGraphChangeFn: BroadcastGraphChangeFn | null = null;
+
+export const setCollaborationBroadcasters = (
+  nodeFn: BroadcastNodeChangeFn | null,
+  edgeFn: BroadcastEdgeChangeFn | null,
+  graphFn?: BroadcastGraphChangeFn | null,
+) => {
+  broadcastNodeChangeFn = nodeFn;
+  broadcastEdgeChangeFn = edgeFn;
+  broadcastGraphChangeFn = graphFn ?? null;
+};
+
+// Throttle broadcasts to avoid flooding the hub during drags/typing.
+let nodeBroadcastTimer: ReturnType<typeof setTimeout> | null = null;
+let edgeBroadcastTimer: ReturnType<typeof setTimeout> | null = null;
+let pendingNodeId: string | null = null;
+let pendingNodeJson: string | null = null;
+let pendingEdgeId: string | null = null;
+let pendingEdgeJson: string | null = null;
+
+const scheduleNodeBroadcast = (nodeId: string, nodeJson: string) => {
+  pendingNodeId = nodeId;
+  pendingNodeJson = nodeJson;
+  if (nodeBroadcastTimer) return;
+  nodeBroadcastTimer = setTimeout(() => {
+    nodeBroadcastTimer = null;
+    if (broadcastNodeChangeFn && pendingNodeId && pendingNodeJson) {
+      broadcastNodeChangeFn(pendingNodeId, pendingNodeJson);
+    }
+    pendingNodeId = null;
+    pendingNodeJson = null;
+  }, 100);
+};
+
+const scheduleEdgeBroadcast = (edgeId: string, edgeJson: string) => {
+  pendingEdgeId = edgeId;
+  pendingEdgeJson = edgeJson;
+  if (edgeBroadcastTimer) return;
+  edgeBroadcastTimer = setTimeout(() => {
+    edgeBroadcastTimer = null;
+    if (broadcastEdgeChangeFn && pendingEdgeId && pendingEdgeJson) {
+      broadcastEdgeChangeFn(pendingEdgeId, pendingEdgeJson);
+    }
+    pendingEdgeId = null;
+    pendingEdgeJson = null;
+  }, 100);
+};
+
+/**
+ * Broadcasts the current node with the given id to other collaborators. Used when
+ * node data is updated outside the normal onNodesChange path (e.g. the config panel
+ * via React Flow's updateNodeData). Reads the freshest node from the store.
+ */
+export const broadcastNodeUpdate = (nodeId: string) => {
+  const node = useReactFlowExtStore.getState().nodes.find((n) => n.id === nodeId);
+  if (node) scheduleNodeBroadcast(node.id, JSON.stringify(node));
+};
+
+// Throttle full-graph broadcasts for structural changes.
+let graphBroadcastTimer: ReturnType<typeof setTimeout> | null = null;
+
+const broadcastGraphChange = () => {
+  if (graphBroadcastTimer) return;
+  graphBroadcastTimer = setTimeout(() => {
+    graphBroadcastTimer = null;
+    if (!broadcastGraphChangeFn) return;
+    const { nodes, edges } = useReactFlowExtStore.getState();
+    broadcastGraphChangeFn(JSON.stringify(nodes), JSON.stringify(edges));
+  }, 120);
+};
+
 type State = {
   /** Nodes of currently opened flow */
   nodes: Node[];
@@ -63,6 +144,10 @@ type State = {
   future: HistoryState[];
   isRestoringHistory: boolean;
   savedSnapshot: HistoryState | null;
+
+  /** True while a remote collaboration edit is being applied, so local changes
+   *  are not re-broadcast and undo/redo history is not polluted. */
+  isApplyingRemote: boolean;
 };
 
 type Actions = {
@@ -116,6 +201,7 @@ type Actions = {
   commitSnapshot: (snapshot: HistoryState) => void;
   undo: () => void;
   redo: () => void;
+  setIsApplyingRemote: (isApplyingRemote: boolean) => void;
 };
 
 export const useReactFlowExtStore = create<State & Actions>()(
@@ -137,35 +223,85 @@ export const useReactFlowExtStore = create<State & Actions>()(
     future: [],
     isRestoringHistory: false,
     savedSnapshot: null,
+  isApplyingRemote: false,
 
-    onNodesChange: (changes: NodeChange[]) => {
-      set({ nodes: applyNodeChanges(changes, get().nodes) });
-    },
+  onNodesChange: (changes: NodeChange[]) => {
+    const nextNodes = applyNodeChanges(changes, get().nodes);
+    set({ nodes: nextNodes });
 
-    onEdgesChange: (changes: EdgeChange[]) => {
-      set({ edges: applyEdgeChanges(changes, get().edges) });
-    },
+    // Broadcast structural/position changes to collaborators (skip remote-originated).
+    if (!get().isApplyingRemote) {
+      const changed = changes.find((c) => c.type === "position" || c.type === "remove");
+      if (changed && "id" in changed) {
+        const node = nextNodes.find((n) => n.id === changed.id);
+        if (node) scheduleNodeBroadcast(node.id, JSON.stringify(node));
+      }
+    }
+  },
 
-    //onConnect triggers only when two nodes are connected manually
-    onConnect: (connection: Connection) => {
-      // Create a unique id for the edge
-      const id = window.crypto.randomUUID();
-      set({
-        edges: addEdge(
-          {
-            ...connection,
-            label: "plus",
-            id,
-            markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
-          },
-          get().edges,
-        ),
-      });
-    },
+  onEdgesChange: (changes: EdgeChange[]) => {
+    const nextEdges = applyEdgeChanges(changes, get().edges);
+    set({ edges: nextEdges });
 
-    setNodes: (nodes: Node[]) => set({ nodes }),
-    setEdges: (edges: Edge[]) => set({ edges }),
-    setIsPublished: (isPublished: boolean) => set({ isPublished }),
+    if (!get().isApplyingRemote) {
+      const changed = changes.find((c) => c.type === "remove");
+      if (changed && "id" in changed) {
+        scheduleEdgeBroadcast(changed.id, JSON.stringify({ id: changed.id, removed: true }));
+      }
+    }
+  },
+
+  //onConnect triggers only when two nodes are connected manually
+  onConnect: (connection: Connection) => {
+    // Create a unique id for the edge
+    const id = window.crypto.randomUUID();
+    const newEdge = {
+      ...connection,
+      label: "plus",
+      id,
+      markerEnd: `${MARKER_ARROW_PREFIX}${id}`,
+    } as Edge;
+    set({
+      edges: addEdge(newEdge, get().edges),
+    });
+
+    if (!get().isApplyingRemote) {
+      scheduleEdgeBroadcast(id, JSON.stringify(newEdge));
+    }
+  },
+
+  setNodes: (nodes: Node[]) => {
+    const prevNodes = get().nodes;
+    set({ nodes });
+
+    // Broadcast a full-graph snapshot on structural changes (nodes added/removed), since
+    // dagre auto-layout repositions the whole graph. Skip remote-originated changes.
+    if (!get().isApplyingRemote && broadcastGraphChangeFn) {
+      const prevIds = new Set(prevNodes.map((n) => n.id));
+      const hasStructuralChange = nodes.length !== prevNodes.length ||
+        nodes.some((n) => !prevIds.has(n.id)) ||
+        prevNodes.some((n) => !nodes.some((nn) => nn.id === n.id));
+      if (hasStructuralChange) {
+        broadcastGraphChange();
+      }
+    }
+  },
+  setEdges: (edges: Edge[]) => {
+    const prevEdges = get().edges;
+    set({ edges });
+
+    // Broadcast a full-graph snapshot when edges are added/removed structurally.
+    if (!get().isApplyingRemote && broadcastGraphChangeFn) {
+      const prevIds = new Set(prevEdges.map((e) => e.id));
+      const hasStructuralChange = edges.length !== prevEdges.length ||
+        edges.some((e) => !prevIds.has(e.id)) ||
+        prevEdges.some((e) => !edges.some((ee) => ee.id === e.id));
+      if (hasStructuralChange) {
+        broadcastGraphChange();
+      }
+    }
+  },
+  setIsPublished: (isPublished: boolean) => set({ isPublished }),
     setFlowType: (flowType: FlowTypesEnum) => set({ flowType, isTestChatOpen: false }),
     setIsTestChatOpen: (isTestChatOpen: boolean) => set({ isTestChatOpen }),
     setFlowVariablesObject: (variables: FlowVariablesObjectType[]) =>
@@ -229,6 +365,9 @@ export const useReactFlowExtStore = create<State & Actions>()(
           isRestoringHistory: true,
         };
       });
+      // Undo changes the whole graph structure; broadcast a full-graph snapshot to
+      // collaborators so they stay in sync. Skip when applying a remote change.
+      if (!get().isApplyingRemote) broadcastGraphChange();
     },
 
     redo: () => {
@@ -246,6 +385,11 @@ export const useReactFlowExtStore = create<State & Actions>()(
           isRestoringHistory: true,
         };
       });
+      // Redo changes the whole graph structure; broadcast a full-graph snapshot to
+      // collaborators so they stay in sync. Skip when applying a remote change.
+      if (!get().isApplyingRemote) broadcastGraphChange();
     },
+
+    setIsApplyingRemote: (isApplyingRemote: boolean) => set({ isApplyingRemote }),
   })),
 );

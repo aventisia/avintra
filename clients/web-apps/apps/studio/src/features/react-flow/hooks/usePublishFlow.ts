@@ -3,6 +3,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { useLocation } from "react-router-dom";
 
+import { FlowActionType } from "@/features/collaboration/dtos/collaboration-dtos";
+import { useCollaborationStore } from "@/features/collaboration/stores/collaboration-store";
 import { DATA_QUERY_KEY } from "@/features/flow-versions/constants";
 
 import { publishFlow } from "../apis/react-flow-apis";
@@ -31,8 +33,14 @@ export const usePublishFlowMutation = () => {
       toast.error(error.toString());
     },
   });
+
+  // Collaboration guard: expose whether another user holds a publish lock.
+  const flowActionLocks = useCollaborationStore((state) => state.flowActionLocks);
+  const publishLocked = versionId ? !!flowActionLocks[`${versionId}:${FlowActionType.Publish}`] : false;
+
   return {
     isPending,
     mutate,
+    publishLocked,
   };
 };

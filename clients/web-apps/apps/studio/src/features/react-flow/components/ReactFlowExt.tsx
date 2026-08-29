@@ -1,24 +1,32 @@
 import { LoadingSpinner } from "@avplatform/ui";
 import { FlowTypesEnum } from "@avplatform/ui/enums";
 import { useQueryClient } from "@tanstack/react-query";
-import { Edge, Node, OnSelectionChangeParams, ReactFlow, useOnViewportChange } from "@xyflow/react";
+import { Edge, Node, OnSelectionChangeParams, ReactFlow, useOnViewportChange, useReactFlow } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useCallback, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { CustomEdgeTypeObj } from "@/constants/custom-edge-type-obj";
 import { CustomNodeTypeObj } from "@/constants/custom-node-type-obj";
 import { defaultEdgeOptions } from "@/constants/default-edge-options";
 import { AC_QUERY_KEY } from "@/features/available-credits/available-credits-constants";
+import { FlowActionLockBanner } from "@/features/collaboration/components/FlowActionLockBanner";
+import { RemoteCursors } from "@/features/collaboration/components/RemoteCursors";
+import {
+  broadcastCursorEvent,
+  useCollaboration,
+} from "@/features/collaboration/hooks/useCollaboration";
+import { LockTargetType } from "@/features/collaboration/dtos/collaboration-dtos";
 import { CanvasNodeDetailPanel } from "@/features/execute-flow/components/CanvasNodeDetailPanel";
 import { ClearRunResultsPanel } from "@/features/execute-flow/components/ClearRunResultsPanel";
+import { useDynamicConfigPanelStore } from "@/features/dynamic-config-panel/stores/dcp-store";
 import { useHistoryTracker } from "@/hooks/useHistoryTracker";
 import { useUndoRedoShortcuts } from "@/hooks/useUndoRedoShortcuts";
 import { AvPlatformAssistantUI } from "@/react-toolkit/features/av-platform-assistant-ui/components/AvPlatformAssistantUI";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/react-toolkit/ui/resizable";
 import { useContextMenuActionsStore } from "@/stores/context-menu-actions-store";
 import { useCurrentFlowStore } from "@/stores/current-flow-store";
-import { useReactFlowExtStore } from "@/stores/react-flow-ext-store";
+import { setCollaborationBroadcasters, useReactFlowExtStore } from "@/stores/react-flow-ext-store";
 import { useTrackSelectionStore } from "@/stores/track-selection-store";
 
 import { useConfirmDelete } from "../hooks/useConfirmDelete";
@@ -94,6 +102,51 @@ export const ReactFlowExt = () => {
   useHistoryTracker(); // Initialize background  tracking
   useUndoRedoShortcuts(); // Initialize keyboard shortcuts
 
+  // Tracks the node currently locked by this user so it can be released on deselect.
+  const lockedNodeIdRef = useRef<string | null>(null);
+
+  // Collaboration: presence, locking, and real-time edit broadcast.
+  const {
+    acquireLock,
+    releaseLock,
+    broadcastNodeChange,
+    broadcastEdgeChange,
+    broadcastGraphChange,
+  } = useCollaboration();
+
+  // Used to convert screen (client) coordinates to flow coordinates for cursor sharing.
+  const { screenToFlowPosition } = useReactFlow();
+
+  // Broadcast the local cursor position (in flow space) to collaborators, throttled.
+  const onPaneMouseMove = useCallback(
+    (event: React.MouseEvent) => {
+      const pos = screenToFlowPosition({ x: event.clientX, y: event.clientY });
+      broadcastCursorEvent(pos.x, pos.y);
+    },
+    [screenToFlowPosition],
+  );
+
+  // Register the store's broadcasters so local edits reach other collaborators.
+  useEffect(() => {
+    setCollaborationBroadcasters(broadcastNodeChange, broadcastEdgeChange, broadcastGraphChange);
+    return () => setCollaborationBroadcasters(null, null);
+  }, [broadcastNodeChange, broadcastEdgeChange, broadcastGraphChange]);
+
+  // Collaboration: release the held node lock when the node configuration panel is
+  // closed, since closing it does not necessarily clear the React Flow selection.
+  const dcpShowDialog = useDynamicConfigPanelStore((state) => state.showDialog);
+  const wasDialogOpenRef = useRef(dcpShowDialog);
+  useEffect(() => {
+    if (wasDialogOpenRef.current && !dcpShowDialog) {
+      const lockedId = lockedNodeIdRef.current;
+      if (lockedId) {
+        releaseLock(`${currentFlow.versionId}:${LockTargetType.Node}:${lockedId}`);
+        lockedNodeIdRef.current = null;
+      }
+    }
+    wasDialogOpenRef.current = dcpShowDialog;
+  }, [dcpShowDialog, releaseLock, currentFlow.versionId]);
+
   // Fetch flow details and set document title
   const { isLoading } = useFetchFlowToLoad();
 
@@ -104,6 +157,17 @@ export const ReactFlowExt = () => {
 
   // Reconnect nodes if a middle node is deleted
   const { onNodesDelete } = useOnNodeDelete();
+
+  // Release locks for deleted nodes.
+  const handleNodesDelete = useCallback(
+    (deleted: Node[]) => {
+      deleted.forEach((node) => {
+        if (node.id) releaseLock(`${currentFlow.versionId}:${LockTargetType.Node}:${node.id}`);
+      });
+      onNodesDelete(deleted);
+    },
+    [onNodesDelete, releaseLock, currentFlow.versionId],
+  );
 
   // Setter functions for context menu node
   const { setSelectedNode, setSelectedEdge, setMenu } = useContextMenuActionsStore();
@@ -195,8 +259,32 @@ export const ReactFlowExt = () => {
       setSelectedNode(nodes[0] || null);
       setSelectedNodes(nodes);
       setMultipleNodesSelected(nodes.length > 1);
+
+      // Collaboration locking: acquire a lock on the newly selected node and release
+      // the previously locked node (or when the selection is cleared) so locks don't
+      // leak when the user closes the config panel / deselects.
+      const primaryId = nodes[0]?.id;
+      const prevLockedId = lockedNodeIdRef.current;
+
+      if (primaryId && primaryId !== prevLockedId) {
+        if (prevLockedId) {
+          releaseLock(`${currentFlow.versionId}:${LockTargetType.Node}:${prevLockedId}`);
+        }
+        acquireLock(LockTargetType.Node, primaryId);
+        lockedNodeIdRef.current = primaryId;
+      } else if (!primaryId && prevLockedId) {
+        releaseLock(`${currentFlow.versionId}:${LockTargetType.Node}:${prevLockedId}`);
+        lockedNodeIdRef.current = null;
+      }
     },
-    [setSelectedNode, setSelectedNodes, setMultipleNodesSelected],
+    [
+      setSelectedNode,
+      setSelectedNodes,
+      setMultipleNodesSelected,
+      acquireLock,
+      releaseLock,
+      currentFlow.versionId,
+    ],
   );
 
   // Render ReactFlow component
@@ -216,7 +304,7 @@ export const ReactFlowExt = () => {
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
-            onNodesDelete={onNodesDelete}
+            onNodesDelete={handleNodesDelete}
             onSelectionChange={handleSelectionChange}
             onEdgesChange={onEdgesChange}
             onBeforeDelete={() => onBeforeDelete({ nodes, edges })}
@@ -226,6 +314,7 @@ export const ReactFlowExt = () => {
             onEdgeContextMenu={onEdgeContextMenu}
             onPaneContextMenu={onPaneContextMenu}
             onPaneClick={onPaneClick}
+            onPaneMouseMove={onPaneMouseMove}
             // onlyRenderVisibleElements
             snapToGrid={true}
             snapGrid={[16, 16]}
@@ -236,9 +325,11 @@ export const ReactFlowExt = () => {
             <ClearRunResultsPanel />
             <BackgroundExt />
             <MiniMapExt />
+            <RemoteCursors />
           </ReactFlow>
           <ReactFlowContextMenu />
           <CanvasNodeDetailPanel />
+          <FlowActionLockBanner />
           {isLoading && (
             <div className="absolute inset-0 -top-16 flex items-center justify-center  backdrop-blur-sm">
               <LoadingSpinner className="h-6 w-6 text-primary" />

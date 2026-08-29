@@ -1,11 +1,15 @@
 import { Header, HeaderContainer } from "@avplatform/layout";
 import { Button } from "@avplatform/ui/buttons";
-import { useUserSessionStore } from "@avplatform/ui/stores";
+import { useAlertDialogStore, useUserSessionStore } from "@avplatform/ui/stores";
 import { Tooltip } from "@avplatform/ui/tooltip";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
+import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { AvailableCredits } from "@/features/available-credits/AvailableCredits";
+import { Chat } from "@/features/collaboration/components/Chat";
+import { PresenceAvatars } from "@/features/collaboration/components/PresenceAvatars";
+import { releasePublishActionIfActive } from "@/features/collaboration/hooks/useCollaboration";
 import { ExecuteFlow } from "@/features/execute-flow";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { FlowComments } from "@/features/flow-comments/components/FlowComments";
@@ -37,6 +41,18 @@ const AppHeader: React.FC = () => {
 
   const isAgentHistory = useIsVersionHistoryRoute();
   const isExecutionLog = useIsExecutionLogsRoute();
+
+  // Persistent watcher for the publish alert dialog close. The Publish button lives inside
+  // a dropdown that unmounts when closed, so this header component watches the alert dialog
+  // open state and releases the publish lock when the dialog closes (cancel or confirm).
+  const isAlertDialogOpen = useAlertDialogStore((state) => state.isAlertDialogOpen);
+  const wasAlertDialogOpenRef = useRef(isAlertDialogOpen);
+  useEffect(() => {
+    if (wasAlertDialogOpenRef.current && !isAlertDialogOpen) {
+      releasePublishActionIfActive();
+    }
+    wasAlertDialogOpenRef.current = isAlertDialogOpen;
+  }, [isAlertDialogOpen]);
 
   const goBack = () => {
     window.location.href = import.meta.env.VITE_WORKSPACE_PATH;
@@ -86,6 +102,8 @@ const AppHeader: React.FC = () => {
               ) : null}
             </div> */}
             <div className="mx-4 flex items-center gap-1 text-white">
+              <PresenceAvatars />
+
               <ExecuteFlow />
 
               <SearchCommandTrigger />
@@ -96,6 +114,7 @@ const AppHeader: React.FC = () => {
 
               <StudioPreferences className="mt-0 mlg:mt-4" />
               <FlowComments className="mt-0 mlg:mt-4" />
+              <Chat className="mt-0 mlg:mt-4" />
             </div>
             <SaveFlow />
             <div className="flex items-center">

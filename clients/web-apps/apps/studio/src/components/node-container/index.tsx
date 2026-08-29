@@ -1,5 +1,7 @@
 import { cn } from "@avplatform/ui/lib";
 
+import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNodeOverlay";
+import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { NodeDataType } from "@/types/node-data-type";
 
@@ -21,6 +23,9 @@ export const NodeContainer = ({
 }: NodeContainerProps) => {
   const isExecutionLog = useIsExecutionLogsRoute();
 
+  // Collaboration: a node locked by another user is non-interactive and shows an overlay.
+  const { lockedByOther } = useNodeLockedByOther(nodeId);
+
   return (
     <div
       className={cn(
@@ -33,10 +38,12 @@ export const NodeContainer = ({
         nodeData?.isDisabled && "opacity-50",
         nodeData?.isCut && "border-red-400 opacity-60",
         isExecutionLog && "border-0",
+        lockedByOther && "pointer-events-none opacity-70",
       )}
       {...props}
     >
       <OpenNodeConfig {...{ nodeData, nodeId }}>{children}</OpenNodeConfig>
+      {lockedByOther && <LockedNodeOverlay nodeId={nodeId} />}
     </div>
   );
 };
