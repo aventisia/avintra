@@ -66,6 +66,7 @@ export const ChatPanel = () => {
       flowVersionId: "",
       message: text,
       recipientUserId: r.recipientUserId,
+      sentAt: new Date().toISOString(),
     });
   };
 
