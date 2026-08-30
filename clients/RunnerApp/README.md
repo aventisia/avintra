@@ -63,13 +63,24 @@ The service is a **hybrid** listener + worker-spawner: the service itself stays 
 
 ## Build
 
+The runner is split into a portable core library plus platform-specific executables:
+
+- `RunnerApp.Core` — portable class library with shared logic
+- `RunnerApp.Windows` — Windows executable (the only fully implemented platform today)
+- `RunnerApp.Linux` — Linux shell executable (compile-ready stub)
+- `RunnerApp.macOS` — macOS shell executable (compile-ready stub)
+
 ```sh
-dotnet build clients/RunnerApp/RunnerApp.csproj
+# Build the whole runner solution (framework-dependent for Linux/macOS, self-contained win-x64)
+dotnet build clients/RunnerApp/RunnerApp.slnx
+
+# Build just the Windows executable
+dotnet build clients/RunnerApp/RunnerApp.Windows/RunnerApp.Windows.csproj -r win-x64
 ```
 
 ## Publish
 
-`publish.sh` produces a versioned, **self-contained** single-file Windows binary (the .NET 8 runtime is embedded, so the target machine does not need it installed) and packages it into `artifacts/AvintraRunnerApp_<version>_win-x64.zip`. It also copies `Install-AvintraRunnerService.ps1` into `artifacts/` so the provisioning script can be uploaded to the server's `scripts/` directory alongside the runner zip.
+`publish.sh` produces a versioned, **self-contained** Windows binary (the .NET 8 runtime is embedded, so the target machine does not need it installed) and packages it into `artifacts/AvintraRunnerService_<version>_win-x64.zip`. It also copies `Install-AvintraRunnerService.ps1` into `artifacts/` so the provisioning script can be uploaded to the server's `scripts/` directory alongside the runner zip.
 
 ```sh
 ./clients/RunnerApp/publish.sh
@@ -85,7 +96,7 @@ For local development and desktop-app flows, launch RunnerApp from the Tauri des
 or manually with the local WebSocket port:
 
 ```sh
-dotnet run --project clients/RunnerApp/RunnerApp.csproj -- \
+dotnet run --project clients/RunnerApp/RunnerApp.Windows/RunnerApp.Windows.csproj -- \
   --appBaseUrl https://your-backend \
   --accessToken <jwt-token> \
   --jobId <job-guid> \
@@ -293,24 +304,36 @@ If `AVINTRA_UNATTENDED=true` is set, UI-dependent nodes such as `DisplayMessageN
 
 ```
 clients/RunnerApp/
-├── RunnerApp.csproj                # Project file
-├── RunnerAppOptions.cs             # CLI argument model and mode flags
-├── RunnerAppService.cs             # Long-lived Windows service SignalR listener + worker spawner
-├── ExecutionGraphDto.cs            # DTO matching backend response
-├── Program.cs                      # Entry point: console, service, worker routing
+├── RunnerApp.Core/                 # Portable class library (shared runner logic)
+│   ├── RunnerApp.Core.csproj
+│   ├── RunnerAppOptions.cs         # CLI argument model and mode flags
+│   ├── RunnerAppService.cs         # Long-lived service SignalR listener + worker spawner
+│   ├── ExecutionGraphDto.cs
+│   ├── BackendFlowGraphProvider.cs
+│   ├── BackendHttpClient.cs        # REST client for backend APIs
+│   ├── DesktopExecutionEngine.cs   # Wraps FlowProcessor + NodeProcessor
+│   ├── IBackendClient.cs
+│   ├── IExecutionEngine.cs
+│   ├── IOrchestratorHubClient.cs
+│   ├── OrchestratorHubClient.cs    # SignalR hub client implementation
+│   ├── WorkerProcessLauncher.cs    # Launch worker in active session or session 0
+│   └── WorkerProcessManager.cs     # Track, kill, and wait for a spawned worker
+├── RunnerApp.Windows/              # Windows executable
+│   ├── RunnerApp.Windows.csproj
+│   ├── Program.cs                  # Entry point: console, service, worker routing
+│   └── GlobalUsings.cs
+├── RunnerApp.Linux/                # Linux shell executable (compile-ready stub)
+│   ├── RunnerApp.Linux.csproj
+│   └── (shares Program.cs/GlobalUsings.cs from RunnerApp.Windows)
+├── RunnerApp.macOS/                # macOS shell executable (compile-ready stub)
+│   ├── RunnerApp.macOS.csproj
+│   └── (shares Program.cs/GlobalUsings.cs from RunnerApp.Windows)
+├── RunnerApp.slnx                  # Solution file
 ├── Install-AvintraRunnerService.ps1 # Provisioning script
 ├── reinstall-service.ps1           # Local stop/publish/reinstall helper
-├── publish.sh                      # CI publish to self-contained single-file binary
-└── Services/
-    ├── BackendFlowGraphProvider.cs # IFlowGraphProvider using cached graph
-    ├── BackendHttpClient.cs        # REST client for backend APIs
-    ├── DesktopExecutionEngine.cs   # Wraps FlowProcessor + NodeProcessor
-    ├── IBackendClient.cs           # Backend client interface
-    ├── IExecutionEngine.cs         # Execution engine interface
-    ├── IOrchestratorHubClient.cs   # SignalR hub client interface + enums
-    ├── OrchestratorHubClient.cs    # SignalR hub client implementation
-    ├── WorkerProcessLauncher.cs    # Launch worker in active session or session 0
-    └── WorkerProcessManager.cs     # Track, kill, and wait for a spawned worker
+├── publish.sh                      # CI publish (Windows self-contained binary)
+├── publish-local.ps1               # Local Windows staging for desktop app dev
+└── publish-local.sh                # Local Linux/WSL staging for desktop app dev
 ```
 
 ## Dependencies

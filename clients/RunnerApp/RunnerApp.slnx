@@ -1,5 +1,6 @@
 <Solution>
-  <Project Path="../../shared/ExecutorLibrary/ExecutorLibrary.csproj" />
-  <Project Path="../../shared/NodeLibrary/NodeLibrary.csproj" />
-  <Project Path="RunnerApp.csproj" />
+  <Project Path="RunnerApp.Core\RunnerApp.Core.csproj" />
+  <Project Path="RunnerApp.Windows\RunnerApp.Windows.csproj" />
+  <Project Path="RunnerApp.Linux\RunnerApp.Linux.csproj" />
+  <Project Path="RunnerApp.macOS\RunnerApp.macOS.csproj" />
 </Solution>

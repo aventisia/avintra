@@ -83,10 +83,25 @@ function Propagate {
     param([string]$New)
 
     # 1. RunnerApp (.NET service)
-    Replace-InFile -Path (Join-Path $Root 'clients/RunnerApp/RunnerApp.csproj') `
+    $runnerWindowsCsproj = Join-Path $Root 'clients/RunnerApp/RunnerApp.Windows/RunnerApp.Windows.csproj'
+    $runnerLinuxCsproj = Join-Path $Root 'clients/RunnerApp/RunnerApp.Linux/RunnerApp.Linux.csproj'
+    $runnerMacCsproj = Join-Path $Root 'clients/RunnerApp/RunnerApp.macOS/RunnerApp.macOS.csproj'
+    Replace-InFile -Path $runnerWindowsCsproj `
         -Pattern '<Version>[0-9.]+</Version>' `
         -Replacement "<Version>$New</Version>"
-    Replace-InFile -Path (Join-Path $Root 'clients/RunnerApp/RunnerApp.csproj') `
+    Replace-InFile -Path $runnerWindowsCsproj `
+        -Pattern '<InformationalVersion>[0-9.]+</InformationalVersion>' `
+        -Replacement "<InformationalVersion>$New</InformationalVersion>"
+    Replace-InFile -Path $runnerLinuxCsproj `
+        -Pattern '<Version>[0-9.]+</Version>' `
+        -Replacement "<Version>$New</Version>"
+    Replace-InFile -Path $runnerLinuxCsproj `
+        -Pattern '<InformationalVersion>[0-9.]+</InformationalVersion>' `
+        -Replacement "<InformationalVersion>$New</InformationalVersion>"
+    Replace-InFile -Path $runnerMacCsproj `
+        -Pattern '<Version>[0-9.]+</Version>' `
+        -Replacement "<Version>$New</Version>"
+    Replace-InFile -Path $runnerMacCsproj `
         -Pattern '<InformationalVersion>[0-9.]+</InformationalVersion>' `
         -Replacement "<InformationalVersion>$New</InformationalVersion>"
 
@@ -110,6 +125,10 @@ function Propagate {
     Replace-InFile -Path (Join-Path $Root 'clients/web-apps/apps/desktop-app/package.json') `
         -Pattern '"version": "[0-9.]+"' `
         -Replacement "`"version`": `"$New`""
+    #    Desktop-app workspace lockfile entry
+    Replace-InFile -Path (Join-Path $Root 'clients/web-apps/package-lock.json') `
+        -Pattern '"apps/desktop-app": \{\n\s+"version": "[0-9.]+"' `
+        -Replacement "`"apps/desktop-app`": {`n    `"version`": `"$New`""
 }
 
 # ---------------------------------------------------------------------------

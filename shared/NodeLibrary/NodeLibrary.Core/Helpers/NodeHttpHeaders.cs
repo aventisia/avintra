@@ -39,12 +39,13 @@ public static class NodeHttpHeaders
         => ApplyEnvHeader(headers, callerContext?.EnvType);
 
     /// <summary>
-    /// Adds the <c>X-Env-Type</c> header to a client's default request headers from an explicit
-    /// environment value. Defaults to <c>dev</c> when the value is blank.
+    /// Adds the <c>X-Env-Type</c> header to the given headers from an explicit environment value.
+    /// Defaults to <c>dev</c> when the value is blank.
     /// </summary>
     public static void ApplyEnvHeader(HttpRequestHeaders headers, string? envType)
     {
-        var env = string.IsNullOrWhiteSpace(envType) ? "dev" : envType;
-        headers.TryAddWithoutValidation(EnvHeaderName, env);
+        var value = string.IsNullOrWhiteSpace(envType) ? "dev" : envType.Trim().ToLowerInvariant();
+        headers.Remove(EnvHeaderName);
+        headers.Add(EnvHeaderName, value);
     }
 }

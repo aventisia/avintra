@@ -23,14 +23,21 @@ internal class Program
 
     static void Main(string[] args)
     {
-        // Force-load the assembly by name
-        var nodeLibraryAssembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "NodeLibrary");
+        // Load node library assemblies (Core + platform extensions)
+        var nodeLibraryAssemblies = AppDomain.CurrentDomain.GetAssemblies()
+            .Where(a => a.GetName().Name?.StartsWith("NodeLibrary", StringComparison.OrdinalIgnoreCase) == true)
+            .ToList();
 
-        // Load manually if not already loaded
-        if (nodeLibraryAssembly == null) nodeLibraryAssembly = Assembly.Load("NodeLibrary");
+        if (!nodeLibraryAssemblies.Any())
+        {
+            Console.WriteLine("No NodeLibrary.* assembly found in the current domain.");
+            return;
+        }
 
         // Search all Level 1 category types with the [NodeL1CategoryMetadata] attribute
-        var nodeL1CategoryTypes = nodeLibraryAssembly.GetTypes().Where(t => t.GetCustomAttributes(typeof(NodeL1CategoryMetadataAttribute), inherit: false).Any()).ToList();
+        var nodeL1CategoryTypes = nodeLibraryAssemblies.SelectMany(a => a.GetTypes())
+            .Where(t => t.GetCustomAttributes(typeof(NodeL1CategoryMetadataAttribute), inherit: false).Any())
+            .ToList();
 
         // Level 1 not found, exit the program
         if (nodeL1CategoryTypes.Count == 0)
@@ -40,13 +47,27 @@ internal class Program
         }
 
         // Build L1/L2 hierarchy from the NodeLibrary source folder structure because namespaces do not nest.
+        // After the cross-platform split, platform-agnostic nodes live in NodeLibrary.Core/Nodes and
+        // Windows-specific nodes live in NodeLibrary.Windows/Nodes.
         var repoRoot = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", ".."));
-        var nodeLibrarySourceRoot = Path.Combine(repoRoot, "shared", "NodeLibrary", "Nodes");
+        var nodeLibrarySourceRoots = new[]
+        {
+            Path.Combine(repoRoot, "shared", "NodeLibrary", "NodeLibrary.Core", "Nodes"),
+            Path.Combine(repoRoot, "shared", "NodeLibrary", "NodeLibrary.Windows", "Nodes")
+        };
+
+        string[] GetFilesAcrossRoots(string searchPattern)
+        {
+            return nodeLibrarySourceRoots
+                .Where(Directory.Exists)
+                .SelectMany(r => Directory.GetFiles(r, searchPattern, SearchOption.AllDirectories))
+                .ToArray();
+        }
 
         var l1FolderToType = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
         foreach (var l1Type in nodeL1CategoryTypes)
         {
-            var l1Files = Directory.GetFiles(nodeLibrarySourceRoot, l1Type.Name + ".cs", SearchOption.AllDirectories);
+            var l1Files = GetFilesAcrossRoots(l1Type.Name + ".cs");
             if (l1Files.Length == 0) continue;
             var l1Folder = Path.GetFileName(Path.GetDirectoryName(l1Files[0]));
             if (!string.IsNullOrEmpty(l1Folder))
@@ -56,11 +77,11 @@ internal class Program
         }
 
         var l2TypeToL1Type = new Dictionary<Type, Type>();
-        foreach (var l2File in Directory.GetFiles(nodeLibrarySourceRoot, "*L2CategoryMetadata*.cs", SearchOption.AllDirectories))
+        foreach (var l2File in GetFilesAcrossRoots("*L2CategoryMetadata*.cs"))
         {
             var l2ClassName = Path.GetFileNameWithoutExtension(l2File);
             var l1Folder = Path.GetFileName(Path.GetDirectoryName(Path.GetDirectoryName(l2File)));
-            var l2Type = nodeLibraryAssembly.GetTypes().FirstOrDefault(t => t.Name == l2ClassName);
+            var l2Type = nodeLibraryAssemblies.SelectMany(a => a.GetTypes()).FirstOrDefault(t => t.Name == l2ClassName);
             if (string.IsNullOrEmpty(l1Folder) || string.IsNullOrEmpty(l2ClassName) || l2Type == null) continue;
             if (l1FolderToType.TryGetValue(l1Folder, out var l1Type))
             {
@@ -103,7 +124,7 @@ internal class Program
             };
 
             // Get types with NodeL2CategoryMetadata attribute that belong to this L1 category
-            var nodeL2CategoryTypes = nodeLibraryAssembly.GetTypes().Where(t =>
+            var nodeL2CategoryTypes = nodeLibraryAssemblies.SelectMany(a => a.GetTypes()).Where(t =>
                                             t.GetCustomAttributes(typeof(NodeL2CategoryMetadataAttribute), inherit: false).Any() &&
                                             l2TypeToL1Type.TryGetValue(t, out var parentL1Type) &&
                                             parentL1Type == nodeL1CategoryType).ToList();
@@ -134,8 +155,8 @@ internal class Program
                     DoNotRenderIf = nodeL2CategoryMetadata.DoNotRenderIf != null ? nodeL2CategoryMetadata.DoNotRenderIf.Split(',').ToList() : null,
                 };
 
-                // Get types with NodeL2CategoryMetadata attribute within the same namespace as the nodeL1CategoryType
-                var nodeTypes = nodeLibraryAssembly.GetTypes().Where(t =>
+                // Get types with NodeMetadata attribute within the same namespace as the nodeL2CategoryType
+                var nodeTypes = nodeLibraryAssemblies.SelectMany(a => a.GetTypes()).Where(t =>
                                             t.GetCustomAttributes(typeof(NodeMetadataAttribute), inherit: false).Any() &&
                                             t.Namespace != null &&
                                             (t.Namespace == nodeL2CategoryType.Namespace)).ToList();

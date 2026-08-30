@@ -19,13 +19,12 @@
 #   ./publish-local.sh [--version <ver>] [--runtime <rid>] [--force]
 #
 # Defaults:
-#   --version  reads the <Version> from RunnerApp.csproj
+#   --version  reads the <Version> from RunnerApp.Windows.csproj
 #   --runtime  linux-x64
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CSPROJ="$SCRIPT_DIR/RunnerApp.csproj"
 
 VERSION=""
 RUNTIME="linux-x64"
@@ -54,6 +53,13 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# Select the matching platform project.
+if [[ "$RUNTIME" == win-* ]]; then
+  CSPROJ="$SCRIPT_DIR/RunnerApp.Windows/RunnerApp.Windows.csproj"
+else
+  CSPROJ="$SCRIPT_DIR/RunnerApp.Linux/RunnerApp.Linux.csproj"
+fi
+
 if [[ ! -f "$CSPROJ" ]]; then
   echo "error: RunnerApp project not found at $CSPROJ" >&2
   exit 1
@@ -65,7 +71,7 @@ if [[ -z "$VERSION" ]]; then
 fi
 
 if [[ -z "$VERSION" ]]; then
-  echo "error: cannot determine version. Set <Version> in RunnerApp.csproj or pass --version." >&2
+  echo "error: cannot determine version. Set <Version> in RunnerApp.Windows.csproj or pass --version." >&2
   exit 1
 fi
 

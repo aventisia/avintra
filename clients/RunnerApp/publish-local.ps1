@@ -19,7 +19,7 @@
 
 .PARAMETER Version
     Version string written to version.txt and used in messages.
-    Defaults to the <Version> value from RunnerApp.csproj.
+    Defaults to the <Version> value from RunnerApp.Windows.csproj.
 
 .PARAMETER Runtime
     .NET runtime identifier to publish for. Defaults to win-x64.
@@ -49,7 +49,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 $ScriptDir = $PSScriptRoot
-$Csproj = Join-Path $ScriptDir "RunnerApp.csproj"
+$Csproj = Join-Path $ScriptDir "RunnerApp.Windows\RunnerApp.Windows.csproj"
 
 if (-not (Test-Path $Csproj)) {
     throw "RunnerApp project not found at $Csproj"
@@ -65,7 +65,7 @@ if ([string]::IsNullOrWhiteSpace($Version)) {
 }
 
 if ([string]::IsNullOrWhiteSpace($Version)) {
-    throw "Cannot determine version. Set <Version> in RunnerApp.csproj or pass -Version."
+    throw "Cannot determine version. Set <Version> in RunnerApp.Windows.csproj or pass -Version."
 }
 
 $Version = $Version.Trim()

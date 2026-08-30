@@ -65,7 +65,7 @@ public class NodeProcessor : INodeProcessor
 
             if (!NodeTypeCache.Value.TryGetValue(nodeClassName, out var nodeType))
             {
-                return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, sw, $"No BaseNode class found for '{nodeClassName}'. Ensure the node class exists in the NodeLibrary assembly.");
+                return CreateFailedResult(node.Id, nodeDisplayName, nodeClassName, sw, $"No BaseNode class found for '{nodeClassName}'. Ensure the node class exists in a NodeLibrary.* assembly.");
             }
 
             // 2. Create instance
@@ -465,16 +465,28 @@ public class NodeProcessor : INodeProcessor
     private static ConcurrentDictionary<string, Type> BuildNodeTypeCache()
     {
         var cache = new ConcurrentDictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
-
-        var assembly = Assembly.Load("NodeLibrary");
         var baseNodeType = typeof(BaseNode);
 
-        var nodeTypes = assembly.GetTypes()
-            .Where(t => t.IsClass && !t.IsAbstract && baseNodeType.IsAssignableFrom(t));
+        var candidateAssemblies = AppDomain.CurrentDomain.GetAssemblies()
+            .Where(a => a.GetName().Name?.StartsWith("NodeLibrary", StringComparison.OrdinalIgnoreCase) == true)
+            .ToList();
 
-        foreach (var type in nodeTypes)
+        foreach (var assembly in candidateAssemblies)
         {
-            cache.TryAdd(type.Name, type);
+            try
+            {
+                var nodeTypes = assembly.GetTypes()
+                    .Where(t => t.IsClass && !t.IsAbstract && baseNodeType.IsAssignableFrom(t));
+
+                foreach (var type in nodeTypes)
+                {
+                    cache.TryAdd(type.Name, type);
+                }
+            }
+            catch (ReflectionTypeLoadException)
+            {
+                // Best-effort: ignore assemblies that cannot fully load types.
+            }
         }
 
         return cache;

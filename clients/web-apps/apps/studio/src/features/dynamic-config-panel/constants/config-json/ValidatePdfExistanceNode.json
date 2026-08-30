@@ -4,7 +4,7 @@
   "description": "Validates whether a Pdf file contains text or images based on the selected content type.",
   "version": "1.0.0",
   "author": "@aventisia",
-  "supportedPlatforms": ["windows"],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

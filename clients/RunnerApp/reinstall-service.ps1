@@ -62,13 +62,13 @@ param (
 $ErrorActionPreference = "Stop"
 
 $serviceName = "AvintraRunnerService"
-$publishDir = Join-Path $PSScriptRoot "Published"
+$publishDir = Join-Path $PSScriptRoot "RunnerApp.Windows\Published"
 
 # The published assembly is named RunnerApp.exe even though the service name is AvintraRunnerService.
 $exe = Join-Path $publishDir "RunnerApp.exe"
 
 if (-not (Test-Path $exe)) {
-    throw "Published runner not found at: $exe`nRun 'dotnet publish -c Release --property:PublishDir=./Published' first."
+    throw "Published runner not found at: $exe`nRun 'dotnet publish RunnerApp.Windows\RunnerApp.Windows.csproj -c Release -r win-x64 --self-contained --property:PublishDir=RunnerApp.Windows\\Published' first."
 }
 
 function Stop-ServiceGracefully {

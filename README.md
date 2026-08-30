@@ -160,7 +160,9 @@ The **Desktop app** and **Runner app** share a single version, sourced from the 
 
 The script updates:
 
-- `clients/RunnerApp/RunnerApp.csproj` — `<Version>` + `<InformationalVersion>`
+- `clients/RunnerApp/RunnerApp.Windows/RunnerApp.Windows.csproj` — `<Version>` + `<InformationalVersion>` (source of truth for publish scripts)
+- `clients/RunnerApp/RunnerApp.Linux/RunnerApp.Linux.csproj` — `<Version>` + `<InformationalVersion>`
+- `clients/RunnerApp/RunnerApp.macOS/RunnerApp.macOS.csproj` — `<Version>` + `<InformationalVersion>`
 - `clients/web-apps/apps/desktop-app/src-tauri/Cargo.toml` — `version`
 - `clients/web-apps/apps/desktop-app/src-tauri/Cargo.lock` — the `app` package entry
 - `clients/web-apps/apps/desktop-app/src-tauri/tauri.conf.json` — `version` + `userAgent`
@@ -193,7 +195,7 @@ git push origin v0.1.87
 **Release checklist:**
 
 1. **Tag first** — the tag is the single source of truth. Use `v<X.Y.Z>` (e.g. `v0.1.87`).
-2. **Run the release script** — it writes the version into `RunnerApp.csproj`, `Cargo.toml`, `Cargo.lock`, `tauri.conf.json`, and `desktop-app/package.json`.
+2. **Run the release script** — it writes the version into `RunnerApp.Windows.csproj` (and `RunnerApp.Linux.csproj` / `RunnerApp.macOS.csproj`), `Cargo.toml`, `Cargo.lock`, `tauri.conf.json`, and `desktop-app/package.json`.
 3. **Build the Desktop app** — `01-tauri-build.bat` already calls the release script before `npx tauri build`, so this step is automatic.
 4. **Publish the Runner app** — `publish.sh` derives the artifact name from `<Version>` in the `.csproj`.
 5. **Push the tag** — so the version is recorded and CI can build from it.

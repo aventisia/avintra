@@ -79,9 +79,17 @@ propagate() {
   local new="$1"
 
   # 1. RunnerApp (.NET service)
-  replace "$ROOT/clients/RunnerApp/RunnerApp.csproj" \
+  replace "$ROOT/clients/RunnerApp/RunnerApp.Windows/RunnerApp.Windows.csproj" \
     '<Version>[0-9.]+</Version>' "<Version>$new</Version>"
-  replace "$ROOT/clients/RunnerApp/RunnerApp.csproj" \
+  replace "$ROOT/clients/RunnerApp/RunnerApp.Windows/RunnerApp.Windows.csproj" \
+    '<InformationalVersion>[0-9.]+</InformationalVersion>' "<InformationalVersion>$new</InformationalVersion>"
+  replace "$ROOT/clients/RunnerApp/RunnerApp.Linux/RunnerApp.Linux.csproj" \
+    '<Version>[0-9.]+</Version>' "<Version>$new</Version>"
+  replace "$ROOT/clients/RunnerApp/RunnerApp.Linux/RunnerApp.Linux.csproj" \
+    '<InformationalVersion>[0-9.]+</InformationalVersion>' "<InformationalVersion>$new</InformationalVersion>"
+  replace "$ROOT/clients/RunnerApp/RunnerApp.macOS/RunnerApp.macOS.csproj" \
+    '<Version>[0-9.]+</Version>' "<Version>$new</Version>"
+  replace "$ROOT/clients/RunnerApp/RunnerApp.macOS/RunnerApp.macOS.csproj" \
     '<InformationalVersion>[0-9.]+</InformationalVersion>' "<InformationalVersion>$new</InformationalVersion>"
 
   # 2. Desktop app (Tauri)
@@ -99,6 +107,9 @@ propagate() {
   # 3. Desktop-app npm package.json
   replace "$ROOT/clients/web-apps/apps/desktop-app/package.json" \
     '"version": "[0-9.]+"' "\"version\": \"$new\""
+  #    Desktop-app workspace lockfile entry
+  replace "$ROOT/clients/web-apps/package-lock.json" \
+    '"apps/desktop-app": \{\n\s+"version": "[0-9.]+"' "\"apps/desktop-app\": {\n    \"version\": \"$new\""
 }
 
 # ---------------------------------------------------------------------------

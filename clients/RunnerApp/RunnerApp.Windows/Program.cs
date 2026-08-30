@@ -24,6 +24,11 @@ if (options is null)
 // This is a compatibility bridge; new/updated nodes should read CallerContext.Get(context).AppBaseUrl.
 Environment.SetEnvironmentVariable("APP_BASE_URL", options.AppBaseUrl);
 
+#if WINDOWS
+// Register Windows-specific logging hooks for NodeLogHelper (FlaUI, SqlConnection, SecureString).
+NodeLogHelperWindows.Register();
+#endif
+
 if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsServiceMode)
 {
     // Run as Windows service using Generic Host

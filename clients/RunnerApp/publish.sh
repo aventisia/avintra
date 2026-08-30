@@ -6,7 +6,7 @@
 #   ./publish.sh [--version <ver>] [--runtime <rid>] [--output <dir>]
 #
 # Defaults:
-#   --version  reads the <Version> from RunnerApp.csproj (e.g. 0.1.0)
+#   --version  reads the <Version> from RunnerApp.Windows.csproj (e.g. 0.1.0)
 #   --runtime  win-x64
 #   --output   ./artifacts
 #
@@ -29,7 +29,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CSPROJ="$SCRIPT_DIR/RunnerApp.csproj"
+CSPROJ="$SCRIPT_DIR/RunnerApp.Windows/RunnerApp.Windows.csproj"
 
 VERSION=""
 RUNTIME="win-x64"
@@ -58,18 +58,22 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+# --- Resolve output directory (must be absolute before we cd into a temp dir) --
+mkdir -p "$OUTPUT_DIR"
+OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
+
 # --- Resolve version ----------------------------------------------------------
+if [[ ! -f "$CSPROJ" ]]; then
+  echo "error: RunnerApp project not found at $CSPROJ" >&2
+  exit 1
+fi
+
 if [[ -z "$VERSION" ]]; then
   VERSION="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$CSPROJ" | head -n1 | tr -d '[:space:]')"
 fi
 
 if [[ -z "$VERSION" ]]; then
-  echo "error: cannot determine version. Set <Version> in RunnerApp.csproj or pass --version." >&2
-  exit 1
-fi
-
-if [[ ! -f "$CSPROJ" ]]; then
-  echo "error: RunnerApp project not found at $CSPROJ" >&2
+  echo "error: cannot determine version. Set <Version> in RunnerApp.Windows.csproj or pass --version." >&2
   exit 1
 fi
 

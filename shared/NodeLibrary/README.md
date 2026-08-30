@@ -4,22 +4,38 @@ Cross-platform .NET 8 library containing automation node definitions for the Ave
 
 ## Overview
 
-`NodeLibrary` defines the building blocks of an automation flow: node types, attributes, converters, models, enumerations, helpers, and the core execution strategies. It is consumed by `shared/ExecutorLibrary`, `shared/NodeToJson`, and the runner app.
+The library has been split into two projects:
+
+- **`NodeLibrary.Core`** — portable node definitions (attributes, converters, core abstractions, enums, models, helpers, and platform-agnostic nodes). This is the project most consumers should reference.
+- **`NodeLibrary.Windows`** — Windows-specific nodes and helpers (UI Automation, Windows credential management, etc.). Only referenced by Windows runners and tooling.
 
 ## Key Components
 
-- **Nodes** — Node type definitions and implementations
+### NodeLibrary.Core
+
 - **Attributes** — Metadata and serialization attributes for nodes
 - **Converters** — JSON and model converters
 - **Core** — Core abstractions and base classes
 - **Enums** — Shared enumerations
 - **Models** — Node data models
 - **Helpers** — Utility classes for node handling
+- **Nodes** — Platform-agnostic node definitions
+
+### NodeLibrary.Windows
+
+- Windows Desktop interop nodes
+- UI Automation helpers
+- Windows-specific node categories
 
 ## Usage
 
 ```sh
-cd shared/NodeLibrary
+# Build only the portable core
+cd shared/NodeLibrary/NodeLibrary.Core
+dotnet build
+
+# Build the Windows-specific extensions
+cd ../NodeLibrary.Windows
 dotnet build
 ```
 
@@ -27,9 +43,11 @@ dotnet build
 
 - Consumed by `shared/ExecutorLibrary` to execute node logic.
 - Consumed by `shared/NodeToJson` to convert node definitions to JSON.
-- Consumed by `clients/NodeExecutor` (legacy executor).
+- Consumed by `clients/RunnerApp` runners (Core is portable; Windows references the Windows-specific project).
+- Consumed by `apis/WorcBackend-legacy/WorkspaceAPIs` for shared enums and core models.
 
 ## Notes
 
 - Target framework: .NET 8.
-- New node types should be added here and exported for use by the flow engine.
+- New platform-agnostic node types should be added to `NodeLibrary.Core`.
+- Windows-only nodes belong in `NodeLibrary.Windows`.
