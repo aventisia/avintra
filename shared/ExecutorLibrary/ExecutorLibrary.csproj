@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NodeLibrary\NodeLibrary.csproj" />
+    <ProjectReference Include="..\NodeLibrary\NodeLibrary.Core\NodeLibrary.Core.csproj" />
   </ItemGroup>
 
 </Project>

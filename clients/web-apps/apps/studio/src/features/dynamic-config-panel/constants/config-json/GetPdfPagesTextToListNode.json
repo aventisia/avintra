@@ -4,7 +4,7 @@
   "description": "Extracts text from each page of a Pdf file and returns a list of page texts.",
   "version": "1.0.0",
   "author": "@aventisia",
-  "supportedPlatforms": ["windows"],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

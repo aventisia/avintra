@@ -4,7 +4,7 @@
   "description": "Extracts specific pages from a Pdf file and saves them as a New Pdf file.",
   "version": "1.0.0",
   "author": "@aventisia",
-  "supportedPlatforms": ["windows"],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

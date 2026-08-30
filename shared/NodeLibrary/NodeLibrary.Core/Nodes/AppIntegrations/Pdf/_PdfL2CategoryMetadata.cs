@@ -4,5 +4,5 @@ namespace NodeLibrary.PdfNodes;
     label: "Pdf",
     description: "Work with Pdf documents.",
     icon: "/assets/PDF.svg",
-    supportedPlatforms: "windows")]
+    supportedPlatforms: "cloud,windows")]
 internal sealed class _PdfL2CategoryMetadata { }

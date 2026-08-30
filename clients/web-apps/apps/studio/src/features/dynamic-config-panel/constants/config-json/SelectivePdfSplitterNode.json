@@ -4,7 +4,7 @@
   "description": "Splits a Pdf into pages based on selection mode: All, Odd, Even, Range, Specific Pages, or By Chunk Size.",
   "version": "1.0.0",
   "author": "@aventisia",
-  "supportedPlatforms": ["windows"],
+  "supportedPlatforms": ["cloud", "windows"],
   "errorHandling": "standard",
   "testScreenType": "standard",
   "fields": [

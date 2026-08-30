@@ -8,7 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NodeLibrary\NodeLibrary.csproj" />
+    <ProjectReference Include="..\NodeLibrary\NodeLibrary.Core\NodeLibrary.Core.csproj" />
+    <!-- NodeLibrary.Windows is Windows-only and pulls FlaUI, System.Data.OleDb, etc.
+         Conditionally referenced so NodeToJson builds on Linux/macOS. The generator
+         discovers nodes via reflection at runtime; on non-Windows it simply won't
+         find Windows-specific node types. -->
+    <ProjectReference Include="..\NodeLibrary\NodeLibrary.Windows\NodeLibrary.Windows.csproj" Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
   </ItemGroup>
 
   <ItemGroup>

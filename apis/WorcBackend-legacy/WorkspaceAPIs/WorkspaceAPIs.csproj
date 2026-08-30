@@ -42,7 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AspNetToolkit\AspNetToolkit.csproj" />
-    <ProjectReference Include="..\..\..\shared\NodeLibrary\NodeLibrary.csproj" />
+    <ProjectReference Include="..\..\..\shared\NodeLibrary\NodeLibrary.Core\NodeLibrary.Core.csproj" />
     <ProjectReference Include="..\..\..\shared\ExecutorLibrary\ExecutorLibrary.csproj" />
   </ItemGroup>
 

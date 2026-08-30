@@ -3211,24 +3211,6 @@
           },
           {
             "type": "activityNode",
-            "name": "ExtractTextFromDocxFileNode",
-            "label": "Extract Text From DOCX File",
-            "description": "Reads text content from a .docx document using Open XML SDK.",
-            "img": "/assets/Word.svg",
-            "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
-            "name": "FindAndReplaceInDocxFileNode",
-            "label": "Find And Replace In DOCX File",
-            "description": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
-            "img": "/assets/Word.svg",
-            "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
-          },
-          {
-            "type": "activityNode",
             "name": "FindAndReplaceWordsInWordDocumentNode",
             "label": "Find And Replace Words In Word Document",
             "description": "Finds text and replaces it with another in the active document of a Word instance.",
@@ -3277,6 +3259,24 @@
             "name": "WriteToWordDocumentNode",
             "label": "Write To Word Document",
             "description": "Writes or appends text to a Word file.",
+            "img": "/assets/Word.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "ExtractTextFromDocxFileNode",
+            "label": "Extract Text From DOCX File",
+            "description": "Reads text content from a .docx document using Open XML SDK.",
+            "img": "/assets/Word.svg",
+            "docsLink": "https://docs.aventisia.com",
+            "supportedPlatforms": ["windows"]
+          },
+          {
+            "type": "activityNode",
+            "name": "FindAndReplaceInDocxFileNode",
+            "label": "Find And Replace In DOCX File",
+            "description": "Finds text and replaces it with another in a .docx document using Open XML SDK.",
             "img": "/assets/Word.svg",
             "docsLink": "https://docs.aventisia.com",
             "supportedPlatforms": ["windows"]
@@ -4628,7 +4628,7 @@
             "description": "Extracts images from a Pdf file by specifying the source Pdf file and the target folder.",
             "img": "/assets/PDF.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
@@ -4637,7 +4637,7 @@
             "description": "Extracts specific pages from a Pdf file and saves them as a New Pdf file.",
             "img": "/assets/PDF.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
@@ -4646,7 +4646,7 @@
             "description": "Extracts tabular text from all pages of a Pdf file.",
             "img": "/assets/PDF.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
@@ -4655,7 +4655,7 @@
             "description": "Extracts text or images from a Pdf file based on selection.",
             "img": "/assets/PDF.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
@@ -4664,7 +4664,7 @@
             "description": "Checks if the Pdf contains text matching a regular expression pattern (case-sensitive).",
             "img": "/assets/PDF.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
@@ -4673,7 +4673,7 @@
             "description": "Extracts text from each page of a Pdf file and returns a list of page texts.",
             "img": "/assets/PDF.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
@@ -4682,7 +4682,7 @@
             "description": "Merges multiple Pdf files into a new one.",
             "img": "/assets/PDF.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
@@ -4691,7 +4691,7 @@
             "description": "Splits a Pdf into pages based on selection mode: All, Odd, Even, Range, Specific Pages, or By Chunk Size.",
             "img": "/assets/PDF.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
+            "supportedPlatforms": ["cloud", "windows"]
           },
           {
             "type": "activityNode",
@@ -4700,7 +4700,7 @@
             "description": "Validates whether a Pdf file contains text or images based on the selected content type.",
             "img": "/assets/PDF.svg",
             "docsLink": "https://docs.aventisia.com",
-            "supportedPlatforms": ["windows"]
+            "supportedPlatforms": ["cloud", "windows"]
           }
         ]
       },

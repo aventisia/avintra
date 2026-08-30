@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetToolkit", "..\AspNetT
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExecutorLibrary", "..\..\..\shared\ExecutorLibrary\ExecutorLibrary.csproj", "{B9F3FDA9-E242-57F0-E6C9-727C1DF703C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeLibrary", "..\..\..\shared\NodeLibrary\NodeLibrary.csproj", "{3AC795FA-2874-74A5-6461-7654D002BE0C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NodeLibrary.Core", "..\..\..\shared\NodeLibrary\NodeLibrary.Core\NodeLibrary.Core.csproj", "{3AC795FA-2874-74A5-6461-7654D002BE0C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

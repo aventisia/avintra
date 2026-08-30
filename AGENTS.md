@@ -12,7 +12,7 @@ Compact, repo-specific guidance for OpenCode sessions. If a fact is obvious from
 
 | Area              | Path                                                                   | Entry / build                   | Notes                                                                                |
 | ----------------- | ---------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------ |
-| .NET APIs         | `apis/WorcBackend-legacy/`                                             | `AspNetApis.sln`                | AccountsAPIs (port 4000) + WorkspaceAPIs (port 4001), both reference `AspNetToolkit` |
+| .NET APIs         | `apis/WorcBackend-legacy/`                                             | `Avplatform.sln`                | AccountsAPIs (port 4000) + WorkspaceAPIs (port 4001), both reference `AspNetToolkit` |
 | Shared libs       | `shared/NodeLibrary/`, `shared/ExecutorLibrary/`, `shared/NodeToJson/` | .NET 8 class libs / console app | Referenced by WorkspaceAPIs and NodeExecutor tools                                   |
 | Python API        | `apis/llmpipeline/`                                                    | `app/main.py`                   | FastAPI on port 4003, root path `/api`                                               |
 | Web apps          | `clients/web-apps/`                                                    | npm workspaces + Turborepo      | `apps/accounts` (3001), `apps/workspace` (3002), shared packages under `packages/`   |
@@ -29,7 +29,7 @@ Compact, repo-specific guidance for OpenCode sessions. If a fact is obvious from
 
 ```sh
 # Build all APIs
-dotnet build AspNetApis.sln
+dotnet build Avplatform.sln
 
 # Run a single API
 dotnet run --project apis/WorcBackend-legacy/AccountsAPIs
