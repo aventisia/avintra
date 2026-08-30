@@ -103,6 +103,7 @@ public class InstanceService : IInstanceService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to collect metrics from {Source}.", source);
         }
 
         // Return the service response, whether successful or containing an error message

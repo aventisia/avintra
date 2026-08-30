@@ -42,6 +42,7 @@ public class RolePermissionService : IRolePermissionService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve role-permission list.");
             return serviceResponse;
         }
 
@@ -82,6 +83,7 @@ public class RolePermissionService : IRolePermissionService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to insert role-permission.");
             return serviceResponse;
         }
 
@@ -134,6 +136,7 @@ public class RolePermissionService : IRolePermissionService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to update role-permission.");
             return serviceResponse;
         }
         return serviceResponse;
@@ -181,6 +184,7 @@ public class RolePermissionService : IRolePermissionService
         }
         catch(Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete role-permission {RolePermissionId}.", id);
             return serviceResponse;
         }
         return serviceResponse;

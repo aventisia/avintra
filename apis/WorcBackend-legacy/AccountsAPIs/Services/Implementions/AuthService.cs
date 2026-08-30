@@ -99,6 +99,7 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to check email availability.");
             return serviceResponse;
         }
 
@@ -184,6 +185,7 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve tenant info.");
             return serviceResponse;
         }
 
@@ -304,6 +306,7 @@ public class AuthService : IAuthService
                 }
                 catch (Exception ex)
                 {
+                    _logger.LogError(ex, "Failed to create user session.");
                 }
             }
 
@@ -366,6 +369,7 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to create user session.");
             return serviceResponse;
         }
 
@@ -466,6 +470,7 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to terminate user sessions for {UserName}.", userName);
             return serviceResponse;
         }
 
@@ -614,6 +619,7 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to create verification code.");
             return serviceResponse;
         }
 

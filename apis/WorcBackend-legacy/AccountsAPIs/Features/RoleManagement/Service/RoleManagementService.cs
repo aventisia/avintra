@@ -52,6 +52,7 @@ public class RoleManagementService : IRoleManagementService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve role list.");
         }
 
         return serviceResponse;
@@ -191,6 +192,7 @@ public class RoleManagementService : IRoleManagementService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to insert role.");
             return serviceResponse; // Return failure if exception occurs
         }
 
@@ -378,6 +380,7 @@ public class RoleManagementService : IRoleManagementService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to update role.");
             return serviceResponse;
         }
 
@@ -429,6 +432,7 @@ public class RoleManagementService : IRoleManagementService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete role {RoleId}.", roleId);
             return serviceResponse;
         }
 
@@ -520,6 +524,7 @@ public class RoleManagementService : IRoleManagementService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve role options.");
             return serviceResponse;
         }
 

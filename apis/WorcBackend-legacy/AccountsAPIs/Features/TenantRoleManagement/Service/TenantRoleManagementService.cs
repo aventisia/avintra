@@ -49,6 +49,7 @@ public class TenantRoleManagementService : ITenantRoleManagementService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve tenant role list.");
             return serviceResponse;
         }
 
@@ -189,6 +190,7 @@ public class TenantRoleManagementService : ITenantRoleManagementService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to insert tenant role.");
             return serviceResponse;
         }
 
@@ -375,6 +377,7 @@ public class TenantRoleManagementService : ITenantRoleManagementService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to update tenant role.");
             return serviceResponse;
         }
 
@@ -426,6 +429,7 @@ public class TenantRoleManagementService : ITenantRoleManagementService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete tenant role {TenantRoleId}.", tenantRoleId);
             return serviceResponse;
         }
 
@@ -517,6 +521,7 @@ public class TenantRoleManagementService : ITenantRoleManagementService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve tenant role options.");
             return serviceResponse;
         }
 

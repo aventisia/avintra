@@ -64,6 +64,7 @@ public class EmailCampaignService : IEmailCampaignService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve email campaigns.");
             return serviceResponse;
         }
 
@@ -97,6 +98,7 @@ public class EmailCampaignService : IEmailCampaignService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to insert email campaign.");
             return serviceResponse;
         }
 

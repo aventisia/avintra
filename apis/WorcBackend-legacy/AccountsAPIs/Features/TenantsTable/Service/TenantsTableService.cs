@@ -218,6 +218,7 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve tenants.");
             return serviceResponse;
         }
 
@@ -268,6 +269,7 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve tenant {TenantId}.", id);
             return serviceResponse;
         }
 
@@ -302,6 +304,7 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve tenant options.");
             return serviceResponse;
         }
 
@@ -331,6 +334,7 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to search tenant options.");
             return serviceResponse;
         }
 
@@ -370,6 +374,7 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to check tenant name availability.");
             return serviceResponse;
         }
 
@@ -436,6 +441,7 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to insert tenant.");
             return serviceResponse;
         }
 
@@ -517,6 +523,7 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to update tenant.");
             return serviceResponse;
         }
 
@@ -573,6 +580,7 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to disable tenants.");
             return serviceResponse;
         }
 
@@ -641,6 +649,7 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete tenant {TenantId}.", id);
             return serviceResponse;
         }
 

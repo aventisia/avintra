@@ -173,6 +173,7 @@ public class TenantAuthService : ITenantAuthService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to create super-admin session.");
             return serviceResponse;
         }
     }
@@ -399,6 +400,7 @@ public class TenantAuthService : ITenantAuthService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to refresh super-admin session.");
             return serviceResponse;
         }
 

@@ -68,6 +68,7 @@ public class AuditLogService : IAuditLogService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to insert audit log.");
             return serviceResponse;
         }
         return serviceResponse;

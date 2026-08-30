@@ -249,6 +249,7 @@ public class UserRegistrationService : IUserRegistrationService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to create user account.");
             return serviceResponse;
         }
 

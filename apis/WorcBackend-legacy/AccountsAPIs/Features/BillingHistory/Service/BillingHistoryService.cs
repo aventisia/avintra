@@ -50,6 +50,7 @@ public class BillingHistoryService : IBillingHistoryService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve billing history list.");
             return serviceResponse;
         }
 
@@ -103,6 +104,7 @@ public class BillingHistoryService : IBillingHistoryService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to insert billing history.");
             return serviceResponse;
         }
 
@@ -158,6 +160,7 @@ public class BillingHistoryService : IBillingHistoryService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to update billing history.");
             return serviceResponse;
         }
 
@@ -208,6 +211,7 @@ public class BillingHistoryService : IBillingHistoryService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete billing history {BillingHistoryId}.", id);
             return serviceResponse;
         }
 
