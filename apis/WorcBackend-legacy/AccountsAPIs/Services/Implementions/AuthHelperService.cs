@@ -48,6 +48,7 @@ public class AuthHelperService : IAuthHelperService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to validate user tenant.");
             return false;
         }
     }
@@ -78,6 +79,7 @@ public class AuthHelperService : IAuthHelperService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to check password against obsolete-password policy.");
             return false;
         }
 
@@ -118,6 +120,7 @@ public class AuthHelperService : IAuthHelperService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to save password in obsolete-password list.");
             return false;
         }
     }
@@ -157,6 +160,7 @@ public class AuthHelperService : IAuthHelperService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete verification codes for user {UserName}.", userName);
             return false;
         }
 

@@ -139,9 +139,6 @@ public class MyAccountService : IMyAccountService
 
         try
         {
-            // Set method name
-            var methodName = nameof(LogOffFromCurrentSessionAsync);
-
             // Get current active session
             var currentSession = await _unitOfWork.ActiveSessionRepo
                 .GetByConditionAsync(w => w.Id == _sessionId && w.UserId == _userId)
@@ -1025,6 +1022,7 @@ public class MyAccountService : IMyAccountService
 
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete user account.");
             serviceResponse.Message = "An error occurred while deleting the user";
         }
         return serviceResponse;

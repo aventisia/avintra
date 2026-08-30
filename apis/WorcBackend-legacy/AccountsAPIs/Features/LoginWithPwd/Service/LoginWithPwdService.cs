@@ -158,6 +158,7 @@ public class LoginWithPwdService : ILoginWithPwdService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to authenticate user.");
             return serviceResponse;
         }
 
@@ -251,6 +252,7 @@ public class LoginWithPwdService : ILoginWithPwdService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to verify 2FA code.");
             return serviceResponse;
         }
 

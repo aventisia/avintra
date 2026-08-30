@@ -116,6 +116,7 @@ public class VerificationCodeService : IVerificationCodeService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to verify verification code.");
             return serviceResponse;
         }
 

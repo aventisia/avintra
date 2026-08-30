@@ -125,6 +125,7 @@ public class ManageTenantService : IManageTenantService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete tenant.");
         }
         return serviceResponse;
     }
@@ -266,6 +267,7 @@ public class ManageTenantService : IManageTenantService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete tenant-related data.");
             return false;
         }
     }

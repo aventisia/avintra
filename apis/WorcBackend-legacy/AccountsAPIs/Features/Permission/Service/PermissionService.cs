@@ -47,6 +47,7 @@ public class PermissionService : IPermissionService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve permission list.");
             return serviceResponse;
         }
 
@@ -87,6 +88,7 @@ public class PermissionService : IPermissionService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to insert permission.");
             return serviceResponse;
         }
 
@@ -139,6 +141,7 @@ public class PermissionService : IPermissionService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to update permission.");
             return serviceResponse;
         }
         return serviceResponse;
@@ -186,6 +189,7 @@ public class PermissionService : IPermissionService
         }
         catch(Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete permission {PermissionId}.", id);
             return serviceResponse;
         }
         return serviceResponse;

@@ -153,6 +153,7 @@ public class ResetPwdService : IResetPwdService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to reset password.");
             return serviceResponse;
         }
 
@@ -196,6 +197,7 @@ public class ResetPwdService : IResetPwdService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to log off from all sessions for user {UserName}.", userName);
             return false;
         }
     }

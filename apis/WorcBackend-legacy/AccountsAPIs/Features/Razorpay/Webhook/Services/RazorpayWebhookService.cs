@@ -73,6 +73,7 @@ public class WebhookService : IWebhookService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to handle Razorpay webhook.");
             return false;
         }
     }
@@ -377,6 +378,7 @@ public class WebhookService : IWebhookService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to activate subscription during webhook processing.");
         }
 
         // Return the updated tenant subscription, or null if no update was made.
@@ -446,6 +448,7 @@ public class WebhookService : IWebhookService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to update subscription status during webhook processing.");
         }
 
         // Return the updated tenant subscription object (may still be null if no update was made).

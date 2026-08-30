@@ -55,6 +55,7 @@ public class ContactUsService : IContactUsService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve contact-us entry {ContactUsId}.", id);
             return serviceResponse;
         }
 
@@ -85,6 +86,7 @@ public class ContactUsService : IContactUsService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to retrieve contact-us list.");
             return serviceResponse;
         }
 
@@ -138,6 +140,7 @@ public class ContactUsService : IContactUsService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to insert contact-us entry.");
             return serviceResponse;
         }
 
@@ -193,6 +196,7 @@ public class ContactUsService : IContactUsService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to update contact-us entry.");
             return serviceResponse;
         }
 
@@ -239,6 +243,7 @@ public class ContactUsService : IContactUsService
         }
         catch (Exception ex)
         {
+            _logger.LogError(ex, "Failed to delete contact-us entry {ContactUsId}.", id);
             return serviceResponse;
         }
 
