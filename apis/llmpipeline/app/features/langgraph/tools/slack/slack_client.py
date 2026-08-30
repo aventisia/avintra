@@ -9,7 +9,7 @@ async def send_channel_message(
 ) -> dict:
     """Send a Slack channel message. Placeholder implementation."""
 
-    logger.info(
+    logger.debug(
         "Sending Slack message to channel=%s",
         channel,
     )
@@ -24,7 +24,7 @@ async def send_channel_message(
 async def list_channels() -> dict:
     """List accessible Slack channels. Placeholder implementation."""
 
-    logger.info("Listing Slack channels.")
+    logger.debug("Listing Slack channels.")
 
     return {
         "channels": [],

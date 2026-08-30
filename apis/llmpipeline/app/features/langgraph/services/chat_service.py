@@ -723,7 +723,7 @@ class ChatService:
             for ct in custom_tools:
                 self.tool_registry.register(ct)
             if custom_tools:
-                logger.info(
+                logger.debug(
                     "Registered %d custom tools for tenant %s",
                     len(custom_tools),
                     user.tenant_id,
@@ -832,7 +832,7 @@ class ChatService:
         )
 
         if cache_key not in self._graphs:
-            logger.info(
+            logger.debug(
                 "Creating new LangGraph. key=%s",
                 cache_key,
             )

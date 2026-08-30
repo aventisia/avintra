@@ -74,7 +74,7 @@ class PgVectorStore(BaseVectorStore):
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Embedding count mismatch with chunk count.")
 
             # Log the number of chunks created before attempting to store embeddings
-            logger.info("[VECTOR-INGEST] tenant_id=%s chunks=%s", self.db.tenant_id, chunks_created)
+            logger.debug("[VECTOR-INGEST] tenant_id=%s chunks=%s", self.db.tenant_id, chunks_created)
 
             # Create parameterized SQL statement for inserting chunks and embeddings into pgvector column
             insert_sql = text(
@@ -104,7 +104,7 @@ class PgVectorStore(BaseVectorStore):
             elapsed = round(time.perf_counter() - started, 2)
 
             # Log success
-            logger.info("[VECTOR-INGEST] success tenant_id=%s stored=%s elapsed_s=%s", self.db.tenant_id, embeddings_stored, elapsed)
+            logger.debug("[VECTOR-INGEST] success tenant_id=%s stored=%s elapsed_s=%s", self.db.tenant_id, embeddings_stored, elapsed)
 
             # Return response with ingestion details
             return IngestDocResponse(
@@ -249,7 +249,7 @@ class PgVectorStore(BaseVectorStore):
 
             # Log success with number of chunks returned
             elapsed = round(time.perf_counter() - started, 2)
-            logger.info(
+            logger.debug(
                 "[VECTOR-QUERY] success tenant_id=%s top_k=%s returned=%s elapsed_s=%s",
                 self.db.tenant_id,
                 query_doc_request.top_k,
@@ -356,7 +356,7 @@ class PgVectorStore(BaseVectorStore):
             # Log success with number of chunks deleted
             deleted_chunks = int(result.rowcount or 0)
             elapsed = round(time.perf_counter() - started, 2)
-            logger.info(
+            logger.debug(
                 "[VECTOR-DELETE] success tenant_id=%s filters=%s deleted=%s elapsed_s=%s",
                 self.db.tenant_id,
                 {k: v for k, v in bind_params.items()},

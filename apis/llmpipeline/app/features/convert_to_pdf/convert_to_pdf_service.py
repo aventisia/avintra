@@ -21,7 +21,6 @@ def convert_to_pdf(file: str) -> dict:
 
 	file_obj = Path(local_path)
 	if not file_obj.exists() or not file_obj.is_file():
-		logger.error(f"File not found: {local_path}")
 		raise HTTPException(status_code=404, detail=f"File not found: {local_path}")
 	ext = file_obj.suffix.lower()
 	pdf_path = str(file_obj.with_suffix('.pdf'))
@@ -39,7 +38,7 @@ def convert_to_pdf(file: str) -> dict:
 			raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
 		# Delete the source file (always delete for temp files, also for local originals as before)
 		os.remove(local_path)
-		logger.info(f"Deleted original file: {local_path}")
+		logger.debug(f"Deleted original file: {local_path}")
 		pdf_file = Path(pdf_path)
 		return {
 			"name": pdf_file.name[:255],

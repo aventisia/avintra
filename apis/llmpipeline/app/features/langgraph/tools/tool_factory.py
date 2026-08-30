@@ -24,7 +24,7 @@ def create_tool_from_callable(
         args_schema=args_schema,
     )
 
-    logger.info(
+    logger.debug(
         "Created tool from callable: %s",
         name,
     )

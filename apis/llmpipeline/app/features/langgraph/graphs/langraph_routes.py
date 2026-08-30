@@ -35,7 +35,7 @@ async def generate_langgraph_response_route(
     user: User = Depends(authorize()),
 ):
 
-    logger.info(
+    logger.debug(
         "Received chat completion request. stream=%s conversation_id=%s model=%s temp=%s",
         request.stream,
         request.conversation_id,

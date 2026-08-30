@@ -38,7 +38,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
         user: User
     ) -> STTProviderResponse:
 
-        logger.info(f"[NO STREAMING] ElevenLabs STT | model={stt_request.model}")
+        logger.debug(f"[NO STREAMING] ElevenLabs STT | model={stt_request.model}")
 
         # Create base response (important for consistency)
         base_response = self._create_initial_response(stt_request)
@@ -93,7 +93,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
         job_id: str,
         user: User
     ):
-        logger.info(f"[STREAMING][WSS] ElevenLabs STT | model={stt_request.model}")
+        logger.debug(f"[STREAMING][WSS] ElevenLabs STT | model={stt_request.model}")
 
         # Prepare base response object
         base_response = self._create_initial_response(stt_request)
@@ -268,7 +268,6 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
             )
 
             if not credential:
-                logger.error("Invalid BYOK credentials")
                 raise HTTPException(400, "Invalid credential name")
 
             credential_data = credential.get("data") or credential
@@ -285,7 +284,6 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                 task="elevenlabs",
                 jwt=user.access_token
             ):
-                logger.warning("Insufficient credits for ElevenLabs")
                 raise HTTPException(400, "Insufficient credits")
 
     # REQUEST BUILDERS
@@ -399,7 +397,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     jwt=jwt
                 )
 
-                logger.info(f"STT credit usage posted | ref_id={req.ref_id}")
+                logger.debug(f"STT credit usage posted | ref_id={req.ref_id}")
 
             except Exception as e:
                 logger.error(f"Failed to post STT credit usage | error={str(e)}")
@@ -451,7 +449,7 @@ class ElevenLabsSTTProvider(BaseSpeechToTextProvider):
                     jwt=jwt
                 )
 
-                logger.info(f"STT BYOK usage posted | ref_id={req.ref_id}")
+                logger.debug(f"STT BYOK usage posted | ref_id={req.ref_id}")
 
             except Exception as e:
                 logger.error(f"Failed to post STT BYOK usage | error={str(e)}")

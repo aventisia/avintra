@@ -35,7 +35,7 @@ def create_model_node(model: BaseChatModel, skill_prompt: str | None = None):
         response = await model.ainvoke(messages)
 
         if isinstance(response, AIMessage):
-            logger.info(
+            logger.debug(
                 "LLM response generated. tool_calls=%s",
                 bool(response.tool_calls),
             )

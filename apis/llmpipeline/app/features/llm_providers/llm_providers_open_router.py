@@ -37,7 +37,7 @@ class OpenRouterProvider(BaseLLMProvider):
 
     # Handle non-streaming OpenRouter requests
     async def generate_llm_response(self, llm_request: LLMRequest, user: User):
-        logger.info(f"[NO STREAMING] Prompt sent to OpenRouter with model: {llm_request.model}")
+        logger.debug(f"[NO STREAMING] Prompt sent to OpenRouter with model: {llm_request.model}")
 
         # Validate BYOK or credits
         self._handle_byok_and_credits(llm_request, user)
@@ -68,7 +68,7 @@ class OpenRouterProvider(BaseLLMProvider):
                 response_data = response.json()
                 
                 # Log response data for debugging (pretty-printed for readability)
-                logger.info(f"OpenRouter response data:\n{json.dumps(response_data, indent=2)}")
+                logger.debug("OpenRouter response data:\n%s", json.dumps(response_data, indent=2))
                 
                 content = (
                     response_data.get("choices", [{}])[0]
@@ -115,7 +115,7 @@ class OpenRouterProvider(BaseLLMProvider):
     async def stream_llm_response(
         self, llm_request: LLMRequest, job_id: str, user: User
     ):
-        logger.info(f"[STREAMING] Prompt sent to OpenRouter with model: {llm_request.model}")
+        logger.debug(f"[STREAMING] Prompt sent to OpenRouter with model: {llm_request.model}")
 
         # Validate BYOK or credits
         self._handle_byok_and_credits(llm_request, user)
@@ -456,7 +456,7 @@ class OpenRouterProvider(BaseLLMProvider):
             # Post the credit usage data
             try:
                 credit_manager.post_credit_usage(task="openrouter", request=credit_usage_data, jwt=jwt)
-                logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
+                logger.debug(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
             except Exception as e:
                 logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
@@ -497,7 +497,7 @@ class OpenRouterProvider(BaseLLMProvider):
             return mapped_status
         
         # Log the raw finish_reason if not mapped
-        logger.info(f"Raw OpenRouter finish_reason: {finish_reason}")
+        logger.debug(f"Raw OpenRouter finish_reason: {finish_reason}")
         return "unknown"
 
     # Helper: Build credit usage data for OpenRouter models based on token usage and model mapping
@@ -586,13 +586,13 @@ class OpenRouterProvider(BaseLLMProvider):
         if output_tokens > 0:
             credit_usage.append(build_entry(service_map["output"], output_tokens))
         
-        logger.info("Credit usage: %s", json.dumps(credit_usage, default=str))
+        logger.debug("Credit usage: %s", json.dumps(credit_usage, default=str))
 
         return credit_usage
     
     # Method: Generate embeddings via OpenRouter (OpenAI-compatible)
     async def generate_embeddings(self, embedding_request: EmbeddingRequest, user: User):
-        logger.info(f"[EMBEDDING] Request sent to OpenRouter with model: {embedding_request.model}")
+        logger.debug(f"[EMBEDDING] Request sent to OpenRouter with model: {embedding_request.model}")
 
         # Handle BYOK or credit validation
         if embedding_request.is_byok_enabled and embedding_request.credential_name:
@@ -682,7 +682,7 @@ class OpenRouterProvider(BaseLLMProvider):
                             request=credit_usage,
                             jwt=user.access_token
                         )
-                        logger.info("Embedding credit usage posted successfully.")
+                        logger.debug("Embedding credit usage posted successfully.")
                     except Exception as e:
                         logger.error(f"Failed to post embedding credit usage: {str(e)}")
                         raise HTTPException(status_code=500, detail="Credit usage failed")

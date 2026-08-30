@@ -150,7 +150,7 @@ def create_tool_node(tools: list[BaseTool], request: LLMRequest | None = None):
         if not tool_calls:
             return await tool_node.ainvoke(state)
 
-        logger.info(
+        logger.debug(
             "Executing tools: %s",
             [tool_call.get("name") for tool_call in tool_calls],
         )

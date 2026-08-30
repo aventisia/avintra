@@ -10,7 +10,7 @@ router = APIRouter()
 async def convert_to_pdf_route(payload: ConvertToPDFRequest):
 	try:
 		file_detail = convert_to_pdf(payload.file)
-		logger.info(f"Successfully converted to PDF: {file_detail['path']}")
+		logger.debug(f"Successfully converted to PDF: {file_detail['path']}")
 		return ConvertToPDFResponse(**file_detail)
 	except HTTPException as e:
 		raise e

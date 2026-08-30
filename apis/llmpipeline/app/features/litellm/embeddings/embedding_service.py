@@ -95,7 +95,7 @@ class EmbeddingService:
             return
         # Skip token-based deduction when the agent has a fixed-credits override.
         if agent_has_fixed_credits(req.reference_id, user.access_token):
-            logger.info(f"[LLM-V2] Skipping platform credit usage for agent {req.reference_id} (fixed credits).")
+            logger.debug(f"[LLM-V2] Skipping platform credit usage for agent {req.reference_id} (fixed credits).")
             return
         try:
             service = get_credit_service_type(req.provider, req.model, "service")

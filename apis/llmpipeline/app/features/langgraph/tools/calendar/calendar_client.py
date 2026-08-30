@@ -12,7 +12,7 @@ async def create_event(
 ) -> dict:
     """Create a calendar event. Placeholder implementation."""
 
-    logger.info(
+    logger.debug(
         "Creating calendar event: %s",
         title,
     )
@@ -30,7 +30,7 @@ async def list_upcoming_events(
 ) -> dict:
     """List upcoming calendar events. Placeholder implementation."""
 
-    logger.info("Listing upcoming calendar events.")
+    logger.debug("Listing upcoming calendar events.")
 
     return {
         "now": datetime.now(timezone.utc).isoformat(),

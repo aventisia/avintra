@@ -204,7 +204,7 @@ class DeepInfraProvider(BaseLLMProvider):
 
                             # stop correctly
                             if json_str == "[DONE]":
-                                logger.info("Stream completed")
+                                
                                 break
 
                             chunk = json.loads(json_str)
@@ -450,7 +450,7 @@ class DeepInfraProvider(BaseLLMProvider):
             return mapped_status
 
         # Log the raw finish_reason if not mapped
-        logger.info(f"Raw DeepInfra finish_reason: {finish_reason}")
+        logger.debug(f"Raw DeepInfra finish_reason: {finish_reason}")
         return "unknown"
 
     # Helper: Map DeepInfra finish_reason to LLMResponse finish_reason compatible with OpenAI finish_reason

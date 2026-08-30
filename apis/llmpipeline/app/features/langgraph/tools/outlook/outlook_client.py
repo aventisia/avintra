@@ -70,7 +70,7 @@ async def send_email_via_outlook(
         "payload": payload,
     }
 
-    logger.info(
+    logger.debug(
         "Sending Outlook email. credential_name=%s to=%s subject=%s agent=%s",
         credential_name,
         to,
@@ -85,7 +85,7 @@ async def send_email_via_outlook(
         method="POST",
     )
 
-    logger.info(
+    logger.debug(
         "Outlook email result: %s",
         result,
     )

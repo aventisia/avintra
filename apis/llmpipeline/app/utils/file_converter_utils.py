@@ -367,7 +367,7 @@ def file_to_base64(file_input: str) -> str:
 
                 os.unlink(temp_file_path)
 
-                logger.info(
+                logger.debug(
                     "Temporary file deleted: %s",
                     temp_file_path
                 )
@@ -404,7 +404,7 @@ def _normalize_file_scheme(value: str) -> str:
 def _download_remote_file(url: str) -> str:
 
     # Log download start
-    logger.info(f"Downloading remote file: {url}")
+    logger.debug(f"Downloading remote file: {url}")
 
     # Send request
     response = requests.get(

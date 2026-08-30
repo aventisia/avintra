@@ -27,7 +27,7 @@ def create_anthropic_model(
         # Initialize vault client
         vault_manager = VaultManager()
 
-        logger.info(
+        logger.debug(
             "Fetching Anthropic BYOK credentials. credential_name=%s",
             llm_request.credential_name,
         )
@@ -70,7 +70,7 @@ def create_anthropic_model(
                 detail="Anthropic API key is missing.",
             )
 
-        logger.info(
+        logger.debug(
             "Anthropic BYOK credentials loaded successfully."
         )
 

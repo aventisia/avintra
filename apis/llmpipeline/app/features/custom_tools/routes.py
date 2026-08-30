@@ -14,7 +14,7 @@ async def test_custom_tool(
     payload: TestToolRequest,
     user: User = Depends(authorize()),
 ):
-    logger.info(
+    logger.debug(
         "Testing custom tool: operation_id=%s base_url=%s",
         payload.operation_id,
         payload.base_url,

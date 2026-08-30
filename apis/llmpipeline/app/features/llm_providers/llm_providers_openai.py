@@ -28,14 +28,14 @@ class OpenAIProvider(BaseLLMProvider):
 
     # Method: Generate a response from the LLM
     async def generate_llm_response(self, llm_request: LLMRequest, user: User):
-        logger.info(f"[NO STREAMING] Prompt sent to OpenAI provider with model: {llm_request.model}")
+        logger.debug(f"[NO STREAMING] Prompt sent to OpenAI provider with model: {llm_request.model}")
         
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_name:
             vault_manager = VaultManager()
 
             # Fetch the credentials from the vault using the credential NAME, tenant, and JWT
-            logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
+            logger.debug(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
             credential = vault_manager.get_vault_secret_by_name(
                 credential=llm_request.credential_name,
                 jwt=user.access_token,
@@ -48,9 +48,8 @@ class OpenAIProvider(BaseLLMProvider):
                 # Update the API URL and key from the vault credentials
                 self.api_url = credential.get('data', {}).get('Url') or credential.get('Url')
                 self.api_key = credential.get("data", {}).get("ApiKey") or credential.get("ApiKey")
-                logger.info("BYOK credentials successfully applied.")
+                logger.debug("BYOK credentials successfully applied.")
             else:
-                logger.error(f"BYOK enabled but no valid credentials found for credential: {llm_request.credential_name}")
                 raise HTTPException(
                     status_code=400,
                     detail=f"No valid credentials found for the provided credential '{llm_request.credential_name}'. Verify the name and that you have access in the '{user.env_type}' environment.",
@@ -60,7 +59,6 @@ class OpenAIProvider(BaseLLMProvider):
             credential_manager = CreditManagerService()
 
             if not credential_manager.has_sufficient_credits(task="openai", jwt=user.access_token):
-                logger.warning(f"Insufficient credits for OpenAI task, user: {user.username}")
                 raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
 
         # Initialize
@@ -140,7 +138,7 @@ class OpenAIProvider(BaseLLMProvider):
                     raw_output = conversation
 
                 # Log response data for debugging (pretty-printed for readability)
-                logger.info(f"OpenAI response data:\n{json.dumps(response_data, indent=2)}")
+                logger.debug("OpenAI response data:\n%s", json.dumps(response_data, indent=2))
                 
                 # Handle is_json_output if requested
                 output = extract_json_from_llm_response(raw_output) if llm_request.is_json_output else raw_output
@@ -169,14 +167,14 @@ class OpenAIProvider(BaseLLMProvider):
 
     # Method: Streaming response generator for OpenAI
     async def stream_llm_response(self, llm_request: LLMRequest, job_id: str, user: User):
-        logger.info(f"[STREAMING] Prompt sent to OpenAI provider with model: {llm_request.model}")
+        logger.debug(f"[STREAMING] Prompt sent to OpenAI provider with model: {llm_request.model}")
 
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_name:
             vault_manager = VaultManager()
 
             # Fetch the credentials from the vault using the credential NAME, tenant, and JWT
-            logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
+            logger.debug(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
             credential = vault_manager.get_vault_secret_by_name(
                 credential=llm_request.credential_name,
                 jwt=user.access_token,
@@ -190,9 +188,8 @@ class OpenAIProvider(BaseLLMProvider):
                 credential_data = credential.get("data") or credential
                 self.api_url = credential_data.get("Url") or credential_data.get("Host")
                 self.api_key = credential_data.get("ApiKey")
-                logger.info("BYOK credentials successfully applied.")
+                logger.debug("BYOK credentials successfully applied.")
             else:
-                logger.error(f"BYOK enabled but no valid credentials found for credential: {llm_request.credential_name}")
                 raise HTTPException(
                     status_code=400,
                     detail=f"No valid credentials found for the provided credential '{llm_request.credential_name}'. Verify the provider and that you have it in the current environment.",
@@ -202,7 +199,6 @@ class OpenAIProvider(BaseLLMProvider):
             credential_manager = CreditManagerService()
 
             if not credential_manager.has_sufficient_credits(task="openai", jwt=user.access_token):
-                logger.warning(f"Insufficient credits for OpenAI task, user: {user.username}")
                 raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
 
         # Initialize
@@ -237,7 +233,7 @@ class OpenAIProvider(BaseLLMProvider):
                     async for line in response.aiter_lines():
                         # Check for job cancellation
                         if job_id not in active_llm_jobs:
-                            logger.info(f"Job {job_id} cancelled. Stopping OpenAI stream.")
+                            logger.debug(f"Job {job_id} cancelled. Stopping OpenAI stream.")
                             break
                         
                         # Process each line
@@ -547,7 +543,7 @@ class OpenAIProvider(BaseLLMProvider):
         if not llm_request.is_byok_enabled and not llm_request.credential_name:
             # Skip token-based deduction when the agent has a fixed-credits override.
             if agent_has_fixed_credits(llm_request.ref_id, jwt):
-                logger.info(f"Skipping platform credit usage for agent {llm_request.ref_id} (fixed credits).")
+                logger.debug(f"Skipping platform credit usage for agent {llm_request.ref_id} (fixed credits).")
                 return llm_response
 
             credit_usage_data = self._build_gpt_credit_usage(llm_request, llm_response, space_id)
@@ -558,7 +554,7 @@ class OpenAIProvider(BaseLLMProvider):
             # Post the credit usage data
             try:
                 credit_manager.post_credit_usage(task="openai", request=credit_usage_data, jwt=jwt)
-                logger.info(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
+                logger.debug(f"Successfully posted credit usage data for request ID {llm_request.ref_id}.")
             except Exception as e:
                 logger.error(f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}")
                 raise HTTPException(status_code=500, detail=f"Failed to post credit usage: {str(e)}")
@@ -662,13 +658,13 @@ class OpenAIProvider(BaseLLMProvider):
 
     # Method: Generate embeddings from OpenAI
     async def generate_embeddings(self, embedding_request: EmbeddingRequest, user: User):
-        logger.info(f"[EMBEDDING] Request sent to OpenAI provider with model: {embedding_request.model}")
+        logger.debug(f"[EMBEDDING] Request sent to OpenAI provider with model: {embedding_request.model}")
 
         # Handle BYOK (Bring Your Own Key)
         if embedding_request.is_byok_enabled and embedding_request.credential_name:
             vault_manager = VaultManager()
 
-            logger.info(f"Fetching credentials from vault for credential name: {embedding_request.credential_name}")
+            logger.debug(f"Fetching credentials from vault for credential name: {embedding_request.credential_name}")
             credential = vault_manager.get_vault_secret_by_name(
                 credential=embedding_request.credential_name,
                 jwt=user.access_token,
@@ -681,7 +677,7 @@ class OpenAIProvider(BaseLLMProvider):
                 credential_data = credential.get("data") or credential
                 self.api_url = credential_data.get("Url") or credential_data.get("Host")
                 self.api_key = credential_data.get("ApiKey")
-                logger.info("BYOK credentials successfully applied.")
+                logger.debug("BYOK credentials successfully applied.")
             else:
                 logger.error("Invalid BYOK credential name")
                 raise HTTPException(status_code=400, detail="No valid credentials found.")
@@ -757,7 +753,7 @@ class OpenAIProvider(BaseLLMProvider):
                             request=credit_usage,
                             jwt=user.access_token
                         )
-                        logger.info("Embedding credit usage posted successfully.")
+                        logger.debug("Embedding credit usage posted successfully.")
                     except Exception as e:
                         logger.error(f"Failed to post embedding credit usage: {str(e)}")
                         raise HTTPException(status_code=500, detail="Credit usage failed")

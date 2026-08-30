@@ -35,10 +35,10 @@ class ByokUsageManager:
 
         # Try to post BYOK usage
         try:
-            logger.info(f"BYOK usage post list:\n{json.dumps(sanitized_request, indent=2)}")
+            logger.debug("BYOK usage post list:\n%s", json.dumps(sanitized_request, indent=2))
             response = requests.post(f"{self.api_url}/bulk", json=sanitized_request, headers=headers, timeout=60, verify=settings.SSL_VERIFY)
             response.raise_for_status()
-            logger.info(f"ByokUsageManager: Successfully posted BYOK usage for task {task}")
+            logger.debug(f"ByokUsageManager: Successfully posted BYOK usage for task {task}")
         except Exception as e:
             logger.error(f"ByokUsageManager: Failed to post BYOK usage for task {task}: {e}")
 

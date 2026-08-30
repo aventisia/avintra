@@ -18,7 +18,7 @@ from app.utils.file_converter_utils import file_to_local_path, check_pdf_not_enc
 def extract_text_from_file(file: str) -> str:
     """Extract text from various file types. Supports local files, remote URLs, and base64 encoded content."""
     # Initialize
-    logger.info("Extracting text from file input: %s", _safe_input_log(file))
+    logger.debug("Extracting text from file input: %s", _safe_input_log(file))
     local_path = None
     is_temp = False
 
@@ -85,12 +85,11 @@ def extract_text_from_file(file: str) -> str:
 
     # Clean up temp file if created
     finally:
-        logger.info("Successfully extracted text from file: %s", _safe_input_log(file))
         if is_temp and local_path:
             try:
                 if os.path.exists(local_path):
                     os.unlink(local_path)
-                    logger.info(f"Temporary file deleted: {local_path}")
+                    logger.debug(f"Temporary file deleted: {local_path}")
             except Exception as cleanup_err:
                 logger.warning(f"Failed to delete temp file: {local_path} ({cleanup_err})")
 
@@ -134,13 +133,13 @@ def _extract_text_from_pdf(pdf_path: str) -> str:
     check_pdf_not_encrypted(pdf_path)
 
     # Initialize
-    logger.info("Extracting text from PDF: %s", pdf_path)
+    logger.debug("Extracting text from PDF: %s", pdf_path)
     text_parts = []
 
     # Extract all tables using camelot
     try:
         tables = camelot.read_pdf(pdf_path, pages="all")
-        logger.info(f"Total tables found: {tables.n} in pdf {pdf_path}")
+        logger.debug(f"Total tables found: {tables.n} in pdf {pdf_path}")
         merged_tables = _merge_camelot_tables(tables)
         for idx, table in enumerate(merged_tables):
             table_text = table.to_json(orient="records", force_ascii=False)

@@ -10,7 +10,7 @@ async def send_email(
 ) -> dict:
     """Send an email via Gmail. Placeholder implementation."""
 
-    logger.info(
+    logger.debug(
         "Sending Gmail email to=%s subject=%s",
         to,
         subject,
@@ -29,7 +29,7 @@ async def search_emails(
 ) -> dict:
     """Search Gmail. Placeholder implementation."""
 
-    logger.info(
+    logger.debug(
         "Searching Gmail. query=%s",
         query,
     )

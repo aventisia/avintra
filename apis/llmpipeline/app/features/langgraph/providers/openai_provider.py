@@ -30,7 +30,7 @@ def create_openai_model(
         # Initialize vault client
         vault_manager = VaultManager()
 
-        logger.info(
+        logger.debug(
             "Fetching OpenAI BYOK credentials. credential_name=%s",
             llm_request.credential_name,
         )
@@ -68,7 +68,7 @@ def create_openai_model(
                 detail="OpenAI API key is missing.",
             )
 
-        logger.info(
+        logger.debug(
             "OpenAI BYOK credentials loaded successfully."
         )
 

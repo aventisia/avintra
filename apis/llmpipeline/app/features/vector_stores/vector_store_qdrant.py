@@ -233,7 +233,7 @@ class QdrantVectorStore(BaseVectorStore):
             # Calculate total execution time
             elapsed = round(time.perf_counter() - started, 2)
 
-            logger.info("[INGEST] Completed in %ss", elapsed)
+            logger.debug("[INGEST] Completed in %ss", elapsed)
 
             # Return successful ingestion response
             return IngestDocResponse(
@@ -378,7 +378,7 @@ class QdrantVectorStore(BaseVectorStore):
             # Calculate total execution time
             elapsed = round(time.perf_counter() - started, 2)
 
-            logger.info("[QUERY] Retrieved %s chunks", len(chunks))
+            logger.debug("[QUERY] Retrieved %s chunks", len(chunks))
 
             # Return successful query response
             return QueryDocResponse(
@@ -483,7 +483,7 @@ class QdrantVectorStore(BaseVectorStore):
                 }
             }
 
-            logger.info(
+            logger.debug(
                 "[VECTOR-DELETE-QDRANT] Initiating delete | tenant_id=%s filters=%s",
                 user.tenant_id,
                 {k: v for k, v in {
@@ -505,7 +505,7 @@ class QdrantVectorStore(BaseVectorStore):
             # Calculate elapsed time
             elapsed = round(time.perf_counter() - started, 2)
 
-            logger.info(
+            logger.debug(
                 "[VECTOR-DELETE-QDRANT] Success | tenant_id=%s operation_id=%s elapsed_s=%s",
                 user.tenant_id,
                 operation_id,

@@ -34,7 +34,7 @@ class ToolRegistry:
         # Save tool in registry.
         self._tools[tool_name] = tool
 
-        logger.info(
+        logger.debug(
             "Registered tool: %s",
             tool_name,
         )
@@ -154,7 +154,7 @@ class ToolRegistry:
         # Delete tool from registry.
         del self._tools[name]
 
-        logger.info(
+        logger.debug(
             "Removed tool: %s",
             name,
         )

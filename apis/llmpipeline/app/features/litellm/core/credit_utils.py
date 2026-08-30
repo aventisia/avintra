@@ -172,7 +172,7 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
     # Skip token-based deduction when the agent has a fixed-credits override.
     ref_id = getattr(request, "ref_id", None)
     if agent_has_fixed_credits(ref_id, access_token):
-        logger.info(f"[credit-utils] Skipping platform credit usage for agent {ref_id} (fixed credits).")
+        logger.debug(f"[credit-utils] Skipping platform credit usage for agent {ref_id} (fixed credits).")
         return
 
     # Build the payload the Accounts API expects (PascalCase fields).
@@ -190,7 +190,7 @@ def post_credit_usage(request, provider: str, kind: str, consumed_units: float, 
     # Post a single-entry bulk request to the credit-usage endpoint.
     credit_manager = CreditManagerService()
     credit_manager.post_credit_usage(task=provider, request=[credit_usage_entry], jwt=access_token)
-    logger.info(f"Credit usage posted | task={provider} ref_id={request.ref_id}")
+    logger.debug(f"Credit usage posted | task={provider} ref_id={request.ref_id}")
 
 
 def should_record_byok(is_byok: bool, credential_name: str | None) -> bool:
