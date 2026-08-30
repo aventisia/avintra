@@ -55,7 +55,7 @@ public class FocusTextFieldNode : BaseNode
             {
                 var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
                 wait.Until(d =>
-                    ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                    d != null && "complete".Equals(((IJavaScriptExecutor)d).ExecuteScript("return document.readyState")));
             }
 
             // Locate the element
@@ -72,7 +72,7 @@ public class FocusTextFieldNode : BaseNode
             {
                 try
                 {
-                    driver.SwitchTo().Alert().Accept();
+                    driver.SwitchTo().Alert()?.Accept();
                 }
                 catch (NoAlertPresentException) { }
             }
@@ -80,7 +80,7 @@ public class FocusTextFieldNode : BaseNode
             {
                 try
                 {
-                    driver.SwitchTo().Alert().Dismiss();
+                    driver.SwitchTo().Alert()?.Dismiss();
                 }
                 catch (NoAlertPresentException) { }
             }

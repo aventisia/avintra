@@ -20,8 +20,6 @@ public class TrimTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var originalText = OriginalText.Get(context);
@@ -63,7 +61,7 @@ public class TrimTextNode : BaseNode
         {
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error trimming text: {ex.Message}");
-            TrimmedText.Set(context, null!);
+            TrimmedText.Set(context, null);
         }
     }
 }

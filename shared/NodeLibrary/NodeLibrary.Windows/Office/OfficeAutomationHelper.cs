@@ -25,7 +25,7 @@ public static class OfficeAutomationHelper
             var type = Type.GetTypeFromProgID(progid)
                 ?? throw new InvalidOperationException($"The COM ProgID '{progid}' is not registered.");
 
-            return Activator.CreateInstance(type);
+            return (dynamic)Activator.CreateInstance(type)!;
         }
         catch (Exception ex) when (ex is COMException or InvalidComObjectException or InvalidOperationException or MemberAccessException)
         {

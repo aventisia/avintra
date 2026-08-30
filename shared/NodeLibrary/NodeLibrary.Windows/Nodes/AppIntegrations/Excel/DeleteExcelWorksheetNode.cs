@@ -24,19 +24,19 @@ public class DeleteExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic workbook = WorkbookInstance.Get(context);
+            dynamic? workbook = WorkbookInstance.Get(context);
             var deleteMode = DeleteMode.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance cannot be null.");
 
-            dynamic targetSheet = null;
+            dynamic? targetSheet = null;
 
             switch (deleteMode)
             {
                 case WorksheetDeleteByModeEnum.Name:
                     {
-                        var name = WorksheetName.Get(context);
+                        var name = WorksheetName.Get(context) ?? string.Empty;
                         if (string.IsNullOrWhiteSpace(name))
                             throw new ArgumentException("Worksheet name must be provided when DeleteMode is 'Name'.");
                         foreach (var ws in workbook.Worksheets)

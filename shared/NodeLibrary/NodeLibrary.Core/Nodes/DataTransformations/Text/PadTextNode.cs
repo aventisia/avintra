@@ -23,8 +23,6 @@ public class PadTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var originalText = OriginalText.Get(context);
@@ -64,7 +62,7 @@ public class PadTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            PaddedText.Set(context, null!);
+            PaddedText.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error padding text: {ex.Message}");
         }

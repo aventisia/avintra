@@ -22,7 +22,7 @@ public class GetDropDownSelectedItemNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
             var maxWaitTime = MaxWaitTime.Get(context);
             string dropdownContent = "";
             bool isSuccess = false;

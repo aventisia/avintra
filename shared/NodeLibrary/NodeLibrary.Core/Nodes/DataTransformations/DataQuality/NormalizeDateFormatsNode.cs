@@ -35,7 +35,7 @@ public class NormalizeDateFormatsNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var columnsToNormalize = ColumnsToNormalize.Get(context);
+            var columnsToNormalize = ColumnsToNormalize.Get(context) ?? string.Empty;
             var outputFormat = OutputFormat.Get(context);
 
             if (dataTable == null)
@@ -70,7 +70,7 @@ public class NormalizeDateFormatsNode : BaseNode
         }
         catch (Exception ex)
         {
-            NormalizedDataTable.Set(context, null!);
+            NormalizedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error normalizing date formats: {ex.Message}");
         }

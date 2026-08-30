@@ -40,7 +40,7 @@ public class ConvertNumberToTextNode : BaseNode
         catch (Exception ex)
         {
             status = $"Error converting number to text: {ex.Message}";
-            FormattedNumber.Set(context, null!);
+            FormattedNumber.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error converting number to text: {ex.Message}");
         }

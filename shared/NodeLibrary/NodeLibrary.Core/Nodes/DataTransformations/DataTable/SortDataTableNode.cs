@@ -43,7 +43,7 @@ public class SortDataTableNode : BaseNode
             // Validate inputs
             if (dataTable == null) throw new ArgumentException("Data table cannot be null.");
 
-            string sortColumnName = null;
+            string? sortColumnName = null;
 
             switch (specifyColumnWith)
             {
@@ -90,7 +90,7 @@ public class SortDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            SortedDataTable.Set(context, null!);
+            SortedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Failed to sort the data table: {ex.Message}");
         }

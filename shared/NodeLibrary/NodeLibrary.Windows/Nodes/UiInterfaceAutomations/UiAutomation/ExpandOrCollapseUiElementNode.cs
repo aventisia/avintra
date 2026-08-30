@@ -25,7 +25,7 @@ public class ExpandOrCollapseUiElementNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
             var actionType = ActionType.Get(context);
             var maxWaitTime = MaxWaitTime.Get(context);
             bool result = false;

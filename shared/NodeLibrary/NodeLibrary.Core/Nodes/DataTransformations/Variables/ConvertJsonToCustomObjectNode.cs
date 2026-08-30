@@ -33,7 +33,7 @@ public class ConvertJsonToCustomObjectNode : BaseNode
         }
         catch (Exception ex)
         {
-            CustomObject.Set(context, null!);
+            CustomObject.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error converting JSON to object: {ex.Message}");
         }

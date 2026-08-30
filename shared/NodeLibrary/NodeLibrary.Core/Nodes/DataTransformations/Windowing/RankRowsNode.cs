@@ -91,7 +91,7 @@ public class RankRowsNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error ranking rows: {ex.Message}");
         }

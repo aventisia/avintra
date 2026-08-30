@@ -17,8 +17,6 @@ public class ConvertTextToNumberNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var textToConvert = TextToConvert.Get(context);
@@ -27,7 +25,7 @@ public class ConvertTextToNumberNode : BaseNode
             if (string.IsNullOrWhiteSpace(textToConvert))
                 throw new ArgumentException("Text to Convert cannot be empty.");
 
-            object result = null;
+            object? result = null;
 
             switch (outputType)
             {
@@ -59,7 +57,7 @@ public class ConvertTextToNumberNode : BaseNode
         }
         catch (Exception ex)
         {
-            ConvertedValue.Set(context, null!);
+            ConvertedValue.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error converting text to number: {ex.Message}");
         }

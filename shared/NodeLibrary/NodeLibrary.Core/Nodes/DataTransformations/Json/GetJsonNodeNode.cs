@@ -23,14 +23,14 @@ public class GetJSONNodeNode : BaseNode
             var keyToFind = KeyToFind.Get(context);
             if (jsonContent == null || string.IsNullOrWhiteSpace(keyToFind))
             {
-                ResultNode.Set(context, null!);
+                ResultNode.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, "Invalid input: JsonContent or KeyToFind is null/empty.");
                 return;
             }
 
             var jsonNode = jsonContent is string
-                ? JsonNode.Parse((string)jsonContent)
+                ? JsonNode.Parse((string)jsonContent) ?? throw new ArgumentException("Invalid JSON content.")
                 : (JsonNode)jsonContent;
 
             var result = FindValueHelper(jsonNode, keyToFind);
@@ -51,13 +51,13 @@ public class GetJSONNodeNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultNode.Set(context, null!);
+            ResultNode.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error finding JSON node: {ex.Message}");
         }
     }
 
-    private static JsonNode FindValueHelper(JsonNode token, string keyToFind)
+    private static JsonNode? FindValueHelper(JsonNode? token, string keyToFind)
     {
         if (token?.GetValueKind() == System.Text.Json.JsonValueKind.Object)
         {

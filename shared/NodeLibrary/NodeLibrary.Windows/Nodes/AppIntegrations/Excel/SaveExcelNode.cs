@@ -26,7 +26,7 @@ public class SaveExcelNode : BaseNode
 
         try
         {
-            dynamic excelApp = ExcelApplication.Get(context);
+            dynamic? excelApp = ExcelApplication.Get(context);
             var saveMode = SaveMode.Get(context);
 
             if (excelApp?.ActiveWorkbook == null)

@@ -59,7 +59,7 @@ public class ConcatenateDataTablesNode : BaseNode
         }
         catch (Exception ex)
         {
-            ConcatenatedDataTable.Set(context, null!);
+            ConcatenatedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error concatenating data tables: {ex.Message}");
         }

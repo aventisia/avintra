@@ -57,7 +57,7 @@ public class ExtractTextFromDocxFileNode : BaseNode
                             "Use 'Whole Document' or 'Bookmark' instead.");
 
                     case RetrieveOptionEnum.Bookmark:
-                        content = ExtractBookmarkText(wordDoc, bookmarkName);
+                        content = ExtractBookmarkText(wordDoc, bookmarkName!);
                         break;
 
                     default:

@@ -15,7 +15,7 @@ public class DeleteRowFromExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var rowIndex = RowIndex.Get(context);
 
             if (worksheet == null)

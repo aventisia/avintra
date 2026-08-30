@@ -55,7 +55,7 @@ public class JoinDataTablesNode : BaseNode
         }
         catch (Exception ex)
         {
-            JoinedDataTable.Set(context, null!);
+            JoinedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Failed to join data tables: {ex.Message}");
         }

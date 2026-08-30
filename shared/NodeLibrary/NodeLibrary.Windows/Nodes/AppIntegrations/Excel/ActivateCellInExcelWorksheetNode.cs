@@ -39,12 +39,12 @@ public class ActivateCellInExcelWorksheetNode : BaseNode
 
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var activationMode = ActivationMode.Get(context);
 
             if (worksheet == null)
             {
-                dynamic excelApp = ComHelper.GetActiveObject("Excel.Application");
+                dynamic? excelApp = ComHelper.GetActiveObject("Excel.Application");
                 worksheet = excelApp?.ActiveSheet;
             }
 
@@ -55,7 +55,7 @@ public class ActivateCellInExcelWorksheetNode : BaseNode
             {
                 case ActivationModeEnum.Absolute:
                     var row = Row.Get(context);
-                    var colStr = Column.Get(context);
+                    var colStr = Column.Get(context) ?? string.Empty;
 
                     if (string.IsNullOrWhiteSpace(colStr))
                         throw new ArgumentException("Column must be provided for absolute activation.");
@@ -75,7 +75,7 @@ public class ActivateCellInExcelWorksheetNode : BaseNode
                     if (activeCell == null)
                         throw new InvalidOperationException("No active cell found to move relative from.");
 
-                    dynamic targetCell = direction switch
+                    dynamic? targetCell = direction switch
                     {
                         CellMoveDirectionEnum.Up => activeCell.Offset[-offset, 0],
                         CellMoveDirectionEnum.Down => activeCell.Offset[offset, 0],
@@ -89,7 +89,7 @@ public class ActivateCellInExcelWorksheetNode : BaseNode
                     break;
 
                 case ActivationModeEnum.NamedRange:
-                    var name = Name.Get(context);
+                    var name = Name.Get(context) ?? string.Empty;
                     if (string.IsNullOrWhiteSpace(name))
                         throw new ArgumentException("Named range name cannot be empty.");
 

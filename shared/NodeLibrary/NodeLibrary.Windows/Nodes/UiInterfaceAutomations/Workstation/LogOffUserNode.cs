@@ -178,7 +178,7 @@ public class LogOffUserNode : BaseNode
         public static extern bool ExitWindowsEx(uint uFlags, uint dwReason);
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        public static extern bool LookupPrivilegeValue(string lpSystemName, string lpName, out LUID lpLuid);
+        public static extern bool LookupPrivilegeValue(string? lpSystemName, string lpName, out LUID lpLuid);
 
         [DllImport("advapi32.dll", SetLastError = true)]
         public static extern bool AdjustTokenPrivileges(

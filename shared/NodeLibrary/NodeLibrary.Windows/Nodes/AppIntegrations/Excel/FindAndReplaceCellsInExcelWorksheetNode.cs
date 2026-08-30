@@ -48,9 +48,9 @@ public class FindAndReplaceCellsInExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
-            var findWhat = FindWhat.Get(context);
-            var replaceWith = ReplaceWith.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
+            var findWhat = FindWhat.Get(context) ?? string.Empty;
+            var replaceWith = ReplaceWith.Get(context) ?? string.Empty;
             var searchMode = SearchMode.Get(context);
             var matchCase = MatchCase.Get(context);
             var matchEntireCell = MatchEntireCell.Get(context);
@@ -61,29 +61,29 @@ public class FindAndReplaceCellsInExcelWorksheetNode : BaseNode
             if (string.IsNullOrEmpty(findWhat))
                 throw new ArgumentException("Find text cannot be empty.");
 
-            dynamic searchRange;
+            dynamic? searchRange;
             if (searchMode == ExcelSearchModeEnum.RangeOfCells)
             {
-                var startColStr = StartColumn.Get(context);
-                var endColStr = EndColumn.Get(context);
+                var startColStr = StartColumn.Get(context) ?? string.Empty;
+                var endColStr = EndColumn.Get(context) ?? string.Empty;
                 var startRow = StartRow.Get(context);
                 var endRow = EndRow.Get(context);
                 int startCol = GetColumnIndex(startColStr);
                 int endCol = GetColumnIndex(endColStr);
-                searchRange = worksheet.Range[worksheet.Cells[startRow, startCol], worksheet.Cells[endRow, endCol]];
+                searchRange = worksheet?.Range[worksheet?.Cells[startRow, startCol], worksheet?.Cells[endRow, endCol]];
             }
             else
             {
-                searchRange = worksheet.UsedRange;
+                searchRange = worksheet?.UsedRange;
             }
 
             var lookAt = matchEntireCell ? OfficeConstants.XlWhole : OfficeConstants.XlPart;
 
-            bool replaced = searchRange.Replace(
+            bool replaced = searchRange?.Replace(
                 What: findWhat,
                 Replacement: replaceWith,
                 LookAt: lookAt,
-                MatchCase: matchCase);
+                MatchCase: matchCase) ?? false;
 
             ReplacedCount.Set(context, replaced ? 1 : 0);
             IsSuccess.Set(context, true);

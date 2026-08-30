@@ -35,7 +35,7 @@ public class MergeListsNode : BaseNode
         }
         catch (Exception ex)
         {
-            MergedList.Set(context, null!);
+            MergedList.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error merging lists: {ex.Message}");
         }

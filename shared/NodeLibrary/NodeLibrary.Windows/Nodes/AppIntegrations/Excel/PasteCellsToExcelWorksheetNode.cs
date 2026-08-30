@@ -32,7 +32,7 @@ public class PasteCellsToExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var pasteMode = PasteMode.Get(context);
             var pasteType = PasteType.Get(context);
 
@@ -45,7 +45,7 @@ public class PasteCellsToExcelWorksheetNode : BaseNode
             {
                 case CellPasteModeEnum.OnSpecifiedCell:
                     {
-                        var colStr = Column.Get(context);
+                        var colStr = Column.Get(context) ?? string.Empty;
                         var row = Row.Get(context);
                         int colNum = int.TryParse(colStr, out int num) ? num : GetColumnIndex(colStr);
                         targetRange = worksheet.Cells[row, colNum];
@@ -54,7 +54,7 @@ public class PasteCellsToExcelWorksheetNode : BaseNode
 
                 case CellPasteModeEnum.OnNamedCells:
                     {
-                        var name = Name.Get(context);
+                        var name = Name.Get(context) ?? string.Empty;
                         targetRange = worksheet.Range[name];
                         if (targetRange == null)
                             throw new InvalidOperationException($"Named range '{name}' not found.");

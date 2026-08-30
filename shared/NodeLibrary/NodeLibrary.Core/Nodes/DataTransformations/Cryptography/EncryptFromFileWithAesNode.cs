@@ -22,10 +22,10 @@ public class EncryptFromFileWithAesNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Operation completed successfully.";
-        var inputFilePath = InputFilePath.Get(context);
-        var key = Key.Get(context);
+        var inputFilePath = InputFilePath.Get(context) ?? string.Empty;
+        var key = Key.Get(context) ?? string.Empty;
         var encodingFormat = EncodingFormat.Get(context);
-        var outputFilePath = OutputFilePath.Get(context);
+        var outputFilePath = OutputFilePath.Get(context) ?? string.Empty;
 
         try
         {

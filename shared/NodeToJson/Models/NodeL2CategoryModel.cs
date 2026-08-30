@@ -9,5 +9,5 @@ internal class NodeL2CategoryModel
     public string? Icon { get; set; }
     public List<string>? DoNotRenderIf { get; set; }
     // TODO: Rename to Nodes once migration from NodeExecutor to RunnerApp is complete
-    public List<NodeMetadataModel>? Actions { get; set; } = [];
+    public List<NodeMetadataModel> Actions { get; set; } = [];
 }

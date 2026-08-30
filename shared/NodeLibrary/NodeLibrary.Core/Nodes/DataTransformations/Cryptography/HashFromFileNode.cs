@@ -19,7 +19,7 @@ public class HashFromFileNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Operation completed successfully.";
-        var filePath = FilePath.Get(context);
+        var filePath = FilePath.Get(context) ?? string.Empty;
         var algorithm = Algorithm.Get(context);
 
         try
@@ -36,7 +36,7 @@ public class HashFromFileNode : BaseNode
         }
         catch (Exception ex)
         {
-            HashedContent.Set(context, null!);
+            HashedContent.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error hashing file: {ex.Message}");
         }

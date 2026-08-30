@@ -17,7 +17,7 @@ public class CropTextNode : BaseNode
 
     [DisplayName("Second Flag"), Description("The second flag used in 'Between Flags' mode to mark the end of the extracted text.")]
     [RenderIfCondition(nameof(Mode), CropModeEnum.BetweenFlags)]
-    public InArgument<string> SecondFlag { get; set; }
+    public InArgument<string> SecondFlag { get; set; } = new InArgument<string>();
 
     [DisplayName("Ignore Case"), Description("When true, ignores case when matching flags.")]
     public InArgument<bool> IgnoreCase { get; set; } = new InArgument<bool>(true);
@@ -30,14 +30,12 @@ public class CropTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
-            var originalText = OriginalText.Get(context);
+            var originalText = OriginalText.Get(context) ?? string.Empty;
             var mode = Mode.Get(context);
-            var flag = Flag.Get(context);
-            var secondFlag = SecondFlag.Get(context);
+            var flag = Flag.Get(context) ?? string.Empty;
+            var secondFlag = SecondFlag.Get(context) ?? string.Empty;
             var ignoreCase = IgnoreCase.Get(context);
 
             if (string.IsNullOrWhiteSpace(originalText))
@@ -60,7 +58,7 @@ public class CropTextNode : BaseNode
                     throw new ArgumentOutOfRangeException();
             }
 
-            string result = null;
+            string? result = null;
             var flagFound = false;
 
             switch (mode)
@@ -88,14 +86,14 @@ public class CropTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            CroppedText.Set(context, null!);
+            CroppedText.Set(context, null);
             IsFlagFound.Set(context, false);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error cropping text: {ex.Message}");
         }
     }
 
-    private static string GetTextBeforeFlag(string text, string flag, bool ignoreCase, out bool flagFound)
+    private static string? GetTextBeforeFlag(string text, string flag, bool ignoreCase, out bool flagFound)
     {
         var index = ignoreCase
             ? text.IndexOf(flag, StringComparison.OrdinalIgnoreCase)
@@ -106,7 +104,7 @@ public class CropTextNode : BaseNode
         return index == -1 ? null : text.Substring(0, index);
     }
 
-    private static string GetTextAfterFlag(string text, string flag, bool ignoreCase, out bool flagFound)
+    private static string? GetTextAfterFlag(string text, string flag, bool ignoreCase, out bool flagFound)
     {
         var index = ignoreCase
             ? text.IndexOf(flag, StringComparison.OrdinalIgnoreCase)
@@ -117,7 +115,7 @@ public class CropTextNode : BaseNode
         return index == -1 ? null : text.Substring(index + flag.Length);
     }
 
-    private static string GetTextBetweenFlags(string text, string flag1, string flag2, bool ignoreCase,
+    private static string? GetTextBetweenFlags(string text, string flag1, string flag2, bool ignoreCase,
         out bool flagFound)
     {
         var startIndex = ignoreCase

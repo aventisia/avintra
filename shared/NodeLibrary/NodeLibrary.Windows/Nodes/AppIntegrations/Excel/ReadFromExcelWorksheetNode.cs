@@ -58,13 +58,13 @@ public class ReadFromExcelWorksheetNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Starting Excel read...";
-        DataTable dataTable = null;
-        dynamic worksheet = null;
-        dynamic range = null;
+        DataTable? dataTable = null;
+        dynamic? worksheet = null;
+        dynamic? range = null;
 
         try
         {
-            dynamic worksheetArg = WorksheetInstance.Get(context);
+            dynamic? worksheetArg = WorksheetInstance.Get(context);
             var retrieveMode = RetrieveMode.Get(context);
 
             if (worksheetArg == null)
@@ -80,11 +80,11 @@ public class ReadFromExcelWorksheetNode : BaseNode
             if (worksheet == null)
                 throw new InvalidOperationException("No valid worksheet found to read from.");
 
-            var startCol = StartColumn.Get(context);
+            var startCol = StartColumn.Get(context) ?? string.Empty;
             var startRow = StartRow.Get(context);
-            var endCol = EndColumn.Get(context);
+            var endCol = EndColumn.Get(context) ?? string.Empty;
             var endRow = EndRow.Get(context);
-            var name = Name.Get(context);
+            var name = Name.Get(context) ?? string.Empty;
             var getContentsAsText = GetContentsAsText.Get(context);
             var firstLineContainsColumnNames = FirstLineContainsColumnNames.Get(context);
             var trimEmpty = TrimTrailingEmptyRowsAndColumns.Get(context);

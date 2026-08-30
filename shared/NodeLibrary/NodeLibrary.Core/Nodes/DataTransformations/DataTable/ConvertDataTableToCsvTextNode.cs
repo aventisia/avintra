@@ -52,7 +52,7 @@ public class ConvertDataTableToCsvTextNode : BaseNode
 
             // Add rows
             foreach (DataRow row in dataTable.Rows)
-                csvBuilder.AppendLine(string.Join(separator, row.ItemArray.Select(field => FormatField(field))));
+                csvBuilder.AppendLine(string.Join(separator, row.ItemArray.Select(field => FormatField(field!))));
 
             csvText = csvBuilder.ToString();
             status = "Successfully converted data table to CSV.";

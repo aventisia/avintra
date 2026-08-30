@@ -28,6 +28,9 @@ public class WaitForFileNode : BaseNode
 
         try
         {
+            if (string.IsNullOrWhiteSpace(filePath))
+                throw new ArgumentException("File path cannot be empty.");
+
             var startTime = DateTime.Now;
             bool success = false;
 
@@ -38,7 +41,7 @@ public class WaitForFileNode : BaseNode
                     if (mode == WaitForFileModeEnum.Create)
                     {
                         if (!File.Exists(filePath))
-                            File.Create(filePath).Close(); // Create empty file
+                            File.Create(filePath ?? string.Empty).Close(); // Create empty file
                         success = File.Exists(filePath);
                     }
                     else if (mode == WaitForFileModeEnum.Delete)

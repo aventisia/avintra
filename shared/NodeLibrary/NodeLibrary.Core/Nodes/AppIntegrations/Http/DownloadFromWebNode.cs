@@ -48,7 +48,7 @@ public class DownloadFromWebNode : BaseNode
                 if (saveToFile)
                 {
                     var content = response.Content.ReadAsByteArrayAsync().GetAwaiter().GetResult();
-                    File.WriteAllBytes(filePath, content);
+                    File.WriteAllBytes(filePath!, content);
                     result = filePath;
                     status = $"File successfully saved to '{filePath}'.";
                 }

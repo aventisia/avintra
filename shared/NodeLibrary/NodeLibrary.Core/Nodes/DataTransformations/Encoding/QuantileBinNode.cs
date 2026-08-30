@@ -78,7 +78,7 @@ public class QuantileBinNode : BaseNode
         }
         catch (Exception ex)
         {
-            BinnedDataTable.Set(context, null!);
+            BinnedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error binning values into quantiles: {ex.Message}");
         }

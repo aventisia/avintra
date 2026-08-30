@@ -18,7 +18,7 @@ public class SplitTextNode : BaseNode
 
     [DisplayName("Times"), Description("The number of times to split the text using the standard delimiter.")]
     [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Standard)]
-    public InArgument<int> Times { get; set; }
+    public InArgument<int> Times { get; set; } = new InArgument<int>();
 
     [DisplayName("Split Width"), Description("The width of each substring when 'Delimiter Type' is 'Number of Characters'.")]
     [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.NumberOfCharacters)]
@@ -26,7 +26,7 @@ public class SplitTextNode : BaseNode
 
     [DisplayName("Custom Delimiter"), Description("The custom delimiter to use when 'Delimiter Type' is 'Custom'.")]
     [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Custom)]
-    public InArgument<string> CustomDelimiter { get; set; }
+    public InArgument<string> CustomDelimiter { get; set; } = new InArgument<string>();
 
     [DisplayName("Is Regular Expression"), Description("Indicates whether the custom delimiter is a regular expression pattern.")]
     [RenderIfCondition(nameof(DelimiterType), DelimiterTypeEnum.Custom)]
@@ -37,8 +37,6 @@ public class SplitTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var textToSplit = TextToSplit.Get(context);
@@ -47,7 +45,7 @@ public class SplitTextNode : BaseNode
             if (string.IsNullOrWhiteSpace(textToSplit))
                 throw new ArgumentException("Text to Split cannot be empty.");
 
-            List<string> result = null;
+            List<string>? result = null;
 
             switch (delimiterType)
             {
@@ -104,7 +102,7 @@ public class SplitTextNode : BaseNode
         {
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error splitting text: {ex.Message}");
-            TextList.Set(context, null!);
+            TextList.Set(context, null);
         }
     }
 

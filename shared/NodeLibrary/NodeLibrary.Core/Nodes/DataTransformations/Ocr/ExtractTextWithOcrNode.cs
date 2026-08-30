@@ -26,7 +26,7 @@ public class ExtractTextWithOcrNode : BaseNode
         {
             var imagePath = ImagePath.Get(context);
             var langCode = LanguageCode.Get(context) ?? "eng";
-            var userProvidedTessdataPath = TessDataPath.Get(context);
+            var userProvidedTessdataPath = TessDataPath.Get(context) ?? string.Empty;
 
             // Validate input image
             if (string.IsNullOrWhiteSpace(imagePath) || !File.Exists(imagePath))
@@ -54,7 +54,7 @@ public class ExtractTextWithOcrNode : BaseNode
         }
         catch (Exception ex)
         {
-            ExtractedText.Set(context, null!);
+            ExtractedText.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"OCR failed: {ex.Message}");
         }

@@ -112,7 +112,7 @@ public class ControlScreensaverNode : BaseNode
     private static extern IntPtr GetDesktopWindow();
 
     [DllImport("user32.dll", SetLastError = true)]
-    private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+    private static extern IntPtr FindWindow(string? lpClassName, string? lpWindowName);
 }
 
 public enum ScreensaverActionEnum

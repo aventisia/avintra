@@ -40,7 +40,7 @@ public class HashTextWithKeyNode : BaseNode
         }
         catch (Exception ex)
         {
-            HashedText.Set(context, null!);
+            HashedText.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error hashing text with key: {ex.Message}");
         }

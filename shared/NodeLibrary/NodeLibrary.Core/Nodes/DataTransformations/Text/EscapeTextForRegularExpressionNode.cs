@@ -26,7 +26,7 @@ public class EscapeTextForRegularExpressionNode : BaseNode
         }
         catch (Exception ex)
         {
-            EscapedText.Set(context, null!);
+            EscapedText.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error escaping text: {ex.Message}");
         }

@@ -20,8 +20,8 @@ public class ConvertWordToPdfNode : BaseNode
 
         try
         {
-            string inputPath = InputFilePath.Get(context);
-            string outputPath = OutputFilePath.Get(context);
+            string inputPath = InputFilePath.Get(context) ?? string.Empty;
+            string outputPath = OutputFilePath.Get(context) ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(inputPath))
                 throw new ArgumentException("Input file path cannot be empty.");

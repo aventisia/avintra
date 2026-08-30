@@ -66,7 +66,7 @@ public class RemoveColumnsByMissingRatioNode : BaseNode
         }
         catch (Exception ex)
         {
-            CleanedDataTable.Set(context, null!);
+            CleanedDataTable.Set(context, null);
             RemovedColumns.Set(context, "");
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error removing columns by missing ratio: {ex.Message}");

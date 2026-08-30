@@ -17,7 +17,7 @@ public class WriteTextToJSONFileNode : BaseNode
         try
         {
             var input = JsonContent.Get(context);
-            var filePath = FilePath.Get(context);
+            var filePath = FilePath.Get(context) ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(filePath))
             {
@@ -45,7 +45,7 @@ public class WriteTextToJSONFileNode : BaseNode
 
             // Ensure directory exists
             var directory = Path.GetDirectoryName(filePath);
-            if (!Directory.Exists(directory))
+            if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }

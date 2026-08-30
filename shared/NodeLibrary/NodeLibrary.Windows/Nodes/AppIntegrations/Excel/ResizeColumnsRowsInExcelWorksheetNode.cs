@@ -39,7 +39,7 @@ public class ResizeColumnsRowsInExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var resizeMode = ResizeMode.Get(context);
             var resizeType = ResizeType.Get(context);
 

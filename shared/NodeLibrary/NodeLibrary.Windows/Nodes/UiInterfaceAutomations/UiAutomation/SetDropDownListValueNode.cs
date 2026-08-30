@@ -26,9 +26,9 @@ public class SetDropDownListValueNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
             var maxWaitTime = MaxWaitTime.Get(context);
-            var optionToSelect = OptionToSelect.Get(context);
+            var optionToSelect = OptionToSelect.Get(context) ?? string.Empty;
             bool itemSelected = false;
 
             var dropdownElement = UiAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
@@ -61,7 +61,7 @@ public class SetDropDownListValueNode : BaseNode
                         .Or(cf.ByControlType(ControlType.TreeItem))
                         .Or(cf.ByControlType(ControlType.MenuItem))
                     );
-                    AutomationElement itemToSelect = null;
+                    AutomationElement? itemToSelect = null;
 
                     // Try to parse as index
                     if (int.TryParse(optionToSelect, out int optionIndex))
@@ -80,7 +80,7 @@ public class SetDropDownListValueNode : BaseNode
                         // Select by name (case-insensitive)
                         foreach (var item in listItems)
                         {
-                            if (item.Name.Equals(optionToSelect, StringComparison.OrdinalIgnoreCase))
+                            if (string.Equals(item.Name, optionToSelect, StringComparison.OrdinalIgnoreCase))
                             {
                                 itemToSelect = item;
                                 break;

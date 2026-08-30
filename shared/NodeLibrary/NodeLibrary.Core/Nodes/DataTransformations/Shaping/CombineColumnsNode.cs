@@ -33,14 +33,17 @@ public class CombineColumnsNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var columnsToCombine = ColumnsToCombine.Get(context);
-            var delimiter = Delimiter.Get(context);
-            var resultColumnName = ResultColumnName.Get(context);
+            var columnsToCombine = ColumnsToCombine.Get(context) ?? string.Empty;
+            var delimiter = Delimiter.Get(context) ?? string.Empty;
+            var resultColumnName = ResultColumnName.Get(context) ?? string.Empty;
             var removeSourceColumns = RemoveSourceColumns.Get(context);
             var skipEmptyValues = SkipEmptyValues.Get(context);
 
             if (dataTable == null)
                 throw new ArgumentException("Data table cannot be null.");
+
+            if (string.IsNullOrWhiteSpace(columnsToCombine))
+                throw new ArgumentException("Columns To Combine cannot be empty.");
 
             var combineCols = columnsToCombine.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
             foreach (var col in combineCols)
@@ -75,7 +78,7 @@ public class CombineColumnsNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error combining columns: {ex.Message}");
         }

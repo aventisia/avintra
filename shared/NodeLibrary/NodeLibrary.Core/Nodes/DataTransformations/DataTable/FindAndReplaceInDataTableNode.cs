@@ -19,7 +19,7 @@ public sealed class FindAndReplaceInDataTableNode : BaseNode
 
     [DisplayName("Text to Replace With"), Description("The value to replace with (required if 'Search Mode' is 'Find and Replace').")]
     [RenderIfCondition(nameof(SearchMode), DataTableFindOrReplaceModeEnum.FindAndReplace)]
-    public InArgument<string> TextToReplaceWith { get; set; }
+    public InArgument<string> TextToReplaceWith { get; set; } = new InArgument<string>();
 
     [DisplayName("All Matches"), Description("If true, processes all occurrences. If false, processes only the first occurrence.")]
     public InArgument<bool> AllMatches { get; set; } = new InArgument<bool>(true);
@@ -52,14 +52,14 @@ public sealed class FindAndReplaceInDataTableNode : BaseNode
         {
             var dataTable = DataTable.Get(context);
             var searchMode = SearchMode.Get(context);
-            var textToFind = TextToFind.Get(context);
-            var textToReplaceWith = TextToReplaceWith.Get(context);
+            var textToFind = TextToFind.Get(context) ?? string.Empty;
+            var textToReplaceWith = TextToReplaceWith.Get(context) ?? string.Empty;
             var allMatches = AllMatches.Get(context);
             var useRegularExpression = UseRegularExpression.Get(context);
             var matchCase = MatchCase.Get(context);
             var matchEntireCellContents = MatchEntireCellContents.Get(context);
             var searchBy = SearchBy.Get(context);
-            var columnIndexOrName = ColumnIndexOrName.Get(context);
+            var columnIndexOrName = ColumnIndexOrName.Get(context) ?? string.Empty;
 
             if (dataTable == null)
                 throw new ArgumentException("Data table cannot be null.");
@@ -83,7 +83,7 @@ public sealed class FindAndReplaceInDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            MatchedRows.Set(context, null!);
+            MatchedRows.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error processing data table: {ex.Message}");
         }
@@ -117,7 +117,6 @@ public sealed class FindAndReplaceInDataTableNode : BaseNode
     {
         foreach (DataRow row in dataTable.Rows)
         {
-            var rowMatched = false;
             foreach (DataColumn column in dataTable.Columns)
             {
                 var cellValue = row[column];
@@ -128,7 +127,6 @@ public sealed class FindAndReplaceInDataTableNode : BaseNode
                 if (CellMatches(cellText, textToFind, matchCase, useRegularExpression, matchEntireCellContents))
                 {
                     matchedRows.Add(row);
-                    rowMatched = true;
                     if (!allMatches)
                         break;
                 }
@@ -171,9 +169,12 @@ public sealed class FindAndReplaceInDataTableNode : BaseNode
         }
     }
 
-    private bool CellMatches(string cellText, string textToFind, bool matchCase, bool useRegularExpression,
+    private bool CellMatches(string? cellText, string textToFind, bool matchCase, bool useRegularExpression,
         bool matchEntireCellContents)
     {
+        if (cellText == null)
+            return false;
+
         if (useRegularExpression)
         {
             var regexOptions = matchCase ? RegexOptions.None : RegexOptions.IgnoreCase;
@@ -213,6 +214,8 @@ public sealed class FindAndReplaceInDataTableNode : BaseNode
                     continue;
 
                 var cellText = cellValue.ToString();
+                if (cellText == null)
+                    continue;
 
                 if (useRegularExpression)
                 {

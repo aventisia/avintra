@@ -84,15 +84,10 @@ public class MergeDataTablesNode : BaseNode
         }
         catch (Exception ex)
         {
-            MergedDataTable.Set(context, null!);
+            MergedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Failed to merge data tables: {ex.Message}");
         }
-    }
-
-    private T DataTable<T>(INodeContext context, InArgument<T> argument)
-    {
-        return argument.Get(context);
     }
 
     public enum DataTableMergeModeEnum

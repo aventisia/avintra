@@ -62,7 +62,7 @@ public class SortListNode : BaseNode
                 var firstSort = FirstSort.Get(context);
                 if (!string.IsNullOrWhiteSpace(firstProp))
                 {
-                    outputList = outputList.OrderByPropertyValue(firstProp, firstSort == SortOrderEnum.Ascending)
+                    outputList = outputList.OrderByPropertyValue(firstProp!, firstSort == SortOrderEnum.Ascending)
                         .ToList();
                     status += $" Sorted by '{firstProp}' ({firstSort}).";
                 }
@@ -71,7 +71,7 @@ public class SortListNode : BaseNode
                 var secondSort = SecondSort.Get(context);
                 if (!string.IsNullOrWhiteSpace(secondProp))
                 {
-                    outputList = outputList.OrderByPropertyValue(secondProp, secondSort == SortOrderEnum.Ascending)
+                    outputList = outputList.OrderByPropertyValue(secondProp!, secondSort == SortOrderEnum.Ascending)
                         .ToList();
                     status += $" Then by '{secondProp}' ({secondSort}).";
                 }
@@ -80,7 +80,7 @@ public class SortListNode : BaseNode
                 var thirdSort = ThirdSort.Get(context);
                 if (!string.IsNullOrWhiteSpace(thirdProp))
                 {
-                    outputList = outputList.OrderByPropertyValue(thirdProp, thirdSort == SortOrderEnum.Ascending)
+                    outputList = outputList.OrderByPropertyValue(thirdProp!, thirdSort == SortOrderEnum.Ascending)
                         .ToList();
                     status += $" Then by '{thirdProp}' ({thirdSort}).";
                 }
@@ -92,7 +92,7 @@ public class SortListNode : BaseNode
         }
         catch (Exception ex)
         {
-            SortedList.Set(context, null!);
+            SortedList.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error sorting list: {ex.Message}");
         }
@@ -120,7 +120,7 @@ internal static class EnumerableExtensions
             : source.OrderByDescending(item => GetPropertyValue(item, propertyName));
     }
 
-    private static object GetPropertyValue(object obj, string propertyName)
+    private static object? GetPropertyValue(object? obj, string propertyName)
     {
         if (obj == null)
             return null;

@@ -78,7 +78,7 @@ public class ProfileDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            ProfileDataTable.Set(context, null!);
+            ProfileDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error profiling data table: {ex.Message}");
         }

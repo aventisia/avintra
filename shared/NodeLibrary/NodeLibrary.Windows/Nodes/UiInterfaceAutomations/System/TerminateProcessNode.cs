@@ -48,8 +48,8 @@ public class TerminateProcessNode : BaseNode
 
             IEnumerable<Process> processes = specifyProcessBy switch
             {
-                SpecifyProcessByEnum.ProcessName => GetProcessesByName(processName, fromUser, userName),
-                SpecifyProcessByEnum.ProcessId => GetProcessesById(processId, fromUser, userName),
+                SpecifyProcessByEnum.ProcessName => GetProcessesByName(processName ?? string.Empty, fromUser, userName ?? string.Empty),
+                SpecifyProcessByEnum.ProcessId => GetProcessesById(processId, fromUser, userName ?? string.Empty),
                 _ => throw new NotSupportedException($"Unsupported specify process by option: {specifyProcessBy}")
             };
 
@@ -135,7 +135,7 @@ public class TerminateProcessNode : BaseNode
             using var searcher = new ManagementObjectSearcher(query);
             foreach (ManagementObject obj in searcher.Get())
             {
-                var args = new object[] { null };
+                var args = new object?[] { null };
                 if ((uint)obj.InvokeMethod("GetOwner", args) == 0)
                     return args[0] as string;
             }

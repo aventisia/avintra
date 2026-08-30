@@ -27,13 +27,11 @@ public class ReplaceTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
-            var originalText = OriginalText.Get(context);
-            var searchPattern = SearchPattern.Get(context);
-            var replacementText = ReplacementText.Get(context);
+            var originalText = OriginalText.Get(context) ?? string.Empty;
+            var searchPattern = SearchPattern.Get(context) ?? string.Empty;
+            var replacementText = ReplacementText.Get(context) ?? string.Empty;
             var useRegex = UseRegex.Get(context);
             var ignoreCase = IgnoreCase.Get(context);
             var activateEscapeSequences = ActivateEscapeSequences.Get(context);
@@ -81,7 +79,7 @@ public class ReplaceTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            ReplacedText.Set(context, null!);
+            ReplacedText.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error replacing text: {ex.Message}");
         }

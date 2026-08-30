@@ -43,7 +43,7 @@ public class RemoveDuplicateItemsFromListNode : BaseNode
         }
         catch (Exception ex)
         {
-            DeduplicatedList.Set(context, null!);
+            DeduplicatedList.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error removing duplicates from list: {ex.Message}");
         }

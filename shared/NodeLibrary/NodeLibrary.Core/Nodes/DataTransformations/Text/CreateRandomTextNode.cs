@@ -27,8 +27,6 @@ public class CreateRandomTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var minLength = MinimumLength.Get(context);
@@ -70,7 +68,7 @@ public class CreateRandomTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            RandomText.Set(context, null!);
+            RandomText.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error generating random text: {ex.Message}");
         }

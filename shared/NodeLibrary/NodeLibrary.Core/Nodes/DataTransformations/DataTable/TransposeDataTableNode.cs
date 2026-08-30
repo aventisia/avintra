@@ -72,7 +72,7 @@ public class TransposeDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            TransposedDataTable.Set(context, null!);
+            TransposedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error transposing data table: {ex.Message}");
         }

@@ -23,7 +23,7 @@ public class CloseExcelNode : BaseNode
     {
         try
         {
-            dynamic excelAppArg = ExcelApplication.Get(context);
+            dynamic? excelAppArg = ExcelApplication.Get(context);
             var closeOption = BeforeClosingExcel.Get(context);
 
             if (excelAppArg == null)
@@ -43,7 +43,7 @@ public class CloseExcelNode : BaseNode
 
                 case ExcelCloseOptionEnum.SaveDocumentAs:
                     {
-                        var savePath = SavePath.Get(context);
+                        var savePath = SavePath.Get(context) ?? string.Empty;
                         if (string.IsNullOrWhiteSpace(savePath))
                             throw new ArgumentException("Save Path cannot be empty when saving as.");
                         OfficeAutomationHelper.RetryComCall(() => excelApp.ActiveWorkbook.SaveAs(savePath));

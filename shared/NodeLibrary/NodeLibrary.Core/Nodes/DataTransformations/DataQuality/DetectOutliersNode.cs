@@ -34,8 +34,8 @@ public class DetectOutliersNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var valueColumn = ValueColumn.Get(context);
-            var method = Method.Get(context);
+            var valueColumn = ValueColumn.Get(context) ?? string.Empty;
+            var method = Method.Get(context) ?? string.Empty;
             var threshold = Threshold.Get(context);
             var groupByColumns = GroupByColumns.Get(context);
             var resultColumnName = ResultColumnName.Get(context);
@@ -77,7 +77,7 @@ public class DetectOutliersNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error detecting outliers: {ex.Message}");
         }

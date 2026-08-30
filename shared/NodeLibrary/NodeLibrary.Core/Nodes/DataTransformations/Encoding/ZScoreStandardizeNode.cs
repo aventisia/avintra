@@ -22,7 +22,7 @@ public class ZScoreStandardizeNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var columnsToStandardize = ColumnsToStandardize.Get(context);
+            var columnsToStandardize = ColumnsToStandardize.Get(context) ?? string.Empty;
 
             if (dataTable == null)
                 throw new ArgumentException("Data table cannot be null.");
@@ -59,7 +59,7 @@ public class ZScoreStandardizeNode : BaseNode
         }
         catch (Exception ex)
         {
-            StandardizedDataTable.Set(context, null!);
+            StandardizedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error standardizing columns: {ex.Message}");
         }

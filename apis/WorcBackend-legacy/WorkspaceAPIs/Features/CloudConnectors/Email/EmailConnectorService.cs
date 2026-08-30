@@ -372,6 +372,9 @@ public class EmailConnectorsService : IEmailConnectorsService
                                     }
                                 case EmailOperationEnum.MoveToFolder:
                                     {
+                                        if (string.IsNullOrWhiteSpace(targetFolder))
+                                            return new { Error = "Target folder is required when operation is 'MoveToFolder'." };
+
                                         var inbox = client.Inbox;
                                         await inbox.OpenAsync(FolderAccess.ReadWrite);
 

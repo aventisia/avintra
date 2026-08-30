@@ -29,7 +29,7 @@ public class StandardizeColumnNamesNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var caseStyle = CaseStyle.Get(context);
+            var caseStyle = CaseStyle.Get(context) ?? string.Empty;
             var columnsToRename = ColumnsToRename.Get(context);
             var ensureUniqueNames = EnsureUniqueNames.Get(context);
 
@@ -54,8 +54,8 @@ public class StandardizeColumnNamesNode : BaseNode
 
             foreach (var col in cols)
             {
-                var original = result.Columns[col];
-                var standardized = Convert(original.ColumnName, caseStyle);
+                var original = result.Columns[col]!;
+                var standardized = Convert(original.ColumnName ?? string.Empty, caseStyle);
                 if (ensureUniqueNames)
                     standardized = MakeUnique(usedNames, standardized);
                 else
@@ -70,7 +70,7 @@ public class StandardizeColumnNamesNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error standardizing column names: {ex.Message}");
         }

@@ -41,7 +41,7 @@ public class FormatDateTimeNode : BaseNode
             var datetimeGivenToConvert = DatetimeToConvert.Get(context);
             var formatToUse = FormatToUse.Get(context);
             var standardFormat = StandardFormat.Get(context);
-            var customFormat = CustomFormat.Get(context);
+            var customFormat = CustomFormat.Get(context) ?? string.Empty;
 
             if (datetimeGivenToConvert == null)
                 throw new ArgumentException("DateTime value cannot be null.");

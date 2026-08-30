@@ -37,7 +37,7 @@ public class FlattenJsonNode : BaseNode
         }
         catch (Exception ex)
         {
-            FlattenedJson.Set(context, null!);
+            FlattenedJson.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error flattening JSON: {ex.Message}");
         }

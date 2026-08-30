@@ -21,7 +21,7 @@ public class GetTextBoxTextNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
             var maxWaitTime = MaxWaitTime.Get(context);
             string textboxContent = "";
 
@@ -32,7 +32,7 @@ public class GetTextBoxTextNode : BaseNode
                 var valuePattern = textboxElement.Patterns.Value.PatternOrDefault;
                 if (valuePattern != null)
                 {
-                    textboxContent = valuePattern.Value;
+                    textboxContent = valuePattern.Value ?? string.Empty;
                     status = "Text copied from the text box successfully.";
                 }
                 else
@@ -41,7 +41,7 @@ public class GetTextBoxTextNode : BaseNode
                     var textPattern = textboxElement.Patterns.Text.PatternOrDefault;
                     if (textPattern != null)
                     {
-                        textboxContent = textPattern.DocumentRange.GetText(-1)?.TrimEnd('\r', '\n');
+                        textboxContent = textPattern.DocumentRange.GetText(-1)?.TrimEnd('\r', '\n') ?? string.Empty;
                         status = "Text copied from the text box successfully.";
                     }
                     else

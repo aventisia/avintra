@@ -77,7 +77,7 @@ public class OneHotEncodeNode : BaseNode
         }
         catch (Exception ex)
         {
-            EncodedDataTable.Set(context, null!);
+            EncodedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error one-hot encoding: {ex.Message}");
         }

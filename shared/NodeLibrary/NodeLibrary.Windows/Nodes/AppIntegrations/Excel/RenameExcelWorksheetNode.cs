@@ -22,7 +22,7 @@ public class RenameExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic workbook = WorkbookInstance.Get(context);
+            dynamic? workbook = WorkbookInstance.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance cannot be null.");
@@ -40,7 +40,7 @@ public class RenameExcelWorksheetNode : BaseNode
             if (newName.Length > 31)
                 throw new ArgumentException("Worksheet name cannot exceed 31 characters.");
 
-            dynamic targetSheet = null;
+            dynamic? targetSheet = null;
 
             switch (selectionType)
             {

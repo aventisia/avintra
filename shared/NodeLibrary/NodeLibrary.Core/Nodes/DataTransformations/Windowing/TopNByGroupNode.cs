@@ -66,7 +66,7 @@ public class TopNByGroupNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error computing top N by group: {ex.Message}");
         }

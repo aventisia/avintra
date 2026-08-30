@@ -59,7 +59,7 @@ public class RoundNumbersInColumnNode : BaseNode
         }
         catch (Exception ex)
         {
-            UpdatedDataTable.Set(context, null!);
+            UpdatedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error rounding column: {ex.Message}");
         }

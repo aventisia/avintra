@@ -58,7 +58,7 @@ public class ConvertJsonArrayToDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            DataTable.Set(context, null!);
+            DataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error converting JSON array to data table: {ex.Message}");
         }

@@ -63,12 +63,12 @@ public class ClearCellsInExcelWorksheetNode : BaseNode
 
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var clearMode = ClearMode.Get(context);
 
             if (worksheet == null)
             {
-                dynamic excelApp = ComHelper.GetActiveObject("Excel.Application");
+                dynamic? excelApp = ComHelper.GetActiveObject("Excel.Application");
                 worksheet = excelApp?.ActiveSheet;
             }
 
@@ -79,7 +79,7 @@ public class ClearCellsInExcelWorksheetNode : BaseNode
             {
                 case CellClearModeEnum.SingleCell:
                     {
-                        var colStr = Column.Get(context);
+                        var colStr = Column.Get(context) ?? string.Empty;
                         var row = Row.Get(context);
                         if (!int.TryParse(colStr, out var colNum))
                             colNum = GetColumnIndex(colStr);
@@ -93,8 +93,8 @@ public class ClearCellsInExcelWorksheetNode : BaseNode
 
                 case CellClearModeEnum.NamedCells:
                     {
-                        var name = Name.Get(context);
-                        dynamic namedRange = null;
+                        var name = Name.Get(context) ?? string.Empty;
+                        dynamic? namedRange = null;
                         try { namedRange = worksheet.Names.Item(name)?.RefersToRange; } catch { }
                         if (namedRange != null)
                         {
@@ -110,8 +110,8 @@ public class ClearCellsInExcelWorksheetNode : BaseNode
 
                 case CellClearModeEnum.RangeOfCells:
                     {
-                        var startColStr = StartColumn.Get(context);
-                        var endColStr = EndColumn.Get(context);
+                        var startColStr = StartColumn.Get(context) ?? string.Empty;
+                        var endColStr = EndColumn.Get(context) ?? string.Empty;
                         var startRow = StartRow.Get(context);
                         var endRow = EndRow.Get(context);
                         int startColNum = int.TryParse(startColStr, out var tempStart) ? tempStart : GetColumnIndex(startColStr);

@@ -34,7 +34,7 @@ public class GetFirstFreeRowOrColumnIndexNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var searchDirection = SearchDirection.Get(context);
 
             if (worksheet == null)

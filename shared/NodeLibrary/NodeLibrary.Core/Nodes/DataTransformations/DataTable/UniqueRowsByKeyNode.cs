@@ -60,7 +60,7 @@ public class UniqueRowsByKeyNode : BaseNode
         }
         catch (Exception ex)
         {
-            UniqueDataTable.Set(context, null!);
+            UniqueDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error removing duplicate-key rows: {ex.Message}");
         }

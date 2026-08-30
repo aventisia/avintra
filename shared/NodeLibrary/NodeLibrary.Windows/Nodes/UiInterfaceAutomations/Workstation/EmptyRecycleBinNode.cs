@@ -106,7 +106,7 @@ public class EmptyRecycleBinNode : BaseNode
     }
 
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
-    private static extern bool SHEmptyRecycleBin(IntPtr hwnd, string pszRootPath, RecycleBinFlags dwFlags);
+    private static extern bool SHEmptyRecycleBin(IntPtr hwnd, string? pszRootPath, RecycleBinFlags dwFlags);
 
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
     private static extern int SHFileOperation(ref SHFILEOPSTRUCT lpFileOp);
@@ -125,11 +125,11 @@ public class EmptyRecycleBinNode : BaseNode
         public IntPtr hwnd;
         public FileOperationType wFunc;
         [MarshalAs(UnmanagedType.LPWStr)] public string pFrom;
-        [MarshalAs(UnmanagedType.LPWStr)] public string pTo;
+        [MarshalAs(UnmanagedType.LPWStr)] public string? pTo;
         public SHFileOperationFlags fFlags;
         [MarshalAs(UnmanagedType.Bool)] public bool fAnyOperationsAborted;
         public IntPtr hNameMappings;
-        [MarshalAs(UnmanagedType.LPWStr)] public string lpszProgressTitle;
+        [MarshalAs(UnmanagedType.LPWStr)] public string? lpszProgressTitle;
     }
 
     private enum FileOperationType : uint

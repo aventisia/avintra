@@ -53,14 +53,14 @@ public class ClickLinkOnWebPageNode : BaseNode
         try
         {
             var driver = WebBrowserInstance.Get(context);
-            var uiElement = ValueToFind.Get(context);
+            var uiElement = ValueToFind.Get(context) ?? string.Empty;
             var findType = FindType.Get(context);
             var clickType = ClickType.Get(context);
             var sendPhysicalClick = SendPhysicalClick.Get(context);
             var waitForPageLoad = WaitForPageLoad.Get(context);
             var timeout = TimeoutForPageLoad.Get(context);
             var dialogAction = IfDialogAppears.Get(context);
-            var dialogButton = DialogButtonToPress.Get(context);
+            var dialogButton = DialogButtonToPress.Get(context) ?? string.Empty;
             var mousePosition = MousePosition.Get(context);
             var offsetX = OffsetX.Get(context);
             var offsetY = OffsetY.Get(context);
@@ -154,7 +154,7 @@ public class ClickLinkOnWebPageNode : BaseNode
             {
                 var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(timeout));
                 wait.Until(d =>
-                    ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                    d != null && "complete".Equals(((IJavaScriptExecutor)d).ExecuteScript("return document.readyState")));
             }
 
             // Optional: Handle alert popup
@@ -162,9 +162,12 @@ public class ClickLinkOnWebPageNode : BaseNode
                 try
                 {
                     var alert = driver.SwitchTo().Alert();
-                    if (dialogAction == DialogActionEnum.PressAButton)
-                        alert.SendKeys(dialogButton);
-                    alert.Accept();
+                    if (alert != null)
+                    {
+                        if (dialogAction == DialogActionEnum.PressAButton)
+                            alert.SendKeys(dialogButton);
+                        alert.Accept();
+                    }
                 }
                 catch (NoAlertPresentException) { }
 

@@ -21,8 +21,8 @@ public class AddNewWorksheetNode : BaseNode
 
         try
         {
-            dynamic workbook = WorkbookInstance.Get(context);
-            var newWorksheetName = NewWorksheetName.Get(context);
+            dynamic? workbook = WorkbookInstance.Get(context);
+            var newWorksheetName = NewWorksheetName.Get(context) ?? string.Empty;
             var addWorksheetAs = AddWorksheetAs.Get(context);
 
             if (workbook == null)

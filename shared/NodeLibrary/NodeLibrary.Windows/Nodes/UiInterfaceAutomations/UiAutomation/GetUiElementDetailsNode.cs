@@ -46,7 +46,7 @@ public class GetUiElementDetailsNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
             var maxWaitTime = MaxWaitTime.Get(context);
             var detailType = DetailType.Get(context);
             bool isSuccess = false;
@@ -73,42 +73,28 @@ public class GetUiElementDetailsNode : BaseNode
             {
                 case UiElementDetailTypeEnum.BoundingRectangle:
                     var rect = elementInstance.Properties.BoundingRectangle.ValueOrDefault;
-                    if (rect != null)
+                    var rectObj = new JsonObject
                     {
-                        var rectObj = new JsonObject
-                        {
-                            ["Left"] = rect.Left,
-                            ["Top"] = rect.Top,
-                            ["Width"] = rect.Width,
-                            ["Height"] = rect.Height
-                        };
-                        BoundingRectangle.Set(context, rectObj);
-                        status = "Bounding rectangle retrieved successfully.";
-                        isSuccess = true;
-                    }
-                    else
-                    {
-                        status = "Error: Not able to retrieve bounding rectangle.";
-                    }
+                        ["Left"] = rect.Left,
+                        ["Top"] = rect.Top,
+                        ["Width"] = rect.Width,
+                        ["Height"] = rect.Height
+                    };
+                    BoundingRectangle.Set(context, rectObj);
+                    status = "Bounding rectangle retrieved successfully.";
+                    isSuccess = true;
                     break;
 
                 case UiElementDetailTypeEnum.ClickablePoint:
                     var clickablePoint = elementInstance.Properties.ClickablePoint.ValueOrDefault;
-                    if (clickablePoint != null)
+                    var pointObj = new JsonObject
                     {
-                        var pointObj = new JsonObject
-                        {
-                            ["X"] = clickablePoint.X,
-                            ["Y"] = clickablePoint.Y
-                        };
-                        ClickablePoint.Set(context, pointObj);
-                        status = "Clickable point retrieved successfully.";
-                        isSuccess = true;
-                    }
-                    else
-                    {
-                        status = "Error: Not able to retrieve clickable point.";
-                    }
+                        ["X"] = clickablePoint.X,
+                        ["Y"] = clickablePoint.Y
+                    };
+                    ClickablePoint.Set(context, pointObj);
+                    status = "Clickable point retrieved successfully.";
+                    isSuccess = true;
                     break;
 
                 case UiElementDetailTypeEnum.LabelText:

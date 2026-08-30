@@ -46,7 +46,7 @@ public sealed class DeleteRowFromDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            ModifiedDataTable.Set(context, null!);
+            ModifiedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error deleting row: {ex.Message}");
         }

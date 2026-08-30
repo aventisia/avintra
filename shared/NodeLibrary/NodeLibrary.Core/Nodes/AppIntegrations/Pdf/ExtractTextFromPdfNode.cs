@@ -53,8 +53,8 @@ public class ExtractTextFromPdfNode : BaseNode
             var sourcePdfPath = SourcePdfPath.Get(context);
             var pageSelection = PageSelection.Get(context);
             var extractionType = ExtractionType.Get(context);
-            var password = SecureStringHelper.ConvertSecureStringToString(Password.Get(context));
-            var outputFolderPath = OutputFolderPath.Get(context);
+            var password = SecureStringHelper.ConvertSecureStringToString(Password.Get(context)!);
+            var outputFolderPath = OutputFolderPath.Get(context) ?? string.Empty;
 
             if (!File.Exists(sourcePdfPath))
                 throw new FileNotFoundException("Source Pdf file not found.", sourcePdfPath);

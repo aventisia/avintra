@@ -20,7 +20,7 @@ public class GetColumnNameOnExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var columnIndex = ColumnIndex.Get(context);
 
             if (worksheet == null)

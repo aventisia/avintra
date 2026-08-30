@@ -46,7 +46,7 @@ public class SendKeysNode : BaseNode
         try
         {
             var target = Target.Get(context);
-            var textToSend = TextToSend.Get(context);
+            var textToSend = TextToSend.Get(context) ?? string.Empty;
             var delay = DelayBetweenKeystrokes.Get(context);
             var useHardwareKeys = SendAsHardwareKeys.Get(context);
 
@@ -60,7 +60,7 @@ public class SendKeysNode : BaseNode
                     break;
 
                 case SendKeysTargetEnum.UiElement:
-                    var uiElement = UiElement.Get(context);
+                    var uiElement = UiElement.Get(context) ?? string.Empty;
                     if (string.IsNullOrWhiteSpace(uiElement))
                         throw new ArgumentException("UI element must be specified.");
                     SendKeysToUiElement(uiElement, textToSend, delay, useHardwareKeys);
@@ -74,8 +74,8 @@ public class SendKeysNode : BaseNode
                     break;
 
                 case SendKeysTargetEnum.TitleAndOrClass:
-                    var windowTitle = WindowTitle.Get(context);
-                    var windowClass = WindowClass.Get(context);
+                    var windowTitle = WindowTitle.Get(context) ?? string.Empty;
+                    var windowClass = WindowClass.Get(context) ?? string.Empty;
                     if (string.IsNullOrWhiteSpace(windowTitle) && string.IsNullOrWhiteSpace(windowClass))
                         throw new ArgumentException("Either window title or class must be specified.");
                     SendKeysToWindowByTitleOrClass(windowTitle, windowClass, textToSend, delay, useHardwareKeys);

@@ -27,12 +27,18 @@ public class StackColumnsNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var columnsToStack = ColumnsToStack.Get(context);
-            var resultColumn = ResultColumn.Get(context);
-            var sourceColumnColumn = SourceColumnColumn.Get(context);
+            var columnsToStack = ColumnsToStack.Get(context) ?? string.Empty;
+            var resultColumn = ResultColumn.Get(context) ?? string.Empty;
+            var sourceColumnColumn = SourceColumnColumn.Get(context) ?? string.Empty;
 
             if (dataTable == null)
                 throw new ArgumentException("Data table cannot be null.");
+
+            if (string.IsNullOrWhiteSpace(columnsToStack))
+                throw new ArgumentException("Columns To Stack cannot be empty.");
+
+            if (string.IsNullOrWhiteSpace(resultColumn))
+                throw new ArgumentException("Result Column cannot be empty.");
 
             var stackCols = columnsToStack.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
             foreach (var col in stackCols)
@@ -44,7 +50,7 @@ public class StackColumnsNode : BaseNode
 
             var result = new DataTable();
             foreach (var idCol in idCols)
-                result.Columns.Add(idCol, dataTable.Columns[idCol].DataType);
+                result.Columns.Add(idCol, dataTable.Columns[idCol]!.DataType);
             result.Columns.Add(resultColumn, typeof(object));
             var includeSource = !string.IsNullOrWhiteSpace(sourceColumnColumn);
             if (includeSource)
@@ -71,7 +77,7 @@ public class StackColumnsNode : BaseNode
         }
         catch (Exception ex)
         {
-            StackedDataTable.Set(context, null!);
+            StackedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error stacking columns: {ex.Message}");
         }

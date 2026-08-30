@@ -38,11 +38,11 @@ public class GoToWebPageNode : BaseNode
         {
             var driver = WebBrowserInstance.Get(context);
             var navigateAction = NavigateAction.Get(context);
-            var url = Url.Get(context);
+            var url = Url.Get(context) ?? string.Empty;
             var waitForPage = WaitForPageToLoad.Get(context);
             var timeout = TimeSpan.FromSeconds(TimeoutForPageLoad.Get(context));
             var dialogAction = IfDialogAppears.Get(context);
-            var dialogButton = DialogButtonToPress.Get(context);
+            var dialogButton = DialogButtonToPress.Get(context) ?? string.Empty;
 
             if (driver == null)
                 throw new ArgumentException("Web browser instance cannot be null.");
@@ -79,16 +79,19 @@ public class GoToWebPageNode : BaseNode
             {
                 var wait = new WebDriverWait(driver, timeout);
                 wait.Until(d =>
-                    ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                    d != null && "complete".Equals(((IJavaScriptExecutor)d).ExecuteScript("return document.readyState")));
 
                 if (dialogAction != DialogActionEnum.DoNothing)
                     try
                     {
                         var alert = driver.SwitchTo().Alert();
-                        if (dialogAction == DialogActionEnum.CloseIt)
-                            alert.Accept();
-                        else if (dialogAction == DialogActionEnum.PressAButton)
-                            alert.SendKeys(dialogButton);
+                        if (alert != null)
+                        {
+                            if (dialogAction == DialogActionEnum.CloseIt)
+                                alert.Accept();
+                            else if (dialogAction == DialogActionEnum.PressAButton)
+                                alert.SendKeys(dialogButton);
+                        }
                     }
                     catch (NoAlertPresentException) { }
             }

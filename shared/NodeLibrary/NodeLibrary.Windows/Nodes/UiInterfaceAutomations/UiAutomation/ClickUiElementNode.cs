@@ -25,7 +25,7 @@ public class ClickUiElementNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
             var clickType = ClickType.Get(context);
             var maxWaitTime = MaxWaitTime.Get(context);
             bool elementClicked = false;

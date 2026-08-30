@@ -38,29 +38,31 @@ public class FilterCellsInExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var filterMode = FilterMode.Get(context);
-            var columnStr = Column.Get(context);
+            var columnStr = Column.Get(context) ?? string.Empty;
             var startRow = StartRow.Get(context);
             var endRow = EndRow.Get(context);
-            var startColumnStr = StartColumn.Get(context);
-            var endColumnStr = EndColumn.Get(context);
-            var filterValue = FilterValue.Get(context);
-            var filterValue2 = FilterValue2.Get(context);
+            var startColumnStr = StartColumn.Get(context) ?? string.Empty;
+            var endColumnStr = EndColumn.Get(context) ?? string.Empty;
+            var filterValue = FilterValue.Get(context) ?? string.Empty;
+            var filterValue2 = FilterValue2.Get(context) ?? string.Empty;
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");
 
             int filterColumn = GetColumnIndex(columnStr);
             int startCol = string.IsNullOrEmpty(startColumnStr) ? 1 : GetColumnIndex(startColumnStr);
-            int endCol = string.IsNullOrEmpty(endColumnStr) ? worksheet.UsedRange.Columns.Count : GetColumnIndex(endColumnStr);
+            int endCol = string.IsNullOrEmpty(endColumnStr)
+                ? worksheet?.UsedRange.Columns.Count ?? 0
+                : GetColumnIndex(endColumnStr);
 
             if (endRow == 0)
-                endRow = worksheet.UsedRange.Rows.Count + worksheet.UsedRange.Row - 1;
+                endRow = (worksheet?.UsedRange.Rows.Count ?? 0) + (worksheet?.UsedRange.Row ?? 0) - 1;
 
-            var range = worksheet.Range[
-                worksheet.Cells[startRow, startCol],
-                worksheet.Cells[endRow, endCol]];
+            dynamic? range = worksheet?.Range[
+                worksheet?.Cells[startRow, startCol],
+                worksheet?.Cells[endRow, endCol]];
 
             int relativeColumn = filterColumn - startCol + 1;
 
@@ -82,17 +84,17 @@ public class FilterCellsInExcelWorksheetNode : BaseNode
 
             if (filterMode == ExcelFilterOperatorEnum.ClearFilter)
             {
-                if (worksheet.AutoFilterMode)
-                    worksheet.AutoFilter.ShowAllData();
+                if (worksheet?.AutoFilterMode)
+                    worksheet?.AutoFilter?.ShowAllData();
             }
             else if (filterMode == ExcelFilterOperatorEnum.IsBetween)
             {
                 string criteria2 = $"<={filterValue2}";
-                range.AutoFilter(relativeColumn, criteria1, OfficeConstants.XlAnd, criteria2);
+                range?.AutoFilter(relativeColumn, criteria1, OfficeConstants.XlAnd, criteria2);
             }
             else
             {
-                range.AutoFilter(relativeColumn, criteria1, xlOperator);
+                range?.AutoFilter(relativeColumn, criteria1, xlOperator);
             }
 
             IsSuccess.Set(context, true);

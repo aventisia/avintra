@@ -19,8 +19,8 @@ public class AttachToRunningExcelNode : BaseNode
 
         try
         {
-            dynamic excelApp = ExcelApplication.Get(context);
-            var filePath = FilePath.Get(context);
+            dynamic? excelApp = ExcelApplication.Get(context);
+            var filePath = FilePath.Get(context) ?? string.Empty;
 
             if (excelApp == null)
                 throw new InvalidOperationException("Excel Application cannot be null.");

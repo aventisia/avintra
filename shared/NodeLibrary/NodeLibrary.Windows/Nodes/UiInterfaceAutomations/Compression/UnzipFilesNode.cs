@@ -18,7 +18,7 @@ public class UnzipFilesNode : BaseNode
     public InArgument<string> IncludeMask { get; set; } = new InArgument<string>();
 
     [DisplayName("Exclude Mask"), Description("Excludes files matching the mask. Use wildcards like '*.log'. Multiple filters separated by ';'.")]
-    public InArgument<string> ExcludeMask { get; set; }
+    public InArgument<string> ExcludeMask { get; set; } = new InArgument<string>();
 
     #endregion
 

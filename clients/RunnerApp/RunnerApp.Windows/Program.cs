@@ -24,13 +24,19 @@ if (options is null)
 // This is a compatibility bridge; new/updated nodes should read CallerContext.Get(context).AppBaseUrl.
 Environment.SetEnvironmentVariable("APP_BASE_URL", options.AppBaseUrl);
 
-#if WINDOWS
 // Register Windows-specific logging hooks for NodeLogHelper (FlaUI, SqlConnection, SecureString).
+#if WINDOWS
 NodeLogHelperWindows.Register();
 #endif
 
 if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsServiceMode)
 {
+    if (!OperatingSystem.IsWindows())
+    {
+        Console.Error.WriteLine("Windows service mode is only supported on Windows.");
+        return 1;
+    }
+
     // Run as Windows service using Generic Host
     var host = Host.CreateDefaultBuilder(args)
         .UseWindowsService(optionsBuilder =>
@@ -45,7 +51,10 @@ if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsSe
         .ConfigureLogging(logging =>
         {
             logging.AddConsole();
-            logging.AddEventLog();
+            if (OperatingSystem.IsWindows())
+            {
+                logging.AddEventLog();
+            }
         })
         .Build();
 
@@ -729,6 +738,7 @@ static RunnerAppOptions? TryParseInstallArguments(string[] args)
         ApiKey = apiKey,
         TenantId = tenantId,
         LinkedUsername = linkedUsername,
+        Unattended = unattended,
     };
 }
 

@@ -32,10 +32,10 @@ public class GetJSONNodeListNode : BaseNode
             // Handle various input types: string, JsonNode, ExpandoObject, or other objects
             JsonNode? jsonNode = jsonContent switch
             {
-                string s => JsonNode.Parse(s),
+                string s => JsonNode.Parse(s) ?? throw new ArgumentException("Invalid JSON content."),
                 JsonNode node => node,
-                System.Dynamic.ExpandoObject expando => JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(expando)),
-                _ => JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(jsonContent))
+                System.Dynamic.ExpandoObject expando => JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(expando)) ?? throw new ArgumentException("Invalid JSON content."),
+                _ => JsonNode.Parse(System.Text.Json.JsonSerializer.Serialize(jsonContent)) ?? throw new ArgumentException("Invalid JSON content.")
             };
 
             var result = FindAllValuesHelper(jsonNode, keyToFind);
@@ -52,14 +52,14 @@ public class GetJSONNodeListNode : BaseNode
         }
     }
 
-    private static List<JsonNode> FindAllValuesHelper(JsonNode token, string keyToFind)
+    private static List<JsonNode> FindAllValuesHelper(JsonNode? token, string keyToFind)
     {
         var results = new List<JsonNode>();
         if (token?.GetValueKind() == System.Text.Json.JsonValueKind.Object)
         {
             foreach (var property in token.AsObject())
             {
-                if (property.Key == keyToFind)
+                if (property.Key == keyToFind && property.Value != null)
                     results.Add(property.Value);
                 if (property.Value != null)
                     results.AddRange(FindAllValuesHelper(property.Value, keyToFind));

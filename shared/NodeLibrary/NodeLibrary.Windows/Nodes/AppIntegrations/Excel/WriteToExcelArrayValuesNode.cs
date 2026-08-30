@@ -25,9 +25,9 @@ public class WriteToExcelArrayValuesNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var values = Values.Get(context);
-            var startColStr = StartColumn.Get(context);
+            var startColStr = StartColumn.Get(context) ?? string.Empty;
             var startRow = StartRow.Get(context);
             var direction = WriteDirection.Get(context);
 

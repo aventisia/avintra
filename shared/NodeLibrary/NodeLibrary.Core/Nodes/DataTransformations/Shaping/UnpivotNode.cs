@@ -27,12 +27,18 @@ public class UnpivotNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var columnsToUnpivot = ColumnsToUnpivot.Get(context);
-            var nameColumn = NameColumn.Get(context);
-            var valueColumn = ValueColumn.Get(context);
+            var columnsToUnpivot = ColumnsToUnpivot.Get(context) ?? string.Empty;
+            var nameColumn = NameColumn.Get(context) ?? string.Empty;
+            var valueColumn = ValueColumn.Get(context) ?? string.Empty;
 
             if (dataTable == null)
                 throw new ArgumentException("Data table cannot be null.");
+
+            if (string.IsNullOrWhiteSpace(nameColumn))
+                throw new ArgumentException("Name Column cannot be empty.");
+
+            if (string.IsNullOrWhiteSpace(valueColumn))
+                throw new ArgumentException("Value Column cannot be empty.");
 
             var unpivotCols = string.IsNullOrWhiteSpace(columnsToUnpivot)
                 ? dataTable.Columns.Cast<DataColumn>().Select(c => c.ColumnName).ToList()
@@ -47,7 +53,7 @@ public class UnpivotNode : BaseNode
 
             var result = new DataTable();
             foreach (var idCol in idCols)
-                result.Columns.Add(idCol, dataTable.Columns[idCol].DataType);
+                result.Columns.Add(idCol, dataTable.Columns[idCol]!.DataType);
             result.Columns.Add(nameColumn, typeof(string));
             result.Columns.Add(valueColumn, typeof(object));
 
@@ -71,7 +77,7 @@ public class UnpivotNode : BaseNode
         }
         catch (Exception ex)
         {
-            UnpivotedDataTable.Set(context, null!);
+            UnpivotedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error unpivoting data table: {ex.Message}");
         }

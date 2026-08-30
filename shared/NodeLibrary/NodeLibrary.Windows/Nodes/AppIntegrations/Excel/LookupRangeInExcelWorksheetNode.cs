@@ -43,12 +43,12 @@ public class LookupRangeInExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var lookupValue = LookupValue.Get(context);
-            var searchColumnStr = SearchColumn.Get(context);
+            var searchColumnStr = SearchColumn.Get(context) ?? string.Empty;
             var startRow = StartRow.Get(context);
             var endRow = EndRow.Get(context);
-            var resultColumnStr = ResultColumn.Get(context);
+            var resultColumnStr = ResultColumn.Get(context) ?? string.Empty;
             var matchCase = MatchCase.Get(context);
 
             if (worksheet == null)

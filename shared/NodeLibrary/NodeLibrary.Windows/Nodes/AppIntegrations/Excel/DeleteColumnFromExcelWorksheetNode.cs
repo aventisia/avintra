@@ -13,12 +13,10 @@ public class DeleteColumnFromExcelWorksheetNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
-            var columnIndexInput = ColumnIndex.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
+            var columnIndexInput = ColumnIndex.Get(context) ?? string.Empty;
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance is null.");

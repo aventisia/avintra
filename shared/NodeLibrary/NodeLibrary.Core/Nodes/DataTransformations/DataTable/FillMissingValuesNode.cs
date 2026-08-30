@@ -95,7 +95,7 @@ public class FillMissingValuesNode : BaseNode
         }
         catch (Exception ex)
         {
-            UpdatedDataTable.Set(context, null!);
+            UpdatedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error filling missing values: {ex.Message}");
         }

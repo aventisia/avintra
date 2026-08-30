@@ -22,7 +22,7 @@ public class GetSelectedCheckboxesNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
             var maxWaitTime = MaxWaitTime.Get(context);
             var selectedCheckboxes = new List<string>();
 

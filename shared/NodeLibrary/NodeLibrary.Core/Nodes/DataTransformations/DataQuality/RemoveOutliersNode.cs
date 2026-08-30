@@ -31,8 +31,8 @@ public class RemoveOutliersNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var valueColumn = ValueColumn.Get(context);
-            var method = Method.Get(context);
+            var valueColumn = ValueColumn.Get(context) ?? string.Empty;
+            var method = Method.Get(context) ?? string.Empty;
             var threshold = Threshold.Get(context);
             var groupByColumns = GroupByColumns.Get(context);
 
@@ -79,7 +79,7 @@ public class RemoveOutliersNode : BaseNode
         }
         catch (Exception ex)
         {
-            CleanedDataTable.Set(context, null!);
+            CleanedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error removing outliers: {ex.Message}");
         }

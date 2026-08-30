@@ -32,23 +32,21 @@ public class CopyExcelWorksheetNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
-            dynamic sourceWorkbook = SourceWorkbook.Get(context);
-            dynamic targetWorkbook = TargetWorkbook.Get(context);
+            dynamic? sourceWorkbook = SourceWorkbook.Get(context);
+            dynamic? targetWorkbook = TargetWorkbook.Get(context);
             var copyMode = CopyMode.Get(context);
             var pastePosition = PastePosition.Get(context);
 
             if (sourceWorkbook == null)
                 throw new ArgumentNullException(nameof(SourceWorkbook), "Source workbook cannot be null.");
 
-            dynamic sourceSheet = null;
+            dynamic? sourceSheet = null;
 
             if (copyMode == WorksheetCopyModeEnum.Name)
             {
-                var name = WorksheetName.Get(context);
+                var name = WorksheetName.Get(context) ?? string.Empty;
                 if (string.IsNullOrWhiteSpace(name))
                     throw new ArgumentException("Worksheet name must be provided when CopyMode is 'Name'.");
                 sourceSheet = GetSheetByName(sourceWorkbook, name);
@@ -66,8 +64,7 @@ public class CopyExcelWorksheetNode : BaseNode
             if (sourceSheet == null)
                 throw new InvalidOperationException("Unable to locate the source worksheet.");
 
-            if (targetWorkbook == null)
-                targetWorkbook = sourceWorkbook;
+            targetWorkbook ??= sourceWorkbook;
 
             dynamic targetSheet = targetWorkbook.Worksheets.Add();
 
@@ -106,7 +103,7 @@ public class CopyExcelWorksheetNode : BaseNode
         }
     }
 
-    private dynamic GetSheetByName(dynamic workbook, string sheetName)
+    private dynamic? GetSheetByName(dynamic workbook, string sheetName)
     {
         foreach (var sheet in workbook.Worksheets)
             if (sheet.Name.Equals(sheetName, StringComparison.OrdinalIgnoreCase))

@@ -21,7 +21,7 @@ public sealed class InsertColumnIntoDataTableNode : BaseNode
 
     [DisplayName("Column Index"), Description("Index to insert column at (used only if 'Before Column Index').")]
     [RenderIfCondition(nameof(InsertLocation), DataTableInsertLocationEnum.BeforeColumnIndex)]
-    public InArgument<int> ColumnIndex { get; set; }
+    public InArgument<int> ColumnIndex { get; set; } = new InArgument<int>();
 
     [DisplayName("Modified Data Table"), Description("The updated data table with the new column.")]
     public OutArgument<DataTable> ModifiedDataTable { get; set; } = new OutArgument<DataTable>();
@@ -71,7 +71,7 @@ public sealed class InsertColumnIntoDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            ModifiedDataTable.Set(context, null!);
+            ModifiedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error inserting column: {ex.Message}");
         }

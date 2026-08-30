@@ -50,7 +50,7 @@ public class CalculateColumnNode : BaseNode
         }
         catch (Exception ex)
         {
-            UpdatedDataTable.Set(context, null!);
+            UpdatedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error calculating column: {ex.Message}");
         }

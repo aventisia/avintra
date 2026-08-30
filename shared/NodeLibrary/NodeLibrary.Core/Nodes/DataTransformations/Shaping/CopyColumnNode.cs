@@ -24,8 +24,8 @@ public class CopyColumnNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var sourceColumn = SourceColumn.Get(context);
-            var newColumnName = NewColumnName.Get(context);
+            var sourceColumn = SourceColumn.Get(context) ?? string.Empty;
+            var newColumnName = NewColumnName.Get(context) ?? string.Empty;
 
             if (dataTable == null)
                 throw new ArgumentException("Data table cannot be null.");
@@ -36,7 +36,7 @@ public class CopyColumnNode : BaseNode
 
             var result = dataTable.Copy();
             if (!result.Columns.Contains(newColumnName))
-                result.Columns.Add(newColumnName, result.Columns[sourceColumn].DataType);
+                result.Columns.Add(newColumnName, result.Columns[sourceColumn]!.DataType);
 
             foreach (var row in result.AsEnumerable())
                 row[newColumnName] = row[sourceColumn];
@@ -48,7 +48,7 @@ public class CopyColumnNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error copying column: {ex.Message}");
         }

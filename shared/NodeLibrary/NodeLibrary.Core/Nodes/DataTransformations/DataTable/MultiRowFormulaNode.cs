@@ -68,7 +68,7 @@ public class MultiRowFormulaNode : BaseNode
         }
         catch (Exception ex)
         {
-            UpdatedDataTable.Set(context, null!);
+            UpdatedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error computing multi-row formula: {ex.Message}");
         }
@@ -88,7 +88,7 @@ public class MultiRowFormulaNode : BaseNode
         switch (type)
         {
             case MultiRowFormulaTypeEnum.RunningTotal:
-                return values.Take(index + 1).Where(v => v.HasValue).Sum(v => v.Value);
+                return values.Take(index + 1).Where(v => v.HasValue).Sum(v => v!.Value);
             case MultiRowFormulaTypeEnum.PreviousValue:
                 {
                     var target = index - rows;
@@ -112,7 +112,7 @@ public class MultiRowFormulaNode : BaseNode
                         rows = 1;
                     var start = Math.Max(0, index - rows);
                     var window = values.Skip(start).Take(index - start + 1).Where(v => v.HasValue).ToList();
-                    return window.Count == 0 ? null : window.Average(v => v.Value);
+                    return window.Count == 0 ? null : window.Average(v => v!.Value);
                 }
             default:
                 throw new ArgumentOutOfRangeException(nameof(type));

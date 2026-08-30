@@ -78,13 +78,13 @@ public class InsertImageInWordDocumentNode : BaseNode
         }
     }
 
-    private static dynamic GetInsertionRange(
+    private static dynamic? GetInsertionRange(
         dynamic document,
         InsertLocationEnum location,
         string bookmarkName,
         string searchText)
     {
-        dynamic range = null;
+        dynamic? range = null;
 
         switch (location)
         {
@@ -147,7 +147,7 @@ public class InsertImageInWordDocumentNode : BaseNode
         return range;
     }
 
-    private static dynamic FindTextRange(dynamic document, string text, bool insertBefore)
+    private static dynamic? FindTextRange(dynamic document, string text, bool insertBefore)
     {
         foreach (dynamic para in document.Paragraphs)
         {

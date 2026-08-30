@@ -60,7 +60,7 @@ public class UpdateDataTableItemNode : BaseNode
         }
         catch (Exception ex)
         {
-            ModifiedDataTable.Set(context, null!);
+            ModifiedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error updating data table item: {ex.Message}");
         }

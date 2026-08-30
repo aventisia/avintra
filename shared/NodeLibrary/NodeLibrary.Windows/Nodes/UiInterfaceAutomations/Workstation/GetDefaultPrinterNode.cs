@@ -122,7 +122,7 @@ public class GetDefaultPrinterNode : BaseNode
     }
 
     [DllImport("winspool.drv", CharSet = CharSet.Auto, SetLastError = true)]
-    private static extern bool GetDefaultPrinter(StringBuilder pszBuffer, ref int pcchBuffer);
+    private static extern bool GetDefaultPrinter(StringBuilder? pszBuffer, ref int pcchBuffer);
 
     private string GetDefaultPrinterWin32()
     {
@@ -151,7 +151,8 @@ public class GetDefaultPrinterNode : BaseNode
         {
             foreach (ManagementObject printer in collection)
             {
-                return printer["Name"].ToString();
+                return printer["Name"]?.ToString()
+                    ?? throw new InvalidOperationException("Default printer name returned by WMI is null.");
             }
         }
 

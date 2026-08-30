@@ -30,8 +30,8 @@ public class GetTableRangeFromExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
-            var tableName = TableName.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
+            var tableName = TableName.Get(context) ?? string.Empty;
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");
@@ -39,7 +39,7 @@ public class GetTableRangeFromExcelWorksheetNode : BaseNode
             if (worksheet.ListObjects.Count == 0)
                 throw new InvalidOperationException("No tables found in the worksheet.");
 
-            dynamic table;
+            dynamic? table;
             if (!string.IsNullOrWhiteSpace(tableName))
             {
                 table = null;

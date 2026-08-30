@@ -22,8 +22,8 @@ public class DeserializeJSONTextNode : BaseNode
             var jsonText = JsonText.Get(context);
             if (string.IsNullOrWhiteSpace(jsonText))
             {
-                DeserializedToken.Set(context, null!);
-                DeserializedJson.Set(context, null!);
+                DeserializedToken.Set(context, null);
+                DeserializedJson.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, "Input JSON text is null or empty.");
                 return;
@@ -40,8 +40,8 @@ public class DeserializeJSONTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            DeserializedToken.Set(context, null!);
-            DeserializedJson.Set(context, null!);
+            DeserializedToken.Set(context, null);
+            DeserializedJson.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error deserializing JSON: {ex.Message}");
         }

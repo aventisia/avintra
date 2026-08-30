@@ -85,7 +85,12 @@ public static class EnumExtensions
     public static string GetDisplayName(this Enum value)
     {
         var field = value.GetType().GetField(value.ToString());
-        var attribute = (DisplayAttribute)Attribute.GetCustomAttribute(
+        if (field == null)
+        {
+            return value.ToString();
+        }
+
+        var attribute = (DisplayAttribute?)Attribute.GetCustomAttribute(
             field,
             typeof(DisplayAttribute));
 
