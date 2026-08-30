@@ -205,7 +205,7 @@ def _post_credit_usage(req: LLMGenerationRequest, resp: LLMGenerationResponse, u
     # by the Super Admin (the WorkspaceAPIs job-close path already bills the fixed
     # amount, so posting token usage here would double-charge).
     if agent_has_fixed_credits(req.ref_id, user.access_token):
-        logger.info(f"[LLM-V2] Skipping platform credit usage for agent {req.ref_id} (fixed credits).")
+        logger.debug(f"[LLM-V2] Skipping platform credit usage for agent {req.ref_id} (fixed credits).")
         return
     try:
         entries = []

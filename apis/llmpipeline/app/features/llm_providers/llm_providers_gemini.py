@@ -539,7 +539,7 @@ class GeminiProvider(BaseLLMProvider):
             return mapped_status
 
         # Log the raw finish_reason if not mapped
-        logger.info(f"Raw DeepInfra finish_reason: {finish_reason}")
+        logger.debug(f"Raw Gemini finish_reason: {finish_reason}")
         return "unknown"
 
     # Helper: Map Gemini finish_reason to OpenAI-compatible finish_reason

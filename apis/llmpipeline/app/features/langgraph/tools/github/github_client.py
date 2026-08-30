@@ -10,7 +10,7 @@ async def get_repository_issues(
 ) -> dict:
     """List repository issues. Placeholder implementation."""
 
-    logger.info(
+    logger.debug(
         "Listing GitHub issues for %s/%s",
         owner,
         repo,
@@ -32,7 +32,7 @@ async def create_issue(
 ) -> dict:
     """Create a GitHub issue. Placeholder implementation."""
 
-    logger.info(
+    logger.debug(
         "Creating GitHub issue %s/%s: %s",
         owner,
         repo,

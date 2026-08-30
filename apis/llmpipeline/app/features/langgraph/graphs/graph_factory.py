@@ -167,7 +167,7 @@ def _create_agent_selector_node(
         selected_tool_names = list(explicit_tool_names or [])
 
         if explicit_skill_names:
-            logger.info(
+            logger.debug(
                 "Attached skills available for planner routing: %s",
                 explicit_skill_names,
             )
@@ -189,7 +189,7 @@ def _create_agent_selector_node(
             tenant_id=tenant_id,
         )
 
-        logger.info(
+        logger.debug(
             "Agent identified tools/skills. tools=%s skills=%s",
             selected_tool_names,
             [skill.name for skill in selected_skills]
@@ -233,7 +233,7 @@ def _create_dynamic_model_node(
 
         # Enable tool calling when tools are available
         if tools:
-            logger.info(
+            logger.debug(
                 "Binding selected tools: %s",
                 [tool.name for tool in tools],
             )

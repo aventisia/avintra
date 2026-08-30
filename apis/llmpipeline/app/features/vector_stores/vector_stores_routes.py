@@ -28,7 +28,7 @@ async def ingest_document_route(
         ingest_doc_request.embedding_credential_name = _normalize_optional_credential(ingest_doc_request.embedding_credential_name)
         ingest_doc_request.credential_name = _normalize_optional_credential(ingest_doc_request.credential_name)
 
-        logger.info("[VECTOR-INGEST] route called store=%s user=%s", ingest_doc_request.vector_store, _user.username)
+        logger.debug("[VECTOR-INGEST] route called store=%s user=%s", ingest_doc_request.vector_store, _user.username)
 
         # PgVector
         if ingest_doc_request.vector_store == "pgvector":
@@ -66,7 +66,7 @@ async def query_document_route(
         query_doc_request.embedding_credential_name = _normalize_optional_credential(query_doc_request.embedding_credential_name)
         query_doc_request.credential_name = _normalize_optional_credential(query_doc_request.credential_name)
 
-        logger.info("[VECTOR-QUERY] route called store=%s user=%s", query_doc_request.vector_store, _user.username)
+        logger.debug("[VECTOR-QUERY] route called store=%s user=%s", query_doc_request.vector_store, _user.username)
 
         # PgVector
         if query_doc_request.vector_store == "pgvector":
@@ -103,7 +103,7 @@ async def delete_document_route(
         # Normalize credential reference
         delete_doc_request.credential_name = _normalize_optional_credential(delete_doc_request.credential_name)
 
-        logger.info("[VECTOR-DELETE] route called store=%s user=%s", delete_doc_request.vector_store, _user.username)
+        logger.debug("[VECTOR-DELETE] route called store=%s user=%s", delete_doc_request.vector_store, _user.username)
 
         # PgVector
         if delete_doc_request.vector_store == "pgvector":

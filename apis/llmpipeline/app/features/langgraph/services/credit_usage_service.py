@@ -262,7 +262,7 @@ class CreditUsageService:
                 )
                 return
 
-            logger.info(
+            logger.debug(
                 "Posting credit usage for %s/%s: %s",
                 request.provider,
                 model_name,

@@ -170,7 +170,7 @@ async def resolve_requested_or_selected_tools_and_skills(
         explicit_skills = skill_names
 
     if explicit_tools is not None or explicit_skills is not None:
-        logger.info(
+        logger.debug(
             "Using explicit tool/skill selection. tools=%s skills=%s",
             explicit_tools,
             explicit_skills,
@@ -193,7 +193,7 @@ async def resolve_requested_or_selected_tools_and_skills(
         tenant_id=tenant_id,
     )
 
-    logger.info(
+    logger.debug(
         "Planner selected tools/skills. tools=%s skills=%s",
         selection.tool_names,
         selection.skill_names,

@@ -27,7 +27,7 @@ def create_gemini_model(
         # Initialize vault client
         vault_manager = VaultManager()
 
-        logger.info(
+        logger.debug(
             "Fetching Gemini BYOK credentials. credential_name=%s",
             llm_request.credential_name,
         )
@@ -74,7 +74,7 @@ def create_gemini_model(
                 detail="Gemini API key is missing.",
             )
 
-        logger.info(
+        logger.debug(
             "Gemini BYOK credentials loaded successfully."
         )
 

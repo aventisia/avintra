@@ -73,7 +73,7 @@ class LiteLLMService:
             # Some providers require response_format to be JSON-serializable dict.
             kwargs["response_format"] = response_format
 
-        logger.info(
+        logger.debug(
             f"[LLM-V2] chat_completion provider={request.provider} "
             f"model={request.model} stream={request.stream} byok={request.is_byok_enabled}"
         )
@@ -122,7 +122,7 @@ class LiteLLMService:
         if request.dimensions:
             kwargs["dimensions"] = request.dimensions
 
-        logger.info(
+        logger.debug(
             f"[LLM-V2] embed provider={request.provider} model={request.model} "
             f"inputs={len(input_texts)} byok={request.is_byok_enabled}"
         )
@@ -178,7 +178,7 @@ class LiteLLMService:
         if language:
             kwargs["language"] = language
 
-        logger.info(
+        logger.debug(
             f"[LLM-V2] transcribe provider={provider} model={model} "
             f"byok={is_byok}"
         )
@@ -234,7 +234,7 @@ class LiteLLMService:
             }
         )
 
-        logger.info(
+        logger.debug(
             f"[LLM-V2] synthesize provider={provider} model={model} "
             f"byok={is_byok}"
         )

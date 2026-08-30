@@ -169,7 +169,7 @@ async def _fetch_ollama_tags(
 
     names = _extract_model_names(response)
     if not names:
-        logger.info(f"[LLM-V2] Ollama server at {_host(base_url)} has no models.")
+        logger.debug(f"[LLM-V2] Ollama server at {_host(base_url)} has no models.")
         return []
     return names
 

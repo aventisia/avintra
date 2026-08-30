@@ -201,7 +201,7 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
                 all_chunks.extend(result.chunks)
         # Guard: no results from any KB
         if not all_chunks:
-            logger.info("[KB-RETRIEVAL] No chunks retrieved from knowledge base.")
+            logger.debug("[KB-RETRIEVAL] No chunks retrieved from knowledge base.")
             return
 
          # Rank chunks globally by similarity score (descending)
@@ -209,7 +209,7 @@ async def retrieve_and_inject_kb_context(llm_request: LLMRequest, user: User) ->
 
         # Format retrieved chunks as a context block and inject into LLMRequest input
         chunks_text = "\n\n".join(chunk.content for chunk in all_chunks)
-        logger.info(f"[KB-RETRIEVAL] Retrieved {len(all_chunks)} chunk(s) from knowledge base.")
+        logger.debug(f"[KB-RETRIEVAL] Retrieved {len(all_chunks)} chunk(s) from knowledge base.")
         context_str = f"[Knowledge Base Context]\n{chunks_text}\n[/Knowledge Base Context]"
         _inject_context_into_input(llm_request, context_str)
 

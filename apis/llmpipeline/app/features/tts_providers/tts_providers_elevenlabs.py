@@ -34,7 +34,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
         user: User
     ) -> TTSProviderResponse:
 
-        logger.info(f"[NO STREAMING] ElevenLabs TTS | model={tts_request.model}")
+        logger.debug(f"[NO STREAMING] ElevenLabs TTS | model={tts_request.model}")
 
         # Prepare base response object
         base_response = self._create_initial_response(tts_request)
@@ -86,7 +86,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
         user: User
     ) -> AsyncGenerator[str, None]:
 
-        logger.info(f"[STREAMING] ElevenLabs TTS | model={tts_request.model}")
+        logger.debug(f"[STREAMING] ElevenLabs TTS | model={tts_request.model}")
 
         # Prepare base response object
         base_response = self._create_initial_response(tts_request)
@@ -121,7 +121,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
 
                         # Stop if job is cancelled
                         if job_id not in list_active_tts_jobs():
-                            logger.info(f"TTS streaming cancelled | job={job_id}")
+                            logger.debug(f"TTS streaming cancelled | job={job_id}")
                             break
 
                         sequence_id += 1
@@ -179,7 +179,6 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
             )
 
             if not credential:
-                logger.error("Invalid BYOK credentials")
                 raise HTTPException(400, "Invalid credential name")
 
             # Override API config from vault (support both wrapped and flat data shapes)
@@ -198,7 +197,6 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                 task="elevenlabs_tts",
                 jwt=user.access_token
             ):
-                logger.warning("Insufficient credits for TTS")
                 raise HTTPException(400, "Insufficient credits")
 
     # Build full API URL
@@ -296,7 +294,7 @@ class ElevenLabsTTSProvider(BaseTextToSpeechProvider):
                     jwt=jwt
                 )
 
-                logger.info(f"TTS credit usage posted | ref_id={req.ref_id}")
+                logger.debug(f"TTS credit usage posted | ref_id={req.ref_id}")
 
             except Exception as e:
                 logger.error(f"Failed to post TTS credit usage | error={str(e)}")

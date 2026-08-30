@@ -124,7 +124,7 @@ def attach_files_to_human_message(
             )
 
         else:
-            logger.info(
+            logger.debug(
                 "Unsupported attachment type: %s",
                 file,
             )

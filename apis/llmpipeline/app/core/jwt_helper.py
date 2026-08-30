@@ -25,10 +25,8 @@ def get_jwt(request: Request) -> str:
         if access_token:
             return access_token
         else:
-            logger.error("No JWT found in Authorization header.")
             return "Error: No JWT found in Authorization header."
     else:
-        logger.warning("Authorization header missing.")
         return "Error: Authorization header missing"
 
 # Get user info from JWT token
@@ -52,9 +50,7 @@ def get_user_from_jwt(token: str) -> User:
             tenant_id=UUID(payload.get("tntid"))
         )
     except jwt.ExpiredSignatureError:
-        logger.error("Token has expired.")
         raise
 
     except jwt.InvalidTokenError as e:
-        logger.error(f"Invalid token: {e}")
         raise

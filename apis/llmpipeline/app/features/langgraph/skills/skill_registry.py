@@ -34,7 +34,7 @@ class SkillRegistry:
 
         self._skills[skill.name] = skill
 
-        logger.info(
+        logger.debug(
             "Registered skill: %s",
             skill.name,
         )
@@ -128,7 +128,7 @@ class SkillRegistry:
 
         del self._skills[name]
 
-        logger.info(
+        logger.debug(
             "Removed skill: %s",
             name,
         )
@@ -153,7 +153,7 @@ class SkillRegistry:
 
         self._user_skills[tenant_id][skill.name] = skill
 
-        logger.info(
+        logger.debug(
             "Registered tenant skill: %s for tenant %s",
             skill.name,
             tenant_id,
@@ -224,7 +224,7 @@ class SkillRegistry:
 
         if tenant_id in self._user_skills:
             del self._user_skills[tenant_id]
-            logger.info(
+            logger.debug(
                 "Cleared tenant skills for %s",
                 tenant_id,
             )

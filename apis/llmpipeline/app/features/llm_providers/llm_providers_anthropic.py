@@ -23,14 +23,14 @@ class AnthropicProvider(BaseLLMProvider):
 
     # Method: Generate a response from the LLM
     async def generate_llm_response(self, llm_request: LLMRequest, user: User):
-        logger.info(f"[NO STREAMING] Promptf sent to Anthropic provider with model: {llm_request.model}")
+        logger.debug(f"[NO STREAMING] Prompt sent to Anthropic provider with model: {llm_request.model}")
         
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_name:
             vault_manager = VaultManager()
 
             # Fetch the credentials from the vault using the credential NAME and JWT
-            logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
+            logger.debug(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
             credential = vault_manager.get_vault_secret_by_name(
                 credential=llm_request.credential_name,
                 jwt=user.access_token,
@@ -43,9 +43,8 @@ class AnthropicProvider(BaseLLMProvider):
                 # Update the API URL and key from the vault credentials
                 self.api_url = credential.get("data", {}).get("Url", self.api_url)
                 self.api_key = credential.get("data", {}).get("ApiKey", self.api_key)
-                logger.info("BYOK credentials successfully applied.")
+                logger.debug("BYOK credentials successfully applied.")
             else:
-                logger.error(f"BYOK enabled but no valid credentials found for credential: {llm_request.credential_name}")
                 raise HTTPException(
                     status_code=400,
                     detail=f"No valid credentials found for the provided credential '{llm_request.credential_name}'. Verify the name and that you have access in the '{user.env_type}' environment.",
@@ -55,7 +54,6 @@ class AnthropicProvider(BaseLLMProvider):
             credential_manager = CreditManagerService()
 
             if not credential_manager.has_sufficient_credits(task="anthropic", jwt=user.access_token):
-                logger.warning(f"Insufficient credits for Anthropic task, user: {user.username}")
                 raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
 
         # Initialize
@@ -83,7 +81,7 @@ class AnthropicProvider(BaseLLMProvider):
                 response_data = response.json()
                 
                 # Log response data for debugging (pretty-printed for readability)
-                logger.info(f"Anthropic response data:\n{json.dumps(response_data, indent=2)}")
+                logger.debug("Anthropic response data:\n%s", json.dumps(response_data, indent=2))
                 
                 # Extract output text using robust helper method
                 raw_output = self._extract_output_text_from_response(response_data)
@@ -115,14 +113,14 @@ class AnthropicProvider(BaseLLMProvider):
 
     # Method: Streaming response generator for Anthropic
     async def stream_llm_response(self, llm_request: LLMRequest, job_id: str, user: User):
-        logger.info(f"[STREAMING] Prompt sent to Anthropic provider with model: {llm_request.model}")
+        logger.debug(f"[STREAMING] Prompt sent to Anthropic provider with model: {llm_request.model}")
 
         # Handle BYOK (Bring Your Own Key) if enabled
         if llm_request.is_byok_enabled and llm_request.credential_name:
             vault_manager = VaultManager()
 
             # Fetch the credentials from the vault using the NAME and JWT
-            logger.info(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
+            logger.debug(f"Fetching credentials from vault for credential name: {llm_request.credential_name}")
             credential = vault_manager.get_vault_secret_by_name(
                 credential=llm_request.credential_name,
                 jwt=user.access_token,
@@ -135,7 +133,7 @@ class AnthropicProvider(BaseLLMProvider):
                 # Update the API URL and key from the vault credentials
                 self.api_url = credential.get("data", {}).get("Url", self.api_url)
                 self.api_key = credential.get("data", {}).get("ApiKey", self.api_key)
-                logger.info("BYOK credentials successfully applied.")
+                logger.debug("BYOK credentials successfully applied.")
             else:
                 logger.error(f"BYOK enabled but no valid credentials found for credential: {llm_request.credential_name}")
                 raise HTTPException(
@@ -147,7 +145,6 @@ class AnthropicProvider(BaseLLMProvider):
             credential_manager = CreditManagerService()
 
             if not credential_manager.has_sufficient_credits(task="anthropic", jwt=user.access_token):
-                logger.warning(f"Insufficient credits for Anthropic task, user: {user.username}")
                 raise HTTPException(status_code=400, detail="Insufficient credits to continue. Please top up your credits.")
 
         # Initialize
@@ -183,12 +180,11 @@ class AnthropicProvider(BaseLLMProvider):
                     async for line in response.aiter_lines():
                         # Stop streaming if the job has been cancelled
                         if job_id not in active_llm_jobs:
-                            logger.info(f"Streaming stopped: job {job_id} no longer active")
+                            logger.debug(f"Streaming stopped: job {job_id} no longer active")
                             break
 
                         # Normalize incoming line
                         line = line.strip()
-                        logger.info("Response: %s", line)
                         # Ignore non-data lines (Anthropic sends only "data:" lines for payload)
                         if not line.startswith("data:"):
                             continue
@@ -198,7 +194,7 @@ class AnthropicProvider(BaseLLMProvider):
 
                         # Handle explicit stream termination signal
                         if json_str == "[DONE]":
-                            logger.info(f"Received DONE signal for job {job_id}")
+                            logger.debug(f"Received DONE signal for job {job_id}")
                             break
 
                         try:
@@ -257,7 +253,7 @@ class AnthropicProvider(BaseLLMProvider):
 
                             # Handle completion event
                             elif event_type == "message_stop":
-                                logger.info(f"Stream completed successfully | job_id={job_id}")
+                                logger.debug(f"Stream completed successfully | job_id={job_id}")
 
                                 try:
                                     if llm_request.is_json_output:
@@ -495,35 +491,6 @@ class AnthropicProvider(BaseLLMProvider):
         llm_response.input_cached_tokens = usage.get("cache_read_input_tokens", 0)
         llm_response.output_tokens = usage.get("output_tokens", 0)
         llm_response.output_reasoning_tokens = usage.get("reasoning_tokens", 0)
-
-       # Post credit usage only when BYOK is disabled and no external credential is used
-        if not llm_request.is_byok_enabled and not llm_request.credential_name:
-            credit_usage_data = self._build_anthropic_credit_usage(llm_request, llm_response)
-
-            # # TODO: Extend ServiceType handling if new token categories are introduced
-            # # TODO: Verify if any additional services need to be uncommented/added in credit usage payload.
-            # credit_manager = CreditManagerService()
-
-            # try:
-            #     # Send credit usage data to billing/credit service
-            #     credit_manager.post_credit_usage(
-            #         task="anthropic",
-            #         request=credit_usage_data,
-            #         jwt=jwt
-            #     )
-            #     logger.info(
-            #         f"Successfully posted credit usage data for request ID {llm_request.ref_id}."
-            #     )
-
-            # except Exception as e:
-            #     # Log and propagate failure for visibility and retry handling
-            #     logger.error(
-            #         f"Failed to post credit usage data for request ID {llm_request.ref_id}. Error: {str(e)}"
-            #     )
-            #     raise HTTPException(
-            #         status_code=500,
-            #         detail=f"Failed to post credit usage: {str(e)}"
-            #     )
 
         return llm_response
 

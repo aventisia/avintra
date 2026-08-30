@@ -39,13 +39,13 @@ class CreditManagerService:
                 return False
             
             # Check credits and return result
-            logger.info(f"Successfully retrieved available credits: {credits}")
+            logger.debug(f"Successfully retrieved available credits: {credits}")
             if credits <= 10:
                 logger.warning(f"Insufficient credits available: {credits}")
                 return False
             
             # Sufficient credits
-            logger.info("Sufficient credits are available to continue.")
+            logger.debug("Sufficient credits are available to continue.")
             return True
         except Exception as ex:
             logger.error(f"Exception in has_sufficient_credits: {ex}")
@@ -68,10 +68,10 @@ class CreditManagerService:
             
         # Try to post credit usage
         try:
-            logger.info(f"Credit usage post list:\n{json.dumps(sanitized_request, indent=2)}")
+            logger.debug("Credit usage post list:\n%s", json.dumps(sanitized_request, indent=2))
             response = requests.post(f"{self.api_url}/bulk", json=sanitized_request, headers=headers, timeout=60, verify=settings.SSL_VERIFY)
             response.raise_for_status()
-            logger.info(f"CreditManagerService: Successfully posted credit usage for task {task}")
+            logger.debug(f"CreditManagerService: Successfully posted credit usage for task {task}")
         except Exception as e:
             logger.error(f"CreditManagerService: Failed to post credit usage for task {task}: {e}")
 

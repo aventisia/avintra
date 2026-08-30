@@ -84,7 +84,7 @@ async def resolve_and_inject_skill_context(llm_request: LLMRequest, user: User) 
         context_str = f"[Skill Context]\n{skill_prompt}\n[/Skill Context]"
         _inject_context_into_input(llm_request, context_str)
 
-        logger.info(
+        logger.debug(
             "[SKILL-INJECTION] Injected context for %d skill(s): %s",
             len(skill_configs),
             [skill.name for skill in skill_configs],

@@ -144,7 +144,7 @@ async def ensure_conversation(
     await session.flush()
     await session.refresh(conversation)
 
-    logger.info(
+    logger.debug(
         "Created conversation. conversation_id=%s tenant=%s user=%s flow_version=%s",
         conversation_id,
         tenant_id,
@@ -187,7 +187,7 @@ async def save_message(
         )
     )
 
-    logger.info(
+    logger.debug(
         "Persisted %s message for conversation %s.",
         _message_role(message),
         conversation_id,

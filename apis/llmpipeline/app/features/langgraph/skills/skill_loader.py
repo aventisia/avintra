@@ -146,7 +146,7 @@ def discover_skills() -> dict[str, SkillConfig]:
             continue
 
         discovered[config.name] = config
-        logger.info(
+        logger.debug(
             "Discovered skill %s from %s",
             config.name,
             full_module_name,
@@ -180,13 +180,13 @@ def load_default_skills(
 
     if skill_names:
         selected_names = set(skill_names)
-        logger.info(
+        logger.debug(
             "Loading skills by explicit request: %s",
             sorted(selected_names),
         )
     else:
         selected_names = set(discovered.keys())
-        logger.info(
+        logger.debug(
             "Loading all discovered default skills: %s",
             sorted(selected_names),
         )
@@ -361,7 +361,7 @@ async def load_user_skills_from_db(
 
         registry.register(config)
         loaded.append(config)
-        logger.info(
+        logger.debug(
             "Loaded user skill %s for tenant %s",
             config.name,
             tenant_id,

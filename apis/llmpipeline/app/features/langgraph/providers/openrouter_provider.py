@@ -27,7 +27,7 @@ def create_openrouter_model(
         # Initialize vault client
         vault_manager = VaultManager()
 
-        logger.info(
+        logger.debug(
             "Fetching OpenRouter BYOK credentials. credential_name=%s",
             llm_request.credential_name,
         )
@@ -74,7 +74,7 @@ def create_openrouter_model(
                 detail="OpenRouter API key is missing.",
             )
 
-        logger.info(
+        logger.debug(
             "OpenRouter BYOK credentials loaded successfully."
         )
 
