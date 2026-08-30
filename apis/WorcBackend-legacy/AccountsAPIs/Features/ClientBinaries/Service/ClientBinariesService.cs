@@ -22,14 +22,14 @@ public class ClientBinariesService : IClientBinariesService
     }
 
     // Retrieves the download manifest listing every available version of both products.
-    public async Task<ServiceResponse<DownloadManifestDto>> GetDownloadManifestAsync()
+    public Task<ServiceResponse<DownloadManifestDto>> GetDownloadManifestAsync()
     {
         // Initialize a service response with failure defaults
         var serviceResponse = ServiceResponse<DownloadManifestDto>.Create("Failed to retrieve the download manifest.", 500);
 
         const string cacheKey = "client-binaries-download-manifest";
         if (_cache.TryGetValue(cacheKey, out DownloadManifestDto? cached))
-            return serviceResponse.Update(null, 200, cached);
+            return Task.FromResult(serviceResponse.Update(null, 200, cached));
 
         // Each product exposes its own full version list so the Desktop App and the
         // Runner app can be at different versions independently.
@@ -59,18 +59,18 @@ public class ClientBinariesService : IClientBinariesService
             _cache.Set(cacheKey, manifest, TimeSpan.FromSeconds(60));
         }
 
-        return serviceResponse.Update(null, 200, manifest);
+        return Task.FromResult(serviceResponse.Update(null, 200, manifest));
     }
 
     // Retrieves the latest available version of the Runner App.
-    public async Task<ServiceResponse<RunnerLatestDto>> GetRunnerAppLatestAsync()
+    public Task<ServiceResponse<RunnerLatestDto>> GetRunnerAppLatestAsync()
     {
         // Initialize a service response with failure defaults
         var serviceResponse = ServiceResponse<RunnerLatestDto>.Create("Failed to retrieve the latest Runner App version.", 500);
 
         const string cacheKey = "runner-app-latest";
         if (_cache.TryGetValue(cacheKey, out RunnerLatestDto? cached))
-            return serviceResponse.Update(null, 200, cached);
+            return Task.FromResult(serviceResponse.Update(null, 200, cached));
 
         // Resolve the latest Runner App binary
         var (filePath, fileName, _, message) = ClientBinariesHelper.GetLatestVersion(
@@ -81,7 +81,7 @@ public class ClientBinariesService : IClientBinariesService
         {
             // Don't cache a negative result: files may be published while the API is
             // running, and caching "not found" requires a restart to clear.
-            return serviceResponse.Update(message, 404);
+            return Task.FromResult(serviceResponse.Update(message, 404));
         }
 
         // Extract the version from the file name and build the download URL
@@ -96,11 +96,11 @@ public class ClientBinariesService : IClientBinariesService
         };
 
         _cache.Set(cacheKey, result, TimeSpan.FromSeconds(60));
-        return serviceResponse.Update(null, 200, result);
+        return Task.FromResult(serviceResponse.Update(null, 200, result));
     }
 
     // Checks whether an update is available for the Desktop App at the given current version.
-    public async Task<ServiceResponse<UpdateCheckDto>> CheckUpdateAsync(string target, string arch, string currentVersion)
+    public Task<ServiceResponse<UpdateCheckDto>> CheckUpdateAsync(string target, string arch, string currentVersion)
     {
         // Initialize a service response with failure defaults
         var serviceResponse = ServiceResponse<UpdateCheckDto>.Create("Failed to check for updates.", 500);
@@ -111,7 +111,7 @@ public class ClientBinariesService : IClientBinariesService
             ClientBinariesHelper.DesktopPrefix,
             ClientBinariesHelper.DesktopSuffix);
         if (string.IsNullOrEmpty(filePath))
-            return serviceResponse.Update(message, 404);
+            return Task.FromResult(serviceResponse.Update(message, 404));
 
         // Extract the latest version from the file name
         var latestVersion = ClientBinariesHelper.ParseVersion(
@@ -121,7 +121,7 @@ public class ClientBinariesService : IClientBinariesService
 
         // No update needed when the current version matches the latest
         if (currentVersion == latestVersion)
-            return serviceResponse.Update(null, 204);
+            return Task.FromResult(serviceResponse.Update(null, 204));
 
         // Read the signature file
         var signature = System.IO.File.ReadAllText(signatureFilePath).Trim();
@@ -141,7 +141,7 @@ public class ClientBinariesService : IClientBinariesService
             }
         };
 
-        return serviceResponse.Update(null, 200, updateCheck);
+        return Task.FromResult(serviceResponse.Update(null, 200, updateCheck));
     }
 
     // Resolves the latest (or a specific) Desktop App binary for download.
