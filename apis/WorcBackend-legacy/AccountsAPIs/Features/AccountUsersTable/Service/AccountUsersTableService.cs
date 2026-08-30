@@ -90,9 +90,8 @@ public class AccountUsersTableService : IAccountUsersTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Users retrieved successfully";
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -119,8 +118,6 @@ public class AccountUsersTableService : IAccountUsersTableService
                 .Include(w => w.Plan)
                 .FirstOrDefaultAsync();
 
-            // Log: Checking if subscription exists
-            _logger.LogInformation("Checking subscription for TenantId: {TenantId}", _currentTenantService.CurrentTenantId);
 
             if (currentSubscription == null)
             {
@@ -165,7 +162,6 @@ public class AccountUsersTableService : IAccountUsersTableService
             // User already exists
             if (userAlreadyExists)
             {
-                _logger.LogInformation($"User already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A user with same email already exists. Please enter a unique Email";
                 return serviceResponse;
@@ -203,7 +199,6 @@ public class AccountUsersTableService : IAccountUsersTableService
             // User Insert-Job failed
             if (!createUserResult.Succeeded)
             {
-                _logger.LogInformation("Failed while creating new user");
                 return serviceResponse;
             }
 
@@ -213,7 +208,6 @@ public class AccountUsersTableService : IAccountUsersTableService
             // Add to Roles Task failed
             if (!createRolesResult.Succeeded)
             {
-                _logger.LogInformation("Failed while adding roles to user");
                 return serviceResponse;
             }
 
@@ -226,9 +220,8 @@ public class AccountUsersTableService : IAccountUsersTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "User created successfully";
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -276,7 +269,6 @@ public class AccountUsersTableService : IAccountUsersTableService
             // User does not exist
             if (user == null)
             {
-                _logger.LogInformation($"User does not exist");
                 serviceResponse.Message = "User does not exist";
                 return serviceResponse;
             }
@@ -289,7 +281,6 @@ public class AccountUsersTableService : IAccountUsersTableService
             // User already exists
             if (userAlreadyExists)
             {
-                _logger.LogInformation($"User already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A user with same Email already exists. Please enter a unique Email";
                 return serviceResponse;
@@ -315,7 +306,6 @@ public class AccountUsersTableService : IAccountUsersTableService
             // User Update-Job failed
             if (!updateUserResult.Succeeded)
             {
-                _logger.LogInformation("Failed while updating user");
                 return serviceResponse;
             }
 
@@ -325,7 +315,6 @@ public class AccountUsersTableService : IAccountUsersTableService
             // Update user roles jab failed
             if (!updateUserRolesResult)
             {
-                _logger.LogInformation("Failed while updating User roles");
                 return serviceResponse;
             }
 
@@ -348,9 +337,8 @@ public class AccountUsersTableService : IAccountUsersTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "User updated successfully";
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -390,7 +378,6 @@ public class AccountUsersTableService : IAccountUsersTableService
             // User does not exist
             if (user == null)
             {
-                _logger.LogInformation($"User does not exist");
                 serviceResponse.Message = "User does not exist";
                 return serviceResponse;
             }
@@ -401,7 +388,6 @@ public class AccountUsersTableService : IAccountUsersTableService
             // Delete-Job failed
             if (!deleteUserResult.Succeeded)
             {
-                _logger.LogInformation("Failed while deleting user");
                 return serviceResponse;
             }
 
@@ -416,9 +402,8 @@ public class AccountUsersTableService : IAccountUsersTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "User deleted successfully";
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -448,9 +433,8 @@ public class AccountUsersTableService : IAccountUsersTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Users retrieved successfully";
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -487,9 +471,8 @@ public class AccountUsersTableService : IAccountUsersTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Spaces retrieved successfully";
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -584,9 +567,8 @@ public class AccountUsersTableService : IAccountUsersTableService
             // Task successful
             return true;
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex.ToString());
             return false;
         }
     }
@@ -621,7 +603,6 @@ public class AccountUsersTableService : IAccountUsersTableService
             // Users do not exist
             if (users.Count == 0)
             {
-                _logger.LogInformation($"Users do not exist");
                 serviceResponse.Message = "Users do not exist";
                 return serviceResponse;
             }
@@ -640,7 +621,6 @@ public class AccountUsersTableService : IAccountUsersTableService
                 // User Update-Job failed
                 if (!updateUserResult.Succeeded)
                 {
-                    _logger.LogInformation($"Failed while disabling user {user.UserName}");
                     isUpdateSuccessful = false;
                 }
             }
@@ -654,9 +634,8 @@ public class AccountUsersTableService : IAccountUsersTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Users disabled successfully";
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -678,7 +657,6 @@ public class AccountUsersTableService : IAccountUsersTableService
                 .OrderBy(o => o.Seq)
                 .Select(s => s.Name)
                 .ToList();
-
             return userToManageRoles;
         }
         catch

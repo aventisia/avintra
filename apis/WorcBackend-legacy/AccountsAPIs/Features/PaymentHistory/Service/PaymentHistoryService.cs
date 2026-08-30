@@ -36,8 +36,8 @@ public class PaymentHistoryService : IPaymentHistoryService
         {
             // Fetch payment history entity by ID from repository
             var paymentHistoryEntity = await _unitOfWork.PaymentHistoryRepo
-                .GetByConditionAsync(w => 
-                    w.Id == paymentHistoryId && 
+                .GetByConditionAsync(w =>
+                    w.Id == paymentHistoryId &&
                     w.TenantId == _tenantId
                 )
                 .FirstOrDefaultAsync();
@@ -55,7 +55,6 @@ public class PaymentHistoryService : IPaymentHistoryService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Payment history retrieved successfully";
 
-            _logger.LogInformation("Successfully retrieved payment history for Id {PaymentHistoryId}", paymentHistoryId);
         }
         catch (Exception ex)
         {
@@ -134,7 +133,6 @@ public class PaymentHistoryService : IPaymentHistoryService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Payment history created successfully";
 
-            _logger.LogInformation("Payment history created successfully with Id {PaymentHistoryId}", newPaymentHistoryEntity.Id);
         }
         catch (Exception ex)
         {
@@ -195,7 +193,6 @@ public class PaymentHistoryService : IPaymentHistoryService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Payment history updated successfully";
 
-            _logger.LogInformation("Successfully updated payment history with Id {PaymentHistoryId}", paymentHistoryDto.Id);
         }
         catch (Exception ex)
         {
@@ -250,7 +247,6 @@ public class PaymentHistoryService : IPaymentHistoryService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Payment history deleted successfully";
 
-            _logger.LogInformation("Successfully deleted payment history with Id {PaymentHistoryId}", paymentHistoryId);
         }
         catch (Exception ex)
         {
@@ -284,7 +280,7 @@ public class PaymentHistoryService : IPaymentHistoryService
         {
             // Retrieve all payment histories matching the given IDs from repository
             var paymentHistoriesToDelete = await _unitOfWork.PaymentHistoryRepo
-                .GetByConditionAsync(w => 
+                .GetByConditionAsync(w =>
                     paymentHistoryIds.Contains(w.Id) &&
                     w.TenantId == _tenantId)
                 .ToListAsync();
@@ -316,7 +312,6 @@ public class PaymentHistoryService : IPaymentHistoryService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = $"Successfully deleted {paymentHistoriesToDelete.Count} payment histories";
 
-            _logger.LogInformation("Successfully deleted {Count} payment histories for user {UserId}", paymentHistoriesToDelete.Count, _userId);
         }
         catch (Exception ex)
         {

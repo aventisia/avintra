@@ -23,8 +23,6 @@ public class CustomerService : ICustomerService
 
         try
         {
-            // Log the start of the customer creation process
-            _logger.LogInformation("Starting CreateCustomerAsync for Customer Name: {Name}, Email: {Email}", customerDto.Name, customerDto.Email);
 
             // Prepare customer data dictionary to send in the API request
             var customerRequest = new Dictionary<string, object>
@@ -32,9 +30,6 @@ public class CustomerService : ICustomerService
                     { "name", customerDto.Name },
                     { "email", customerDto.Email }
                 };
-
-            // Log the customer data (excluding sensitive data)
-            _logger.LogDebug("Prepared customer request: Name={Name}, Email={Email}", customerDto.Name, customerDto.Email);
 
             // Add optional contact field if provided by the customer
             if (!string.IsNullOrEmpty(customerDto.Contact))
@@ -51,8 +46,6 @@ public class CustomerService : ICustomerService
             // Call Razorpay API to create the customer
             var customer = await Task.Run(() => _razorpayClient.Customer.Create(customerRequest));
 
-            // Log successful customer creation
-            _logger.LogInformation("Customer created successfully with Email: {CustomerEmail}", customerDto.Email);
 
             // Map the response from Razorpay to the CustomerResponseDto object
             var createdCustomer = new CustomerResponseDto()
@@ -72,7 +65,6 @@ public class CustomerService : ICustomerService
         }
         catch (Exception ex)
         {
-            // Log any exceptions that occur during the process
             _logger.LogError(ex, "Error occurred while creating customer with Email: {CustomerEmail}", customerDto.Email);
         }
 
@@ -92,13 +84,10 @@ public class CustomerService : ICustomerService
 
         try
         {
-            _logger.LogInformation("Fetching customer with ID: {CustomerId}", customerId);
 
             // Fetch the customer data from Razorpay API
             var customer = await Task.Run(() => _razorpayClient.Customer.Fetch(customerId));
 
-            // Log successful retrieval
-            _logger.LogInformation("Customer fetched successfully for ID: {CustomerId}", customerId);
 
             // Map the response from Razorpay to the CustomerResponseDto object
             var retrivedCustomer = new CustomerResponseDto()
@@ -118,7 +107,6 @@ public class CustomerService : ICustomerService
         }
         catch (Exception ex)
         {
-            // Log errors encountered during the fetch operation
             _logger.LogError(ex, "Error occurred while fetching customer with ID: {CustomerId}", customerId);
         }
 
@@ -138,13 +126,10 @@ public class CustomerService : ICustomerService
 
         try
         {
-            _logger.LogInformation("Fetching all customers from Razorpay");
 
             // Call Razorpay API to fetch all customers
             var customers = await Task.Run(() => _razorpayClient.Customer.All());
 
-            // Log the number of customers fetched
-            _logger.LogInformation("Successfully fetched {Count} customers", customers.Count);
 
             // Transform the raw customer data into a list of CustomerResponseDto objects
             var customerList = customers.Select(s => new CustomerResponseDto()
@@ -164,7 +149,6 @@ public class CustomerService : ICustomerService
         }
         catch (Exception ex)
         {
-            // Log errors encountered during the fetch of all customers
             _logger.LogError(ex, "Error occurred while fetching all customers.");
         }
 
@@ -184,7 +168,6 @@ public class CustomerService : ICustomerService
 
         try
         {
-            _logger.LogInformation("Starting UpdateCustomerAsync for Customer ID: {CustomerId}", customerId);
 
             // Prepare the update data dictionary
             var customerRequest = new Dictionary<string, object>
@@ -192,9 +175,6 @@ public class CustomerService : ICustomerService
                     { "name", customerDto.Name },
                     { "email", customerDto.Email }
                 };
-
-            // Log the prepared update request (excluding sensitive data)
-            _logger.LogDebug("Prepared customer update request: Name={Name}, Email={Email}", customerDto.Name, customerDto.Email);
 
             // Add contact field to the update request if it’s provided by the customer
             if (!string.IsNullOrEmpty(customerDto.Contact))
@@ -218,8 +198,6 @@ public class CustomerService : ICustomerService
                 return existingCustomer.Edit(customerRequest);
             });
 
-            // Log successful update
-            _logger.LogInformation("Customer updated successfully for ID: {CustomerId}", customerId);
 
             // Map the response from Razorpay to the CustomerResponseDto object
             var updatedCustomer = new CustomerResponseDto()
@@ -239,7 +217,6 @@ public class CustomerService : ICustomerService
         }
         catch (Exception ex)
         {
-            // Log errors encountered during the update process
             _logger.LogError(ex, "Error occurred while updating customer with ID: {CustomerId}", customerId);
         }
 

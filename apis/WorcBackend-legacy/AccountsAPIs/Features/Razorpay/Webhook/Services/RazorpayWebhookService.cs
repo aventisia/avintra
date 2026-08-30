@@ -26,8 +26,6 @@ public class WebhookService : IWebhookService
 
     public async Task<bool> HandleWebhookAsync(HttpRequest request)
     {
-        // Log the receipt of the webhook request from Razorpay
-        _logger.LogInformation("Received a Razorpay webhook request.");
 
         try
         {
@@ -38,7 +36,6 @@ public class WebhookService : IWebhookService
                 body = await reader.ReadToEndAsync();
             }
 
-            _logger.LogInformation("Webhook body successfully read.");
 
             // Retrieve the Razorpay signature from the headers
             string? signature = request.Headers["X-Razorpay-Signature"];
@@ -54,7 +51,6 @@ public class WebhookService : IWebhookService
             // Verify the authenticity of the webhook request by comparing the Razorpay signature with a computed hash using the request body and secret.
             Razorpay.Api.Utils.verifyWebhookSignature(body, signature, secret);
 
-            _logger.LogInformation("Razorpay signature verified successfully.");
 
             // Parse the JSON payload from the body
             var json = Newtonsoft.Json.Linq.JObject.Parse(body);
@@ -68,19 +64,15 @@ public class WebhookService : IWebhookService
                 return false;
             }
 
-            _logger.LogInformation($"Event type '{eventType}' received.");
 
             // Pass the event to the appropriate handler for business logic processing
             await DispatchEventAsync(eventType, json);
 
-            _logger.LogInformation($"Successfully processed Razorpay webhook event: {eventType}");
 
             return true;
         }
         catch (Exception ex)
         {
-            // Log the error details for debugging and return failure
-            _logger.LogError(ex, $"Razorpay webhook processing failed: {ex.Message}");
             return false;
         }
     }
@@ -88,7 +80,6 @@ public class WebhookService : IWebhookService
     // Dispatches incoming events to their corresponding handler methods based on the event type.
     private async Task DispatchEventAsync(string eventType, Newtonsoft.Json.Linq.JObject json)
     {
-        _logger.LogInformation($"Dispatching event '{eventType}' to the appropriate handler.");
 
         switch (eventType)
         {
@@ -162,8 +153,6 @@ public class WebhookService : IWebhookService
                 break;
 
             case "subscription.charged":
-                // Log the event of receiving a subscription charge webhook
-                _logger.LogInformation("Processing subscription charge event.");
 
                 // Invoke the method to handle the subscription status update to 'Active'
                 TenantSubscription? tenantSubscription = await HandleActivateSubscriptionStatus(json);
@@ -265,7 +254,6 @@ public class WebhookService : IWebhookService
             // ========================== Unhandled Events ==========================
 
             default:
-                _logger.LogWarning($"Unhandled Razorpay event received: '{eventType}'");
                 break;
         }
     }
@@ -290,8 +278,6 @@ public class WebhookService : IWebhookService
             return null;
         }
 
-        // Log the extracted Razorpay Subscription ID for tracking purposes.
-        _logger.LogInformation("Extracted Razorpay Subscription ID: {RazorpaySubscriptionId}", razorpaySubscriptionId);
 
         try
         {
@@ -307,8 +293,6 @@ public class WebhookService : IWebhookService
                 return null;
             }
 
-            // Log tenant information to verify we have found the correct tenant.
-            _logger.LogInformation("Found tenant with Razorpay Customer ID: {RazorpayCustomerId}", razorpayCustomerId);
 
             // Retrieve the current active subscription for the tenant.
             var currentTenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -327,7 +311,6 @@ public class WebhookService : IWebhookService
 
                 // Update the subscription status to inactive in the repository.
                 _unitOfWork.TenantSubscriptionRepo.Update(currentTenantSubscription);
-                _logger.LogInformation("Deactivated subscription with Razorpay Subscription ID: {RazorpaySubscriptionId}.", razorpaySubscriptionId);
 
                 // Handle credits for the Starter plan if applicable.
                 if (currentTenantSubscription.Plan.Type == SubscriptionPlanTypeEnum.Starter)
@@ -342,7 +325,6 @@ public class WebhookService : IWebhookService
                         tenantCredit.AvailableCredits = 0;
                         tenantCredit.LastModifiedByUserId = tenant.LastModifiedByUserId;
                         _unitOfWork.TenantCreditRepo.Update(tenantCredit);
-                        _logger.LogInformation("Reset credits for Tenant ID: {TenantId}, Subscription ID: {SubscriptionId}.", tenant.Id, currentTenantSubscription.Id);
                     }
                 }
             }
@@ -361,8 +343,6 @@ public class WebhookService : IWebhookService
                 return null;
             }
 
-            // Log the current status of the subscription for debugging purposes.
-            _logger.LogInformation("Found subscription with Razorpay Subscription ID: {RazorpaySubscriptionId}, Current Status: {CurrentStatus}", razorpaySubscriptionId, tenantSubscription.Status);
 
             // Extract subscription start and end dates from the Razorpay subscription entity.
             DateTimeOffset? subscriptionStartDate = razorpaySubscriptionEntity["current_start"] != null
@@ -373,7 +353,6 @@ public class WebhookService : IWebhookService
                 ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(razorpaySubscriptionEntity["current_end"])).ToUniversalTime()
                 : (DateTimeOffset?)null;
 
-            _logger.LogInformation("Subscription Start Date: {StartDate}, End Date: {EndDate}", subscriptionStartDate, subscriptionEndDate);
 
             // Calculate the next billing date based on the subscription's end date, or default to the frequency (monthly or yearly).
             var nextBillingDate = subscriptionEndDate ?? (tenantSubscription.Frequency == SubscriptionFrequenciesEnum.Monthly
@@ -386,7 +365,6 @@ public class WebhookService : IWebhookService
             tenantSubscription.Status = SubscriptionStatusTypesEnum.Active;
             tenantSubscription.LastModifiedByUserId = tenant.LastModifiedByUserId;
 
-            _logger.LogInformation("Updated Subscription with Razorpay Subscription ID: {RazorpaySubscriptionId} to Active status. Next Billing Date: {NextBillingDate}", razorpaySubscriptionId, nextBillingDate);
 
             // Update the subscription entity in the repository.
             _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
@@ -399,7 +377,6 @@ public class WebhookService : IWebhookService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"An error occurred while processing the subscription activation for Razorpay Subscription ID: {razorpaySubscriptionId}. Error: {ex.Message}");
         }
 
         // Return the updated tenant subscription, or null if no update was made.
@@ -422,13 +399,10 @@ public class WebhookService : IWebhookService
         // Return early if the Razorpay Subscription ID is missing or invalid in the payload.
         if (string.IsNullOrEmpty(razorpaySubscriptionId))
         {
-            // Log a warning if the subscription ID is missing or invalid.
             _logger.LogWarning("The subscription ID is either missing or invalid in the webhook payload.");
             return tenantSubscription;
         }
 
-        // Log the extracted subscription ID for tracking and debugging purposes.
-        _logger.LogInformation("Extracted Subscription ID: {RazorpaySubscriptionId}", razorpaySubscriptionId);
 
         try
         {
@@ -460,8 +434,6 @@ public class WebhookService : IWebhookService
 
             tenantSubscription.Status = targetStatus;
 
-            // Log the action of updating the subscription status for tracking purposes.
-            _logger.LogInformation("Updating subscription with ID {RazorpaySubscriptionId} to '{TargetStatus}' status.", razorpaySubscriptionId, targetStatus);
 
             // Update the subscription entity in the repository.
             _unitOfWork.TenantSubscriptionRepo.Update(tenantSubscription);
@@ -474,8 +446,6 @@ public class WebhookService : IWebhookService
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors or exceptions that occur during the subscription status update process.
-            _logger.LogError($"Exception encountered while processing subscription status update for Razorpay Subscription ID {razorpaySubscriptionId}: {ex.Message}");
         }
 
         // Return the updated tenant subscription object (may still be null if no update was made).
@@ -493,7 +463,6 @@ public class WebhookService : IWebhookService
             return;
         }
 
-        _logger.LogInformation("Processing billing details for Subscription ID: {SubscriptionId}", subscriptionId);
 
         try
         {
@@ -613,10 +582,6 @@ public class WebhookService : IWebhookService
 
         try
         {
-            // Log the creation of the credit entry
-            _logger.LogInformation("Assigning {AvailableCredits} credits to TenantId {TenantId} for SubscriptionId {SubscriptionId}. Expiry Date: {ExpiredOn}",
-                tenantCredit.AvailableCredits, tenantCredit.TenantId, tenantCredit.SubscriptionId, tenantCredit.ExpiredOn);
-
             // Insert the credit into the database
             await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredit);
 
@@ -628,8 +593,7 @@ public class WebhookService : IWebhookService
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors during the credit assignment
-            _logger.LogError($"An error occurred while assigning credits to TenantId {tenantSubscription.TenantId} for SubscriptionId {tenantSubscription.Id}: {ex.Message}");
+            _logger.LogError(ex, "An error occurred while assigning credits to TenantId {tenantSubscription.TenantId} for SubscriptionId {tenantSubscription.Id}: {ex.Message}", tenantSubscription.TenantId, tenantSubscription.Id, ex.Message);
         }
     }
 
@@ -665,7 +629,6 @@ public class WebhookService : IWebhookService
 
                 if (billingHistory == null)
                 {
-                    // Log a warning if the billing detail is missing or invalid
                     _logger.LogWarning("Missing or invalid Razorpay Customer ID in the payload.");
                     return;
                 }
@@ -682,7 +645,6 @@ public class WebhookService : IWebhookService
 
                 if (tenant == null)
                 {
-                    // Log a warning if tenant associated with the Razorpay Customer ID is not found
                     _logger.LogWarning("Tenant not found for Razorpay Customer ID: {RazorpayCustomerId}", razorpayCustomerId);
                     return;
                 }
@@ -787,7 +749,6 @@ public class WebhookService : IWebhookService
         }
         catch (Exception ex)
         {
-            // Log any exceptions that occur during the processing
             _logger.LogError(ex, "Error processing payment history for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
         }
     }
@@ -818,7 +779,6 @@ public class WebhookService : IWebhookService
 
             if (billingHistory == null)
             {
-                // Log a warning if the billing detail is missing or invalid
                 _logger.LogWarning("Missing or invalid Razorpay Customer ID in the payload.");
                 return;
             }
@@ -862,7 +822,6 @@ public class WebhookService : IWebhookService
                             tenantCredit.AvailableCredits = 0;
                             tenantCredit.LastModifiedByUserId = currentTenantSubscription.LastModifiedByUserId;
                             _unitOfWork.TenantCreditRepo.Update(tenantCredit);
-                            _logger.LogInformation("Reset credits for Tenant ID: {TenantId}, Subscription ID: {SubscriptionId}.", currentTenantSubscription.TenantId, currentTenantSubscription.Id);
                         }
                     }
                 }
@@ -955,7 +914,6 @@ public class WebhookService : IWebhookService
         }
         catch (Exception ex)
         {
-            // Log any exceptions that occur during the processing
             _logger.LogError(ex, "Error processing payment history for Razorpay Payment ID: {RazorpayPaymentId}", razorpayPaymentId);
         }
     }
@@ -970,7 +928,6 @@ public class WebhookService : IWebhookService
             return;
         }
 
-        _logger.LogInformation("Processing billing details for Subscription ID: {SubscriptionId}", subscriptionId);
 
         try
         {
@@ -1059,7 +1016,6 @@ public class WebhookService : IWebhookService
         }
         catch (Exception ex)
         {
-            // Log any exceptions that occur during the process
             _logger.LogError(ex, "An error occurred while processing billing details for Razorpay Subscription ID {SubscriptionId}", subscriptionId);
         }
     }
@@ -1077,7 +1033,6 @@ public class WebhookService : IWebhookService
         // If no negative credits are found, return maxCredits
         if (!availableCredits.Any())
         {
-            _logger.LogInformation("No negative credits found for TenantId: {TenantId}. Returning maxCredits.", tenantId);
             return totalCredits;
         }
 
@@ -1090,14 +1045,8 @@ public class WebhookService : IWebhookService
         // Ensure the total doesn't exceed the maximum value for ulong and is non-negative
         totalCredits = (ulong)Math.Min((decimal)Math.Max((decimal)credits, 0), (decimal)ulong.MaxValue);
 
-        // Log the reset of available credits for the tenant
-        _logger.LogInformation("Resetting AvailableCredits for TenantId: {TenantId}.", tenantId);
-
         // Set all available credits to zero
         availableCredits.ForEach(f => f.AvailableCredits = 0);
-
-        // Log reset action completion
-        _logger.LogInformation("AvailableCredits reset to zero for TenantId: {TenantId}.", tenantId);
 
         // Save the changes to the database
         _unitOfWork.TenantCreditRepo.Update(availableCredits);
@@ -1107,10 +1056,6 @@ public class WebhookService : IWebhookService
         {
             _logger.LogError("Failed to save updated credit data for TenantId: {TenantId}.", tenantId);
         }
-
-        // Log the total of negative credits
-        _logger.LogInformation("Total negative credits for TenantId {TenantId}: {TotalNegativeCredits}.", tenantId, totalNegativeCredits);
-
         return totalCredits;
     }
 

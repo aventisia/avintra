@@ -19,8 +19,6 @@ public class InstanceUsageJob : IJob
         // Record the current UTC time to log the job start and end times
         var currentDateTime = DateTimeOffset.UtcNow;
 
-        // Log the start of the job execution
-        _logger.LogInformation($"Instance usage job started at {currentDateTime:O}");
 
         try
         {
@@ -32,18 +30,13 @@ public class InstanceUsageJob : IJob
                 // Post the collected metrics to an external API for processing
                 await _instanceService.PostMetricsToApiAsync(serviceResponse.Data);
 
-                // Log successful completion of the job
-                _logger.LogInformation($"Instance usage job completed successfully at {currentDateTime:O}");
             }
             else
             {
-                // Log failure if the metrics collection was unsuccessful
-                _logger.LogWarning($"Metrics collection failed with message: {serviceResponse.Message}");
             }
         }
         catch (Exception ex)
         {
-            // Log any errors that occur during the job execution
             _logger.LogError(ex, "An error occurred while executing the instance usage job.");
         }
     }

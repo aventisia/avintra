@@ -47,7 +47,6 @@ public class ManageTenantService : IManageTenantService
             // Check if the user's (requester) tenant ID is the same as the tenant ID to delete If the user tries to delete their own tenant, we prevent it.
             if (_currentTenantService.CurrentTenantId == _userTenantId)
             {
-                _logger.LogWarning($"Attempt to delete user's own tenant. TenantId: {_userTenantId}. Operation is not allowed.");
                 serviceResponse.Message = "You cannot delete your own tenant.";
                 return serviceResponse;
             }
@@ -56,7 +55,6 @@ public class ManageTenantService : IManageTenantService
             var tenantIdToBeDeleted = _currentTenantService.CurrentTenantId;
 
             // Fetch tenant from repository with deletion constraints
-            _logger.LogInformation($"Attempting to fetch tenant record for deletion. TenantId: {tenantIdToBeDeleted}");
             var tenant = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(w =>
                     w.IsEditable &&
@@ -68,7 +66,6 @@ public class ManageTenantService : IManageTenantService
             // Check if tenant exists
             if (tenant == null)
             {
-                _logger.LogInformation($"Tenant not found. TenantId: {tenantIdToBeDeleted}. It may have already been deleted or is not eligible for deletion.");
                 serviceResponse.Message = "Tenant does not exist or is not eligible for deletion.";
                 return serviceResponse;
             }
@@ -76,7 +73,6 @@ public class ManageTenantService : IManageTenantService
             // Check if tenant is a default system tenant (can't delete default tenant)
             if (tenant.IsDefault)
             {
-                _logger.LogWarning($"Attempt to delete system default tenant blocked. TenantId: {tenant.Id}, Name: {tenant.Name}");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Cannot delete the system default tenant.";
                 return serviceResponse;
@@ -89,7 +85,6 @@ public class ManageTenantService : IManageTenantService
 
             if (hasBillingHistory)
             {
-                _logger.LogWarning($"Tenant deletion blocked due to existing billing history. TenantId: {tenant.Id}");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Cannot delete a tenant with existing billing history.";
                 return serviceResponse;
@@ -100,33 +95,26 @@ public class ManageTenantService : IManageTenantService
 
             if (!deletionSuccess)
             {
-                _logger.LogError($"Failed to delete related data for tenant ID: {tenant.Id}");
                 return serviceResponse;
             }
 
             // Proceed with deleting tenant record
-            _logger.LogInformation($"Attempting to delete tenant record. TenantId: {tenant.Id}, Name: {tenant.Name}");
             _unitOfWork.TenantRepo.Delete(tenant);
 
             // Persist changes in the database
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError($"SaveChanges failed while deleting tenant record. TenantId: {tenant.Id}, Name: {tenant.Name}");
                 return serviceResponse;
             }
 
-            // Log successful deletion of tenant
-            _logger.LogInformation($"Tenant successfully deleted. TenantId: {tenant.Id}, Name: {tenant.Name}");
 
             // Blob storage deletion
             var blobDeleted = await _azureBlobStorageService.RemoveContainerAsync(tenant.ContainerName);
             if (blobDeleted)
             {
-                _logger.LogInformation($"Blob container '{tenant.ContainerName}' deleted successfully.");
             }
             else
             {
-                _logger.LogError($"Failed to delete blob container '{tenant.ContainerName}' for tenant ID: {tenant.Id}");
             }
 
             // Update response to indicate successful deletion
@@ -137,16 +125,12 @@ public class ManageTenantService : IManageTenantService
         }
         catch (Exception ex)
         {
-            // Catch unexpected errors and log them with detailed information
-            _logger.LogError(ex, $"Unexpected error occurred while deleting tenant. TenantId: {_currentTenantService.CurrentTenantId}");
         }
         return serviceResponse;
     }
 
     private async Task<bool> DeleteTenantRelatedDataAsync(Tenant tenant)
     {
-        // Start the deletion process and log the tenant information for tracking
-        _logger.LogInformation("Starting deletion of related data for tenant ID: {TenantId}, Name: {TenantName}", tenant.Id, tenant.Name);
 
         try
         {
@@ -163,7 +147,6 @@ public class ManageTenantService : IManageTenantService
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _jwt);
                 request.Headers.Add("X-TENANT-ID", tenantId.ToString());
 
-                // Log the outgoing request to the external API for transparency
                 _logger.LogInformation("Sending DELETE request to {ApiUrl} for tenant {TenantId}", apiUrl, tenantId);
 
                 // Send the DELETE request and wait for the response
@@ -173,7 +156,6 @@ public class ManageTenantService : IManageTenantService
                 // Check if the response was successful
                 if (!response.IsSuccessStatusCode)
                 {
-                    // Log detailed error if the request failed
                     _logger.LogError("Failed DELETE request to {ApiUrl} for tenant {TenantId}. Status: {Status}, Response: {Content}",
                         apiUrl, tenantId, response.StatusCode, content);
                     return false;  // Return false to indicate failure
@@ -188,13 +170,10 @@ public class ManageTenantService : IManageTenantService
                 // Check if the response was valid and contains success status
                 if (apiResponse == null || !apiResponse.Data)
                 {
-                    // Log error with detailed message if API returned failure
                     _logger.LogError("API returned failure for tenant {TenantName}, ID: {TenantId}. Message: {Message}", tenantName, tenantId, apiResponse?.Message);
                     return false;  // Return false if the deletion failed
                 }
 
-                // Log success message after a successful deletion call
-                _logger.LogInformation("Successfully deleted tenant in API {ApiUrl} for tenant {TenantId}", apiUrl, tenantId);
                 return true;
             }
 
@@ -202,7 +181,6 @@ public class ManageTenantService : IManageTenantService
             var workspaceResult = await CallExternalDeleteApi(workspaceApiUrl, tenant.Id, tenant.Name);
             if (!workspaceResult)
             {
-                // Log failure and return early if Workspace API call failed
                 _logger.LogError("Workspace API call failed for tenant {TenantId}", tenant.Id);
                 return false;
             }
@@ -288,7 +266,6 @@ public class ManageTenantService : IManageTenantService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error while deleting related data for tenant ID: {tenant.Id}, Exception: {ex.Message}");
             return false;
         }
     }
@@ -308,14 +285,11 @@ public class ManageTenantService : IManageTenantService
         if (!entities.Any())
             return true;
 
-        // Delete entities and log the operation
-        _logger.LogInformation($"Deleting {entities.Count} {entityName} records for tenant ID: {tenantId}");
         repository.Delete(entities);
 
         // Save changes and check for success
         if (!await _unitOfWork.SaveAsync())
         {
-            _logger.LogError($"Context SaveChanges failed while deleting {entityName} records.");
             return false;
         }
 
@@ -385,7 +359,6 @@ public class ManageTenantService : IManageTenantService
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("SaveChanges failed while updating support config for tenant {TenantId}", tenantId);
                 return serviceResponse;
             }
 

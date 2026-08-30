@@ -38,12 +38,9 @@ public class AppIntegrationService : IAppIntegrationService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "App integrations fetched successfully.";
 
-            // Log success
-            _logger.LogInformation("Successfully retrieved {Count} app integrations from the database.", appIntegrations.Count);
         }
         catch (Exception ex)
         {
-            // Log any error that occurs
             _logger.LogError(ex, "Error occurred while fetching app integrations.");
         }
 
@@ -62,8 +59,6 @@ public class AppIntegrationService : IAppIntegrationService
 
         try
         {
-            // Log the request for retrieving a specific app integration
-            _logger.LogInformation("Looking up app integration with ID: {AppIntegrationId}", appIntegrationId);
 
             // Fetch the specific app integration by its ID
             var appIntegration = await _unitOfWork.AppIntegrationRepo
@@ -84,12 +79,9 @@ public class AppIntegrationService : IAppIntegrationService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "App integration retrieved successfully.";
 
-            // Log success
-            _logger.LogInformation("Successfully fetched app integration with ID: {AppIntegrationId}", appIntegrationId);
         }
         catch (Exception ex)
         {
-            // Log any error that occurs
             _logger.LogError(ex, "An error occurred while fetching app integration with ID: {AppIntegrationId}", appIntegrationId);
         }
 
@@ -108,8 +100,6 @@ public class AppIntegrationService : IAppIntegrationService
 
         try
         {
-            // Log the initiation of app integration creation
-            _logger.LogInformation("Initiating creation of app integration: {AppIntegrationName}", appIntegrationDto.Name);
 
             // Check if an integration with the same name already exists
             var existingIntegration = await _unitOfWork.AppIntegrationRepo
@@ -118,7 +108,6 @@ public class AppIntegrationService : IAppIntegrationService
 
             if (existingIntegration != null)
             {
-                // Log the duplicate creation attempt and return conflict response
                 _logger.LogWarning("App integration creation aborted. An integration named '{AppIntegrationName}' already exists.", appIntegrationDto.Name);
                 serviceResponse.Message = $"An app integration named '{appIntegrationDto.Name}' already exists.";
                 serviceResponse.StatusCode = 409;
@@ -139,7 +128,6 @@ public class AppIntegrationService : IAppIntegrationService
             // Commit the changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                // Log the failure to save the new integration
                 _logger.LogError("Failed to save newly created app integration: {AppIntegrationName}", appIntegrationDto.Name);
                 return serviceResponse;
             }
@@ -149,12 +137,9 @@ public class AppIntegrationService : IAppIntegrationService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "App integration created successfully.";
 
-            // Log the successful creation
-            _logger.LogInformation("App integration created successfully with ID: {AppIntegrationId}", newAppIntegration.Id);
         }
         catch (Exception ex)
         {
-            // Log any error that occurs during creation
             _logger.LogError(ex, "An unexpected error occurred while creating app integration: {AppIntegrationName}", appIntegrationDto.Name);
         }
 
@@ -173,8 +158,6 @@ public class AppIntegrationService : IAppIntegrationService
 
         try
         {
-            // Log the initiation of app integration update
-            _logger.LogInformation("Attempting to update app integration with ID: {AppIntegrationId}", appIntegrationDto.Id);
 
             // Fetch the existing app integration to update
             var existingAppIntegration = await _unitOfWork.AppIntegrationRepo
@@ -183,7 +166,6 @@ public class AppIntegrationService : IAppIntegrationService
 
             if (existingAppIntegration == null)
             {
-                // Log and return failure response if the integration does not exist
                 _logger.LogWarning("Update failed. No app integration found with ID: {AppIntegrationId}", appIntegrationDto.Id);
                 serviceResponse.Message = "App integration not found.";
                 return serviceResponse;
@@ -196,7 +178,6 @@ public class AppIntegrationService : IAppIntegrationService
 
             if (duplicateIntegration != null)
             {
-                // Log and return failure response if a duplicate exists
                 _logger.LogWarning("Update failed. App integration with name '{AppIntegrationName}' already exists.", appIntegrationDto.Name);
                 serviceResponse.Message = $"An app integration with the name '{appIntegrationDto.Name}' already exists.";
                 serviceResponse.StatusCode = 409;
@@ -216,7 +197,6 @@ public class AppIntegrationService : IAppIntegrationService
             // Commit the changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                // Log the failure to save the updated integration
                 _logger.LogError("Failed to save updated app integration: {AppIntegrationId}", appIntegrationDto.Id);
                 return serviceResponse;
             }
@@ -226,12 +206,9 @@ public class AppIntegrationService : IAppIntegrationService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "App integration updated successfully.";
 
-            // Log the successful update
-            _logger.LogInformation("App integration with ID: {AppIntegrationId} successfully updated.", appIntegrationDto.Id);
         }
         catch (Exception ex)
         {
-            // Log any error that occurs during update
             _logger.LogError(ex, "Error occurred while updating app integration with ID: {AppIntegrationId}", appIntegrationDto.Id);
         }
 
@@ -250,8 +227,6 @@ public class AppIntegrationService : IAppIntegrationService
 
         try
         {
-            // Log the initiation of app integration deletion
-            _logger.LogInformation("Initiating deletion of app integration with ID: {AppIntegrationId}", appIntegrationId);
 
             // Fetch the app integration to be deleted
             var appIntegration = await _unitOfWork.AppIntegrationRepo
@@ -260,7 +235,6 @@ public class AppIntegrationService : IAppIntegrationService
 
             if (appIntegration == null)
             {
-                // Log and return failure response if the integration does not exist
                 _logger.LogWarning("No app integration found with ID: {AppIntegrationId}", appIntegrationId);
                 serviceResponse.Message = "App integration not found.";
                 return serviceResponse;
@@ -272,7 +246,6 @@ public class AppIntegrationService : IAppIntegrationService
             // Commit the changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                // Log the failure to delete the integration
                 _logger.LogWarning("Failed to delete app integration with ID: {AppIntegrationId} due to database save error.", appIntegrationId);
                 return serviceResponse;
             }
@@ -282,12 +255,9 @@ public class AppIntegrationService : IAppIntegrationService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "App integration deleted successfully.";
 
-            // Log the successful deletion
-            _logger.LogInformation("App integration with ID: {AppIntegrationId} successfully deleted.", appIntegrationId);
         }
         catch (Exception ex)
         {
-            // Log any error that occurs during deletion
             _logger.LogError(ex, "Unexpected error while deleting app integration with ID: {AppIntegrationId}", appIntegrationId);
         }
 
@@ -306,8 +276,6 @@ public class AppIntegrationService : IAppIntegrationService
 
         try
         {
-            // Log the initiation of bulk app integration deletion
-            _logger.LogInformation("Initiating bulk deletion for {Count} app integration(s).", appIntegrationIds.Count);
 
             // Fetch the app integrations to be deleted
             var appIntegrations = await _unitOfWork.AppIntegrationRepo
@@ -316,7 +284,6 @@ public class AppIntegrationService : IAppIntegrationService
 
             if (appIntegrations == null || appIntegrations.Count == 0)
             {
-                // Log and return failure response if no integrations are found
                 _logger.LogWarning("No app integrations found for deletion.");
                 serviceResponse.Message = "No app integrations found to delete.";
                 return serviceResponse;
@@ -328,7 +295,6 @@ public class AppIntegrationService : IAppIntegrationService
             // Commit the changes to the database
             if (!await _unitOfWork.SaveAsync())
             {
-                // Log the failure to delete integrations
                 _logger.LogWarning("Failed to commit bulk deletion of app integrations.");
                 return serviceResponse;
             }
@@ -338,12 +304,9 @@ public class AppIntegrationService : IAppIntegrationService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "App integrations deleted successfully.";
 
-            // Log the successful bulk deletion
-            _logger.LogInformation("Successfully deleted {Count} app integration(s).", appIntegrations.Count);
         }
         catch (Exception ex)
         {
-            // Log any error that occurs during bulk deletion
             _logger.LogError(ex, "Unexpected error while bulk deleting app integrations.");
         }
 

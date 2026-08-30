@@ -59,7 +59,6 @@ public class ResetPwdService : IResetPwdService
             // Jwt cookie not found
             if (pwdResetJwt == null)
             {
-                _logger.LogInformation($"{CookieNamesEnum.AccessToken} not found while trying to reset password");
                 return serviceResponse;
             }
 
@@ -76,14 +75,12 @@ public class ResetPwdService : IResetPwdService
             // JwtInfo not found
             if (jwtInfo == null)
             {
-                _logger.LogInformation($"Not able to extract information from Jwt");
                 return serviceResponse;
             }
 
             // jwtInfo.TenantId || jwtInfo.UserName not found
             if (string.IsNullOrWhiteSpace(jwtInfo.TenantId) || string.IsNullOrWhiteSpace(jwtInfo.UserName))
             {
-                _logger.LogInformation($"Not able to extract TenantId and Username from Jwt");
                 return serviceResponse;
             }
 
@@ -97,14 +94,12 @@ public class ResetPwdService : IResetPwdService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"User account not found for username {jwtInfo.UserName}");
                 return serviceResponse;
             }
 
             // Match found in ObsoletePwd table
             if (!await _authHelperService.DoesNewPwdPassObsoletePwdPolicy(pwdResetDto.NewPwd, user))
             {
-                _logger.LogInformation($"A match found in obsolete passwords list for account {jwtInfo.UserName}");
                 serviceResponse.Message = "New password does not meet all the requirements. Please try again";
                 return serviceResponse;
             }
@@ -117,14 +112,12 @@ public class ResetPwdService : IResetPwdService
             // Reset-NewPwd job failed
             if (!pwdRemoveResult.Succeeded || !addNewPwdResult.Succeeded)
             {
-                _logger.LogInformation($"Usermanager is not able to set new password for account {jwtInfo.UserName}");
                 return serviceResponse;
             }
 
             // Saving pwd in ObsoletePwd failed
             if (!await _authHelperService.SavePwdInObsoletePwdList(user, pwdResetDto.NewPwd, newPwdSetOn))
             {
-                _logger.LogInformation($"Not able to save new pwd in ObsoletePwd list for account {jwtInfo.UserName}");
                 return serviceResponse;
             }
 
@@ -141,7 +134,6 @@ public class ResetPwdService : IResetPwdService
             // Context SaveChanges job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Context SaveChanges failed. While inserting ObsoletePwd and updating user.PwdSetOn for username - {user.Email}");
                 return serviceResponse;
             }
 
@@ -151,19 +143,16 @@ public class ResetPwdService : IResetPwdService
             // Failed to send PwdReset email
             if (!await _emailService.SendEmailUsingTemplate(EmailTypesEnum.PwdReset, user.Email, placeholderValues))
             {
-                _logger.LogError($"Error occurred while sending password has been reset email to {user.Email}");
                 /*Still moving forward as new password is already saved in the database*/
             }
 
             // Task successful
-            _logger.LogInformation($"Password has been reset for account {jwtInfo.UserName}");
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your password has been reset";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -207,7 +196,6 @@ public class ResetPwdService : IResetPwdService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"LogoffFromAllSessions Error: {ex.Message} for username {userName}");
             return false;
         }
     }

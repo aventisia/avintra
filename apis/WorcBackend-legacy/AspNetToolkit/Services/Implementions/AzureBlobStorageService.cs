@@ -47,7 +47,6 @@ public class AzureBlobStorageService : IAzureBlobStorageService
         if (!fileStream.CanRead)
             throw new ArgumentException("File stream must be readable.", nameof(fileStream));
 
-        _logger.LogInformation("Uploading blob '{FileName}' to container '{ContainerName}'. ContentType: {ContentType}", fileName, containerName, contentType);
 
         try
         {
@@ -82,8 +81,6 @@ public class AzureBlobStorageService : IAzureBlobStorageService
     // Downloads a blob from Azure Blob Storage.
     public async Task<FileStreamContentResponseDto> DownloadFileAsync(string containerName, string fileName)
     {
-        // Log the download operation for auditing and diagnostics.
-        _logger.LogInformation("Downloading blob '{FileName}' from container '{ContainerName}'.", fileName, containerName);
 
         // Get a client for the specified blob container.
         var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
@@ -110,8 +107,6 @@ public class AzureBlobStorageService : IAzureBlobStorageService
     // Deletes a blob if it exists.
     public async Task<bool> DeleteFileAsync(string containerName, string fileName)
     {
-        // Log the delete operation for traceability and diagnostics.
-        _logger.LogInformation("Deleting blob '{FileName}' from container '{ContainerName}'.", fileName, containerName);
 
         // Get a client for the specified blob container.
         var containerClient = _blobServiceClient.GetBlobContainerClient(containerName);
@@ -148,7 +143,6 @@ public class AzureBlobStorageService : IAzureBlobStorageService
         // If the container does not exist, log the message and return true (no need to delete).
         if (!containerExists)
         {
-            _logger.LogInformation($"Blob container '{containerName}' does not exist. No action needed.");
             return true;
         }
 

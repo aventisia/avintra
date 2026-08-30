@@ -33,7 +33,6 @@ public class AITaskService : IAITaskService
             // Check if the provided AI task name is valid
             if (string.IsNullOrEmpty(checkAvailabilityDto.UserInput))
             {
-                _logger.LogError($"Invalid AI task name: '{checkAvailabilityDto.UserInput}'. It must start with a letter or underscore and cannot contain spaces or symbols.");
                 serviceResponse.Message = $"The name '{checkAvailabilityDto.UserInput}' is invalid. Please use a valid name.";
                 return serviceResponse;
             }
@@ -94,8 +93,6 @@ public class AITaskService : IAITaskService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "AI tasks retrieved successfully.";
 
-            // Log the successful retrieval of AI tasks
-            _logger.LogInformation("Successfully retrieved {Count} AI tasks for user {UserId}.", aiTasks.Count, _userId);
         }
         catch (Exception ex)
         {
@@ -138,8 +135,6 @@ public class AITaskService : IAITaskService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "AI task retrieved successfully.";
 
-            // Log successful retrieval
-            _logger.LogInformation("Successfully retrieved AI task with ID {AITaskId}.", aiTaskId);
         }
         catch (Exception ex)
         {
@@ -182,8 +177,6 @@ public class AITaskService : IAITaskService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "AI task retrieved successfully.";
 
-            // Log successful retrieval
-            _logger.LogInformation("Successfully retrieved AI task with name {AITaskName}.", aiTaskName);
         }
         catch (Exception ex)
         {
@@ -232,7 +225,6 @@ public class AITaskService : IAITaskService
             // Save changes to the database and check for success
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("SaveChanges failed when inserting AI task with name {TaskName}.", aiTaskDto.Name);
                 return serviceResponse;
             }
 
@@ -241,8 +233,6 @@ public class AITaskService : IAITaskService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "AI task inserted successfully.";
 
-            // Log successful insertion
-            _logger.LogInformation("Successfully inserted new AI task with name {TaskName} by user {UserId}.", aiTaskDto.Name, _userId);
         }
         catch (Exception ex)
         {
@@ -310,7 +300,6 @@ public class AITaskService : IAITaskService
             // Save changes to the database and check for success
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("SaveChanges failed when updating AI task with ID {AITaskId}.", aiTaskDto.Id);
                 return serviceResponse;
             }
 
@@ -319,8 +308,6 @@ public class AITaskService : IAITaskService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "AI task updated successfully.";
 
-            // Log successful update
-            _logger.LogInformation("Successfully updated AI task with ID {AITaskId} by user {UserId}.", aiTaskDto.Id, _userId);
         }
         catch (Exception ex)
         {
@@ -361,7 +348,6 @@ public class AITaskService : IAITaskService
             // Save changes to the database and check for success
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("SaveChanges failed when deleting AI task with ID {AITaskId}.", aiTaskId);
                 return serviceResponse;
             }
 
@@ -370,8 +356,6 @@ public class AITaskService : IAITaskService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "AI task deleted successfully.";
 
-            // Log successful deletion
-            _logger.LogInformation("Successfully deleted AI task with ID {AITaskId} by user {UserId}.", aiTaskId, _userId);
         }
         catch (Exception ex)
         {
@@ -423,8 +407,6 @@ public class AITaskService : IAITaskService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = $"Successfully deleted {tasksToDelete.Count} AI tasks.";
 
-            // Log the successful deletion
-            _logger.LogInformation("Successfully deleted {TaskCount} AI tasks for user {UserId} with task IDs {AITaskIds}.", tasksToDelete.Count, _userId, string.Join(", ", aiTaskIds));
         }
         catch (Exception ex)
         {
@@ -433,7 +415,6 @@ public class AITaskService : IAITaskService
         // Return the response
         return serviceResponse;
     }
-
     // Method to search AI tasks by name
     public async Task<ServiceResponse<IEnumerable<AITaskTableDto>>> SearchAITasksByNameAsync(string taskName)
     {
@@ -449,14 +430,9 @@ public class AITaskService : IAITaskService
             // Validate that the provided task name is not null, empty, or just whitespace
             if (string.IsNullOrWhiteSpace(taskName))
             {
-                // Log invalid search term
-                _logger.LogWarning("The provided search term is empty or only contains whitespace.");
                 serviceResponse.Message = "Search keyword cannot be empty or whitespace.";
                 return serviceResponse;
             }
-
-            // Log the search term being used for the query
-            _logger.LogInformation("Searching for AI tasks with the search term '{TaskName}' for user {UserId}.", taskName, _userId);
 
             // Perform the search query by matching the task name (case-insensitive)
             var matchedAITasks = await _unitOfWork.AITaskRepo
@@ -466,7 +442,6 @@ public class AITaskService : IAITaskService
             // If no matching AI tasks were found, return a message indicating this
             if (matchedAITasks == null || !matchedAITasks.Any())
             {
-                _logger.LogInformation("No AI tasks found for search term '{TaskName}' for user {UserId}.", taskName, _userId);
                 serviceResponse.Message = "No AI tasks found matching the provided search term.";
                 return serviceResponse;
             }
@@ -475,9 +450,6 @@ public class AITaskService : IAITaskService
             serviceResponse.Data = matchedAITasks.Adapt<IEnumerable<AITaskTableDto>>();
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = $"{matchedAITasks.Count} AI task(s) found matching the search term '{taskName}'.";
-
-            // Log how many tasks were found and the search term used
-            _logger.LogInformation("{Count} AI task(s) found for search term '{TaskName}' for user {UserId}.", matchedAITasks.Count, taskName, _userId);
         }
         catch (Exception ex)
         {

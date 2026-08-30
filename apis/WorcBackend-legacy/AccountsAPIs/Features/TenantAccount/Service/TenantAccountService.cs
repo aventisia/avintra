@@ -47,7 +47,6 @@ public class TenantAccountService : ITenantAccountService
 
         try
         {
-            _logger.LogInformation("Attempting to retrieve tenant organization for TenantId: {TenantId}", _tenantId);
 
             // Fetch tenant entity using TenantId
             var tenant = await _unitOfWork.TenantRepo
@@ -93,11 +92,9 @@ public class TenantAccountService : ITenantAccountService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant organization details retrieved successfully.";
 
-            _logger.LogInformation("Successfully retrieved tenant organization for TenantId: {TenantId}", _tenantId);
         }
         catch (Exception ex)
         {
-            // Log the exception
             _logger.LogError(ex, "An error occurred while retrieving tenant organization details for TenantId: {TenantId}", _tenantId);
         }
 
@@ -116,7 +113,6 @@ public class TenantAccountService : ITenantAccountService
 
         try
         {
-            _logger.LogInformation("Starting update for Tenant Organization. TenantId: {TenantId}", _tenantId);
 
             // Fetch tenant entity from repository
             var tenant = await _unitOfWork.TenantRepo
@@ -131,7 +127,6 @@ public class TenantAccountService : ITenantAccountService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Tenant found. Proceeding with update for TenantId: {TenantId}", _tenantId);
 
             // Fetch tenant subscription entity from repository
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -156,7 +151,6 @@ public class TenantAccountService : ITenantAccountService
             // Existing Billing detail is null
             if (existingBillingDetail == null)
             {
-                _logger.LogInformation("No existing billing detail found for TenantId: {TenantId}", _tenantId);
                 serviceResponse.Message = "No existing billing detail found to update.";
                 return serviceResponse;
             }
@@ -173,7 +167,6 @@ public class TenantAccountService : ITenantAccountService
             var billingDetailObjForResponse = existingBillingDetail;
             if (billingHistoriesCount == 0)
             {
-                _logger.LogInformation("No billing history found. Updating existing billing detail.");
 
                 // Update existing Billing Detail
                 organizationBillingDto.Adapt(existingBillingDetail);
@@ -192,14 +185,12 @@ public class TenantAccountService : ITenantAccountService
                     return serviceResponse;
                 }
 
-                _logger.LogInformation("Billing detail updated successfully for TenantId: {TenantId}", _tenantId);
 
                 // Set the response object to the updated billing detail
                 billingDetailObjForResponse = existingBillingDetail;
             }
             else
             {
-                _logger.LogInformation("Billing history found. Creating new billing detail.");
 
                 // Create a new Billing Detail
                 var newBillingDetail = organizationBillingDto.Adapt<BillingDetail>();
@@ -219,7 +210,6 @@ public class TenantAccountService : ITenantAccountService
                     return serviceResponse;
                 }
 
-                _logger.LogInformation("New billing detail created successfully for TenantId: {TenantId}", _tenantId);
 
                 // Set the response object to the newly created billing detail
                 billingDetailObjForResponse = newBillingDetail;
@@ -234,7 +224,6 @@ public class TenantAccountService : ITenantAccountService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant organization updated successfully.";
 
-            _logger.LogInformation("Tenant organization update process completed successfully for TenantId: {TenantId}", _tenantId);
         }
         catch (Exception ex)
         {
@@ -257,7 +246,6 @@ public class TenantAccountService : ITenantAccountService
 
         try
         {
-            _logger.LogInformation("Attempting to retrieve tenant preferences for TenantId: {TenantId}", _tenantId);
 
             // Attempt to retrieve tenant entity based on the tenant ID
             var tenant = await _unitOfWork.TenantRepo
@@ -281,11 +269,9 @@ public class TenantAccountService : ITenantAccountService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant preferences retrieved successfully.";
 
-            _logger.LogInformation("Successfully retrieved tenant preferences for TenantId: {TenantId}", _tenantId);
         }
         catch (Exception ex)
         {
-            // Log the exception with context
             _logger.LogError(ex, "Error occurred while retrieving tenant preferences for TenantId: {TenantId}", _tenantId);
         }
 
@@ -304,7 +290,6 @@ public class TenantAccountService : ITenantAccountService
 
         try
         {
-            _logger.LogInformation("Attempting to update tenant preferences for TenantId: {TenantId}", _tenantId);
 
             // Retrieve tenant entity to update
             var tenant = await _unitOfWork.TenantRepo
@@ -370,11 +355,9 @@ public class TenantAccountService : ITenantAccountService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Tenant preferences updated successfully.";
 
-            _logger.LogInformation("Successfully updated tenant preferences for TenantId: {TenantId}", _tenantId);
         }
         catch (Exception ex)
         {
-            // Log the exception with context
             _logger.LogError(ex, "Error occurred while updating tenant preferences for TenantId: {TenantId}", _tenantId);
         }
 
@@ -392,7 +375,6 @@ public class TenantAccountService : ITenantAccountService
 
         try
         {
-            _logger.LogInformation("Attempting to retrieve notification settings for TenantId: {TenantId}", _tenantId);
 
             var tenant = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(t => t.Id == _tenantId)
@@ -430,7 +412,6 @@ public class TenantAccountService : ITenantAccountService
 
         try
         {
-            _logger.LogInformation("Attempting to update notification settings for TenantId: {TenantId}", _tenantId);
 
             var tenant = await _unitOfWork.TenantRepo
                 .GetByConditionAsync(t => t.Id == _tenantId)
@@ -483,7 +464,6 @@ public class TenantAccountService : ITenantAccountService
             serviceResponse.Data = BuildNotificationSettingsDto(_tenantId, settings);
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Notification settings updated successfully.";
-            _logger.LogInformation("Successfully updated notification settings for TenantId: {TenantId}", _tenantId);
         }
         catch (Exception ex)
         {
@@ -547,7 +527,6 @@ public class TenantAccountService : ITenantAccountService
 
             if (response.IsSuccessStatusCode)
             {
-                _logger.LogInformation("Azure Entra credentials validated successfully for TenantId: {TenantId}", tenantId);
                 return true;
             }
             else
@@ -560,7 +539,6 @@ public class TenantAccountService : ITenantAccountService
         }
         catch (Exception ex)
         {
-            // Catch any exception and log the error
             _logger.LogError(ex, "Exception occurred while validating Azure Entra credentials for TenantId: {TenantId}", _environmentConfig.AzureTenantId);
             return false;
         }
@@ -628,7 +606,6 @@ public class TenantAccountService : ITenantAccountService
         }
         catch (Exception ex)
         {
-            // Log unexpected exceptions and return the default error response.
             _logger.LogError(ex, "An error occurred while searching account users with key '{SearchKey}'", searchKey);
         }
 

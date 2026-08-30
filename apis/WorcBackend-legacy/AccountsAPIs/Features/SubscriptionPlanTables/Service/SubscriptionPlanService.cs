@@ -83,7 +83,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Subscription plans retrieved successfully.";
 
-            _logger.LogInformation("Retrieved {Count} subscription plan(s).", subscriptionPlans.Count);
         }
         catch (Exception ex)
         {
@@ -119,7 +118,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Subscription plans retrieved successfully.";
 
-            _logger.LogInformation("Retrieved {Count} subscription plan(s).", subscriptionPlans.Count);
         }
         catch (Exception ex)
         {
@@ -176,7 +174,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         try
         {
-            _logger.LogInformation("Fetching subscription plan with ID: {SubscriptionPlanId}", subscriptionPlanId);
 
             // Query the database for the plan and include the creator
             var plan = await _unitOfWork.SubscriptionPlanRepo
@@ -197,7 +194,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Subscription plan retrieved successfully.";
 
-            _logger.LogInformation("Successfully retrieved subscription plan with ID: {SubscriptionPlanId}", subscriptionPlanId);
         }
         catch (Exception ex)
         {
@@ -219,7 +215,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         try
         {
-            _logger.LogInformation("Attempting to create a new subscription plan: {PlanName}", subscriptionPlanDto.Name);
 
             // Check if plan name already exists (case-insensitive)
             var existingPlan = await _unitOfWork.SubscriptionPlanRepo
@@ -262,7 +257,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Subscription plan created successfully.";
 
-            _logger.LogInformation("Subscription plan created successfully with ID: {SubscriptionPlanId}", newSubscriptionPlan.Id);
         }
         catch (Exception ex)
         {
@@ -404,7 +398,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Subscription plan updated successfully.";
 
-            _logger.LogInformation("Subscription plan with ID {SubscriptionPlanId} updated successfully.", subscriptionPlanDto.Id);
         }
         catch (Exception ex)
         {
@@ -485,7 +478,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
 
         try
         {
-            _logger.LogInformation("Bulk deletion of {Count} subscription plans initiated.", subscriptionPlanIds.Count);
 
             // Fetch all matching plans
             var plans = await _unitOfWork.SubscriptionPlanRepo
@@ -524,7 +516,6 @@ public class SubscriptionPlanService : ISubscriptionPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Subscription plans deleted successfully.";
 
-            _logger.LogInformation("Successfully deleted {Count} subscription plans.", plans.Count);
         }
         catch (Exception ex)
         {

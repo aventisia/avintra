@@ -54,36 +54,18 @@ public class VerificationCodeService : IVerificationCodeService
             // VerificationCode not found
             if (verificationCode == null)
             {
-                _logger.LogInformation($"Verification code not found. " +
-                    $"While trying to validate verification code for " +
-                    $"Verification code Id - {checkVerificationCodeDto.VerificationCodeId}, " +
-                    $"requestType - {checkVerificationCodeDto.RequestType}, " +
-                    $"username - {checkVerificationCodeDto.Email} and " +
-                    $"device Id - {userAgent}");
                 return serviceResponse;
             }
 
             // Code did not match
             if (verificationCode.SecretCode != checkVerificationCodeDto.SecretCode)
             {
-                _logger.LogInformation($"Verification code did not match. " +
-                    $"While trying to validate verification code for " +
-                    $"Verification code Id - {checkVerificationCodeDto.VerificationCodeId}, " +
-                    $"requestType - {checkVerificationCodeDto.RequestType}, " +
-                    $"username - {checkVerificationCodeDto.Email} and " +
-                    $"device Id - {userAgent}");
                 return serviceResponse;
             }
 
             // Code has expired
             if (verificationCode.ExpiresOn <= DateTimeOffset.UtcNow)
             {
-                _logger.LogInformation($"Verification code has expired. " +
-                    $"While trying to validate verification code for " +
-                    $"Verification code Id - {checkVerificationCodeDto.VerificationCodeId}, " +
-                    $"requestType - {checkVerificationCodeDto.RequestType}, " +
-                    $"username - {checkVerificationCodeDto.Email} and " +
-                    $"device Id - {userAgent}");
                 return serviceResponse;
             }
 
@@ -93,12 +75,6 @@ public class VerificationCodeService : IVerificationCodeService
             // Delete-verificationCode job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Context SaveChanges failed. " +
-                    $"While deleting verification code for " +
-                    $"Verification code Id - {checkVerificationCodeDto.VerificationCodeId}, " +
-                    $"requestType - {checkVerificationCodeDto.RequestType}, " +
-                    $"username - {checkVerificationCodeDto.Email} and " +
-                    $"device Id - {userAgent}");
                 return serviceResponse;
             }
 
@@ -134,18 +110,12 @@ public class VerificationCodeService : IVerificationCodeService
             }
 
             // Task successful
-            _logger.LogInformation($"Verification code has been validated successfully for " +
-                    $"Verification code Id - {checkVerificationCodeDto.VerificationCodeId}, " +
-                    $"requestType - {checkVerificationCodeDto.RequestType}, " +
-                    $"username - {checkVerificationCodeDto.Email} and " +
-                    $"device Id - {userAgent}");
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Verification code has been validated successfully";
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

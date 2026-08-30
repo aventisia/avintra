@@ -60,7 +60,6 @@ public class LoginWithPwdService : ILoginWithPwdService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogWarning($"Account not found for email {pwdLoginDto.Email}");
                 serviceResponse.Message = "Invalid credentials";
                 return serviceResponse;
             }
@@ -71,7 +70,6 @@ public class LoginWithPwdService : ILoginWithPwdService
             // Account is locked
             if (result.IsLockedOut)
             {
-                _logger.LogWarning($"{pwdLoginDto.Email} account is locked");
                 serviceResponse.Message = "Your account is locked. Please unlock it first";
                 return serviceResponse;
             }
@@ -79,7 +77,6 @@ public class LoginWithPwdService : ILoginWithPwdService
             // Signing in failed
             if (!result.Succeeded)
             {
-                _logger.LogError($"Error while signing in user {pwdLoginDto.Email} with password. Error: {result}");
                 serviceResponse.Message = "Invalid credentials";
                 return serviceResponse;
             }
@@ -104,7 +101,6 @@ public class LoginWithPwdService : ILoginWithPwdService
             // Account is disabled
             if (user.IsDisabled)
             {
-                _logger.LogInformation($"{pwdLoginDto.Email} account is disabled");
                 serviceResponse.Message = "Your account is disabled. Please contact support adminstrator";
                 return serviceResponse;
             }
@@ -112,7 +108,6 @@ public class LoginWithPwdService : ILoginWithPwdService
             // Account is disabled
             if (user.DeactivatedOn.ToUniversalTime() < DateTime.MaxValue.ToUniversalTime() && user.DeactivatedOn.ToUniversalTime() != DateTime.MinValue.ToUniversalTime() && user.DeactivatedOn.ToUniversalTime() != DateTime.MaxValue.ToUniversalTime())
             {
-                _logger.LogInformation($"{pwdLoginDto.Email} account is deleted");
                 serviceResponse.Message = "Your account is deleted. Please contact support adminstrator";
                 return serviceResponse;
             }
@@ -130,7 +125,6 @@ public class LoginWithPwdService : ILoginWithPwdService
                 // Password has expired
                 if (user?.Tenant.IsPwdNeverExpiresEnabled == false && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > user?.Tenant.DaysBeforePwdExpires)
                 {
-                    _logger.LogInformation($"{pwdLoginDto.Email} account's password has been expired");
                     serviceResponse.StatusCode = 200;
 
                     /********IMPORTANCT NOTE********
@@ -146,7 +140,6 @@ public class LoginWithPwdService : ILoginWithPwdService
                 if (user.Tenant.IsTwoFAEnabled || user.TwoFactorEnabled)
                 {
                     // log information
-                    _logger.LogInformation($"Returning TwoFA is enabled for account {pwdLoginDto.Email}");
 
                     /********IMPORTANCT NOTE********
                     DO NOT CHANGE the message's part "TwoFA is enabled" 
@@ -165,7 +158,6 @@ public class LoginWithPwdService : ILoginWithPwdService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -206,36 +198,18 @@ public class LoginWithPwdService : ILoginWithPwdService
             // VerificationCode not found
             if (verificationCode == null)
             {
-                _logger.LogInformation($"TwoFA Verification code not found. " +
-                    $"While trying to validate verification code for " +
-                    $"Verification code Id - {checkVerificationCodeDto.VerificationCodeId}, " +
-                    $"requestType - {checkVerificationCodeDto.RequestType}, " +
-                    $"username - {checkVerificationCodeDto.Email} and " +
-                    $"device Id - {userAgent}");
                 return serviceResponse;
             }
 
             // Code did not match
             if (verificationCode.SecretCode != checkVerificationCodeDto.SecretCode)
             {
-                _logger.LogInformation($"TwoFA Verification code did not match. " +
-                    $"While trying to validate verification code for " +
-                    $"Verification code Id - {checkVerificationCodeDto.VerificationCodeId}, " +
-                    $"requestType - {checkVerificationCodeDto.RequestType}, " +
-                    $"username - {checkVerificationCodeDto.Email} and " +
-                    $"device Id - {userAgent}");
                 return serviceResponse;
             }
 
             // Code has expired
             if (verificationCode.ExpiresOn <= DateTimeOffset.UtcNow)
             {
-                _logger.LogInformation($"TwoFA Verification code has expired. " +
-                    $"While trying to validate verification code for " +
-                    $"Verification code Id - {checkVerificationCodeDto.VerificationCodeId}, " +
-                    $"requestType - {checkVerificationCodeDto.RequestType}, " +
-                    $"username - {checkVerificationCodeDto.Email} and " +
-                    $"device Id - {userAgent}");
                 return serviceResponse;
             }
 
@@ -245,12 +219,6 @@ public class LoginWithPwdService : ILoginWithPwdService
             // Delete-verificationCode job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Context SaveChanges failed. " +
-                    $"While deleting TwoFA verification code for " +
-                    $"Verification code Id - {checkVerificationCodeDto.VerificationCodeId}, " +
-                    $"requestType - {checkVerificationCodeDto.RequestType}, " +
-                    $"username - {checkVerificationCodeDto.Email} and " +
-                    $"device Id - {userAgent}");
                 return serviceResponse;
             }
 
@@ -269,17 +237,11 @@ public class LoginWithPwdService : ILoginWithPwdService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"Account not found for email {checkVerificationCodeDto.Email}");
                 serviceResponse.Message = "Invalid credentials";
                 return serviceResponse;
             }
 
             // User is authenticated
-            _logger.LogInformation($"TwoFA Verification code has been validated successfully for " +
-                    $"Verification code Id - {checkVerificationCodeDto.VerificationCodeId}, " +
-                    $"requestType - {checkVerificationCodeDto.RequestType}, " +
-                    $"username - {checkVerificationCodeDto.Email} and " +
-                    $"device Id - {userAgent}");
 
             // Task successful
             serviceResponse.Data = user;
@@ -289,7 +251,6 @@ public class LoginWithPwdService : ILoginWithPwdService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

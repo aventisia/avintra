@@ -99,7 +99,6 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -136,8 +135,6 @@ public class AuthService : IAuthService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"Account not found, while trying to fetch " +
-                    $"tenant info for email {emailDto.Email}");
                 serviceResponse.Message = "User account does not exist";
                 return serviceResponse;
             }
@@ -187,7 +184,6 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -212,8 +208,6 @@ public class AuthService : IAuthService
             // UserAgent not found
             if (userAgent == null)
             {
-                _logger.LogInformation($"User-Agent not found in request header " +
-                            $"for user {user.UserName}");
                 serviceResponse.Message = "Something went wrong. Please try again later";
                 return serviceResponse;
             }
@@ -227,8 +221,6 @@ public class AuthService : IAuthService
             // Allowed active session limit exhausted
             if (activeSessionCount >= _environmentConfig.MaxActiveSessionAllowed)
             {
-                _logger.LogInformation($"Maximum allowed active session limit " +
-                    $"exhausted for {user.UserName}");
                 serviceResponse.Message = "Maximum allowed active session limit exhausted. " +
                                           "Please logoff from other devices or browsers first";
                 return serviceResponse;
@@ -279,7 +271,6 @@ public class AuthService : IAuthService
             // ActiveSession Insert job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Context SaveChanges failed while creating session for {user.UserName}");
                 return serviceResponse;
             }
 
@@ -305,7 +296,6 @@ public class AuthService : IAuthService
                     // Update AccountUser job failed
                     if (updateResult == 0)
                     {
-                        _logger.LogInformation($"Failed to update user creation status for {user.UserName}");
                         return serviceResponse;
                     }
 
@@ -314,7 +304,6 @@ public class AuthService : IAuthService
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error occurred while creating user in other databases for {user.UserName}. Exception: {ex}");
                 }
             }
 
@@ -372,13 +361,11 @@ public class AuthService : IAuthService
             }
 
             // UserSessionDto is ready
-            _logger.LogInformation($"New session has been created successfully for {user.UserName}");
             serviceResponse.Data = userSessionDto;
             serviceResponse.StatusCode = 200;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -453,8 +440,6 @@ public class AuthService : IAuthService
             // Insert-SessionLog job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Context SaveChanges failed while creating " +
-                    $"session logs for user {userName} and reason - {howSessionEnded}");
                 serviceResponse.Message = "Something went wrong while creating session " +
                     "log. Please try again later";
                 return serviceResponse;
@@ -466,8 +451,6 @@ public class AuthService : IAuthService
             // Delete-expiredSessions job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Context SaveChanges failed while deleting " +
-                    $"sessions for user {userName} and reason - {howSessionEnded}");
                 serviceResponse.Message = "Something went wrong while deleting sessions. " +
                                           "Please try again later";
                 return serviceResponse;
@@ -476,8 +459,6 @@ public class AuthService : IAuthService
             // Task successful
             foreach (var sessionId in sessionIds)
             {
-                _logger.LogInformation($"Session of session Id {sessionId} for " +
-                    $"Username {userName} has been terminated with reason - {howSessionEnded}");
             }
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
@@ -485,7 +466,6 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -634,7 +614,6 @@ public class AuthService : IAuthService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

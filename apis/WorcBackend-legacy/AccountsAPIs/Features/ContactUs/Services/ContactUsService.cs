@@ -44,7 +44,6 @@ public class ContactUsService : IContactUsService
             // ContactUs record doesn't exist
             if (contactUs == null)
             {
-                _logger.LogInformation($"ContactUs record not found for Id {id}");
                 serviceResponse.Message = "ContactUs record does not exist";
                 return serviceResponse;
             }
@@ -56,7 +55,6 @@ public class ContactUsService : IContactUsService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -87,7 +85,6 @@ public class ContactUsService : IContactUsService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -116,7 +113,6 @@ public class ContactUsService : IContactUsService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new ContactUs record");
                 return serviceResponse;
             }
 
@@ -132,9 +128,6 @@ public class ContactUsService : IContactUsService
                     {"{{userMessage}}", contactUsDto.Message }
                 }))
             {
-                _logger.LogError($"Error occurred while sending new contact us request " +
-                    $"email to {_environmentConfig.SalesEmails} and " +
-                    $"request type {EmailTypesEnum.ContactUsRequest}");
                 return serviceResponse;
             }
 
@@ -145,7 +138,6 @@ public class ContactUsService : IContactUsService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -172,7 +164,6 @@ public class ContactUsService : IContactUsService
             // ContactUs record does not exist
             if (contactUs == null)
             {
-                _logger.LogInformation($"ContactUs record does not exist");
                 serviceResponse.Message = "ContactUs record does not exist";
                 return serviceResponse;
             }
@@ -192,7 +183,6 @@ public class ContactUsService : IContactUsService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating ContactUs record");
                 return serviceResponse;
             }
 
@@ -203,7 +193,6 @@ public class ContactUsService : IContactUsService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -230,7 +219,6 @@ public class ContactUsService : IContactUsService
             // ContactUs record does not exist
             if (contactUs == null)
             {
-                _logger.LogInformation($"ContactUs record does not exist");
                 serviceResponse.Message = "ContactUs record does not exist";
                 return serviceResponse;
             }
@@ -241,7 +229,6 @@ public class ContactUsService : IContactUsService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting ContactUs record");
                 return serviceResponse;
             }
 
@@ -252,7 +239,6 @@ public class ContactUsService : IContactUsService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

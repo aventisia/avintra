@@ -100,7 +100,6 @@ public class UploadFileService : IUploadFileService
             // Process each file individually
             foreach (var file in files)
             {
-                _logger.LogInformation("Processing file: {FileName}", file.FileName);
 
                 var extension = Path.GetExtension(file.FileName).ToLower();
 
@@ -150,7 +149,6 @@ public class UploadFileService : IUploadFileService
                     Size = file.Length
                 });
 
-                // Log successful upload with reference to the stored blob
                 _logger.LogInformation("File '{FileName}' uploaded successfully. Blob URL: {FileUrl}", file.FileName, fileUrl
                 );
             }
@@ -189,7 +187,6 @@ public class UploadFileService : IUploadFileService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Initiating file deletion for URL: {FileUrl}", fileUrl);
 
             // Check if the file exists
             if (!await _azureBlobStorageService.FileExistsAsync(_containerName, fileUrl))
@@ -211,7 +208,6 @@ public class UploadFileService : IUploadFileService
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "File deleted successfully.";
-            _logger.LogInformation("File successfully deleted from '{FileUrl}'.", fileUrl);
         }
         catch (Exception ex)
         {
@@ -226,7 +222,6 @@ public class UploadFileService : IUploadFileService
     // Identifies the file category based on the file extension
     private string GetFileCategory(string extension)
     {
-        _logger.LogInformation("Determining file category for extension: {Extension}.", extension);
 
         // Check Pictures category
         if (_appDefaultConfig.FileUploadConfig.AllowedFileTypes.Pictures.AllowedFileExtensions.Contains(extension))
@@ -249,15 +244,12 @@ public class UploadFileService : IUploadFileService
             return "Videos";
         }
 
-        // If no category matches, log the failure and return empty
-        _logger.LogInformation("No matching file category found for extension: {Extension}.", extension);
         return string.Empty;
     }
 
     // Validates if the file type is allowed for the given category
     private bool ValidateFileType(string extension, string fileCategory)
     {
-        _logger.LogInformation("Validating file type for extension: {Extension} under category: {Category}.", extension, fileCategory);
 
         // Retrieve the allowed extensions for the given file category
         List<string> allowedExtensions = fileCategory.ToLower() switch
@@ -286,7 +278,6 @@ public class UploadFileService : IUploadFileService
     // Validates if the file size exceeds the allowed size for the category
     private bool ValidateFileSize(long fileSize, string fileCategory)
     {
-        _logger.LogInformation("Validating file size for category: {Category}. File size: {FileSize} bytes.", fileCategory, fileSize);
 
         // Convert the file size from bytes to megabytes
         var fileSizeInMB = fileSize / (1024.0 * 1024.0);
@@ -381,7 +372,6 @@ public class UploadFileService : IUploadFileService
                 _logger.LogError(serviceResponse.Message);
                 return serviceResponse;
             }
-            _logger.LogInformation("Starting file download process for file URL: {FileUrl}.", fileUrl);
             var client = _httpClientFactory.CreateClient();
 
             var response = await client.GetAsync(fileUrl, HttpCompletionOption.ResponseHeadersRead);
@@ -473,8 +463,6 @@ public class UploadFileService : IUploadFileService
             // Construct the full local file path
             var fullLocalPath = Path.Combine("/var/www/aventisia.com/files", subDirectory, fileName);
 
-            // Log the expected local file path
-            _logger.LogInformation("Constructed local file path: {FullLocalPath}", fullLocalPath);
 
             // Ensure the file exists locally
             if (!File.Exists(fullLocalPath))
@@ -515,14 +503,10 @@ public class UploadFileService : IUploadFileService
                 _ => "application/octet-stream"
             };
 
-            // Log the determined MIME type
-            _logger.LogInformation("Determined MIME type for file {FileName}: {MimeType}", fileName, mimeType);
 
             // Create a unique filename to prevent conflicts, keeping the file extension.
             var uniqueFileName = fileName;
 
-            // Log the unique file name generated
-            _logger.LogInformation("Generated unique file name for upload: {UniqueFileName}", uniqueFileName);
 
             // Retrieve tenant information based on tenantId
             var tenant = await _tenantDbContext.ReadOnlyTenants.SingleOrDefaultAsync(w => w.Id == tenantId);
@@ -537,7 +521,6 @@ public class UploadFileService : IUploadFileService
             var containerName = tenant.ContainerName;
 
             // Upload the file asynchronously to Azure Blob Storage
-            _logger.LogInformation("Starting file upload for {FileName} to Azure Blob Storage in container {ContainerName}.", fileName, containerName);
 
             // Open the file stream and upload the file to Blob Storage
             using (var fileStream = File.OpenRead(fullLocalPath))
@@ -550,8 +533,6 @@ public class UploadFileService : IUploadFileService
                     mimeType
                 );
 
-                // Log successful upload
-                _logger.LogInformation("Successfully uploaded file {FileName} to Azure Blob Storage. Blob URI: {BlobUri}", fileName, blobUri?.ToString());
 
                 // Store the unique file name in the service response as an indicator of success
                 serviceResponse.Data = uniqueFileName;
@@ -564,7 +545,6 @@ public class UploadFileService : IUploadFileService
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors during the upload process
             _logger.LogError(ex, "An error occurred while uploading the file to Azure Blob Storage.");
         }
 

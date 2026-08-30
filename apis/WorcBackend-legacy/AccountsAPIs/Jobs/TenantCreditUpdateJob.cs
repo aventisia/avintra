@@ -23,7 +23,6 @@ public class TenantCreditAllocationJob : IJob
         // Capture the current UTC time for consistent processing
         var currentDateTime = DateTimeOffset.UtcNow.Date;
 
-        _logger.LogInformation($"Tenant credit update job started at {currentDateTime:O}");
 
         try
         {
@@ -42,7 +41,6 @@ public class TenantCreditAllocationJob : IJob
                 .AsNoTrackingWithIdentityResolution()
                 .ToListAsync();
 
-            _logger.LogInformation($"Found {tenantSubscriptions.Count} active subscriptions.");
 
             // List to store credits that need to be inserted
             var tenantCredits = new List<TenantCredit>();
@@ -182,7 +180,6 @@ public class TenantCreditAllocationJob : IJob
             // SAVE CREDIT RECORDS
             if (tenantCredits.Any())
             {
-                _logger.LogInformation($"Inserting {tenantCredits.Count} tenant credits.");
 
                 // Bulk insert generated credits
                 await _unitOfWork.TenantCreditRepo.InsertAsync(tenantCredits);
@@ -194,11 +191,9 @@ public class TenantCreditAllocationJob : IJob
                 }
             }
 
-            _logger.LogInformation($"Tenant credit update job completed successfully at {currentDateTime:O}");
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors
             _logger.LogError(ex, "An error occurred while processing the tenant credit update job.");
         }
     }

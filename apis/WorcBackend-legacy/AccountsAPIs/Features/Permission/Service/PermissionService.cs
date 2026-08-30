@@ -47,7 +47,6 @@ public class PermissionService : IPermissionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -77,7 +76,6 @@ public class PermissionService : IPermissionService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new permission.");
                 return serviceResponse;
             }
 
@@ -89,7 +87,6 @@ public class PermissionService : IPermissionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -116,7 +113,6 @@ public class PermissionService : IPermissionService
             // Permission does not exist
             if (permission == null)
             {
-                _logger.LogInformation($"Permission does not exist");
                 serviceResponse.Message = "Permission does not exist";
                 return serviceResponse;
             }
@@ -132,7 +128,6 @@ public class PermissionService : IPermissionService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating permission.");
                 return serviceResponse;
             }
 
@@ -144,7 +139,6 @@ public class PermissionService : IPermissionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;
@@ -171,7 +165,6 @@ public class PermissionService : IPermissionService
             //Check if permission not exists
             if (permission == null)
             {
-                _logger.LogInformation($"Permission does not exist");
                 serviceResponse.Message = "Permission does not exist";
                 return serviceResponse;
             }
@@ -182,7 +175,6 @@ public class PermissionService : IPermissionService
             //Delete-job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting a permission.");
                 return serviceResponse;
             }
 
@@ -194,7 +186,6 @@ public class PermissionService : IPermissionService
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;

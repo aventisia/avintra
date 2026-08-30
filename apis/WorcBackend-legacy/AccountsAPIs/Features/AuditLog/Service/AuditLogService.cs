@@ -46,7 +46,6 @@ public class AuditLogService : IAuditLogService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation($"User not found for User Id {_userId}");
                 serviceResponse.Message = "User does not exist";
             }
 
@@ -59,7 +58,6 @@ public class AuditLogService : IAuditLogService
             // Insert-job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting plan");
                 return serviceResponse;
             }
 
@@ -70,7 +68,6 @@ public class AuditLogService : IAuditLogService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;
@@ -94,7 +91,6 @@ public class AuditLogService : IAuditLogService
             // log does not exist
             if (auditLog == null)
             {
-                _logger.LogInformation($"Audit log does not exist");
                 serviceResponse.Message = "Log not exist";
                 return serviceResponse;
             }
@@ -104,7 +100,6 @@ public class AuditLogService : IAuditLogService
             // Delete-job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting audit log");
                 return serviceResponse;
             }
 
@@ -113,9 +108,8 @@ public class AuditLogService : IAuditLogService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Audit log deleted successfully";
         }
-        catch (Exception ex)
+        catch
         {
-            _logger.LogError(ex.ToString());
             serviceResponse.Message = "An error occurs while deteting audit log";
             return serviceResponse;
         }

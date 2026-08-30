@@ -39,8 +39,6 @@ public class CreditPlanService : ICreditPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit plans retrieved successfully.";
 
-            // Log success with count of retrieved plans
-            _logger.LogInformation("Retrieved {Count} credit plan(s).", creditPlans.Count);
         }
         catch (Exception ex)
         {
@@ -73,8 +71,6 @@ public class CreditPlanService : ICreditPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit plan options retrieved successfully.";
 
-            // Log number of options retrieved
-            _logger.LogInformation("Retrieved {Count} credit plan option(s) for selection.", creditPlans.Count);
         }
         catch (Exception ex)
         {
@@ -96,8 +92,6 @@ public class CreditPlanService : ICreditPlanService
 
         try
         {
-            // Log the fetch attempt
-            _logger.LogInformation("Fetching credit plan with ID: {CreditPlanId}", creditPlanId);
 
             // Query the repository for the credit plan including the creator user info
             var creditPlan = await _unitOfWork.CreditPlanRepo
@@ -118,7 +112,6 @@ public class CreditPlanService : ICreditPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit plan retrieved successfully.";
 
-            _logger.LogInformation("Successfully retrieved credit plan with ID: {CreditPlanId}", creditPlanId);
         }
         catch (Exception ex)
         {
@@ -140,9 +133,6 @@ public class CreditPlanService : ICreditPlanService
 
         try
         {
-            // Log attempt to create a new plan
-            _logger.LogInformation("Trying to create credit plan with service type: {ServiceType}", creditPlanDto.ServiceType.ToString());
-
             // Check if a plan with the same name already exists
             var existingPlan = await _unitOfWork.CreditPlanRepo
                 .GetByConditionAsync(w => w.ServiceType == creditPlanDto.ServiceType)
@@ -150,7 +140,6 @@ public class CreditPlanService : ICreditPlanService
 
             if (existingPlan != null)
             {
-                // Log and return conflict if the plan already exists
                 _logger.LogWarning("Service type '{ServiceType}' already exists.", creditPlanDto.ServiceType.ToString());
                 serviceResponse.Message = $"A credit plan with the service type '{creditPlanDto.ServiceType.ToString()}' already exists.";
                 serviceResponse.StatusCode = 409;
@@ -182,7 +171,6 @@ public class CreditPlanService : ICreditPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit plan created successfully.";
 
-            _logger.LogInformation("Successfully created credit plan with ID: {CreditPlanId}", newCreditPlan.Id);
         }
         catch (Exception ex)
         {
@@ -253,8 +241,6 @@ public class CreditPlanService : ICreditPlanService
 
         try
         {
-            // Log update attempt
-            _logger.LogInformation("Updating credit plan with ID: {CreditPlanId}", creditPlanDto.Id);
 
             // Fetch the existing plan by ID
             var existingPlan = await _unitOfWork.CreditPlanRepo
@@ -263,7 +249,6 @@ public class CreditPlanService : ICreditPlanService
 
             if (existingPlan == null)
             {
-                // Log and return failure if the plan doesn't exist
                 _logger.LogWarning("Credit plan not found with ID: {CreditPlanId}", creditPlanDto.Id);
                 serviceResponse.Message = "Credit plan not found.";
                 return serviceResponse;
@@ -276,7 +261,6 @@ public class CreditPlanService : ICreditPlanService
 
             if (duplicatePlan != null)
             {
-                // Log and return conflict if duplicate name found
                 _logger.LogWarning("Duplicate service tyope: {ServiceType}", creditPlanDto.ServiceType.ToString());
                 serviceResponse.Message = $"Service type '{creditPlanDto.ServiceType.ToString()}' already exists.";
                 serviceResponse.StatusCode = 409;
@@ -305,7 +289,6 @@ public class CreditPlanService : ICreditPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit plan updated successfully.";
 
-            _logger.LogInformation("Successfully updated credit plan with ID: {CreditPlanId}", creditPlanDto.Id);
         }
         catch (Exception ex)
         {
@@ -327,8 +310,6 @@ public class CreditPlanService : ICreditPlanService
 
         try
         {
-            // Log deletion attempt
-            _logger.LogInformation("Deleting credit plan with ID: {CreditPlanId}", creditPlanId);
 
             // Find the credit plan entity by ID
             var creditPlan = await _unitOfWork.CreditPlanRepo
@@ -337,7 +318,6 @@ public class CreditPlanService : ICreditPlanService
 
             if (creditPlan == null)
             {
-                // If not found, log warning and update message
                 _logger.LogWarning("No credit plan found with ID: {CreditPlanId}", creditPlanId);
                 serviceResponse.Message = "Credit plan not found.";
                 return serviceResponse;
@@ -380,8 +360,6 @@ public class CreditPlanService : ICreditPlanService
 
         try
         {
-            // Log the bulk deletion attempt with count
-            _logger.LogInformation("Bulk deletion of {Count} credit plans initiated.", creditPlanIds.Count);
 
             // Fetch all plans matching the provided list of IDs
             var creditPlans = await _unitOfWork.CreditPlanRepo
@@ -411,7 +389,6 @@ public class CreditPlanService : ICreditPlanService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Credit plans deleted successfully.";
 
-            _logger.LogInformation("Successfully deleted {Count} credit plans.", creditPlans.Count);
         }
         catch (Exception ex)
         {

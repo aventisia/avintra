@@ -52,7 +52,6 @@ public class RoleManagementService : IRoleManagementService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
         }
 
         return serviceResponse;
@@ -69,7 +68,6 @@ public class RoleManagementService : IRoleManagementService
 
         try
         {
-            _logger.LogInformation("Checking if Role Name is available: {Name}", checkAvailability.UserInput);
 
             // Check if role already exists by comparing case-insensitive role name
             var role = await _unitOfWork.AccountRoleRepo
@@ -117,7 +115,6 @@ public class RoleManagementService : IRoleManagementService
             var existingRoles = await _unitOfWork.AccountRoleRepo.GetAllAsync().ToListAsync();
             if (existingRoles.Any(a => a.FullName == roleManagementDto.FullName && a.TenantId == roleManagementDto.TenantId))
             {
-                _logger.LogInformation("Role already exists, please select another role name.");
                 serviceResponse.Message = "Role already exists, please select another role name.";
                 return serviceResponse;
             }
@@ -138,7 +135,6 @@ public class RoleManagementService : IRoleManagementService
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new role.");
                 return serviceResponse;
             }
 
@@ -184,7 +180,6 @@ public class RoleManagementService : IRoleManagementService
 
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Context SaveChanges failed while inserting new role permissions.");
                     return serviceResponse;
                 }
             }
@@ -196,7 +191,6 @@ public class RoleManagementService : IRoleManagementService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse; // Return failure if exception occurs
         }
 
@@ -226,7 +220,6 @@ public class RoleManagementService : IRoleManagementService
 
             if (existingRole == null)
             {
-                _logger.LogInformation("Role does not exist");
                 serviceResponse.Message = "Role does not exist";
                 return serviceResponse;
             }
@@ -278,7 +271,6 @@ public class RoleManagementService : IRoleManagementService
 
             if (existingRole == null)
             {
-                _logger.LogInformation("Role does not exist");
                 serviceResponse.Message = "Role does not exist";
                 return serviceResponse;
             }
@@ -294,7 +286,6 @@ public class RoleManagementService : IRoleManagementService
 
             if (duplicateRole != null)
             {
-                _logger.LogInformation("Role already exists, please select another role name.");
                 serviceResponse.Message = "Role already exists, please select another role name.";
                 return serviceResponse;
             }
@@ -302,7 +293,6 @@ public class RoleManagementService : IRoleManagementService
             // Check if the role is a default role, which cannot be updated
             if (existingRole.IsDefault)
             {
-                _logger.LogInformation("Cannot update the default role.");
                 serviceResponse.Message = "Cannot update the default role.";
                 return serviceResponse;
             }
@@ -315,7 +305,6 @@ public class RoleManagementService : IRoleManagementService
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating role.");
                 return serviceResponse;
             }
 
@@ -367,7 +356,6 @@ public class RoleManagementService : IRoleManagementService
 
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Context SaveChanges failed while inserting new role permissions.");
                     return serviceResponse;
                 }
             }
@@ -379,7 +367,6 @@ public class RoleManagementService : IRoleManagementService
 
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Context SaveChanges failed while deleting existing role permissions.");
                     return serviceResponse;
                 }
             }
@@ -391,7 +378,6 @@ public class RoleManagementService : IRoleManagementService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -418,7 +404,6 @@ public class RoleManagementService : IRoleManagementService
 
             if (roleToDelete == null)
             {
-                _logger.LogInformation("Role does not exist");
                 serviceResponse.Message = "Role does not exist";
                 return serviceResponse;
             }
@@ -426,7 +411,6 @@ public class RoleManagementService : IRoleManagementService
             // Check if the role is default, which cannot be deleted
             if (roleToDelete.IsDefault)
             {
-                _logger.LogInformation("Cannot delete the default role.");
                 serviceResponse.Message = "Cannot delete the default role.";
                 return serviceResponse;
             }
@@ -436,7 +420,6 @@ public class RoleManagementService : IRoleManagementService
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting a role.");
                 return serviceResponse;
             }
 
@@ -446,7 +429,6 @@ public class RoleManagementService : IRoleManagementService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -480,7 +462,6 @@ public class RoleManagementService : IRoleManagementService
 
             if (roles.Count == 0)
             {
-                _logger.LogInformation($"Role not found for Ids {roleIds}");
                 serviceResponse.Message = "Role does not exist";
                 return serviceResponse;
             }
@@ -488,19 +469,16 @@ public class RoleManagementService : IRoleManagementService
             // Check if any role is default, which cannot be deleted
             if (roles.Any(a => a.IsDefault))
             {
-                _logger.LogInformation("Cannot delete the default role.");
                 serviceResponse.Message = "Cannot delete the default role.";
                 return serviceResponse;
             }
 
-            _logger.LogInformation($"Found {roles.Count} roles to delete.");
 
             // Delete the roles
             _unitOfWork.AccountRoleRepo.Delete(roles);
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Failed to save changes while deleting the roles with IDs {roleIds}.");
                 return serviceResponse;
             }
 
@@ -542,7 +520,6 @@ public class RoleManagementService : IRoleManagementService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

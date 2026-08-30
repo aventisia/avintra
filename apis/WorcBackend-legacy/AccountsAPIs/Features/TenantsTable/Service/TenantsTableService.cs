@@ -218,7 +218,6 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -269,7 +268,6 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -304,8 +302,6 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
-            // Log the error and return the service response with the default message
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -335,8 +331,6 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
-            // Log the error and return the service response with the default message
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -376,7 +370,6 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -403,7 +396,6 @@ public class TenantsTableService : ITenantsTableService
             // Tenant already exists
             if (tenantAlreadyExists != null)
             {
-                _logger.LogInformation($"Tenant already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A tenant with same Name already exists. Please enter a unique name";
                 return serviceResponse;
@@ -434,7 +426,6 @@ public class TenantsTableService : ITenantsTableService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new Tenant");
                 return serviceResponse;
             }
 
@@ -445,7 +436,6 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -476,7 +466,6 @@ public class TenantsTableService : ITenantsTableService
             // Tenant does not exist
             if (tenant == null)
             {
-                _logger.LogInformation($"Tenant does not exist");
                 serviceResponse.Message = "Tenant does not exist";
                 return serviceResponse;
             }
@@ -491,7 +480,6 @@ public class TenantsTableService : ITenantsTableService
             // Tenant already exists
             if (tenantAlreadyExists != null)
             {
-                _logger.LogInformation($"Tenant already exists");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "A tenant with same Name already exists. Please enter a unique name";
                 return serviceResponse;
@@ -519,7 +507,6 @@ public class TenantsTableService : ITenantsTableService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating Tenant");
                 return serviceResponse;
             }
 
@@ -530,7 +517,6 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -559,7 +545,6 @@ public class TenantsTableService : ITenantsTableService
             // Tenants do not exist
             if (tenants.Count == 0)
             {
-                _logger.LogInformation($"Tenants do not exist");
                 serviceResponse.Message = "Tenants do not exist";
                 return serviceResponse;
             }
@@ -578,7 +563,6 @@ public class TenantsTableService : ITenantsTableService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while disabling tenants");
                 return serviceResponse;
             }
 
@@ -589,7 +573,6 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -619,7 +602,6 @@ public class TenantsTableService : ITenantsTableService
             // Tenant does not exist
             if (tenant == null)
             {
-                _logger.LogInformation($"Tenant does not exist");
                 serviceResponse.Message = "Tenant does not exist";
                 return serviceResponse;
             }
@@ -627,7 +609,6 @@ public class TenantsTableService : ITenantsTableService
             // Cannot delete if its Default
             if (tenant.IsDefault)
             {
-                _logger.LogInformation($"Cannot delete default tenant {tenant.Name}");
                 serviceResponse.StatusCode = 409;
                 serviceResponse.Message = "Cannot delete system default tenant";
                 return serviceResponse;
@@ -640,7 +621,6 @@ public class TenantsTableService : ITenantsTableService
             // Relationship exists
             if (relationshipExists)
             {
-                _logger.LogInformation($"Cannot delete Tenant because it is linked with other records");
                 serviceResponse.Message = "Cannot delete Tenant because it is linked with other records";
                 return serviceResponse;
             }
@@ -651,7 +631,6 @@ public class TenantsTableService : ITenantsTableService
             // Delete-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting Tenant");
                 return serviceResponse;
             }
 
@@ -662,7 +641,6 @@ public class TenantsTableService : ITenantsTableService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

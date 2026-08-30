@@ -23,10 +23,6 @@ public class PlanService : IPlanService
 
         try
         {
-            // Logging the start of the plan creation process with provided details
-            _logger.LogInformation("Starting CreatePlanAsync for Plan: {PlanName}, Period: {Period}, Interval: {Interval}",
-                request.Item.Name, request.Period, request.Interval);
-
             // Check if required fields (name, amount) are provided and valid
             if (request.Item == null || string.IsNullOrEmpty(request.Item.Name) || request.Item.Amount <= 0)
             {
@@ -51,15 +47,10 @@ public class PlanService : IPlanService
                 }
             };
 
-            // Log the request details sent to Razorpay (excluding sensitive data)
-            _logger.LogDebug("Prepared plan creation request: PlanName={PlanName}, Amount={Amount}, Currency={Currency}, Notes={Notes}",
-                request.Item.Name, request.Item.Amount, request.Item.Currency, request.Notes);
-
+            
             // Call Razorpay API to create the plan
             var plan = await Task.Run(() => _razorpayClient.Plan.Create(planRequest));
 
-            // Log successful plan creation with the plan name
-            _logger.LogInformation("Subscription plan created successfully with Name: {PlanName}", request.Item.Name);
 
             // Map the response from Razorpay to PlanResponseDto
             var createdPlan = new PlanResponseDto
@@ -84,7 +75,6 @@ public class PlanService : IPlanService
         }
         catch (Exception ex)
         {
-            // Log any exception that occurs during the plan creation process
             _logger.LogError(ex, "Error occurred while creating plan: {PlanName}, Period: {Period}, Interval: {Interval}",
                 request.Item.Name, request.Period, request.Interval);
         }
@@ -104,14 +94,10 @@ public class PlanService : IPlanService
 
         try
         {
-            // Log the request to fetch a specific plan by ID
-            _logger.LogInformation("Fetching plan with ID: {PlanId}", planId);
 
             // Fetch the plan data from Razorpay API
             var plan = await Task.Run(() => _razorpayClient.Plan.Fetch(planId));
 
-            // Log successful retrieval of the plan
-            _logger.LogInformation("Subscription plan fetched successfully with ID: {PlanId}", planId);
 
             // Map the response from Razorpay to PlanResponseDto
             var retrievedPlan = new PlanResponseDto
@@ -136,7 +122,6 @@ public class PlanService : IPlanService
         }
         catch (Exception ex)
         {
-            // Log any exception that occurs during the plan retrieval process
             _logger.LogError(ex, "Error occurred while fetching plan with ID: {PlanId}", planId);
         }
 
@@ -155,14 +140,10 @@ public class PlanService : IPlanService
 
         try
         {
-            // Log the request to fetch all plans
-            _logger.LogInformation("Fetching all subscription plans from Razorpay");
 
             // Fetch all plans from Razorpay API
             var plans = await Task.Run(() => _razorpayClient.Plan.All());
 
-            // Log the number of plans fetched
-            _logger.LogInformation("Successfully fetched {Count} subscription plans", plans.Count);
 
             // Map the response from Razorpay to List of PlanResponseDto
             var retrievedPlanList = plans.Select(plan => new PlanResponseDto
@@ -187,7 +168,6 @@ public class PlanService : IPlanService
         }
         catch (Exception ex)
         {
-            // Log any exception that occurs during the fetch of all plans
             _logger.LogError(ex, "Error occurred while fetching all plans.");
         }
 

@@ -103,8 +103,6 @@ public class InstanceService : IInstanceService
         }
         catch (Exception ex)
         {
-            // Log any exception that occurs during the metric collection process
-            _logger.LogError("An error occurred while collecting metrics: {ExceptionMessage}", ex.Message);
         }
 
         // Return the service response, whether successful or containing an error message
@@ -128,7 +126,6 @@ public class InstanceService : IInstanceService
                 Encoding.UTF8,
                 "application/json"
             );
-            Console.WriteLine("Request:", jsonContent);
 
             // Call the external API to post the metrics
             var httpResponse = await httpClient.PostAsync($"{_appDefaultConfig.GlobalAdminApiBaseUrl}/api/onprem/instance/validate", jsonContent);
