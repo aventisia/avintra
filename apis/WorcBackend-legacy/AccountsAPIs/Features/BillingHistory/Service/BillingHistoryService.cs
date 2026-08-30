@@ -50,7 +50,6 @@ public class BillingHistoryService : IBillingHistoryService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -93,7 +92,6 @@ public class BillingHistoryService : IBillingHistoryService
             // If insertion fails
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new billing history.");
                 return serviceResponse;
             }
 
@@ -105,7 +103,6 @@ public class BillingHistoryService : IBillingHistoryService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -135,7 +132,6 @@ public class BillingHistoryService : IBillingHistoryService
             // Billing history does not exist
             if (billingHistory == null)
             {
-                _logger.LogInformation("Billing history does not exist");
                 serviceResponse.Message = "Billing history does not exist";
                 return serviceResponse;
             }
@@ -151,7 +147,6 @@ public class BillingHistoryService : IBillingHistoryService
             // If update fails
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating billing history.");
                 return serviceResponse;
             }
 
@@ -163,7 +158,6 @@ public class BillingHistoryService : IBillingHistoryService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -193,7 +187,6 @@ public class BillingHistoryService : IBillingHistoryService
             // Billing history does not exist
             if (billingHistory == null)
             {
-                _logger.LogInformation("Billing history does not exist");
                 serviceResponse.Message = "Billing history does not exist";
                 return serviceResponse;
             }
@@ -204,7 +197,6 @@ public class BillingHistoryService : IBillingHistoryService
             // If deletion fails
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting billing history.");
                 return serviceResponse;
             }
 
@@ -216,7 +208,6 @@ public class BillingHistoryService : IBillingHistoryService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

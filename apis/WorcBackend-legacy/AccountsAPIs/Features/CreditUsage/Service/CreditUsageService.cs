@@ -239,7 +239,6 @@ public class CreditUsageService : ICreditUsageService
         }
         catch (Exception ex)
         {
-            // Log detailed error in case of failure
             _logger.LogError(ex, "An error occurred while retrieving credit usage data.");
         }
 
@@ -398,7 +397,6 @@ public class CreditUsageService : ICreditUsageService
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors during the credit usage process
             _logger.LogError(ex, "An error occurred while recording credit usage for User ID: {UserId}, Service Type: {ServiceType}.",
                 creditUsageDto.UsedByUserId, creditUsageDto.ServiceType);
         }

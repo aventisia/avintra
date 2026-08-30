@@ -10,11 +10,15 @@ public static class AccountsDbInitialSeed
             // Get environment configs
             var environmentConfig = scope.ServiceProvider.GetRequiredService<EnvironmentConfig>();
 
+            // Get logger
+            var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("AccountsDbInitialSeed");
+
             // Get accountsDbContext
             using var _accountsDbContext = scope.ServiceProvider.GetRequiredService<AccountsDbContext>();
 
             // Apply pending database migrations
-            await ApplyMigrationsAsync(_accountsDbContext);
+            await ApplyMigrationsAsync(_accountsDbContext, logger);
 
             // Get RoleManager and UserManager
             using var _roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AccountRole>>();
@@ -26,74 +30,73 @@ public static class AccountsDbInitialSeed
                 // Ensure every tenant has a default "Central" space.
                 // This runs unconditionally (idempotently) so existing tenants also get it,
                 // even when the rest of the seed is skipped by IsSeedingRequired.
-                await SeedDefaultSpacesForAllTenantsAsync(_accountsDbContext);
+                await SeedDefaultSpacesForAllTenantsAsync(_accountsDbContext, logger);
 
                 // Seeding is not required
-                if (!await IsSeedingRequired(_accountsDbContext)) return app;
+                if (!await IsSeedingRequired(_accountsDbContext, logger)) return app;
 
                 // Seed Roles
-                if (!await SeedDefaultRolesAsync(_roleManager)) return app;
+                if (!await SeedDefaultRolesAsync(_roleManager, logger)) return app;
 
                 // Seed Super User without tenant
-                var superUser = await SeedSuperUserAsync(_userManager, environmentConfig);
+                var superUser = await SeedSuperUserAsync(_userManager, environmentConfig, logger);
 
                 // Super user not seeded
                 if (superUser == null) return app;
 
                 // Seed Permissions
-                if (!await SeedPermissionsAsync(_accountsDbContext, superUser)) return app;
+                if (!await SeedPermissionsAsync(_accountsDbContext, superUser, logger)) return app;
 
                 // Seed default tenant
-                var defaultTenant = await SeedDefaultTenantAsync(_accountsDbContext, environmentConfig, superUser.Id);
+                var defaultTenant = await SeedDefaultTenantAsync(_accountsDbContext, environmentConfig, superUser.Id, logger);
 
                 // Default tenant not seeded
                 if (defaultTenant == null) return app;
 
                 // Update Super user tenant Id
-                if (!await UpdateSuperUserTenantId(_accountsDbContext, defaultTenant.Id, superUser.Id)) return app;
+                if (!await UpdateSuperUserTenantId(_accountsDbContext, defaultTenant.Id, superUser.Id, logger)) return app;
 
                 // Seed Permissions
-                if (!await SeedCreditPlansAsync(_accountsDbContext, superUser)) return app;
+                if (!await SeedCreditPlansAsync(_accountsDbContext, superUser, logger)) return app;
 
                 // Seed the default Subscription Plan (create or ensure the default subscription plan exists)
-                if (!await SeedSubscriptionPlanAsync(_accountsDbContext, environmentConfig, superUser))
+                if (!await SeedSubscriptionPlanAsync(_accountsDbContext, environmentConfig, superUser, logger))
                     return app;
 
                 // Seed the Tenant Subscription (this associates the super user with a subscription plan for their tenant)
-                if (!await SeedTenantSubscriptionAsync(_accountsDbContext, superUser))
+                if (!await SeedTenantSubscriptionAsync(_accountsDbContext, superUser, logger))
                     return app;
 
                 // Seed the Tenant Credits (this associates the super user with a subscription plan for their tenant)
-                if (!await SeedTenantCreditsAsync(_accountsDbContext, superUser))
+                if (!await SeedTenantCreditsAsync(_accountsDbContext, superUser, logger))
                     return app;
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error: Error occurred while tyring to seed data: " + ex.Message);
+                logger.LogError(ex, "An error occurred while seeding initial data.");
             }
             return app;
         }
     }
 
     // Apply pending database migrations
-    private async static Task ApplyMigrationsAsync(AccountsDbContext accountsDbContext)
+    private async static Task ApplyMigrationsAsync(AccountsDbContext accountsDbContext, ILogger logger)
     {
         try
         {
-            Console.WriteLine("Info: Applying database migrations...");
             await accountsDbContext.Database.MigrateAsync();
-            Console.WriteLine("Info: Database migrations applied successfully.");
+            logger.LogInformation("Database migrations applied successfully.");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error: An error occurred while applying database migrations: {ex.Message}");
+            logger.LogError(ex, "An error occurred while applying database migrations.");
             throw;
         }
     }
 
     // Check if data already exists
-    private static async Task<bool> IsSeedingRequired(AccountsDbContext accountsDbContext)
+    private static async Task<bool> IsSeedingRequired(AccountsDbContext accountsDbContext, ILogger logger)
     {
         try
         {
@@ -118,27 +121,27 @@ public static class AccountsDbInitialSeed
             // Role already exists
             if (await accountsDbContext.Roles.CountAsync() > 0)
             {
-                Console.WriteLine("Info: Role's data already exists, so, skipping data seed process");
+                logger.LogDebug("Role data already exists, skipping data seed process.");
                 return false;
             }
 
             // Tenant already exists
             if (await accountsDbContext.Tenants.Where(w => w.IsDefault).CountAsync() > 0)
             {
-                Console.WriteLine("Info: Tenant's data already exists, so, skipping data seed process");
+                logger.LogDebug("Tenant data already exists, skipping data seed process.");
                 return false;
             }
 
             // User already exists
             if (await accountsDbContext.Users.Where(w => w.IsDefault).CountAsync() > 0)
             {
-                Console.WriteLine("Info: User's data already exists, so, skipping data seed process");
+                logger.LogDebug("User data already exists, skipping data seed process.");
                 return false;
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error: Error occurred while tyring to check if data already exists: " + ex.Message);
+            logger.LogError(ex, "An error occurred while checking if seeding is required.");
             return false;
         }
 
@@ -147,7 +150,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed roles
-    private async static Task<bool> SeedDefaultRolesAsync(RoleManager<AccountRole> roleManager)
+    private async static Task<bool> SeedDefaultRolesAsync(RoleManager<AccountRole> roleManager, ILogger logger)
     {
         try
         {
@@ -171,7 +174,7 @@ public static class AccountsDbInitialSeed
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error: Error occurred while tyring to seed roles: " + ex.Message);
+            logger.LogError(ex, "An error occurred while seeding default roles.");
             return false;
         }
 
@@ -180,7 +183,7 @@ public static class AccountsDbInitialSeed
     }
 
     // Seed super user without tenant
-    private async static Task<AccountUser?> SeedSuperUserAsync(UserManager<AccountUser> userManager, EnvironmentConfig environmentConfig)
+    private async static Task<AccountUser?> SeedSuperUserAsync(UserManager<AccountUser> userManager, EnvironmentConfig environmentConfig, ILogger logger)
     {
         try
         {
@@ -226,33 +229,29 @@ public static class AccountsDbInitialSeed
             // Super user creation failed
             if (!createUserResult.Succeeded || !addToRoleResult.Succeeded)
             {
-                // Log create user errors
                 foreach (var error in createUserResult.Errors)
-                    Console.WriteLine($"Super user creation failed. ErrorCode: {error.Code}, Description: {error.Description}");
+                    logger.LogError("Super user creation failed. ErrorCode: {ErrorCode}, Description: {Description}", error.Code, error.Description);
 
-                // Log add-to-role errors
                 foreach (var error in addToRoleResult.Errors)
-                    Console.WriteLine($"Adding roles for super user failed. ErrorCode: {error.Code}, Description: {error.Description}");
+                    logger.LogError("Adding roles for super user failed. ErrorCode: {ErrorCode}, Description: {Description}", error.Code, error.Description);
 
                 return null;
             }
 
-            Console.WriteLine("User created successfully.");
-            Console.WriteLine($"Email: {superUser.Email}");
-            Console.WriteLine($"Password: {password}");
-
-            // Super user seeded successfully
+            logger.LogInformation("Super user {Email} created successfully.", superUser.Email);
+            Console.WriteLine("Email: {superUser.Email}", superUser.Email);
+            Console.WriteLine("Password: {password}", password);
             return superUser;
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error: Error occurred while tyring to seed super user : " + ex.Message);
+            logger.LogError(ex, "An error occurred while seeding the super user.");
             return null;
         }
     }
 
     // Seed default tenants
-    private async static Task<Tenant?> SeedDefaultTenantAsync(AccountsDbContext accountsDbContext, EnvironmentConfig environmentConfig, Guid superUserId)
+    private async static Task<Tenant?> SeedDefaultTenantAsync(AccountsDbContext accountsDbContext, EnvironmentConfig environmentConfig, Guid superUserId, ILogger logger)
     {
         try
         {
@@ -297,7 +296,7 @@ public static class AccountsDbInitialSeed
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error: Error occurred while tyring to seed default tenants: " + ex.Message);
+            logger.LogError(ex, "An error occurred while seeding the default tenant.");
             return null;
         }
     }
@@ -309,7 +308,7 @@ public static class AccountsDbInitialSeed
     // NOTE: Uses raw SQL insert to bypass the DbContext SaveChanges override,
     // which would otherwise overwrite TenantId with Guid.Empty during startup
     // (no request context is available at seed time).
-    private async static Task SeedDefaultSpacesForAllTenantsAsync(AccountsDbContext accountsDbContext)
+    private async static Task SeedDefaultSpacesForAllTenantsAsync(AccountsDbContext accountsDbContext, ILogger logger)
     {
         try
         {
@@ -338,12 +337,12 @@ public static class AccountsDbInitialSeed
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error: Error occurred while trying to seed the default spaces: " + ex.Message);
+            logger.LogError(ex, "An error occurred while seeding the default spaces.");
         }
     }
 
     // Seed permissions
-    private async static Task<bool> SeedPermissionsAsync(AccountsDbContext dbContext, AccountUser superUser)
+    private async static Task<bool> SeedPermissionsAsync(AccountsDbContext dbContext, AccountUser superUser, ILogger logger)
     {
         try
         {
@@ -369,7 +368,7 @@ public static class AccountsDbInitialSeed
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error: Error occurred while trying to seed permissions: " + ex.Message);
+            logger.LogError(ex, "An error occurred while seeding permissions.");
             return false;
         }
 
@@ -377,7 +376,7 @@ public static class AccountsDbInitialSeed
         return true;
     }
 
-    private static async Task<bool> UpdateSuperUserTenantId(AccountsDbContext accountsDbContext, Guid defaultTenantId, Guid superUserId)
+    private static async Task<bool> UpdateSuperUserTenantId(AccountsDbContext accountsDbContext, Guid defaultTenantId, Guid superUserId, ILogger logger)
     {
         try
         {
@@ -387,7 +386,7 @@ public static class AccountsDbInitialSeed
             // Default Tenant not found
             if (defaultTenant == null)
             {
-                Console.WriteLine("Error: Default Tenant not found for super user");
+                logger.LogError("Default tenant not found for super user during tenant id update.");
                 return false;
             }
 
@@ -397,7 +396,7 @@ public static class AccountsDbInitialSeed
             // Super user not found
             if (superUser == null)
             {
-                Console.WriteLine("Error: Super user not found for updating tenant Id");
+                logger.LogError("Super user not found while updating tenant id.");
                 return false;
             }
 
@@ -415,13 +414,13 @@ public static class AccountsDbInitialSeed
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error: Error occurred while tyring to update super user tenant : " + ex.Message);
+            logger.LogError(ex, "An error occurred while updating the super user's tenant id.");
             return false;
         }
     }
 
     // Seed CreditPlans based on CreditServicesEnum
-    private async static Task<bool> SeedCreditPlansAsync(AccountsDbContext dbContext, AccountUser superUser)
+    private async static Task<bool> SeedCreditPlansAsync(AccountsDbContext dbContext, AccountUser superUser, ILogger logger)
     {
         try
         {
@@ -453,8 +452,7 @@ public static class AccountsDbInitialSeed
         }
         catch (Exception ex)
         {
-            // Log detailed error information for debugging
-            Console.WriteLine($"Error: Error occurred while seeding credit plans. Exception: {ex.Message}");
+            logger.LogError(ex, "An error occurred while seeding credit plans.");
             return false;
         }
 
@@ -462,7 +460,7 @@ public static class AccountsDbInitialSeed
         return true;
     }
 
-    private static async Task<bool> SeedSubscriptionPlanAsync(AccountsDbContext accountsDbContext, EnvironmentConfig environmentConfig, AccountUser superUser)
+    private static async Task<bool> SeedSubscriptionPlanAsync(AccountsDbContext accountsDbContext, EnvironmentConfig environmentConfig, AccountUser superUser, ILogger logger)
     {
         try
         {
@@ -477,7 +475,7 @@ public static class AccountsDbInitialSeed
             // If the subscription plan already exists, skip seeding and return true
             if (existingPlan != null)
             {
-                Console.WriteLine($"Subscription plan '{subscriptionPlanName}' already exists.");
+                logger.LogDebug("Subscription plan {PlanName} already exists.", subscriptionPlanName);
                 return true;
             }
 
@@ -516,13 +514,12 @@ public static class AccountsDbInitialSeed
         }
         catch (Exception ex)
         {
-            // Log the error and return false if seeding failed
-            Console.WriteLine($"Error: An error occurred while trying to seed the subscription plan: {ex.Message}");
+            logger.LogError(ex, "An error occurred while seeding the subscription plan.");
             return false;
         }
     }
 
-    private static async Task<bool> SeedTenantSubscriptionAsync(AccountsDbContext accountsDbContext, AccountUser superUser)
+    private static async Task<bool> SeedTenantSubscriptionAsync(AccountsDbContext accountsDbContext, AccountUser superUser, ILogger logger)
     {
         try
         {
@@ -531,10 +528,9 @@ public static class AccountsDbInitialSeed
                 .Where(w => w.Id == superUser.TenantId)
                 .SingleOrDefaultAsync();
 
-            // If the default tenant is not found, log the error and return false
             if (defaultTenant == null)
             {
-                Console.WriteLine("Error: Default Tenant not found for super user");
+                logger.LogError("Default tenant not found for super user while seeding tenant subscription.");
                 return false;
             }
 
@@ -549,7 +545,7 @@ public static class AccountsDbInitialSeed
             // If a subscription plan already exists, skip seeding and return true
             if (existingSubscription != null)
             {
-                Console.WriteLine($"Subscription plan '{subscriptionPlanName}' already exists for the super user's tenant.");
+                logger.LogDebug("Subscription plan {PlanName} already exists for the super user's tenant.", subscriptionPlanName);
                 return true;
             }
 
@@ -558,10 +554,9 @@ public static class AccountsDbInitialSeed
                 .Where(w => w.Name == subscriptionPlanName && w.IsDefault)
                 .SingleOrDefaultAsync();
 
-            // If the subscription plan is not found, log the error and return false
             if (subscriptionPlan == null)
             {
-                Console.WriteLine($"Error: Subscription plan '{subscriptionPlanName}' not found.");
+                logger.LogError("Subscription plan {PlanName} not found.", subscriptionPlanName);
                 return false;
             }
 
@@ -594,13 +589,12 @@ public static class AccountsDbInitialSeed
         }
         catch (Exception ex)
         {
-            // Log the error and return false if seeding failed
-            Console.WriteLine($"Error: An error occurred while trying to seed the tenant subscription: {ex.Message}");
+            logger.LogError(ex, "An error occurred while seeding the tenant subscription.");
             return false;
         }
     }
 
-    private static async Task<bool> SeedTenantCreditsAsync(AccountsDbContext accountsDbContext, AccountUser superUser)
+    private static async Task<bool> SeedTenantCreditsAsync(AccountsDbContext accountsDbContext, AccountUser superUser, ILogger logger)
     {
         try
         {
@@ -609,10 +603,9 @@ public static class AccountsDbInitialSeed
                 .Where(w => w.Id == superUser.TenantId)
                 .SingleOrDefaultAsync();
 
-            // If the default tenant is not found, log the error and return false
             if (defaultTenant == null)
             {
-                Console.WriteLine("Error: Default Tenant not found for super user");
+                logger.LogError("Default tenant not found for super user while seeding tenant credits.");
                 return false;
             }
 
@@ -621,10 +614,9 @@ public static class AccountsDbInitialSeed
                 .Where(w => w.TenantId == defaultTenant.Id && w.IsActive)
                 .SingleOrDefaultAsync();
 
-            // If no active subscription is found, log the error and return false
             if (tenantSubscription == null)
             {
-                Console.WriteLine("Error: No active subscription found for the super user's tenant.");
+                logger.LogError("No active subscription found for the super user's tenant while seeding credits.");
                 return false;
             }
 
@@ -636,7 +628,7 @@ public static class AccountsDbInitialSeed
             // If tenant credits already exist, skip seeding and return true
             if (existingCredits != null)
             {
-                Console.WriteLine($"Tenant credits already exist for the super user's tenant.");
+                logger.LogDebug("Tenant credits already exist for the super user's tenant.");
                 return true;
             }
 
@@ -661,8 +653,7 @@ public static class AccountsDbInitialSeed
         }
         catch (Exception ex)
         {
-            // Log the error and return false if seeding failed
-            Console.WriteLine($"Error: An error occurred while trying to seed tenant credits: {ex.Message}");
+            logger.LogError(ex, "An error occurred while seeding tenant credits.");
             return false;
         }
     }

@@ -79,7 +79,6 @@ public class MyAccountService : IMyAccountService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation("User not found for username {_userName}", _userName);
                 serviceResponse.Message = userDoesNotExists;
                 return serviceResponse;
             }
@@ -92,7 +91,6 @@ public class MyAccountService : IMyAccountService
             // User session doesn't exist
             if (session == null)
             {
-                _logger.LogInformation("User session not found for session Id {_sessionId} and {Id}", _sessionId, user.Id);
                 serviceResponse.Message = "User session does not exist";
                 return serviceResponse;
             }
@@ -152,7 +150,6 @@ public class MyAccountService : IMyAccountService
             // Session not found
             if (currentSession == null)
             {
-                _logger.LogInformation($"Active session not found for account {_userName} for session Id {_sessionId}");
                 return serviceResponse;
             }
 
@@ -163,7 +160,6 @@ public class MyAccountService : IMyAccountService
             // // DeviceId did not match
             // if (currentSession.DeviceId != userAgent)
             // {
-            //     _logger.LogInformation($"DeviceId did not match for session {_sessionId} and account {_userName}. Expected {currentSession.DeviceId}, found {userAgent}");
             //     return serviceResponse;
             // }
 
@@ -176,7 +172,6 @@ public class MyAccountService : IMyAccountService
             // TerminateSession job failed
             if (terminateSessionResult.StatusCode != 200)
             {
-                _logger.LogError($"{methodName}: Not able to terminate current active sessions for session Id {_sessionId} and account {_userName}");
                 return serviceResponse;
             }
 
@@ -190,7 +185,6 @@ public class MyAccountService : IMyAccountService
             _authHelperService.RemoveCookie(CookieNamesEnum.UserName.ToString());
 
             // Task successful
-            _logger.LogInformation("User has logged off successfully. Session Id - {_sessionId}, username - {_userName} and device Id - {userAgent}", _sessionId, _userName, userAgent);
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "You have been logged off successfully";
@@ -233,8 +227,6 @@ public class MyAccountService : IMyAccountService
             // Something is missing
             if (sessionIdString == null || userName == null || userAgent == null)
             {
-                _logger.LogInformation("Log:2 Missing session data: SessionId = {SessionId}, UserName = {UserName}, User-Agent = {UserAgent}", sessionIdString, userName, userAgent);
-                _logger.LogInformation("{SessionId} or {UserName} or User-Agent not found", CookieNamesEnum.SessionId, CookieNamesEnum.UserName);
                 serviceResponse.Message = "Unable to refresh the session";
                 return serviceResponse;
             }
@@ -242,10 +234,7 @@ public class MyAccountService : IMyAccountService
             // RefreshToken not found
             if (refreshToken == null)
             {
-                _logger.LogInformation("Log:3 RefreshToken not found for sessionId {SessionIdString} and user {UserName}", sessionIdString, userName);
 
-                // Expired sessions will be deleted once user try to create new session via logging in
-                _logger.LogInformation($"Session has expired for {sessionIdString} because {CookieNamesEnum.RefreshToken} not found");
                 serviceResponse.Message = "Session has expired";
                 return serviceResponse;
             }
@@ -264,8 +253,6 @@ public class MyAccountService : IMyAccountService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation("Log:4 User {UserName} not found in database", userName);
-                _logger.LogInformation("{UserName} account not found", userName);
                 serviceResponse.Message = invalidcredentials;
                 return serviceResponse;
             }
@@ -273,7 +260,6 @@ public class MyAccountService : IMyAccountService
             // Tenant is null/disabled/expired
             if (!_authHelperService.IsUserTenantValid(user.Tenant, user.UserName))
             {
-                _logger.LogInformation("Log:5 Tenant validation failed for user {UserName} with tenantId {TenantId}", userName, user.TenantId);
                 serviceResponse.Message = "Not able to retrieve your tenant's details. Please contact support administrator";
                 return serviceResponse;
             }
@@ -281,8 +267,6 @@ public class MyAccountService : IMyAccountService
             // Account is locked
             if (user.LockoutEnd > DateTimeOffset.UtcNow)
             {
-                _logger.LogInformation("Log:6 Account {UserName} is locked until {LockoutEnd}", userName, user.LockoutEnd);
-                _logger.LogInformation("{UserName} account is locked", userName);
                 serviceResponse.Message = "Your account is locked. Please contact support administrator";
                 return serviceResponse;
             }
@@ -290,8 +274,6 @@ public class MyAccountService : IMyAccountService
             // Account is disabled
             if (user.IsDisabled)
             {
-                _logger.LogInformation("Log:7 Account {UserName} is disabled", userName);
-                _logger.LogInformation("{UserName} account is disabled", userName);
                 serviceResponse.Message = "Your account is disabled. Please contact support administrator";
                 return serviceResponse;
             }
@@ -299,8 +281,6 @@ public class MyAccountService : IMyAccountService
             // Password has expired
             if (!user.Tenant.IsPwdNeverExpiresEnabled && (DateTimeOffset.UtcNow - user.PwdSetOn)?.Days > user.Tenant.DaysBeforePwdExpires)
             {
-                _logger.LogInformation("Log:8 Password for {UserName} has expired. Password set on {PwdSetOn}", userName, user.PwdSetOn);
-                _logger.LogInformation("{UserName} account's password has been expired", userName);
                 /********IMPORTANCT NOTE********
                 DO NOT CHANGE the message's part "Your password has
                 been expired" as it has to match on frontend side
@@ -318,8 +298,6 @@ public class MyAccountService : IMyAccountService
             // Session not found
             if (activeSession == null)
             {
-                _logger.LogInformation("Log:9 Active session not found for user {UserName} with sessionId {SessionId}", userName, sessionIdString);
-                _logger.LogInformation($"Active session not found for account {userName}");
                 serviceResponse.Message = invalidcredentials;
                 return serviceResponse;
             }
@@ -329,7 +307,6 @@ public class MyAccountService : IMyAccountService
             // if (activeSession.DeviceId != userAgent)
             // {
             //     _logger.LogInformation("Log:10 DeviceId mismatch: expected {ExpectedDeviceId}, found {ActualDeviceId} for session {SessionId} and user {UserName}", activeSession.DeviceId, userAgent, activeSession.Id, userName);
-            //     _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
             //     serviceResponse.Message = invalidcredentials;
             //     return serviceResponse;
             // }
@@ -338,7 +315,6 @@ public class MyAccountService : IMyAccountService
             // if (activeSession.RefreshToken != refreshToken)
             // {
             //     _logger.LogInformation("Log:11 RefreshToken mismatch for session {SessionId} and user {UserName}. Expected {ExpectedRefreshToken}, found {ActualRefreshToken}", activeSession.Id, userName, activeSession.RefreshToken, refreshToken);
-            //     _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
             //     serviceResponse.Message = invalidcredentials;
             //     return serviceResponse;
             // }
@@ -379,8 +355,6 @@ public class MyAccountService : IMyAccountService
                 // Update ActiveSession failed
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation("Log:12 Failed to save updated session data for user {UserName} and sessionId {SessionId}", user.UserName, sessionIdString);
-                    _logger.LogInformation($"Context SaveChanges failed while refreshing active session for {user.UserName} and sessionId {sessionIdString}");
                     return serviceResponse;
                 }
             }
@@ -388,7 +362,6 @@ public class MyAccountService : IMyAccountService
             {
                 // Another concurrent request already refreshed this session (e.g., React Strict Mode double-call)
                 // Re-fetch the updated session and use its tokens
-                _logger.LogInformation("Log:12a Concurrent session refresh detected for user {UserName} and sessionId {SessionId}. Using existing refreshed session.", user.UserName, sessionIdString);
 
                 // Re-fetch the session that was updated by the concurrent request
                 activeSession = await _unitOfWork.ActiveSessionRepo
@@ -398,7 +371,6 @@ public class MyAccountService : IMyAccountService
 
                 if (activeSession == null)
                 {
-                    _logger.LogWarning("Log:12b Session disappeared after concurrency conflict for user {UserName}", user.UserName);
                     serviceResponse.Message = invalidcredentials;
                     return serviceResponse;
                 }
@@ -434,7 +406,6 @@ public class MyAccountService : IMyAccountService
             // Check if user is associated with an organization (tenant)
             if (user.Tenant == null || user.Tenant.Type == TenantTypesEnum.Unspecified)
             {
-                _logger.LogInformation("Log:13 User {UserName} has an incomplete organization setup", userName);
                 serviceResponse.Message = "Complete organization setup to continue.";
             }
             else
@@ -446,29 +417,22 @@ public class MyAccountService : IMyAccountService
                     )
                     .SingleOrDefaultAsync();
 
-                // IMPORTANT NOTE: Once user has completed onboarding, then there will always be an 1 active subscription at 
-                // any point of time even that subscription's status is expired. Users will be able to login even if subscription 
-                // is expired they won't be able to access any paid features. In future, we may downgrade user's subscription to 
                 // free Starter plan automatically once subscription is expired. In that case also there will be always one active subscription.
 
 
                 // Check if a valid subscription was found
                 if (subscription == null || subscription.Status == SubscriptionStatusTypesEnum.Initiated)
                 {
-                    _logger.LogWarning("Log:14 No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
                     _logger.LogWarning("No active subscription found for user {UserId} in tenant {TenantId}.", user.Id, user.TenantId);
                     serviceResponse.Message = "Tenant has no active subscription.";
                 }
                 else
                 {
-                    _logger.LogInformation("Log:15 Subscription is valid for tenant {TenantId}", user.TenantId);
                     serviceResponse.Message = "Session has been refreshed successfully.";
                 }
             }
 
             // UserSessionDto is ready
-            _logger.LogInformation($"Log:16 Session has been refreshed successfully for {user.UserName} and session Id {sessionIdString}");
-            _logger.LogInformation($"Session has been refreshed successfully for {user.UserName} and session Id {sessionIdString}");
             serviceResponse.Data = userSessionDto;
             serviceResponse.StatusCode = 200;
         }
@@ -522,8 +486,6 @@ public class MyAccountService : IMyAccountService
                 // Update user
                 await _userManager.UpdateAsync(user);
 
-                // log and return
-                _logger.LogInformation($"{methodName}: Old password is incorrect for username {_userName}");
                 serviceResponse.Message = "Old password is incorrect";
                 return serviceResponse;
             }
@@ -531,7 +493,6 @@ public class MyAccountService : IMyAccountService
             // User is disabled
             if (user.IsDisabled)
             {
-                _logger.LogInformation($"{methodName}: User account is disabled for username {_userName}");
                 serviceResponse.Message = "Your account is disabled. Please contact support adminstrator";
                 return serviceResponse;
             }
@@ -539,7 +500,6 @@ public class MyAccountService : IMyAccountService
             // User is locked
             if (user.LockoutEnd > DateTimeOffset.UtcNow)
             {
-                _logger.LogInformation($"{methodName}: User account is locked for username {_userName}");
                 serviceResponse.Message = "Your account is locked. Please contact support adminstrator";
                 return serviceResponse;
             }
@@ -547,7 +507,6 @@ public class MyAccountService : IMyAccountService
             // Match found in ObsoletePwd table
             if (!await _authHelperService.DoesNewPwdPassObsoletePwdPolicy(pwdUpdateDto.NewPwd, user))
             {
-                _logger.LogInformation($"{methodName}: A match found in obsolete passwords list for account {_userName}");
                 serviceResponse.Message = "New password does not meet all the requirements. Please try again";
                 return serviceResponse;
             }
@@ -559,7 +518,6 @@ public class MyAccountService : IMyAccountService
             // Reset-NewPwd job failed
             if (!pwdRemoveResult.Succeeded || !addNewPwdResult.Succeeded)
             {
-                _logger.LogError($"{methodName}: Usermanager is not able to set new password for account {_userName}");
                 return serviceResponse;
             }
 
@@ -569,7 +527,6 @@ public class MyAccountService : IMyAccountService
             // Save old password in ObsoletePwds table
             if (!await _authHelperService.SavePwdInObsoletePwdList(user, pwdUpdateDto.NewPwd, newPwdSetOn))
             {
-                _logger.LogError($"{methodName}: Not able to save new pwd in ObsoletePwd list for account {_userName}");
                 return serviceResponse;
             }
 
@@ -592,7 +549,6 @@ public class MyAccountService : IMyAccountService
                 // TerminateSessions job failed
                 if (terminateSessionsResult.StatusCode != 200)
                 {
-                    _logger.LogError($"{methodName}: Not able to terminate all sessions for account {_userName}");
                     return serviceResponse;
                 }
             }
@@ -600,7 +556,6 @@ public class MyAccountService : IMyAccountService
             // Context SaveChanges job failed
             if (!await _unitOfWork.SaveAsync(true))
             {
-                _logger.LogError($"{methodName}: Context SaveChanges failed. While updating user passwrod for username - {_userName}");
                 return serviceResponse;
             }
 
@@ -610,12 +565,10 @@ public class MyAccountService : IMyAccountService
             // Failed to send PwdReset email
             if (!await _emailService.SendEmailUsingTemplate(EmailTypesEnum.PwdUpdated, user.Email, placeholderValues))
             {
-                _logger.LogError($"{methodName}: Error occurred while sending password has been updated email to {user.Email}");
                 /*Still moving forward as new password is already saved in the database*/
             }
 
             // Task successful
-            _logger.LogInformation($"{methodName}: Password has been updated for account {_userName}");
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your password has been updated successfully";
@@ -664,7 +617,6 @@ public class MyAccountService : IMyAccountService
             // User Update-Job failed
             if (!updateUserResult.Succeeded)
             {
-                _logger.LogInformation("Failed while updating user");
                 serviceResponse.Message = "User's name update failed";
                 return serviceResponse;
             }
@@ -674,13 +626,11 @@ public class MyAccountService : IMyAccountService
 
             if (!response)
             {
-                _logger.LogInformation("Failed while updating user in other databases");
                 serviceResponse.Message = "User's name update failed in other databases";
                 return serviceResponse;
             }
 
             // Task successful
-            _logger.LogInformation($"{methodName}: Name has been updated for account {_userName}");
             serviceResponse.Data = nameUpdateDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your name has been updated successfully";
@@ -728,7 +678,6 @@ public class MyAccountService : IMyAccountService
             // Handle case where the verification code is not found
             if (verificationCode == null)
             {
-                _logger.LogInformation($"Verification code not found for email {emailUpdateDto.Email}");
                 serviceResponse.Message = "Failed to verify code. Please try again";
                 return serviceResponse;
             }
@@ -744,7 +693,6 @@ public class MyAccountService : IMyAccountService
             // If the verification code does not match or is expired, return error message
             if (!verificationCodeMatches)
             {
-                _logger.LogInformation($"Invalid verification code for email {emailUpdateDto.Email}");
                 serviceResponse.Message = "Failed to verify code. Please try again";
                 return serviceResponse;
             }
@@ -760,7 +708,6 @@ public class MyAccountService : IMyAccountService
             // If the email change fails, log and return error message
             if (!identityResult.Succeeded)
             {
-                _logger.LogInformation("Failed while updating user");
                 serviceResponse.Message = "User's email update failed";
                 return serviceResponse;
             }
@@ -777,7 +724,6 @@ public class MyAccountService : IMyAccountService
             // If updating in other databases fails, return error message
             if (!response)
             {
-                _logger.LogInformation("Failed while updating user in other databases");
                 serviceResponse.Message = "User's email update failed in other databases";
                 return serviceResponse;
             }
@@ -791,7 +737,6 @@ public class MyAccountService : IMyAccountService
                 _unitOfWork.ActiveSessionRepo.Delete(activeSessions);
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogWarning($"Failed to save after deleting {activeSessions.Count} active session(s) for user {user.UserName}.");
                 }
             }
             // Fetch the updated user with their tenant details
@@ -810,13 +755,9 @@ public class MyAccountService : IMyAccountService
             var activeSession = await _authService.CreateUserSessionAsync(user);
             if (activeSession.StatusCode != 200)
             {
-                // Log the error with relevant details
-                _logger.LogError($"Failed to create user session. Status Code: {activeSession.StatusCode}, User ID: {user.Id}, Email: {user.Email}");
                 return serviceResponse;
             }
 
-            // Log success and set response message
-            _logger.LogInformation($"{methodName}: Email has been updated for account {_userName}");
             serviceResponse.Data = activeSession.Data;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your email has been updated successfully";
@@ -867,7 +808,6 @@ public class MyAccountService : IMyAccountService
                 // Verification secret code not found
                 if (verificationCode == null)
                 {
-                    _logger.LogInformation($"Verification code not found for email {user.Email}");
                     serviceResponse.Message = "Failed to verify code. Please try again";
                     return serviceResponse;
                 }
@@ -883,7 +823,6 @@ public class MyAccountService : IMyAccountService
                 // Secret code did not match
                 if (!verificationCodeMatches)
                 {
-                    _logger.LogInformation($"Invalid verification code for email {user.Email}");
                     serviceResponse.Message = "Failed to verify code. Please try again";
                     return serviceResponse;
                 }
@@ -896,13 +835,11 @@ public class MyAccountService : IMyAccountService
             // User Update-Job failed
             if (!updateUserResult.Succeeded)
             {
-                _logger.LogInformation("Failed while updating 2FA for the user");
                 serviceResponse.Message = "User's two factor authentication update failed";
                 return serviceResponse;
             }
 
             // Task successful
-            _logger.LogInformation($"{methodName}: Two factor authentication has been updated for account {_userName}");
             serviceResponse.Data = toggle2FADto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your two factor authentication has been updated successfully";
@@ -937,7 +874,6 @@ public class MyAccountService : IMyAccountService
             // Check condition if no active session
             if (!activeSessions.Any())
             {
-                _logger.LogInformation("No active sessions found.");
                 serviceResponse.Message = "No active sessions found for the specified user.";
                 serviceResponse.StatusCode = 404;
                 return serviceResponse;
@@ -1017,7 +953,6 @@ public class MyAccountService : IMyAccountService
             // User not found
             if (user == null)
             {
-                _logger.LogInformation("User not found");
                 serviceResponse.Message = "User not found";
                 return serviceResponse;
             }
@@ -1030,7 +965,6 @@ public class MyAccountService : IMyAccountService
             // Verification secret code not found
             if (verificationCode == null)
             {
-                _logger.LogInformation($"Verification code not found for email {user.Email}");
                 serviceResponse.Message = "Failed to verify code. Please try again";
                 return serviceResponse;
             }
@@ -1046,7 +980,6 @@ public class MyAccountService : IMyAccountService
             // Secret code did not match
             if (!verificationCodeMatches)
             {
-                _logger.LogInformation($"Invalid verification code for email {user.Email}");
                 serviceResponse.Message = "Failed to verify code. Please try again";
                 return serviceResponse;
             }
@@ -1075,7 +1008,6 @@ public class MyAccountService : IMyAccountService
             var deleteUserResult = await _userManager.DeleteAsync(user);
             if (!deleteUserResult.Succeeded)
             {
-                _logger.LogInformation("Failed to delete user");
                 return serviceResponse;
             }
 
@@ -1083,7 +1015,6 @@ public class MyAccountService : IMyAccountService
             var deleteUserInOtherDbsResult = await _authHelperService.DeleteUserInOtherDbsAsync(user.Id, _jwt);
             if (!deleteUserInOtherDbsResult)
             {
-                _logger.LogInformation("Failed to delete user in other databases");
                 return serviceResponse;
             }
             // Task successful
@@ -1094,7 +1025,6 @@ public class MyAccountService : IMyAccountService
 
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while deleting the user");
             serviceResponse.Message = "An error occurred while deleting the user";
         }
         return serviceResponse;
@@ -1143,7 +1073,6 @@ public class MyAccountService : IMyAccountService
             // If the update fails, log the failure and return a failure response
             if (!updateUserResult.Succeeded)
             {
-                _logger.LogInformation("Failed while updating user's profile");
                 serviceResponse.Message = "User's profile update failed";
                 return serviceResponse;
             }
@@ -1153,13 +1082,10 @@ public class MyAccountService : IMyAccountService
 
             if (!response)
             {
-                _logger.LogInformation("Failed while updating user in other databases");
                 serviceResponse.Message = "User's name update failed in other databases";
                 return serviceResponse;
             }
 
-            // If the update is successful, log success and set the success response
-            _logger.LogInformation("{MethodName}: profile has been updated for account {_UserName}", methodName, _userName);
             serviceResponse.Data = userProfileDto;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your profile has been updated successfully";
@@ -1209,7 +1135,6 @@ public class MyAccountService : IMyAccountService
             };
 
             // Task successful
-            _logger.LogInformation("{MethodName}: profile has been fetched for account {_UserName}", "GetUserProfileAsync()", _userName);
             serviceResponse.Data = userProfileDetails;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your profile has been fetched successfully";
@@ -1256,7 +1181,6 @@ public class MyAccountService : IMyAccountService
             UserBillingAddressDto getUserTenantInfoDto;
             if (defaultTenant.Name.Equals(GetEnumDescriptionUtil.GetEnumDescription(DefaultTenantsEnum.IndividualUsers)))
             {
-                _logger.LogInformation("{_UserName} user is individual", _userName);
 
                 //if the use is individual then get the billing address of the user
                 var userBillingAddress = await _unitOfWork.BillingDetailRepo
@@ -1336,7 +1260,6 @@ public class MyAccountService : IMyAccountService
 
             if (userTenantInfoDto is null)
             {
-                _logger.LogInformation("parameter is null while updating in method {MethodName}", methodName);
                 serviceResponse.Message = "Please provide proper details to update the tenant account";
                 serviceResponse.StatusCode = 400;
                 return serviceResponse;
@@ -1351,7 +1274,6 @@ public class MyAccountService : IMyAccountService
 
             if (isIndie != null && !isIndie.Value)
             {
-                _logger.LogInformation("billing address of the tenant must updated by authorized user {MethodName}", methodName);
                 serviceResponse.Message = "Billing address of tenant must be update by the authorized user. ";
                 serviceResponse.StatusCode = 400;
                 return serviceResponse;
@@ -1403,7 +1325,6 @@ public class MyAccountService : IMyAccountService
             // Verification secret code not found
             if (verificationCode == null)
             {
-                _logger.LogInformation($"Verification code not found for email {user.Email}");
                 serviceResponse.Message = "Failed to verify code. Please try again";
                 return serviceResponse;
             }
@@ -1415,7 +1336,6 @@ public class MyAccountService : IMyAccountService
             // return if the user password is not correct
             if (!isCorrectPWD)
             {
-                _logger.LogInformation($"Incorrect password while deactivation of account of email {user.Email}");
                 serviceResponse.Message = "Password is incorrect. Please try again";
                 return serviceResponse;
             }
@@ -1431,7 +1351,6 @@ public class MyAccountService : IMyAccountService
             // Secret code did not match
             if (!verificationCodeMatches)
             {
-                _logger.LogInformation($"Invalid verification code for email {user.Email}");
                 serviceResponse.Message = "Failed to verify code. Please try again";
                 return serviceResponse;
             }
@@ -1451,7 +1370,6 @@ public class MyAccountService : IMyAccountService
                 // TerminateSessions job failed
                 if (terminateSessionsResult.StatusCode != 200)
                 {
-                    _logger.LogError($"{methodName}: Not able to terminate all sessions for account {_userName}");
                     return serviceResponse;
                 }
             }
@@ -1462,13 +1380,11 @@ public class MyAccountService : IMyAccountService
             // User Update-Job failed
             if (!updateUserResult.Succeeded)
             {
-                _logger.LogInformation("Failed while deactivation the user {_userName}", _userName);
                 serviceResponse.Message = "User's account deactivation failed";
                 return serviceResponse;
             }
 
             // Task successful
-            _logger.LogInformation($"{methodName}: account has been deactivating of {_userName}");
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your account will be deactivated in 10 days.";
@@ -1521,8 +1437,6 @@ public class MyAccountService : IMyAccountService
             _logger.LogError(ex, "Error occured while performing {Name}", ex.TargetSite.Name);
             return serviceResponse;
         }
-
         return serviceResponse;
     }
-
 }

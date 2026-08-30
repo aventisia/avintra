@@ -77,7 +77,6 @@ public class UserRegistrationService : IUserRegistrationService
             // User already exists
             if (user != null)
             {
-                _logger.LogInformation($"User account already exists for email {createAccountDto.Email}");
                 serviceResponse.Message = "User account already exists";
                 return serviceResponse;
             }
@@ -90,7 +89,6 @@ public class UserRegistrationService : IUserRegistrationService
             // Verification secret code not found
             if (verificationCode == null)
             {
-                _logger.LogInformation($"Verification code not found for email {createAccountDto.Email}");
                 serviceResponse.Message = "Failed to verify code. Please try again";
                 return serviceResponse;
             }
@@ -106,7 +104,6 @@ public class UserRegistrationService : IUserRegistrationService
             // Secret code did not match
             if (!verificationCodeMatches)
             {
-                _logger.LogInformation($"Invalid verification code for email {createAccountDto.Email}");
                 serviceResponse.Message = "Failed to verify code. Please try again";
                 return serviceResponse;
             }
@@ -137,7 +134,6 @@ public class UserRegistrationService : IUserRegistrationService
             {
                 // Log create user errors
                 foreach (var error in createUserResult.Errors)
-                    _logger.LogError($"New user creation failed. ErrorCode: {error.Code}, Description: {error.Description}");
 
                 // Return common error for both
                 serviceResponse.Message = "Failed to create your account. Please try again later";
@@ -220,7 +216,6 @@ public class UserRegistrationService : IUserRegistrationService
             // Saving pwd (if available) in ObsoletePwd failed
             if (!await _authHelperService.SavePwdInObsoletePwdList(newUser, createAccountDto.Pwd, newPwdSetOn))
             {
-                _logger.LogInformation($"Not able to save new pwd in ObsoletePwd list. Tried to create account for email {createAccountDto.Email}");
                 return serviceResponse;
             }
 
@@ -231,12 +226,9 @@ public class UserRegistrationService : IUserRegistrationService
             if (!await _emailService.SendEmailUsingTemplate(emailType: EmailTypesEnum.AccountCreated, toEmailAddress: createAccountDto.Email, placeholderValues: placeholderValues,
                 bccEmailAddresses: _environmentConfig.SalesEmails))
             {
-                _logger.LogError($"Error occurred while sending account creation confirmation email to {createAccountDto.Email}");
                 /*Still moving forward as account is already saved in the database*/
             }
 
-            // Log successful account creation
-            _logger.LogInformation($"Account successfully created for {createAccountDto.Email}");
 
             // Fetch the newly created user with their tenant details
             var newlyAddedUser = await _unitOfWork.AccountUserRepo
@@ -257,8 +249,6 @@ public class UserRegistrationService : IUserRegistrationService
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors and return the failure response
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -289,7 +279,6 @@ public class UserRegistrationService : IUserRegistrationService
             // Check if the tenant type is NOT 'Individual'
             if (tenantOrganizationDto.Type != TenantTypesEnum.Individual)
             {
-                _logger.LogInformation("Validating organization name for tenant type: {TenantType}", tenantOrganizationDto.Type);
 
                 // Retrieve any existing tenant with the same organization name (case-insensitive)
                 var existingTenant = await _unitOfWork.TenantRepo
@@ -354,7 +343,6 @@ public class UserRegistrationService : IUserRegistrationService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Tenant details successfully updated for tenant ID {TenantId} (Organization: {TenantName}).", tenant.Id, tenant.Name);
 
             // Retrieve the updated user with tenant details for the response
             var updatedUser = await _unitOfWork.AccountUserRepo

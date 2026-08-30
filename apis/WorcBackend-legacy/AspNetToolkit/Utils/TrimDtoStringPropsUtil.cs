@@ -33,9 +33,8 @@ public static class TrimDtoStringPropsUtil
             // Return formatted dto
             return dto;
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine(ex.Message);
         }
         return dto;
     }

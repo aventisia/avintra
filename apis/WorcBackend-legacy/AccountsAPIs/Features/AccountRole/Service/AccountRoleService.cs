@@ -43,7 +43,7 @@ public class AccountRoleService : IAccountRoleService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "An unhandled exception occurred.");
             return serviceResponse;
         }
 
@@ -69,7 +69,7 @@ public class AccountRoleService : IAccountRoleService
             //Check for duplicate role
             if (roles.Any(r => r.FullName == accountRoleDto.FullName))
             {
-                _logger.LogInformation($"Role already exists, please select another role name.");
+                _logger.LogWarning("Role already exists, please select another role name.");
                 serviceResponse.Message = "Role already exists, please select another role name.";
                 return serviceResponse;
             }
@@ -85,7 +85,7 @@ public class AccountRoleService : IAccountRoleService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new role.");
+                _logger.LogError("Context SaveChanges failed while inserting new role.");
                 return serviceResponse;
             }
 
@@ -97,7 +97,7 @@ public class AccountRoleService : IAccountRoleService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "An unhandled exception occurred.");
             return serviceResponse;
         }
 
@@ -123,7 +123,7 @@ public class AccountRoleService : IAccountRoleService
             //Check for duplicate role
             if (roles.Any(r => r.FullName == accountRoleDto.FullName))
             {
-                _logger.LogInformation($"Role already exists, please select another role name.");
+                _logger.LogWarning("Role already exists, please select another role name.");
                 serviceResponse.Message = "Role already exists, please select another role name.";
                 return serviceResponse;
             }
@@ -136,7 +136,7 @@ public class AccountRoleService : IAccountRoleService
             // Role does not exist
             if (role == null)
             {
-                _logger.LogInformation($"Role does not exist");
+                _logger.LogWarning("Role does not exist");
                 serviceResponse.Message = "Role does not exist";
                 return serviceResponse;
             }
@@ -152,7 +152,7 @@ public class AccountRoleService : IAccountRoleService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating role.");
+                _logger.LogError("Context SaveChanges failed while updating role.");
                 return serviceResponse;
             }
 
@@ -164,7 +164,7 @@ public class AccountRoleService : IAccountRoleService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "An unhandled exception occurred.");
             return serviceResponse;
         }
         return serviceResponse;
@@ -191,7 +191,7 @@ public class AccountRoleService : IAccountRoleService
             //Check if role not exists
             if (role == null)
             {
-                _logger.LogInformation($"Role does not exist");
+                _logger.LogWarning("Role does not exist");
                 serviceResponse.Message = "Role does not exist";
                 return serviceResponse;
             }
@@ -202,7 +202,7 @@ public class AccountRoleService : IAccountRoleService
             //Delete-job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting a role.");
+                _logger.LogError("Context SaveChanges failed while deleting a role.");
                 return serviceResponse;
             }
 
@@ -214,7 +214,7 @@ public class AccountRoleService : IAccountRoleService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "An unhandled exception occurred.");
             return serviceResponse;
         }
         return serviceResponse;

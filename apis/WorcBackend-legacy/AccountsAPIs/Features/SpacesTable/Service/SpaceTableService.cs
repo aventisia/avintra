@@ -109,12 +109,9 @@ public class SpaceTableService : ISpaceTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Spaces retrieved successfully.";
 
-            // Log the total count of retrieved spaces
-            _logger.LogInformation("Retrieved {Count} spaces from the database.", spaceEntities.Count);
         }
         catch (Exception ex)
         {
-            // Log any unexpected exception
             _logger.LogError(ex, "Failed to retrieve spaces due to an error.");
         }
 
@@ -145,12 +142,9 @@ public class SpaceTableService : ISpaceTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Spaces retrieved successfully.";
 
-            // Log success with the number of spaces retrieved
-            _logger.LogInformation("Successfully retrieved {Count} space(s) from the database.", spaceEntities.Count);
         }
         catch (Exception ex)
         {
-            // Log the exception with full error details
             _logger.LogError(ex, "An error occurred while retrieving spaces from the database.");
         }
 
@@ -170,8 +164,6 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
-            // Log the operation attempt
-            _logger.LogInformation("Fetching space with ID: {SpaceId}", spaceId);
 
             // Query the repository for a space matching the provided ID
             var spaceEntity = await _unitOfWork.SpaceRepo
@@ -192,12 +184,9 @@ public class SpaceTableService : ISpaceTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Space retrieved successfully.";
 
-            // Log the successful retrieval
-            _logger.LogInformation("Successfully retrieved space with ID: {SpaceId}", spaceId);
         }
         catch (Exception ex)
         {
-            // Log any errors that occur during the operation
             _logger.LogError(ex, "Error occurred while retrieving space with ID: {SpaceId}", spaceId);
         }
 
@@ -217,8 +206,6 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
-            // Log the start of space creation
-            _logger.LogInformation("Starting creation of space: {SpaceName}", spaceDto.Name);
 
             // Check if a space with the same name already exists within the tenant (case-insensitive)
             var existingSpace = await _unitOfWork.SpaceRepo
@@ -294,7 +281,6 @@ public class SpaceTableService : ISpaceTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Space created successfully.";
 
-            _logger.LogInformation("Space created successfully with ID: {SpaceId}", newSpace.Id);
         }
         catch (Exception ex)
         {
@@ -316,7 +302,6 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
-            _logger.LogInformation("Attempting to update space with ID: {SpaceId}", spaceDto.Id);
 
             // Retrieve the existing space
             var existingSpace = await _unitOfWork.SpaceRepo
@@ -407,7 +392,6 @@ public class SpaceTableService : ISpaceTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Space updated successfully.";
 
-            _logger.LogInformation("Space with ID {SpaceId} updated successfully.", spaceDto.Id);
         }
         catch (Exception ex)
         {
@@ -429,7 +413,6 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
-            _logger.LogInformation("Initiating deletion for space with ID: {SpaceId}", spaceId);
 
             // Retrieve the space entity from the repository
             var spaceEntity = await _unitOfWork.SpaceRepo
@@ -477,7 +460,6 @@ public class SpaceTableService : ISpaceTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Space deleted successfully.";
 
-            _logger.LogInformation("Space with ID: {SpaceId} was deleted successfully.", spaceId);
         }
         catch (Exception ex)
         {
@@ -628,7 +610,6 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
-            _logger.LogInformation("Initiating bulk deletion for {Count} space(s).", spaceIds.Count);
 
             // Retrieve matching space entities from the repository
             var spaces = await _unitOfWork.SpaceRepo
@@ -689,7 +670,6 @@ public class SpaceTableService : ISpaceTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Spaces deleted successfully.";
 
-            _logger.LogInformation("Successfully deleted {Count} space(s).", deletableSpaces.Count);
         }
         catch (Exception ex)
         {
@@ -711,7 +691,6 @@ public class SpaceTableService : ISpaceTableService
 
         try
         {
-            _logger.LogInformation("Fetching users for space with ID: {SpaceId}", spaceId);
 
             // Retrieve the space along with its associated users
             var space = await _unitOfWork.SpaceRepo
@@ -733,7 +712,6 @@ public class SpaceTableService : ISpaceTableService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Users retrieved successfully.";
 
-            _logger.LogInformation("Successfully retrieved {UserCount} user(s) for space ID: {SpaceId}.", space.SpaceUsers.Count, spaceId);
         }
         catch (Exception ex)
         {

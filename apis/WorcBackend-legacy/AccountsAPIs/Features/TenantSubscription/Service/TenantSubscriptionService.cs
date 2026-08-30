@@ -51,7 +51,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            _logger.LogInformation("Attempting to retrieve all tenant subscriptions.");
 
             // Fetch all tenant subscriptions with their related plan and creator user
             var subscriptions = await _unitOfWork.TenantSubscriptionRepo
@@ -62,7 +61,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 .Include(i => i.CreatedByUser)
                 .ToListAsync();
 
-            _logger.LogInformation("Retrieved {Count} tenant subscriptions.", subscriptions.Count);
 
             // Map entities to DTOs
             serviceResponse.Data = subscriptions.Adapt<IEnumerable<TenantSubscriptionDto>>();
@@ -89,7 +87,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            _logger.LogInformation("Fetching tenant subscription with ID: {TenantSubscriptionId}", tenantSubscriptionId);
 
             // Query tenant subscription by ID with related plan and creator
             var subscription = await _unitOfWork.TenantSubscriptionRepo
@@ -105,7 +102,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Tenant subscription found with ID: {TenantSubscriptionId}", tenantSubscriptionId);
 
             serviceResponse.Data = subscription.Adapt<TenantSubscriptionDto>();
             serviceResponse.StatusCode = 200;
@@ -131,7 +127,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            _logger.LogInformation("Attempting to create a new tenant subscription for PlanId: {PlanId}", tenantSubscriptionDto.PlanId);
 
             // Check if subscription already exists for tenant (assuming you have tenant info in DTO or context)
             var existingSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -191,7 +186,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Tenant subscription created successfully with ID: {TenantSubscriptionId}", newSubscription.Id);
 
             serviceResponse.Data = newSubscription.Adapt<TenantSubscriptionDto>();
             serviceResponse.StatusCode = 200;
@@ -217,7 +211,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            _logger.LogInformation("Updating tenant subscription with ID: {TenantSubscriptionId}", tenantSubscriptionDto.Id);
 
             // Retrieve existing subscription from DB
             var existingSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -256,7 +249,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Tenant subscription with ID {TenantSubscriptionId} updated successfully.", tenantSubscriptionDto.Id);
 
             serviceResponse.Data = existingSubscription.Adapt<TenantSubscriptionDto>();
             serviceResponse.StatusCode = 200;
@@ -282,7 +274,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            _logger.LogInformation("Deleting tenant subscription with ID: {TenantSubscriptionId}", tenantSubscriptionId);
 
             // Fetch subscription to ensure existence
             var subscription = await _unitOfWork.TenantSubscriptionRepo
@@ -332,7 +323,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            _logger.LogInformation("Bulk deletion of {Count} tenant subscriptions initiated.", tenantSubscriptionIds.Count);
 
             // Fetch subscriptions to delete
             var subscriptions = await _unitOfWork.TenantSubscriptionRepo
@@ -356,7 +346,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Successfully deleted {Count} tenant subscriptions.", subscriptions.Count);
 
             serviceResponse.Data = true;
             serviceResponse.StatusCode = 200;
@@ -391,7 +380,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Attempting to purchase a new tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto);
 
             // Retrieve the subscription plan by its ID and return an error if not found
             var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
@@ -505,7 +493,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
                 // Update the billing detail in the repository
                 _unitOfWork.BillingDetailRepo.Update(existingBillingDetail);
-                _logger.LogInformation("Billing details successfully updated for TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, existingBillingDetail.Id);
             }
             else
             {
@@ -515,7 +502,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
                 // Insert the new billing detail into the repository
                 await _unitOfWork.BillingDetailRepo.InsertAsync(billingDetail);
-                _logger.LogInformation("Billing details successfully created for TenantId: {TenantId}, BillingDetailId: {BillingDetailId}", _tenantId, billingDetail.Id);
             }
 
             // Save changes to the database
@@ -596,7 +582,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     return serviceResponse;
                 }
 
-                _logger.LogInformation("Tenant credit successfully saved. TenantId: {TenantId}, TenantCreditId: {TenantCreditId}", _tenantId, newTenantCredit.Id);
 
                 // If the subscription plan is not 'Starter', check and update existing tenant credits
                 var tenantCredits = await _unitOfWork.TenantCreditRepo
@@ -626,8 +611,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 }
             }
 
-            // Log the successful creation of the tenant subscription
-            _logger.LogInformation("Tenant subscription successfully created with ID: {TenantSubscriptionId}", tenantSubscription.Id);
 
             // Map the tenant subscription entity to a DTO for response
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
@@ -640,7 +623,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors that occur during the subscription creation process
             _logger.LogError(ex, "An unexpected error occurred while purchasing tenant subscription for PlanId: {PlanId}", tenantSubscriptionPurchaseDto.PlanId);
         }
 
@@ -660,7 +642,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         try
         {
             // Log information about the process of fetching the current tenant's subscription plan
-            _logger.LogInformation("Fetching current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
 
             // Initialize an empty SubscriptionDashboardDto to store subscription data
             SubscriptionDashboardDto? subscriptionDashboardDto = new();
@@ -784,8 +765,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 TotalAmount = totalAmount,
             };
 
-            // Log success message after retrieving the subscription details successfully
-            _logger.LogInformation("Successfully retrieved the current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
 
             // Populate the service response with the subscription data and a success message
             serviceResponse.Data = subscriptionDashboardDto;
@@ -794,7 +773,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         }
         catch (Exception ex)
         {
-            // Log the error in case of an exception
             _logger.LogError(ex, "Error occurred while retrieving the current tenant subscription plan for tenant ID: {TenantId}", _tenantId);
         }
 
@@ -813,7 +791,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            _logger.LogInformation("Processing subscription upgrade for TenantId: {TenantId}, PlanId: {PlanId}", _tenantId, tenantSubscriptionPurchaseDto.PlanId);
 
             // Retrieve the selected subscription plan
             var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
@@ -949,7 +926,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                     return serviceResponse;
                 }
 
-                _logger.LogInformation("Tenant credit successfully saved. TenantId: {TenantId}, TenantCreditId: {TenantCreditId}", _tenantId, tenantCredit.Id);
             }
 
             // Map the tenant subscription entity to a DTO for response
@@ -980,7 +956,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            _logger.LogInformation("Attempting to upgrade subscription for TenantId: {TenantId}, requested PlanId: {PlanId}", _tenantId, selfHostedSubscriptionUpgradeDto.PlanId);
 
             // Retrieve the subscription plan the tenant wants to upgrade to
             var subscriptionPlan = await _unitOfWork.SubscriptionPlanRepo
@@ -1052,8 +1027,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            // Log the start of the cancellation process for tracking purposes
-            _logger.LogInformation("Processing subscription cancellation for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
 
             // Fetch the existing tenant subscription to be canceled
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -1081,7 +1054,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            // Log success for deactivating the subscription
             _logger.LogInformation("Tenant subscription deactivated. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
 
             // Map the tenant subscription entity to a DTO for response (so client gets details of canceled subscription)
@@ -1094,7 +1066,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         }
         catch (Exception ex)
         {
-            // Log any unexpected exceptions that occur during the cancellation process
             _logger.LogError(ex, "An error occurred while cancelling the subscription. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
         }
 
@@ -1114,14 +1085,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            // Log the start of the subscription update process for tracking purposes
             _logger.LogInformation("Processing subscription updation for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}",
                                     _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
 
             // Check if the provided PlanId is empty (invalid)
             if (subscriptionUpdateRequestDto.PlanId == Guid.Empty)
             {
-                // Log the invalid PlanId case
                 _logger.LogWarning("Invalid PlanId provided. PlanId is empty for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}",
                                     _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
 
@@ -1186,8 +1155,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            // Log success for deactivating the subscription
-            _logger.LogInformation("Tenant subscription updated. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
 
             // Map the tenant subscription entity to a DTO for response
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
@@ -1199,7 +1166,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         }
         catch (Exception ex)
         {
-            // Log any unexpected exceptions that occur during the Updation process
             _logger.LogError(ex, "An error occurred while updating the subscription. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
         }
 
@@ -1219,8 +1185,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            // Log the start of the recurring payment cancellation process
-            _logger.LogInformation("Processing recurring payment cancellation for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
 
             // Fetch the active tenant subscription
             var tenantSubscription = await _unitOfWork.TenantSubscriptionRepo
@@ -1245,8 +1209,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
                 return serviceResponse;
             }
 
-            // Log success for canceling the recurring payment
-            _logger.LogInformation("Recurring payment canceled successfully for TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
 
             // Map the tenant subscription entity to a DTO for response (so client gets details of canceled payment)
             var tenantSubscriptionDto = tenantSubscription.Adapt<TenantSubscriptionDto>();
@@ -1258,7 +1220,6 @@ public class TenantSubscriptionService : ITenantSubscriptionService
         }
         catch (Exception ex)
         {
-            // Log any unexpected exceptions that occur during the recurring payment cancellation process
             _logger.LogError(ex, "An error occurred while canceling the recurring payment. TenantId: {TenantId}, SubscriptionId: {SubscriptionId}", _tenantId, subscriptionUpdateRequestDto.SubscriptionId);
         }
 
@@ -1278,14 +1239,12 @@ public class TenantSubscriptionService : ITenantSubscriptionService
 
         try
         {
-            _logger.LogInformation("Attempting to retrieve all subscriptions.");
 
             // Fetch all active subscriptions with their history retention details
             var subscriptions = await _unitOfWork.TenantSubscriptionRepo
                 .GetByConditionAsync(w => w.IsActive)
                 .ToListAsync();
 
-            _logger.LogInformation("Retrieved {Count} active subscriptions.", subscriptions.Count);
 
             // Check if any subscriptions are retrieved
             if (subscriptions.Any())

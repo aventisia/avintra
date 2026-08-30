@@ -8,9 +8,12 @@ namespace AspNetToolkit.Middleware;
 public class TenantResolver
 {
     private readonly RequestDelegate _next;
-    public TenantResolver(RequestDelegate next)
+    private readonly ILogger<TenantResolver> _logger;
+
+    public TenantResolver(RequestDelegate next, ILogger<TenantResolver> logger)
     {
         _next = next;
+        _logger = logger;
     }
 
     // Get Tenant Id from incoming requests 
@@ -171,7 +174,7 @@ public class TenantResolver
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
+            _logger.LogError(ex, "Failed to resolve tenant from request.");
         }
 
         return;

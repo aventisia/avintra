@@ -37,18 +37,16 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             // Failed to get available credits
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogError($"Failed to retrieve available credits. Response: {response.StatusCode} - {responseContent}");
                 return serviceResponse;
             }
 
             serviceResponse.StatusCode = 200;
             dynamic availableCredits = JsonConvert.DeserializeObject<dynamic>(responseContent) ?? new { data = new { AvailableCredits = 0 } };
-            _logger.LogInformation($"Successfully retrieved available credits: {availableCredits.data.availableCredits}");
+            var availableCreditAmount = (int?)availableCredits?.data?.availableCredits ?? 0;
 
-            if (availableCredits.data.availableCredits <= 10)
+            if (availableCreditAmount <= 10)
             {
-                serviceResponse.Message = "Insufficient credits to continue. Please top up your credits.";
-                _logger.LogWarning($"Insufficient credits available: {availableCredits.data.availableCredits}");
+                _logger.LogWarning("Insufficient credits available: {AvailableCredits}", availableCreditAmount);
                 return serviceResponse;
             }
 
@@ -57,7 +55,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
+            _logger.LogError(ex, "Failed to check available credits.");
             return serviceResponse;
         }
 
@@ -73,7 +71,6 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             Message = "Data extraction failed. Please try again later."
         };
 
-        _logger.LogInformation("Starting data extraction process...");
 
         var startTime = DateTime.UtcNow;
         double totalExecutionTime = 0;
@@ -123,21 +120,11 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                         // Store the model's output in the response
                         llmResponse = apiResponse.Output.ToString() ?? string.Empty;
 
-                        // Log success after receiving the LLM response
-                        _logger.LogInformation("Received successful response from LLM Pipeline API: {LLMResponse}", llmResponse);
-
                         // Capture token usage statistics if available
                         inputTokens = apiResponse.InputTokens;
                         outputTokens = apiResponse.OutputTokens;
                         inputCachedTokens = apiResponse.InputCachedTokens;
                         outputReasoningTokens = apiResponse.OutputReasoningTokens;
-
-                        // Log token usage metrics for monitoring purposes
-                        _logger.LogInformation(
-                            "LLM Token Usage - Input: {InputTokens}, Output: {OutputTokens}, Cached Input: {InputCachedTokens}, Reasoning: {OutputReasoningTokens}",
-                            inputTokens, outputTokens, inputCachedTokens, outputReasoningTokens
-                        );
-
                         // Calculate the total execution time for the API call
                         totalExecutionTime = (DateTime.UtcNow - startTime).TotalSeconds;
 
@@ -148,7 +135,7 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError("Attempt {Attempt} failed with error: {ErrorMessage}", attempt, ex.Message);
+                        _logger.LogError(ex, "Attempt {Attempt} failed during LLM data extraction.", attempt);
                     }
                 }
             }
@@ -180,17 +167,10 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Data successfully extracted.";
             _logger.LogInformation("Final cleaned LLM response: {llmResponse}", llmResponse);
-
-            // Log detailed token usage for future analysis
-            _logger.LogInformation("Token Usage Details - Input Tokens: {inputTokens}, Cached Input Tokens: {inputCachedTokens}, Output Tokens: {outputTokens}, Output Reasoning Tokens: {outputReasoningTokens}",
-                inputTokens, inputCachedTokens, outputTokens, outputReasoningTokens);
-
-            // Step 10: Return a successful response with the cleaned extracted data
-            _logger.LogInformation("Data extraction completed successfully.");
         }
         catch (Exception ex)
         {
-            _logger.LogError("An unexpected error occurred during the extraction process: {ErrorMessage}.", ex.Message);
+            _logger.LogError(ex, "An unexpected error occurred during the extraction process.");
         }
 
         return serviceResponse;
@@ -226,13 +206,12 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 }
 
                 string fileText = await response.Content.ReadAsStringAsync();
-                _logger.LogInformation("Successfully extracted text from file URL: {fileUrl}", fileUrl);
                 return fileText;
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError("An error occurred while retrieving file text: {error}", ex.Message);
+            _logger.LogError(ex, "An error occurred while retrieving file text.");
             return string.Empty;
         }
     }
@@ -242,8 +221,6 @@ public class LLMDataExtractionService : ILLMDataExtractionService
     {
         try
         {
-            // Log start of the API request
-            _logger.LogInformation("Starting request to LLM Pipeline API...");
 
             // Log the input request body (for debugging)
             var requestBody = new
@@ -267,9 +244,6 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 agent_name = llmRequest.AgentName
             };
 
-            // Log the request body before sending it
-            _logger.LogInformation("LLM Pipeline API request body: {RequestBody}", JsonConvert.SerializeObject(requestBody));
-
             // Add authorization header using the JWT
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_jwt}");
 
@@ -292,7 +266,6 @@ public class LLMDataExtractionService : ILLMDataExtractionService
             // Handle non-successful HTTP responses
             if (!apiResponse.IsSuccessStatusCode)
             {
-                // Log error details for failed request
                 _logger.LogError("LLM Pipeline API request failed. Status Code: {StatusCode}. Response: {Response}", apiResponse.StatusCode, responseString);
                 return new LLMResponse();
             }
@@ -303,14 +276,12 @@ public class LLMDataExtractionService : ILLMDataExtractionService
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             ) ?? new LLMResponse();
 
-            _logger.LogInformation("Received response from LLM Pipeline API successfully.");
 
             return llmResponse;
         }
         catch (Exception ex)
         {
-            // Log any unexpected errors
-            _logger.LogError(ex, "An exception occurred while sending request to LLM Pipeline API: {Message}", ex.Message);
+            _logger.LogError(ex, "Failed to get chat completion from LLM Pipeline API.");
             return new LLMResponse();
         }
     }

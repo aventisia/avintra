@@ -2,7 +2,7 @@
   "Serilog": {
     "Using": ["Serilog.Sinks.File", "Serilog.Sinks.Console"],
     "MinimumLevel": {
-      "Default": "Verbose",
+      "Default": "Information",
       "Override": {
         "Microsoft": "Warning",
         "Microsoft.Hosting.Lifetime": "Information",
@@ -20,7 +20,7 @@
           "path": "./logs/auth_api_log-.json",
           "rollingInterval": "Day",
           "rollOnFileSizeLimit": true,
-          "restrictedToMinimumLevel": "Verbose",
+          "restrictedToMinimumLevel": "Information",
           "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} {CorrelationId} {Level:u3}] {Username} {Message:lj}{NewLine}{Exception}"
         }
       }

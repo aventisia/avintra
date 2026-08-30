@@ -23,10 +23,6 @@ public class OrderService : IOrderService
 
         try
         {
-            // Log the start of the order creation process
-            _logger.LogInformation("Starting CreateOrderAsync for Amount: {Amount}, Currency: {Currency}, Receipt: {Receipt}",
-                                    request.Amount, request.Currency, request.Receipt);
-
             // Prepare the dictionary for Razorpay API call to create an order
             var orderRequestOptions = new Dictionary<string, object>
                 {
@@ -34,10 +30,6 @@ public class OrderService : IOrderService
                     { "currency", request.Currency.ToString().ToUpper()},
                     { "receipt", request.Receipt ?? Guid.NewGuid().ToString() },
                 };
-
-            // Log the prepared order request data
-            _logger.LogDebug("Prepared order request: Amount={Amount}, Currency={Currency}, Receipt={Receipt}",
-                             request.Amount, request.Currency, request.Receipt);
 
             // Make API call to create the order
             var razorpayOrder = await Task.Run(() => _razorpayClient.Order.Create(orderRequestOptions));
@@ -59,7 +51,6 @@ public class OrderService : IOrderService
         }
         catch (Exception ex)
         {
-            // Log the exception and failure details
             _logger.LogError(ex, "Error occurred while creating order for Amount: {Amount}, Currency: {Currency}",
                              request.Amount, request.Currency);
         }
@@ -80,14 +71,10 @@ public class OrderService : IOrderService
 
         try
         {
-            // Log the start of the fetch operation
-            _logger.LogInformation("Fetching order with ID: {OrderId}", orderId);
 
             // Call Razorpay API to fetch the order by ID
             var razorpayOrder = await Task.Run(() => _razorpayClient.Order.Fetch(orderId));
 
-            // Log the successful retrieval of the order
-            _logger.LogInformation("Order fetched successfully with ID: {OrderId}", orderId);
 
             // Map the Razorpay response to OrderResponseDto
             var orderResponseDto = new OrderResponseDto
@@ -106,7 +93,6 @@ public class OrderService : IOrderService
         }
         catch (Exception ex)
         {
-            // Log the exception and failure details
             _logger.LogError(ex, "Error occurred while fetching order with ID: {OrderId}", orderId);
         }
 
@@ -126,14 +112,9 @@ public class OrderService : IOrderService
 
         try
         {
-            // Log the start of the fetch operation for all orders
-            _logger.LogInformation("Fetching all orders from Razorpay");
 
             // Call Razorpay API to fetch all orders
             var razorpayOrders = await Task.Run(() => _razorpayClient.Order.All());
-
-            // Log the number of orders retrieved
-            _logger.LogInformation("Successfully fetched {OrderCount} orders from Razorpay.", razorpayOrders.Count);
 
             // Map the Razorpay response (list of orders) to OrderResponseDto for the API response
             var orderList = razorpayOrders.Select(order => new OrderResponseDto
@@ -153,7 +134,6 @@ public class OrderService : IOrderService
         }
         catch (Exception ex)
         {
-            // Log the exception and failure details
             _logger.LogError(ex, "Error occurred while fetching all orders.");
         }
 

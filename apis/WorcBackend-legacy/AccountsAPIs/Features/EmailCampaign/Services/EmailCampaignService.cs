@@ -64,7 +64,6 @@ public class EmailCampaignService : IEmailCampaignService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -89,7 +88,6 @@ public class EmailCampaignService : IEmailCampaignService
 
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new EmailCampaign record");
                 return serviceResponse;
             }
 
@@ -99,7 +97,6 @@ public class EmailCampaignService : IEmailCampaignService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 

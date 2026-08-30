@@ -60,7 +60,6 @@ public class TenantAuthService : ITenantAuthService
             // Validate user existence
             if (user == null)
             {
-                _logger.LogError($"User not found: {_userId}");
                 serviceResponse.Message = "User not found";
                 return serviceResponse;
             }
@@ -81,7 +80,6 @@ public class TenantAuthService : ITenantAuthService
             // Validate tenant existence
             if (tenant == null)
             {
-                _logger.LogError($"Tenant not found for user {user.UserName}");
                 return serviceResponse;
             }
 
@@ -97,7 +95,6 @@ public class TenantAuthService : ITenantAuthService
             // Enforce max session limit
             if (activeSessionCount >= _environmentConfig.MaxActiveSessionAllowed)
             {
-                _logger.LogError($"Session limit reached for {user.UserName}");
                 serviceResponse.Message = "Session limit reached";
                 return serviceResponse;
             }
@@ -145,7 +142,6 @@ public class TenantAuthService : ITenantAuthService
             // Validate database save
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogError($"Failed to save session for {user.UserName}");
                 return serviceResponse;
             }
 
@@ -177,8 +173,6 @@ public class TenantAuthService : ITenantAuthService
         }
         catch (Exception ex)
         {
-            // Log unexpected failure
-            _logger.LogError(ex, $"Session creation failed for user {_userId}");
             return serviceResponse;
         }
     }
@@ -211,7 +205,6 @@ public class TenantAuthService : ITenantAuthService
             // Something is missing
             if (sessionIdString == null || userName == null || userAgent == null)
             {
-                _logger.LogInformation("{SessionId} or {UserName} or User-Agent not found", CookieNamesEnum.SessionId, CookieNamesEnum.UserName);
                 serviceResponse.Message = "Unable to refresh the session";
                 return serviceResponse;
             }
@@ -219,10 +212,7 @@ public class TenantAuthService : ITenantAuthService
             // RefreshToken not found
             if (refreshToken == null)
             {
-                _logger.LogInformation("Log:3 RefreshToken not found for sessionId {SessionIdString} and user {UserName}", sessionIdString, userName);
 
-                // Expired sessions will be deleted once user try to create new session via logging in
-                _logger.LogInformation($"Session has expired for {sessionIdString} because {CookieNamesEnum.RefreshToken} not found");
                 serviceResponse.Message = "Session has expired";
                 return serviceResponse;
             }
@@ -241,8 +231,6 @@ public class TenantAuthService : ITenantAuthService
             // User doesn't exist
             if (user == null)
             {
-                _logger.LogInformation("Log:4 User {UserName} not found in database", userName);
-                _logger.LogInformation("{UserName} account not found", userName);
                 serviceResponse.Message = "Invalid credentials";
                 return serviceResponse;
             }
@@ -304,7 +292,6 @@ public class TenantAuthService : ITenantAuthService
             // Session not found
             if (activeSession == null)
             {
-                _logger.LogInformation($"Active session not found for account {userName}");
                 serviceResponse.Message = "Invalid credentials";
                 return serviceResponse;
             }
@@ -313,7 +300,6 @@ public class TenantAuthService : ITenantAuthService
             // // DeviceId did not match
             // if (activeSession.DeviceId != userAgent)
             // {
-            //     _logger.LogInformation($"DeviceId did not match for session {activeSession.Id} and account {userName}");
             //     serviceResponse.Message = "Invalid credentials";
             //     return serviceResponse;
             // }
@@ -321,7 +307,6 @@ public class TenantAuthService : ITenantAuthService
             // // RefreshToken did not match
             // if (activeSession.RefreshToken != refreshToken)
             // {
-            //     _logger.LogInformation($"RefreshToken did not match for session {activeSession.Id} and account {userName}");
             //     serviceResponse.Message = "Invalid credentials";
             //     return serviceResponse;
             // }
@@ -362,7 +347,6 @@ public class TenantAuthService : ITenantAuthService
                 // Update ActiveSession failed
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    _logger.LogInformation($"Context SaveChanges failed while refreshing active session for {user.UserName} and sessionId {sessionIdString}");
                     return serviceResponse;
                 }
             }
@@ -415,7 +399,6 @@ public class TenantAuthService : ITenantAuthService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while performing {Name}", ex.TargetSite.Name);
             return serviceResponse;
         }
 
@@ -520,7 +503,6 @@ public class TenantAuthService : ITenantAuthService
         {
             SetDefaultTimesOnTokenCreation = false
         };
-
         return tokenHandler.CreateToken(tokenDescriptor);
     }
 }

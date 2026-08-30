@@ -39,10 +39,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
         string redirectUrl = $"https://{_environmentConfig.AppBaseUrl}/accounts/sso-redirect";
         try
         {
-            // Log provider type and redirect URL for traceability
-            _logger.LogInformation(
-                "Generating login URL for provider {Provider}. RedirectUrl={RedirectUrl}", type, redirectUrl);
-
             // Determine which external provider to use
             switch (type)
             {
@@ -56,7 +52,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                         $"&response_mode=query" +
                         $"&scope=openid profile email";
 
-                    _logger.LogInformation("Azure login URL generated successfully for TenantId={TenantId}", _environmentConfig.AzureTenantId);
                     break;
 
                 case ExternalAuthProviderEnum.Google:
@@ -179,7 +174,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Access token validated successfully. Proceeding to user validation.");
 
             // Validate token and create or load local user
             var validateRequest = new ValidateTokenRequestDto
@@ -211,11 +205,6 @@ public class LoginWithExternalAuthService : ILoginWithExternalAuthService
 
         try
         {
-            // Log start of token validation flow
-            _logger.LogInformation(
-                "Starting token validation for provider {Provider}",
-                validateTokenRequestDto.Type);
-
             // JWT handler for reading token payload
             var handler = new JwtSecurityTokenHandler();
 

@@ -26,14 +26,8 @@ public static class RegexUtils
                 return match.Groups[1].Value + domainName;
             }
         }
-        catch (RegexMatchTimeoutException ex)
+        catch
         {
-            Console.WriteLine(ex.Message);
-            return false;
-        }
-        catch (ArgumentException ex)
-        {
-            Console.WriteLine(ex.Message);
             return false;
         }
 

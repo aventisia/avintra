@@ -52,7 +52,6 @@ public class UserManagementGuardService : IUserManagementGuardService
         {
             if (!allowedRolesList.Contains(role))
             {
-                _logger.LogWarning($"User {_userName} with UserId {_userId} tried to manage user with UserId {userId} without required role.");
                 return false;
             }
         }
@@ -73,7 +72,6 @@ public class UserManagementGuardService : IUserManagementGuardService
         // If list is empty then it means current user does not belong to following Roles: SA,GA,GSA,TA,TSA
         if (allowedRolesList.Count == 0)
         {
-            _logger.LogWarning($"User {_userName} with UserId {_userId} tried to manage user with UserId {userId} without required role.");
             return false;
         }
 

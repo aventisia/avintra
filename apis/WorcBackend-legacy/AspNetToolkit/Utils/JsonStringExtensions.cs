@@ -136,9 +136,8 @@ public static class JsonStringExtensions
 
             return grouped.Count == 0;
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine("Error parsing JSON: " + ex.Message);
             duplicates = [];
             return false;
         }

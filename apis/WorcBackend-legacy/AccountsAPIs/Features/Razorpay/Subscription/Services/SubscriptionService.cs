@@ -23,10 +23,6 @@ public class SubscriptionService : ISubscriptionService
 
         try
         {
-            // Log the incoming subscription request
-            _logger.LogInformation("Starting CreateSubscriptionAsync with PlanId: {PlanId}, Quantity: {Quantity}, TotalCount: {TotalCount}",
-                subscriptionRequestDto.PlanId, subscriptionRequestDto.Quantity, subscriptionRequestDto.TotalCount);
-
             // Input validation check: PlanId, Quantity, and TotalCount are required
             if (string.IsNullOrEmpty(subscriptionRequestDto.PlanId) || subscriptionRequestDto.Quantity <= 0 || subscriptionRequestDto.TotalCount <= 0)
             {
@@ -55,14 +51,9 @@ public class SubscriptionService : ISubscriptionService
                 subscriptionRequest.Add("customer_id", subscriptionRequestDto.CustomerId);
             }
 
-            // Log the prepared subscription request before sending it to Razorpay
-            _logger.LogDebug("Prepared subscription request: {SubscriptionRequest}", subscriptionRequest);
-
             // Call Razorpay API to create the subscription
             var subscription = await Task.Run(() => _razorpayClient.Subscription.Create(subscriptionRequest));
 
-            // Log successful subscription creation
-            _logger.LogInformation("Subscription created successfully");
 
             // Map Razorpay response to DTO
             var createdSubscription = new SubscriptionResponseDto
@@ -97,7 +88,6 @@ public class SubscriptionService : ISubscriptionService
         }
         catch (Exception ex)
         {
-            // Log error during subscription creation
             _logger.LogError(ex, "Error occurred while creating subscription with PlanId: {PlanId}, Quantity: {Quantity}, TotalCount: {TotalCount}",
                 subscriptionRequestDto.PlanId, subscriptionRequestDto.Quantity, subscriptionRequestDto.TotalCount);
         }
@@ -117,14 +107,10 @@ public class SubscriptionService : ISubscriptionService
 
         try
         {
-            // Log the incoming subscription ID
-            _logger.LogInformation("Fetching subscription with ID: {SubscriptionId}", subscriptionId);
 
             // Call Razorpay API to fetch the subscription by ID
             var subscription = await Task.Run(() => _razorpayClient.Subscription.Fetch(subscriptionId));
 
-            // Log successful subscription fetch
-            _logger.LogInformation("Subscription fetched successfully with ID: {SubscriptionId}", subscriptionId);
 
             // Map Razorpay response to DTO
             var retrievedSubscription = new SubscriptionResponseDto
@@ -177,10 +163,6 @@ public class SubscriptionService : ISubscriptionService
 
         try
         {
-            // Log the incoming update request
-            _logger.LogInformation("Updating subscription with ID: {SubscriptionId}, New PlanId: {PlanId}, Quantity: {Quantity}",
-                subscriptionId, request.PlanId, request.Quantity);
-
             // Prepare the update request dictionary
             var updateRequest = new Dictionary<string, object>();
 
@@ -206,17 +188,12 @@ public class SubscriptionService : ISubscriptionService
             // CustomerNotify is mandatory for updates
             updateRequest.Add("customer_notify", request.CustomerNotify);
 
-            // Log the prepared update request before sending it to Razorpay
-            _logger.LogDebug("Prepared update request for subscription: {UpdateRequest}", updateRequest);
-
             // Call Razorpay API to update the subscription
             var updatedSubscription = await Task.Run(() =>
             {
                 var subscription = _razorpayClient.Subscription.Fetch(subscriptionId);
                 return subscription.Edit(updateRequest);
             });
-            // Log successful subscription update
-            _logger.LogInformation("Subscription updated successfully with ID: {SubscriptionId}", subscriptionId);
 
             // Map Razorpay response to DTO
             var updatedSubscriptionDto = new SubscriptionResponseDto
@@ -254,7 +231,6 @@ public class SubscriptionService : ISubscriptionService
 
         try
         {
-            _logger.LogInformation("Fetching all subscriptions.");
 
             // Call Razorpay API to fetch all subscriptions
             var subscriptionList = await Task.Run(() => _razorpayClient.Subscription.All());
@@ -285,8 +261,6 @@ public class SubscriptionService : ISubscriptionService
                 CreatedAt = s["created_at"] != null ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(s["created_at"])) : null
             }).ToList();
 
-            // Log successful retrieval of subscriptions
-            _logger.LogInformation("Subscriptions retrieved successfully.");
 
             // Set success response
             serviceResponse.Data = subscriptions;
@@ -295,7 +269,6 @@ public class SubscriptionService : ISubscriptionService
         }
         catch (Exception ex)
         {
-            // Log error in case of failure
             _logger.LogError(ex, "Error occurred while fetching all subscriptions.");
         }
 
@@ -326,14 +299,8 @@ public class SubscriptionService : ISubscriptionService
             // Fetch the subscription from Razorpay
             var subscription = _razorpayClient.Subscription.Fetch(subscriptionId);
 
-            // Log the fetched subscription details before cancellation
-            _logger.LogDebug("Fetched subscription details: {SubscriptionDetails}", subscription);
-
             // Call the Razorpay API to cancel the subscription
             var updatedSubscription = await Task.Run(() => subscription.Cancel(options));
-
-            // Log the successful cancellation of the subscription
-            _logger.LogInformation("Subscription with ID: {SubscriptionId} canceled successfully.", subscriptionId);
 
             // Map Razorpay response to SubscriptionResponseDto
             var subscriptionDto = new SubscriptionResponseDto()
@@ -368,7 +335,6 @@ public class SubscriptionService : ISubscriptionService
         }
         catch (Exception ex)
         {
-            // Log error during subscription cancellation
             _logger.LogError(ex, "Error occurred while canceling subscription with ID: {SubscriptionId}", subscriptionId);
         }
 
@@ -399,15 +365,8 @@ public class SubscriptionService : ISubscriptionService
             // Fetch the subscription details from Razorpay
             var subscription = _razorpayClient.Subscription.Fetch(subscriptionId);
 
-            // Log the subscription details before pausing
-            _logger.LogDebug("Fetched subscription details: {SubscriptionDetails}", subscription);
-
             // Call Razorpay API to pause the subscription
             var pausedSubscription = await Task.Run(() => subscription.Pause(options));
-
-            // Log successful pausing of the subscription
-            _logger.LogInformation("Subscription with ID: {SubscriptionId} paused successfully.", subscriptionId);
-
             // Map Razorpay response to SubscriptionResponseDto
             var subscriptionDto = new SubscriptionResponseDto()
             {
@@ -441,7 +400,6 @@ public class SubscriptionService : ISubscriptionService
         }
         catch (Exception ex)
         {
-            // Log error during subscription pausing
             _logger.LogError(ex, "Error occurred while pausing subscription with ID: {SubscriptionId}", subscriptionId);
         }
 
@@ -472,15 +430,8 @@ public class SubscriptionService : ISubscriptionService
             // Fetch subscription details from Razorpay
             var subscription = _razorpayClient.Subscription.Fetch(subscriptionId);
 
-            // Log the subscription details before resuming
-            _logger.LogDebug("Fetched subscription details: {SubscriptionDetails}", subscription);
-
             // Call Razorpay API to resume the subscription
             var resumedSubscription = await Task.Run(() => subscription.Resume(options));
-
-            // Log successful resumption of the subscription
-            _logger.LogInformation("Subscription with ID: {SubscriptionId} resumed successfully.", subscriptionId);
-
             // Map Razorpay response to SubscriptionResponseDto
             var subscriptionDto = new SubscriptionResponseDto()
             {
@@ -514,7 +465,6 @@ public class SubscriptionService : ISubscriptionService
         }
         catch (Exception ex)
         {
-            // Log error during subscription resumption
             _logger.LogError(ex, "Error occurred while resuming subscription with ID: {SubscriptionId}", subscriptionId);
         }
 

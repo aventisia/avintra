@@ -55,7 +55,6 @@ public class PaymentMethodService : IPaymentMethodService
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Payment method retrieved successfully";
 
-            _logger.LogInformation("GetPaymentMethodAsync completed successfully for Id: {PaymentMethodId}", paymentMethodId);
         }
         catch (Exception ex)
         {
@@ -77,7 +76,6 @@ public class PaymentMethodService : IPaymentMethodService
 
         try
         {
-            _logger.LogInformation("Fetching all payment methods from repository.");
 
             // Fetch all payment method entities asynchronously as a list
             var paymentMethodEntities = await _unitOfWork.PaymentMethodRepo
@@ -133,7 +131,6 @@ public class PaymentMethodService : IPaymentMethodService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Payment method created successfully with Id: {PaymentMethodId}", newPaymentMethodEntity.Id);
 
             // Map entity back to DTO for returning with created data
             serviceResponse.Data = newPaymentMethodEntity.Adapt<PaymentMethodDto>();
@@ -198,7 +195,6 @@ public class PaymentMethodService : IPaymentMethodService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Payment method updated successfully for Id: {PaymentMethodId}", paymentMethodDto.Id);
 
             // Map updated entity back to DTO
             serviceResponse.Data = updatedPaymentMethodEntity.Adapt<PaymentMethodDto>();
@@ -225,7 +221,6 @@ public class PaymentMethodService : IPaymentMethodService
 
         try
         {
-            _logger.LogInformation("Retrieving PaymentMethod entity to delete.");
 
             // Attempt to find entity to delete by Id
             var paymentMethodEntity = await _unitOfWork.PaymentMethodRepo
@@ -253,7 +248,6 @@ public class PaymentMethodService : IPaymentMethodService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Payment method deleted successfully for Id: {PaymentMethodId}", paymentMethodId);
 
             // Update response on success
             serviceResponse.Data = true;
@@ -288,7 +282,6 @@ public class PaymentMethodService : IPaymentMethodService
 
         try
         {
-            _logger.LogInformation("Fetching payment methods to delete matching provided IDs.");
 
             // Fetch all entities with Ids in the provided list
             var paymentMethodsToDelete = await _unitOfWork.PaymentMethodRepo
@@ -319,7 +312,6 @@ public class PaymentMethodService : IPaymentMethodService
                 return serviceResponse;
             }
 
-            _logger.LogInformation("Successfully deleted {Count} payment methods.", paymentMethodsToDelete.Count);
 
             // Update response on success
             serviceResponse.Data = true;

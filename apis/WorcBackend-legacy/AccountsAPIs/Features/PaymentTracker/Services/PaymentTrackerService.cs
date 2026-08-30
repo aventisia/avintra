@@ -126,7 +126,6 @@ namespace AccountsAPIs.Services
             }
             catch (Exception ex)
             {
-                // Log any exceptions that occur during the processing
                 _logger.LogError(ex, "An error occurred while retrieving the payment tracker for PaymentId: {PaymentId}", paymentId);
             }
 

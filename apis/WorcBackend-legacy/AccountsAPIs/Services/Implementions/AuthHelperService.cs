@@ -30,28 +30,24 @@ public class AuthHelperService : IAuthHelperService
             // Tenant is null
             if (tenant == null)
             {
-                _logger.LogInformation($"Tenant account not found, while trying to fetch tenant info for email {userName}");
                 return false;
             }
 
             // Tenant is disabled. This does not apply to default Tenant (Individual Users)
             if (tenant.IsDisabled && tenant.IsDefault == false)
             {
-                _logger.LogInformation($"Tenant account is disabled, while trying to fetch tenant info for email {userName}");
                 return false;
             }
 
             // Tenant account has expired. This does not apply to default Tenant (Individual Users)
             if (tenant.ExpiresOn < DateTimeOffset.UtcNow && tenant.IsDefault == false)
             {
-                _logger.LogInformation($"Tenant account has been expired, while trying to fetch tenant info for email {userName}");
                 return false;
             }
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError($"IsUserTenantValid Error: {ex.Message} for username {userName}");
             return false;
         }
     }
@@ -82,7 +78,6 @@ public class AuthHelperService : IAuthHelperService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return false;
         }
 
@@ -115,9 +110,6 @@ public class AuthHelperService : IAuthHelperService
             // Context SaveChanges job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation($"Context SaveChanges failed. " +
-                    $"While inserting ObsoletePwd " +
-                    $"for username - {user.Email}");
                 return false;
             }
 
@@ -126,7 +118,6 @@ public class AuthHelperService : IAuthHelperService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"SavePwdInObsoletePwdList Error: {ex.Message} for username {user.UserName}");
             return false;
         }
     }
@@ -160,14 +151,12 @@ public class AuthHelperService : IAuthHelperService
             // Delete-verificaitonCodeList job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting " +
-                    $"verification codes for username - {userName} and device Id - {userAgent}");
+                _logger.LogError("Context SaveChanges failed while deleting verification codes for username {UserName} and device Id {DeviceId}", userName, userAgent);
                 return false;
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return false;
         }
 
@@ -310,7 +299,6 @@ public class AuthHelperService : IAuthHelperService
         if (!response.IsSuccessStatusCode)
         {
             string errorContent = await response.Content.ReadAsStringAsync();
-            _logger.LogError($"Failed to {crudType} user in Workspace database for {user.UserName}. Response: {response.StatusCode} - {errorContent}");
             return false;
         }
 
@@ -325,7 +313,6 @@ public class AuthHelperService : IAuthHelperService
         // Failed to Delete user in Workspace database
         if (!response.IsSuccessStatusCode)
         {
-            _logger.LogInformation($"Failed to delete user in Workspace database for user Id: {userId}");
             return false;
         }
 

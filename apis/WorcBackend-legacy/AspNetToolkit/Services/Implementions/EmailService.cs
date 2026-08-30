@@ -33,19 +33,16 @@ public class EmailService : IEmailService
             // Validates inputs.
             if (string.IsNullOrWhiteSpace(toEmailAddresses))
             {
-                _logger.LogError("Recipient email address is required.");
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(subject))
             {
-                _logger.LogError("Subject is required to send email.");
                 return false;
             }
 
             if (string.IsNullOrWhiteSpace(content))
             {
-                _logger.LogError("Email content is required.");
                 return false;
             }
 
@@ -120,13 +117,11 @@ public class EmailService : IEmailService
                 await client.DisconnectAsync(true);
             }
 
-            // Log the email sent and return true.
-            _logger.LogInformation($"Email has been sent to {toEmailAddresses} with subject {subject}");
             return true;
         }
         catch (Exception ex)
         {
-            _logger.LogError($"An error occurred while sending email: {ex.Message}");
+            _logger.LogError(ex, "Failed to send email to {Recipient}.", toEmailAddresses);
             return false;
         }
     }
@@ -278,7 +273,6 @@ public class EmailService : IEmailService
                 );
         }
 
-        _logger.LogError($"Email type {emailType} did not match with any email template");
         return false;
     }
 
@@ -293,8 +287,6 @@ public class EmailService : IEmailService
             // Checks if the template file exists.
             if (!file.Exists)
             {
-                _logger.LogError($"Email template file does not exist " +
-                    $"with file name {templateFile}");
                 return null;
             }
 
@@ -311,7 +303,7 @@ public class EmailService : IEmailService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error while rendering email template: {ex.Message}");
+            _logger.LogError(ex, "Failed to load or render email template {TemplateFile}.", templateFile);
             return null;
         }
     }
@@ -457,7 +449,7 @@ public class EmailService : IEmailService
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Error while sending test email template '{templateName}': {ex}");
+            _logger.LogError(ex, "Failed to send test email template {TemplateName}.", templateName);
         }
 
         return serviceResponse;

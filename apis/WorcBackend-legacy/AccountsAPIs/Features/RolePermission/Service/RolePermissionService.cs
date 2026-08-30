@@ -42,7 +42,6 @@ public class RolePermissionService : IRolePermissionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -72,7 +71,6 @@ public class RolePermissionService : IRolePermissionService
             // Insert-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while inserting new role permission.");
                 return serviceResponse;
             }
 
@@ -84,7 +82,6 @@ public class RolePermissionService : IRolePermissionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
 
@@ -111,7 +108,6 @@ public class RolePermissionService : IRolePermissionService
             // Role Permission does not exist
             if (rolePermission == null)
             {
-                _logger.LogInformation($"Role permission does not exist");
                 serviceResponse.Message = "Role permission does not exist";
                 return serviceResponse;
             }
@@ -127,7 +123,6 @@ public class RolePermissionService : IRolePermissionService
             // Update-Job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while updating a role permission.");
                 return serviceResponse;
             }
 
@@ -139,7 +134,6 @@ public class RolePermissionService : IRolePermissionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;
@@ -166,7 +160,6 @@ public class RolePermissionService : IRolePermissionService
             //Check if role permission not exists
             if (rolePermission == null)
             {
-                _logger.LogInformation($"Role permission does not exist");
                 serviceResponse.Message = "Role permission does not exist";
                 return serviceResponse;
             }
@@ -177,7 +170,6 @@ public class RolePermissionService : IRolePermissionService
             //Delete-job failed
             if (!await _unitOfWork.SaveAsync())
             {
-                _logger.LogInformation("Context SaveChanges failed while deleting a role permission.");
                 return serviceResponse;
             }
 
@@ -189,7 +181,6 @@ public class RolePermissionService : IRolePermissionService
         }
         catch(Exception ex)
         {
-            _logger.LogError(ex.ToString());
             return serviceResponse;
         }
         return serviceResponse;

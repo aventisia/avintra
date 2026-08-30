@@ -61,9 +61,8 @@ public static class JwtClaimsDataUtil
                     };
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                Console.WriteLine(ex.Message);
             }
         }
         return null;

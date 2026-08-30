@@ -97,7 +97,6 @@ namespace AccountsAPIs.Services
                 // If order creation fails, log failure details and return an error response
                 if (orderResponse.Data == null || orderResponse.StatusCode != 200)
                 {
-                    // Log the failure details including status code and error message
                     _logger.LogError("Order creation failed. Amount: {Amount}, Currency: {Currency}, Credits: {Credits}, StatusCode: {StatusCode}, Message: {Message}",
                                      razorpayOrderRequestDto.Amount, razorpayOrderRequestDto.Currency, razorpayOrderRequestDto.Credits, orderResponse.StatusCode, orderResponse.Message);
 
@@ -145,7 +144,6 @@ namespace AccountsAPIs.Services
                 // Commit the transaction if insertion is successful
                 if (!await _unitOfWork.SaveAsync())
                 {
-                    // Log failure in saving the transaction and return a response
                     _logger.LogError("Failed to save the top-up transaction for Amount: {Amount}, Currency: {Currency}", razorpayOrderRequestDto.Amount, razorpayOrderRequestDto.Currency);
                     return serviceResponse;
                 }
@@ -159,7 +157,6 @@ namespace AccountsAPIs.Services
             }
             catch (Exception ex)
             {
-                // Log any exception that occurred during processing
                 _logger.LogError(ex, "An error occurred while processing top-up transaction. Amount: {Amount}, Currency: {Currency}",
                                  razorpayOrderRequestDto.Amount, razorpayOrderRequestDto.Currency);
             }
