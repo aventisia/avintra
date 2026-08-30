@@ -51,12 +51,12 @@ public class AutoFillCellsInExcelWorksheetNode : BaseNode
 
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var rangesFormat = RangesFormat.Get(context);
 
             if (worksheet == null)
             {
-                dynamic excelApp = ComHelper.GetActiveObject("Excel.Application");
+                dynamic? excelApp = ComHelper.GetActiveObject("Excel.Application");
                 worksheet = excelApp?.ActiveSheet;
             }
 
@@ -67,11 +67,11 @@ public class AutoFillCellsInExcelWorksheetNode : BaseNode
             {
                 case ExcelRangesFormatEnum.SpecificRanges:
                     {
-                        string startColumn = StartColumn.Get(context);
+                        string startColumn = StartColumn.Get(context) ?? string.Empty;
                         int startRow = StartRow.Get(context);
-                        string sourceEndColumn = SourceEndColumn.Get(context);
+                        string sourceEndColumn = SourceEndColumn.Get(context) ?? string.Empty;
                         int sourceEndRow = SourceEndRow.Get(context);
-                        string destinationEndColumn = DestinationEndColumn.Get(context);
+                        string destinationEndColumn = DestinationEndColumn.Get(context) ?? string.Empty;
                         int destinationEndRow = DestinationEndRow.Get(context);
 
                         if (string.IsNullOrWhiteSpace(startColumn) ||
@@ -104,8 +104,8 @@ public class AutoFillCellsInExcelWorksheetNode : BaseNode
 
                 case ExcelRangesFormatEnum.NamedCells:
                     {
-                        string sourceCellsName = SourceCellsName.Get(context);
-                        string destinationCellsName = DestinationCellsName.Get(context);
+                        string sourceCellsName = SourceCellsName.Get(context) ?? string.Empty;
+                        string destinationCellsName = DestinationCellsName.Get(context) ?? string.Empty;
 
                         if (string.IsNullOrWhiteSpace(sourceCellsName) || string.IsNullOrWhiteSpace(destinationCellsName))
                             throw new ArgumentException("Both Source Cells Name and Destination Cells Name must be specified.");

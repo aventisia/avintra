@@ -25,11 +25,11 @@ public class DecryptToFileWithAesNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Operation completed successfully.";
-        var encryptedFilePath = EncryptedFilePath.Get(context);
-        var key = Key.Get(context);
-        var iv = Iv.Get(context);
+        var encryptedFilePath = EncryptedFilePath.Get(context) ?? string.Empty;
+        var key = Key.Get(context) ?? string.Empty;
+        var iv = Iv.Get(context) ?? string.Empty;
         var encodingFormat = EncodingFormat.Get(context);
-        var outputFilePath = OutputFilePath.Get(context);
+        var outputFilePath = OutputFilePath.Get(context) ?? string.Empty;
 
         try
         {

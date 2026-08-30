@@ -81,7 +81,7 @@ public class SummarizeDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            SummarizedDataTable.Set(context, null!);
+            SummarizedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error summarizing data table: {ex.Message}");
         }

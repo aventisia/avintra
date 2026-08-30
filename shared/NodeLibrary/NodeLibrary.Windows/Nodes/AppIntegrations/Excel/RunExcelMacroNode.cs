@@ -27,11 +27,11 @@ public class RunExcelMacroNode : BaseNode
     {
         try
         {
-            dynamic workbook = WorkbookInstance.Get(context);
-            var macroName = MacroName.Get(context);
-            dynamic arg1 = Argument1.Get(context);
-            dynamic arg2 = Argument2.Get(context);
-            dynamic arg3 = Argument3.Get(context);
+            dynamic? workbook = WorkbookInstance.Get(context);
+            var macroName = MacroName.Get(context) ?? string.Empty;
+            dynamic? arg1 = Argument1.Get(context);
+            dynamic? arg2 = Argument2.Get(context);
+            dynamic? arg3 = Argument3.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance cannot be null.");

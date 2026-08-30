@@ -31,7 +31,7 @@ public class ReverseListNode : BaseNode
         }
         catch (Exception ex)
         {
-            ReversedList.Set(context, null!);
+            ReversedList.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error reversing list: {ex.Message}");
         }

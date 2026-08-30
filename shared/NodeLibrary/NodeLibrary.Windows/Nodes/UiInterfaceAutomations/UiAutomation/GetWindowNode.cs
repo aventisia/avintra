@@ -26,7 +26,7 @@ public class GetWindowNode : BaseNode
 
         try
         {
-            string windowName = WindowName.Get(context);
+            string windowName = WindowName.Get(context) ?? string.Empty;
             int maxWaitTime = MaxWaitTime.Get(context);
 
             var identificationObject = new List<IdentificationObject>

@@ -21,10 +21,13 @@ public class MoveColumnsNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var columnOrder = ColumnOrder.Get(context);
+            var columnOrder = ColumnOrder.Get(context) ?? string.Empty;
 
             if (dataTable == null)
                 throw new ArgumentException("Data table cannot be null.");
+
+            if (string.IsNullOrWhiteSpace(columnOrder))
+                throw new ArgumentException("Column Order cannot be empty.");
 
             var desired = columnOrder.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
             foreach (var col in desired)
@@ -39,7 +42,7 @@ public class MoveColumnsNode : BaseNode
             ordered.Columns.Clear();
             foreach (var col in finalOrder)
             {
-                var source = dataTable.Columns[col];
+                var source = dataTable.Columns[col]!;
                 ordered.Columns.Add(col, source.DataType);
             }
             foreach (var row in dataTable.AsEnumerable())
@@ -57,7 +60,7 @@ public class MoveColumnsNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error moving columns: {ex.Message}");
         }

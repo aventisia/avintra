@@ -51,10 +51,10 @@ public class RemoveItemFromListNode : BaseNode
                 case RemoveModeEnum.Value:
                     var value = ValueToRemove.Get(context);
 
-                    if (!sourceList.Contains(value))
+                    if (!sourceList.Contains(value!))
                         throw new InvalidOperationException($"Value '{value}' not found in list.");
 
-                    sourceList.Remove(value);
+                    sourceList.Remove(value!);
                     status = $"Removed item '{value}'.";
                     break;
 

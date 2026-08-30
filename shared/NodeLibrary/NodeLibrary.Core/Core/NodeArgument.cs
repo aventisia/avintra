@@ -63,7 +63,7 @@ public class OutArgument<T> : NodeArgument
         ArgumentType = typeof(T);
     }
 
-    public void Set(INodeContext context, T value)
+    public void Set(INodeContext context, T? value)
     {
         Value = value;
     }

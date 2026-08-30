@@ -30,8 +30,8 @@ public class PopulateTextFieldInWindowNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
-            var textToEnter = TextToEnter.Get(context);
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
+            var textToEnter = TextToEnter.Get(context) ?? string.Empty;
             var fillMethod = FillMethod.Get(context);
             var maxWaitTime = MaxWaitTime.Get(context);
             bool valueEntered = false;

@@ -23,7 +23,7 @@ public class ReadJSONFileNode : BaseNode
             if (string.IsNullOrWhiteSpace(filePath))
             {
                 JsonContentString.Set(context, "null");
-                JsonContentToken.Set(context, null!);
+                JsonContentToken.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, "File path is null or empty.");
                 return;
@@ -33,7 +33,7 @@ public class ReadJSONFileNode : BaseNode
             if (!File.Exists(filePath))
             {
                 JsonContentString.Set(context, "null");
-                JsonContentToken.Set(context, null!);
+                JsonContentToken.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, $"File not found: {filePath}");
                 return;
@@ -51,7 +51,7 @@ public class ReadJSONFileNode : BaseNode
         catch (Exception ex)
         {
             JsonContentString.Set(context, "null");
-            JsonContentToken.Set(context, null!);
+            JsonContentToken.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error reading JSON file: {ex.Message}");
         }

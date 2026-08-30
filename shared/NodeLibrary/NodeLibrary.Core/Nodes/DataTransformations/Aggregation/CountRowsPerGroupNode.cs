@@ -69,7 +69,7 @@ public class CountRowsPerGroupNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error counting rows per group: {ex.Message}");
         }

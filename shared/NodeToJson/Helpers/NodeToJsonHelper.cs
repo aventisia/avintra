@@ -79,14 +79,14 @@ public static class NodeToJsonHelper
             var isRequired = prop.GetCustomAttributes(false).Any(attr => attr.GetType().FullName == "System.Runtime.CompilerServices.RequiredMemberAttribute");
 
             // Skip if displayName or description is null or if the property is in the excluded list
-            if (displayName == null || description == null || _excludedInputOutput.Contains(prop.Name)) continue;
+            if (displayName == null || description == null || _excludedInputOutput.Contains(prop.Name!)) continue;
 
             // Create initial field dictionary
             var field = new Dictionary<string, object>
             {
                 ["direction"] = direction,
                 ["type"] = "text",
-                ["name"] = prop.Name,
+                ["name"] = prop.Name!,
                 ["label"] = displayName,
                 ["description"] = description,
                 ["defaultValue"] = "",
@@ -107,15 +107,19 @@ public static class NodeToJsonHelper
             // If direction is Input and prop.Type is enum then type should be select
             if (direction == "Input" && prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(InArgument<>))
             {
+                // Create an instance of the node once to read default argument values.
+                // Activator.CreateInstance returns object? but for a class type the result is non-null.
+                var nodeInstance = Activator.CreateInstance(nodeType)!;
+
                 // Get the default value of the property for all input and generic types
-                field["defaultValue"] = GetInArgumentDefaultValue(prop, Activator.CreateInstance(nodeType)); // create instance dynamically
+                field["defaultValue"] = GetInArgumentDefaultValue(prop, nodeInstance); // create instance dynamically
 
                 // If the property is an enum, set type to select and get selectOptions
                 var genericType = prop.PropertyType.GenericTypeArguments.FirstOrDefault();
                 if (genericType != null && genericType.IsEnum)
                 {
                     // Get the default value of the property for enum types and convert it to string if it's not null
-                    field["defaultValue"] = GetInArgumentDefaultValue(prop, Activator.CreateInstance(nodeType), isEnum: true);
+                    field["defaultValue"] = GetInArgumentDefaultValue(prop, nodeInstance, isEnum: true);
 
                     // Set type to select
                     field["type"] = "select";
@@ -129,7 +133,7 @@ public static class NodeToJsonHelper
                     field["type"] = "switch";
 
                     // Get the default value of the boolean property
-                    field["defaultValue"] = GetInArgumentDefaultValue(prop, Activator.CreateInstance(nodeType));
+                    field["defaultValue"] = GetInArgumentDefaultValue(prop, nodeInstance);
                 }
                 else if (genericType != null && genericType == typeof(System.Security.SecureString))
                 {
@@ -194,7 +198,7 @@ public static class NodeToJsonHelper
         // If DefaultValue is set, return it directly
         if (defaultAttributeValue != null)
         {
-            return isEnum ? defaultAttributeValue.ToString() : defaultAttributeValue;
+            return isEnum ? defaultAttributeValue.ToString()! : defaultAttributeValue;
         }
 
         var value = property.GetValue(nodeInstance);
@@ -233,16 +237,18 @@ public static class NodeToJsonHelper
 
         foreach (var enumValue in Enum.GetValues(enumType))
         {
-            var field = enumType.GetField(enumValue.ToString());
+            var enumName = enumValue!.ToString()!;
+            var field = enumType.GetField(enumName);
+            if (field == null) continue;
             var displayAttr = field.GetCustomAttribute<DisplayAttribute>();
 
-            var enumDisplayName = displayAttr?.Name ?? enumValue.ToString();
+            var enumDisplayName = displayAttr?.Name ?? enumName;
             var enumItemDescription = displayAttr?.Description ?? "";
 
             selectOptions.Add(new
             {
                 label = enumDisplayName,
-                value = enumValue.ToString(),
+                value = enumName,
                 description = enumItemDescription
             });
         }

@@ -38,9 +38,9 @@ public class GetDetailsOfElementNode : BaseNode
         try
         {
             var driver = WebBrowserInstance.Get(context);
-            var uiElement = ValueToFind.Get(context);
+            var uiElement = ValueToFind.Get(context) ?? string.Empty;
             var findType = FindType.Get(context);
-            var attributeName = AttributeName.Get(context);
+            var attributeName = AttributeName.Get(context) ?? string.Empty;
             var waitForElement = WaitForElement.Get(context);
             var timeout = TimeSpan.FromSeconds(TimeoutSeconds.Get(context));
 

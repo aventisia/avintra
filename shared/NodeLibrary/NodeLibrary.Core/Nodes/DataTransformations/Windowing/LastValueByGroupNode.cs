@@ -77,7 +77,7 @@ public class LastValueByGroupNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error computing last value by group: {ex.Message}");
         }

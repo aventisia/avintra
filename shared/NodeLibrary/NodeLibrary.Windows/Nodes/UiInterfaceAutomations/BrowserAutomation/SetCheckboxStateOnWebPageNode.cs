@@ -78,7 +78,7 @@ public class SetCheckboxStateOnWebPageNode : BaseNode
             {
                 var wait = new WebDriverWait(driver, timeout);
                 wait.Until(d =>
-                    ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                    ((IJavaScriptExecutor)d)?.ExecuteScript("return document.readyState")?.ToString() == "complete");
             }
 
             if (dialogAction != DialogActionEnum.DoNothing)
@@ -88,7 +88,7 @@ public class SetCheckboxStateOnWebPageNode : BaseNode
                     if (dialogAction == DialogActionEnum.CloseIt)
                         alert.Accept();
                     else if (dialogAction == DialogActionEnum.PressAButton)
-                        alert.SendKeys(dialogButton);
+                        alert.SendKeys(dialogButton ?? string.Empty);
                 }
                 catch (NoAlertPresentException) { }
 

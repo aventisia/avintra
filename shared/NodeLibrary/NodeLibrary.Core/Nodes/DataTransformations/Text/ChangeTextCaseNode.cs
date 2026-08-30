@@ -17,14 +17,12 @@ public class ChangeTextCaseNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var input = TextToConvert.Get(context);
             var convertTo = ConvertTo.Get(context);
 
-            string result = null;
+            string? result = null;
 
             switch (convertTo)
             {
@@ -51,19 +49,19 @@ public class ChangeTextCaseNode : BaseNode
         }
         catch (Exception ex)
         {
-            Result.Set(context, null!);
+            Result.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error converting text: {ex.Message}");
         }
     }
 
-    private static string ToTitleCase(string input)
+    private static string? ToTitleCase(string? input)
     {
         if (string.IsNullOrEmpty(input)) return input;
         return Thread.CurrentThread.CurrentCulture.TextInfo.ToTitleCase(input.ToLower());
     }
 
-    private static string ToSentenceCase(string input)
+    private static string? ToSentenceCase(string? input)
     {
         if (string.IsNullOrEmpty(input)) return input;
         return char.ToUpper(input[0]) + input.Substring(1).ToLower();

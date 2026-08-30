@@ -26,8 +26,8 @@ public class SelectRadioButtonNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
-            var radioButtonIdentifier = RadioButtonIdentifier.Get(context);
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
+            var radioButtonIdentifier = RadioButtonIdentifier.Get(context) ?? string.Empty;
             var maxWaitTime = MaxWaitTime.Get(context);
             bool radioSelected = false;
 
@@ -39,7 +39,7 @@ public class SelectRadioButtonNode : BaseNode
             }
             else
             {
-                AutomationElement radioToSelect = null;
+                AutomationElement? radioToSelect = null;
                 var radioButtons = radioGroupElement.FindAllDescendants(cf => cf.ByControlType(ControlType.RadioButton));
 
                 // Try to parse as index, otherwise treat as name
@@ -58,7 +58,7 @@ public class SelectRadioButtonNode : BaseNode
                 {
                     foreach (var radio in radioButtons)
                     {
-                        if (radio.Properties.Name.ValueOrDefault.Equals(radioButtonIdentifier, StringComparison.OrdinalIgnoreCase))
+                        if (string.Equals(radio.Properties.Name.ValueOrDefault, radioButtonIdentifier, StringComparison.OrdinalIgnoreCase))
                         {
                             radioToSelect = radio;
                             break;

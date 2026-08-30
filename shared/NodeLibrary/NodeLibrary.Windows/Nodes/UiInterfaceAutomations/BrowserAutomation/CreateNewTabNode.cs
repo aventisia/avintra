@@ -40,7 +40,7 @@ public class CreateNewTabNode : BaseNode
             var waitForPage = WaitForPageToLoad.Get(context);
             var timeout = TimeoutForWebpageToLoad.Get(context);
             var dialogAction = IfAPopUpDialogAppears.Get(context);
-            var dialogButton = DialogButtonToPress.Get(context);
+            var dialogButton = DialogButtonToPress.Get(context) ?? string.Empty;
 
             if (driver == null)
                 throw new ArgumentException("Web Browser Instance cannot be null.");
@@ -63,20 +63,23 @@ public class CreateNewTabNode : BaseNode
                 {
                     var wait = new WebDriverWait(newDriver, TimeSpan.FromSeconds(timeout));
                     wait.Until(d =>
-                        ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                        d != null && "complete".Equals(((IJavaScriptExecutor)d).ExecuteScript("return document.readyState")));
 
                     if (dialogAction != CreateTabDialogActionEnum.DoNothing)
                         try
                         {
                             var alert = newDriver.SwitchTo().Alert();
-                            switch (dialogAction)
+                            if (alert != null)
                             {
-                                case CreateTabDialogActionEnum.CloseIt:
-                                    alert.Accept();
-                                    break;
-                                case CreateTabDialogActionEnum.PressAButton:
-                                    alert.SendKeys(dialogButton);
-                                    break;
+                                switch (dialogAction)
+                                {
+                                    case CreateTabDialogActionEnum.CloseIt:
+                                        alert.Accept();
+                                        break;
+                                    case CreateTabDialogActionEnum.PressAButton:
+                                        alert.SendKeys(dialogButton);
+                                        break;
+                                }
                             }
                         }
                         catch (NoAlertPresentException) { }

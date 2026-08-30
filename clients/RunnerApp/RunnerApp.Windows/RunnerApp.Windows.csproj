@@ -9,7 +9,6 @@
     <RootNamespace>RunnerApp</RootNamespace>
     <Version>0.2.18</Version>
     <InformationalVersion>0.2.18</InformationalVersion>
-    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
 
     <!--
       Self-contained publish.

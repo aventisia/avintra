@@ -22,7 +22,7 @@ public class SetActiveExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic workbook = WorkbookInstance.Get(context);
+            dynamic? workbook = WorkbookInstance.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance cannot be null.");
@@ -33,7 +33,7 @@ public class SetActiveExcelWorksheetNode : BaseNode
             if (string.IsNullOrWhiteSpace(searchValue))
                 throw new ArgumentException("Search value cannot be empty.");
 
-            dynamic targetSheet = null;
+            dynamic? targetSheet = null;
 
             switch (selectionType)
             {

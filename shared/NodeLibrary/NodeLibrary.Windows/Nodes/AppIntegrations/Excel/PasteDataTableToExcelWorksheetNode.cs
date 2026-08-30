@@ -24,9 +24,9 @@ public class PasteDataTableToExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var dataTable = DataTableInput.Get(context);
-            var startColStr = StartColumn.Get(context);
+            var startColStr = StartColumn.Get(context) ?? string.Empty;
             var startRow = StartRow.Get(context);
             var includeHeaders = IncludeHeaders.Get(context);
 

@@ -22,9 +22,9 @@ public class GetSelectedRadioButtonNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
             var maxWaitTime = MaxWaitTime.Get(context);
-            string selectedRadioButton = null;
+            string? selectedRadioButton = null;
 
             var groupElement = UiAutomationElementHelper.GetElementByPath(identificationObjectPath, maxWaitTime);
 

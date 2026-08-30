@@ -25,8 +25,6 @@ public class JoinTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var textList = TextList.Get(context);

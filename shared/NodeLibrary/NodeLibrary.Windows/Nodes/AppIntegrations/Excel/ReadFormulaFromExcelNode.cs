@@ -26,8 +26,8 @@ public class ReadFormulaFromExcelNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
-            var columnStr = Column.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
+            var columnStr = Column.Get(context) ?? string.Empty;
             var row = Row.Get(context);
 
             if (worksheet == null)

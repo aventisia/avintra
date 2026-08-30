@@ -14,7 +14,7 @@ public class ConvertFileToBinaryDataNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var filePath = FilePath.Get(context);
-        byte[] binaryData = null;
+        byte[]? binaryData = null;
 
         try
         {

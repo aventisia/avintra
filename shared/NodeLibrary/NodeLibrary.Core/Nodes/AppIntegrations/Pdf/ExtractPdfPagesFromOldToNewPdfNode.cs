@@ -38,9 +38,9 @@ public class ExtractPdfPagesFromOldToNewPdfNode : BaseNode
         try
         {
             var sourcePath = SourcePdfPath.Get(context);
-            var outputPath = NewPdfPath.Get(context);
+            var outputPath = NewPdfPath.Get(context) ?? string.Empty;
             var pageMode = PageSelection.Get(context);
-            var password = SecureStringHelper.ConvertSecureStringToString(Password.Get(context));
+            var password = SecureStringHelper.ConvertSecureStringToString(Password.Get(context)!);
 
             if (!File.Exists(sourcePath))
                 throw new FileNotFoundException("Source Pdf file not found.", sourcePath);

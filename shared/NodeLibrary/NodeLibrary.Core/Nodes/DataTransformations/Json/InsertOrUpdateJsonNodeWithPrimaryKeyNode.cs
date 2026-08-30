@@ -35,9 +35,9 @@ public class InsertOrUpdateJSONNodeWithPrimaryKeyNode : BaseNode
             var targetKey = TargetKeyName.Get(context);
             var targetValue = TargetKeyValue.Get(context);
 
-            if (jsonInput == null || string.IsNullOrWhiteSpace(primaryKey) || string.IsNullOrWhiteSpace(primaryValue))
+            if (jsonInput == null || string.IsNullOrWhiteSpace(primaryKey) || string.IsNullOrWhiteSpace(primaryValue) || string.IsNullOrWhiteSpace(targetKey))
             {
-                SetError(context, "JSON Content, Primary Key Name, or Primary Key Value is missing.");
+                SetError(context, "JSON Content, Primary Key Name, Primary Key Value, or Target Key Name is missing.");
                 return;
             }
 
@@ -45,7 +45,7 @@ public class InsertOrUpdateJSONNodeWithPrimaryKeyNode : BaseNode
             JsonNode jsonToken;
             if (jsonInput is string jsonString)
             {
-                jsonToken = JsonNode.Parse(jsonString);
+                jsonToken = JsonNode.Parse(jsonString) ?? throw new ArgumentException("Invalid JSON content.");
             }
             else if (jsonInput is JsonNode jn)
             {
@@ -60,10 +60,10 @@ public class InsertOrUpdateJSONNodeWithPrimaryKeyNode : BaseNode
             // Convert value to JsonNode
             var options = new System.Text.Json.JsonSerializerOptions { WriteIndented = false };
             var jsonStr = System.Text.Json.JsonSerializer.Serialize(targetValue, options);
-            var jTargetValue = JsonNode.Parse(jsonStr);
+            var jTargetValue = JsonNode.Parse(jsonStr) ?? throw new ArgumentException("Invalid target value JSON.");
 
             // Perform recursive update
-            var isUpdated = UpdateNode(jsonToken, primaryKey, primaryValue, targetKey, jTargetValue);
+            var isUpdated = UpdateNode(jsonToken, primaryKey, primaryValue, targetKey!, jTargetValue);
 
             // Set result
             UpdatedJsonContent.Set(context, jsonToken);
@@ -86,7 +86,7 @@ public class InsertOrUpdateJSONNodeWithPrimaryKeyNode : BaseNode
         }
     }
 
-    private static bool UpdateNode(JsonNode token, string primaryKey, string primaryValue, string targetKey, JsonNode targetValue)
+    private static bool UpdateNode(JsonNode? token, string primaryKey, string primaryValue, string targetKey, JsonNode? targetValue)
     {
         return token?.GetValueKind() switch
         {
@@ -96,7 +96,7 @@ public class InsertOrUpdateJSONNodeWithPrimaryKeyNode : BaseNode
         };
     }
 
-    private static bool UpdateNodeInArray(JsonNode token, string primaryKey, string primaryValue, string targetKey, JsonNode targetValue)
+    private static bool UpdateNodeInArray(JsonNode? token, string primaryKey, string primaryValue, string targetKey, JsonNode? targetValue)
     {
         var array = token?.AsArray();
         if (array != null)
@@ -110,7 +110,7 @@ public class InsertOrUpdateJSONNodeWithPrimaryKeyNode : BaseNode
         return false;
     }
 
-    private static bool UpdateNodeInObject(JsonNode token, string primaryKey, string primaryValue, string targetKey, JsonNode targetValue)
+    private static bool UpdateNodeInObject(JsonNode? token, string primaryKey, string primaryValue, string targetKey, JsonNode? targetValue)
     {
         var obj = token?.AsObject();
         if (obj == null)
@@ -138,7 +138,7 @@ public class InsertOrUpdateJSONNodeWithPrimaryKeyNode : BaseNode
 
     private void SetError(INodeContext context, string message)
     {
-        UpdatedJsonContent.Set(context, null!);
+        UpdatedJsonContent.Set(context, null);
         IsSuccess.Set(context, false);
         StatusMessage.Set(context, message);
     }

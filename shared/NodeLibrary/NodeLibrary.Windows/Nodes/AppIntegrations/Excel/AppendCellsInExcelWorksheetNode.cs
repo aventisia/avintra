@@ -33,23 +33,29 @@ public class AppendCellsInExcelWorksheetNode : BaseNode
 
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var dataTable = DataTable.Get(context);
             var appendMode = AppendMode.Get(context);
             var hasHeaders = FirstRowHasHeaders.Get(context);
-            var startingColumnStr = StartingColumn.Get(context);
+            var startingColumnStr = StartingColumn.Get(context) ?? string.Empty;
 
             if (worksheet == null)
             {
-                dynamic excelApp = ComHelper.GetActiveObject("Excel.Application");
+                dynamic? excelApp = ComHelper.GetActiveObject("Excel.Application");
                 worksheet = excelApp?.ActiveSheet;
             }
+
+            if (worksheet == null)
+                throw new InvalidOperationException("Worksheet instance is not available or invalid.");
+
+            if (dataTable == null)
+                throw new ArgumentException("Data table cannot be null.");
 
             switch (appendMode)
             {
                 case CellAppendModeEnum.ToNamedCells:
                     {
-                        var name = Name.Get(context);
+                        var name = Name.Get(context) ?? string.Empty;
                         if (string.IsNullOrWhiteSpace(name))
                             throw new ArgumentException("Name cannot be empty when appending to named cells.");
 

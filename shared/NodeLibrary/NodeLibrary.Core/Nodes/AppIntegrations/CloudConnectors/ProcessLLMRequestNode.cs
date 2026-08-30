@@ -61,7 +61,7 @@ public class ProcessLLMRequestNode : BaseNode
             var threadMessages = ThreadMessages.Get(context);
             var userInput = UserInput.Get(context);
 
-            var formattedFilesList = FormatFilesList(filesList);
+            var formattedFilesList = FormatFilesList(filesList ?? new List<string>());
 
             if (filesList != null && formattedFilesList?.Count != filesList.Count)
                 throw new FileNotFoundException("One or more files in the provided Files List were not found.");

@@ -44,7 +44,7 @@ public class RenameColumnsNode : BaseNode
                     throw new ArgumentException($"Invalid rename pair '{pair}'. Names cannot be empty.");
                 if (!resultTable.Columns.Contains(oldName))
                     throw new ArgumentException($"Column '{oldName}' does not exist in the data table.");
-                resultTable.Columns[oldName].ColumnName = newName;
+                resultTable.Columns[oldName]!.ColumnName = newName;
                 renamedCount++;
             }
 
@@ -55,7 +55,7 @@ public class RenameColumnsNode : BaseNode
         }
         catch (Exception ex)
         {
-            RenamedDataTable.Set(context, null!);
+            RenamedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error renaming columns: {ex.Message}");
         }

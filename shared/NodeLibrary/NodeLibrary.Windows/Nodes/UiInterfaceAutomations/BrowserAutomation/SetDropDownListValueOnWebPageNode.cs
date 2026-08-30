@@ -74,7 +74,7 @@ public class SetDropDownListValueOnWebPageNode : BaseNode
 
             if (!select.IsMultiple && operation == DropDownListOperationEnum.SelectOptionsByIndex)
             {
-                if (!int.TryParse(optionIndices, out int selectedIndex))
+                if (!int.TryParse(optionIndices ?? string.Empty, out int selectedIndex))
                     throw new FormatException("Invalid format for Option Indices.");
                 select.SelectByIndex(selectedIndex);
                 status = $"Selected option at index '{selectedIndex}' in '{searchKeywords}'.";
@@ -84,7 +84,7 @@ public class SetDropDownListValueOnWebPageNode : BaseNode
                 if (useRegex)
                 {
                     var matchedOption = dropdownElement.FindElements(By.TagName("option"))
-                        .FirstOrDefault(e => System.Text.RegularExpressions.Regex.IsMatch(e.Text, optionNames));
+                        .FirstOrDefault(e => System.Text.RegularExpressions.Regex.IsMatch(e.Text, optionNames ?? string.Empty));
 
                     if (matchedOption != null)
                     {
@@ -98,20 +98,20 @@ public class SetDropDownListValueOnWebPageNode : BaseNode
                 }
                 else
                 {
-                    select.SelectByText(optionNames);
+                    select.SelectByText(optionNames ?? string.Empty);
                     status = $"Selected option '{optionNames}' in '{searchKeywords}'.";
                 }
             }
             else if (select.IsMultiple && operation == DropDownListOperationEnum.SelectOptionsByName)
             {
-                var selectedOptions = optionNames.Split(',');
+                var selectedOptions = (optionNames ?? string.Empty).Split(',');
                 foreach (var option in selectedOptions)
                     select.SelectByText(option.Trim());
                 status = $"Selected multiple options from '{searchKeywords}' by name.";
             }
             else if (select.IsMultiple && operation == DropDownListOperationEnum.SelectOptionsByIndex)
             {
-                var indices = Array.ConvertAll(optionIndices.Split(','), int.Parse);
+                var indices = Array.ConvertAll((optionIndices ?? string.Empty).Split(','), int.Parse);
                 foreach (var index in indices)
                     select.SelectByIndex(index);
                 status = $"Selected multiple options from '{searchKeywords}' by index.";
@@ -130,7 +130,7 @@ public class SetDropDownListValueOnWebPageNode : BaseNode
             {
                 var wait = new WebDriverWait(driver, timeout);
                 wait.Until(d =>
-                    ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                    ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState")?.Equals("complete") == true);
             }
 
             if (dialogAction != DialogActionEnum.DoNothing)
@@ -140,7 +140,7 @@ public class SetDropDownListValueOnWebPageNode : BaseNode
                     if (dialogAction == DialogActionEnum.CloseIt)
                         alert.Accept();
                     else if (dialogAction == DialogActionEnum.PressAButton)
-                        alert.SendKeys(dialogButton);
+                        alert.SendKeys(dialogButton ?? string.Empty);
                 }
                 catch (NoAlertPresentException) { }
 

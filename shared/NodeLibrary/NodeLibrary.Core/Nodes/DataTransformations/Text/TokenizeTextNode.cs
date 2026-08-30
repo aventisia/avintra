@@ -56,7 +56,7 @@ public class TokenizeTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            Tokens.Set(context, null!);
+            Tokens.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error tokenizing text: {ex.Message}");
         }

@@ -211,7 +211,7 @@ internal class Program
                     });
 
                     // Create node json file
-                    var nodeJson = NodeToJsonHelper.ConvertNodeToJson(nodeType, nodeSupportedPlatforms);
+                    var nodeJson = NodeToJsonHelper.ConvertNodeToJson(nodeType, nodeSupportedPlatforms ?? []);
                     if (string.IsNullOrEmpty(nodeJson) || nodeJson == "[]")
                     {
                         Console.WriteLine($"Failed to convert {nodeType.Name} to JSON.");

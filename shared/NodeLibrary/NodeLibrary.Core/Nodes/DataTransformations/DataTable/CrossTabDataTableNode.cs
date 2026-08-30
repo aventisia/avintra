@@ -98,7 +98,7 @@ public class CrossTabDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            CrossTabledDataTable.Set(context, null!);
+            CrossTabledDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error cross-tabbing data table: {ex.Message}");
         }

@@ -33,16 +33,18 @@ public class CollapseRowsToDelimitedNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var groupByColumns = GroupByColumns.Get(context);
-            var targetColumn = TargetColumn.Get(context);
-            var delimiter = Delimiter.Get(context);
+            var groupByColumns = GroupByColumns.Get(context) ?? string.Empty;
+            var targetColumn = TargetColumn.Get(context) ?? string.Empty;
+            var delimiter = Delimiter.Get(context) ?? string.Empty;
             var distinctValuesOnly = DistinctValuesOnly.Get(context);
-            var resultColumnName = ResultColumnName.Get(context);
+            var resultColumnName = ResultColumnName.Get(context) ?? string.Empty;
 
             if (dataTable == null)
                 throw new ArgumentException("Data table cannot be null.");
             if (string.IsNullOrWhiteSpace(targetColumn) || !dataTable.Columns.Contains(targetColumn))
                 throw new ArgumentException($"Target column '{targetColumn}' does not exist in the data table.");
+            if (string.IsNullOrWhiteSpace(groupByColumns))
+                throw new ArgumentException("Group By Columns cannot be empty.");
 
             var groupCols = groupByColumns.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
             foreach (var col in groupCols)
@@ -52,7 +54,7 @@ public class CollapseRowsToDelimitedNode : BaseNode
             var resultColumn = string.IsNullOrWhiteSpace(resultColumnName) ? $"{targetColumn}_Collapsed" : resultColumnName.Trim();
             var result = new DataTable();
             foreach (var col in groupCols)
-                result.Columns.Add(col, dataTable.Columns[col].DataType);
+                result.Columns.Add(col, dataTable.Columns[col]!.DataType);
             result.Columns.Add(resultColumn, typeof(string));
 
             var groups = dataTable.AsEnumerable().GroupBy(row => string.Join("\u0001", groupCols.Select(c => row[c]?.ToString() ?? "")));
@@ -68,7 +70,7 @@ public class CollapseRowsToDelimitedNode : BaseNode
                 var newRow = result.NewRow();
                 var keys = group.Key.Split('\u0001');
                 for (var i = 0; i < groupCols.Count; i++)
-                    newRow[groupCols[i]] = keys[i];
+                    newRow[groupCols[i]!] = keys[i];
                 newRow[resultColumn] = combined;
                 result.Rows.Add(newRow);
             }
@@ -80,7 +82,7 @@ public class CollapseRowsToDelimitedNode : BaseNode
         }
         catch (Exception ex)
         {
-            CollapsedDataTable.Set(context, null!);
+            CollapsedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error collapsing rows: {ex.Message}");
         }

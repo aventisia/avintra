@@ -20,32 +20,31 @@ public class CopyExcelWorksheetToDataTableNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
         DataTable dataTable = new DataTable();
-        dynamic worksheet = null;
-        dynamic xlRange = null;
+        dynamic? worksheet = null;
+        dynamic? xlRange = null;
 
         try
         {
             worksheet = WorksheetInstance.Get(context);
-            string rangeAddress = RangeToCopy.Get(context);
+            string rangeAddress = RangeToCopy.Get(context) ?? string.Empty;
             bool hasHeaders = HasHeaders.Get(context);
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance is required and cannot be null.");
 
-            xlRange = worksheet.Range[rangeAddress];
-            if (xlRange == null || xlRange.Value == null)
+            xlRange = worksheet?.Range[rangeAddress];
+            if (xlRange == null || xlRange?.Value == null)
                 throw new ArgumentException($"Invalid or empty range: '{rangeAddress}'");
 
-            int rowCount = xlRange.Rows.Count;
-            int colCount = xlRange.Columns.Count;
+            int rowCount = xlRange?.Rows.Count ?? 0;
+            int colCount = xlRange?.Columns.Count ?? 0;
 
             if (hasHeaders)
             {
                 for (int j = 1; j <= colCount; j++)
                 {
-                    dynamic headerCell = xlRange.Cells[1, j];
+                    dynamic? headerCell = xlRange?.Cells[1, j];
                     string value = GetCellValue(headerCell).Trim();
                     string columnName = string.IsNullOrEmpty(value) ? $"Column{j}" : value;
                     dataTable.Columns.Add(columnName);
@@ -64,7 +63,7 @@ public class CopyExcelWorksheetToDataTableNode : BaseNode
                 DataRow row = dataTable.NewRow();
                 for (int j = 1; j <= colCount; j++)
                 {
-                    dynamic cell = xlRange.Cells[i, j];
+                    dynamic? cell = xlRange?.Cells[i, j];
                     row[j - 1] = GetCellValue(cell);
                     ReleaseObject(cell);
                 }

@@ -6,15 +6,15 @@ namespace NodeLibrary.UiAutomationNodes.Helpers;
 
 public class IdentificationObject
 {
-    public string Index { get; set; }
-    public string Name { get; set; }
+    public string? Index { get; set; }
+    public string? Name { get; set; }
 
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public NameMatchModeEnum NameMatchMode { get; set; } = NameMatchModeEnum.Equals;
-    public string ClassName { get; set; }
-    public string ControlType { get; set; }
-    public string FrameworkId { get; set; }
-    public string AutomationId { get; set; }
+    public string? ClassName { get; set; }
+    public string? ControlType { get; set; }
+    public string? FrameworkId { get; set; }
+    public string? AutomationId { get; set; }
 }
 
 public static class UiAutomationElementHelper
@@ -30,7 +30,7 @@ public static class UiAutomationElementHelper
                string.IsNullOrEmpty(identificationObject.AutomationId);
     }
 
-    public static string GetPropertyValue(AutomationElement element, PropertyTypeEnum propertyName)
+    public static string? GetPropertyValue(AutomationElement element, PropertyTypeEnum propertyName)
     {
         // Return null if element or propertyName is null
         if (element == null)
@@ -62,7 +62,7 @@ public static class UiAutomationElementHelper
         }
     }
 
-    public static AutomationElement FindChildElement(AutomationElement parent, IdentificationObject identificationObject)
+    public static AutomationElement? FindChildElement(AutomationElement parent, IdentificationObject identificationObject)
     {
         // Return null if parent or identificationObject is null
         if (parent == null || identificationObject == null)
@@ -133,7 +133,7 @@ public static class UiAutomationElementHelper
         return null; // No matching child found
     }
 
-    public static AutomationElement GetElementByPath(List<IdentificationObject> path, int maxWaitTime = 0)
+    public static AutomationElement? GetElementByPath(List<IdentificationObject> path, int maxWaitTime = 0)
     {
         // Get the window by using the first identification object in the path
         if (path == null || path.Count == 0)
@@ -153,7 +153,7 @@ public static class UiAutomationElementHelper
             AutomationElement currentElement = rootElement;
             foreach (var identificationObject in path)
             {
-                AutomationElement foundChild = null;
+                AutomationElement? foundChild = null;
 
                 // If maxWaitTime is 0 then try only once
                 var retryCount = maxWaitTime > 0 ? maxWaitTime * 2 : 1;
@@ -194,7 +194,7 @@ public static class UiAutomationElementHelper
         }
     }
 
-    public static List<IdentificationObject> ConvertIdentificationObjectPath(string identificationObjectPath)
+    public static List<IdentificationObject> ConvertIdentificationObjectPath(string? identificationObjectPath)
     {
         // If the string is null or empty, return an empty list
         if (string.IsNullOrEmpty(identificationObjectPath))

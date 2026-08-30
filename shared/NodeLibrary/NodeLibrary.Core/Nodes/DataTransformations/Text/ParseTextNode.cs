@@ -27,8 +27,6 @@ public class ParseTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var textToParse = TextToParse.Get(context);

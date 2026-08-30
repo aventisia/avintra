@@ -33,7 +33,7 @@ public class GetSelectedCellRangeFromExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");

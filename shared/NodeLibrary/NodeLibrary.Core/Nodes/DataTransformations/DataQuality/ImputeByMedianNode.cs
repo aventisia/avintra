@@ -25,7 +25,7 @@ public class ImputeByMedianNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var columnsToImpute = ColumnsToImpute.Get(context);
+            var columnsToImpute = ColumnsToImpute.Get(context) ?? string.Empty;
             var groupByColumns = GroupByColumns.Get(context);
 
             if (dataTable == null)
@@ -81,7 +81,7 @@ public class ImputeByMedianNode : BaseNode
         }
         catch (Exception ex)
         {
-            ImputedDataTable.Set(context, null!);
+            ImputedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error imputing by median: {ex.Message}");
         }

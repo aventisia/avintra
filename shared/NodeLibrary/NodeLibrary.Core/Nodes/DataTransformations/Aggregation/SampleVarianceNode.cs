@@ -70,7 +70,7 @@ public class SampleVarianceNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error computing sample variance: {ex.Message}");
         }

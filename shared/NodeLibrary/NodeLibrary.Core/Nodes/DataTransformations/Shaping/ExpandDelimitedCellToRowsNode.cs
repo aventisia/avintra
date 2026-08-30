@@ -37,6 +37,9 @@ public class ExpandDelimitedCellToRowsNode : BaseNode
 
             if (dataTable == null)
                 throw new ArgumentException("Data table cannot be null.");
+            if (string.IsNullOrWhiteSpace(delimiter))
+                throw new ArgumentException("Delimiter cannot be null or empty.");
+
             if (string.IsNullOrWhiteSpace(targetColumn) || !dataTable.Columns.Contains(targetColumn))
                 throw new ArgumentException($"Target column '{targetColumn}' does not exist in the data table.");
 
@@ -52,7 +55,7 @@ public class ExpandDelimitedCellToRowsNode : BaseNode
                     continue;
                 }
 
-                var parts = value.Split(new[] { delimiter }, StringSplitOptions.None);
+                var parts = value.Split(new[] { delimiter! }, StringSplitOptions.None);
                 foreach (var part in parts)
                 {
                     var trimmed = trimValues ? part.Trim() : part;
@@ -72,7 +75,7 @@ public class ExpandDelimitedCellToRowsNode : BaseNode
         }
         catch (Exception ex)
         {
-            ExpandedDataTable.Set(context, null!);
+            ExpandedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error expanding cells: {ex.Message}");
         }

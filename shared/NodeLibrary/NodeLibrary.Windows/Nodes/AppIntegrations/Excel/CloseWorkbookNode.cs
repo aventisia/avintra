@@ -21,9 +21,8 @@ public class CloseWorkbookNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-        dynamic workbook = null;
-        dynamic excelApp = null;
+        dynamic? workbook = null;
+        dynamic? excelApp = null;
 
         try
         {
@@ -39,7 +38,7 @@ public class CloseWorkbookNode : BaseNode
             OfficeAutomationHelper.Release(workbook);
             workbook = null;
 
-            if (excelApp != null && quitApp)
+            if (excelApp is not null && quitApp)
             {
                 excelApp.Quit();
                 OfficeAutomationHelper.Release(excelApp);

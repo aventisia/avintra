@@ -49,7 +49,7 @@ public class SplitTextToColumnsNode : BaseNode
 
             var prefix = string.IsNullOrWhiteSpace(columnPrefix) ? "Part" : columnPrefix.Trim();
             var partsPerRow = dataTable.Rows.Cast<DataRow>()
-                .Select(row => SplitValue(row[sourceColumn]?.ToString(), splitBy, delimiter, chunkLength))
+                .Select(row => SplitValue(row[sourceColumn]?.ToString(), splitBy, delimiter ?? string.Empty, chunkLength))
                 .ToList();
             var maxParts = partsPerRow.Count == 0 ? 0 : partsPerRow.Max(p => p.Count);
 
@@ -75,7 +75,7 @@ public class SplitTextToColumnsNode : BaseNode
         }
         catch (Exception ex)
         {
-            SplitDataTable.Set(context, null!);
+            SplitDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error splitting text to columns: {ex.Message}");
         }

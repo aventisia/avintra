@@ -85,6 +85,14 @@ public class DesktopExecutionEngine : IExecutionEngine
 
     private static Task<T> RunOnStaThreadAsync<T>(Func<Task<T>> work)
     {
+        // STA threads and COM apartments are a Windows concept. On macOS/Linux there is no COM,
+        // so run the flow directly on the caller's continuation. Office/COM-dependent nodes are
+        // themselves Windows-only and already guarded elsewhere.
+        if (!OperatingSystem.IsWindows())
+        {
+            return work();
+        }
+
         var tcs = new TaskCompletionSource<T>(TaskCreationOptions.RunContinuationsAsynchronously);
         var staThread = new Thread(() =>
         {

@@ -66,7 +66,7 @@ public class BottomNByGroupNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error computing bottom N by group: {ex.Message}");
         }

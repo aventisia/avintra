@@ -33,12 +33,10 @@ public class WriteToExcelWorksheetNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
-            dynamic worksheetArg = WorksheetInstance.Get(context);
-            dynamic rawValue = ValueToWrite.Get(context);
+            dynamic? worksheetArg = WorksheetInstance.Get(context);
+            dynamic? rawValue = ValueToWrite.Get(context);
             var writeMode = WriteMode.Get(context);
             dynamic worksheet;
 
@@ -89,7 +87,7 @@ public class WriteToExcelWorksheetNode : BaseNode
 
                 case ExcelCellWriteModeEnum.OnNamedCells:
                     {
-                        var name = Name.Get(context);
+                        var name = Name.Get(context) ?? string.Empty;
                         var populateEntireRange = PopulateEntireRange.Get(context);
 
                         if (string.IsNullOrWhiteSpace(name))
@@ -125,7 +123,7 @@ public class WriteToExcelWorksheetNode : BaseNode
                         }
                         else
                         {
-                            string value = rawValue?.ToString();
+                            string value = rawValue?.ToString() ?? string.Empty;
                             if (string.IsNullOrEmpty(value))
                                 throw new ArgumentException("Value to write cannot be null or empty.");
 
@@ -168,7 +166,7 @@ public class WriteToExcelWorksheetNode : BaseNode
             else if (value is IEnumerable<string> stringList)
                 finalValue = string.Join(Environment.NewLine, stringList);
             else
-                finalValue = value.ToString();
+                finalValue = value.ToString() ?? string.Empty;
 
             range.Value = finalValue;
             range.WrapText = true;

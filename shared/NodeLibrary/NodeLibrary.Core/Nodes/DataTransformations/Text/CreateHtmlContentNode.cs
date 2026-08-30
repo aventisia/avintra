@@ -15,8 +15,6 @@ public class CreateHtmlContentNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var title = Title.Get(context);
@@ -45,7 +43,7 @@ public class CreateHtmlContentNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultHtml.Set(context, null!);
+            ResultHtml.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error generating HTML content: {ex.Message}");
         }

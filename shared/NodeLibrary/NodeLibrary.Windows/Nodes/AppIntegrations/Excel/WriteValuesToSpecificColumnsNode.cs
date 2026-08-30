@@ -18,7 +18,7 @@ public class WriteValuesToSpecificColumnsNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var row = Row.Get(context);
             var columnValuePairs = ColumnValuePairs.Get(context);
 

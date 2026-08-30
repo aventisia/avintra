@@ -21,8 +21,8 @@ public class FindPdfTextNode : BaseNode
 
         try
         {
-            string pdfPath = PdfFilePath.Get(context);
-            string pattern = RegexPattern.Get(context);
+            string pdfPath = PdfFilePath.Get(context) ?? string.Empty;
+            string pattern = RegexPattern.Get(context) ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(pdfPath))
                 throw new ArgumentException("Pdf file path is required.");

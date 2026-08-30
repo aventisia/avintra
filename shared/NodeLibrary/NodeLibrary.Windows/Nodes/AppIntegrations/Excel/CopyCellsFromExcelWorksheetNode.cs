@@ -36,7 +36,7 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Success";
-        dynamic worksheet = null;
+        dynamic? worksheet = null;
 
         try
         {
@@ -50,7 +50,7 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
             {
                 case CellCopyModeEnum.SingleCell:
                     {
-                        var colStr = StartColumn.Get(context);
+                        var colStr = StartColumn.Get(context) ?? string.Empty;
                         var row = StartRow.Get(context);
                         int colNum = GetColumnIndex(colStr);
                         var cell = worksheet.Cells[row, colNum];
@@ -64,8 +64,8 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
 
                 case CellCopyModeEnum.NamedCells:
                     {
-                        var name = Name.Get(context);
-                        dynamic namedItem = null;
+                        var name = Name.Get(context) ?? string.Empty;
+                        dynamic? namedItem = null;
                         foreach (var n in worksheet.Names)
                         {
                             if (n.Name == name)
@@ -105,8 +105,8 @@ public class CopyCellsFromExcelWorksheetNode : BaseNode
 
                 case CellCopyModeEnum.RangeOfCells:
                     {
-                        var startColStr = StartColumn.Get(context);
-                        var endColStr = EndColumn.Get(context);
+                        var startColStr = StartColumn.Get(context) ?? string.Empty;
+                        var endColStr = EndColumn.Get(context) ?? string.Empty;
                         var startRow = StartRow.Get(context);
                         var endRow = EndRow.Get(context);
                         int startColNum = GetColumnIndex(startColStr);

@@ -24,7 +24,7 @@ public class RenameFileNode : BaseNode
 
     [DisplayName("Text to add"), Description("The text to prepend or append to the existing filename. Example: '_backup'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddText)]
-    public InArgument<string> TextToAdd { get; set; }
+    public InArgument<string> TextToAdd { get; set; } = new InArgument<string>();
 
     [DisplayName("Text position"), Description("Whether to insert the text before or after the filename. Default: After name.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddText)]
@@ -36,15 +36,15 @@ public class RenameFileNode : BaseNode
 
     [DisplayName("Text to find"), Description("The exact text in the filename to be replaced. Example: 'old' in 'old_report.txt'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.ReplaceText)]
-    public InArgument<string> TextToReplace { get; set; }
+    public InArgument<string> TextToReplace { get; set; } = new InArgument<string>();
 
     [DisplayName("Replace with"), Description("The replacement text. Example: 'new' replaces 'old' → 'new_report.txt'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.ReplaceText)]
-    public InArgument<string> ReplaceWith { get; set; }
+    public InArgument<string> ReplaceWith { get; set; } = new InArgument<string>();
 
     [DisplayName("New extension"), Description("The new file extension including the leading dot. Example: '.pdf', '.bak'.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.ChangeExtension)]
-    public InArgument<string> NewExtension { get; set; }
+    public InArgument<string> NewExtension { get; set; } = new InArgument<string>();
 
     [DisplayName("Use custom datetime"), Description("When true, allows selecting a custom datetime source instead of the current system time.")]
     [RenderIfCondition(nameof(RenameScheme), RenameSchemeEnum.AddDateTime)]
@@ -132,20 +132,20 @@ public class RenameFileNode : BaseNode
                     var newFilePath = ApplyRenameScheme(
                         filePath,
                         renameScheme,
-                        NewFileName?.Get(context),
-                        TextToAdd?.Get(context),
+                        NewFileName.Get(context) ?? string.Empty,
+                        TextToAdd.Get(context) ?? string.Empty,
                         AddTextPosition?.Get(context),
-                        TextToRemove?.Get(context),
-                        TextToReplace?.Get(context),
-                        ReplaceWith?.Get(context),
-                        NewExtension?.Get(context),
+                        TextToRemove.Get(context) ?? string.Empty,
+                        TextToReplace.Get(context) ?? string.Empty,
+                        ReplaceWith.Get(context) ?? string.Empty,
+                        NewExtension.Get(context) ?? string.Empty,
                         keepExtension,
                         UseCustomDateTime?.Get(context),
                         DatetimeSource?.Get(context),
                         AddDateTimePosition?.Get(context),
                         DateTimeSeparator?.Get(context),
-                        DateTimeFormat?.Get(context),
-                        BaseFileName?.Get(context),
+                        DateTimeFormat.Get(context) ?? string.Empty,
+                        BaseFileName.Get(context) ?? string.Empty,
                         AddNumberPosition?.Get(context),
                         StartNumber?.Get(context),
                         IncrementBy?.Get(context),
@@ -230,7 +230,7 @@ public class RenameFileNode : BaseNode
     {
         var fileName = Path.GetFileNameWithoutExtension(filePath);
         var extension = Path.GetExtension(filePath);
-        var dir = Path.GetDirectoryName(filePath);
+        var dir = Path.GetDirectoryName(filePath) ?? string.Empty;
 
         switch (renameScheme)
         {

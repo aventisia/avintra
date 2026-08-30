@@ -77,7 +77,7 @@ public class ReadFromCsvFileNode : BaseNode
             using (var reader = new StreamReader(filePath, GetEncoding(encodingEnum)))
             {
                 var dataTable = new DataTable();
-                string line;
+                string? line;
                 int lineNumber = 0;
 
                 while ((line = reader.ReadLine()) != null)
@@ -178,7 +178,7 @@ public class ReadFromCsvFileNode : BaseNode
             _separator = separator ?? throw new ArgumentNullException(nameof(separator));
         }
 
-        public string ReadLine()
+        public string? ReadLine()
         {
             return _reader.ReadLine();
         }

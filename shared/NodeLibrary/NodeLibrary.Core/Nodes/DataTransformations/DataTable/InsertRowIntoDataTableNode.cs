@@ -18,7 +18,7 @@ public sealed class InsertRowIntoDataTableNode : BaseNode
 
     [DisplayName("Row Index"), Description("Zero-based index before which to insert the row (used only when location is 'Before Row Index').")]
     [RenderIfCondition(nameof(InsertLocation), DataTableInsertRowLocationEnum.BeforeRowIndex)]
-    public InArgument<int> RowIndex { get; set; }
+    public InArgument<int> RowIndex { get; set; } = new InArgument<int>();
 
     [DisplayName("Modified Data Table"), Description("The updated data table with the new row inserted.")]
     public OutArgument<DataTable> ModifiedDataTable { get; set; } = new OutArgument<DataTable>();
@@ -104,7 +104,7 @@ public sealed class InsertRowIntoDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            ModifiedDataTable.Set(context, null!);
+            ModifiedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error inserting row: {ex.Message}");
         }

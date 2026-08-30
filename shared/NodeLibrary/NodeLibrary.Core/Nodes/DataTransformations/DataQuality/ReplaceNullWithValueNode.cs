@@ -63,7 +63,7 @@ public class ReplaceNullWithValueNode : BaseNode
         }
         catch (Exception ex)
         {
-            CleanedDataTable.Set(context, null!);
+            CleanedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error replacing null values: {ex.Message}");
         }

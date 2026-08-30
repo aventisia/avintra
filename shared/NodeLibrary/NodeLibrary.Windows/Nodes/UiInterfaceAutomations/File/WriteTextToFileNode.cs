@@ -36,7 +36,8 @@ public class WriteTextToFileNode : BaseNode
                 throw new ArgumentException("Text cannot be empty.");
 
             var dir = Path.GetDirectoryName(filePath);
-            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir); // auto-create directories
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir); // auto-create directories
 
             if (writeMode == WriteModeEnum.Append)
             {

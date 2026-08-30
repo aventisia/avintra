@@ -35,7 +35,7 @@ public class DeleteJSONNodeWithPrimaryKeyNode : BaseNode
             }
 
             var jsonNode = jsonContent is string
-                ? JsonNode.Parse((string)jsonContent)
+                ? JsonNode.Parse((string)jsonContent) ?? throw new ArgumentException("Invalid JSON content.")
                 : (JsonNode)jsonContent;
 
             var nodeDeleted = DeleteNodeHelper(jsonNode, primaryKey, primaryValue);
@@ -63,7 +63,7 @@ public class DeleteJSONNodeWithPrimaryKeyNode : BaseNode
         }
     }
 
-    private static bool DeleteNodeHelper(JsonNode token, string primaryKey, string primaryValue)
+    private static bool DeleteNodeHelper(JsonNode? token, string primaryKey, string primaryValue)
     {
         if (token?.GetValueKind() == System.Text.Json.JsonValueKind.Object)
         {

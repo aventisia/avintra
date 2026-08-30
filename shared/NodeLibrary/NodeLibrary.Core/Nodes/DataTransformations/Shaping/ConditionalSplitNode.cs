@@ -88,7 +88,7 @@ public class ConditionalSplitNode : BaseNode
         }
         catch (Exception ex)
         {
-            Outputs.Set(context, null!);
+            Outputs.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error in conditional split: {ex.Message}");
         }

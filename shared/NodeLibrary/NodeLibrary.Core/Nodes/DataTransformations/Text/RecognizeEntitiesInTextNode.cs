@@ -20,8 +20,6 @@ public class RecognizeEntitiesInTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var textToAnalyze = TextToAnalyze.Get(context);

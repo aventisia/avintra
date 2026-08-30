@@ -19,7 +19,7 @@ public sealed class DeleteColumnFromDataTableNode : BaseNode
 
     [DisplayName("Column Index"), Description("The zero-based index of the column to delete (required if 'Specify Column With' is 'Index').")]
     [RenderIfCondition(nameof(SpecifyColumnWith), DataTableDeleteColumnByEnum.Index)]
-    public InArgument<int> ColumnIndex { get; set; }
+    public InArgument<int> ColumnIndex { get; set; } = new InArgument<int>();
 
     [DisplayName("Modified Data Table"), Description("Returns the updated data table after the column is deleted.")]
     public OutArgument<DataTable> ModifiedDataTable { get; set; } = new OutArgument<DataTable>();
@@ -79,7 +79,7 @@ public sealed class DeleteColumnFromDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            ModifiedDataTable.Set(context, null!);
+            ModifiedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error deleting column: {ex.Message}");
         }

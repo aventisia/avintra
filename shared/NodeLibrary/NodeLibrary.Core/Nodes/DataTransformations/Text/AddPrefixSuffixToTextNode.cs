@@ -31,7 +31,7 @@ public class AddPrefixSuffixToTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            Result.Set(context, null!);
+            Result.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error adding prefix/suffix: {ex.Message}");
         }

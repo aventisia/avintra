@@ -23,8 +23,8 @@ public class SerializeJSONNode : BaseNode
 
             if (token == null)
             {
-                SerializedJson.Set(context, null!);
-                SerializedToken.Set(context, null!);
+                SerializedJson.Set(context, null);
+                SerializedToken.Set(context, null);
                 IsSuccess.Set(context, false);
                 StatusMessage.Set(context, "Input token is null. Cannot serialize.");
                 return;
@@ -46,8 +46,8 @@ public class SerializeJSONNode : BaseNode
         }
         catch (Exception ex)
         {
-            SerializedJson.Set(context, null!);
-            SerializedToken.Set(context, null!);
+            SerializedJson.Set(context, null);
+            SerializedToken.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error serializing JSON: {ex.Message}");
         }

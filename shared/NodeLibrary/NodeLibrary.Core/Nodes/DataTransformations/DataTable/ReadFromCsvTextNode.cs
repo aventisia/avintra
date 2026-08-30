@@ -35,7 +35,7 @@ public class ReadFromCsvTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        DataTable resultTable = null;
+        DataTable? resultTable = null;
         var status = "Operation completed successfully.";
 
         try
@@ -51,7 +51,7 @@ public class ReadFromCsvTextNode : BaseNode
                 throw new ArgumentException("CSV text cannot be empty.");
 
             resultTable = ReadCsvToDataTable(csvText, trimFields, firstLineContainsColumnNames, getFieldsAsText,
-                columnsSeparator, CustomSeparator.Get(context), fixedColumnWidths);
+                columnsSeparator, CustomSeparator.Get(context) ?? string.Empty, fixedColumnWidths ?? string.Empty);
 
             ResultDataTable.Set(context, resultTable);
             status = "Successfully generated the data table from CSV.";
@@ -60,7 +60,7 @@ public class ReadFromCsvTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultDataTable.Set(context, null!);
+            ResultDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error generating data table: {ex.Message}");
         }
@@ -83,7 +83,7 @@ public class ReadFromCsvTextNode : BaseNode
                     table.Columns.Add(header);
             }
 
-            string line;
+            string? line;
             while ((line = reader.ReadLine()) != null)
             {
                 if (string.IsNullOrWhiteSpace(line)) continue;

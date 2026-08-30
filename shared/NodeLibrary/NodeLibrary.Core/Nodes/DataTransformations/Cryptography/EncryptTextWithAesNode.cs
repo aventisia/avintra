@@ -25,9 +25,9 @@ public class EncryptTextWithAesNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Operation completed successfully.";
-        var plaintext = Plaintext.Get(context);
-        var key = Key.Get(context);
-        var iv = IV.Get(context);
+        var plaintext = Plaintext.Get(context) ?? string.Empty;
+        var key = Key.Get(context) ?? string.Empty;
+        var iv = IV.Get(context) ?? string.Empty;
         var encodingFormat = EncodingFormat.Get(context);
 
         try
@@ -56,7 +56,7 @@ public class EncryptTextWithAesNode : BaseNode
         }
         catch (Exception ex)
         {
-            EncryptedText.Set(context, null!);
+            EncryptedText.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error encrypting text with AES: {ex.Message}");
         }

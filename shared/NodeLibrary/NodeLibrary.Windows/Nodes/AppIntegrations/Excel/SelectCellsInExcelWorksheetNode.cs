@@ -44,7 +44,7 @@ public class SelectCellsInExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var selectMode = SelectMode.Get(context);
 
             if (worksheet == null)
@@ -57,7 +57,7 @@ public class SelectCellsInExcelWorksheetNode : BaseNode
             {
                 case ExcelCellSelectionModeEnum.SingleCell:
                     {
-                        var colStr = Column.Get(context);
+                        var colStr = Column.Get(context) ?? string.Empty;
                         var row = Row.Get(context);
                         int colNum = int.TryParse(colStr, out int num) ? num : GetColumnIndex(colStr);
                         targetRange = worksheet.Cells[row, colNum];
@@ -66,7 +66,7 @@ public class SelectCellsInExcelWorksheetNode : BaseNode
 
                 case ExcelCellSelectionModeEnum.NamedCells:
                     {
-                        var name = Name.Get(context);
+                        var name = Name.Get(context) ?? string.Empty;
                         targetRange = worksheet.Range[name];
                         if (targetRange == null)
                             throw new InvalidOperationException($"Named range '{name}' not found.");
@@ -75,8 +75,8 @@ public class SelectCellsInExcelWorksheetNode : BaseNode
 
                 case ExcelCellSelectionModeEnum.RangeOfCells:
                     {
-                        var startColStr = StartColumn.Get(context);
-                        var endColStr = EndColumn.Get(context);
+                        var startColStr = StartColumn.Get(context) ?? string.Empty;
+                        var endColStr = EndColumn.Get(context) ?? string.Empty;
                         var startRow = StartRow.Get(context);
                         var endRow = EndRow.Get(context);
                         int startCol = int.TryParse(startColStr, out int sc) ? sc : GetColumnIndex(startColStr);

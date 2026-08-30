@@ -29,7 +29,7 @@ public class CreateDataTableNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Operation completed successfully.";
-        DataTable resultTable = null;
+        DataTable? resultTable = null;
 
         try
         {
@@ -97,7 +97,7 @@ public class CreateDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            NewDataTable.Set(context, null!);
+            NewDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error creating data table: {ex.Message}");
         }

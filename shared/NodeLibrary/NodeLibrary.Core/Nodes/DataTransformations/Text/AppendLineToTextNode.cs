@@ -5,10 +5,10 @@ namespace NodeLibrary.TextNodes;
 public class AppendLineToTextNode : BaseNode
 {
     [DisplayName("Original Text"), Description("The original text to which a new line will be appended.")]
-    public InArgument<string> OriginalText { get; set; }
+    public required InArgument<string> OriginalText { get; set; }
 
     [DisplayName("New Line"), Description("The new line of text to append.")]
-    public InArgument<string> NewLine { get; set; }
+    public required InArgument<string> NewLine { get; set; }
 
     [DisplayName("Result"), Description("The resulting text after appending the new line.")]
     public OutArgument<string> ResultOutput { get; set; } = new OutArgument<string>();
@@ -31,7 +31,7 @@ public class AppendLineToTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            ResultOutput.Set(context, null!);
+            ResultOutput.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error appending line to text: {ex.Message}");
         }

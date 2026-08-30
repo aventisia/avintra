@@ -57,15 +57,15 @@ public class PrintDocumentNode : BaseNode
             switch (method)
             {
                 case PrintMethodEnum.ProcessStart:
-                    success = PrintViaProcess(documentPath, printerName, copies, ref status);
+                    success = PrintViaProcess(documentPath, printerName ?? string.Empty, copies, ref status);
                     break;
 
                 case PrintMethodEnum.Direct:
-                    success = PrintDirect(documentPath, printerName, copies, ref jobId, ref status);
+                    success = PrintDirect(documentPath, printerName ?? string.Empty, copies, ref jobId, ref status);
                     break;
 
                 default:
-                    success = PrintDefault(documentPath, printerName, copies, ref status);
+                    success = PrintDefault(documentPath, printerName ?? string.Empty, copies, ref status);
                     break;
             }
 
@@ -136,7 +136,7 @@ public class PrintDocumentNode : BaseNode
             printDoc.PrintPage += (sender, e) =>
             {
                 using var img = Image.FromFile(documentPath);
-                e.Graphics.DrawImage(img, e.MarginBounds);
+                e.Graphics?.DrawImage(img, e.MarginBounds);
                 e.HasMorePages = false;
             };
 
@@ -155,7 +155,7 @@ public class PrintDocumentNode : BaseNode
     {
         try
         {
-            var startInfo = new ProcessStartInfo(documentPath)
+            var startInfo = new ProcessStartInfo(documentPath ?? string.Empty)
             {
                 Verb = "Print",
                 CreateNoWindow = true,

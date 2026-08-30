@@ -137,7 +137,7 @@ public class FindAndReplaceInDocxFileNode : BaseNode
         }
 
         if (saveDocument)
-            wordDoc.MainDocumentPart.Document.Save();
+            wordDoc.MainDocumentPart?.Document?.Save();
     }
 
     private static string ReplaceFirstOccurrence(string text, string searchText, string replaceText)

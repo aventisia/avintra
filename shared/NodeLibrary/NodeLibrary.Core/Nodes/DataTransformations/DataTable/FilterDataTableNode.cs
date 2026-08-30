@@ -54,7 +54,7 @@ public sealed class FilterDataTableNode : BaseNode
         catch (Exception ex)
         {
             // Handle error
-            FilteredDataTable.Set(context, null!);
+            FilteredDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error filtering data table: {ex.Message}");
         }

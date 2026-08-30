@@ -41,7 +41,7 @@ public class FuzzyMatchNode : BaseNode
             var referenceMatchColumn = ReferenceMatchColumn.Get(context);
             var threshold = Threshold.Get(context);
             var referenceColumnsToInclude = ReferenceColumnsToInclude.Get(context);
-            var scoreColumnName = ScoreColumnName.Get(context);
+            var scoreColumnName = ScoreColumnName.Get(context) ?? string.Empty;
 
             if (primaryTable == null)
                 throw new ArgumentException("Primary Data Table cannot be null.");
@@ -59,7 +59,7 @@ public class FuzzyMatchNode : BaseNode
             if (string.IsNullOrWhiteSpace(referenceColumnsToInclude))
             {
                 includeCols = referenceTable.Columns.Cast<DataColumn>()
-                    .Where(c => !c.ColumnName.Equals(referenceMatchColumn, StringComparison.OrdinalIgnoreCase))
+                    .Where(c => !c.ColumnName.Equals(referenceMatchColumn!, StringComparison.OrdinalIgnoreCase))
                     .Select(c => c.ColumnName)
                     .ToList();
             }
@@ -75,7 +75,7 @@ public class FuzzyMatchNode : BaseNode
             foreach (var col in primaryTable.Columns.Cast<DataColumn>())
                 result.Columns.Add(col.ColumnName, col.DataType);
             foreach (var col in includeCols)
-                result.Columns.Add($"{col}", referenceTable.Columns[col].DataType);
+                result.Columns.Add($"{col}", referenceTable.Columns[col]!.DataType);
             result.Columns.Add(scoreColumnName, typeof(decimal));
 
             // Normalize reference rows once.
@@ -114,7 +114,7 @@ public class FuzzyMatchNode : BaseNode
 
                 var matched = bestRef != null && bestScore >= threshold;
                 foreach (var col in includeCols)
-                    newRow[col] = matched ? bestRef![col] : DBNull.Value;
+                    newRow[col!] = matched ? bestRef![col!] : DBNull.Value;
 
                 newRow[scoreColumnName] = matched ? bestScore : 0m;
                 result.Rows.Add(newRow);
@@ -127,7 +127,7 @@ public class FuzzyMatchNode : BaseNode
         }
         catch (Exception ex)
         {
-            MatchedDataTable.Set(context, null!);
+            MatchedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error performing fuzzy match: {ex.Message}");
         }

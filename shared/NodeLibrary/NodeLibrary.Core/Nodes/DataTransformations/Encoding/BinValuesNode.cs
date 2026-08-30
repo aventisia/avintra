@@ -83,7 +83,7 @@ public class BinValuesNode : BaseNode
         }
         catch (Exception ex)
         {
-            BinnedDataTable.Set(context, null!);
+            BinnedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error binning values: {ex.Message}");
         }

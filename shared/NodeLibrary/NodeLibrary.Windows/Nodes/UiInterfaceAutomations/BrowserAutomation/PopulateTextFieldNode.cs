@@ -135,7 +135,7 @@ public class PopulateTextFieldNode : BaseNode
                     if (dialogAction == DialogActionEnum.CloseIt)
                         alert.Accept();
                     else if (dialogAction == DialogActionEnum.PressAButton)
-                        alert.SendKeys(dialogButton);
+                        alert.SendKeys(dialogButton ?? string.Empty);
                 }
                 catch (NoAlertPresentException) { }
 

@@ -23,5 +23,7 @@ global using System.Security;
 global using System.Net.Http;
 global using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 
 [assembly: InternalsVisibleTo("ExecutorLibrary")]
+[assembly: SupportedOSPlatform("windows6.1")]

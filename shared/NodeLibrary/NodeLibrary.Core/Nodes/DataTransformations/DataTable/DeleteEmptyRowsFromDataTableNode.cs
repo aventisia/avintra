@@ -15,7 +15,7 @@ public sealed class DeleteEmptyRowsFromDataTableNode : BaseNode
 
     [DisplayName("Column Names To Check"), Description("List of column names to check for emptiness (required if 'Empty Row Mode' is 'Based on Specific Columns').")]
     [RenderIfCondition(nameof(EmptyRowMode), DataTableEmptyRowModeEnum.SpecificColumns)]
-    public InArgument<List<string>> ColumnNamesToCheck { get; set; }
+    public InArgument<List<string>> ColumnNamesToCheck { get; set; } = new InArgument<List<string>>();
 
     protected override void Execute(INodeContext context)
     {
@@ -29,13 +29,14 @@ public sealed class DeleteEmptyRowsFromDataTableNode : BaseNode
             if (dataTable == null)
                 throw new ArgumentException("Data table cannot be null.");
 
-            List<string> columnsToCheck = null;
+            List<string> columnsToCheck;
             switch (emptyRowMode)
             {
                 case DataTableEmptyRowModeEnum.SpecificColumns:
-                    columnsToCheck = ColumnNamesToCheck.Get(context);
-                    if (columnsToCheck == null || !columnsToCheck.Any())
+                    var selected = ColumnNamesToCheck.Get(context);
+                    if (selected == null || !selected.Any())
                         throw new ArgumentException("Column names to check cannot be empty.");
+                    columnsToCheck = selected;
                     break;
 
                 case DataTableEmptyRowModeEnum.AllEmpty:

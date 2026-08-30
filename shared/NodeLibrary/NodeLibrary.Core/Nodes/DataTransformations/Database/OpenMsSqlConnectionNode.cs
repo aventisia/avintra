@@ -36,19 +36,19 @@ public class OpenMsSqlConnectionNode : BaseNode
         }
         catch (ArgumentException argEx)
         {
-            SqlConnection.Set(context, null!);
+            SqlConnection.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Invalid argument: {argEx.Message}");
         }
         catch (SqlException sqlEx)
         {
-            SqlConnection.Set(context, null!);
+            SqlConnection.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"SQL error opening connection: {sqlEx.Message}");
         }
         catch (Exception ex)
         {
-            SqlConnection.Set(context, null!);
+            SqlConnection.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error opening database connection: {ex.Message}");
         }

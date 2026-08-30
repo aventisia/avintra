@@ -27,7 +27,6 @@
 
     <ItemGroup>
         <Compile Include="..\RunnerApp.Windows\Program.cs" />
-        <Compile Include="..\RunnerApp.Windows\GlobalUsings.cs" />
     </ItemGroup>
 
 </Project>

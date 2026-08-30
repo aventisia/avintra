@@ -33,7 +33,8 @@ public class ConvertBase64ToFileNode : BaseNode
             var fileBytes = Convert.FromBase64String(base64);
             var dir = Path.GetDirectoryName(filePath);
 
-            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
 
             if (File.Exists(filePath))
                 switch (ifExists)
@@ -49,7 +50,7 @@ public class ConvertBase64ToFileNode : BaseNode
 
             if (shouldWrite)
             {
-                File.WriteAllBytes(filePath, fileBytes);
+                File.WriteAllBytes(filePath ?? string.Empty, fileBytes);
                 status = $"File successfully created at {filePath}.";
             }
 

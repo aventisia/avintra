@@ -19,7 +19,7 @@ public class HashTextNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Operation completed successfully.";
-        var text = Text.Get(context);
+        var text = Text.Get(context) ?? string.Empty;
         var algorithm = Algorithm.Get(context);
 
         try
@@ -35,7 +35,7 @@ public class HashTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            HashedText.Set(context, null!);
+            HashedText.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error hashing text: {ex.Message}");
         }

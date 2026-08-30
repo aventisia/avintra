@@ -25,8 +25,8 @@ public class OpenWorkbookNode : BaseNode
     {
         try
         {
-            dynamic excelApp = ExcelInstance.Get(context);
-            var workbookName = WorkbookName.Get(context);
+            dynamic? excelApp = ExcelInstance.Get(context);
+            var workbookName = WorkbookName.Get(context) ?? string.Empty;
             var readOnly = OpenAsReadOnly.Get(context);
             dynamic? workbook = null;
 

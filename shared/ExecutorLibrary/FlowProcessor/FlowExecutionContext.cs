@@ -119,6 +119,7 @@ public class FlowExecutionContext
                 }
                 catch (Exception ex)
                 {
+                    _ = ex; // variable is required by the when filter
                     // If evaluation fails, try simple variable lookup
                     if (_variables.TryGetValue(expr, out var directValue))
                     {

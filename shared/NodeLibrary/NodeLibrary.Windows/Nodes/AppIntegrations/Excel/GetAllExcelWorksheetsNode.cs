@@ -18,7 +18,7 @@ public class GetAllExcelWorksheetsNode : BaseNode
     {
         try
         {
-            dynamic workbook = WorkbookInstance.Get(context);
+            dynamic? workbook = WorkbookInstance.Get(context);
 
             if (workbook == null)
                 throw new InvalidOperationException("Workbook instance cannot be null.");

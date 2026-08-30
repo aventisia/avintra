@@ -82,7 +82,7 @@ public class GroupByNode : BaseNode
         }
         catch (Exception ex)
         {
-            GroupedDataTable.Set(context, null!);
+            GroupedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error grouping data table: {ex.Message}");
         }

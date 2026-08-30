@@ -83,7 +83,7 @@ public class DataCleansingNode : BaseNode
         }
         catch (Exception ex)
         {
-            CleansedDataTable.Set(context, null!);
+            CleansedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error cleansing data table: {ex.Message}");
         }

@@ -16,8 +16,8 @@ public class InsertColumnToExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
-            var columnStr = Column.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
+            var columnStr = Column.Get(context) ?? string.Empty;
 
             if (worksheet == null)
                 throw new InvalidOperationException("Worksheet instance cannot be null.");

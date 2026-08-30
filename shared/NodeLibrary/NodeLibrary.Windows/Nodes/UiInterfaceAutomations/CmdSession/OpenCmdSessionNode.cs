@@ -83,8 +83,6 @@ public class OpenCmdSessionNode : BaseNode
         {
             case EncodingEnum.UTF8:
                 return Encoding.UTF8;
-            case EncodingEnum.UTF7:
-                return Encoding.UTF7;
             case EncodingEnum.ASCII:
                 return Encoding.ASCII;
             case EncodingEnum.Windows1252:

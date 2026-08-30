@@ -29,9 +29,9 @@ public class SetCheckboxStateNode : BaseNode
 
         try
         {
-            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context));
+            var identificationObjectPath = UiAutomationElementHelper.ConvertIdentificationObjectPath(IdentificationObjectPath.Get(context) ?? string.Empty);
             var maxWaitTime = MaxWaitTime.Get(context);
-            var checkboxNameOrIndex = CheckboxNameOrIndex.Get(context);
+            var checkboxNameOrIndex = CheckboxNameOrIndex.Get(context) ?? string.Empty;
             var shouldBeChecked = Checked.Get(context);
             bool stateChanged = false;
 
@@ -44,7 +44,7 @@ public class SetCheckboxStateNode : BaseNode
             else
             {
                 var checkboxesCollection = parentElement.FindAllDescendants(cf => cf.ByControlType(ControlType.CheckBox));
-                AutomationElement targetCheckbox = null;
+                AutomationElement? targetCheckbox = null;
 
                 // Try index first
                 if (int.TryParse(checkboxNameOrIndex, out int idx))

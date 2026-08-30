@@ -43,7 +43,7 @@ public class ChangeColumnDataTypeNode : BaseNode
             {
                 if (!resultTable.Columns.Contains(col))
                     throw new ArgumentException($"Column '{col}' does not exist in the data table.");
-                resultTable.Columns[col].DataType = targetType;
+                resultTable.Columns[col]!.DataType = targetType;
             }
 
             foreach (DataRow row in dataTable.Rows)
@@ -66,7 +66,7 @@ public class ChangeColumnDataTypeNode : BaseNode
         }
         catch (Exception ex)
         {
-            ConvertedDataTable.Set(context, null!);
+            ConvertedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error converting column data type: {ex.Message}");
         }

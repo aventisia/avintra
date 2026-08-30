@@ -52,7 +52,7 @@ public class NormalizeTextNode : BaseNode
         }
         catch (Exception ex)
         {
-            NormalizedText.Set(context, null!);
+            NormalizedText.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error normalizing text: {ex.Message}");
         }

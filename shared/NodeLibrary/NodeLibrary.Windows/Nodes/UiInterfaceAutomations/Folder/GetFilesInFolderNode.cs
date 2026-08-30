@@ -158,8 +158,8 @@ public class GetFilesInFolderNode : BaseNode
         return criteria switch
         {
             FileSortCriteria.FullName => f => f,
-            FileSortCriteria.RootPath => Path.GetPathRoot,
-            FileSortCriteria.Directory => Path.GetDirectoryName,
+            FileSortCriteria.RootPath => f => Path.GetPathRoot(f) ?? string.Empty,
+            FileSortCriteria.Directory => f => Path.GetDirectoryName(f) ?? string.Empty,
             FileSortCriteria.Name => Path.GetFileName,
             FileSortCriteria.NameWithoutExtension => Path.GetFileNameWithoutExtension,
             FileSortCriteria.Extension => Path.GetExtension,

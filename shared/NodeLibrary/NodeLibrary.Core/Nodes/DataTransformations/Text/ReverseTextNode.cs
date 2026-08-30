@@ -12,8 +12,6 @@ public class ReverseTextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
             var original = OriginalText.Get(context);

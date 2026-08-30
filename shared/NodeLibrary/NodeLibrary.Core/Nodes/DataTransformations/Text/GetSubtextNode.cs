@@ -28,15 +28,13 @@ public class GetSubtextNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var status = "Success";
-
         try
         {
-            var originalText = OriginalText.Get(context);
+            var originalText = OriginalText.Get(context) ?? string.Empty;
             var startIndexTypeEnum = StartIndexType.Get(context);
-            int? startIndex = null;
+            int startIndex;
 
-            if (originalText == null)
+            if (string.IsNullOrEmpty(originalText))
                 throw new ArgumentException("OriginalText cannot be empty.");
 
             switch (startIndexTypeEnum)
@@ -58,22 +56,24 @@ public class GetSubtextNode : BaseNode
             }
 
             var lengthTypeEnum = LengthType.Get(context);
-            int? length = null;
+            string result;
 
             if (lengthTypeEnum == LengthTypeEnum.SpecificLength)
             {
-                length = NumberOfCharacters.Get(context);
+                var length = NumberOfCharacters.Get(context);
 
                 if (length < 0)
                     throw new ArgumentException("Length must be non-negative.");
 
                 if (startIndex + length > originalText.Length)
                     throw new ArgumentException("StartIndex + Length exceeds the length of the original text.");
-            }
 
-            var result = lengthTypeEnum == LengthTypeEnum.UntilEnd
-                ? originalText.Substring(startIndex.Value)
-                : originalText.Substring(startIndex.Value, length.Value);
+                result = originalText.Substring(startIndex, length);
+            }
+            else
+            {
+                result = originalText.Substring(startIndex);
+            }
 
             SubstringResult.Set(context, result);
             IsSuccess.Set(context, true);
@@ -81,7 +81,7 @@ public class GetSubtextNode : BaseNode
         }
         catch (Exception ex)
         {
-            SubstringResult.Set(context, null!);
+            SubstringResult.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error extracting substring: {ex.Message}");
         }

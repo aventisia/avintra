@@ -60,7 +60,7 @@ public class PressButtonOnWebPageNode : BaseNode
             {
                 var wait = new WebDriverWait(driver, timeout);
                 wait.Until(d =>
-                    ((IJavaScriptExecutor)d).ExecuteScript("return document.readyState").Equals("complete"));
+                    ((IJavaScriptExecutor)d)?.ExecuteScript("return document.readyState")?.ToString() == "complete");
             }
 
             if (dialogAction != DialogActionEnum.DoNothing)
@@ -73,7 +73,7 @@ public class PressButtonOnWebPageNode : BaseNode
                             alert.Accept();
                             break;
                         case DialogActionEnum.PressAButton:
-                            alert.SendKeys(dialogButton);
+                            alert.SendKeys(dialogButton ?? string.Empty);
                             break;
                     }
                 }

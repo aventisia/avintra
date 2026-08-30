@@ -28,7 +28,7 @@ public class BrowserAutomationHelper
         }
     }
 
-    public static IWebElement FindElement(IWebDriver driver, ElementSelectorTypeEnum findType, string searchValue,
+    public static IWebElement? FindElement(IWebDriver driver, ElementSelectorTypeEnum findType, string searchValue,
         string isDisplayed = "Validate", string isEnabled = "Validate", int waitSeconds = 10)
     {
         try

@@ -61,14 +61,14 @@ public class CloseWebBrowserTabNode : BaseNode
                     foreach (var handle in handles)
                     {
                         driver.SwitchTo().Window(handle);
-                        string matchValue = matchType.ToLower() switch
+                        string matchValue = (matchType ?? string.Empty).ToLower() switch
                         {
                             "url" => driver.Url,
                             "title" => driver.Title,
                             _ => throw new ArgumentException("Invalid match type.")
                         };
 
-                        if (!matchValue.Contains(matchCriteria)) continue;
+                        if (!matchValue.Contains(matchCriteria ?? string.Empty)) continue;
                         driver.Close();
                         foundAndClosed = true;
                         status = $"Closed tab with '{matchType}': '{matchCriteria}'.";

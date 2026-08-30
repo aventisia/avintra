@@ -28,7 +28,7 @@ public class MinMaxScaleNode : BaseNode
         try
         {
             var dataTable = DataTable.Get(context);
-            var columnsToScale = ColumnsToScale.Get(context);
+            var columnsToScale = ColumnsToScale.Get(context) ?? string.Empty;
             var min = Minimum.Get(context);
             var max = Maximum.Get(context);
 
@@ -69,7 +69,7 @@ public class MinMaxScaleNode : BaseNode
         }
         catch (Exception ex)
         {
-            ScaledDataTable.Set(context, null!);
+            ScaledDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error scaling columns: {ex.Message}");
         }

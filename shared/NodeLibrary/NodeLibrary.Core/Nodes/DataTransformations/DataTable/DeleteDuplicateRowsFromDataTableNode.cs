@@ -42,9 +42,10 @@ public sealed class DeleteDuplicateRowsFromDataTableNode : BaseNode
                     break;
 
                 case DataTableColumnCompareModeEnum.SelectedColumns:
-                    columnsToCompare = ColumnNamesToCompare.Get(context);
-                    if (columnsToCompare == null || !columnsToCompare.Any())
+                    var selected = ColumnNamesToCompare.Get(context);
+                    if (selected == null || !selected.Any())
                         throw new ArgumentException("Column names to compare cannot be empty.");
+                    columnsToCompare = selected;
                     break;
 
                 default:
@@ -83,7 +84,7 @@ public sealed class DeleteDuplicateRowsFromDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            ModifiedDataTable.Set(context, null!);
+            ModifiedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error deleting duplicate rows: {ex.Message}");
         }

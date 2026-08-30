@@ -29,7 +29,6 @@ public class AttachToRunningWordNode : BaseNode
                 fullPath = Path.GetFullPath(documentPath);
 
             wordApp = OfficeAutomationHelper.GetActiveApplication(OfficeApplication.Word, createIfMissing: true);
-            bool isNewInstance = false;
 
             // Check if document is already open
             foreach (var doc in wordApp.Documents)
@@ -56,7 +55,7 @@ public class AttachToRunningWordNode : BaseNode
                 }
             }
 
-            targetDocument.Activate();
+            targetDocument!.Activate();
 
             WordInstance.Set(context, wordApp);
             IsSuccess.Set(context, true);
@@ -64,8 +63,8 @@ public class AttachToRunningWordNode : BaseNode
         }
         catch (Exception ex)
         {
-            if (wordApp != null && !IsWordVisible(wordApp))
-                wordApp.Quit();
+            if (wordApp is not null && !IsWordVisible(wordApp))
+                wordApp!.Quit();
 
             WordInstance.Set(context, null);
             IsSuccess.Set(context, false);

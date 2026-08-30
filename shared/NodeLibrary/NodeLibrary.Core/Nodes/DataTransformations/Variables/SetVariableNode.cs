@@ -18,7 +18,7 @@ public class SetVariableNode : BaseNode
 
     protected override void Execute(INodeContext context)
     {
-        var variableName = VariableName.Get(context);
+        var variableName = VariableName.Get(context) ?? string.Empty;
         var valueToSet = ValueToSet.Get(context);
         var isSuccess = true;
         var statusMessage = "Success";
@@ -43,7 +43,7 @@ public class SetVariableNode : BaseNode
                 isSuccess = false;
             }
 
-            object finalValue = valueToSet;
+            object? finalValue = valueToSet;
 
             if (isSuccess && valueToSet is string strValue)
             {

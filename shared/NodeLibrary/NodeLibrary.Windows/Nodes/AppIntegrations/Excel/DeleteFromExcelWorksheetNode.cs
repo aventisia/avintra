@@ -34,7 +34,7 @@ public class DeleteFromExcelWorksheetNode : BaseNode
     {
         try
         {
-            dynamic worksheet = WorksheetInstance.Get(context);
+            dynamic? worksheet = WorksheetInstance.Get(context);
             var deleteMode = DeleteMode.Get(context);
             var shiftDirection = ShiftDirection.Get(context);
 
@@ -49,7 +49,7 @@ public class DeleteFromExcelWorksheetNode : BaseNode
             {
                 case CellDeletionModeEnum.SingleCell:
                     {
-                        var colStr = StartColumn.Get(context);
+                        var colStr = StartColumn.Get(context) ?? string.Empty;
                         var row = StartRow.Get(context);
                         int colNum = GetColumnIndex(colStr);
                         var cell = worksheet.Cells[row, colNum];
@@ -59,8 +59,8 @@ public class DeleteFromExcelWorksheetNode : BaseNode
 
                 case CellDeletionModeEnum.RangeOfCells:
                     {
-                        var startColStr = StartColumn.Get(context);
-                        var endColStr = EndColumn.Get(context);
+                        var startColStr = StartColumn.Get(context) ?? string.Empty;
+                        var endColStr = EndColumn.Get(context) ?? string.Empty;
                         var startRow = StartRow.Get(context);
                         var endRow = EndRow.Get(context);
                         int startCol = GetColumnIndex(startColStr);
@@ -82,8 +82,8 @@ public class DeleteFromExcelWorksheetNode : BaseNode
 
                 case CellDeletionModeEnum.Columns:
                     {
-                        var startColStr = StartColumn.Get(context);
-                        var endColStr = EndColumn.Get(context);
+                        var startColStr = StartColumn.Get(context) ?? string.Empty;
+                        var endColStr = EndColumn.Get(context) ?? string.Empty;
                         if (string.IsNullOrEmpty(endColStr)) endColStr = startColStr;
                         var range = worksheet.Range[$"{startColStr}:{endColStr}"];
                         range.Delete();

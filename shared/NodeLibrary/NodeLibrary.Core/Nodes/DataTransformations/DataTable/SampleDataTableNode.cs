@@ -74,7 +74,7 @@ public class SampleDataTableNode : BaseNode
         }
         catch (Exception ex)
         {
-            SampledDataTable.Set(context, null!);
+            SampledDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error sampling data table: {ex.Message}");
         }

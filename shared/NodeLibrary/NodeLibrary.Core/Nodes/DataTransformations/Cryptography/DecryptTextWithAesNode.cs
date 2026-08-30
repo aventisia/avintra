@@ -21,9 +21,9 @@ public class DecryptTextWithAesNode : BaseNode
     protected override void Execute(INodeContext context)
     {
         var status = "Operation completed successfully.";
-        var ciphertext = Ciphertext.Get(context);
-        var key = Key.Get(context);
-        var iv = IV.Get(context);
+        var ciphertext = Ciphertext.Get(context) ?? string.Empty;
+        var key = Key.Get(context) ?? string.Empty;
+        var iv = IV.Get(context) ?? string.Empty;
 
         try
         {
@@ -40,7 +40,7 @@ public class DecryptTextWithAesNode : BaseNode
         }
         catch (Exception ex)
         {
-            DecryptedText.Set(context, null!);
+            DecryptedText.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error decrypting text with AES: {ex.Message}");
         }

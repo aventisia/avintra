@@ -42,7 +42,7 @@ public class SelectColumnsNode : BaseNode
             // Remove all columns then re-add only selected ones
             resultTable.Columns.Clear();
             foreach (var col in columnNames)
-                resultTable.Columns.Add(col, dataTable.Columns[col].DataType);
+                resultTable.Columns.Add(col, dataTable.Columns[col]!.DataType);
 
             foreach (DataRow row in dataTable.Rows)
             {
@@ -59,7 +59,7 @@ public class SelectColumnsNode : BaseNode
         }
         catch (Exception ex)
         {
-            SelectedDataTable.Set(context, null!);
+            SelectedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error selecting columns: {ex.Message}");
         }

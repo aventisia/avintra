@@ -69,7 +69,7 @@ public class ExtractRegexToColumnsNode : BaseNode
         }
         catch (Exception ex)
         {
-            ExtractedDataTable.Set(context, null!);
+            ExtractedDataTable.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error extracting regex to columns: {ex.Message}");
         }

@@ -23,9 +23,10 @@ public class RetrieveDataTableColumnIntoListNode : BaseNode
             if (dataTable == null || dataTable.Columns.Count == 0)
                 throw new ArgumentException("DataTable must contain at least one column.");
 
-            DataColumn column = null;
+            DataColumn? column = null;
+            var columnIdentifier = columnNameOrIndex ?? string.Empty;
 
-            if (int.TryParse(columnNameOrIndex, out var columnIndex))
+            if (int.TryParse(columnIdentifier, out var columnIndex))
             {
                 if (columnIndex < 0 || columnIndex >= dataTable.Columns.Count)
                     throw new ArgumentOutOfRangeException(nameof(columnIndex),
@@ -35,24 +36,26 @@ public class RetrieveDataTableColumnIntoListNode : BaseNode
             }
             else
             {
-                if (!dataTable.Columns.Contains(columnNameOrIndex))
-                    throw new ArgumentException($"Column '{columnNameOrIndex}' not found in DataTable.");
+                if (!dataTable.Columns.Contains(columnIdentifier))
+                    throw new ArgumentException($"Column '{columnIdentifier}' not found in DataTable.");
 
-                column = dataTable.Columns[columnNameOrIndex];
+                column = dataTable.Columns[columnIdentifier];
             }
 
+            var targetColumn = column ?? throw new InvalidOperationException("Column could not be resolved.");
+
             var result = (from DataRow row in dataTable.Rows
-                          select row[column] as object
+                          select row[targetColumn] as object
                 into value
                           select value?.ToString() ?? string.Empty).ToList();
 
             ColumnAsList.Set(context, result);
             IsSuccess.Set(context, true);
-            StatusMessage.Set(context, $"Successfully extracted {result.Count} items from column '{column.ColumnName}'.");
+            StatusMessage.Set(context, $"Successfully extracted {result.Count} items from column '{targetColumn.ColumnName}'.");
         }
         catch (Exception ex)
         {
-            ColumnAsList.Set(context, null!);
+            ColumnAsList.Set(context, null);
             IsSuccess.Set(context, false);
             StatusMessage.Set(context, $"Error retrieving column into list: {ex.Message}");
         }
