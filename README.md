@@ -16,10 +16,11 @@ This repository contains the source code, shared libraries, clients, and deploym
 │   │   ├── apps/accounts       # Identity / accounts web app
 │   │   ├── apps/workspace      # Workspace / flow builder web app
 │   │   ├── apps/studio         # Studio / admin web app
+│   │   ├── apps/desktop-app    # Tauri-based cross-platform desktop app
 │   │   └── packages/*          # Shared packages (ui, layout, ui-editors, eslint-config, etc.)
-│   ├── desktop-app/            # Tauri-based cross-platform desktop app
-│   ├── docs/                   # Nextra-based documentation site
-│   └── NodeExecutor/           # Windows desktop workflow executor (WPF / .NET Framework 4.8)
+│   ├── RunnerApp/              # .NET 8 autonomous workflow runner (Windows / Linux / macOS)
+│   ├── UIInspector/            # Windows UI Automation inspector (WPF / .NET Framework 4.8)
+│   └── docs/                   # Nextra-based documentation site
 │
 ├── shared/                     # Shared cross-platform .NET libraries
 │   ├── ExecutorLibrary/        # Flow execution engine

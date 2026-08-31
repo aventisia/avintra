@@ -13,13 +13,14 @@ Compact, repo-specific guidance for OpenCode sessions. If a fact is obvious from
 | Area              | Path                                                                   | Entry / build                   | Notes                                                                                |
 | ----------------- | ---------------------------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------ |
 | .NET APIs         | `apis/WorcBackend-legacy/`                                             | `Avplatform.sln`                | AccountsAPIs (port 4000) + WorkspaceAPIs (port 4001), both reference `AspNetToolkit` |
-| Shared libs       | `shared/NodeLibrary/`, `shared/ExecutorLibrary/`, `shared/NodeToJson/` | .NET 8 class libs / console app | Referenced by WorkspaceAPIs and NodeExecutor tools                                   |
+| Shared libs       | `shared/NodeLibrary/`, `shared/ExecutorLibrary/`, `shared/NodeToJson/` | .NET 8 class libs / console app | Referenced by WorkspaceAPIs and RunnerApp / NodeToJson tooling                       |
 | Python API        | `apis/llmpipeline/`                                                    | `app/main.py`                   | FastAPI on port 4003, root path `/api`                                               |
 | Web apps          | `clients/web-apps/`                                                    | npm workspaces + Turborepo      | `apps/accounts` (3001), `apps/workspace` (3002), shared packages under `packages/`   |
 | Studio app        | `clients/web-apps/apps/studio/`                                        | Turborepo app (Vite)            | port 3006                                                                            |
 | Documentation     | `clients/docs/`                                                        | Next.js, port 3004              | Search index built by `pagefind` in `postbuild`                                      |
-| Desktop app       | `clients/desktop-app/`                                                 | Vite + Tauri (Rust)             | dev port 2999, Tauri config in `src-tauri/`                                          |
-| Node/RPA executor | `clients/NodeExecutor/`                                                | Multiple `.sln` files           | Windows-centric tooling (desktop RPA executor)                                       |
+| Desktop app       | `clients/web-apps/apps/desktop-app/`                                   | Vite + Tauri (Rust)             | dev port 2999, Tauri config in `src-tauri/`, launches RunnerApp + UIInspector        |
+| Runner app        | `clients/RunnerApp/`                                                   | `RunnerApp.slnx`                | .NET 8 autonomous flow runner (Windows / Linux / macOS)                              |
+| UI Inspector      | `clients/UIInspector/`                                                 | `UIInspector.sln`               | Windows UI Automation inspector (WPF / net48)                                        |
 | API tests         | `tests/bruno/`                                                         | Bruno collection                | AccountsAPIs, WorkspaceAPIs, llmpipeline APIs                                        |
 | Reverse proxy     | `deploy/nginx/`                                                        | Dockerfile                      | Serves built studio dist; backend upstream via nginx config                          |
 
@@ -144,7 +145,7 @@ Open `tests/bruno` in Bruno. Environments are under `tests/bruno/environments/`.
 - Environment files: `.env.local` is gitignored. `deploy/.env` contains example/default values for local/dev. Do not commit secrets.
 - No unit test suites found in web-apps or .NET projects. `tests/bruno` is the primary API-level verification.
 - EF Core migrations live under `Data/Migrations` in each legacy API project.
-- NodeExecutor / RPA tools are Windows-oriented; expect `.csproj`, WPF-style projects, and `src-tauri` only for the desktop app.
+- RunnerApp and UIInspector are Windows-oriented .NET client tools; expect `.csproj` (net8 for RunnerApp, net48 WPF for UIInspector) and `src-tauri` only for the desktop app.
 
 ## CI/CD quick reference
 

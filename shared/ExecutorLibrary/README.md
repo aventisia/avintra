@@ -24,7 +24,7 @@ dotnet build
 ## Relationship to Other Projects
 
 - Uses `shared/NodeLibrary` for node definitions and strategies.
-- Complements `clients/NodeExecutor` (legacy WPF executor) and the newer `apis/WorcBackend` services.
+- Complements `clients/RunnerApp` (cross-platform runner) and the `apis/WorcBackend` services.
 - For a detailed execution spec, see `apis/WorcBackend-legacy/WorkspaceAPIs/Features/ExecuteFlow/README.md`.
 
 ## Notes
