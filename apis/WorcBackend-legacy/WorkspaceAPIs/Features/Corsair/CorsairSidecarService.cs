@@ -27,25 +27,6 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
     }
 
     /// <inheritdoc />
-    public async Task<IReadOnlyList<CorsairToolDescriptor>> GetToolsAsync(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync("/api/corsair/tools", cancellationToken);
-            response.EnsureSuccessStatusCode();
-
-            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
-            var payload = await System.Text.Json.JsonSerializer.DeserializeAsync<CorsairToolsResponse>(stream, JsonSerializerOptions.Web, cancellationToken);
-            return payload?.Tools ?? [];
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to fetch tools from Corsair sidecar at {BaseAddress}.", _httpClient.BaseAddress);
-            return [];
-        }
-    }
-
-    /// <inheritdoc />
     public async Task<bool> MirrorCredentialAsync(Guid connectionId, string plugin, string apiKey, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(plugin) || string.IsNullOrWhiteSpace(apiKey))
@@ -338,12 +319,6 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
                 connectionId);
             return new CorsairInvokeResult { Success = false, Error = ex.Message };
         }
-    }
-
-    private sealed class CorsairToolsResponse
-    {
-        [JsonPropertyName("tools")]
-        public List<CorsairToolDescriptor> Tools { get; set; } = [];
     }
 
     private sealed class CorsairConnectLinkResponse
