@@ -1,0 +1,56 @@
+{
+  "name": "Corsair/Hubspot/ContactsGetRecentlyCreatedConnector",
+  "description": "List recently created contacts",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__HubSpot",
+      "label": "HubSpot Credential",
+      "description": "Select HubSpot credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "count",
+      "label": "Count",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "after",
+      "label": "After",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "since",
+      "label": "Since",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

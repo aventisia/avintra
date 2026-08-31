@@ -1,0 +1,32 @@
+{
+  "name": "Corsair/Github/UsersGetAuthenticatedConnector",
+  "description": "Get the authenticated user",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__GitHub",
+      "label": "GitHub Credential",
+      "description": "Select GitHub credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

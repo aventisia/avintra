@@ -1,0 +1,235 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Corsair twilio connector (from sidecar descriptors)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.twilio.com/2010-04-01"
+    }
+  ],
+  "paths": {
+    "/corsair/twilio/messages.send": {
+      "post": {
+        "operationId": "twilio.messages.send",
+        "summary": "Send an SMS or MMS message",
+        "description": "Send an SMS or MMS message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "To": {
+                    "type": "string"
+                  },
+                  "From": {
+                    "type": "string"
+                  },
+                  "Body": {
+                    "type": "string"
+                  },
+                  "MediaUrl": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "StatusCallback": {
+                    "type": "string"
+                  },
+                  "MessagingServiceSid": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "To",
+                  "From"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/twilio/messages.get": {
+      "post": {
+        "operationId": "twilio.messages.get",
+        "summary": "Retrieve a message by SID",
+        "description": "Retrieve a message by SID",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messageSid": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "messageSid"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/twilio/messages.list": {
+      "post": {
+        "operationId": "twilio.messages.list",
+        "summary": "List messages with optional filters",
+        "description": "List messages with optional filters",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "To": {
+                    "type": "string"
+                  },
+                  "From": {
+                    "type": "string"
+                  },
+                  "DateSent": {
+                    "type": "string"
+                  },
+                  "PageSize": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/twilio/calls.create": {
+      "post": {
+        "operationId": "twilio.calls.create",
+        "summary": "Initiate an outbound phone call",
+        "description": "Initiate an outbound phone call",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "To": {
+                    "type": "string"
+                  },
+                  "From": {
+                    "type": "string"
+                  },
+                  "Url": {
+                    "type": "string"
+                  },
+                  "Twiml": {
+                    "type": "string"
+                  },
+                  "StatusCallback": {
+                    "type": "string"
+                  },
+                  "StatusCallbackMethod": {
+                    "type": "string"
+                  },
+                  "StatusCallbackEvent": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "Timeout": {
+                    "type": "number"
+                  },
+                  "Record": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "To",
+                  "From"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/twilio/calls.get": {
+      "post": {
+        "operationId": "twilio.calls.get",
+        "summary": "Retrieve a call record by SID",
+        "description": "Retrieve a call record by SID",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "callSid": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "callSid"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/twilio/calls.list": {
+      "post": {
+        "operationId": "twilio.calls.list",
+        "summary": "List call records with optional filters",
+        "description": "List call records with optional filters",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "To": {
+                    "type": "string"
+                  },
+                  "From": {
+                    "type": "string"
+                  },
+                  "Status": {
+                    "type": "string"
+                  },
+                  "StartTime": {
+                    "type": "string"
+                  },
+                  "EndTime": {
+                    "type": "string"
+                  },
+                  "PageSize": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    }
+  }
+}

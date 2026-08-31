@@ -1,0 +1,123 @@
+{
+  "name": "Corsair/Resend/EmailsSendConnector",
+  "description": "Send an email to one or more recipients",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Resend",
+      "label": "Resend Credential",
+      "description": "Select Resend credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "from",
+      "label": "From",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "to",
+      "label": "To",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "subject",
+      "label": "Subject",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "html",
+      "label": "Html",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "text",
+      "label": "Text",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "cc",
+      "label": "Cc",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "bcc",
+      "label": "Bcc",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "reply_to",
+      "label": "Reply To",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "attachments",
+      "label": "Attachments",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "tags",
+      "label": "Tags",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "headers",
+      "label": "Headers",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

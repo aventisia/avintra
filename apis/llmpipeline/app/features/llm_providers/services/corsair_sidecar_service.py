@@ -239,10 +239,9 @@ def _resolve_credential_id_by_name(
 
 
 def _sidecar_headers() -> dict[str, str]:
-    headers = {"Content-Type": "application/json"}
-    if settings.CORSAIR_API_KEY:
-        headers["X-Corsair-Api-Key"] = settings.CORSAIR_API_KEY
-    return headers
+    # The sidecar is backend-only and private to the deployment network; no auth
+    # header is required. Kept as a helper so callers share a single header set.
+    return {"Content-Type": "application/json"}
 
 
 def _sidecar_base_url() -> str:

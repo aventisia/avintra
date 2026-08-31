@@ -101,6 +101,20 @@ public class AppSecretService : IAppSecretService
                     : resourceAccess.GetValueOrDefault(fe.Id, ResourceAccessTypeEnum.View);
             });
 
+            // For OAuth-capable credentials, check the Corsair sidecar connection status in
+            // parallel so the vault list can show whether consent has been completed.
+            var oauthStatusTasks = appSecretData
+                .Where(dto => MapAppSecretTypeToCorsairOAuthPlugin(dto.Type) is not null)
+                .Select(async dto =>
+                {
+                    var plugin = MapAppSecretTypeToCorsairOAuthPlugin(dto.Type)!;
+                    var status = await _corsairSidecarService.GetConnectionStatusAsync(dto.Id, plugin);
+                    dto.OAuthConnected = status?.Connected ?? false;
+                })
+                .ToList();
+
+            await Task.WhenAll(oauthStatusTasks);
+
             // Adapt the data to the DTO format and assign to service response
             serviceResponse.Data = appSecretData;
             serviceResponse.StatusCode = 200;
@@ -1104,7 +1118,7 @@ public class AppSecretService : IAppSecretService
             var link = await _corsairSidecarService.CreateConnectLinkAsync(appSecret.Id, plugin);
             if (link == null)
             {
-                serviceResponse.Message = "Failed to create OAuth connect link in Corsair.";
+                serviceResponse.Message = "Failed to create OAuth connect link.";
                 return serviceResponse;
             }
 
@@ -1153,7 +1167,7 @@ public class AppSecretService : IAppSecretService
             var status = await _corsairSidecarService.GetConnectionStatusAsync(appSecret.Id, plugin);
             if (status == null)
             {
-                serviceResponse.Message = "Failed to get OAuth connection status from Corsair.";
+                serviceResponse.Message = "Failed to get OAuth connection status.";
                 return serviceResponse;
             }
 

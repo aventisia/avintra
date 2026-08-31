@@ -1,0 +1,88 @@
+{
+  "name": "Corsair/Outlook/MessagesSearchConnector",
+  "description": "Search email messages",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Microsoft",
+      "label": "Microsoft Credential",
+      "description": "Select Microsoft credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "query",
+      "label": "Query",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "subject",
+      "label": "Subject",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "fromEmail",
+      "label": "From Email",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "hasAttachments",
+      "label": "Has Attachments",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "size",
+      "label": "Size",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "from_index",
+      "label": "From Index",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "enable_top_results",
+      "label": "Enable Top Results",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

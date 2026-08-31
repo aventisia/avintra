@@ -1,0 +1,56 @@
+{
+  "name": "Corsair/Stripe/CouponsListConnector",
+  "description": "List Stripe coupons",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Stripe",
+      "label": "Stripe Credential",
+      "description": "Select Stripe credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "limit",
+      "label": "Limit",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "starting_after",
+      "label": "Starting After",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ending_before",
+      "label": "Ending Before",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

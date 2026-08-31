@@ -1,0 +1,57 @@
+{
+  "name": "Corsair/Slack/UserGroupsDisableConnector",
+  "description": "Disable a user group",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Slack",
+      "label": "Slack Credential",
+      "description": "Select Slack credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "userGroup",
+      "label": "User Group",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "include_count",
+      "label": "Include Count",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "team_id",
+      "label": "Team Id",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

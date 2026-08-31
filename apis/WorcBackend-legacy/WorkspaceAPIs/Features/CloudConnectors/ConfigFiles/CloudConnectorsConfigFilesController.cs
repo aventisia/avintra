@@ -26,7 +26,9 @@ public class CloudConnectorsConfigFilesController : ControllerBase
         //     Response.Headers["Vary"] = "Origin";
         // }
 
-        var contentType = "application/octet-stream";
+        var contentType = filePath?.EndsWith(".json", StringComparison.OrdinalIgnoreCase) == true
+            ? "application/json"
+            : "application/octet-stream";
         return PhysicalFile(fullPath, contentType);
     }
 }

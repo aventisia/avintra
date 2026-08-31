@@ -106,7 +106,7 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
   };
   finalNodeList = desktopNodesModule.default;
 
-  // Fetch Cloud Connector module from remote URL using axiosInstance
+  // Fetch the global Cloud Connector mapping from the Workspace API.
   try {
     const response = await axiosInstance
       .get<PrimaryCategoryType[]>(
@@ -118,6 +118,22 @@ export async function getActionSelectorData(): Promise<PrimaryCategoryType[]> {
     }
   } catch (error) {
     console.error("Cloud Connector mapping file fetch error:", error);
+  }
+
+  // Fetch the dedicated Corsair action-selector mapping and merge it under
+  // "App Integrations". This keeps Corsair UI metadata separate from the
+  // global Cloud Connector mapping.
+  try {
+    const corsairResponse = await axiosInstance
+      .get<PrimaryCategoryType[]>(
+        `${import.meta.env.VITE_WORKSPACE_API_PATH}/cloud-connector/config-file/CorsairActionSelectorMappingFile.json`,
+      )
+      .then((res) => res.data);
+    if (corsairResponse) {
+      finalNodeList = mergeActionSelectorData(finalNodeList, corsairResponse);
+    }
+  } catch (error) {
+    console.error("Corsair action selector mapping file fetch error:", error);
   }
 
   // Explicitly import AI Integrations module

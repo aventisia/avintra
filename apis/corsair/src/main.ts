@@ -1,3 +1,17 @@
+/**
+ * Corsair Sidecar API Server — INTERNAL ONLY
+ *
+ * This sidecar is backend-only infrastructure for the Worc Platform. It is NOT
+ * exposed to end users and must be deployed in a private, isolated network behind
+ * the Workspace API proxy. All endpoints are accessed exclusively via the backend
+ * Workspace API (`CorsairInvokeService`), and end users interact only with the
+ * generated plugin action configurations through the Studio UI.
+ *
+ * SECURITY NOTE: This sidecar has no authentication layer because it assumes
+ * network isolation (private deployment network). Do NOT expose this to the
+ * public internet; always route requests through the Workspace API proxy.
+ */
+
 import dotenv from "dotenv";
 import express from "express";
 import { toExpressHandler, PermissionRequiredError, AuthMissingError, listOperations, getStructuredSchema } from "corsair";
@@ -25,27 +39,13 @@ const app = express();
 const port = Number(process.env.PORT || 3456);
 const appUrl = process.env.APP_URL || `http://localhost:${port}`;
 const workspaceAppUrl = process.env.WORKSPACE_APP_URL || appUrl;
-const apiKey = process.env.CORSAIR_API_KEY;
 
 // REQUIRED: express.json() must run BEFORE the Corsair route.
 app.use(express.json());
 
-// Shared-secret middleware: protects all sidecar routes except the Corsair
-// management handler (which has its own token checks and needs public OAuth callbacks).
-// TODO: When external callers arrive, replace/augment this with JWT validation and
-// resolve a tenant/user identity for per-credential authorization.
-function requireApiKey(req: express.Request, res: express.Response, next: express.NextFunction) {
-  if (!apiKey) return next();
-  const header = req.headers["x-corsair-api-key"];
-  if (header !== apiKey) {
-    return res.status(401).json({ error: "Unauthorized", message: "Missing or invalid X-Corsair-Api-Key header" });
-  }
-  next();
-}
-
 // --- List all available tools across registered plugins ---
 // Mount BEFORE the catch-all Corsair handler, which uses app.use and would otherwise 404 this path.
-app.get("/api/corsair/tools", requireApiKey, async (_req, res) => {
+app.get("/api/corsair/tools", async (_req, res) => {
   try {
     const operations = listOperations(corsair);
     const paths = operations.split("\n").filter(Boolean);
@@ -66,7 +66,8 @@ app.get("/api/corsair/tools", requireApiKey, async (_req, res) => {
 });
 
 // Corsair management handler: serves /connect/links, /connect/resolve,
-// /connect/oauth-callback, /ok, etc. Intentionally NOT behind requireApiKey.
+// /connect/oauth-callback, /ok, etc. The sidecar is backend-only and private,
+// so no auth middleware is applied here.
 app.use("/api/corsair", toExpressHandler(corsair, { basePath: "/api/corsair" }));
 
 // --- Connect page (manual.baseUrl) ---
@@ -88,60 +89,14 @@ app.get("/connect", async (req, res) => {
       return res.status(400).send(`Plugin ${pluginId} does not support OAuth.`);
     }
 
-    const providerName = meta.oauthConfig.providerName ?? meta.name ?? pluginId;
-    const scopes = meta.oauthConfig.scopes ?? [];
-    const cancelUrl = `${workspaceAppUrl}/configure/vault/oauth-callback?oauth_cancelled=true&plugin=${encodeURIComponent(pluginId)}&credentialId=${encodeURIComponent((resolved as any).tenantId ?? "")}`;
-
-    res.send(`<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connect to ${escapeHtml(providerName)}</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; margin: 0; background: #f4f6f8; color: #1f2937; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-    .card { background: #fff; border-radius: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); padding: 32px; max-width: 420px; width: 100%; }
-    h1 { font-size: 20px; margin: 0 0 8px; }
-    p { margin: 0 0 16px; color: #4b5563; line-height: 1.5; }
-    .scopes { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px; padding: 12px 16px; margin-bottom: 24px; }
-    .scopes ul { margin: 8px 0 0; padding-left: 20px; }
-    .scopes li { margin-bottom: 4px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; color: #374151; }
-    .actions { display: flex; gap: 12px; }
-    button, a.button { flex: 1; text-align: center; border-radius: 8px; padding: 12px 16px; font-size: 15px; font-weight: 500; cursor: pointer; text-decoration: none; }
-    button { background: #111827; color: #fff; border: none; }
-    button:hover { background: #374151; }
-    a.button { background: #fff; color: #374151; border: 1px solid #d1d5db; }
-    a.button:hover { background: #f9fafb; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h1>Connect to ${escapeHtml(providerName)}</h1>
-    <p>The workspace wants to access the following permissions on your behalf. You can revoke access at any time from the vault.</p>
-    <div class="scopes">
-      <strong>Requested permissions</strong>
-      <ul>${scopes.map((s) => `<li>${escapeHtml(s)}</li>`).join("")}</ul>
-    </div>
-    <div class="actions">
-      <a class="button" href="${escapeHtml(cancelUrl)}">Cancel</a>
-      <button onclick="location.href='${escapeHtml(oauthUrl)}'">Connect</button>
-    </div>
-  </div>
-</body>
-</html>`);
+    // Skip the intermediate consent page and send the user directly to the
+    // provider's OAuth authorization URL. The provider already shows the
+    // service being connected and the requested scopes.
+    return res.redirect(oauthUrl);
   } catch (err) {
     res.status(400).send(err instanceof Error ? err.message : String(err));
   }
 });
-
-function escapeHtml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
 
 // --- OAuth callback (manual.redirectUri) ---
 // Provider redirects here with ?code=...&state=...; Corsair stores tokens per tenant.
@@ -189,7 +144,7 @@ process.stderr.write = (chunk: any, ...args: any[]) => {
 
 // --- Mint a connect link for a tenant (called by the .NET backend) ---
 // OAuth plugins only; API-key plugins use POST /credentials instead.
-app.post("/connect/link", requireApiKey, async (req, res) => {
+app.post("/connect/link", async (req, res) => {
   const { tenantId, plugin } = req.body ?? {};
   if (!tenantId) return res.status(400).json({ error: "tenantId required" });
   if (!plugin) return res.status(400).json({ error: "plugin required" });
@@ -213,7 +168,7 @@ app.post("/connect/link", requireApiKey, async (req, res) => {
 });
 
 // --- Check whether a tenant has connected a plugin ---
-app.post("/connect/status", requireApiKey, async (req, res) => {
+app.post("/connect/status", async (req, res) => {
   const { tenantId, plugin } = req.body ?? {};
   if (!tenantId) return res.status(400).json({ error: "tenantId required" });
   if (!plugin) return res.status(400).json({ error: "plugin required" });
@@ -235,7 +190,7 @@ app.post("/connect/status", requireApiKey, async (req, res) => {
 // --- Store tenant-scoped OAuth integration keys for a plugin ---
 // These are the client_id / client_secret / redirect_url used by Corsair to
 // drive the OAuth flow and refresh tokens for this specific tenant.
-app.post("/integration-keys", requireApiKey, async (req, res) => {
+app.post("/integration-keys", async (req, res) => {
   const { plugin, tenantId, clientId, clientSecret, redirectUrl } = req.body ?? {};
   if (!plugin || !tenantId || !clientId || !clientSecret || !redirectUrl) {
     return res.status(400).json({
@@ -268,7 +223,7 @@ app.post("/integration-keys", requireApiKey, async (req, res) => {
 });
 
 // --- Mirror an API-key credential into Corsair (vault already owns the copy) ---
-app.post("/credentials", requireApiKey, async (req, res) => {
+app.post("/credentials", async (req, res) => {
   const { connectionId, plugin, apiKey: keyValue } = req.body ?? {};
   if (!connectionId || !plugin || !keyValue) {
     return res.status(400).json({ error: "connectionId, plugin, and apiKey required" });
@@ -290,7 +245,7 @@ app.post("/credentials", requireApiKey, async (req, res) => {
 // --- Unmirror / delete an API-key credential from Corsair ---
 // We clear the stored key/config instead of deleting the row so FK relationships
 // with corsair_entities / corsair_events stay intact.
-app.delete("/credentials", requireApiKey, async (req, res) => {
+app.delete("/credentials", async (req, res) => {
   const { connectionId, plugin } = req.body ?? {};
   if (!connectionId || !plugin) {
     return res.status(400).json({ error: "connectionId and plugin required" });
@@ -317,7 +272,11 @@ app.delete("/credentials", requireApiKey, async (req, res) => {
 });
 
 // --- Invoke a Corsair tool using a stored credential ---
-app.post("/corsair/invoke", requireApiKey, async (req, res) => {
+// The sidecar is backend-only and private to the deployment network. The
+// Workspace API is the authorization boundary: it authenticates the caller,
+// resolves the Vault credential, and enforces tenant/environment/resource-share
+// access before calling this endpoint. No auth is required here.
+app.post("/corsair/invoke", async (req, res) => {
   const { connectionId, plugin, action, payload = {} } = req.body ?? {};
   const pluginId = String(plugin).toLowerCase();
   if (!connectionId || !pluginId || !action) {

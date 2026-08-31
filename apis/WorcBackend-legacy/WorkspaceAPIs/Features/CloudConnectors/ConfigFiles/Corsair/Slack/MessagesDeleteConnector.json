@@ -1,0 +1,58 @@
+{
+  "name": "Corsair/Slack/MessagesDeleteConnector",
+  "description": "Delete a message [DESTRUCTIVE]",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Slack",
+      "label": "Slack Credential",
+      "description": "Select Slack credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "channel",
+      "label": "Channel",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ts",
+      "label": "Ts",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "as_user",
+      "label": "As User",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

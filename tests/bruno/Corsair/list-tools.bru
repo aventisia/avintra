@@ -10,10 +10,6 @@ get {
   auth: none
 }
 
-headers {
-  X-Corsair-Api-Key: {{CORSAIR_API_KEY}}
-}
-
 assert {
   res.status: eq 200
   res.body: contains "tools"

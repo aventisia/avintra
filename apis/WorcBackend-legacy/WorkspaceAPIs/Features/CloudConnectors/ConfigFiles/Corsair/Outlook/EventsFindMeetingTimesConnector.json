@@ -1,0 +1,112 @@
+{
+  "name": "Corsair/Outlook/EventsFindMeetingTimesConnector",
+  "description": "Find available meeting times for attendees",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Microsoft",
+      "label": "Microsoft Credential",
+      "description": "Select Microsoft credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "user_id",
+      "label": "User Id",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "attendees",
+      "label": "Attendees",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "timeConstraint",
+      "label": "Time Constraint",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "locationConstraint",
+      "label": "Location Constraint",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "meetingDuration",
+      "label": "Meeting Duration",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "maxCandidates",
+      "label": "Max Candidates",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "isOrganizerOptional",
+      "label": "Is Organizer Optional",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "returnSuggestionReasons",
+      "label": "Return Suggestion Reasons",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "minimumAttendeePercentage",
+      "label": "Minimum Attendee Percentage",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "prefer_timezone",
+      "label": "Prefer Timezone",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

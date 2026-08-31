@@ -2,6 +2,16 @@
 
 Express wrapper around the `corsair` SDK that hosts API-key and OAuth plugins for the WORC Platform.
 
+## SECURITY: Internal Only
+
+**This sidecar is backend-only infrastructure and must NOT be exposed to end users or the public internet.**
+
+- No user-facing endpoints or UI — it exists only to manage plugin operations internally.
+- Has no authentication layer (relies on network isolation).
+- Always deployed in a private network behind the Workspace API proxy.
+- All user interactions happen through the Studio UI or the Workspace API (WorkspaceAPIs), never directly with this sidecar.
+- End users see only friendly plugin names and descriptions in the action selector; internal "Corsair" branding is stripped from all user-facing text.
+
 ## What it does
 
 - Registers Corsair plugins (GitHub, Resend, Tavily, Slack, Stripe, Twilio, Notion, HubSpot, OpenWeatherMap, Outlook).
@@ -9,7 +19,19 @@ Express wrapper around the `corsair` SDK that hosts API-key and OAuth plugins fo
 - Mirrors OAuth client credentials (client id/secret/redirect URL) via `POST /integration-keys`.
 - Renders an OAuth consent page at `GET /connect?state=...`.
 - Handles the provider OAuth callback at `GET /api/oauth/callback` and stores tokens per tenant.
-- Exposes tool invocation via `POST /corsair/invoke`.
+- Exposes tool invocation via `POST /api/corsair/invoke` (called by the Workspace API only).
+
+## Architecture
+
+Users see only:
+- ✅ **Plugin names and descriptions** in the Studio action selector (e.g., "GitHub", "Send an email with Resend")
+- ✅ **Action operations** displayed as friendly labels (e.g., "List issues in a repository")
+
+Users do NOT see:
+- ❌ The word "Corsair" (internal infrastructure name)
+- ❌ HTTP endpoints (all access goes through the Workspace API proxy)
+- ❌ OAuth flows (handled silently in the vault configuration)
+- ❌ Credential storage details (managed internally)
 
 ## Environment variables
 
@@ -17,11 +39,10 @@ Copy `.env.example` to `.env.local` and fill in real values.
 
 | Variable | Purpose |
 | --- | --- |
-| `PORT` | Sidecar HTTP port. Default `3456`. |
-| `APP_URL` | Public base URL used for OAuth connect/callback URLs. Local dev: `https://local-avintra.aventisia.com/corsair`. |
-| `WORKSPACE_APP_URL` | Workspace frontend URL used to redirect the browser back after OAuth. Local dev: `https://local-avintra.aventisia.com/workspace`. |
+| `PORT` | Sidecar HTTP port. Default `3456`. Keep internal; do NOT expose to public. |
+| `APP_URL` | Internal base URL for OAuth consent page. Local dev: `https://local-avintra.aventisia.com/corsair`. |
+| `WORKSPACE_APP_URL` | Workspace API URL for OAuth callback redirect. Local dev: `https://local-avintra.aventisia.com/workspace`. |
 | `CORSAIR_KEK` | 32-byte hex encryption key for Corsair token storage. |
-| `CORSAIR_API_KEY` | Shared secret callers send in `X-Corsair-Api-Key`. |
 | `POSTGRESQL_HOST` / `PORT` / `USERNAME` / `PASSWORD` | Postgres connection for the Corsair SDK tables. |
 
 ## OAuth flow

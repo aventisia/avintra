@@ -1,0 +1,1779 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Corsair outlook connector (from sidecar descriptors)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://graph.microsoft.com/v1.0"
+    }
+  ],
+  "paths": {
+    "/corsair/outlook/messages.send": {
+      "post": {
+        "operationId": "outlook.messages.send",
+        "summary": "Send an email message",
+        "description": "Send an email message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "to": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "to_name": {
+                    "type": "string"
+                  },
+                  "is_html": {
+                    "type": "boolean"
+                  },
+                  "cc_emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "bcc_emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "from_address": {
+                    "type": "string"
+                  },
+                  "save_to_sent_items": {
+                    "type": "boolean"
+                  },
+                  "attachment": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "to",
+                  "subject",
+                  "body"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.createDraft": {
+      "post": {
+        "operationId": "outlook.messages.createDraft",
+        "summary": "Create an email draft",
+        "description": "Create an email draft",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subject": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "is_html": {
+                    "type": "boolean"
+                  },
+                  "to_recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "cc_recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "bcc_recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "attachment": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "subject",
+                  "body"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.get": {
+      "post": {
+        "operationId": "outlook.messages.get",
+        "summary": "Get an email message by ID",
+        "description": "Get an email message by ID",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "select": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "message_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.list": {
+      "post": {
+        "operationId": "outlook.messages.list",
+        "summary": "List email messages in a folder",
+        "description": "List email messages in a folder",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "folder": {
+                    "type": "string"
+                  },
+                  "top": {
+                    "type": "number"
+                  },
+                  "skip": {
+                    "type": "number"
+                  },
+                  "select": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "orderby": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "is_read": {
+                    "type": "boolean"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "subject_contains": {
+                    "type": "string"
+                  },
+                  "subject_startswith": {
+                    "type": "string"
+                  },
+                  "subject_endswith": {
+                    "type": "string"
+                  },
+                  "from_address": {
+                    "type": "string"
+                  },
+                  "has_attachments": {
+                    "type": "boolean"
+                  },
+                  "importance": {
+                    "type": "string"
+                  },
+                  "categories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "conversationId": {
+                    "type": "string"
+                  },
+                  "sent_date_time_gt": {
+                    "type": "string"
+                  },
+                  "sent_date_time_lt": {
+                    "type": "string"
+                  },
+                  "received_date_time_ge": {
+                    "type": "string"
+                  },
+                  "received_date_time_gt": {
+                    "type": "string"
+                  },
+                  "received_date_time_le": {
+                    "type": "string"
+                  },
+                  "received_date_time_lt": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.query": {
+      "post": {
+        "operationId": "outlook.messages.query",
+        "summary": "Query email messages with OData filters",
+        "description": "Query email messages with OData filters",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "folder": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "select": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "orderby": {
+                    "type": "string"
+                  },
+                  "top": {
+                    "type": "number"
+                  },
+                  "skip": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.search": {
+      "post": {
+        "operationId": "outlook.messages.search",
+        "summary": "Search email messages",
+        "description": "Search email messages",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "fromEmail": {
+                    "type": "string"
+                  },
+                  "hasAttachments": {
+                    "type": "boolean"
+                  },
+                  "size": {
+                    "type": "number"
+                  },
+                  "from_index": {
+                    "type": "number"
+                  },
+                  "enable_top_results": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.reply": {
+      "post": {
+        "operationId": "outlook.messages.reply",
+        "summary": "Reply to an email message",
+        "description": "Reply to an email message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message_id": {
+                    "type": "string"
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "cc_emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "bcc_emails": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "message_id",
+                  "comment"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.forward": {
+      "post": {
+        "operationId": "outlook.messages.forward",
+        "summary": "Forward an email message",
+        "description": "Forward an email message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message_id": {
+                    "type": "string"
+                  },
+                  "to_recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "message_id",
+                  "to_recipients"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.delete": {
+      "post": {
+        "operationId": "outlook.messages.delete",
+        "summary": "Delete an email message [DESTRUCTIVE]",
+        "description": "Delete an email message [DESTRUCTIVE]",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "message_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.move": {
+      "post": {
+        "operationId": "outlook.messages.move",
+        "summary": "Move a message to a different folder",
+        "description": "Move a message to a different folder",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message_id": {
+                    "type": "string"
+                  },
+                  "destination_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "message_id",
+                  "destination_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.update": {
+      "post": {
+        "operationId": "outlook.messages.update",
+        "summary": "Update an email message (e.g. mark as read)",
+        "description": "Update an email message (e.g. mark as read)",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "is_read": {
+                    "type": "boolean"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "importance": {
+                    "type": "string"
+                  },
+                  "categories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "to_recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "cc_recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "bcc_recipients": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "reply_to": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "flag": {
+                    "type": "string"
+                  },
+                  "inference_classification": {
+                    "type": "string"
+                  },
+                  "is_read_receipt_requested": {
+                    "type": "boolean"
+                  },
+                  "is_delivery_receipt_requested": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "message_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.sendDraft": {
+      "post": {
+        "operationId": "outlook.messages.sendDraft",
+        "summary": "Send a saved draft message",
+        "description": "Send a saved draft message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "message_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.batchMove": {
+      "post": {
+        "operationId": "outlook.messages.batchMove",
+        "summary": "Batch move up to 20 messages to a folder",
+        "description": "Batch move up to 20 messages to a folder",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "destination_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "message_ids",
+                  "destination_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.batchUpdate": {
+      "post": {
+        "operationId": "outlook.messages.batchUpdate",
+        "summary": "Batch update up to 20 messages",
+        "description": "Batch update up to 20 messages",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "updates": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "message_id": {
+                          "type": "string"
+                        },
+                        "patch": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "message_id",
+                        "patch"
+                      ]
+                    }
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "updates"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/messages.addAttachment": {
+      "post": {
+        "operationId": "outlook.messages.addAttachment",
+        "summary": "Add an attachment to a message",
+        "description": "Add an attachment to a message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message_id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "odata_type": {
+                    "type": "string"
+                  },
+                  "contentBytes": {
+                    "type": "string"
+                  },
+                  "contentType": {
+                    "type": "string"
+                  },
+                  "contentId": {
+                    "type": "string"
+                  },
+                  "contentLocation": {
+                    "type": "string"
+                  },
+                  "isInline": {
+                    "type": "boolean"
+                  },
+                  "item": {
+                    "type": "string"
+                  },
+                  "attachment": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "mimetype": {
+                        "type": "string"
+                      },
+                      "s3key": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "mimetype",
+                      "s3key"
+                    ]
+                  }
+                },
+                "required": [
+                  "message_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/events.create": {
+      "post": {
+        "operationId": "outlook.events.create",
+        "summary": "Create a calendar event",
+        "description": "Create a calendar event",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subject": {
+                    "type": "string"
+                  },
+                  "start_datetime": {
+                    "type": "string"
+                  },
+                  "end_datetime": {
+                    "type": "string"
+                  },
+                  "time_zone": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "calendar_id": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "is_html": {
+                    "type": "boolean"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "attendees_info": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "email"
+                      ]
+                    }
+                  },
+                  "is_online_meeting": {
+                    "type": "boolean"
+                  },
+                  "online_meeting_provider": {
+                    "type": "string"
+                  },
+                  "show_as": {
+                    "type": "string"
+                  },
+                  "categories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "importance": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "subject",
+                  "start_datetime",
+                  "end_datetime",
+                  "time_zone"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/events.get": {
+      "post": {
+        "operationId": "outlook.events.get",
+        "summary": "Get a calendar event by ID",
+        "description": "Get a calendar event by ID",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "calendar_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "event_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/events.list": {
+      "post": {
+        "operationId": "outlook.events.list",
+        "summary": "List calendar events",
+        "description": "List calendar events",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "calendar_id": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "select": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "orderby": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "top": {
+                    "type": "number"
+                  },
+                  "skip": {
+                    "type": "number"
+                  },
+                  "timezone": {
+                    "type": "string"
+                  },
+                  "expand_recurring_events": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/events.update": {
+      "post": {
+        "operationId": "outlook.events.update",
+        "summary": "Update a calendar event",
+        "description": "Update a calendar event",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "body": {
+                    "type": "string"
+                  },
+                  "start_datetime": {
+                    "type": "string"
+                  },
+                  "end_datetime": {
+                    "type": "string"
+                  },
+                  "time_zone": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "attendees": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "show_as": {
+                    "type": "string"
+                  },
+                  "categories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "event_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/events.delete": {
+      "post": {
+        "operationId": "outlook.events.delete",
+        "summary": "Delete a calendar event [DESTRUCTIVE]",
+        "description": "Delete a calendar event [DESTRUCTIVE]",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "event_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/events.cancel": {
+      "post": {
+        "operationId": "outlook.events.cancel",
+        "summary": "Cancel a calendar event and notify attendees",
+        "description": "Cancel a calendar event and notify attendees",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "calendar_id": {
+                    "type": "string"
+                  },
+                  "Comment": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "event_id",
+                  "user_id",
+                  "calendar_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/events.decline": {
+      "post": {
+        "operationId": "outlook.events.decline",
+        "summary": "Decline a calendar event invitation",
+        "description": "Decline a calendar event invitation",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event_id": {
+                    "type": "string"
+                  },
+                  "comment": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "sendResponse": {
+                    "type": "boolean"
+                  },
+                  "proposedNewTime": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "event_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/events.findMeetingTimes": {
+      "post": {
+        "operationId": "outlook.events.findMeetingTimes",
+        "summary": "Find available meeting times for attendees",
+        "description": "Find available meeting times for attendees",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "attendees": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "timeConstraint": {
+                    "type": "string"
+                  },
+                  "locationConstraint": {
+                    "type": "string"
+                  },
+                  "meetingDuration": {
+                    "type": "string"
+                  },
+                  "maxCandidates": {
+                    "type": "number"
+                  },
+                  "isOrganizerOptional": {
+                    "type": "boolean"
+                  },
+                  "returnSuggestionReasons": {
+                    "type": "boolean"
+                  },
+                  "minimumAttendeePercentage": {
+                    "type": "number"
+                  },
+                  "prefer_timezone": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/events.getSchedule": {
+      "post": {
+        "operationId": "outlook.events.getSchedule",
+        "summary": "Get free/busy schedule for a calendar",
+        "description": "Get free/busy schedule for a calendar",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "calendar_id": {
+                    "type": "string"
+                  },
+                  "schedules": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "startTime": {
+                    "type": "object",
+                    "properties": {
+                      "dateTime": {
+                        "type": "string"
+                      },
+                      "timeZone": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "dateTime",
+                      "timeZone"
+                    ]
+                  },
+                  "endTime": {
+                    "type": "object",
+                    "properties": {
+                      "dateTime": {
+                        "type": "string"
+                      },
+                      "timeZone": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "dateTime",
+                      "timeZone"
+                    ]
+                  },
+                  "availabilityViewInterval": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "calendar_id",
+                  "schedules",
+                  "startTime",
+                  "endTime"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/calendars.create": {
+      "post": {
+        "operationId": "outlook.calendars.create",
+        "summary": "Create a new calendar",
+        "description": "Create a new calendar",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "color": {
+                    "type": "string"
+                  },
+                  "hexColor": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/calendars.get": {
+      "post": {
+        "operationId": "outlook.calendars.get",
+        "summary": "Get a calendar by ID",
+        "description": "Get a calendar by ID",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "calendar_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "calendar_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/calendars.list": {
+      "post": {
+        "operationId": "outlook.calendars.list",
+        "summary": "List all calendars",
+        "description": "List all calendars",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "select": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "orderby": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "top": {
+                    "type": "number"
+                  },
+                  "skip": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/calendars.delete": {
+      "post": {
+        "operationId": "outlook.calendars.delete",
+        "summary": "Delete a calendar [DESTRUCTIVE]",
+        "description": "Delete a calendar [DESTRUCTIVE]",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "calendar_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "calendar_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/contacts.create": {
+      "post": {
+        "operationId": "outlook.contacts.create",
+        "summary": "Create a new contact",
+        "description": "Create a new contact",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "givenName": {
+                    "type": "string"
+                  },
+                  "surname": {
+                    "type": "string"
+                  },
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "emailAddresses": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "address": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "address"
+                      ]
+                    }
+                  },
+                  "mobilePhone": {
+                    "type": "string"
+                  },
+                  "homePhone": {
+                    "type": "string"
+                  },
+                  "businessPhones": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "jobTitle": {
+                    "type": "string"
+                  },
+                  "companyName": {
+                    "type": "string"
+                  },
+                  "department": {
+                    "type": "string"
+                  },
+                  "officeLocation": {
+                    "type": "string"
+                  },
+                  "birthday": {
+                    "type": "string"
+                  },
+                  "notes": {
+                    "type": "string"
+                  },
+                  "categories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/contacts.list": {
+      "post": {
+        "operationId": "outlook.contacts.list",
+        "summary": "List contacts",
+        "description": "List contacts",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "contact_folder_id": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "select": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "orderby": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "top": {
+                    "type": "number"
+                  },
+                  "skip": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/contacts.update": {
+      "post": {
+        "operationId": "outlook.contacts.update",
+        "summary": "Update a contact",
+        "description": "Update a contact",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contact_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "givenName": {
+                    "type": "string"
+                  },
+                  "surname": {
+                    "type": "string"
+                  },
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "emailAddresses": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "address": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "address"
+                      ]
+                    }
+                  },
+                  "mobilePhone": {
+                    "type": "string"
+                  },
+                  "homePhones": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "businessPhones": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "jobTitle": {
+                    "type": "string"
+                  },
+                  "companyName": {
+                    "type": "string"
+                  },
+                  "department": {
+                    "type": "string"
+                  },
+                  "officeLocation": {
+                    "type": "string"
+                  },
+                  "birthday": {
+                    "type": "string"
+                  },
+                  "notes": {
+                    "type": "string"
+                  },
+                  "categories": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "contact_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/contacts.delete": {
+      "post": {
+        "operationId": "outlook.contacts.delete",
+        "summary": "Delete a contact [DESTRUCTIVE]",
+        "description": "Delete a contact [DESTRUCTIVE]",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "contact_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "contact_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/folders.create": {
+      "post": {
+        "operationId": "outlook.folders.create",
+        "summary": "Create a new mail folder",
+        "description": "Create a new mail folder",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "isHidden": {
+                    "type": "boolean"
+                  },
+                  "return_existing_if_exists": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "displayName"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/folders.get": {
+      "post": {
+        "operationId": "outlook.folders.get",
+        "summary": "Get a mail folder by ID",
+        "description": "Get a mail folder by ID",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mail_folder_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "select": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "mail_folder_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/folders.list": {
+      "post": {
+        "operationId": "outlook.folders.list",
+        "summary": "List mail folders",
+        "description": "List mail folders",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user_id": {
+                    "type": "string"
+                  },
+                  "filter": {
+                    "type": "string"
+                  },
+                  "select": {
+                    "type": "string"
+                  },
+                  "orderby": {
+                    "type": "string"
+                  },
+                  "top": {
+                    "type": "number"
+                  },
+                  "skip": {
+                    "type": "number"
+                  },
+                  "count": {
+                    "type": "boolean"
+                  },
+                  "include_hidden_folders": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/folders.update": {
+      "post": {
+        "operationId": "outlook.folders.update",
+        "summary": "Rename a mail folder",
+        "description": "Rename a mail folder",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "mail_folder_id": {
+                    "type": "string"
+                  },
+                  "displayName": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "mail_folder_id",
+                  "displayName"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/outlook/folders.delete": {
+      "post": {
+        "operationId": "outlook.folders.delete",
+        "summary": "Delete a mail folder [DESTRUCTIVE]",
+        "description": "Delete a mail folder [DESTRUCTIVE]",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "folder_id": {
+                    "type": "string"
+                  },
+                  "user_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "folder_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    }
+  }
+}

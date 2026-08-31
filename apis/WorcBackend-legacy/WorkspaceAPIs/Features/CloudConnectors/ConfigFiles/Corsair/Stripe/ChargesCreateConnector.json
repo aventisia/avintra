@@ -1,0 +1,82 @@
+{
+  "name": "Corsair/Stripe/ChargesCreateConnector",
+  "description": "Create a new Stripe charge",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Stripe",
+      "label": "Stripe Credential",
+      "description": "Select Stripe credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "amount",
+      "label": "Amount",
+      "description": "",
+      "defaultValue": 0,
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "currency",
+      "label": "Currency",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "source",
+      "label": "Source",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "customer",
+      "label": "Customer",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "description",
+      "label": "Description",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "metadata",
+      "label": "Metadata",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,258 @@
+{
+  "name": "Corsair/Tavily/SearchSearchConnector",
+  "description": "Search the web using Tavily",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Tavily",
+      "label": "Tavily Credential",
+      "description": "Select Tavily credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "query",
+      "label": "Query",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "search_depth",
+      "label": "Search Depth",
+      "description": "",
+      "defaultValue": "advanced",
+      "selectOptions": [
+        {
+          "label": "advanced",
+          "value": "advanced",
+          "description": "advanced"
+        },
+        {
+          "label": "basic",
+          "value": "basic",
+          "description": "basic"
+        },
+        {
+          "label": "fast",
+          "value": "fast",
+          "description": "fast"
+        },
+        {
+          "label": "ultra-fast",
+          "value": "ultra-fast",
+          "description": "ultra-fast"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "chunks_per_source",
+      "label": "Chunks Per Source",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "max_results",
+      "label": "Max Results",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "topic",
+      "label": "Topic",
+      "description": "",
+      "defaultValue": "general",
+      "selectOptions": [
+        {
+          "label": "general",
+          "value": "general",
+          "description": "general"
+        },
+        {
+          "label": "news",
+          "value": "news",
+          "description": "news"
+        },
+        {
+          "label": "finance",
+          "value": "finance",
+          "description": "finance"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "time_range",
+      "label": "Time Range",
+      "description": "",
+      "defaultValue": "day",
+      "selectOptions": [
+        {
+          "label": "day",
+          "value": "day",
+          "description": "day"
+        },
+        {
+          "label": "week",
+          "value": "week",
+          "description": "week"
+        },
+        {
+          "label": "month",
+          "value": "month",
+          "description": "month"
+        },
+        {
+          "label": "year",
+          "value": "year",
+          "description": "year"
+        },
+        {
+          "label": "d",
+          "value": "d",
+          "description": "d"
+        },
+        {
+          "label": "w",
+          "value": "w",
+          "description": "w"
+        },
+        {
+          "label": "m",
+          "value": "m",
+          "description": "m"
+        },
+        {
+          "label": "y",
+          "value": "y",
+          "description": "y"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "start_date",
+      "label": "Start Date",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "end_date",
+      "label": "End Date",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "include_answer",
+      "label": "Include Answer",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "include_raw_content",
+      "label": "Include Raw Content",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "include_images",
+      "label": "Include Images",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "include_image_descriptions",
+      "label": "Include Image Descriptions",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "include_favicon",
+      "label": "Include Favicon",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "include_domains",
+      "label": "Include Domains",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "exclude_domains",
+      "label": "Exclude Domains",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "country",
+      "label": "Country",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "auto_parameters",
+      "label": "Auto Parameters",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "include_usage",
+      "label": "Include Usage",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

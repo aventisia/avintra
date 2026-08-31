@@ -30,7 +30,8 @@ export const pool = new Pool({
 
 // TODO: When an external caller needs user-scoped auth, configure Corsair's
 // permission/approval settings here (permissions.mode, approvalBaseUrl, etc.).
-// For now the sidecar is platform-internal and protected by the shared API key.
+// For now the sidecar is backend-only and private to the deployment network;
+// the Workspace API is the authorization boundary.
 
 export const plugins = [
   github(),

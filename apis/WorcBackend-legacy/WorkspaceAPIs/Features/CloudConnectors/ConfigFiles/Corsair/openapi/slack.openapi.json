@@ -1,0 +1,1658 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Corsair slack connector (from sidecar descriptors)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://slack.com/api"
+    }
+  ],
+  "paths": {
+    "/corsair/slack/channels.archive": {
+      "post": {
+        "operationId": "slack.channels.archive",
+        "summary": "Archive a Slack channel [DESTRUCTIVE]",
+        "description": "Archive a Slack channel [DESTRUCTIVE]",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.close": {
+      "post": {
+        "operationId": "slack.channels.close",
+        "summary": "Close a direct message or multi-party DM",
+        "description": "Close a direct message or multi-party DM",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.create": {
+      "post": {
+        "operationId": "slack.channels.create",
+        "summary": "Create a new Slack channel",
+        "description": "Create a new Slack channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "is_private": {
+                    "type": "boolean"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.get": {
+      "post": {
+        "operationId": "slack.channels.get",
+        "summary": "Get info about a channel",
+        "description": "Get info about a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "include_locale": {
+                    "type": "boolean"
+                  },
+                  "include_num_members": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "channel"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.list": {
+      "post": {
+        "operationId": "slack.channels.list",
+        "summary": "List all channels in the workspace",
+        "description": "List all channels in the workspace",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "exclude_archived": {
+                    "type": "boolean"
+                  },
+                  "types": {
+                    "type": "string"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.getHistory": {
+      "post": {
+        "operationId": "slack.channels.getHistory",
+        "summary": "Fetch message history for a channel",
+        "description": "Fetch message history for a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "latest": {
+                    "type": "string"
+                  },
+                  "oldest": {
+                    "type": "string"
+                  },
+                  "inclusive": {
+                    "type": "boolean"
+                  },
+                  "include_all_metadata": {
+                    "type": "boolean"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "channel"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.invite": {
+      "post": {
+        "operationId": "slack.channels.invite",
+        "summary": "Invite users to a channel",
+        "description": "Invite users to a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "users": {
+                    "type": "string"
+                  },
+                  "force": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "channel",
+                  "users"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.join": {
+      "post": {
+        "operationId": "slack.channels.join",
+        "summary": "Join a channel",
+        "description": "Join a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.kick": {
+      "post": {
+        "operationId": "slack.channels.kick",
+        "summary": "Remove a user from a channel",
+        "description": "Remove a user from a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "user": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel",
+                  "user"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.leave": {
+      "post": {
+        "operationId": "slack.channels.leave",
+        "summary": "Leave a channel",
+        "description": "Leave a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.getMembers": {
+      "post": {
+        "operationId": "slack.channels.getMembers",
+        "summary": "List members of a channel",
+        "description": "List members of a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "channel"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.open": {
+      "post": {
+        "operationId": "slack.channels.open",
+        "summary": "Open a direct message or multi-party DM",
+        "description": "Open a direct message or multi-party DM",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "users": {
+                    "type": "string"
+                  },
+                  "prevent_creation": {
+                    "type": "boolean"
+                  },
+                  "return_im": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.rename": {
+      "post": {
+        "operationId": "slack.channels.rename",
+        "summary": "Rename a channel",
+        "description": "Rename a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel",
+                  "name"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.getReplies": {
+      "post": {
+        "operationId": "slack.channels.getReplies",
+        "summary": "Fetch replies for a thread",
+        "description": "Fetch replies for a thread",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "ts": {
+                    "type": "string"
+                  },
+                  "latest": {
+                    "type": "string"
+                  },
+                  "oldest": {
+                    "type": "string"
+                  },
+                  "inclusive": {
+                    "type": "boolean"
+                  },
+                  "include_all_metadata": {
+                    "type": "boolean"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "channel",
+                  "ts"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.setPurpose": {
+      "post": {
+        "operationId": "slack.channels.setPurpose",
+        "summary": "Set the purpose of a channel",
+        "description": "Set the purpose of a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "purpose": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel",
+                  "purpose"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.setTopic": {
+      "post": {
+        "operationId": "slack.channels.setTopic",
+        "summary": "Set the topic of a channel",
+        "description": "Set the topic of a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "topic": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel",
+                  "topic"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/channels.unarchive": {
+      "post": {
+        "operationId": "slack.channels.unarchive",
+        "summary": "Unarchive a channel",
+        "description": "Unarchive a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/users.get": {
+      "post": {
+        "operationId": "slack.users.get",
+        "summary": "Get info about a user",
+        "description": "Get info about a user",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "string"
+                  },
+                  "include_locale": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "user"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/users.list": {
+      "post": {
+        "operationId": "slack.users.list",
+        "summary": "List all users in the workspace",
+        "description": "List all users in the workspace",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "include_locale": {
+                    "type": "boolean"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/users.getProfile": {
+      "post": {
+        "operationId": "slack.users.getProfile",
+        "summary": "Get a user profile",
+        "description": "Get a user profile",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "string"
+                  },
+                  "include_labels": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/users.getPresence": {
+      "post": {
+        "operationId": "slack.users.getPresence",
+        "summary": "Get the presence status of a user",
+        "description": "Get the presence status of a user",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/users.updateProfile": {
+      "post": {
+        "operationId": "slack.users.updateProfile",
+        "summary": "Update the authenticated user's profile",
+        "description": "Update the authenticated user's profile",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "profile": {
+                    "type": "string"
+                  },
+                  "user": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/userGroups.create": {
+      "post": {
+        "operationId": "slack.userGroups.create",
+        "summary": "Create a user group",
+        "description": "Create a user group",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "channels": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "handle": {
+                    "type": "string"
+                  },
+                  "include_count": {
+                    "type": "boolean"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/userGroups.disable": {
+      "post": {
+        "operationId": "slack.userGroups.disable",
+        "summary": "Disable a user group",
+        "description": "Disable a user group",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userGroup": {
+                    "type": "string"
+                  },
+                  "include_count": {
+                    "type": "boolean"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "userGroup"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/userGroups.enable": {
+      "post": {
+        "operationId": "slack.userGroups.enable",
+        "summary": "Enable a user group",
+        "description": "Enable a user group",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userGroup": {
+                    "type": "string"
+                  },
+                  "include_count": {
+                    "type": "boolean"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "userGroup"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/userGroups.list": {
+      "post": {
+        "operationId": "slack.userGroups.list",
+        "summary": "List user groups in the workspace",
+        "description": "List user groups in the workspace",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "include_count": {
+                    "type": "boolean"
+                  },
+                  "include_disabled": {
+                    "type": "boolean"
+                  },
+                  "include_users": {
+                    "type": "boolean"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/userGroups.update": {
+      "post": {
+        "operationId": "slack.userGroups.update",
+        "summary": "Update a user group",
+        "description": "Update a user group",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "userGroup": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "channels": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "handle": {
+                    "type": "string"
+                  },
+                  "include_count": {
+                    "type": "boolean"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "userGroup"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/files.get": {
+      "post": {
+        "operationId": "slack.files.get",
+        "summary": "Get info about a file",
+        "description": "Get info about a file",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  },
+                  "page": {
+                    "type": "number"
+                  },
+                  "count": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "file"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/files.list": {
+      "post": {
+        "operationId": "slack.files.list",
+        "summary": "List files in the workspace",
+        "description": "List files in the workspace",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "user": {
+                    "type": "string"
+                  },
+                  "types": {
+                    "type": "string"
+                  },
+                  "ts_from": {
+                    "type": "string"
+                  },
+                  "ts_to": {
+                    "type": "string"
+                  },
+                  "show_files_hidden_by_limit": {
+                    "type": "boolean"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  },
+                  "page": {
+                    "type": "number"
+                  },
+                  "count": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/files.upload": {
+      "post": {
+        "operationId": "slack.files.upload",
+        "summary": "Upload a file to Slack",
+        "description": "Upload a file to Slack",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channels": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "string"
+                  },
+                  "file": {
+                    "type": "string"
+                  },
+                  "filename": {
+                    "type": "string"
+                  },
+                  "filetype": {
+                    "type": "string"
+                  },
+                  "initial_comment": {
+                    "type": "string"
+                  },
+                  "thread_ts": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/messages.delete": {
+      "post": {
+        "operationId": "slack.messages.delete",
+        "summary": "Delete a message [DESTRUCTIVE]",
+        "description": "Delete a message [DESTRUCTIVE]",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "ts": {
+                    "type": "string"
+                  },
+                  "as_user": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "channel",
+                  "ts"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/messages.getPermalink": {
+      "post": {
+        "operationId": "slack.messages.getPermalink",
+        "summary": "Get a permalink for a message",
+        "description": "Get a permalink for a message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "message_ts": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel",
+                  "message_ts"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/messages.search": {
+      "post": {
+        "operationId": "slack.messages.search",
+        "summary": "Search messages in the workspace",
+        "description": "Search messages in the workspace",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string"
+                  },
+                  "sort": {
+                    "type": "string"
+                  },
+                  "sort_dir": {
+                    "type": "string"
+                  },
+                  "highlight": {
+                    "type": "boolean"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  },
+                  "page": {
+                    "type": "number"
+                  },
+                  "count": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "query"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/messages.post": {
+      "post": {
+        "operationId": "slack.messages.post",
+        "summary": "Post a message to a channel",
+        "description": "Post a message to a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "blocks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ]
+                    }
+                  },
+                  "attachments": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "thread_ts": {
+                    "type": "string"
+                  },
+                  "reply_broadcast": {
+                    "type": "boolean"
+                  },
+                  "parse": {
+                    "type": "string"
+                  },
+                  "link_names": {
+                    "type": "boolean"
+                  },
+                  "unfurl_links": {
+                    "type": "boolean"
+                  },
+                  "unfurl_media": {
+                    "type": "boolean"
+                  },
+                  "mrkdwn": {
+                    "type": "boolean"
+                  },
+                  "as_user": {
+                    "type": "boolean"
+                  },
+                  "icon_emoji": {
+                    "type": "string"
+                  },
+                  "icon_url": {
+                    "type": "string"
+                  },
+                  "username": {
+                    "type": "string"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {
+                      "event_type": {
+                        "type": "string"
+                      },
+                      "event_payload": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "event_type",
+                      "event_payload"
+                    ]
+                  }
+                },
+                "required": [
+                  "channel"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/messages.update": {
+      "post": {
+        "operationId": "slack.messages.update",
+        "summary": "Update an existing message",
+        "description": "Update an existing message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "ts": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "blocks": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "type"
+                      ]
+                    }
+                  },
+                  "attachments": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "parse": {
+                    "type": "string"
+                  },
+                  "link_names": {
+                    "type": "boolean"
+                  },
+                  "as_user": {
+                    "type": "boolean"
+                  },
+                  "file_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "reply_broadcast": {
+                    "type": "boolean"
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "properties": {
+                      "event_type": {
+                        "type": "string"
+                      },
+                      "event_payload": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "event_type",
+                      "event_payload"
+                    ]
+                  }
+                },
+                "required": [
+                  "channel",
+                  "ts"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/reactions.add": {
+      "post": {
+        "operationId": "slack.reactions.add",
+        "summary": "Add a reaction emoji to a message",
+        "description": "Add a reaction emoji to a message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "channel",
+                  "timestamp",
+                  "name"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/reactions.get": {
+      "post": {
+        "operationId": "slack.reactions.get",
+        "summary": "Get reactions for a message",
+        "description": "Get reactions for a message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  },
+                  "file": {
+                    "type": "string"
+                  },
+                  "file_comment": {
+                    "type": "string"
+                  },
+                  "full": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/reactions.remove": {
+      "post": {
+        "operationId": "slack.reactions.remove",
+        "summary": "Remove a reaction emoji from a message",
+        "description": "Remove a reaction emoji from a message",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "channel": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  },
+                  "file": {
+                    "type": "string"
+                  },
+                  "file_comment": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/stars.add": {
+      "post": {
+        "operationId": "slack.stars.add",
+        "summary": "Star an item",
+        "description": "Star an item",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  },
+                  "file": {
+                    "type": "string"
+                  },
+                  "file_comment": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/stars.remove": {
+      "post": {
+        "operationId": "slack.stars.remove",
+        "summary": "Unstar an item",
+        "description": "Unstar an item",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  },
+                  "file": {
+                    "type": "string"
+                  },
+                  "file_comment": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/stars.list": {
+      "post": {
+        "operationId": "slack.stars.list",
+        "summary": "List starred items for the authenticated user",
+        "description": "List starred items for the authenticated user",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "team_id": {
+                    "type": "string"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  },
+                  "page": {
+                    "type": "number"
+                  },
+                  "count": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/admin.listTeams": {
+      "post": {
+        "operationId": "slack.admin.listTeams",
+        "summary": "List all teams on an Enterprise organization",
+        "description": "List all teams on an Enterprise organization",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "limit": {
+                    "type": "number"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/admin.conversationsSearch": {
+      "post": {
+        "operationId": "slack.admin.conversationsSearch",
+        "summary": "Search for channels on an Enterprise organization",
+        "description": "Search for channels on an Enterprise organization",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "team_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "connected_team_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "query": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "search_channel_types": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "sort": {
+                    "type": "string"
+                  },
+                  "sort_dir": {
+                    "type": "string"
+                  },
+                  "total_count_only": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/admin.conversationsGetTeams": {
+      "post": {
+        "operationId": "slack.admin.conversationsGetTeams",
+        "summary": "Get all the workspaces a given channel is connected to",
+        "description": "Get all the workspaces a given channel is connected to",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel_id": {
+                    "type": "string"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  },
+                  "limit": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "channel_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/slack/admin.conversationsSetTeams": {
+      "post": {
+        "operationId": "slack.admin.conversationsSetTeams",
+        "summary": "Set the workspaces in an Enterprise grid org that connect to a channel",
+        "description": "Set the workspaces in an Enterprise grid org that connect to a channel",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "channel_id": {
+                    "type": "string"
+                  },
+                  "team_id": {
+                    "type": "string"
+                  },
+                  "target_team_ids": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "org_channel": {
+                    "type": "boolean"
+                  }
+                },
+                "required": [
+                  "channel_id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    }
+  }
+}

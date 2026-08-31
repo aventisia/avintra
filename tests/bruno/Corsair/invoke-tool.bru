@@ -10,15 +10,11 @@ post {
   auth: none
 }
 
-headers {
-  X-Corsair-Api-Key: {{CORSAIR_API_KEY}}
-}
-
 body:json {
   {
     "connectionId": "73bd9857-bac7-4b97-8b7f-4ab261d39b7e",
-    "plugin": "github",
-    "action": "repositories.list",
+    "plugin": "outlook",
+    "action": "messages.list",
     "payload": {}
   }
 }
