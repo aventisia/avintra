@@ -8,7 +8,6 @@
         "label": "Queue Management",
         "description": "Create, retrieve, update, move, and delete work items in queues",
         "img": "/assets/Queue.svg",
-        "doNotRenderIf": ["production"],
         "actions": [
           {
             "type": "activityNode",

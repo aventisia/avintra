@@ -80,7 +80,62 @@ dotnet build clients/RunnerApp/RunnerApp.Windows/RunnerApp.Windows.csproj -r win
 
 ## Publish
 
-`publish.sh` produces a versioned, **self-contained** Windows binary (the .NET 8 runtime is embedded, so the target machine does not need it installed) and packages it into `artifacts/AvintraRunnerService_<version>_win-x64.zip`. It also copies `Install-AvintraRunnerService.ps1` into `artifacts/` so the provisioning script can be uploaded to the server's `scripts/` directory alongside the runner zip.
+The runner is published per platform. Jenkins (Ubuntu agent) only builds the **Linux** runner. Windows and macOS runners must be published from the appropriate developer machine because no Jenkins agents exist for those platforms.
+
+### Linux (Jenkins + local dev)
+
+`publish-and-upload-linux.sh` builds `RunnerApp.Linux.csproj` as a framework-dependent single-file executable for `linux-x64` and uploads `artifacts/AvintraRunnerApp_<version>_linux-x64.zip` to the selected server(s).
+
+Target server options (`--target-servers` or interactive prompt):
+
+1. `dev` → `avdev.aventisia.com`
+2. `uat` → `avuat.aventisia.com`
+3. `dev+uat` → `avdev.aventisia.com` + `avuat.aventisia.com`
+4. `prod` → `avweb1.aventisia.com` + `avweb2.aventisia.com`
+
+```sh
+./clients/RunnerApp/publish-and-upload-linux.sh
+# non-interactive usage
+./clients/RunnerApp/publish-and-upload-linux.sh --target-servers dev
+./clients/RunnerApp/publish-and-upload-linux.sh --target-servers 3   # dev+uat
+# preview only
+./clients/RunnerApp/publish-and-upload-linux.sh --target-servers dev --dry-run
+```
+
+### macOS (developer machine)
+
+`publish-and-upload-macos.sh` builds `RunnerApp.macOS.csproj` for `osx-x64` and uploads `artifacts/AvintraRunnerApp_<version>_osx-x64.zip`.
+
+```sh
+./clients/RunnerApp/publish-and-upload-macos.sh --target-servers dev+uat
+./clients/RunnerApp/publish-and-upload-macos.sh --target-servers 1       # dev
+```
+
+### Windows (developer machine)
+
+`publish-and-upload-windows.ps1` builds `RunnerApp.Windows.csproj` as a **self-contained** `win-x64` executable (the .NET 8 runtime is embedded), renames it to `AvintraRunnerService.exe`, and uploads `artifacts/AvintraRunnerService_<version>_win-x64.zip` plus `Install-AvintraRunnerService.ps1` to the selected server(s).
+
+```powershell
+.\clients\RunnerApp\publish-and-upload-windows.ps1 -TargetServers dev
+.\clients\RunnerApp\publish-and-upload-windows.ps1 -TargetServers 2   # uat
+# preview only
+.\clients\RunnerApp\publish-and-upload-windows.ps1 -TargetServers dev -WhatIf
+```
+
+### Jenkins (CI)
+
+Jenkins continues to run the original branch-based Windows runner build. The
+`Runner App` stage calls `publish.sh` and uploads the resulting Windows zip and
+`Install-AvintraRunnerService.ps1` to the server(s) mapped from the branch
+(`dev` → avdev, `uat` → avuat, `main` → avweb1 + avweb2). Linux, macOS, and
+additional Windows releases are self-service from the appropriate developer
+machine using the scripts above.
+
+### Legacy Windows-only publish script
+
+`publish.sh` still produces the same self-contained Windows zip and is used by
+Jenkins and internally by `publish-and-upload-windows.ps1`. It can also be run
+standalone:
 
 ```sh
 ./clients/RunnerApp/publish.sh
@@ -88,7 +143,7 @@ dotnet build clients/RunnerApp/RunnerApp.Windows/RunnerApp.Windows.csproj -r win
 ./clients/RunnerApp/publish.sh --version 0.1.83
 ```
 
-The CI/CD pipeline uploads the zip to `/var/www/aventisia.com/files/binaries/` and the scripts to `/var/www/aventisia.com/files/scripts/` on each target server.
+All upload scripts place platform-specific zips in `/var/www/aventisia.com/files/binaries/`. Windows uploads also place `Install-AvintraRunnerService.ps1` in `/var/www/aventisia.com/files/scripts/`.
 
 ## Run (Local Desktop Mode)
 

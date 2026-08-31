@@ -15,7 +15,7 @@
       "label": "Original Text",
       "description": "The original text to which a new line will be appended.",
       "defaultValue": "",
-      "required": false
+      "required": true
     },
     {
       "direction": "Input",
@@ -24,7 +24,7 @@
       "label": "New Line",
       "description": "The new line of text to append.",
       "defaultValue": "",
-      "required": false
+      "required": true
     },
     {
       "direction": "Output",
