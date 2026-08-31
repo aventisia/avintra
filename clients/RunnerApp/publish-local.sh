@@ -53,12 +53,9 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Select the matching platform project.
-if [[ "$RUNTIME" == win-* ]]; then
-  CSPROJ="$SCRIPT_DIR/RunnerApp.Windows/RunnerApp.Windows.csproj"
-else
-  CSPROJ="$SCRIPT_DIR/RunnerApp.Linux/RunnerApp.Linux.csproj"
-fi
+# Local Linux/WSL dev only. The Windows runner targets net8.0-windows and must
+# be published from a Windows developer machine.
+CSPROJ="$SCRIPT_DIR/RunnerApp.Linux/RunnerApp.Linux.csproj"
 
 if [[ ! -f "$CSPROJ" ]]; then
   echo "error: RunnerApp project not found at $CSPROJ" >&2
@@ -99,9 +96,6 @@ mkdir -p "$DESTINATION"
 rm -rf "${DESTINATION:?}"/*
 
 PUBLISHED_EXE="$PUBLISH_DIR/RunnerApp"
-if [[ "$RUNTIME" == win-* ]]; then
-  PUBLISHED_EXE="${PUBLISHED_EXE}.exe"
-fi
 
 if [[ ! -f "$PUBLISHED_EXE" ]]; then
   echo "error: expected published executable not found: $PUBLISHED_EXE" >&2
@@ -109,10 +103,6 @@ if [[ ! -f "$PUBLISHED_EXE" ]]; then
 fi
 
 TARGET_EXE="$DESTINATION/AvintraRunnerApp"
-if [[ "$RUNTIME" == win-* ]]; then
-  TARGET_EXE="${TARGET_EXE}.exe"
-fi
-
 cp "$PUBLISHED_EXE" "$TARGET_EXE"
 echo "$VERSION" > "$DESTINATION/version.txt"
 

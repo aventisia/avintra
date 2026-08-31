@@ -437,7 +437,7 @@ pipeline {
 
                         targetServers.each { server ->
                             def zipPath = sh(
-                                script: "ls -t ${WORKSPACE}/clients/RunnerApp/artifacts/AvintraRunnerService_*.zip | head -n1",
+                                script: "ls -t ${WORKSPACE}/clients/RunnerApp/artifacts/AvintraRunnerApp_*.zip | head -n1",
                                 returnStdout: true
                             ).trim()
                             sh "ssh admin@${server} 'mkdir -p ${targetDir} ${scriptsDir}'"
