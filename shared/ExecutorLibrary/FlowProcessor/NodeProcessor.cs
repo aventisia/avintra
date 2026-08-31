@@ -182,7 +182,7 @@ public class NodeProcessor : INodeProcessor
 
             // Log the input using DisplayName if available, otherwise property name
             var displayName = property.GetCustomAttribute<DisplayNameAttribute>()?.DisplayName ?? input.Key;
-            inputLogs[displayName] = NodeLogHelper.ConvertValueForLogging(displayName, convertedValue ?? "null", "Input", false);
+            inputLogs[displayName] = NodeLogHelper.ConvertValueForLogging(displayName, convertedValue ?? "null", "Input");
         }
     }
 
@@ -258,7 +258,7 @@ public class NodeProcessor : INodeProcessor
             // StatusMessage is logged as "Status" to match the legacy format
             if (string.Equals(property.Name, nameof(BaseNode.StatusMessage), StringComparison.OrdinalIgnoreCase))
             {
-                outputLogs["Status"] = NodeLogHelper.ConvertValueForLogging("Status", value, "Output", false);
+                outputLogs["Status"] = NodeLogHelper.ConvertValueForLogging("Status", value, "Output");
                 continue;
             }
 
@@ -270,7 +270,7 @@ public class NodeProcessor : INodeProcessor
             var logKey = outputAliasMap.TryGetValue(property.Name, out var alias) ? alias : property.Name;
 
             // Log the output
-            outputLogs[logKey] = NodeLogHelper.ConvertValueForLogging(logKey, value, "Output", false);
+            outputLogs[logKey] = NodeLogHelper.ConvertValueForLogging(logKey, value, "Output");
 
             // Add to flow context using the alias as the variable name
             var contextKey = outputAliasMap.TryGetValue(property.Name, out var ctxAlias) ? ctxAlias : property.Name;
@@ -288,7 +288,7 @@ public class NodeProcessor : INodeProcessor
                     continue;
 
                 var logKey = kv.Key;
-                outputLogs[logKey] = NodeLogHelper.ConvertValueForLogging(logKey, kv.Value, "Output", false);
+                outputLogs[logKey] = NodeLogHelper.ConvertValueForLogging(logKey, kv.Value, "Output");
                 outputValues[logKey] = kv.Value;
             }
         }
@@ -470,6 +470,33 @@ public class NodeProcessor : INodeProcessor
         var candidateAssemblies = AppDomain.CurrentDomain.GetAssemblies()
             .Where(a => a.GetName().Name?.StartsWith("NodeLibrary", StringComparison.OrdinalIgnoreCase) == true)
             .ToList();
+
+        // Self-contained, non-single-file publishes place dependency assemblies next to
+        // the executable, but .NET only loads them into the AppDomain on first use. We
+        // eagerly load any NodeLibrary.* assemblies from the app base directory so the
+        // static type cache is complete before any flow executes.
+        var baseDir = AppContext.BaseDirectory;
+        if (!string.IsNullOrEmpty(baseDir) && Directory.Exists(baseDir))
+        {
+            foreach (var dllPath in Directory.GetFiles(baseDir, "NodeLibrary.*.dll"))
+            {
+                try
+                {
+                    var asmName = Path.GetFileNameWithoutExtension(dllPath);
+                    if (candidateAssemblies.Exists(a =>
+                        string.Equals(a.GetName().Name, asmName, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        continue;
+                    }
+
+                    candidateAssemblies.Add(Assembly.LoadFrom(dllPath));
+                }
+                catch
+                {
+                    // Best-effort: ignore assemblies that cannot be loaded.
+                }
+            }
+        }
 
         foreach (var assembly in candidateAssemblies)
         {

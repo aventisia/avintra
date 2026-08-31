@@ -3,22 +3,20 @@
 # into a versioned zip ready for upload/distribution.
 #
 # Usage:
-#   ./publish.sh [--version <ver>] [--runtime <rid>] [--output <dir>]
+#   ./publish.sh [--version <ver>] [--runtime <rid>] [--output <dir>] [--output-name <name>]
 #
 # Defaults:
-#   --version  reads the <Version> from RunnerApp.Windows.csproj (e.g. 0.1.0)
-#   --runtime  win-x64
-#   --output   ./artifacts
+#   --version      reads the <Version> from RunnerApp.Windows.csproj (e.g. 0.1.0)
+#   --runtime      win-x64
+#   --output       ./artifacts
+#   --output-name  AvintraRunnerService (base name for the zip and inner exe)
 #
 # Output:
-#   <output>/AvintraRunnerService_<version>_<runtime>.zip
+#   <output>/<output-name>_<version>_<runtime>.zip
 #
-# The published single-file executable is renamed to AvintraRunnerService after
+# The published single-file executable is renamed to <output-name> after
 # publish while the project keeps the RunnerApp name internally. This avoids
-# an "Ambiguous project name" NuGet error. The service name and artifact prefix
-# use "AvintraRunnerService" to distinguish the runner service process from the
-# Tauri desktop app (which extracts this same zip and renames the inner exe to
-# AvintraRunnerApp.exe before launching it).
+# an "Ambiguous project name" NuGet error. The default name is "AvintraRunnerService".
 #
 # The publish is SELF-CONTAINED: the .NET 8 runtime is embedded in the single-file
 # executable, so the target machine does NOT need .NET 8 installed. This removes the
@@ -34,6 +32,7 @@ CSPROJ="$SCRIPT_DIR/RunnerApp.Windows/RunnerApp.Windows.csproj"
 VERSION=""
 RUNTIME="win-x64"
 OUTPUT_DIR="$SCRIPT_DIR/artifacts"
+OUTPUT_NAME="AvintraRunnerService"
 
 # --- Parse arguments -----------------------------------------------------------
 while [[ $# -gt 0 ]]; do
@@ -50,9 +49,13 @@ while [[ $# -gt 0 ]]; do
       OUTPUT_DIR="$2"
       shift 2
       ;;
+    --output-name)
+      OUTPUT_NAME="$2"
+      shift 2
+      ;;
     *)
       echo "error: unknown argument: $1" >&2
-      echo "usage: $0 [--version <ver>] [--runtime <rid>] [--output <dir>]" >&2
+      echo "usage: $0 [--version <ver>] [--runtime <rid>] [--output <dir>] [--output-name <name>]" >&2
       exit 1
       ;;
   esac
@@ -94,18 +97,18 @@ dotnet publish "$CSPROJ" "${PUBLISH_ARGS[@]}"
 
 mkdir -p "$OUTPUT_DIR"
 
-# Rename the published executable to AvintraRunnerService.
+# Rename the published executable to the requested output name.
 # We do this after publish instead of setting AssemblyName to avoid an
 # "Ambiguous project name" conflict during NuGet restore.
 EXENAME="RunnerApp"
-NEWEXENAME="AvintraRunnerService"
+NEWEXENAME="$OUTPUT_NAME"
 if [[ "$RUNTIME" == win-* ]]; then
   EXENAME="${EXENAME}.exe"
   NEWEXENAME="${NEWEXENAME}.exe"
 fi
 mv "$PUBLISH_DIR/$EXENAME" "$PUBLISH_DIR/$NEWEXENAME" 2>/dev/null || true
 
-ZIP_NAME="AvintraRunnerService_${VERSION}_${RUNTIME}.zip"
+ZIP_NAME="${OUTPUT_NAME}_${VERSION}_${RUNTIME}.zip"
 ZIP_PATH="$OUTPUT_DIR/$ZIP_NAME"
 
 # Zip the published output (executable + dependencies). The zip is what gets distributed/downloaded.
