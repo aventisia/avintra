@@ -184,6 +184,48 @@ function Stop-RunnerServiceIfPresent {
     }
 }
 
+function Remove-RunnerServiceRegistrationIfPresent {
+    param ([string]$Name)
+
+    $service = Get-Service -Name $Name -ErrorAction SilentlyContinue
+    if (-not $service) {
+        return
+    }
+
+    Write-Host "Deleting existing service registration '$Name' before re-installing..." -ForegroundColor Yellow
+
+    $psi = [System.Diagnostics.ProcessStartInfo]::new()
+    $psi.FileName = "sc.exe"
+    $psi.Arguments = "delete `"$Name`""
+    $psi.UseShellExecute = $false
+    $psi.RedirectStandardOutput = $true
+    $psi.RedirectStandardError = $true
+    $psi.CreateNoWindow = $true
+
+    $process = [System.Diagnostics.Process]::Start($psi)
+    $stdout = $process.StandardOutput.ReadToEnd()
+    $stderr = $process.StandardError.ReadToEnd()
+    $process.WaitForExit()
+
+    if ($stdout) { Write-Host $stdout }
+    if ($stderr) { Write-Warning $stderr }
+
+    # Wait until the service entry is actually gone from the SCM database.
+    $maxWaitSeconds = 15
+    $elapsed = 0
+    while ($elapsed -lt $maxWaitSeconds) {
+        $stillThere = Get-Service -Name $Name -ErrorAction SilentlyContinue
+        if (-not $stillThere) {
+            Write-Host "Service registration removed." -ForegroundColor Green
+            return
+        }
+        Start-Sleep -Seconds 1
+        $elapsed++
+    }
+
+    Write-Warning "Service '$Name' is still reported by the service manager; it may be marked for deletion. Continuing anyway..."
+}
+
 function Install-RunnerArchive {
     param (
         [string]$Url,
@@ -202,6 +244,10 @@ function Install-RunnerArchive {
         # Stop the service first so the running executable is not locked when we
         # replace the install directory (otherwise upgrades fail on a locked exe).
         Stop-RunnerServiceIfPresent -Name $ServiceName
+
+        # Remove the existing service registration so the runner's `sc create`
+        # step succeeds (stopping alone leaves the SCM entry behind).
+        Remove-RunnerServiceRegistrationIfPresent -Name $ServiceName
 
         # Clean destination to avoid stale files from a previous version.
         if (Test-Path $Destination) {
