@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net8.0-windows</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
@@ -11,15 +11,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="CredentialManagement" Version="1.0.2">
-            <NoWarn>NU1701</NoWarn>
-        </PackageReference>
-        <PackageReference Include="FlaUI.UIA3" Version="5.0.0">
-            <NoWarn>NU1701</NoWarn>
-        </PackageReference>
-        <PackageReference Include="FlaUI.Core" Version="5.0.0">
-            <NoWarn>NU1701</NoWarn>
-        </PackageReference>
+        <PackageReference Include="CredentialManagement" Version="1.0.2" />
+        <PackageReference Include="FlaUI.UIA3" Version="5.0.0" />
+        <PackageReference Include="FlaUI.Core" Version="5.0.0" />
         <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.8" />
         <PackageReference Include="Selenium.Support" Version="4.43.0" />
         <PackageReference Include="Selenium.WebDriver" Version="4.43.0" />

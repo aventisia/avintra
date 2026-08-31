@@ -26,4 +26,4 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 [assembly: InternalsVisibleTo("ExecutorLibrary")]
-[assembly: SupportedOSPlatform("windows6.1")]
+[assembly: SupportedOSPlatform("windows7.0")]

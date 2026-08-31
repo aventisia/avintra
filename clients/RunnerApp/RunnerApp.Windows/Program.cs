@@ -38,11 +38,7 @@ if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsSe
     }
 
     // Run as Windows service using Generic Host
-    var host = Host.CreateDefaultBuilder(args)
-        .UseWindowsService(optionsBuilder =>
-        {
-            optionsBuilder.ServiceName = "AvintraRunnerService";
-        })
+    var hostBuilder = Host.CreateDefaultBuilder(args)
         .ConfigureServices((_, services) =>
         {
             services.AddSingleton(options);
@@ -55,8 +51,16 @@ if (args.Contains("--service", StringComparer.OrdinalIgnoreCase) || options.IsSe
             {
                 logging.AddEventLog();
             }
-        })
-        .Build();
+        });
+
+#if WINDOWS
+    hostBuilder.UseWindowsService(optionsBuilder =>
+    {
+        optionsBuilder.ServiceName = "AvintraRunnerService";
+    });
+#endif
+
+    var host = hostBuilder.Build();
 
     await host.RunAsync();
     return 0;

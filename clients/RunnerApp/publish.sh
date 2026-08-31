@@ -1,38 +1,41 @@
 #!/usr/bin/env bash
-# Publishes the RunnerApp as a self-contained Windows binary and packages it
-# into a versioned zip ready for upload/distribution.
+# Publishes the RunnerApp Linux binary as a framework-dependent single-file executable
+# and packages it into a versioned zip ready for upload/distribution.
+#
+# This script is intended to run on the Jenkins Ubuntu agent (or any Linux dev box).
+# The Windows runner is published manually from a Windows developer machine using
+# publish-and-upload-windows.ps1; it can no longer be built on Linux because
+# RunnerApp.Windows targets net8.0-windows.
 #
 # Usage:
 #   ./publish.sh [--version <ver>] [--runtime <rid>] [--output <dir>] [--output-name <name>]
 #
 # Defaults:
-#   --version      reads the <Version> from RunnerApp.Windows.csproj (e.g. 0.1.0)
-#   --runtime      win-x64
+#   --version      reads the <Version> from RunnerApp.Windows.csproj (single source of truth)
+#   --runtime      linux-x64
 #   --output       ./artifacts
-#   --output-name  AvintraRunnerService (base name for the zip and inner exe)
+#   --output-name  AvintraRunnerApp (base name for the zip and inner exe)
 #
 # Output:
 #   <output>/<output-name>_<version>_<runtime>.zip
 #
-# The published single-file executable is renamed to <output-name> after
-# publish while the project keeps the RunnerApp name internally. This avoids
-# an "Ambiguous project name" NuGet error. The default name is "AvintraRunnerService".
+# The published single-file executable is renamed to <output-name> after publish.
+# The project keeps the RunnerApp name internally to avoid an "Ambiguous project name"
+# NuGet error.
 #
-# The publish is SELF-CONTAINED: the .NET 8 runtime is embedded in the single-file
-# executable, so the target machine does NOT need .NET 8 installed. This removes the
-# need for winget installs or runtime checks in the provisioning scripts.
-#
-# This script is reusable for every new version: bump <Version> in the .csproj and rerun.
+# The Linux publish is FRAMEWORK-DEPENDENT: the target machine must have .NET 8
+# installed. This matches the existing Linux/macOS runner release model.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CSPROJ="$SCRIPT_DIR/RunnerApp.Windows/RunnerApp.Windows.csproj"
+CSPROJ="$SCRIPT_DIR/RunnerApp.Linux/RunnerApp.Linux.csproj"
+VERSION_CSPROJ="$SCRIPT_DIR/RunnerApp.Windows/RunnerApp.Windows.csproj"
 
 VERSION=""
-RUNTIME="win-x64"
+RUNTIME="linux-x64"
 OUTPUT_DIR="$SCRIPT_DIR/artifacts"
-OUTPUT_NAME="AvintraRunnerService"
+OUTPUT_NAME="AvintraRunnerApp"
 
 # --- Parse arguments -----------------------------------------------------------
 while [[ $# -gt 0 ]]; do
@@ -66,13 +69,13 @@ mkdir -p "$OUTPUT_DIR"
 OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
 
 # --- Resolve version ----------------------------------------------------------
-if [[ ! -f "$CSPROJ" ]]; then
-  echo "error: RunnerApp project not found at $CSPROJ" >&2
+if [[ ! -f "$VERSION_CSPROJ" ]]; then
+  echo "error: RunnerApp version source project not found at $VERSION_CSPROJ" >&2
   exit 1
 fi
 
 if [[ -z "$VERSION" ]]; then
-  VERSION="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$CSPROJ" | head -n1 | tr -d '[:space:]')"
+  VERSION="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$VERSION_CSPROJ" | head -n1 | tr -d '[:space:]')"
 fi
 
 if [[ -z "$VERSION" ]]; then
@@ -80,38 +83,29 @@ if [[ -z "$VERSION" ]]; then
   exit 1
 fi
 
-echo "Publishing RunnerApp ($RUNTIME, self-contained) v$VERSION ..."
+echo "Publishing RunnerApp ($RUNTIME, framework-dependent single-file) v$VERSION ..."
 
 PUBLISH_DIR="$(mktemp -d)"
 trap 'rm -rf "$PUBLISH_DIR"' EXIT
 
-# On non-Windows build agents (e.g. Ubuntu Jenkins) the Office PIA is not available and is
-# not required for the build. Office is resolved dynamically at runtime on the user's
-# Windows machine via late binding. If OFFICE_PIA_PATH is set, forward it to MSBuild.
-PUBLISH_ARGS=(-c Release -r "$RUNTIME" --self-contained true -o "$PUBLISH_DIR")
-if [[ -n "${OFFICE_PIA_PATH:-}" ]]; then
-  PUBLISH_ARGS+=(/p:OfficePiaPath="$OFFICE_PIA_PATH")
-fi
-
-dotnet publish "$CSPROJ" "${PUBLISH_ARGS[@]}"
+dotnet publish "$CSPROJ" \
+  -c Release \
+  -r "$RUNTIME" \
+  --self-contained false \
+  -p:PublishSingleFile=true \
+  -o "$PUBLISH_DIR"
 
 mkdir -p "$OUTPUT_DIR"
 
 # Rename the published executable to the requested output name.
-# We do this after publish instead of setting AssemblyName to avoid an
-# "Ambiguous project name" conflict during NuGet restore.
 EXENAME="RunnerApp"
 NEWEXENAME="$OUTPUT_NAME"
-if [[ "$RUNTIME" == win-* ]]; then
-  EXENAME="${EXENAME}.exe"
-  NEWEXENAME="${NEWEXENAME}.exe"
-fi
 mv "$PUBLISH_DIR/$EXENAME" "$PUBLISH_DIR/$NEWEXENAME" 2>/dev/null || true
 
 ZIP_NAME="${OUTPUT_NAME}_${VERSION}_${RUNTIME}.zip"
 ZIP_PATH="$OUTPUT_DIR/$ZIP_NAME"
 
-# Zip the published output (executable + dependencies). The zip is what gets distributed/downloaded.
+# Zip the published output (single-file executable). The zip is what gets distributed/downloaded.
 if command -v zip >/dev/null 2>&1; then
   (cd "$PUBLISH_DIR" && zip -qr "$ZIP_PATH" .)
 elif command -v python3 >/dev/null 2>&1; then
@@ -125,17 +119,6 @@ fi
 
 echo "Published to $ZIP_PATH"
 ls -lh "$ZIP_PATH"
-
-# Copy the install provisioning script into the artifacts output so it can be
-# uploaded to the server's scripts/ directory alongside the runner zip. This
-# keeps the served script in sync with the source of truth.
-INSTALL_SCRIPT="$SCRIPT_DIR/Install-AvintraRunnerService.ps1"
-if [[ -f "$INSTALL_SCRIPT" ]]; then
-  cp "$INSTALL_SCRIPT" "$OUTPUT_DIR/Install-AvintraRunnerService.ps1"
-  echo "Copied install script to $OUTPUT_DIR/Install-AvintraRunnerService.ps1"
-else
-  echo "warning: Install-AvintraRunnerService.ps1 not found at $INSTALL_SCRIPT" >&2
-fi
 
 # Print the published binary names for quick verification.
 echo "Published binaries:"
