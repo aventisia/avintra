@@ -87,25 +87,25 @@ The runner is published per platform. Jenkins (Ubuntu agent) only builds the **L
 
 ### Linux (Jenkins + local dev)
 
-`publish.sh` and `publish-and-upload-linux.sh` both build `RunnerApp.Linux.csproj` as a framework-dependent single-file executable for `linux-x64` and produce `artifacts/AvintraRunnerApp_<version>_linux-x64.zip`.
+`publish-ci.sh` and `publish-and-upload-linux.sh` both build `RunnerApp.Linux.csproj` as a framework-dependent single-file executable for `linux-x64` and produce `artifacts/AvintraRunnerApp_<version>_linux-x64.zip`.
 
-`publish.sh` is the version used by Jenkins and can be run standalone:
+`publish-ci.sh` is the version used by Jenkins and can be run standalone:
 
 ```sh
-./clients/RunnerApp/publish.sh
+./clients/RunnerApp/RunnerApp.Linux/publish-ci.sh
 # or with an explicit version
-./clients/RunnerApp/publish.sh --version 0.1.83
+./clients/RunnerApp/RunnerApp.Linux/publish-ci.sh --version 0.1.83
 ```
 
 `publish-and-upload-linux.sh` additionally uploads to the selected server(s):
 
 ```sh
-./clients/RunnerApp/publish-and-upload-linux.sh
+./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh
 # non-interactive usage
-./clients/RunnerApp/publish-and-upload-linux.sh --target-servers dev
-./clients/RunnerApp/publish-and-upload-linux.sh --target-servers 3   # dev+uat
+./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers dev
+./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers 3   # dev+uat
 # preview only
-./clients/RunnerApp/publish-and-upload-linux.sh --target-servers dev --dry-run
+./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers dev --dry-run
 ```
 
 Target server options (`--target-servers` or interactive prompt):
@@ -120,8 +120,8 @@ Target server options (`--target-servers` or interactive prompt):
 `publish-and-upload-macos.sh` builds `RunnerApp.macOS.csproj` for `osx-x64` and uploads `artifacts/AvintraRunnerApp_<version>_osx-x64.zip`.
 
 ```sh
-./clients/RunnerApp/publish-and-upload-macos.sh --target-servers dev+uat
-./clients/RunnerApp/publish-and-upload-macos.sh --target-servers 1       # dev
+./clients/RunnerApp/RunnerApp.macOS/publish-and-upload-macos.sh --target-servers dev+uat
+./clients/RunnerApp/RunnerApp.macOS/publish-and-upload-macos.sh --target-servers 1       # dev
 ```
 
 ### Windows (developer machine)
@@ -129,17 +129,17 @@ Target server options (`--target-servers` or interactive prompt):
 `publish-and-upload-windows.ps1` builds `RunnerApp.Windows.csproj` as a **self-contained** `win-x64` executable (the .NET 8 runtime is embedded), renames it to `AvintraRunnerService.exe`, and uploads `artifacts/AvintraRunnerService_<version>_win-x64.zip` plus `Install-AvintraRunnerService.ps1` to the selected server(s).
 
 ```powershell
-.\clients\RunnerApp\publish-and-upload-windows.ps1 -TargetServers dev
-.\clients\RunnerApp\publish-and-upload-windows.ps1 -TargetServers 2   # uat
+.\clients\RunnerApp\RunnerApp.Windows\publish-and-upload-windows.ps1 -TargetServers dev
+.\clients\RunnerApp\RunnerApp.Windows\publish-and-upload-windows.ps1 -TargetServers 2   # uat
 # preview only
-.\clients\RunnerApp\publish-and-upload-windows.ps1 -TargetServers dev -WhatIf
+.\clients\RunnerApp\RunnerApp.Windows\publish-and-upload-windows.ps1 -TargetServers dev -WhatIf
 ```
 
 ### Jenkins (CI)
 
 Jenkins runs on an Ubuntu agent and can no longer build the Windows runner
 because `RunnerApp.Windows` targets `net8.0-windows`. The `Runner App` stage now
-calls `publish.sh` to produce the **Linux** runner and uploads
+calls `publish-ci.sh` to produce the **Linux** runner and uploads
 `AvintraRunnerApp_*.zip` to the server(s) mapped from the branch
 (`dev` → avdev, `uat` → avuat, `main` → avweb1 + avweb2).
 
@@ -194,7 +194,7 @@ Use the provisioning script to install everything in one step. The script downlo
 The script resolves the **latest** runner version automatically from the backend, so you don't need to supply a zip URL. Run it from an elevated PowerShell prompt:
 
 ```powershell
-.\Install-AvintraRunnerService.ps1 `
+.\clients\RunnerApp\RunnerApp.Windows\Install-AvintraRunnerService.ps1 `
   -AppBaseUrl "https://api.avintra.com" `
   -ApiKey "<API_KEY>" `
   -TenantId "<TENANT_ID>" `
@@ -234,15 +234,22 @@ Available parameters:
 
 ### Reinstall from local build
 
-During development, use `reinstall-service.ps1` to stop the service, republish the project, and re-install from the local `./Published` folder:
+There is no dedicated reinstall script anymore. To test a locally built Windows service build:
 
-```powershell
-.\reinstall-service.ps1 -AppBaseUrl https://your-backend -ApiKey <key> -TenantId <guid> -LinkedUsername <user>
-```
+1. Publish to a folder (e.g. `Published` next to the csproj):
+   ```powershell
+   dotnet publish RunnerApp.Windows.csproj -c Release -r win-x64 --self-contained --property:PublishDir=Published
+   ```
+2. Uninstall any existing service, then install from the new build (both steps use the exe's built-in installer and self-elevate):
 
-Add `-Unattended` to install in unattended mode.
+   ```powershell
+   .\Published\RunnerApp.exe --uninstall
+   .\Published\RunnerApp.exe --install -AppBaseUrl https://your-backend -ApiKey <key> -TenantId <guid> -LinkedUsername <user>
+   ```
 
-> **Important:** The service must be stopped before publishing to `./Published` because the running service locks its DLLs.
+   Add `--unattended` to install in unattended mode.
+
+> **Important:** The service must be stopped before publishing to the same `PublishDir` because the running service locks its DLLs.
 
 ### Manual install
 
@@ -357,7 +364,7 @@ If `AVINTRA_UNATTENDED=true` is set, UI-dependent nodes such as `DisplayMessageN
 
 ## Project Structure
 
-```
+````
 clients/RunnerApp/
 ├── RunnerApp.Core/                 # Portable class library (shared runner logic)
 │   ├── RunnerApp.Core.csproj
@@ -376,20 +383,23 @@ clients/RunnerApp/
 ├── RunnerApp.Windows/              # Windows executable
 │   ├── RunnerApp.Windows.csproj
 │   ├── Program.cs                  # Entry point: console, service, worker routing
-│   └── GlobalUsings.cs
+│   ├── GlobalUsings.cs
+│   ├── Install-AvintraRunnerService.ps1 # Provisioning script (name served at /files/scripts/)
+│   ├── publish-and-upload-windows.ps1   # Windows publish + upload
+│   └── publish-local.ps1                # Local Windows staging for desktop app dev
 ├── RunnerApp.Linux/                # Linux shell executable (compile-ready stub)
 │   ├── RunnerApp.Linux.csproj
+│   ├── publish-ci.sh               # CI publish (Linux framework-dependent binary)
+│   ├── publish-and-upload-linux.sh # Linux publish + upload
+│   ├── publish-local.sh            # Local Linux/WSL staging for desktop app dev
 │   └── (shares Program.cs/GlobalUsings.cs from RunnerApp.Windows)
 ├── RunnerApp.macOS/                # macOS shell executable (compile-ready stub)
 │   ├── RunnerApp.macOS.csproj
+│   ├── publish-and-upload-macos.sh # macOS publish + upload
 │   └── (shares Program.cs/GlobalUsings.cs from RunnerApp.Windows)
+├── artifacts/                      # Publish output (gitignored, shared by all platforms)
 ├── RunnerApp.slnx                  # Solution file
-├── Install-AvintraRunnerService.ps1 # Provisioning script
-├── reinstall-service.ps1           # Local stop/publish/reinstall helper
-├── publish.sh                      # CI publish (Windows self-contained binary)
-├── publish-local.ps1               # Local Windows staging for desktop app dev
-└── publish-local.sh                # Local Linux/WSL staging for desktop app dev
-```
+└── README.md
 
 ## Dependencies
 
@@ -407,7 +417,7 @@ clients/RunnerApp/
 
 ```powershell
 AvintraRunnerApp.exe --appBaseUrl <url> --accessToken <token> --jobId <guid> [--websocketPort <port>]
-```
+````
 
 **Windows service (hybrid model):**
 

@@ -4,16 +4,16 @@
 #
 # This script is intended to run on the Jenkins Ubuntu agent (or any Linux dev box).
 # The Windows runner is published manually from a Windows developer machine using
-# publish-and-upload-windows.ps1; it can no longer be built on Linux because
-# RunnerApp.Windows targets net8.0-windows.
+# ../RunnerApp.Windows/publish-and-upload-windows.ps1; it can no longer be built on
+# Linux because RunnerApp.Windows targets net8.0-windows.
 #
 # Usage:
-#   ./publish.sh [--version <ver>] [--runtime <rid>] [--output <dir>] [--output-name <name>]
+#   ./publish-ci.sh [--version <ver>] [--runtime <rid>] [--output <dir>] [--output-name <name>]
 #
 # Defaults:
 #   --version      reads the <Version> from RunnerApp.Windows.csproj (single source of truth)
 #   --runtime      linux-x64
-#   --output       ./artifacts
+#   --output       <RunnerApp>/artifacts
 #   --output-name  AvintraRunnerApp (base name for the zip and inner exe)
 #
 # Output:
@@ -29,12 +29,12 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CSPROJ="$SCRIPT_DIR/RunnerApp.Linux/RunnerApp.Linux.csproj"
-VERSION_CSPROJ="$SCRIPT_DIR/RunnerApp.Windows/RunnerApp.Windows.csproj"
+CSPROJ="$SCRIPT_DIR/RunnerApp.Linux.csproj"
+VERSION_CSPROJ="$SCRIPT_DIR/../RunnerApp.Windows/RunnerApp.Windows.csproj"
 
 VERSION=""
 RUNTIME="linux-x64"
-OUTPUT_DIR="$SCRIPT_DIR/artifacts"
+OUTPUT_DIR="$SCRIPT_DIR/../artifacts"
 OUTPUT_NAME="AvintraRunnerApp"
 
 # --- Parse arguments -----------------------------------------------------------

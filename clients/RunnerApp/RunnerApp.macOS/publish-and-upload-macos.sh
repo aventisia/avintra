@@ -20,7 +20,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CSPROJ="$SCRIPT_DIR/RunnerApp.macOS/RunnerApp.macOS.csproj"
+CSPROJ="$SCRIPT_DIR/RunnerApp.macOS.csproj"
 
 VERSION=""
 TARGET_SERVERS=""
@@ -61,7 +61,7 @@ if [[ ! -f "$CSPROJ" ]]; then
 fi
 
 if [[ -z "$VERSION" ]]; then
-  VERSION="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$SCRIPT_DIR/RunnerApp.Windows/RunnerApp.Windows.csproj" | head -n1 | tr -d '[:space:]')"
+  VERSION="$(sed -n 's:.*<Version>\(.*\)</Version>.*:\1:p' "$SCRIPT_DIR/../RunnerApp.Windows/RunnerApp.Windows.csproj" | head -n1 | tr -d '[:space:]')"
 fi
 
 if [[ -z "$VERSION" ]]; then
@@ -98,7 +98,7 @@ fi
 SERVER_LIST="$(resolve_servers "$TARGET_SERVERS")"
 
 # --- Publish ------------------------------------------------------------------
-OUTPUT_DIR="$SCRIPT_DIR/artifacts"
+OUTPUT_DIR="$SCRIPT_DIR/../artifacts"
 mkdir -p "$OUTPUT_DIR"
 OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
 

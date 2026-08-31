@@ -168,7 +168,7 @@ The script updates:
 - `clients/web-apps/apps/desktop-app/src-tauri/tauri.conf.json` — `version` + `userAgent`
 - `clients/web-apps/apps/desktop-app/package.json` — `version`
 
-The Tauri build (`01-tauri-build.bat`) runs the release script automatically before `npx tauri build`. The RunnerApp `publish.sh` already reads `<Version>` from the `.csproj` to name its artifact. The same tag is intended to tag future self-hosted Docker images.
+The Tauri build (`01-tauri-build.bat`) runs the release script automatically before `npx tauri build`. The RunnerApp `publish-ci.sh` already reads `<Version>` from the `.csproj` to name its artifact. The same tag is intended to tag future self-hosted Docker images.
 
 ### Usage going forward
 
@@ -186,7 +186,7 @@ git tag v0.1.87
 #    Windows: run clients/web-apps/apps/desktop-app/01-tauri-build.bat
 
 # 4. Build/publish the Runner app (reads <Version> from the .csproj)
-bash clients/RunnerApp/publish.sh       # produces AvintraRunnerService_<ver>_win-x64.zip
+bash clients/RunnerApp/RunnerApp.Linux/publish-ci.sh   # produces AvintraRunnerApp_<ver>_linux-x64.zip
 
 # 5. Push the tag so CI and other developers see it
 git push origin v0.1.87
@@ -197,7 +197,7 @@ git push origin v0.1.87
 1. **Tag first** — the tag is the single source of truth. Use `v<X.Y.Z>` (e.g. `v0.1.87`).
 2. **Run the release script** — it writes the version into `RunnerApp.Windows.csproj` (and `RunnerApp.Linux.csproj` / `RunnerApp.macOS.csproj`), `Cargo.toml`, `Cargo.lock`, `tauri.conf.json`, and `desktop-app/package.json`.
 3. **Build the Desktop app** — `01-tauri-build.bat` already calls the release script before `npx tauri build`, so this step is automatic.
-4. **Publish the Runner app** — `publish.sh` derives the artifact name from `<Version>` in the `.csproj`.
+4. **Publish the Runner app** — `RunnerApp.Linux/publish-ci.sh` derives the artifact name from `<Version>` in the `.csproj`.
 5. **Push the tag** — so the version is recorded and CI can build from it.
 
 > **Note:** if no tag exists yet, the release script errors and asks you to create one (or pass an explicit version, e.g. `./scripts/release-version.sh 0.1.87`).
