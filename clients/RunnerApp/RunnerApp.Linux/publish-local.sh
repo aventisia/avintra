@@ -12,8 +12,8 @@
 # A version.txt marker is written so the desktop app's runner check reports the
 # correct installed version.
 #
-# This script is intended for local development only. Use publish.sh for
-# CI/distribution builds that produce a versioned zip artifact.
+# This script is intended for local development only. Use publish-ci.sh (same
+# folder) for CI/distribution builds that produce a versioned zip artifact.
 #
 # Usage:
 #   ./publish-local.sh [--version <ver>] [--runtime <rid>] [--force]
@@ -55,7 +55,7 @@ done
 
 # Local Linux/WSL dev only. The Windows runner targets net8.0-windows and must
 # be published from a Windows developer machine.
-CSPROJ="$SCRIPT_DIR/RunnerApp.Linux/RunnerApp.Linux.csproj"
+CSPROJ="$SCRIPT_DIR/RunnerApp.Linux.csproj"
 
 if [[ ! -f "$CSPROJ" ]]; then
   echo "error: RunnerApp project not found at $CSPROJ" >&2

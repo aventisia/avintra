@@ -58,7 +58,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 $ScriptDir = $PSScriptRoot
-$Csproj = Join-Path $ScriptDir "RunnerApp.Windows\RunnerApp.Windows.csproj"
+$Csproj = Join-Path $ScriptDir "RunnerApp.Windows.csproj"
 
 if (-not (Test-Path $Csproj)) {
     throw "RunnerApp Windows project not found at $Csproj"
@@ -116,7 +116,7 @@ if ([string]::IsNullOrWhiteSpace($TargetServers)) {
 $ServerList = Resolve-Servers -Choice $TargetServers
 
 # --- Publish ------------------------------------------------------------------
-$OutputDir = Join-Path $ScriptDir "artifacts"
+$OutputDir = Join-Path $ScriptDir "..\artifacts"
 New-Item -ItemType Directory -Path $OutputDir -Force | Out-Null
 
 $PublishDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.Guid]::NewGuid().ToString("N"))

@@ -427,7 +427,7 @@ pipeline {
             steps {
                 script {
                     echo 'Publishing RunnerApp...'
-                    sh "set -e; bash ${WORKSPACE}/clients/RunnerApp/publish.sh"
+                    sh "set -e; bash ${WORKSPACE}/clients/RunnerApp/RunnerApp.Linux/publish-ci.sh"
 
                     sshagent(credentials: ['aventisia_vps_ssh']) {
                         def targetServers = getTargetServers(env.BRANCH_NAME)
@@ -442,7 +442,7 @@ pipeline {
                             ).trim()
                             sh "ssh admin@${server} 'mkdir -p ${targetDir} ${scriptsDir}'"
                             sh "rsync -avz --timeout=300 ${zipPath} admin@${server}:${targetDir}/"
-                            sh "rsync -avz --timeout=300 ${WORKSPACE}/clients/RunnerApp/artifacts/Install-AvintraRunnerService.ps1 admin@${server}:${scriptsDir}/"
+                            sh "rsync -avz --timeout=300 ${WORKSPACE}/clients/RunnerApp/RunnerApp.Windows/Install-AvintraRunnerService.ps1 admin@${server}:${scriptsDir}/"
                             echo "Successfully uploaded RunnerApp to ${server}"
                         }
                     }

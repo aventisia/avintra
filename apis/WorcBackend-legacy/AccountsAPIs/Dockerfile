@@ -28,7 +28,7 @@ RUN mkdir -p /var/www/aventisia.com/files/scripts
 COPY clients/desktop-app/src-tauri/target/release/bundle/nsis/ /var/www/aventisia.com/files/binaries/
 
 # Copy the runner install script to the scripts directory
-COPY clients/RunnerApp/Install-AvintraRunnerService.ps1 /var/www/aventisia.com/files/scripts/Install-AvintraRunnerService.ps1
+COPY clients/RunnerApp/RunnerApp.Windows/Install-AvintraRunnerService.ps1 /var/www/aventisia.com/files/scripts/Install-AvintraRunnerService.ps1
 
 # Set port environment variable
 ENV ASPNETCORE_URLS=http://+:4000

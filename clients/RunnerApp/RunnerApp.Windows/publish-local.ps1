@@ -14,8 +14,9 @@
     launch (see runner_management.rs). A version.txt marker is written so the
     desktop app's runner check reports the correct installed version.
 
-    This script is intended for local development only. Use publish.sh for
-    CI/distribution builds that produce a versioned zip artifact.
+    This script is intended for local development only. Use
+    ..\RunnerApp.Linux\publish-ci.sh for CI/distribution builds that produce a
+    versioned zip artifact.
 
 .PARAMETER Version
     Version string written to version.txt and used in messages.
@@ -49,7 +50,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 $ScriptDir = $PSScriptRoot
-$Csproj = Join-Path $ScriptDir "RunnerApp.Windows\RunnerApp.Windows.csproj"
+$Csproj = Join-Path $ScriptDir "RunnerApp.Windows.csproj"
 
 if (-not (Test-Path $Csproj)) {
     throw "RunnerApp project not found at $Csproj"
