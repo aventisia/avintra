@@ -61,4 +61,4 @@ This app imports shared packages from the monorepo:
 
 - Tauri v2 is used for the application shell.
 - The `invoke()` calls (`launch_runner_app`, `get_user_metadata`) are guarded by a Tauri-detection check so the app also runs in a plain browser. The runner is provisioned (downloaded/updated) when the desktop app opens; flow execution only launches it.
-- The bundled `runner` and `ui-inspector` binaries are provided by `clients/NodeExecutor` (post-build copy to `src-tauri/binaries/`).
+- The bundled `ui-inspector` binary is built from `clients/UIInspector` (its post-build step copies to `src-tauri/binaries/ui-inspector/`). The runner binary is not bundled — it is downloaded/updated from the server by `runner_management.rs` and published via `clients/RunnerApp` publish scripts.
