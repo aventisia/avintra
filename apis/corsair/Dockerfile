@@ -18,7 +18,7 @@ ENV PORT=3456
 ENV PYTHONUNBUFFERED=1
 
 # Runtime configuration is injected via environment variables at deploy time
-# (see .env.example). APP_URL, CORSAIR_KEK, CORSAIR_API_KEY and the
+# (see .env.example). APP_URL, CORSAIR_KEK and the
 # POSTGRESQL_* values must be provided by the orchestrator/deployment.
 
 COPY package.json package-lock.json* ./

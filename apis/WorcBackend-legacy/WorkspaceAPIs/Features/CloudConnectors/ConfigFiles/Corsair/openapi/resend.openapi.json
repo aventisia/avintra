@@ -1,0 +1,290 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Corsair resend connector (from sidecar descriptors)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.resend.com"
+    }
+  ],
+  "paths": {
+    "/corsair/resend/emails.send": {
+      "post": {
+        "operationId": "resend.emails.send",
+        "summary": "Send an email to one or more recipients",
+        "description": "Send an email to one or more recipients",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "from": {
+                    "type": "string"
+                  },
+                  "to": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "html": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  },
+                  "cc": {
+                    "type": "string"
+                  },
+                  "bcc": {
+                    "type": "string"
+                  },
+                  "reply_to": {
+                    "type": "string"
+                  },
+                  "attachments": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "filename": {
+                          "type": "string"
+                        },
+                        "content": {
+                          "type": "string"
+                        },
+                        "path": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "filename",
+                        "content"
+                      ]
+                    }
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "value"
+                      ]
+                    }
+                  },
+                  "headers": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "from",
+                  "to",
+                  "subject"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/resend/emails.get": {
+      "post": {
+        "operationId": "resend.emails.get",
+        "summary": "Get info about a sent email",
+        "description": "Get info about a sent email",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/resend/emails.list": {
+      "post": {
+        "operationId": "resend.emails.list",
+        "summary": "List sent emails",
+        "description": "List sent emails",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "limit": {
+                    "type": "number"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/resend/domains.create": {
+      "post": {
+        "operationId": "resend.domains.create",
+        "summary": "Add a new sending domain",
+        "description": "Add a new sending domain",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "region": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/resend/domains.get": {
+      "post": {
+        "operationId": "resend.domains.get",
+        "summary": "Get info about a sending domain",
+        "description": "Get info about a sending domain",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/resend/domains.list": {
+      "post": {
+        "operationId": "resend.domains.list",
+        "summary": "List all sending domains",
+        "description": "List all sending domains",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "limit": {
+                    "type": "number"
+                  },
+                  "cursor": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/resend/domains.delete": {
+      "post": {
+        "operationId": "resend.domains.delete",
+        "summary": "Remove a sending domain [DESTRUCTIVE · IRREVERSIBLE]",
+        "description": "Remove a sending domain [DESTRUCTIVE · IRREVERSIBLE]",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    },
+    "/corsair/resend/domains.verify": {
+      "post": {
+        "operationId": "resend.domains.verify",
+        "summary": "Trigger DNS verification for a domain",
+        "description": "Trigger DNS verification for a domain",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id"
+                ]
+              }
+            }
+          },
+          "required": false
+        }
+      }
+    }
+  }
+}

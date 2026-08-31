@@ -11,6 +11,8 @@
     "prestart": "npm run migrate",
     "dev": "tsx watch src/main.ts",
     "start": "tsx src/main.ts",
+    "generate:dcp": "tsx src/generate-dcp.ts",
+    "test:dcp": "tsx src/dcp-generator/generator.test.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
     "lint": "echo 'No linter configured'",

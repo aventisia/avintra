@@ -1,0 +1,104 @@
+{
+  "name": "Corsair/Slack/FilesListConnector",
+  "description": "List files in the workspace",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Slack",
+      "label": "Slack Credential",
+      "description": "Select Slack credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "channel",
+      "label": "Channel",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "user",
+      "label": "User",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "types",
+      "label": "Types",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ts_from",
+      "label": "Ts From",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "ts_to",
+      "label": "Ts To",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "show_files_hidden_by_limit",
+      "label": "Show Files Hidden By Limit",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "team_id",
+      "label": "Team Id",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "page",
+      "label": "Page",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "count",
+      "label": "Count",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

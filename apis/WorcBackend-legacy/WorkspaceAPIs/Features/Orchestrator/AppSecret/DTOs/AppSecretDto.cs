@@ -78,4 +78,11 @@ public class AppSecretDto
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("oauthConnectUrl")]
     public string? OAuthConnectUrl { get; set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the OAuth connection has been completed for
+    /// OAuth-capable credential types. For response use only.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonPropertyName("oauthConnected")]
+    public bool OAuthConnected { get; set; }
 }

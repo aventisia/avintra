@@ -8,6 +8,7 @@ using WorkspaceAPIs.Features.CloudConnectors.Twilio;
 using WorkspaceAPIs.Features.CloudConnectors.VectorStore;
 using WorkspaceAPIs.Features.CloudConnectors.VectorStore.PgVector;
 using WorkspaceAPIs.Features.Chats.StreamingChat.Service;
+using WorkspaceAPIs.Features.Corsair;
 
 namespace WorkspaceAPIs.Extensions;
 
@@ -152,6 +153,8 @@ public static class AppServicesExtension
         services.AddScoped<IFlowUserService, FlowUserService>();
         services.AddScoped<IAppSecretService, AppSecretService>();
         services.AddScoped<ICorsairSidecarService, CorsairSidecarService>();
+        services.AddScoped<ICorsairInvokeService, CorsairInvokeService>();
+        services.AddSingleton<CorsairConfigRepository>();
         services.AddSingleton<ConcurrentDictionary<Guid, ClientDataStore>>();
         services.AddSingleton<ConcurrentDictionary<string, Guid>>();
         services.AddSingleton<ConcurrentDictionary<Guid, int>>();

@@ -83,9 +83,8 @@ class Settings(BaseSettings):
 
     # Corsair sidecar configuration
     # URL of the Corsair sidecar (llmpipeline calls this directly for Corsair tools).
+    # The sidecar is backend-only and private; no auth header is required.
     CORSAIR_SIDECAR_URL: str = ""
-    # Shared secret for X-Corsair-Api-Key header; leave empty to skip sending it.
-    CORSAIR_API_KEY: str = ""
 
     model_config = SettingsConfigDict(
         env_file=env_files, # System env vars take precedence over these files

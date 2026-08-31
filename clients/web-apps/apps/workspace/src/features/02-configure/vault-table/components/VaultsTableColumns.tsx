@@ -89,6 +89,7 @@ export const vaultsTableColumns = (isSharedTab: boolean): ColumnDef<VaultsTableD
       <VaultRowActions
         rowId={row.id || "rowId"}
         name={row.name}
+        type={row.type}
         accessLevel={row.accessLevel}
         isTenantWideAccess={row.isTenantWideAccess || false}
       />

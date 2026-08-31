@@ -1,0 +1,89 @@
+{
+  "name": "Corsair/Stripe/PricesCreateConnector",
+  "description": "Create a new Stripe price",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Stripe",
+      "label": "Stripe Credential",
+      "description": "Select Stripe credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "currency",
+      "label": "Currency",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "unit_amount",
+      "label": "Unit Amount",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "product",
+      "label": "Product",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "product_data",
+      "label": "Product Data",
+      "description": "",
+      "defaultValue": "{}"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "nickname",
+      "label": "Nickname",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "json-editor",
+      "name": "recurring",
+      "label": "Recurring",
+      "description": "",
+      "defaultValue": "{}"
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "metadata",
+      "label": "Metadata",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

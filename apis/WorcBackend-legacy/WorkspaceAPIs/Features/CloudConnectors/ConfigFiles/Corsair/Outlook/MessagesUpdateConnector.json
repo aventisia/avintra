@@ -1,0 +1,145 @@
+{
+  "name": "Corsair/Outlook/MessagesUpdateConnector",
+  "description": "Update an email message (e.g. mark as read)",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Microsoft",
+      "label": "Microsoft Credential",
+      "description": "Select Microsoft credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "message_id",
+      "label": "Message Id",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "user_id",
+      "label": "User Id",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "is_read",
+      "label": "Is Read",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "subject",
+      "label": "Subject",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "importance",
+      "label": "Importance",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "categories",
+      "label": "Categories",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "to_recipients",
+      "label": "To Recipients",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "cc_recipients",
+      "label": "Cc Recipients",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "bcc_recipients",
+      "label": "Bcc Recipients",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "reply_to",
+      "label": "Reply To",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "flag",
+      "label": "Flag",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "inference_classification",
+      "label": "Inference Classification",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "is_read_receipt_requested",
+      "label": "Is Read Receipt Requested",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "is_delivery_receipt_requested",
+      "label": "Is Delivery Receipt Requested",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

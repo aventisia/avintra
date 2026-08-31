@@ -1,0 +1,66 @@
+{
+  "name": "Corsair/Resend/DomainsCreateConnector",
+  "description": "Add a new sending domain",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Resend",
+      "label": "Resend Credential",
+      "description": "Select Resend credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "name",
+      "label": "Name",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "region",
+      "label": "Region",
+      "description": "",
+      "defaultValue": "us-east-1",
+      "selectOptions": [
+        {
+          "label": "us-east-1",
+          "value": "us-east-1",
+          "description": "us-east-1"
+        },
+        {
+          "label": "eu-west-1",
+          "value": "eu-west-1",
+          "description": "eu-west-1"
+        },
+        {
+          "label": "sa-east-1",
+          "value": "sa-east-1",
+          "description": "sa-east-1"
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

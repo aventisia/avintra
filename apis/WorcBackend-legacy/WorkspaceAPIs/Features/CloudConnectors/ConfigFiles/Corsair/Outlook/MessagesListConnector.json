@@ -1,0 +1,208 @@
+{
+  "name": "Corsair/Outlook/MessagesListConnector",
+  "description": "List email messages in a folder",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Microsoft",
+      "label": "Microsoft Credential",
+      "description": "Select Microsoft credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "user_id",
+      "label": "User Id",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "folder",
+      "label": "Folder",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "top",
+      "label": "Top",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "skip",
+      "label": "Skip",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "select",
+      "label": "Select",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "orderby",
+      "label": "Orderby",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "is_read",
+      "label": "Is Read",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "subject",
+      "label": "Subject",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "subject_contains",
+      "label": "Subject Contains",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "subject_startswith",
+      "label": "Subject Startswith",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "subject_endswith",
+      "label": "Subject Endswith",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "from_address",
+      "label": "From Address",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "has_attachments",
+      "label": "Has Attachments",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "importance",
+      "label": "Importance",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "categories",
+      "label": "Categories",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "conversationId",
+      "label": "Conversation Id",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "sent_date_time_gt",
+      "label": "Sent Date Time Gt",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "sent_date_time_lt",
+      "label": "Sent Date Time Lt",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "received_date_time_ge",
+      "label": "Received Date Time Ge",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "received_date_time_gt",
+      "label": "Received Date Time Gt",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "received_date_time_le",
+      "label": "Received Date Time Le",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "received_date_time_lt",
+      "label": "Received Date Time Lt",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

@@ -19,16 +19,10 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
         _logger = logger;
 
         var sidecarUrl = environmentConfig.CorsairSidecarUrl;
-        var apiKey = environmentConfig.CorsairApiKey;
 
         if (!string.IsNullOrEmpty(sidecarUrl))
         {
             _httpClient.BaseAddress = new Uri(sidecarUrl.TrimEnd('/'));
-        }
-
-        if (!string.IsNullOrEmpty(apiKey))
-        {
-            _httpClient.DefaultRequestHeaders.Add("X-Corsair-Api-Key", apiKey);
         }
     }
 
@@ -272,6 +266,80 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
         }
     }
 
+    /// <inheritdoc />
+    public async Task<CorsairInvokeResult> InvokeAsync(Guid connectionId, string plugin, string action, object? payload, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(plugin) || string.IsNullOrWhiteSpace(action))
+        {
+            return new CorsairInvokeResult { Success = false, Error = "plugin and action are required" };
+        }
+
+        try
+        {
+            // The sidecar is backend-only and private to the deployment network.
+            // This service is the authorization boundary: the caller has already
+            // been authenticated and authorized (Vault credential + resource-share)
+            // before reaching this point, so no sidecar auth is required.
+            var body = new
+            {
+                connectionId = connectionId.ToString(),
+                plugin = plugin.ToLowerInvariant(),
+                action,
+                payload = payload ?? new { }
+            };
+
+            var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
+            using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/corsair/invoke")
+            {
+                Content = content
+            };
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var rawBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                _logger.LogWarning(
+                    "Corsair /corsair/invoke status {Status} for plugin {Plugin} action {Action} tenant {ConnectionId}. Body: {Body}",
+                    (int)response.StatusCode,
+                    plugin,
+                    action,
+                    connectionId,
+                    rawBody);
+            }
+
+            var payloadResult = System.Text.Json.JsonSerializer.Deserialize<CorsairInvokeResponse>(rawBody, JsonSerializerOptions.Web);
+            if (payloadResult is null)
+            {
+                return new CorsairInvokeResult { Success = false, Error = "Empty response from Corsair sidecar" };
+            }
+
+            return new CorsairInvokeResult
+            {
+                Success = payloadResult.Success,
+                Data = payloadResult.Data,
+                Error = payloadResult.Error,
+                Details = payloadResult.Details,
+                NeedsConnect = payloadResult.NeedsConnect,
+                Plugin = payloadResult.Plugin,
+                AuthType = payloadResult.AuthType,
+                ApprovalRequired = payloadResult.ApprovalRequired,
+                Message = payloadResult.Message
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Failed to invoke Corsair plugin {Plugin} action {Action} tenant {ConnectionId}.",
+                plugin,
+                action,
+                connectionId);
+            return new CorsairInvokeResult { Success = false, Error = ex.Message };
+        }
+    }
+
     private sealed class CorsairToolsResponse
     {
         [JsonPropertyName("tools")]
@@ -300,5 +368,35 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
 
         [JsonPropertyName("connected")]
         public bool Connected { get; set; }
+    }
+
+    private sealed class CorsairInvokeResponse
+    {
+        [JsonPropertyName("success")]
+        public bool Success { get; set; }
+
+        [JsonPropertyName("data")]
+        public object? Data { get; set; }
+
+        [JsonPropertyName("error")]
+        public string? Error { get; set; }
+
+        [JsonPropertyName("details")]
+        public string? Details { get; set; }
+
+        [JsonPropertyName("needsConnect")]
+        public bool NeedsConnect { get; set; }
+
+        [JsonPropertyName("plugin")]
+        public string? Plugin { get; set; }
+
+        [JsonPropertyName("authType")]
+        public string? AuthType { get; set; }
+
+        [JsonPropertyName("approvalRequired")]
+        public bool ApprovalRequired { get; set; }
+
+        [JsonPropertyName("message")]
+        public string? Message { get; set; }
     }
 }

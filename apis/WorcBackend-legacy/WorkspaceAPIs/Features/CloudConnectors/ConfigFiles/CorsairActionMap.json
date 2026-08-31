@@ -1,0 +1,2827 @@
+[
+  {
+    "nodeName": "Corsair/Github/IssuesListConnector",
+    "plugin": "github",
+    "action": "issues.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "milestone",
+      "state",
+      "assignee",
+      "creator",
+      "mentioned",
+      "labels",
+      "sort",
+      "direction",
+      "since",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/IssuesGetConnector",
+    "plugin": "github",
+    "action": "issues.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "issueNumber"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/IssuesCreateConnector",
+    "plugin": "github",
+    "action": "issues.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "title",
+      "body",
+      "assignee",
+      "milestone",
+      "labels",
+      "assignees"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/IssuesUpdateConnector",
+    "plugin": "github",
+    "action": "issues.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "issueNumber",
+      "title",
+      "body",
+      "assignee",
+      "state",
+      "stateReason",
+      "milestone",
+      "labels",
+      "assignees"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/IssuesCreateCommentConnector",
+    "plugin": "github",
+    "action": "issues.createComment",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "issueNumber",
+      "body"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/PullRequestsListConnector",
+    "plugin": "github",
+    "action": "pullRequests.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "state",
+      "head",
+      "base",
+      "sort",
+      "direction",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/PullRequestsGetConnector",
+    "plugin": "github",
+    "action": "pullRequests.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "pullNumber"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/PullRequestsListReviewsConnector",
+    "plugin": "github",
+    "action": "pullRequests.listReviews",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "pullNumber",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/PullRequestsCreateReviewConnector",
+    "plugin": "github",
+    "action": "pullRequests.createReview",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "pullNumber",
+      "commitId",
+      "body",
+      "event",
+      "comments"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/RepositoriesListConnector",
+    "plugin": "github",
+    "action": "repositories.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "type",
+      "sort",
+      "direction",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/RepositoriesGetConnector",
+    "plugin": "github",
+    "action": "repositories.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/RepositoriesListBranchesConnector",
+    "plugin": "github",
+    "action": "repositories.listBranches",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "protected",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/RepositoriesListCommitsConnector",
+    "plugin": "github",
+    "action": "repositories.listCommits",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "sha",
+      "path",
+      "author",
+      "committer",
+      "since",
+      "until",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/RepositoriesGetContentConnector",
+    "plugin": "github",
+    "action": "repositories.getContent",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "path",
+      "ref"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/RepositoriesStarConnector",
+    "plugin": "github",
+    "action": "repositories.star",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/RepositoriesUnstarConnector",
+    "plugin": "github",
+    "action": "repositories.unstar",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/RepositoriesCheckStarredConnector",
+    "plugin": "github",
+    "action": "repositories.checkStarred",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/RepositoriesListStarredConnector",
+    "plugin": "github",
+    "action": "repositories.listStarred",
+    "authType": "oauth_2",
+    "configKeys": [
+      "sort",
+      "direction",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/RepositoriesListStargazersConnector",
+    "plugin": "github",
+    "action": "repositories.listStargazers",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/ReleasesListConnector",
+    "plugin": "github",
+    "action": "releases.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/ReleasesGetConnector",
+    "plugin": "github",
+    "action": "releases.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "releaseId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/ReleasesCreateConnector",
+    "plugin": "github",
+    "action": "releases.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "tagName",
+      "targetCommitish",
+      "name",
+      "body",
+      "draft",
+      "prerelease",
+      "generateReleaseNotes"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/ReleasesUpdateConnector",
+    "plugin": "github",
+    "action": "releases.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "releaseId",
+      "tagName",
+      "targetCommitish",
+      "name",
+      "body",
+      "draft",
+      "prerelease"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/WorkflowsListConnector",
+    "plugin": "github",
+    "action": "workflows.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/WorkflowsGetConnector",
+    "plugin": "github",
+    "action": "workflows.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "workflowId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/WorkflowsListRunsConnector",
+    "plugin": "github",
+    "action": "workflows.listRuns",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "actor",
+      "branch",
+      "event",
+      "status",
+      "perPage",
+      "page",
+      "created",
+      "excludePullRequests",
+      "checkSuiteId",
+      "headSha"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/DiscussionsListConnector",
+    "plugin": "github",
+    "action": "discussions.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/DiscussionsGetConnector",
+    "plugin": "github",
+    "action": "discussions.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "discussionNumber"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/ForksListConnector",
+    "plugin": "github",
+    "action": "forks.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "sort",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/CommentsListConnector",
+    "plugin": "github",
+    "action": "comments.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "sort",
+      "direction",
+      "since",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/CommentsListForIssueConnector",
+    "plugin": "github",
+    "action": "comments.listForIssue",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "issueNumber",
+      "since",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/CommentsGetConnector",
+    "plugin": "github",
+    "action": "comments.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "commentId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/CommentsUpdateConnector",
+    "plugin": "github",
+    "action": "comments.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "commentId",
+      "body"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/CommentsDeleteConnector",
+    "plugin": "github",
+    "action": "comments.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "commentId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/EventsListConnector",
+    "plugin": "github",
+    "action": "events.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/EventsListForNetworkConnector",
+    "plugin": "github",
+    "action": "events.listForNetwork",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/EventsListForOrgConnector",
+    "plugin": "github",
+    "action": "events.listForOrg",
+    "authType": "oauth_2",
+    "configKeys": [
+      "org",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/EventsListForRepositoryConnector",
+    "plugin": "github",
+    "action": "events.listForRepository",
+    "authType": "oauth_2",
+    "configKeys": [
+      "owner",
+      "repo",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/EventsListForUserConnector",
+    "plugin": "github",
+    "action": "events.listForUser",
+    "authType": "oauth_2",
+    "configKeys": [
+      "username",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/EventsListForUserOrgConnector",
+    "plugin": "github",
+    "action": "events.listForUserOrg",
+    "authType": "oauth_2",
+    "configKeys": [
+      "username",
+      "org",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/EventsListPublicForUserConnector",
+    "plugin": "github",
+    "action": "events.listPublicForUser",
+    "authType": "oauth_2",
+    "configKeys": [
+      "username",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/EventsListReceivedForUserConnector",
+    "plugin": "github",
+    "action": "events.listReceivedForUser",
+    "authType": "oauth_2",
+    "configKeys": [
+      "username",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/EventsListPublicReceivedForUserConnector",
+    "plugin": "github",
+    "action": "events.listPublicReceivedForUser",
+    "authType": "oauth_2",
+    "configKeys": [
+      "username",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/UsersListConnector",
+    "plugin": "github",
+    "action": "users.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "since",
+      "perPage"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/UsersGetConnector",
+    "plugin": "github",
+    "action": "users.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "username"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/UsersGetByIdConnector",
+    "plugin": "github",
+    "action": "users.getById",
+    "authType": "oauth_2",
+    "configKeys": [
+      "accountId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/UsersGetAuthenticatedConnector",
+    "plugin": "github",
+    "action": "users.getAuthenticated",
+    "authType": "oauth_2",
+    "configKeys": []
+  },
+  {
+    "nodeName": "Corsair/Github/UsersUpdateConnector",
+    "plugin": "github",
+    "action": "users.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "name",
+      "email",
+      "blog",
+      "twitterUsername",
+      "company",
+      "location",
+      "hireable",
+      "bio"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/UsersGetHovercardConnector",
+    "plugin": "github",
+    "action": "users.getHovercard",
+    "authType": "oauth_2",
+    "configKeys": [
+      "username",
+      "subjectType",
+      "subjectId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/SearchIssuesConnector",
+    "plugin": "github",
+    "action": "search.issues",
+    "authType": "oauth_2",
+    "configKeys": [
+      "q",
+      "sort",
+      "order",
+      "perPage",
+      "page",
+      "advancedSearch",
+      "searchType"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/SearchRepositoriesConnector",
+    "plugin": "github",
+    "action": "search.repositories",
+    "authType": "oauth_2",
+    "configKeys": [
+      "q",
+      "sort",
+      "order",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Github/SearchUsersConnector",
+    "plugin": "github",
+    "action": "search.users",
+    "authType": "oauth_2",
+    "configKeys": [
+      "q",
+      "sort",
+      "order",
+      "perPage",
+      "page"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Resend/EmailsSendConnector",
+    "plugin": "resend",
+    "action": "emails.send",
+    "authType": "accessToken",
+    "configKeys": [
+      "from",
+      "to",
+      "subject",
+      "html",
+      "text",
+      "cc",
+      "bcc",
+      "reply_to",
+      "attachments",
+      "tags",
+      "headers"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Resend/EmailsGetConnector",
+    "plugin": "resend",
+    "action": "emails.get",
+    "authType": "accessToken",
+    "configKeys": [
+      "id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Resend/EmailsListConnector",
+    "plugin": "resend",
+    "action": "emails.list",
+    "authType": "accessToken",
+    "configKeys": [
+      "limit",
+      "cursor"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Resend/DomainsCreateConnector",
+    "plugin": "resend",
+    "action": "domains.create",
+    "authType": "accessToken",
+    "configKeys": [
+      "name",
+      "region"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Resend/DomainsGetConnector",
+    "plugin": "resend",
+    "action": "domains.get",
+    "authType": "accessToken",
+    "configKeys": [
+      "id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Resend/DomainsListConnector",
+    "plugin": "resend",
+    "action": "domains.list",
+    "authType": "accessToken",
+    "configKeys": [
+      "limit",
+      "cursor"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Resend/DomainsDeleteConnector",
+    "plugin": "resend",
+    "action": "domains.delete",
+    "authType": "accessToken",
+    "configKeys": [
+      "id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Resend/DomainsVerifyConnector",
+    "plugin": "resend",
+    "action": "domains.verify",
+    "authType": "accessToken",
+    "configKeys": [
+      "id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Tavily/SearchSearchConnector",
+    "plugin": "tavily",
+    "action": "search.search",
+    "authType": "accessToken",
+    "configKeys": [
+      "query",
+      "search_depth",
+      "chunks_per_source",
+      "max_results",
+      "topic",
+      "time_range",
+      "start_date",
+      "end_date",
+      "include_answer",
+      "include_raw_content",
+      "include_images",
+      "include_image_descriptions",
+      "include_favicon",
+      "include_domains",
+      "exclude_domains",
+      "country",
+      "auto_parameters",
+      "include_usage"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Tavily/ExtractExtractConnector",
+    "plugin": "tavily",
+    "action": "extract.extract",
+    "authType": "accessToken",
+    "configKeys": [
+      "urls",
+      "include_images",
+      "extract_depth",
+      "format",
+      "include_favicon"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Tavily/CrawlCrawlConnector",
+    "plugin": "tavily",
+    "action": "crawl.crawl",
+    "authType": "accessToken",
+    "configKeys": [
+      "url",
+      "max_depth",
+      "max_breadth",
+      "limit",
+      "instructions",
+      "select_paths",
+      "select_domains",
+      "exclude_paths",
+      "exclude_domains",
+      "allow_external",
+      "categories",
+      "extract_depth",
+      "format",
+      "include_images",
+      "include_favicon"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Tavily/MapMapConnector",
+    "plugin": "tavily",
+    "action": "map.map",
+    "authType": "accessToken",
+    "configKeys": [
+      "url",
+      "max_depth",
+      "max_breadth",
+      "limit",
+      "instructions",
+      "select_paths",
+      "select_domains",
+      "exclude_paths",
+      "exclude_domains",
+      "allow_external",
+      "categories"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsArchiveConnector",
+    "plugin": "slack",
+    "action": "channels.archive",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsCloseConnector",
+    "plugin": "slack",
+    "action": "channels.close",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsCreateConnector",
+    "plugin": "slack",
+    "action": "channels.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "name",
+      "is_private",
+      "team_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsGetConnector",
+    "plugin": "slack",
+    "action": "channels.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "include_locale",
+      "include_num_members"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsListConnector",
+    "plugin": "slack",
+    "action": "channels.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "exclude_archived",
+      "types",
+      "team_id",
+      "cursor",
+      "limit"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsGetHistoryConnector",
+    "plugin": "slack",
+    "action": "channels.getHistory",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "latest",
+      "oldest",
+      "inclusive",
+      "include_all_metadata",
+      "cursor",
+      "limit"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsInviteConnector",
+    "plugin": "slack",
+    "action": "channels.invite",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "users",
+      "force"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsJoinConnector",
+    "plugin": "slack",
+    "action": "channels.join",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsKickConnector",
+    "plugin": "slack",
+    "action": "channels.kick",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "user"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsLeaveConnector",
+    "plugin": "slack",
+    "action": "channels.leave",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsGetMembersConnector",
+    "plugin": "slack",
+    "action": "channels.getMembers",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "cursor",
+      "limit"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsOpenConnector",
+    "plugin": "slack",
+    "action": "channels.open",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "users",
+      "prevent_creation",
+      "return_im"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsRenameConnector",
+    "plugin": "slack",
+    "action": "channels.rename",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "name"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsGetRepliesConnector",
+    "plugin": "slack",
+    "action": "channels.getReplies",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "ts",
+      "latest",
+      "oldest",
+      "inclusive",
+      "include_all_metadata",
+      "cursor",
+      "limit"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsSetPurposeConnector",
+    "plugin": "slack",
+    "action": "channels.setPurpose",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "purpose"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsSetTopicConnector",
+    "plugin": "slack",
+    "action": "channels.setTopic",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "topic"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ChannelsUnarchiveConnector",
+    "plugin": "slack",
+    "action": "channels.unarchive",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/UsersGetConnector",
+    "plugin": "slack",
+    "action": "users.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user",
+      "include_locale"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/UsersListConnector",
+    "plugin": "slack",
+    "action": "users.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "include_locale",
+      "team_id",
+      "cursor",
+      "limit"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/UsersGetProfileConnector",
+    "plugin": "slack",
+    "action": "users.getProfile",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user",
+      "include_labels"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/UsersGetPresenceConnector",
+    "plugin": "slack",
+    "action": "users.getPresence",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/UsersUpdateProfileConnector",
+    "plugin": "slack",
+    "action": "users.updateProfile",
+    "authType": "oauth_2",
+    "configKeys": [
+      "profile",
+      "user",
+      "name",
+      "value"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/UserGroupsCreateConnector",
+    "plugin": "slack",
+    "action": "userGroups.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "name",
+      "channels",
+      "description",
+      "handle",
+      "include_count",
+      "team_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/UserGroupsDisableConnector",
+    "plugin": "slack",
+    "action": "userGroups.disable",
+    "authType": "oauth_2",
+    "configKeys": [
+      "userGroup",
+      "include_count",
+      "team_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/UserGroupsEnableConnector",
+    "plugin": "slack",
+    "action": "userGroups.enable",
+    "authType": "oauth_2",
+    "configKeys": [
+      "userGroup",
+      "include_count",
+      "team_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/UserGroupsListConnector",
+    "plugin": "slack",
+    "action": "userGroups.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "include_count",
+      "include_disabled",
+      "include_users",
+      "team_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/UserGroupsUpdateConnector",
+    "plugin": "slack",
+    "action": "userGroups.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "userGroup",
+      "name",
+      "channels",
+      "description",
+      "handle",
+      "include_count",
+      "team_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/FilesGetConnector",
+    "plugin": "slack",
+    "action": "files.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "file",
+      "cursor",
+      "limit",
+      "page",
+      "count"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/FilesListConnector",
+    "plugin": "slack",
+    "action": "files.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "user",
+      "types",
+      "ts_from",
+      "ts_to",
+      "show_files_hidden_by_limit",
+      "team_id",
+      "page",
+      "count"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/FilesUploadConnector",
+    "plugin": "slack",
+    "action": "files.upload",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channels",
+      "content",
+      "file",
+      "filename",
+      "filetype",
+      "initial_comment",
+      "thread_ts",
+      "title"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/MessagesDeleteConnector",
+    "plugin": "slack",
+    "action": "messages.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "ts",
+      "as_user"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/MessagesGetPermalinkConnector",
+    "plugin": "slack",
+    "action": "messages.getPermalink",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "message_ts"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/MessagesSearchConnector",
+    "plugin": "slack",
+    "action": "messages.search",
+    "authType": "oauth_2",
+    "configKeys": [
+      "query",
+      "sort",
+      "sort_dir",
+      "highlight",
+      "team_id",
+      "cursor",
+      "limit",
+      "page",
+      "count"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/MessagesPostConnector",
+    "plugin": "slack",
+    "action": "messages.post",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "text",
+      "blocks",
+      "attachments",
+      "thread_ts",
+      "reply_broadcast",
+      "parse",
+      "link_names",
+      "unfurl_links",
+      "unfurl_media",
+      "mrkdwn",
+      "as_user",
+      "icon_emoji",
+      "icon_url",
+      "username",
+      "metadata"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/MessagesUpdateConnector",
+    "plugin": "slack",
+    "action": "messages.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "ts",
+      "text",
+      "blocks",
+      "attachments",
+      "parse",
+      "link_names",
+      "as_user",
+      "file_ids",
+      "reply_broadcast",
+      "metadata"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ReactionsAddConnector",
+    "plugin": "slack",
+    "action": "reactions.add",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "timestamp",
+      "name"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ReactionsGetConnector",
+    "plugin": "slack",
+    "action": "reactions.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "timestamp",
+      "file",
+      "file_comment",
+      "full"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/ReactionsRemoveConnector",
+    "plugin": "slack",
+    "action": "reactions.remove",
+    "authType": "oauth_2",
+    "configKeys": [
+      "name",
+      "channel",
+      "timestamp",
+      "file",
+      "file_comment"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/StarsAddConnector",
+    "plugin": "slack",
+    "action": "stars.add",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "timestamp",
+      "file",
+      "file_comment"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/StarsRemoveConnector",
+    "plugin": "slack",
+    "action": "stars.remove",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel",
+      "timestamp",
+      "file",
+      "file_comment"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/StarsListConnector",
+    "plugin": "slack",
+    "action": "stars.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "team_id",
+      "cursor",
+      "limit",
+      "page",
+      "count"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/AdminListTeamsConnector",
+    "plugin": "slack",
+    "action": "admin.listTeams",
+    "authType": "oauth_2",
+    "configKeys": [
+      "limit",
+      "cursor"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/AdminConversationsSearchConnector",
+    "plugin": "slack",
+    "action": "admin.conversationsSearch",
+    "authType": "oauth_2",
+    "configKeys": [
+      "team_ids",
+      "connected_team_ids",
+      "query",
+      "limit",
+      "cursor",
+      "search_channel_types",
+      "sort",
+      "sort_dir",
+      "total_count_only"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/AdminConversationsGetTeamsConnector",
+    "plugin": "slack",
+    "action": "admin.conversationsGetTeams",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel_id",
+      "cursor",
+      "limit"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Slack/AdminConversationsSetTeamsConnector",
+    "plugin": "slack",
+    "action": "admin.conversationsSetTeams",
+    "authType": "oauth_2",
+    "configKeys": [
+      "channel_id",
+      "team_id",
+      "target_team_ids",
+      "org_channel"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/BalanceGetConnector",
+    "plugin": "stripe",
+    "action": "balance.get",
+    "authType": "accessToken",
+    "configKeys": []
+  },
+  {
+    "nodeName": "Corsair/Stripe/ChargesCreateConnector",
+    "plugin": "stripe",
+    "action": "charges.create",
+    "authType": "accessToken",
+    "configKeys": [
+      "amount",
+      "currency",
+      "source",
+      "customer",
+      "description",
+      "metadata"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/ChargesGetConnector",
+    "plugin": "stripe",
+    "action": "charges.get",
+    "authType": "accessToken",
+    "configKeys": [
+      "id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/ChargesListConnector",
+    "plugin": "stripe",
+    "action": "charges.list",
+    "authType": "accessToken",
+    "configKeys": [
+      "customer",
+      "payment_intent",
+      "limit",
+      "starting_after",
+      "ending_before"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/ChargesUpdateConnector",
+    "plugin": "stripe",
+    "action": "charges.update",
+    "authType": "accessToken",
+    "configKeys": [
+      "id",
+      "description",
+      "metadata",
+      "receipt_email",
+      "shipping"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/CouponsCreateConnector",
+    "plugin": "stripe",
+    "action": "coupons.create",
+    "authType": "accessToken",
+    "configKeys": [
+      "id",
+      "name",
+      "amount_off",
+      "percent_off",
+      "currency",
+      "duration",
+      "duration_in_months",
+      "max_redemptions",
+      "metadata"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/CouponsListConnector",
+    "plugin": "stripe",
+    "action": "coupons.list",
+    "authType": "accessToken",
+    "configKeys": [
+      "limit",
+      "starting_after",
+      "ending_before"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/CustomersCreateConnector",
+    "plugin": "stripe",
+    "action": "customers.create",
+    "authType": "accessToken",
+    "configKeys": [
+      "email",
+      "name",
+      "phone",
+      "description",
+      "metadata"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/CustomersDeleteConnector",
+    "plugin": "stripe",
+    "action": "customers.delete",
+    "authType": "accessToken",
+    "configKeys": [
+      "id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/CustomersGetConnector",
+    "plugin": "stripe",
+    "action": "customers.get",
+    "authType": "accessToken",
+    "configKeys": [
+      "id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/CustomersListConnector",
+    "plugin": "stripe",
+    "action": "customers.list",
+    "authType": "accessToken",
+    "configKeys": [
+      "email",
+      "limit",
+      "starting_after",
+      "ending_before"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/PaymentIntentsCreateConnector",
+    "plugin": "stripe",
+    "action": "paymentIntents.create",
+    "authType": "accessToken",
+    "configKeys": [
+      "amount",
+      "currency",
+      "customer",
+      "description",
+      "payment_method",
+      "confirm",
+      "metadata"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/PaymentIntentsGetConnector",
+    "plugin": "stripe",
+    "action": "paymentIntents.get",
+    "authType": "accessToken",
+    "configKeys": [
+      "id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/PaymentIntentsListConnector",
+    "plugin": "stripe",
+    "action": "paymentIntents.list",
+    "authType": "accessToken",
+    "configKeys": [
+      "customer",
+      "limit",
+      "starting_after",
+      "ending_before"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/PaymentIntentsUpdateConnector",
+    "plugin": "stripe",
+    "action": "paymentIntents.update",
+    "authType": "accessToken",
+    "configKeys": [
+      "id",
+      "amount",
+      "currency",
+      "customer",
+      "description",
+      "payment_method",
+      "metadata"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/PricesCreateConnector",
+    "plugin": "stripe",
+    "action": "prices.create",
+    "authType": "accessToken",
+    "configKeys": [
+      "currency",
+      "unit_amount",
+      "product",
+      "product_data",
+      "nickname",
+      "recurring",
+      "metadata"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/PricesListConnector",
+    "plugin": "stripe",
+    "action": "prices.list",
+    "authType": "accessToken",
+    "configKeys": [
+      "active",
+      "currency",
+      "product",
+      "type",
+      "limit",
+      "starting_after",
+      "ending_before"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/SourcesCreateConnector",
+    "plugin": "stripe",
+    "action": "sources.create",
+    "authType": "accessToken",
+    "configKeys": [
+      "type",
+      "amount",
+      "currency",
+      "flow",
+      "owner",
+      "redirect",
+      "metadata",
+      "token"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/SourcesGetConnector",
+    "plugin": "stripe",
+    "action": "sources.get",
+    "authType": "accessToken",
+    "configKeys": [
+      "id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Stripe/TokensCreateConnector",
+    "plugin": "stripe",
+    "action": "tokens.create",
+    "authType": "accessToken",
+    "configKeys": [
+      "card",
+      "bank_account",
+      "pii"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Twilio/MessagesSendConnector",
+    "plugin": "twilio",
+    "action": "messages.send",
+    "authType": "accessToken",
+    "configKeys": [
+      "To",
+      "From",
+      "Body",
+      "MediaUrl",
+      "StatusCallback",
+      "MessagingServiceSid"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Twilio/MessagesGetConnector",
+    "plugin": "twilio",
+    "action": "messages.get",
+    "authType": "accessToken",
+    "configKeys": [
+      "messageSid"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Twilio/MessagesListConnector",
+    "plugin": "twilio",
+    "action": "messages.list",
+    "authType": "accessToken",
+    "configKeys": [
+      "To",
+      "From",
+      "DateSent",
+      "PageSize"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Twilio/CallsCreateConnector",
+    "plugin": "twilio",
+    "action": "calls.create",
+    "authType": "accessToken",
+    "configKeys": [
+      "To",
+      "From",
+      "Url",
+      "Twiml",
+      "StatusCallback",
+      "StatusCallbackMethod",
+      "StatusCallbackEvent",
+      "Timeout",
+      "Record"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Twilio/CallsGetConnector",
+    "plugin": "twilio",
+    "action": "calls.get",
+    "authType": "accessToken",
+    "configKeys": [
+      "callSid"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Twilio/CallsListConnector",
+    "plugin": "twilio",
+    "action": "calls.list",
+    "authType": "accessToken",
+    "configKeys": [
+      "To",
+      "From",
+      "Status",
+      "StartTime",
+      "EndTime",
+      "PageSize"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/BlocksAppendBlockConnector",
+    "plugin": "notion",
+    "action": "blocks.appendBlock",
+    "authType": "oauth_2",
+    "configKeys": [
+      "block_id",
+      "children"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/BlocksGetManyChildBlocksConnector",
+    "plugin": "notion",
+    "action": "blocks.getManyChildBlocks",
+    "authType": "oauth_2",
+    "configKeys": [
+      "block_id",
+      "start_cursor",
+      "page_size"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/DatabasesGetDatabaseConnector",
+    "plugin": "notion",
+    "action": "databases.getDatabase",
+    "authType": "oauth_2",
+    "configKeys": [
+      "database_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/DatabasesGetManyDatabasesConnector",
+    "plugin": "notion",
+    "action": "databases.getManyDatabases",
+    "authType": "oauth_2",
+    "configKeys": [
+      "start_cursor",
+      "page_size"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/DatabasesSearchDatabaseConnector",
+    "plugin": "notion",
+    "action": "databases.searchDatabase",
+    "authType": "oauth_2",
+    "configKeys": [
+      "query",
+      "sort",
+      "filter",
+      "start_cursor",
+      "page_size"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/DatabasePagesCreateDatabasePageConnector",
+    "plugin": "notion",
+    "action": "databasePages.createDatabasePage",
+    "authType": "oauth_2",
+    "configKeys": [
+      "database_id",
+      "properties"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/DatabasePagesGetDatabasePageConnector",
+    "plugin": "notion",
+    "action": "databasePages.getDatabasePage",
+    "authType": "oauth_2",
+    "configKeys": [
+      "page_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/DatabasePagesGetManyDatabasePagesConnector",
+    "plugin": "notion",
+    "action": "databasePages.getManyDatabasePages",
+    "authType": "oauth_2",
+    "configKeys": [
+      "database_id",
+      "filter",
+      "sorts",
+      "start_cursor",
+      "page_size"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/DatabasePagesUpdateDatabasePageConnector",
+    "plugin": "notion",
+    "action": "databasePages.updateDatabasePage",
+    "authType": "oauth_2",
+    "configKeys": [
+      "page_id",
+      "properties",
+      "archived"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/PagesArchivePageConnector",
+    "plugin": "notion",
+    "action": "pages.archivePage",
+    "authType": "oauth_2",
+    "configKeys": [
+      "page_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/PagesCreatePageConnector",
+    "plugin": "notion",
+    "action": "pages.createPage",
+    "authType": "oauth_2",
+    "configKeys": [
+      "parent",
+      "properties",
+      "children"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/PagesSearchPageConnector",
+    "plugin": "notion",
+    "action": "pages.searchPage",
+    "authType": "oauth_2",
+    "configKeys": [
+      "query",
+      "sort",
+      "filter",
+      "start_cursor",
+      "page_size"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/UsersGetUserConnector",
+    "plugin": "notion",
+    "action": "users.getUser",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Notion/UsersGetManyUsersConnector",
+    "plugin": "notion",
+    "action": "users.getManyUsers",
+    "authType": "oauth_2",
+    "configKeys": [
+      "start_cursor",
+      "page_size"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/ContactsGetConnector",
+    "plugin": "hubspot",
+    "action": "contacts.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "contactId",
+      "properties",
+      "propertiesWithHistory",
+      "associations",
+      "archived",
+      "idProperty"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/ContactsGetManyConnector",
+    "plugin": "hubspot",
+    "action": "contacts.getMany",
+    "authType": "oauth_2",
+    "configKeys": [
+      "limit",
+      "after",
+      "properties",
+      "propertiesWithHistory",
+      "associations",
+      "archived"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/ContactsCreateConnector",
+    "plugin": "hubspot",
+    "action": "contacts.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "properties",
+      "associations"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/ContactsUpdateConnector",
+    "plugin": "hubspot",
+    "action": "contacts.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "contactId",
+      "properties"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/ContactsDeleteConnector",
+    "plugin": "hubspot",
+    "action": "contacts.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "contactId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/ContactsGetRecentlyCreatedConnector",
+    "plugin": "hubspot",
+    "action": "contacts.getRecentlyCreated",
+    "authType": "oauth_2",
+    "configKeys": [
+      "count",
+      "after",
+      "since"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/ContactsGetRecentlyUpdatedConnector",
+    "plugin": "hubspot",
+    "action": "contacts.getRecentlyUpdated",
+    "authType": "oauth_2",
+    "configKeys": [
+      "count",
+      "after",
+      "since"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/ContactsSearchConnector",
+    "plugin": "hubspot",
+    "action": "contacts.search",
+    "authType": "oauth_2",
+    "configKeys": [
+      "query",
+      "limit",
+      "after",
+      "sorts",
+      "properties",
+      "filterGroups"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/CompaniesGetConnector",
+    "plugin": "hubspot",
+    "action": "companies.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "companyId",
+      "properties",
+      "propertiesWithHistory",
+      "associations",
+      "archived",
+      "idProperty"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/CompaniesGetManyConnector",
+    "plugin": "hubspot",
+    "action": "companies.getMany",
+    "authType": "oauth_2",
+    "configKeys": [
+      "limit",
+      "after",
+      "properties",
+      "propertiesWithHistory",
+      "associations",
+      "archived"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/CompaniesCreateConnector",
+    "plugin": "hubspot",
+    "action": "companies.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "properties",
+      "associations"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/CompaniesUpdateConnector",
+    "plugin": "hubspot",
+    "action": "companies.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "companyId",
+      "properties"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/CompaniesDeleteConnector",
+    "plugin": "hubspot",
+    "action": "companies.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "companyId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/CompaniesGetRecentlyCreatedConnector",
+    "plugin": "hubspot",
+    "action": "companies.getRecentlyCreated",
+    "authType": "oauth_2",
+    "configKeys": [
+      "count",
+      "after",
+      "since"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/CompaniesGetRecentlyUpdatedConnector",
+    "plugin": "hubspot",
+    "action": "companies.getRecentlyUpdated",
+    "authType": "oauth_2",
+    "configKeys": [
+      "count",
+      "after",
+      "since"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/CompaniesSearchByDomainConnector",
+    "plugin": "hubspot",
+    "action": "companies.searchByDomain",
+    "authType": "oauth_2",
+    "configKeys": [
+      "domain",
+      "properties"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/DealsGetConnector",
+    "plugin": "hubspot",
+    "action": "deals.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "dealId",
+      "properties",
+      "propertiesWithHistory",
+      "associations",
+      "archived",
+      "idProperty"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/DealsGetManyConnector",
+    "plugin": "hubspot",
+    "action": "deals.getMany",
+    "authType": "oauth_2",
+    "configKeys": [
+      "limit",
+      "after",
+      "properties",
+      "propertiesWithHistory",
+      "associations",
+      "archived"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/DealsCreateConnector",
+    "plugin": "hubspot",
+    "action": "deals.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "properties",
+      "associations"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/DealsUpdateConnector",
+    "plugin": "hubspot",
+    "action": "deals.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "dealId",
+      "properties"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/DealsDeleteConnector",
+    "plugin": "hubspot",
+    "action": "deals.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "dealId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/DealsGetRecentlyCreatedConnector",
+    "plugin": "hubspot",
+    "action": "deals.getRecentlyCreated",
+    "authType": "oauth_2",
+    "configKeys": [
+      "count",
+      "after",
+      "since"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/DealsGetRecentlyUpdatedConnector",
+    "plugin": "hubspot",
+    "action": "deals.getRecentlyUpdated",
+    "authType": "oauth_2",
+    "configKeys": [
+      "count",
+      "after",
+      "since"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/DealsSearchConnector",
+    "plugin": "hubspot",
+    "action": "deals.search",
+    "authType": "oauth_2",
+    "configKeys": [
+      "query",
+      "limit",
+      "after",
+      "sorts",
+      "properties",
+      "filterGroups"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/TicketsGetConnector",
+    "plugin": "hubspot",
+    "action": "tickets.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "ticketId",
+      "properties",
+      "propertiesWithHistory",
+      "associations",
+      "archived",
+      "idProperty"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/TicketsGetManyConnector",
+    "plugin": "hubspot",
+    "action": "tickets.getMany",
+    "authType": "oauth_2",
+    "configKeys": [
+      "limit",
+      "after",
+      "properties",
+      "propertiesWithHistory",
+      "associations",
+      "archived"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/TicketsCreateConnector",
+    "plugin": "hubspot",
+    "action": "tickets.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "properties",
+      "associations"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/TicketsUpdateConnector",
+    "plugin": "hubspot",
+    "action": "tickets.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "ticketId",
+      "properties"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/TicketsDeleteConnector",
+    "plugin": "hubspot",
+    "action": "tickets.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "ticketId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/EngagementsGetConnector",
+    "plugin": "hubspot",
+    "action": "engagements.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "engagementId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/EngagementsGetManyConnector",
+    "plugin": "hubspot",
+    "action": "engagements.getMany",
+    "authType": "oauth_2",
+    "configKeys": [
+      "limit",
+      "after"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/EngagementsCreateConnector",
+    "plugin": "hubspot",
+    "action": "engagements.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "engagement",
+      "associations",
+      "metadata"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/EngagementsDeleteConnector",
+    "plugin": "hubspot",
+    "action": "engagements.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "engagementId"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/ContactListsAddContactConnector",
+    "plugin": "hubspot",
+    "action": "contactLists.addContact",
+    "authType": "oauth_2",
+    "configKeys": [
+      "listId",
+      "emails",
+      "vids"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Hubspot/ContactListsRemoveContactConnector",
+    "plugin": "hubspot",
+    "action": "contactLists.removeContact",
+    "authType": "oauth_2",
+    "configKeys": [
+      "listId",
+      "emails",
+      "vids"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Openweathermap/WeatherOneCallConnector",
+    "plugin": "openweathermap",
+    "action": "weather.oneCall",
+    "authType": "accessToken",
+    "configKeys": [
+      "lat",
+      "lon",
+      "exclude",
+      "units",
+      "lang"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Openweathermap/HistoryTimeMachineConnector",
+    "plugin": "openweathermap",
+    "action": "history.timeMachine",
+    "authType": "accessToken",
+    "configKeys": [
+      "lat",
+      "lon",
+      "dt",
+      "units",
+      "lang"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Openweathermap/SummaryDaySummaryConnector",
+    "plugin": "openweathermap",
+    "action": "summary.daySummary",
+    "authType": "accessToken",
+    "configKeys": [
+      "lat",
+      "lon",
+      "date",
+      "units",
+      "lang",
+      "tz"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Openweathermap/SummaryOverviewConnector",
+    "plugin": "openweathermap",
+    "action": "summary.overview",
+    "authType": "accessToken",
+    "configKeys": [
+      "lat",
+      "lon",
+      "date",
+      "units"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesSendConnector",
+    "plugin": "outlook",
+    "action": "messages.send",
+    "authType": "oauth_2",
+    "configKeys": [
+      "to",
+      "subject",
+      "body",
+      "user_id",
+      "to_name",
+      "is_html",
+      "cc_emails",
+      "bcc_emails",
+      "from_address",
+      "save_to_sent_items",
+      "attachment"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesCreateDraftConnector",
+    "plugin": "outlook",
+    "action": "messages.createDraft",
+    "authType": "oauth_2",
+    "configKeys": [
+      "subject",
+      "body",
+      "is_html",
+      "to_recipients",
+      "cc_recipients",
+      "bcc_recipients",
+      "attachment"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesGetConnector",
+    "plugin": "outlook",
+    "action": "messages.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "message_id",
+      "user_id",
+      "select"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesListConnector",
+    "plugin": "outlook",
+    "action": "messages.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user_id",
+      "folder",
+      "top",
+      "skip",
+      "select",
+      "orderby",
+      "is_read",
+      "subject",
+      "subject_contains",
+      "subject_startswith",
+      "subject_endswith",
+      "from_address",
+      "has_attachments",
+      "importance",
+      "categories",
+      "conversationId",
+      "sent_date_time_gt",
+      "sent_date_time_lt",
+      "received_date_time_ge",
+      "received_date_time_gt",
+      "received_date_time_le",
+      "received_date_time_lt"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesQueryConnector",
+    "plugin": "outlook",
+    "action": "messages.query",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user_id",
+      "folder",
+      "filter",
+      "select",
+      "orderby",
+      "top",
+      "skip"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesSearchConnector",
+    "plugin": "outlook",
+    "action": "messages.search",
+    "authType": "oauth_2",
+    "configKeys": [
+      "query",
+      "subject",
+      "fromEmail",
+      "hasAttachments",
+      "size",
+      "from_index",
+      "enable_top_results"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesReplyConnector",
+    "plugin": "outlook",
+    "action": "messages.reply",
+    "authType": "oauth_2",
+    "configKeys": [
+      "message_id",
+      "comment",
+      "user_id",
+      "cc_emails",
+      "bcc_emails"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesForwardConnector",
+    "plugin": "outlook",
+    "action": "messages.forward",
+    "authType": "oauth_2",
+    "configKeys": [
+      "message_id",
+      "to_recipients",
+      "comment",
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesDeleteConnector",
+    "plugin": "outlook",
+    "action": "messages.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "message_id",
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesMoveConnector",
+    "plugin": "outlook",
+    "action": "messages.move",
+    "authType": "oauth_2",
+    "configKeys": [
+      "message_id",
+      "destination_id",
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesUpdateConnector",
+    "plugin": "outlook",
+    "action": "messages.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "message_id",
+      "user_id",
+      "is_read",
+      "subject",
+      "importance",
+      "categories",
+      "to_recipients",
+      "cc_recipients",
+      "bcc_recipients",
+      "reply_to",
+      "flag",
+      "inference_classification",
+      "is_read_receipt_requested",
+      "is_delivery_receipt_requested"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesSendDraftConnector",
+    "plugin": "outlook",
+    "action": "messages.sendDraft",
+    "authType": "oauth_2",
+    "configKeys": [
+      "message_id",
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesBatchMoveConnector",
+    "plugin": "outlook",
+    "action": "messages.batchMove",
+    "authType": "oauth_2",
+    "configKeys": [
+      "message_ids",
+      "destination_id",
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesBatchUpdateConnector",
+    "plugin": "outlook",
+    "action": "messages.batchUpdate",
+    "authType": "oauth_2",
+    "configKeys": [
+      "updates",
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/MessagesAddAttachmentConnector",
+    "plugin": "outlook",
+    "action": "messages.addAttachment",
+    "authType": "oauth_2",
+    "configKeys": [
+      "message_id",
+      "name",
+      "user_id",
+      "odata_type",
+      "contentBytes",
+      "contentType",
+      "contentId",
+      "contentLocation",
+      "isInline",
+      "item",
+      "attachment"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/EventsCreateConnector",
+    "plugin": "outlook",
+    "action": "events.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "subject",
+      "start_datetime",
+      "end_datetime",
+      "time_zone",
+      "user_id",
+      "calendar_id",
+      "body",
+      "is_html",
+      "location",
+      "attendees_info",
+      "is_online_meeting",
+      "online_meeting_provider",
+      "show_as",
+      "categories",
+      "importance"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/EventsGetConnector",
+    "plugin": "outlook",
+    "action": "events.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "event_id",
+      "user_id",
+      "calendar_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/EventsListConnector",
+    "plugin": "outlook",
+    "action": "events.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user_id",
+      "calendar_id",
+      "filter",
+      "select",
+      "orderby",
+      "top",
+      "skip",
+      "timezone",
+      "expand_recurring_events"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/EventsUpdateConnector",
+    "plugin": "outlook",
+    "action": "events.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "event_id",
+      "user_id",
+      "subject",
+      "body",
+      "start_datetime",
+      "end_datetime",
+      "time_zone",
+      "location",
+      "attendees",
+      "show_as",
+      "categories"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/EventsDeleteConnector",
+    "plugin": "outlook",
+    "action": "events.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "event_id",
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/EventsCancelConnector",
+    "plugin": "outlook",
+    "action": "events.cancel",
+    "authType": "oauth_2",
+    "configKeys": [
+      "event_id",
+      "user_id",
+      "calendar_id",
+      "Comment"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/EventsDeclineConnector",
+    "plugin": "outlook",
+    "action": "events.decline",
+    "authType": "oauth_2",
+    "configKeys": [
+      "event_id",
+      "comment",
+      "user_id",
+      "sendResponse",
+      "proposedNewTime"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/EventsFindMeetingTimesConnector",
+    "plugin": "outlook",
+    "action": "events.findMeetingTimes",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user_id",
+      "attendees",
+      "timeConstraint",
+      "locationConstraint",
+      "meetingDuration",
+      "maxCandidates",
+      "isOrganizerOptional",
+      "returnSuggestionReasons",
+      "minimumAttendeePercentage",
+      "prefer_timezone"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/EventsGetScheduleConnector",
+    "plugin": "outlook",
+    "action": "events.getSchedule",
+    "authType": "oauth_2",
+    "configKeys": [
+      "calendar_id",
+      "schedules",
+      "startTime",
+      "endTime",
+      "availabilityViewInterval"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/CalendarsCreateConnector",
+    "plugin": "outlook",
+    "action": "calendars.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "name",
+      "user_id",
+      "color",
+      "hexColor"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/CalendarsGetConnector",
+    "plugin": "outlook",
+    "action": "calendars.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "calendar_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/CalendarsListConnector",
+    "plugin": "outlook",
+    "action": "calendars.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user_id",
+      "filter",
+      "select",
+      "orderby",
+      "top",
+      "skip"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/CalendarsDeleteConnector",
+    "plugin": "outlook",
+    "action": "calendars.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "calendar_id",
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/ContactsCreateConnector",
+    "plugin": "outlook",
+    "action": "contacts.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user_id",
+      "givenName",
+      "surname",
+      "displayName",
+      "emailAddresses",
+      "mobilePhone",
+      "homePhone",
+      "businessPhones",
+      "jobTitle",
+      "companyName",
+      "department",
+      "officeLocation",
+      "birthday",
+      "notes",
+      "categories"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/ContactsListConnector",
+    "plugin": "outlook",
+    "action": "contacts.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user_id",
+      "contact_folder_id",
+      "filter",
+      "select",
+      "orderby",
+      "top",
+      "skip"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/ContactsUpdateConnector",
+    "plugin": "outlook",
+    "action": "contacts.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "contact_id",
+      "user_id",
+      "givenName",
+      "surname",
+      "displayName",
+      "emailAddresses",
+      "mobilePhone",
+      "homePhones",
+      "businessPhones",
+      "jobTitle",
+      "companyName",
+      "department",
+      "officeLocation",
+      "birthday",
+      "notes",
+      "categories"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/ContactsDeleteConnector",
+    "plugin": "outlook",
+    "action": "contacts.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "contact_id",
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/FoldersCreateConnector",
+    "plugin": "outlook",
+    "action": "folders.create",
+    "authType": "oauth_2",
+    "configKeys": [
+      "displayName",
+      "user_id",
+      "isHidden",
+      "return_existing_if_exists"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/FoldersGetConnector",
+    "plugin": "outlook",
+    "action": "folders.get",
+    "authType": "oauth_2",
+    "configKeys": [
+      "mail_folder_id",
+      "user_id",
+      "select"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/FoldersListConnector",
+    "plugin": "outlook",
+    "action": "folders.list",
+    "authType": "oauth_2",
+    "configKeys": [
+      "user_id",
+      "filter",
+      "select",
+      "orderby",
+      "top",
+      "skip",
+      "count",
+      "include_hidden_folders"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/FoldersUpdateConnector",
+    "plugin": "outlook",
+    "action": "folders.update",
+    "authType": "oauth_2",
+    "configKeys": [
+      "mail_folder_id",
+      "displayName",
+      "user_id"
+    ]
+  },
+  {
+    "nodeName": "Corsair/Outlook/FoldersDeleteConnector",
+    "plugin": "outlook",
+    "action": "folders.delete",
+    "authType": "oauth_2",
+    "configKeys": [
+      "folder_id",
+      "user_id"
+    ]
+  }
+]

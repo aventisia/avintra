@@ -1,0 +1,202 @@
+{
+  "name": "Corsair/Github/WorkflowsListRunsConnector",
+  "description": "List workflow runs",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__GitHub",
+      "label": "GitHub Credential",
+      "description": "Select GitHub credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "owner",
+      "label": "Owner",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "repo",
+      "label": "Repo",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "actor",
+      "label": "Actor",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "branch",
+      "label": "Branch",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "event",
+      "label": "Event",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "status",
+      "label": "Status",
+      "description": "",
+      "defaultValue": "completed",
+      "selectOptions": [
+        {
+          "label": "completed",
+          "value": "completed",
+          "description": "completed"
+        },
+        {
+          "label": "action_required",
+          "value": "action_required",
+          "description": "action_required"
+        },
+        {
+          "label": "cancelled",
+          "value": "cancelled",
+          "description": "cancelled"
+        },
+        {
+          "label": "failure",
+          "value": "failure",
+          "description": "failure"
+        },
+        {
+          "label": "neutral",
+          "value": "neutral",
+          "description": "neutral"
+        },
+        {
+          "label": "skipped",
+          "value": "skipped",
+          "description": "skipped"
+        },
+        {
+          "label": "stale",
+          "value": "stale",
+          "description": "stale"
+        },
+        {
+          "label": "success",
+          "value": "success",
+          "description": "success"
+        },
+        {
+          "label": "timed_out",
+          "value": "timed_out",
+          "description": "timed_out"
+        },
+        {
+          "label": "in_progress",
+          "value": "in_progress",
+          "description": "in_progress"
+        },
+        {
+          "label": "queued",
+          "value": "queued",
+          "description": "queued"
+        },
+        {
+          "label": "requested",
+          "value": "requested",
+          "description": "requested"
+        },
+        {
+          "label": "waiting",
+          "value": "waiting",
+          "description": "waiting"
+        },
+        {
+          "label": "pending",
+          "value": "pending",
+          "description": "pending"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "perPage",
+      "label": "Per Page",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "page",
+      "label": "Page",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "created",
+      "label": "Created",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "excludePullRequests",
+      "label": "Exclude Pull Requests",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "checkSuiteId",
+      "label": "Check Suite Id",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "headSha",
+      "label": "Head Sha",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

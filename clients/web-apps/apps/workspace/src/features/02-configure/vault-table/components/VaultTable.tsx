@@ -8,6 +8,7 @@ import {
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
 import { formatDate } from "@avplatform/ui/utils";
+import { CheckCircleIcon } from "lucide-react";
 
 import { QueryTabs } from "@/components/QueryTab";
 import { HelpButton } from "@/components/help/HelpButton";
@@ -19,10 +20,12 @@ import { VaultAppsEnum } from "../enums/vault-apps-enum";
 import { useFetchVaults } from "../hooks/useFetchVaults";
 import { useTableTab } from "../hooks/useTableTab";
 import { vaultAppIconMapper } from "../vault-config/constants/vault-app-icon-mapper";
+import { isOAuthCredentialType } from "../vault-config/constants/oauth-credential-types";
 import { VaultTableSkeleton } from "./VaultTableSkeleton";
 import { vaultsTableColumns } from "./VaultsTableColumns";
 import { VaultRowActions } from "./vault-row-actions/VaultRowActions";
 import { VaultsBulkActions } from "./vault-row-actions/VaultsBulkActions";
+import { Tooltip } from "@/ui/components/tooltip";
 
 /**
  * Renders a table of configs.
@@ -89,9 +92,9 @@ export const VaultTable = () => {
                         src={
                           basePath +
                           vaultAppIconMapper[
-                            VaultAppsEnum[
-                              row.getValue("type") as keyof typeof VaultAppsEnum
-                            ] as VaultAppsEnum
+                          VaultAppsEnum[
+                          row.getValue("type") as keyof typeof VaultAppsEnum
+                          ] as VaultAppsEnum
                           ]
                         }
                         alt="icon"
@@ -108,6 +111,11 @@ export const VaultTable = () => {
                         >
                           {row.getValue("name")}
                         </div>
+
+                        {isOAuthCredentialType(row.original.type) && row.original.oauthConnected && (
+                          <Tooltip content="OAuth connected">
+                            <CheckCircleIcon className="h-3.5 w-3.5 text-green-600" aria-label="OAuth connected" />
+                          </Tooltip>)}
 
                         {isShared && (
                           <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem]  flex items-center justify-center  text-primary  rounded-full">
@@ -132,6 +140,7 @@ export const VaultTable = () => {
                     rowId={row.original.id || "rowId"}
                     accessLevel={row.original.accessLevel}
                     name={row.original.name}
+                    type={row.original.type}
                     isTenantWideAccess={row.original.isTenantWideAccess || false}
                   />
                 </div>

@@ -1,0 +1,83 @@
+{
+  "name": "Corsair/Openweathermap/SummaryOverviewConnector",
+  "description": "Get a human-readable weather overview text for a location and date",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Openweathermap",
+      "label": "Openweathermap Credential",
+      "description": "Select Openweathermap credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "lat",
+      "label": "Lat",
+      "description": "Latitude of the location",
+      "defaultValue": 0,
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "lon",
+      "label": "Lon",
+      "description": "Longitude of the location",
+      "defaultValue": 0,
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "date",
+      "label": "Date",
+      "description": "Date in YYYY-MM-DD format (defaults to today)",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "units",
+      "label": "Units",
+      "description": "Units: standard (Kelvin), metric (Celsius), imperial (Fahrenheit)",
+      "defaultValue": "standard",
+      "selectOptions": [
+        {
+          "label": "standard",
+          "value": "standard",
+          "description": "standard"
+        },
+        {
+          "label": "metric",
+          "value": "metric",
+          "description": "metric"
+        },
+        {
+          "label": "imperial",
+          "value": "imperial",
+          "description": "imperial"
+        }
+      ]
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

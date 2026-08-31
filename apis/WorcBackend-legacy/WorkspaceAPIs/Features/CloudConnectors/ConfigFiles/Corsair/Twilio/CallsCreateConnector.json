@@ -1,0 +1,118 @@
+{
+  "name": "Corsair/Twilio/CallsCreateConnector",
+  "description": "Initiate an outbound phone call",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Twilio",
+      "label": "Twilio Credential",
+      "description": "Select Twilio credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "To",
+      "label": "To",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "From",
+      "label": "From",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Url",
+      "label": "Url",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "Twiml",
+      "label": "Twiml",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "StatusCallback",
+      "label": "Status Callback",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "StatusCallbackMethod",
+      "label": "Status Callback Method",
+      "description": "",
+      "defaultValue": "GET",
+      "selectOptions": [
+        {
+          "label": "GET",
+          "value": "GET",
+          "description": "GET"
+        },
+        {
+          "label": "POST",
+          "value": "POST",
+          "description": "POST"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "tag-input",
+      "name": "StatusCallbackEvent",
+      "label": "Status Callback Event",
+      "description": "",
+      "defaultValue": []
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "Timeout",
+      "label": "Timeout",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "checkbox",
+      "name": "Record",
+      "label": "Record",
+      "description": "",
+      "defaultValue": false
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

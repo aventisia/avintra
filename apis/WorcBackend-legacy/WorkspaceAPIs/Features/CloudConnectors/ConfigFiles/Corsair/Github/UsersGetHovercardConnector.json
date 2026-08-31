@@ -1,0 +1,79 @@
+{
+  "name": "Corsair/Github/UsersGetHovercardConnector",
+  "description": "Get contextual hovercard information for a user",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__GitHub",
+      "label": "GitHub Credential",
+      "description": "Select GitHub credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "username",
+      "label": "Username",
+      "description": "",
+      "defaultValue": "",
+      "required": true
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "subjectType",
+      "label": "Subject Type",
+      "description": "",
+      "defaultValue": "organization",
+      "selectOptions": [
+        {
+          "label": "organization",
+          "value": "organization",
+          "description": "organization"
+        },
+        {
+          "label": "repository",
+          "value": "repository",
+          "description": "repository"
+        },
+        {
+          "label": "issue",
+          "value": "issue",
+          "description": "issue"
+        },
+        {
+          "label": "pull_request",
+          "value": "pull_request",
+          "description": "pull_request"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "subjectId",
+      "label": "Subject Id",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

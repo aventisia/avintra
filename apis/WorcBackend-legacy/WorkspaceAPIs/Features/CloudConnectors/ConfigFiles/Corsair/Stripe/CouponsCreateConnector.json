@@ -1,0 +1,121 @@
+{
+  "name": "Corsair/Stripe/CouponsCreateConnector",
+  "description": "Create a new Stripe coupon",
+  "version": "1.0.0",
+  "author": "@aventisia",
+  "supportedPlatforms": [
+    "cloud"
+  ],
+  "errorHandling": "standard",
+  "testScreenType": "standard",
+  "fields": [
+    {
+      "direction": "Input",
+      "type": "credentials-select",
+      "name": "__CredentialName__Stripe",
+      "label": "Stripe Credential",
+      "description": "Select Stripe credentials used to authenticate the request.",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "id",
+      "label": "Id",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "name",
+      "label": "Name",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "amount_off",
+      "label": "Amount Off",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "percent_off",
+      "label": "Percent Off",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "currency",
+      "label": "Currency",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Input",
+      "type": "select",
+      "name": "duration",
+      "label": "Duration",
+      "description": "",
+      "defaultValue": "forever",
+      "selectOptions": [
+        {
+          "label": "forever",
+          "value": "forever",
+          "description": "forever"
+        },
+        {
+          "label": "once",
+          "value": "once",
+          "description": "once"
+        },
+        {
+          "label": "repeating",
+          "value": "repeating",
+          "description": "repeating"
+        }
+      ]
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "duration_in_months",
+      "label": "Duration In Months",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "number",
+      "name": "max_redemptions",
+      "label": "Max Redemptions",
+      "description": "",
+      "defaultValue": 0
+    },
+    {
+      "direction": "Input",
+      "type": "text",
+      "name": "metadata",
+      "label": "Metadata",
+      "description": "",
+      "defaultValue": ""
+    },
+    {
+      "direction": "Output",
+      "type": "config-panel-output",
+      "name": "Result",
+      "label": "Result",
+      "description": "Returns the response data from the connector.",
+      "defaultValue": {
+        "value": "Result",
+        "enabled": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,2800 @@
+[
+  {
+    "label": "App Integrations",
+    "description": "Seamlessly integrate with apps and services such as Twilio, Slack, and more",
+    "icon": "AppIntegrationsIcon",
+    "img": null,
+    "actionCategories": [
+      {
+        "label": "GitHub",
+        "description": "Github",
+        "icon": null,
+        "img": "/assets/GitHub.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/IssuesListConnector",
+            "label": "List issues in a repository",
+            "description": "List issues in a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/IssuesGetConnector",
+            "label": "Get a specific issue",
+            "description": "Get a specific issue",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/IssuesCreateConnector",
+            "label": "Create a new issue",
+            "description": "Create a new issue",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/IssuesUpdateConnector",
+            "label": "Update an existing issue",
+            "description": "Update an existing issue",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/IssuesCreateCommentConnector",
+            "label": "Post a comment on an issue",
+            "description": "Post a comment on an issue",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/PullRequestsListConnector",
+            "label": "List pull requests",
+            "description": "List pull requests",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/PullRequestsGetConnector",
+            "label": "Get a specific pull request",
+            "description": "Get a specific pull request",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/PullRequestsListReviewsConnector",
+            "label": "List reviews on a pull request",
+            "description": "List reviews on a pull request",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/PullRequestsCreateReviewConnector",
+            "label": "Submit a pull request review",
+            "description": "Submit a pull request review",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/RepositoriesListConnector",
+            "label": "List repositories for the authenticated user",
+            "description": "List repositories for the authenticated user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/RepositoriesGetConnector",
+            "label": "Get a specific repository",
+            "description": "Get a specific repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/RepositoriesListBranchesConnector",
+            "label": "List branches in a repository",
+            "description": "List branches in a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/RepositoriesListCommitsConnector",
+            "label": "List commits in a repository",
+            "description": "List commits in a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/RepositoriesGetContentConnector",
+            "label": "Get file or directory content from a repository",
+            "description": "Get file or directory content from a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/RepositoriesStarConnector",
+            "label": "Star a repository for the authenticated user",
+            "description": "Star a repository for the authenticated user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/RepositoriesUnstarConnector",
+            "label": "Unstar a repository for the authenticated user",
+            "description": "Unstar a repository for the authenticated user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/RepositoriesCheckStarredConnector",
+            "label": "Check whether the authenticated user has starred a repository",
+            "description": "Check whether the authenticated user has starred a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/RepositoriesListStarredConnector",
+            "label": "List repositories starred by the authenticated user",
+            "description": "List repositories starred by the authenticated user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/RepositoriesListStargazersConnector",
+            "label": "List users who have starred a repository",
+            "description": "List users who have starred a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/ReleasesListConnector",
+            "label": "List releases in a repository",
+            "description": "List releases in a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/ReleasesGetConnector",
+            "label": "Get a specific release",
+            "description": "Get a specific release",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/ReleasesCreateConnector",
+            "label": "Create a new release",
+            "description": "Create a new release",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/ReleasesUpdateConnector",
+            "label": "Update an existing release",
+            "description": "Update an existing release",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/WorkflowsListConnector",
+            "label": "List workflows in a repository",
+            "description": "List workflows in a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/WorkflowsGetConnector",
+            "label": "Get a specific workflow",
+            "description": "Get a specific workflow",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/WorkflowsListRunsConnector",
+            "label": "List workflow runs",
+            "description": "List workflow runs",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/DiscussionsListConnector",
+            "label": "List discussions in a repository",
+            "description": "List discussions in a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/DiscussionsGetConnector",
+            "label": "Get a specific discussion",
+            "description": "Get a specific discussion",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/ForksListConnector",
+            "label": "List forks of a repository",
+            "description": "List forks of a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/CommentsListConnector",
+            "label": "List all comments in a repository",
+            "description": "List all comments in a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/CommentsListForIssueConnector",
+            "label": "List comments on a specific issue or pull request",
+            "description": "List comments on a specific issue or pull request",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/CommentsGetConnector",
+            "label": "Get a specific comment",
+            "description": "Get a specific comment",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/CommentsUpdateConnector",
+            "label": "Update a comment",
+            "description": "Update a comment",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/CommentsDeleteConnector",
+            "label": "Delete a comment",
+            "description": "Delete a comment",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/EventsListConnector",
+            "label": "List public GitHub events",
+            "description": "List public GitHub events",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/EventsListForNetworkConnector",
+            "label": "List public events for a repository network",
+            "description": "List public events for a repository network",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/EventsListForOrgConnector",
+            "label": "List public events for an organization",
+            "description": "List public events for an organization",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/EventsListForRepositoryConnector",
+            "label": "List events for a repository",
+            "description": "List events for a repository",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/EventsListForUserConnector",
+            "label": "List events for a user",
+            "description": "List events for a user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/EventsListForUserOrgConnector",
+            "label": "List organization events for a user",
+            "description": "List organization events for a user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/EventsListPublicForUserConnector",
+            "label": "List public events for a user",
+            "description": "List public events for a user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/EventsListReceivedForUserConnector",
+            "label": "List events received by a user",
+            "description": "List events received by a user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/EventsListPublicReceivedForUserConnector",
+            "label": "List public events received by a user",
+            "description": "List public events received by a user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/UsersListConnector",
+            "label": "List all GitHub users",
+            "description": "List all GitHub users",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/UsersGetConnector",
+            "label": "Get a user by username",
+            "description": "Get a user by username",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/UsersGetByIdConnector",
+            "label": "Get a user by account ID",
+            "description": "Get a user by account ID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/UsersGetAuthenticatedConnector",
+            "label": "Get the authenticated user",
+            "description": "Get the authenticated user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/UsersUpdateConnector",
+            "label": "Update the authenticated user profile",
+            "description": "Update the authenticated user profile",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/UsersGetHovercardConnector",
+            "label": "Get contextual hovercard information for a user",
+            "description": "Get contextual hovercard information for a user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/SearchIssuesConnector",
+            "label": "Search GitHub issues and pull requests",
+            "description": "Search GitHub issues and pull requests",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/SearchRepositoriesConnector",
+            "label": "Search GitHub repositories",
+            "description": "Search GitHub repositories",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Github/SearchUsersConnector",
+            "label": "Search GitHub users and organizations",
+            "description": "Search GitHub users and organizations",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/GitHub.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Resend",
+        "description": "Resend",
+        "icon": null,
+        "img": "/assets/Resend.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Resend/EmailsSendConnector",
+            "label": "Send an email to one or more recipients",
+            "description": "Send an email to one or more recipients",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Resend.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Resend/EmailsGetConnector",
+            "label": "Get info about a sent email",
+            "description": "Get info about a sent email",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Resend.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Resend/EmailsListConnector",
+            "label": "List sent emails",
+            "description": "List sent emails",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Resend.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Resend/DomainsCreateConnector",
+            "label": "Add a new sending domain",
+            "description": "Add a new sending domain",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Resend.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Resend/DomainsGetConnector",
+            "label": "Get info about a sending domain",
+            "description": "Get info about a sending domain",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Resend.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Resend/DomainsListConnector",
+            "label": "List all sending domains",
+            "description": "List all sending domains",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Resend.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Resend/DomainsDeleteConnector",
+            "label": "Remove a sending domain [DESTRUCTIVE · IRREVERSIBLE]",
+            "description": "Remove a sending domain [DESTRUCTIVE · IRREVERSIBLE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Resend.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Resend/DomainsVerifyConnector",
+            "label": "Trigger DNS verification for a domain",
+            "description": "Trigger DNS verification for a domain",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Resend.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Tavily",
+        "description": "Tavily",
+        "icon": null,
+        "img": "/assets/Tavily.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Tavily/SearchSearchConnector",
+            "label": "Search the web using Tavily",
+            "description": "Search the web using Tavily",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Tavily.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Tavily/ExtractExtractConnector",
+            "label": "Extract content from one or more URLs",
+            "description": "Extract content from one or more URLs",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Tavily.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Tavily/CrawlCrawlConnector",
+            "label": "Crawl a website starting from a root URL",
+            "description": "Crawl a website starting from a root URL",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Tavily.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Tavily/MapMapConnector",
+            "label": "Map all URLs on a website starting from a root URL",
+            "description": "Map all URLs on a website starting from a root URL",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Tavily.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Slack",
+        "description": "Slack",
+        "icon": null,
+        "img": "/assets/Slack.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsArchiveConnector",
+            "label": "Archive a Slack channel [DESTRUCTIVE]",
+            "description": "Archive a Slack channel [DESTRUCTIVE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsCloseConnector",
+            "label": "Close a direct message or multi-party DM",
+            "description": "Close a direct message or multi-party DM",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsCreateConnector",
+            "label": "Create a new Slack channel",
+            "description": "Create a new Slack channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsGetConnector",
+            "label": "Get info about a channel",
+            "description": "Get info about a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsListConnector",
+            "label": "List all channels in the workspace",
+            "description": "List all channels in the workspace",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsGetHistoryConnector",
+            "label": "Fetch message history for a channel",
+            "description": "Fetch message history for a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsInviteConnector",
+            "label": "Invite users to a channel",
+            "description": "Invite users to a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsJoinConnector",
+            "label": "Join a channel",
+            "description": "Join a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsKickConnector",
+            "label": "Remove a user from a channel",
+            "description": "Remove a user from a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsLeaveConnector",
+            "label": "Leave a channel",
+            "description": "Leave a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsGetMembersConnector",
+            "label": "List members of a channel",
+            "description": "List members of a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsOpenConnector",
+            "label": "Open a direct message or multi-party DM",
+            "description": "Open a direct message or multi-party DM",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsRenameConnector",
+            "label": "Rename a channel",
+            "description": "Rename a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsGetRepliesConnector",
+            "label": "Fetch replies for a thread",
+            "description": "Fetch replies for a thread",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsSetPurposeConnector",
+            "label": "Set the purpose of a channel",
+            "description": "Set the purpose of a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsSetTopicConnector",
+            "label": "Set the topic of a channel",
+            "description": "Set the topic of a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ChannelsUnarchiveConnector",
+            "label": "Unarchive a channel",
+            "description": "Unarchive a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/UsersGetConnector",
+            "label": "Get info about a user",
+            "description": "Get info about a user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/UsersListConnector",
+            "label": "List all users in the workspace",
+            "description": "List all users in the workspace",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/UsersGetProfileConnector",
+            "label": "Get a user profile",
+            "description": "Get a user profile",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/UsersGetPresenceConnector",
+            "label": "Get the presence status of a user",
+            "description": "Get the presence status of a user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/UsersUpdateProfileConnector",
+            "label": "Update the authenticated user's profile",
+            "description": "Update the authenticated user's profile",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/UserGroupsCreateConnector",
+            "label": "Create a user group",
+            "description": "Create a user group",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/UserGroupsDisableConnector",
+            "label": "Disable a user group",
+            "description": "Disable a user group",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/UserGroupsEnableConnector",
+            "label": "Enable a user group",
+            "description": "Enable a user group",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/UserGroupsListConnector",
+            "label": "List user groups in the workspace",
+            "description": "List user groups in the workspace",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/UserGroupsUpdateConnector",
+            "label": "Update a user group",
+            "description": "Update a user group",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/FilesGetConnector",
+            "label": "Get info about a file",
+            "description": "Get info about a file",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/FilesListConnector",
+            "label": "List files in the workspace",
+            "description": "List files in the workspace",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/FilesUploadConnector",
+            "label": "Upload a file to Slack",
+            "description": "Upload a file to Slack",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/MessagesDeleteConnector",
+            "label": "Delete a message [DESTRUCTIVE]",
+            "description": "Delete a message [DESTRUCTIVE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/MessagesGetPermalinkConnector",
+            "label": "Get a permalink for a message",
+            "description": "Get a permalink for a message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/MessagesSearchConnector",
+            "label": "Search messages in the workspace",
+            "description": "Search messages in the workspace",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/MessagesPostConnector",
+            "label": "Post a message to a channel",
+            "description": "Post a message to a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/MessagesUpdateConnector",
+            "label": "Update an existing message",
+            "description": "Update an existing message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ReactionsAddConnector",
+            "label": "Add a reaction emoji to a message",
+            "description": "Add a reaction emoji to a message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ReactionsGetConnector",
+            "label": "Get reactions for a message",
+            "description": "Get reactions for a message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/ReactionsRemoveConnector",
+            "label": "Remove a reaction emoji from a message",
+            "description": "Remove a reaction emoji from a message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/StarsAddConnector",
+            "label": "Star an item",
+            "description": "Star an item",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/StarsRemoveConnector",
+            "label": "Unstar an item",
+            "description": "Unstar an item",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/StarsListConnector",
+            "label": "List starred items for the authenticated user",
+            "description": "List starred items for the authenticated user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/AdminListTeamsConnector",
+            "label": "List all teams on an Enterprise organization",
+            "description": "List all teams on an Enterprise organization",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/AdminConversationsSearchConnector",
+            "label": "Search for channels on an Enterprise organization",
+            "description": "Search for channels on an Enterprise organization",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/AdminConversationsGetTeamsConnector",
+            "label": "Get all the workspaces a given channel is connected to",
+            "description": "Get all the workspaces a given channel is connected to",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Slack/AdminConversationsSetTeamsConnector",
+            "label": "Set the workspaces in an Enterprise grid org that connect to a channel",
+            "description": "Set the workspaces in an Enterprise grid org that connect to a channel",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Slack.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Stripe",
+        "description": "Stripe",
+        "icon": null,
+        "img": "/assets/Stripe.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/BalanceGetConnector",
+            "label": "Retrieve the current account balance",
+            "description": "Retrieve the current account balance",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/ChargesCreateConnector",
+            "label": "Create a new Stripe charge",
+            "description": "Create a new Stripe charge",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/ChargesGetConnector",
+            "label": "Retrieve a Stripe charge by ID",
+            "description": "Retrieve a Stripe charge by ID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/ChargesListConnector",
+            "label": "List Stripe charges with optional filters",
+            "description": "List Stripe charges with optional filters",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/ChargesUpdateConnector",
+            "label": "Update a Stripe charge",
+            "description": "Update a Stripe charge",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/CouponsCreateConnector",
+            "label": "Create a new Stripe coupon",
+            "description": "Create a new Stripe coupon",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/CouponsListConnector",
+            "label": "List Stripe coupons",
+            "description": "List Stripe coupons",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/CustomersCreateConnector",
+            "label": "Create a new Stripe customer",
+            "description": "Create a new Stripe customer",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/CustomersDeleteConnector",
+            "label": "Delete a Stripe customer [DESTRUCTIVE]",
+            "description": "Delete a Stripe customer [DESTRUCTIVE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/CustomersGetConnector",
+            "label": "Retrieve a Stripe customer by ID",
+            "description": "Retrieve a Stripe customer by ID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/CustomersListConnector",
+            "label": "List Stripe customers with optional filters",
+            "description": "List Stripe customers with optional filters",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/PaymentIntentsCreateConnector",
+            "label": "Create a new Stripe payment intent",
+            "description": "Create a new Stripe payment intent",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/PaymentIntentsGetConnector",
+            "label": "Retrieve a Stripe payment intent by ID",
+            "description": "Retrieve a Stripe payment intent by ID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/PaymentIntentsListConnector",
+            "label": "List Stripe payment intents with optional filters",
+            "description": "List Stripe payment intents with optional filters",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/PaymentIntentsUpdateConnector",
+            "label": "Update a Stripe payment intent",
+            "description": "Update a Stripe payment intent",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/PricesCreateConnector",
+            "label": "Create a new Stripe price",
+            "description": "Create a new Stripe price",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/PricesListConnector",
+            "label": "List Stripe prices",
+            "description": "List Stripe prices",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/SourcesCreateConnector",
+            "label": "Create a new Stripe source",
+            "description": "Create a new Stripe source",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/SourcesGetConnector",
+            "label": "Retrieve a Stripe source by ID",
+            "description": "Retrieve a Stripe source by ID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Stripe/TokensCreateConnector",
+            "label": "Create a Stripe token",
+            "description": "Create a Stripe token",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Stripe.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Twilio",
+        "description": "Twilio",
+        "icon": null,
+        "img": "/assets/Twilio.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Twilio/MessagesSendConnector",
+            "label": "Send an SMS or MMS message",
+            "description": "Send an SMS or MMS message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Twilio.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Twilio/MessagesGetConnector",
+            "label": "Retrieve a message by SID",
+            "description": "Retrieve a message by SID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Twilio.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Twilio/MessagesListConnector",
+            "label": "List messages with optional filters",
+            "description": "List messages with optional filters",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Twilio.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Twilio/CallsCreateConnector",
+            "label": "Initiate an outbound phone call",
+            "description": "Initiate an outbound phone call",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Twilio.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Twilio/CallsGetConnector",
+            "label": "Retrieve a call record by SID",
+            "description": "Retrieve a call record by SID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Twilio.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Twilio/CallsListConnector",
+            "label": "List call records with optional filters",
+            "description": "List call records with optional filters",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Twilio.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Notion",
+        "description": "Notion",
+        "icon": null,
+        "img": "/assets/Notion.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/BlocksAppendBlockConnector",
+            "label": "Append new blocks to a block or page",
+            "description": "Append new blocks to a block or page",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/BlocksGetManyChildBlocksConnector",
+            "label": "Retrieve child blocks of a block or page",
+            "description": "Retrieve child blocks of a block or page",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/DatabasesGetDatabaseConnector",
+            "label": "Get info about a database",
+            "description": "Get info about a database",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/DatabasesGetManyDatabasesConnector",
+            "label": "List databases accessible to the integration",
+            "description": "List databases accessible to the integration",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/DatabasesSearchDatabaseConnector",
+            "label": "Search and filter databases",
+            "description": "Search and filter databases",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/DatabasePagesCreateDatabasePageConnector",
+            "label": "Create a new page in a database",
+            "description": "Create a new page in a database",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/DatabasePagesGetDatabasePageConnector",
+            "label": "Get a page from a database",
+            "description": "Get a page from a database",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/DatabasePagesGetManyDatabasePagesConnector",
+            "label": "List and filter pages in a database",
+            "description": "List and filter pages in a database",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/DatabasePagesUpdateDatabasePageConnector",
+            "label": "Update properties of a database page",
+            "description": "Update properties of a database page",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/PagesArchivePageConnector",
+            "label": "Archive (trash) a page [DESTRUCTIVE]",
+            "description": "Archive (trash) a page [DESTRUCTIVE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/PagesCreatePageConnector",
+            "label": "Create a new page",
+            "description": "Create a new page",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/PagesSearchPageConnector",
+            "label": "Search pages and databases by title",
+            "description": "Search pages and databases by title",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/UsersGetUserConnector",
+            "label": "Get info about a user",
+            "description": "Get info about a user",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Notion/UsersGetManyUsersConnector",
+            "label": "List all users in the workspace",
+            "description": "List all users in the workspace",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/Notion.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "HubSpot",
+        "description": "Hubspot",
+        "icon": null,
+        "img": "/assets/HubSpot.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/ContactsGetConnector",
+            "label": "Get a specific contact",
+            "description": "Get a specific contact",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/ContactsGetManyConnector",
+            "label": "Get multiple contacts",
+            "description": "Get multiple contacts",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/ContactsCreateConnector",
+            "label": "Create a new contact",
+            "description": "Create a new contact",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/ContactsUpdateConnector",
+            "label": "Update an existing contact",
+            "description": "Update an existing contact",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/ContactsDeleteConnector",
+            "label": "Permanently delete a contact [DESTRUCTIVE · IRREVERSIBLE]",
+            "description": "Permanently delete a contact [DESTRUCTIVE · IRREVERSIBLE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/ContactsGetRecentlyCreatedConnector",
+            "label": "List recently created contacts",
+            "description": "List recently created contacts",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/ContactsGetRecentlyUpdatedConnector",
+            "label": "List recently updated contacts",
+            "description": "List recently updated contacts",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/ContactsSearchConnector",
+            "label": "Search contacts",
+            "description": "Search contacts",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/CompaniesGetConnector",
+            "label": "Get a specific company",
+            "description": "Get a specific company",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/CompaniesGetManyConnector",
+            "label": "Get multiple companies",
+            "description": "Get multiple companies",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/CompaniesCreateConnector",
+            "label": "Create a new company",
+            "description": "Create a new company",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/CompaniesUpdateConnector",
+            "label": "Update an existing company",
+            "description": "Update an existing company",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/CompaniesDeleteConnector",
+            "label": "Permanently delete a company [DESTRUCTIVE · IRREVERSIBLE]",
+            "description": "Permanently delete a company [DESTRUCTIVE · IRREVERSIBLE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/CompaniesGetRecentlyCreatedConnector",
+            "label": "List recently created companies",
+            "description": "List recently created companies",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/CompaniesGetRecentlyUpdatedConnector",
+            "label": "List recently updated companies",
+            "description": "List recently updated companies",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/CompaniesSearchByDomainConnector",
+            "label": "Search companies by domain name",
+            "description": "Search companies by domain name",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/DealsGetConnector",
+            "label": "Get a specific deal",
+            "description": "Get a specific deal",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/DealsGetManyConnector",
+            "label": "Get multiple deals",
+            "description": "Get multiple deals",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/DealsCreateConnector",
+            "label": "Create a new deal",
+            "description": "Create a new deal",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/DealsUpdateConnector",
+            "label": "Update an existing deal",
+            "description": "Update an existing deal",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/DealsDeleteConnector",
+            "label": "Permanently delete a deal [DESTRUCTIVE · IRREVERSIBLE]",
+            "description": "Permanently delete a deal [DESTRUCTIVE · IRREVERSIBLE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/DealsGetRecentlyCreatedConnector",
+            "label": "List recently created deals",
+            "description": "List recently created deals",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/DealsGetRecentlyUpdatedConnector",
+            "label": "List recently updated deals",
+            "description": "List recently updated deals",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/DealsSearchConnector",
+            "label": "Search deals",
+            "description": "Search deals",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/TicketsGetConnector",
+            "label": "Get a specific ticket",
+            "description": "Get a specific ticket",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/TicketsGetManyConnector",
+            "label": "Get multiple tickets",
+            "description": "Get multiple tickets",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/TicketsCreateConnector",
+            "label": "Create a new support ticket",
+            "description": "Create a new support ticket",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/TicketsUpdateConnector",
+            "label": "Update an existing ticket",
+            "description": "Update an existing ticket",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/TicketsDeleteConnector",
+            "label": "Permanently delete a ticket [DESTRUCTIVE · IRREVERSIBLE]",
+            "description": "Permanently delete a ticket [DESTRUCTIVE · IRREVERSIBLE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/EngagementsGetConnector",
+            "label": "Get a specific engagement",
+            "description": "Get a specific engagement",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/EngagementsGetManyConnector",
+            "label": "Get multiple engagements",
+            "description": "Get multiple engagements",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/EngagementsCreateConnector",
+            "label": "Create a new engagement",
+            "description": "Create a new engagement",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/EngagementsDeleteConnector",
+            "label": "Permanently delete an engagement [DESTRUCTIVE · IRREVERSIBLE]",
+            "description": "Permanently delete an engagement [DESTRUCTIVE · IRREVERSIBLE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/ContactListsAddContactConnector",
+            "label": "Add a contact to a static contact list",
+            "description": "Add a contact to a static contact list",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Hubspot/ContactListsRemoveContactConnector",
+            "label": "Remove a contact from a static contact list",
+            "description": "Remove a contact from a static contact list",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/HubSpot.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Openweathermap",
+        "description": "Openweathermap",
+        "icon": null,
+        "img": "/assets/OpenWeatherMap.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Openweathermap/WeatherOneCallConnector",
+            "label": "Get current weather, minutely/hourly/daily forecasts, and weather alerts for a location",
+            "description": "Get current weather, minutely/hourly/daily forecasts, and weather alerts for a location",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/OpenWeatherMap.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Openweathermap/HistoryTimeMachineConnector",
+            "label": "Get historical weather data for a specific timestamp (available from 1979-01-01)",
+            "description": "Get historical weather data for a specific timestamp (available from 1979-01-01)",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/OpenWeatherMap.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Openweathermap/SummaryDaySummaryConnector",
+            "label": "Get aggregated weather summary for a specific date (temperature, wind, precipitation)",
+            "description": "Get aggregated weather summary for a specific date (temperature, wind, precipitation)",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/OpenWeatherMap.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Openweathermap/SummaryOverviewConnector",
+            "label": "Get a human-readable weather overview text for a location and date",
+            "description": "Get a human-readable weather overview text for a location and date",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/OpenWeatherMap.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Microsoft",
+        "description": "Outlook",
+        "icon": null,
+        "img": "/assets/M365.svg",
+        "listType": null,
+        "actions": [
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesSendConnector",
+            "label": "Send an email message",
+            "description": "Send an email message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesCreateDraftConnector",
+            "label": "Create an email draft",
+            "description": "Create an email draft",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesGetConnector",
+            "label": "Get an email message by ID",
+            "description": "Get an email message by ID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesListConnector",
+            "label": "List email messages in a folder",
+            "description": "List email messages in a folder",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesQueryConnector",
+            "label": "Query email messages with OData filters",
+            "description": "Query email messages with OData filters",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesSearchConnector",
+            "label": "Search email messages",
+            "description": "Search email messages",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesReplyConnector",
+            "label": "Reply to an email message",
+            "description": "Reply to an email message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesForwardConnector",
+            "label": "Forward an email message",
+            "description": "Forward an email message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesDeleteConnector",
+            "label": "Delete an email message [DESTRUCTIVE]",
+            "description": "Delete an email message [DESTRUCTIVE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesMoveConnector",
+            "label": "Move a message to a different folder",
+            "description": "Move a message to a different folder",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesUpdateConnector",
+            "label": "Update an email message (e.g. mark as read)",
+            "description": "Update an email message (e.g. mark as read)",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesSendDraftConnector",
+            "label": "Send a saved draft message",
+            "description": "Send a saved draft message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesBatchMoveConnector",
+            "label": "Batch move up to 20 messages to a folder",
+            "description": "Batch move up to 20 messages to a folder",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesBatchUpdateConnector",
+            "label": "Batch update up to 20 messages",
+            "description": "Batch update up to 20 messages",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/MessagesAddAttachmentConnector",
+            "label": "Add an attachment to a message",
+            "description": "Add an attachment to a message",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/EventsCreateConnector",
+            "label": "Create a calendar event",
+            "description": "Create a calendar event",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/EventsGetConnector",
+            "label": "Get a calendar event by ID",
+            "description": "Get a calendar event by ID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/EventsListConnector",
+            "label": "List calendar events",
+            "description": "List calendar events",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/EventsUpdateConnector",
+            "label": "Update a calendar event",
+            "description": "Update a calendar event",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/EventsDeleteConnector",
+            "label": "Delete a calendar event [DESTRUCTIVE]",
+            "description": "Delete a calendar event [DESTRUCTIVE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/EventsCancelConnector",
+            "label": "Cancel a calendar event and notify attendees",
+            "description": "Cancel a calendar event and notify attendees",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/EventsDeclineConnector",
+            "label": "Decline a calendar event invitation",
+            "description": "Decline a calendar event invitation",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/EventsFindMeetingTimesConnector",
+            "label": "Find available meeting times for attendees",
+            "description": "Find available meeting times for attendees",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/EventsGetScheduleConnector",
+            "label": "Get free/busy schedule for a calendar",
+            "description": "Get free/busy schedule for a calendar",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/CalendarsCreateConnector",
+            "label": "Create a new calendar",
+            "description": "Create a new calendar",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/CalendarsGetConnector",
+            "label": "Get a calendar by ID",
+            "description": "Get a calendar by ID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/CalendarsListConnector",
+            "label": "List all calendars",
+            "description": "List all calendars",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/CalendarsDeleteConnector",
+            "label": "Delete a calendar [DESTRUCTIVE]",
+            "description": "Delete a calendar [DESTRUCTIVE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/ContactsCreateConnector",
+            "label": "Create a new contact",
+            "description": "Create a new contact",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/ContactsListConnector",
+            "label": "List contacts",
+            "description": "List contacts",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/ContactsUpdateConnector",
+            "label": "Update a contact",
+            "description": "Update a contact",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/ContactsDeleteConnector",
+            "label": "Delete a contact [DESTRUCTIVE]",
+            "description": "Delete a contact [DESTRUCTIVE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/FoldersCreateConnector",
+            "label": "Create a new mail folder",
+            "description": "Create a new mail folder",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/FoldersGetConnector",
+            "label": "Get a mail folder by ID",
+            "description": "Get a mail folder by ID",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/FoldersListConnector",
+            "label": "List mail folders",
+            "description": "List mail folders",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/FoldersUpdateConnector",
+            "label": "Rename a mail folder",
+            "description": "Rename a mail folder",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          },
+          {
+            "type": "cloudConnectorNode",
+            "name": "Corsair/Outlook/FoldersDeleteConnector",
+            "label": "Delete a mail folder [DESTRUCTIVE]",
+            "description": "Delete a mail folder [DESTRUCTIVE]",
+            "docsLink": "https://docs.aventisia.com",
+            "icon": null,
+            "img": "/assets/M365.svg",
+            "supportedPlatforms": [
+              "cloud"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

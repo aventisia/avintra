@@ -82,4 +82,10 @@ export interface VaultsTableDto {
    * complete OAuth consent.
    */
   oauthConnectUrl?: string;
+
+  /**
+   * Gets or sets a value indicating whether the OAuth connection has been
+   * completed for OAuth-capable credential types.
+   */
+  oauthConnected?: boolean;
 }

@@ -94,6 +94,33 @@ public interface ICorsairSidecarService
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The connection status, or <c>null</c> on failure.</returns>
     Task<CorsairConnectionStatus?> GetConnectionStatusAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Invokes a Corsair plugin operation using a stored credential.
+    /// </summary>
+    /// <param name="connectionId">Stable connection handle (AppSecret Id) used as the Corsair tenant.</param>
+    /// <param name="plugin">Target plugin identifier.</param>
+    /// <param name="action">Dotted operation path, e.g. "github.issues.create".</param>
+    /// <param name="payload">Operation payload.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The invocation result.</returns>
+    Task<CorsairInvokeResult> InvokeAsync(Guid connectionId, string plugin, string action, object? payload, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// Result of invoking a Corsair plugin operation.
+/// </summary>
+public sealed class CorsairInvokeResult
+{
+    public bool Success { get; set; }
+    public object? Data { get; set; }
+    public string? Error { get; set; }
+    public string? Details { get; set; }
+    public bool NeedsConnect { get; set; }
+    public string? Plugin { get; set; }
+    public string? AuthType { get; set; }
+    public bool ApprovalRequired { get; set; }
+    public string? Message { get; set; }
 }
 
 /// <summary>
