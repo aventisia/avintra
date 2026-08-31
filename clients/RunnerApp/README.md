@@ -251,6 +251,32 @@ There is no dedicated reinstall script anymore. To test a locally built Windows 
 
 > **Important:** The service must be stopped before publishing to the same `PublishDir` because the running service locks its DLLs.
 
+### Install from a local archive (fast offline iteration)
+
+Use `Install-AvintraRunnerService-Local.ps1` when you have a slow internet connection or want to test a freshly-published local Windows service build without downloading anything. It behaves exactly like `Install-AvintraRunnerService.ps1`, but it uses a local zip archive instead of resolving one from the backend.
+
+If you don't pass `-RunnerZipPath`, the script automatically picks the most recent `AvintraRunnerService_*_win-x64.zip` from `..\artifacts`.
+
+```powershell
+cd clients\RunnerApp\RunnerApp.Windows
+
+# 1) Build the local archive (no upload)
+.\publish-and-upload-windows.ps1 -TargetServers dev -SkipUpload
+
+# 2) Install directly from the built archive
+$env:AVINTRA_APP_BASE_URL = "https://dev-avintra.aventisia.com"
+$env:AVINTRA_API_KEY      = "..."
+$env:AVINTRA_TENANT_ID    = "..."
+$env:AVINTRA_LINKED_USERNAME = "gaurav@aventisia.com"
+.\Install-AvintraRunnerService-Local.ps1
+```
+
+You can also point it at a specific zip:
+
+```powershell
+.\Install-AvintraRunnerService-Local.ps1 -RunnerZipPath "..\artifacts\AvintraRunnerService_0.2.22_win-x64.zip"
+```
+
 ### Manual install
 
 You can install the runner as a Windows service interactively:
