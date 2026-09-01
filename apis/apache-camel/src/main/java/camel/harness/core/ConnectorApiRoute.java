@@ -28,17 +28,20 @@ public class ConnectorApiRoute extends RouteBuilder {
     private final ObjectMapper objectMapper;
     private final ConnectorMetadataRegistry metadataRegistry;
     private final ConnectorSchemaGenerator schemaGenerator;
+    private final ConnectorOperationSchemaGenerator operationSchemaGenerator;
     private final List<ConnectorConfigurer> configurers;
     private final CamelRequestBuilder requestBuilder;
 
     public ConnectorApiRoute(ObjectMapper objectMapper,
                               ConnectorMetadataRegistry metadataRegistry,
                               ConnectorSchemaGenerator schemaGenerator,
+                              ConnectorOperationSchemaGenerator operationSchemaGenerator,
                               List<ConnectorConfigurer> configurers,
                               CamelRequestBuilder requestBuilder) {
         this.objectMapper = objectMapper;
         this.metadataRegistry = metadataRegistry;
         this.schemaGenerator = schemaGenerator;
+        this.operationSchemaGenerator = operationSchemaGenerator;
         this.configurers = configurers;
         this.requestBuilder = requestBuilder;
     }
@@ -69,6 +72,11 @@ public class ConnectorApiRoute extends RouteBuilder {
             .to("direct:connector-schema");
 
         rest("/connectors")
+            .get("/{connector}/operations/{operation}/schema")
+            .produces("application/json")
+            .to("direct:connector-operation-schema");
+
+        rest("/connectors")
             .get("/schemas")
             .produces("application/json")
             .to("direct:connector-schemas");
@@ -93,6 +101,9 @@ public class ConnectorApiRoute extends RouteBuilder {
 
         from("direct:connector-schema")
             .process(connectorSchema());
+
+        from("direct:connector-operation-schema")
+            .process(connectorOperationSchema());
 
         from("direct:connector-schemas")
             .process(allConnectorSchemas());
@@ -505,6 +516,59 @@ public class ConnectorApiRoute extends RouteBuilder {
             exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, 200);
             exchange.getMessage().setBody(objectMapper.writeValueAsString(schemas));
         };
+    }
+
+    private Processor connectorOperationSchema() {
+        return exchange -> {
+            String connector = exchange.getMessage().getHeader("connector", String.class);
+            String operation = exchange.getMessage().getHeader("operation", String.class);
+            // Fall back to parsing the HTTP path when the REST DSL did not
+            // populate the path-variable headers (platform-http).
+            if (connector == null || connector.isBlank() || operation == null || operation.isBlank()) {
+                String[] parts = operationPathParts(
+                    exchange.getMessage().getHeader(Exchange.HTTP_PATH, String.class));
+                if (parts != null) {
+                    if (connector == null || connector.isBlank()) {
+                        connector = parts[0];
+                    }
+                    if (operation == null || operation.isBlank()) {
+                        operation = parts[1];
+                    }
+                }
+            }
+            if (connector == null || connector.isBlank()) {
+                throw new IllegalArgumentException("connector is required");
+            }
+            if (operation == null || operation.isBlank()) {
+                throw new IllegalArgumentException("operation is required");
+            }
+            ConnectorSchema schema = operationSchemaGenerator.generate(connector, operation);
+            exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, "application/json");
+            exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, 200);
+            exchange.getMessage().setBody(objectMapper.writeValueAsString(schema));
+        };
+    }
+
+    /**
+     * Extracts {@code [connector, operation]} from a path shaped like
+     * {@code /connectors/{connector}/operations/{operation}/schema}. Returns
+     * {@code null} when the path does not match that shape.
+     */
+    private static String[] operationPathParts(String path) {
+        if (path == null || path.isBlank()) {
+            return null;
+        }
+        String[] segments = path.split("/");
+        for (int i = 0; i < segments.length; i++) {
+            if ("operations".equals(segments[i]) && i >= 1 && i + 1 < segments.length) {
+                String connector = segments[i - 1];
+                String operation = segments[i + 1];
+                if (!connector.isBlank() && !operation.isBlank()) {
+                    return new String[] { connector, operation };
+                }
+            }
+        }
+        return null;
     }
 
     private Processor errorResponse() {

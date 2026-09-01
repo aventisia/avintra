@@ -20,12 +20,30 @@ public class ConnectorSchemaGenerator {
         if (metadata == null) {
             throw new IllegalArgumentException("Unknown connector: " + connector);
         }
-        return build(metadata);
+        return build(metadata, null);
+    }
+
+    /**
+     * Generates a schema scoped to a single operation for any connector. The
+     * operation is validated against the connector metadata (when an operation
+     * enum exists) and pinned into the returned schema. Connectors without an
+     * operation enum (generic components) accept any operation.
+     */
+    public ConnectorSchema generate(String connector, String operation) {
+        ConnectorMetadata metadata = metadataRegistry.forConnector(connector);
+        if (metadata == null) {
+            throw new IllegalArgumentException("Unknown connector: " + connector);
+        }
+        if (operation != null && !operation.isBlank() && !metadata.supportsOperation(operation)) {
+            throw new IllegalArgumentException(
+                "Unsupported operation '" + operation + "' for connector '" + connector + "'");
+        }
+        return build(metadata, operation);
     }
 
     public Map<String, ConnectorSchema> generateAll() {
         Map<String, ConnectorSchema> result = new LinkedHashMap<>();
-        metadataRegistry.all().forEach((name, metadata) -> result.put(name, build(metadata)));
+        metadataRegistry.all().forEach((name, metadata) -> result.put(name, build(metadata, null)));
         return result;
     }
 
@@ -33,15 +51,20 @@ public class ConnectorSchemaGenerator {
         return metadataRegistry.forConnector(connector) != null;
     }
 
-    private ConnectorSchema build(ConnectorMetadata metadata) {
+    private ConnectorSchema build(ConnectorMetadata metadata, String operation) {
         ConnectorSchema schema = ConnectorSchema.base();
         schema = schema.withProperty("connector",
             ConnectorSchema.stringProperty("Connector family name", metadata.name(), metadata.schemes()));
         List<String> operations = metadata.operations();
-        schema = schema.withProperty("operation",
-            operations == null || operations.isEmpty()
-                ? ConnectorSchema.stringProperty("Operation to execute")
-                : ConnectorSchema.stringProperty("Operation to execute", null, operations));
+        if (operation != null && !operation.isBlank()) {
+            schema = schema.withProperty("operation",
+                ConnectorSchema.stringProperty("Operation to execute", null, List.of(operation)));
+        } else {
+            schema = schema.withProperty("operation",
+                operations == null || operations.isEmpty()
+                    ? ConnectorSchema.stringProperty("Operation to execute")
+                    : ConnectorSchema.stringProperty("Operation to execute", null, operations));
+        }
         schema = schema.withProperty("configuration", configurationSchema(metadata));
         schema = schema.withProperty("auth", authSchema(metadata));
         schema = schema.withProperty("headers", ConnectorSchemaProperty.objectProperty(
