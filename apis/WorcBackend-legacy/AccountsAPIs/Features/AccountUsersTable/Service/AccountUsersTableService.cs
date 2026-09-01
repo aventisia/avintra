@@ -11,6 +11,7 @@ public class AccountUsersTableService : IAccountUsersTableService
     private readonly IUserManagementGuardService _userManagementGuardService;
     private readonly string _jwt;
     private readonly Guid _userId;
+    private readonly PlatformAppsEnum? _platformApp;
 
     public AccountUsersTableService(
         UserManager<AccountUser> userManager,
@@ -26,6 +27,12 @@ public class AccountUsersTableService : IAccountUsersTableService
         _jwt = GetJwtOfRequestUtil.GetJwtOfRequest(httpContextAccessor.HttpContext) ?? "jwt-not-found";
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
 
+        // Set _platformApp. Null when the X-App-Context header is missing or not a known app code.
+        _platformApp = PlatformAppHeaderUtil.TryParseAppCode(
+            httpContextAccessor.HttpContext?.Request.Headers[PlatformAppHeaderUtil.HeaderName].FirstOrDefault(),
+            out var platformApp)
+            ? platformApp : null;
+
         _userManager = userManager;
         _roleManager = roleManager;
         _logger = logger;
@@ -33,6 +40,22 @@ public class AccountUsersTableService : IAccountUsersTableService
         _currentTenantService = currentTenantService;
         _userManagementGuardService = userManagementGuardService;
         _unitOfWork = unitOfWork;
+    }
+
+    // Resolves the requesting application from the X-App-Context header.
+    // Returns false (and sets the failure response) when the header is missing or invalid.
+    private bool TryGetPlatformApp<T>(out PlatformAppsEnum platformApp, ServiceResponse<T> serviceResponse)
+    {
+        if (_platformApp != null)
+        {
+            platformApp = _platformApp.Value;
+            return true;
+        }
+
+        platformApp = default;
+        serviceResponse.StatusCode = 400;
+        serviceResponse.Message = "Missing or invalid X-App-Context header";
+        return false;
     }
 
     // Retrieves a list of account users.
@@ -47,6 +70,10 @@ public class AccountUsersTableService : IAccountUsersTableService
 
         try
         {
+            // Requesting app must be identified via the X-App-Context header
+            if (!TryGetPlatformApp(out var platformApp, serviceResponse)) return serviceResponse;
+            var appCode = platformApp.ToAppCode();
+
             // Get allowed user roles to manage
             var allowedRoles = _userManagementGuardService.GetAllowedRoleListToManageUser();
 
@@ -58,7 +85,7 @@ public class AccountUsersTableService : IAccountUsersTableService
                     w.IsDefault == false &&
                     w.Id != _userId &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
-                    w.UserRoles.Where(w1 => allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
+                    w.UserRoles.Where(w1 => w1.Role != null && w1.Role.AppCode == appCode && allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
                 .ProjectToType<AccountUsersTableDto>()
                 .OrderByDescending(o => o.CreatedOn)
                 .ToListAsync();
@@ -144,8 +171,20 @@ public class AccountUsersTableService : IAccountUsersTableService
                 }
             }
 
+            // Requesting app must be identified via the X-App-Context header
+            if (!TryGetPlatformApp(out var platformApp, serviceResponse)) return serviceResponse;
+
             // Convert roles FullName to Name (Frontend will return roles in "FullName" of IdentityRole. However userManger work with "Name" of IdentityRole
-            var toBeAddedUserRoles = await TransformRoleFullNameToName(accountUsersTableDto.UserRoles);
+            var appRoles = await AccountUsersHelper.FetchAllRolesAsync(_roleManager);
+            var toBeAddedUserRoles = AccountUsersHelper.TransformRoleFullNameToName(appRoles, accountUsersTableDto.UserRoles);
+
+            // For a new user every role must belong to the requesting app
+            var appRoleNameSet = AccountUsersHelper.GetAppRoleNames(appRoles, platformApp);
+            if (!toBeAddedUserRoles.All(w => appRoleNameSet.Contains(w)))
+            {
+                serviceResponse.Message = "One or more roles do not belong to the requesting app";
+                return serviceResponse;
+            }
 
             // Request is not allowed to manage user
             if (!_userManagementGuardService.IsAllowedToManageAccountsDbUser(toBeAddedUserRoles, Guid.Empty))
@@ -213,7 +252,7 @@ public class AccountUsersTableService : IAccountUsersTableService
 
             // Persist the selected spaces to the SpaceUser table so the user's
             // space membership is reflected in the Users table.
-            await SyncUserSpacesAsync(newUser.Id, accountUsersTableDto.Spaces);
+            await AccountUsersHelper.SyncUserSpacesAsync(_unitOfWork, _currentTenantService, _logger, _userId, newUser.Id, accountUsersTableDto.Spaces);
 
             // Task successful
             serviceResponse.Data = newUser.Adapt<AccountUsersTableDto>();
@@ -240,19 +279,11 @@ public class AccountUsersTableService : IAccountUsersTableService
 
         try
         {
+            // Requesting app must be identified via the X-App-Context header
+            if (!TryGetPlatformApp(out var platformApp, serviceResponse)) return serviceResponse;
+
             // Get allowed user roles to manage
             var allowedRoles = _userManagementGuardService.GetAllowedRoleListToManageUser();
-
-            // Convert roles FullName to Name (Frontend will return roles in "FullName" of IdentityRole. However userManger work with "Name" of IdentityRole
-            var toBeAddedUserRoles = await TransformRoleFullNameToName(accountUsersTableDto.UserRoles);
-
-            // Request is not allowed to manage user role which is going to be added
-            if (!_userManagementGuardService.IsAllowedToManageAccountsDbUser(toBeAddedUserRoles, accountUsersTableDto.Id))
-            {
-                // Message is already logged in IsAllowedToManageUser method
-                serviceResponse.Message = "You're not allowed to manage user";
-                return serviceResponse;
-            }
 
             // Try to get user to validate its existence
             var user = await _userManager.Users
@@ -272,6 +303,37 @@ public class AccountUsersTableService : IAccountUsersTableService
                 serviceResponse.Message = "User does not exist";
                 return serviceResponse;
             }
+
+            // Convert roles FullName to Name (Frontend will return roles in "FullName" of IdentityRole. However userManger work with "Name" of IdentityRole
+            var appRoles = await AccountUsersHelper.FetchAllRolesAsync(_roleManager);
+            var toBeAddedUserRoles = AccountUsersHelper.TransformRoleFullNameToName(appRoles, accountUsersTableDto.UserRoles);
+
+            // Only the requesting app's roles are assigned by this update
+            var appRoleNameSet = AccountUsersHelper.GetAppRoleNames(appRoles, platformApp);
+            var rolesToAssign = toBeAddedUserRoles.Where(w => appRoleNameSet.Contains(w)).ToList();
+
+            // Roles of other apps may only be preserved as-is, never newly assigned or removed
+            var currentRoleNames = user.UserRoles.Where(ur => ur.Role != null).Select(ur => ur.Role!.Name).ToList();
+            var foreignRolesRequested = toBeAddedUserRoles.Where(w => !appRoleNameSet.Contains(w)).ToList();
+            if (foreignRolesRequested.Any(w => !currentRoleNames.Contains(w, StringComparer.OrdinalIgnoreCase)))
+            {
+                serviceResponse.Message = "One or more roles do not belong to the requesting app";
+                return serviceResponse;
+            }
+
+            // Request is not allowed to manage user role which is going to be added
+            if (!_userManagementGuardService.IsAllowedToManageAccountsDbUser(rolesToAssign, accountUsersTableDto.Id))
+            {
+                // Message is already logged in IsAllowedToManageUser method
+                serviceResponse.Message = "You're not allowed to manage user";
+                return serviceResponse;
+            }
+
+            // Keep the user's roles from other apps intact while replacing this app's roles
+            var rolesAfterUpdate = rolesToAssign
+                .Concat(currentRoleNames.Where(roleName => !appRoleNameSet.Contains(roleName)))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
 
             // Validate user uniqueness - Not adding TenantId filter since email column is unqiue for whole table
             var userAlreadyExists = await _userManager.Users.AnyAsync(w =>
@@ -310,7 +372,7 @@ public class AccountUsersTableService : IAccountUsersTableService
             }
 
             // Update user roles (M2M relationship)
-            var updateUserRolesResult = await UpdateAccountUserRoles(user, toBeAddedUserRoles);
+            var updateUserRolesResult = await UpdateAccountUserRoles(user, rolesAfterUpdate);
 
             // Update user roles jab failed
             if (!updateUserRolesResult)
@@ -320,7 +382,7 @@ public class AccountUsersTableService : IAccountUsersTableService
 
             // Persist the selected spaces to the SpaceUser table so the user's
             // space membership is reflected in the Users table.
-            await SyncUserSpacesAsync(user.Id, accountUsersTableDto.Spaces);
+            await AccountUsersHelper.SyncUserSpacesAsync(_unitOfWork, _currentTenantService, _logger, _userId, user.Id, accountUsersTableDto.Spaces);
 
             // Update user in other databases
             if (user.IsCreatedInOtherDbs)
@@ -357,6 +419,10 @@ public class AccountUsersTableService : IAccountUsersTableService
 
         try
         {
+            // Requesting app must be identified via the X-App-Context header
+            if (!TryGetPlatformApp(out var platformApp, serviceResponse)) return serviceResponse;
+            var appCode = platformApp.ToAppCode();
+
             // Get allowed user roles to manage
             var allowedRoles = _userManagementGuardService.GetAllowedRoleListToManageUser();
 
@@ -369,11 +435,8 @@ public class AccountUsersTableService : IAccountUsersTableService
                     w.IsDefault == false &&
                     w.Id != _userId &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
-                    w.UserRoles.Where(w1 => allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
+                    w.UserRoles.Where(w1 => w1.Role != null && w1.Role.AppCode == appCode && allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
                 .SingleOrDefaultAsync();
-
-            // Get user roles
-            var userRoleNames = user.UserRoles.Select(s => s.Role.Name).ToList();
 
             // User does not exist
             if (user == null)
@@ -422,16 +485,22 @@ public class AccountUsersTableService : IAccountUsersTableService
 
         try
         {
+            // Requesting app must be identified via the X-App-Context header
+            if (!TryGetPlatformApp(out var platformApp, serviceResponse)) return serviceResponse;
+
             // Get allowed user roles to manage
             var allowedRoles = _userManagementGuardService.GetAllowedRoleListToManageUser();
 
-            // Get all roles after filteration
-            var roles = await _roleManager.Roles.Where(w => allowedRoles.Contains(w.Name)).OrderBy(o => o.Seq).ToListAsync();
+            // Get all roles of the requesting app after filteration
+            var roles = await _roleManager.Roles
+                .Where(w => allowedRoles.Contains(w.Name) && w.AppCode == platformApp.ToAppCode())
+                .OrderBy(o => o.Seq)
+                .ToListAsync();
 
             // Task successful
             serviceResponse.Data = roles.Adapt<IEnumerable<SelectOption>>();
             serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Users retrieved successfully";
+            serviceResponse.Message = "Roles retrieved successfully";
         }
         catch
         {
@@ -477,57 +546,6 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
 
         return serviceResponse;
-    }
-
-    // Persists the user's selected spaces to the SpaceUser table. Removes any
-    // previously assigned spaces that are no longer selected and adds the new ones.
-    private async Task SyncUserSpacesAsync(Guid userId, List<string> spaceIds)
-    {
-        try
-        {
-            var tenantId = _currentTenantService.CurrentTenantId;
-
-            // Parse the selected space IDs (ignore invalid entries).
-            var selectedIds = (spaceIds ?? new List<string>())
-                .Where(id => Guid.TryParse(id, out _))
-                .Select(Guid.Parse)
-                .ToHashSet();
-
-            // Fetch the user's current space memberships.
-            var existing = await _unitOfWork.SpaceUserRepo
-                .GetByConditionAsync(w => w.UserId == userId && w.TenantId == tenantId)
-                .ToListAsync();
-
-            // Remove memberships that are no longer selected.
-            var toRemove = existing.Where(w => !selectedIds.Contains(w.SpaceId)).ToList();
-            if (toRemove.Count > 0)
-                _unitOfWork.SpaceUserRepo.Delete(toRemove);
-
-            // Add memberships for newly selected spaces.
-            var existingSpaceIds = existing.Select(w => w.SpaceId).ToHashSet();
-            var toAdd = selectedIds
-                .Where(id => !existingSpaceIds.Contains(id))
-                .Select(id => new SpaceUser
-                {
-                    UserId = userId,
-                    SpaceId = id,
-                    TenantId = tenantId,
-                    IsActive = true,
-                    CreatedByUserId = _userId,
-                    LastModifiedByUserId = _userId
-                })
-                .ToList();
-
-            if (toAdd.Count > 0)
-                await _unitOfWork.SpaceUserRepo.InsertAsync(toAdd);
-
-            if (toRemove.Count > 0 || toAdd.Count > 0)
-                await _unitOfWork.SaveAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Failed to sync spaces for user {UserId}.", userId);
-        }
     }
 
     // Updates the roles of an account user. Removes unassinged ones and add new ones if there is any requirement
@@ -585,6 +603,10 @@ public class AccountUsersTableService : IAccountUsersTableService
 
         try
         {
+            // Requesting app must be identified via the X-App-Context header
+            if (!TryGetPlatformApp(out var platformApp, serviceResponse)) return serviceResponse;
+            var appCode = platformApp.ToAppCode();
+
             // Get allowed user roles to manage
             var allowedRoles = _userManagementGuardService.GetAllowedRoleListToManageUser();
 
@@ -597,7 +619,7 @@ public class AccountUsersTableService : IAccountUsersTableService
                     w.IsDefault == false &&
                     w.Id != _userId &&
                     w.TenantId == _currentTenantService.CurrentTenantId &&
-                    w.UserRoles.Where(w1 => allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
+                    w.UserRoles.Where(w1 => w1.Role != null && w1.Role.AppCode == appCode && allowedRoles.Contains(w1.Role.Name)).Select(s => s.UserId).Contains(w.Id))
                 .ToListAsync();
 
             // Users do not exist
@@ -640,28 +662,5 @@ public class AccountUsersTableService : IAccountUsersTableService
         }
 
         return serviceResponse;
-    }
-
-    // HelperFn: Transform roles "FullName" to "Name". Frontend will return roles in "FullName" of IdentityRole. However userManger work with "Name" of IdentityRole
-    private async Task<List<string?>> TransformRoleFullNameToName(List<string> rolesToTransform)
-    {
-        try
-        {
-            // Get app roles. Note: StringComparer.OrdinalIgnoreCase cannot apply to db query
-            var appRoles = await _roleManager.Roles.ToListAsync();
-
-            // Transform roles FullName to Name
-            var userToManageRoles = appRoles
-                .Where(w =>
-                    rolesToTransform.Contains(w.FullName, StringComparer.OrdinalIgnoreCase))
-                .OrderBy(o => o.Seq)
-                .Select(s => s.Name)
-                .ToList();
-            return userToManageRoles;
-        }
-        catch
-        {
-            return new List<string?>();
-        }
     }
 }

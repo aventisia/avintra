@@ -30,9 +30,9 @@ public class TenantRoleManagementService : ITenantRoleManagementService
 
         try
         {
-            // Fetches roles with associated entities, ordering by sequence and projecting into RoleDto
+            // Fetches roles of the workspace app with associated entities, ordering by sequence and projecting into RoleDto
             var roleList = await _unitOfWork.AccountRoleRepo
-                .GetByConditionAsync(w => w.TenantId == _tenantId)
+                .GetByConditionAsync(w => w.TenantId == _tenantId && w.AppCode == PlatformAppsEnum.Workspace.ToAppCode())
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .Include(i => i.RolePermissions)

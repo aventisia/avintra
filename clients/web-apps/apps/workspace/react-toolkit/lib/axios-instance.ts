@@ -5,6 +5,11 @@ import axios from "axios";
 
 import { refreshSession } from "@/react-toolkit/apis/accounts-me-apis";
 
+// Identifies this app to the AccountsAPI on every request so role lists are scoped
+// to this app. Mirrors PlatformAppsEnum in the backend `AccountsAPIs/Enums/PlatformAppsEnum.cs`.
+const APP_CONTEXT_HEADER = "X-App-Context";
+const APP_CODE = "workspace";
+
 const getErrorMessageFromResponseData = (responseData: unknown): string => {
   // Standard: errors are plain text strings
   if (typeof responseData === "string" && responseData.trim()) {
@@ -50,6 +55,9 @@ axiosInstance.interceptors.request.use(
   (request) => {
     // Include cookies with the request
     request.withCredentials = true;
+
+    // Identify this app to the AccountsAPI so role lists are scoped to this app
+    request.headers.set(APP_CONTEXT_HEADER, APP_CODE);
 
     return request;
   },

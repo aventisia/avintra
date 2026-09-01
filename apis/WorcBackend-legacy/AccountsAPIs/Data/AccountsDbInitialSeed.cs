@@ -32,11 +32,14 @@ public static class AccountsDbInitialSeed
                 // even when the rest of the seed is skipped by IsSeedingRequired.
                 await SeedDefaultSpacesForAllTenantsAsync(_accountsDbContext, logger);
 
+                // Seed any missing fixed roles.
+                // This runs unconditionally (idempotently) so existing databases also pick up
+                // newly added roles (e.g. the CRM placeholders), even when the rest of the seed
+                // is skipped by IsSeedingRequired.
+                if (!await SeedDefaultRolesAsync(_roleManager, logger)) return app;
+
                 // Seeding is not required
                 if (!await IsSeedingRequired(_accountsDbContext, logger)) return app;
-
-                // Seed Roles
-                if (!await SeedDefaultRolesAsync(_roleManager, logger)) return app;
 
                 // Seed Super User without tenant
                 var superUser = await SeedSuperUserAsync(_userManager, environmentConfig, logger);
@@ -118,13 +121,6 @@ public static class AccountsDbInitialSeed
                 await accountsDbContext.SaveChangesAsync();
             }
 
-            // Role already exists
-            if (await accountsDbContext.Roles.CountAsync() > 0)
-            {
-                logger.LogDebug("Role data already exists, skipping data seed process.");
-                return false;
-            }
-
             // Tenant already exists
             if (await accountsDbContext.Tenants.Where(w => w.IsDefault).CountAsync() > 0)
             {
@@ -149,15 +145,19 @@ public static class AccountsDbInitialSeed
         return true;
     }
 
-    // Seed roles
+    // Seed roles. Idempotent: for each fixed role, add it only when it does not exist yet,
+    // so existing databases pick up newly added roles without touching the ones already present.
     private async static Task<bool> SeedDefaultRolesAsync(RoleManager<AccountRole> roleManager, ILogger logger)
     {
         try
         {
-            foreach (var role in Enum.GetValues(typeof(CustomRolesEnum)))
+            foreach (var role in Enum.GetValues(typeof(CustomRolesEnum)).Cast<CustomRolesEnum>())
             {
+                // Role already exists. Do not add it again.
+                if (await roleManager.RoleExistsAsync(role.ToString())) continue;
+
                 // Get role description
-                var userRoleDescription = GetEnumDescriptionUtil.GetEnumDescription((Enum)role);
+                var userRoleDescription = GetEnumDescriptionUtil.GetEnumDescription(role);
 
                 // Split role description using semicolon (;)
                 string[] splitContent = userRoleDescription.Split(';');
@@ -168,6 +168,7 @@ public static class AccountsDbInitialSeed
                     Name = role.ToString(),
                     FullName = splitContent[1].Trim(),
                     Description = splitContent[2].Trim(),
+                    AppCode = role.ToPlatformApp().ToAppCode(),
                     IsDefault = true,
                 });
             }
@@ -208,9 +209,12 @@ public static class AccountsDbInitialSeed
             };
 
             // Create a list of default roles to be assigned to the super user.
+            // Only workspace roles are granted: the workspace guard keys off the JWT's top role
+            // (Seq ordering), and granting CRM placeholder roles would corrupt that detection
+            // (they restart Seq at 0, so a CRM role would shadow SA/TA in the JWT).
             var roles = Enum.GetValues(typeof(CustomRolesEnum))
                                 .Cast<CustomRolesEnum>()
-                                .Where(w => w != CustomRolesEnum.SA)
+                                .Where(w => w != CustomRolesEnum.SA && w.ToPlatformApp() == PlatformAppsEnum.Workspace)
                                 .Select(r => r.ToString())
                                 .ToList();
 
