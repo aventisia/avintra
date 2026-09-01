@@ -310,26 +310,6 @@ public static class WorkspaceDbInitialSeed
         {
             var fileName = Path.GetFileName(specFile); // e.g. github.openapi.json
             var plugin = Path.GetFileNameWithoutExtension(fileName).Split('.')[0].ToLowerInvariant();
-            // Seed all supported Corsair plugins. For additional plugins, add the base URL mapping here.
-            var baseUrl = plugin switch
-            {
-                "github" => "https://api.github.com",
-                "outlook" => "https://graph.microsoft.com/v1.0",
-                "resend" => "https://api.resend.com",
-                "tavily" => "https://api.tavily.com",
-                "slack" => "https://slack.com/api",
-                "stripe" => "https://api.stripe.com/v1",
-                "notion" => "https://api.notion.com/v1",
-                "hubspot" => "https://api.hubapi.com",
-                "twilio" => "https://api.twilio.com/2010-04-01",
-                "openweathermap" => "https://api.openweathermap.org/data/2.5",
-                _ => null
-            };
-            if (baseUrl == null)
-            {
-                logger.LogInformation("Skipping unsupported Corsair OpenAPI spec {FileName}.", fileName);
-                continue;
-            }
 
             try
             {
@@ -340,6 +320,12 @@ public static class WorkspaceDbInitialSeed
                     logger.LogWarning("Could not parse OpenAPI spec {FileName}; skipping Corsair tool seeding.", fileName);
                     continue;
                 }
+
+                // The base URL is embedded in the generated spec's servers[0].url
+                // (populated from the DCP generator's DEFAULT_BASE_URL_MAP). Derive it
+                // from the spec so every registered plugin is seeded without a
+                // hardcoded allow-list. Fall back to a placeholder when absent.
+                var baseUrl = ExtractServerBaseUrl(parsedSchema) ?? "https://api.example.com";
 
                 // User-facing tool names must NOT expose the internal "Corsair" infrastructure name.
                 // The tool ID remains deterministic and internal; only the display name/description are public.
@@ -591,5 +577,35 @@ public static class WorkspaceDbInitialSeed
         using var md5 = System.Security.Cryptography.MD5.Create();
         var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
         return new Guid(hash);
+    }
+
+    /// <summary>
+    /// Extracts the first server base URL from a flattened OpenAPI spec document.
+    /// The Corsair DCP generator embeds the provider base URL in servers[0].url.
+    /// Returns <c>null</c> when the spec has no servers array or no URL.
+    /// </summary>
+    private static string? ExtractServerBaseUrl(System.Text.Json.JsonDocument parsedSchema)
+    {
+        try
+        {
+            if (parsedSchema.RootElement.TryGetProperty("servers", out var servers) &&
+                servers.ValueKind == System.Text.Json.JsonValueKind.Array)
+            {
+                foreach (var server in servers.EnumerateArray())
+                {
+                    if (server.TryGetProperty("url", out var url) &&
+                        url.ValueKind == System.Text.Json.JsonValueKind.String &&
+                        !string.IsNullOrWhiteSpace(url.GetString()))
+                    {
+                        return url.GetString();
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // ignore malformed servers; caller falls back to a placeholder
+        }
+        return null;
     }
 }
