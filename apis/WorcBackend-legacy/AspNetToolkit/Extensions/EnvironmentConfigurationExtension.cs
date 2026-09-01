@@ -76,9 +76,9 @@ public static class EnvironmentConfigurationExtension
         var LLMPIPELINE_API_BASE_URL = Environment.GetEnvironmentVariable("LLMPIPELINE_API_BASE_URL") ?? config["EnvironmentConfig:LlmPipelineApiBaseUrl"] ?? "http://llmpipeline-apis:4003";
         var CAMEL_API_BASE_URL = Environment.GetEnvironmentVariable("CAMEL_API_BASE_URL") ?? config["EnvironmentConfig:CamelApiBaseUrl"] ?? "http://camel-connector-harness:4005";
         var CORSAIR_SIDECAR_URL = Environment.GetEnvironmentVariable("CORSAIR_SIDECAR_URL") ?? config["EnvironmentConfig:CorsairSidecarUrl"] ?? "http://corsair:3456";
-        // Public OAuth redirect URI must use the generic /integration proxy path so end users
+        // Public OAuth redirect URI must use the generic "integration" proxy path so end users
         // never see the internal "corsair" service name in browser URLs.
-        var CORSAIR_REDIRECT_URI = Environment.GetEnvironmentVariable("CORSAIR_REDIRECT_URI") ?? config["EnvironmentConfig:CorsairRedirectUri"] ?? "https://local-avintra.aventisia.com/integration/api/oauth/callback";
+        var CORSAIR_REDIRECT_URI = Environment.GetEnvironmentVariable("CORSAIR_REDIRECT_URI") ?? config["EnvironmentConfig:CorsairRedirectUri"] ?? "https://local-avintra.aventisia.com/workspace/api/integration/oauth-callback";
 
         // Sales and support emails environment variable
         var SALES_EMAILS = Environment.GetEnvironmentVariable("SALES_EMAILS") ?? config["EnvironmentConfig:SalesEmails"] ?? string.Empty;

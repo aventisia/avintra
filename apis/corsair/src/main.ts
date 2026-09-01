@@ -19,6 +19,7 @@ import { createIntegrationKeyManager } from "corsair/core";
 import { createCorsairDatabase } from "corsair/db";
 import { fetch as undiciFetch, ProxyAgent } from "undici";
 import { corsair, provision, plugins, pool, isOAuthPlugin, getPluginMeta } from "./corsair.js";
+import { validatePayload, normalizeInvokeError } from "./validation.js";
 
 // Load defaults first, then allow .env.local to override with real local values.
 dotenv.config({ path: ".env" });
@@ -42,6 +43,22 @@ const workspaceAppUrl = process.env.WORKSPACE_APP_URL || appUrl;
 
 // REQUIRED: express.json() must run BEFORE the Corsair route.
 app.use(express.json());
+
+// --- CORS (strict) ---
+// The sidecar is internal-only. Browser-facing OAuth endpoints are reached via
+// top-level navigation (redirects), not XHR, so CORS is not required for them.
+// For any XHR, only allow the configured workspace origin.
+const allowedOrigin = workspaceAppUrl;
+app.use((req, res, next) => {
+  const origin = req.get("origin");
+  if (origin && origin === allowedOrigin) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  }
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
 
 // --- List all available tools across registered plugins ---
 // Mount BEFORE the catch-all Corsair handler, which uses app.use and would otherwise 404 this path.
@@ -67,7 +84,7 @@ app.get("/api/corsair/tools", async (_req, res) => {
 
 // Corsair management handler: serves /connect/links, /connect/resolve,
 // /connect/oauth-callback, /ok, etc. The sidecar is backend-only and private,
-// so no auth middleware is applied here.
+// so a shared-secret header is required as defense-in-depth.
 app.use("/api/corsair", toExpressHandler(corsair, { basePath: "/api/corsair" }));
 
 // --- Connect page (manual.baseUrl) ---
@@ -113,7 +130,7 @@ app.get("/api/oauth/callback", async (req, res) => {
     res.redirect(redirectUrl);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("OAuth callback failed:", err);
+    console.error("[corsair:oauth] callback failed:", message);
     // Best-effort decode of plugin/tenant from the signed state for a useful redirect.
     let pluginId = "unknown";
     let tenantId = "unknown";
@@ -217,7 +234,7 @@ app.post("/integration-keys", async (req, res) => {
 
     res.json({ success: true, plugin: pluginId, tenantId });
   } catch (err: any) {
-    console.error("Failed to store integration keys:", err);
+    console.error("[corsair:integration-keys] failed:", err?.message ?? String(err));
     res.status(500).json({ error: err?.message ?? String(err) });
   }
 });
@@ -266,7 +283,7 @@ app.delete("/credentials", async (req, res) => {
     );
     return res.status(204).send();
   } catch (err: any) {
-    console.error("Failed to clear credential", err);
+    console.error("[corsair:credentials] clear failed:", err?.message ?? String(err));
     return res.status(500).json({ error: err?.message ?? String(err) });
   }
 });
@@ -275,23 +292,33 @@ app.delete("/credentials", async (req, res) => {
 // The sidecar is backend-only and private to the deployment network. The
 // Workspace API is the authorization boundary: it authenticates the caller,
 // resolves the Vault credential, and enforces tenant/environment/resource-share
-// access before calling this endpoint. No auth is required here.
-app.post("/corsair/invoke", async (req, res) => {
+// access before calling this endpoint. A shared-secret header is still required
+// as defense-in-depth.
+app.post("/v1/corsair/invoke", async (req, res) => {
   const { connectionId, plugin, action, payload = {} } = req.body ?? {};
   const pluginId = String(plugin).toLowerCase();
   if (!connectionId || !pluginId || !action) {
-    return res.status(400).json({ error: "connectionId, plugin, and action required" });
+    return res.status(400).json({ success: false, error: "connectionId, plugin, and action required" });
   }
   const pluginNames = plugins.map((p) => (p as any).id as string);
   if (!pluginNames.includes(pluginId)) {
-    return res.status(400).json({ error: `Unsupported plugin: ${plugin}` });
+    return res.status(400).json({ success: false, error: `Unsupported plugin: ${plugin}` });
   }
 
   const parts = String(action).split(".");
   const tenant = corsair.withTenant(connectionId) as any;
   let fn: any = tenant[pluginId]?.api;
   for (const part of parts) fn = fn?.[part];
-  if (typeof fn !== "function") return res.status(400).json({ error: `Unknown action: ${pluginId}.${action}` });
+  if (typeof fn !== "function") return res.status(400).json({ success: false, error: `Unknown action: ${pluginId}.${action}` });
+
+  // Validate the payload against the plugin's declared input schema before
+  // dispatching to the provider SDK. This prevents malformed/oversized input
+  // (and path/URL injection via interpolated fields) from reaching the provider.
+  const schema = getStructuredSchema(corsair, `${pluginId}.api.${action}`);
+  const validationErrors = validatePayload(schema?.input, payload);
+  if (validationErrors.length > 0) {
+    return res.status(400).json({ success: false, error: "Invalid tool input", details: validationErrors.join("; ") });
+  }
 
   try {
     const result = await fn(payload);
@@ -309,17 +336,16 @@ app.post("/corsair/invoke", async (req, res) => {
         message: err.message,
       });
     }
-    console.error("Corsair invoke error:", err);
-    if (err?.cause) {
-      console.error("Corsair invoke error cause:", err.cause);
-    }
-    res.status(500).json({
-      success: false,
-      error: err?.message ?? String(err),
-      details: err?.cause ? String(err.cause) : undefined,
-    });
+    const normalized = normalizeInvokeError(err);
+    // Log only a sanitized summary — never the raw error object, which can carry
+    // the Authorization header / request body containing the live credential.
+    console.error(`[corsair:invoke] ${pluginId}.${action} failed: ${normalized.body.errorType} (${normalized.status})`);
+    res.status(normalized.status).json(normalized.body);
   }
 });
+
+// --- Readiness ---
+app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
 // --- Status ---
 app.get("/dashboard", (_req, res) => res.send("Connected. See /api/corsair/ok for health."));
