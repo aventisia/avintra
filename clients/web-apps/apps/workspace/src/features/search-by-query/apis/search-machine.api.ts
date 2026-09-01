@@ -2,7 +2,6 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { ISelectOption } from "@avplatform/ui/types";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { getSpaceHeaders } from "@/utils/space-headers";
 
 import { MachineSearchQueryFilters } from "../types/search-filters";
 
@@ -22,7 +21,6 @@ const searchMachines = (query: string = "", filters: MachineSearchQueryFilters) 
           query,
           flowVersionId: filters.flowVersionId,
         },
-        headers: getSpaceHeaders(),
       },
     )
     .then((res) => res.data);
