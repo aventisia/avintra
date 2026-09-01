@@ -48,7 +48,6 @@ public static class AppServicesExtension
         config.Apply(new UnreadNotificationMappingProfile());
         config.Apply(new AutoNotificationMappingProfile());
         config.Apply(new FlowsTableMappingProfile());
-        config.Apply(new FlowCommentMappingProfile());
         config.Apply(new FlowBuilderMappingProfile());
         config.Apply(new SupportTicketsTableMappingProfile());
         config.Apply(new SupportTicketRemarksMappingProfile());
@@ -121,7 +120,6 @@ public static class AppServicesExtension
         services.AddScoped<INotificationEventService, NotificationEventService>();
         services.AddScoped<INotificationRecipientResolver, NotificationRecipientResolver>();
         services.AddScoped<IFlowsTableService, FlowsTableService>();
-        services.AddScoped<IFlowCommentService, FlowCommentService>();
         services.AddScoped<IFlowBuilderService, FlowBuilderService>();
         services.AddScoped<ISupportTicketsTableService, SupportTicketsTableService>();
         services.AddScoped<ISupportTicketRemarksService, SupportTicketRemarksService>();

@@ -96,7 +96,6 @@ public class ManageTenantService : IManageTenantService
             if (!await DeleteEntitiesAsync(_unitOfWork.FlowVersionRepo, f => f.TenantId == tenantIdToBeDeleted, nameof(FlowVersion), tenantIdToBeDeleted))
                 return serviceResponse;
 
-            // Delete FlowComment - DeleteBehavior.Cascade set with Flow
             // Delete FlowLog - DeleteBehavior.Cascade set with FlowVersion (TODO: should be with FlowVersion currently its with Flow)
             // Delete FlowVersion - DeleteBehavior.Cascade set with Flow
             // Delete FlowUser - DeleteBehavior.Cascade set with Flow

@@ -13,7 +13,6 @@ public class UnitOfWork : IUnitOfWork
     public INotificationRepo NotificationRepo => new NotificationRepo(_workspaceDbContext);
     public INotificationUserRepo NotificationUserRepo => new NotificationUserRepo(_workspaceDbContext);
     public IFlowRepo FlowRepo => new FlowRepo(_workspaceDbContext);
-    public IFlowCommentRepo FlowCommentRepo => new FlowCommentRepo(_workspaceDbContext);
     public ISupportTicketRepo SupportTicketRepo => new SupportTicketRepo(_workspaceDbContext);
     public ISupportTicketRemarkRepo SupportTicketRemarkRepo => new SupportTicketRemarkRepo(_workspaceDbContext);
     public IFlowLogRepo FlowLogRepo => new FlowLogRepo(_workspaceDbContext);

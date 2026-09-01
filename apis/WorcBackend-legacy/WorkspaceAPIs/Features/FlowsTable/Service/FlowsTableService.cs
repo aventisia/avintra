@@ -52,7 +52,6 @@ public class FlowsTableService : IFlowsTableService
                 flows = await _unitOfWork.FlowRepo
                     .GetByConditionAsync(w => w.CreatedByUserId == _userId)
                     .OrderByDescending(w => w.CreatedOn)
-                    .Include(i => i.FlowComments)
                     .Include(i => i.FlowVersions)
                     .Include(i => i.CreatedByUser)
                     .ToListAsync();
@@ -81,7 +80,6 @@ public class FlowsTableService : IFlowsTableService
                         )
                     )
                     .OrderByDescending(w => w.CreatedOn)
-                    .Include(i => i.FlowComments)
                     .Include(i => i.FlowVersions)
                     .Include(i => i.CreatedByUser)
                     .ToListAsync();

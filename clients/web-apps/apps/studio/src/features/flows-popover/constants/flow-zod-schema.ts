@@ -29,7 +29,6 @@ export const flowZodSchema = z.object({
   thumbnail: z.string(),
   isDisabled: z.boolean().default(false),
   // Read (view) only fields
-  flowCommentCount: z.number().default(0),
   createdBy: z.string(),
   createdOn: z.date(),
   lastModifiedBy: z.string(),

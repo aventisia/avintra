@@ -4,7 +4,6 @@ export const columnVisibilityState = {
   name: true,
   type: true,
   supportedPlatform: true,
-  flowCommentCount: true,
   createdBy: true,
   createdOn: true,
 };

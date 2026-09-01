@@ -6,10 +6,6 @@ public class FlowsTableMappingProfile : IRegister
     {
         // Mapping for flow record or records.
         config.NewConfig<Flow, FlowsTableDto>()
-            .Map(dest => dest.FlowCommentCount,
-                src => src.FlowComments != null
-                    ? src.FlowComments.Count
-                    : 0)
             .Map(dest => dest.VersionNumber,
                 src => src.FlowVersions != null && src.FlowVersions.Any()
                     ? src.FlowVersions

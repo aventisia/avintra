@@ -13,6 +13,19 @@ public class WorkspaceDbContextFactory : IDesignTimeDbContextFactory<WorkspaceDb
 {
     public WorkspaceDbContext CreateDbContext(string[] args)
     {
+        // Load .env.local when running locally so the design-time connection string
+        // matches the values used at runtime (mirrors LoadEnvironmentConfiguration in
+        // AspNetToolkit, which only runs when the app is started via Program.cs).
+        var aspnetEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        if (string.Equals(aspnetEnvironment, "Localhost", StringComparison.OrdinalIgnoreCase))
+        {
+            var envLocalPath = Path.Combine(Directory.GetCurrentDirectory(), ".env.local");
+            if (File.Exists(envLocalPath))
+            {
+                DotNetEnv.Env.Load(envLocalPath);
+            }
+        }
+
         // Build configuration from appsettings.json (same source as Program.cs)
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -23,10 +36,23 @@ public class WorkspaceDbContextFactory : IDesignTimeDbContextFactory<WorkspaceDb
         var environmentConfig = new EnvironmentConfig();
         configuration.GetSection("EnvironmentConfig").Bind(environmentConfig);
 
-        var pgHost = string.IsNullOrWhiteSpace(environmentConfig.PostgresqlHost) ? "localhost" : environmentConfig.PostgresqlHost;
-        var pgPort = environmentConfig.PostgresqlPort == 0 ? 5432 : environmentConfig.PostgresqlPort;
-        var pgUsername = environmentConfig.PostgresqlUsername ?? string.Empty;
-        var pgPassword = environmentConfig.PostgresqlPassword ?? string.Empty;
+        // .env.local / environment variables take precedence, then fall back to
+        // appsettings values (ignoring the "env_var" placeholder used in appsettings.json).
+        var pgHost = Environment.GetEnvironmentVariable("POSTGRESQL_HOST")
+            ?? environmentConfig.PostgresqlHost;
+        if (string.IsNullOrWhiteSpace(pgHost) || pgHost == "env_var")
+        {
+            pgHost = "localhost";
+        }
+
+        var pgPortRaw = Environment.GetEnvironmentVariable("POSTGRESQL_PORT");
+        var pgPort = int.TryParse(pgPortRaw, out var pgPortFromEnv) && pgPortFromEnv != 0
+            ? pgPortFromEnv
+            : (environmentConfig.PostgresqlPort == 0 ? 5432 : environmentConfig.PostgresqlPort);
+        var pgUsername = Environment.GetEnvironmentVariable("POSTGRESQL_USERNAME")
+            ?? environmentConfig.PostgresqlUsername ?? string.Empty;
+        var pgPassword = Environment.GetEnvironmentVariable("POSTGRESQL_PASSWORD")
+            ?? environmentConfig.PostgresqlPassword ?? string.Empty;
 
         var appDbConnectionString = $"Host={pgHost};Port={pgPort};Username={pgUsername};Password={pgPassword};Database=WorkspaceDb;Include Error Detail=true";
 
