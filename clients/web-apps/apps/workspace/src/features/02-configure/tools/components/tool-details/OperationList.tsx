@@ -3,29 +3,41 @@ import { normalizeToolOperations } from "../../utils/tool-operations.util";
 
 interface OperationListProps {
   tool: ToolDto;
+  showTitle?: boolean;
 }
 
 /**
  * Renders a read-only list of operations parsed from the tool schema.
+ * Displays operations in a two-column grid showing only action name and description.
  */
-export const OperationList = ({ tool }: OperationListProps) => {
+export const OperationList = ({ tool, showTitle }: OperationListProps) => {
   const operations = normalizeToolOperations(tool);
 
-  if (!operations.length) {
-    return <p className="text-sm text-muted-foreground">No operations available.</p>;
-  }
-
   return (
-    <ul className="space-y-2">
-      {operations.map((op) => (
-        <li key={op.operationId} className="rounded border p-2">
-          <div className="font-medium">{op.operationId}</div>
-          {op.summary && <div className="text-xs text-muted-foreground">{op.summary}</div>}
-          <div className="text-2xs text-muted-foreground">
-            {op.method} {op.path}
-          </div>
-        </li>
-      ))}
-    </ul>
+    <>
+      {showTitle && (
+        <h3 className="text-sm font-semibold mb-3">
+          Operations
+          {operations.length > 0 && (
+            <span className="ml-2 text-xs font-normal text-muted-foreground">
+              ({operations.length})
+            </span>
+          )}
+        </h3>
+      )}
+
+      {!operations.length ? (
+        <p className="text-sm text-muted-foreground">No operations available.</p>
+      ) : (
+        <div className="grid grid-cols-2 gap-3">
+          {operations.map((op) => (
+            <div key={op.operationId} className="rounded border p-3 bg-muted/30">
+              <div className="text-sm font-semibold text-foreground">{op.operationId}</div>
+              {op.summary && <div className="text-xs text-muted-foreground mt-1">{op.summary}</div>}
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   );
 };
