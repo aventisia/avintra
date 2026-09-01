@@ -64,4 +64,17 @@
     </None>
   </ItemGroup>
 
+  <!--
+    Mapping files embedded so they can be restored at runtime if deleted.
+    These artifacts are not reproducible from the harness catalog at startup
+    (curated selector labels/icons/hand-coded groups), so the compiled snapshot
+    is the source of truth for auto-regeneration.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="Features\CloudConnectors\ConfigFiles\CloudConnectorActionSelectorMappingFile.json" LogicalName="CloudConnectorActionSelectorMappingFile.json" />
+    <EmbeddedResource Include="Features\CloudConnectors\CamelV2\Helpers\CamelActionMapping.json" LogicalName="CamelV2.CamelActionMapping.json" />
+    <EmbeddedResource Include="Features\CloudConnectors\CamelV2\openapi\github.openapi.json" LogicalName="CamelV2.openapi.github.openapi.json" />
+    <EmbeddedResource Include="Features\CloudConnectors\CamelV2\openapi\m365.openapi.json" LogicalName="CamelV2.openapi.m365.openapi.json" />
+  </ItemGroup>
+
 </Project>

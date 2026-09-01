@@ -77,15 +77,26 @@ public class CamelConnectorsConfigRepository
 
     private string? ResolvePath(string family, string action)
     {
+        // Check the legacy Camel/ root first, then the CamelV2/ root.
+        var legacy = ResolvePathUnderRoot(family, action, "Camel");
+        if (legacy != null && System.IO.File.Exists(legacy))
+        {
+            return legacy;
+        }
+        return ResolvePathUnderRoot(family, action, "CamelV2");
+    }
+
+    private string? ResolvePathUnderRoot(string family, string action, string rootName)
+    {
         string root;
         try
         {
-            root = Path.Combine(_env.ContentRootPath, "Features", "CloudConnectors", "ConfigFiles", "Camel");
+            root = Path.Combine(_env.ContentRootPath, "Features", "CloudConnectors", "ConfigFiles", rootName);
         }
         catch
         {
             // Fall back to the app base directory (published output).
-            root = Path.Combine(AppContext.BaseDirectory, "Features", "CloudConnectors", "ConfigFiles", "Camel");
+            root = Path.Combine(AppContext.BaseDirectory, "Features", "CloudConnectors", "ConfigFiles", rootName);
         }
         return Path.Combine(root, family, $"{action}Connector.json");
     }

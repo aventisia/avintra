@@ -240,9 +240,20 @@ public class CamelConnectorService : ICamelConnectorService
             }
             try
             {
+                // Prefer the current CamelV2 mapping file (CamelV2/Helpers/
+                // is the active config root after the Camel -> CamelV2 move).
                 var path = Path.Combine(
                     AppContext.BaseDirectory,
-                    "Features", "CloudConnectors", "ConfigFiles", "Camel", "CamelActionMapping.json");
+                    "Features", "CloudConnectors", "CamelV2", "Helpers", "CamelActionMapping.json");
+                if (!System.IO.File.Exists(path))
+                {
+                    // Legacy fallback (ConfigFiles/Camel/ may still exist in
+                    // older checkouts).
+                    path = Path.Combine(
+                        AppContext.BaseDirectory,
+                        "Features", "CloudConnectors", "ConfigFiles", "Camel", "CamelActionMapping.json");
+                }
+
                 if (!System.IO.File.Exists(path))
                 {
                     _logger.LogWarning("CamelActionMapping.json not found at {Path}.", path);
