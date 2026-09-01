@@ -9,7 +9,7 @@
         "label": "Ably",
         "description": "Ably",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/ably.svg",
         "listType": null,
         "actions": [
           {
@@ -19,7 +19,7 @@
             "description": "Get the current Ably service time.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -31,7 +31,7 @@
             "description": "Retrieve application usage statistics.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -43,7 +43,7 @@
             "description": "Request an Ably access token.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55,7 +55,7 @@
             "description": "Publish messages to multiple Ably channels.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -67,7 +67,7 @@
             "description": "Retrieve details for an active channel.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79,7 +79,7 @@
             "description": "Retrieve message history for a channel.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -91,7 +91,7 @@
             "description": "Retrieve current channel presence members.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -103,7 +103,7 @@
             "description": "Retrieve presence history for a channel.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -115,7 +115,7 @@
             "description": "Retrieve historical versions of a message.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -127,7 +127,7 @@
             "description": "List active Ably channels.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -139,7 +139,7 @@
             "description": "Publish a message to an Ably channel.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -151,7 +151,7 @@
             "description": "Retrieve presence information for multiple channels.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -163,7 +163,7 @@
             "description": "Retrieve presence history for multiple channels.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -175,7 +175,7 @@
             "description": "Publish a batch of push notifications.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -187,7 +187,7 @@
             "description": "Delete matching push channel subscriptions.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -199,7 +199,7 @@
             "description": "Subscribe a device or client to a push channel.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -211,7 +211,7 @@
             "description": "Retrieve a push device registration.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -223,7 +223,7 @@
             "description": "List push channel subscriptions.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -235,7 +235,7 @@
             "description": "List channels with push subscribers.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -247,7 +247,7 @@
             "description": "List registered push notification devices.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -259,7 +259,7 @@
             "description": "Partially update a push device registration.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -271,7 +271,7 @@
             "description": "Publish a push notification.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -283,7 +283,7 @@
             "description": "Register a device for push notifications.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -295,7 +295,7 @@
             "description": "Delete matching push device registrations.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -307,7 +307,7 @@
             "description": "Delete a push device registration.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -319,7 +319,7 @@
             "description": "Create or replace a push device registration.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ably.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -6120,7 +6120,7 @@
         "label": "Addresszen",
         "description": "Addresszen",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/addresszen.svg",
         "listType": null,
         "actions": [
           {
@@ -6130,7 +6130,7 @@
             "description": "Get address autocomplete suggestions for a partial address query",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/addresszen.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -6142,7 +6142,7 @@
             "description": "Verify and standardize a US address using USPS CASS validation",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/addresszen.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -6154,7 +6154,7 @@
             "description": "Get public information on an API key, including whether it is currently usable",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/addresszen.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -6166,7 +6166,7 @@
             "description": "Resolve an address autocompletion by its address ID and return the full address in US format",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/addresszen.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -14265,7 +14265,7 @@
         "label": "Alttextai",
         "description": "AltText.ai",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/alttextai.svg",
         "listType": null,
         "actions": [
           {
@@ -14275,7 +14275,7 @@
             "description": "List images in the AltText.ai library with pagination",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/alttextai.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -14287,7 +14287,7 @@
             "description": "Add an image and generate AI alt text from URL or base64 data",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/alttextai.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -14299,7 +14299,7 @@
             "description": "Retrieve image metadata and alt text by asset ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/alttextai.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -14311,7 +14311,7 @@
             "description": "Update alt text or metadata for an existing image",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/alttextai.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -14323,7 +14323,7 @@
             "description": "Delete an image from the AltText.ai library",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/alttextai.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -14335,7 +14335,7 @@
             "description": "Search images by alt text, asset ID, or URL substring",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/alttextai.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -14347,7 +14347,7 @@
             "description": "Upload a CSV of image URLs for batch alt text generation",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/alttextai.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -14359,7 +14359,7 @@
             "description": "Scrape a web page and queue alt text for all images found",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/alttextai.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -14371,7 +14371,7 @@
             "description": "Get AltText.ai account settings and usage",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/alttextai.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -14383,7 +14383,7 @@
             "description": "Update AltText.ai account settings",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/alttextai.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -17337,7 +17337,7 @@
         "label": "Apify",
         "description": "Apify MCP",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/apify.svg",
         "listType": null,
         "actions": [
           {
@@ -17347,7 +17347,7 @@
             "description": "Search for Actors in the Apify Store",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/apify.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -17359,7 +17359,7 @@
             "description": "Get detailed information about an Actor including schemas and pricing",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/apify.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -17371,7 +17371,7 @@
             "description": "Run an Apify Actor and return run metadata",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/apify.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -17383,7 +17383,7 @@
             "description": "Search the web and scrape top results using the RAG Web Browser Actor",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/apify.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -17395,7 +17395,7 @@
             "description": "Get detailed information about a specific Actor run",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/apify.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -17407,7 +17407,7 @@
             "description": "Retrieve dataset items from an Actor run (Apify MCP get-dataset-items)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/apify.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -17419,7 +17419,7 @@
             "description": "Search Apify and Crawlee documentation",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/apify.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -17431,7 +17431,7 @@
             "description": "Fetch the full content of an Apify documentation page",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/apify.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -22704,7 +22704,7 @@
         "label": "Ayrshare",
         "description": "Ayrshare",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/ayrshare.svg",
         "listType": null,
         "actions": [
           {
@@ -22714,7 +22714,7 @@
             "description": "Create or replace an auto-post schedule. Its case-sensitive title is the join key used by publish autoSchedule.title.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ayrshare.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -22726,7 +22726,7 @@
             "description": "List active auto-post schedules, including titles, UTC times, weekday filters, and exclude dates.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ayrshare.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -22738,7 +22738,7 @@
             "description": "Delete an Ayrshare post by id. Published Instagram and TikTok posts cannot be deleted via API; use markManualDeleted only after deleting them on the network.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ayrshare.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -22750,7 +22750,7 @@
             "description": "Fetch Ayrshare post history, filterable by date, status, network, and record count.",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/ayrshare.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33240,7 +33240,7 @@
         "label": "Boloforms",
         "description": "Boloforms",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/boloforms.svg",
         "listType": null,
         "actions": [
           {
@@ -33250,7 +33250,7 @@
             "description": "Retrieve a list of documents from a Boloforms workspace, with optional filtering and pagination",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/boloforms.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33399,7 +33399,7 @@
         "label": "Bookingmood",
         "description": "Bookingmood",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/bookingmood.svg",
         "listType": null,
         "actions": [
           {
@@ -33409,7 +33409,7 @@
             "description": "Bookingmood organizations list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33421,7 +33421,7 @@
             "description": "Bookingmood bookings list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33433,7 +33433,7 @@
             "description": "Bookingmood bookings update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33445,7 +33445,7 @@
             "description": "Bookingmood bookings delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33457,7 +33457,7 @@
             "description": "Bookingmood products list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33469,7 +33469,7 @@
             "description": "Bookingmood products create",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33481,7 +33481,7 @@
             "description": "Bookingmood products update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33493,7 +33493,7 @@
             "description": "Bookingmood products delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33505,7 +33505,7 @@
             "description": "Bookingmood members list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33517,7 +33517,7 @@
             "description": "Bookingmood members delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33529,7 +33529,7 @@
             "description": "Bookingmood members invite",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33541,7 +33541,7 @@
             "description": "Bookingmood contacts list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33553,7 +33553,7 @@
             "description": "Bookingmood contacts create",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33565,7 +33565,7 @@
             "description": "Bookingmood contacts update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33577,7 +33577,7 @@
             "description": "Bookingmood contacts delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33589,7 +33589,7 @@
             "description": "Bookingmood widgets list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33601,7 +33601,7 @@
             "description": "Bookingmood widgets create",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33613,7 +33613,7 @@
             "description": "Bookingmood widgets update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33625,7 +33625,7 @@
             "description": "Bookingmood widgets delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33637,7 +33637,7 @@
             "description": "Bookingmood calendarEvents list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33649,7 +33649,7 @@
             "description": "Bookingmood calendarEvents update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33661,7 +33661,7 @@
             "description": "Bookingmood calendarEvents delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33673,7 +33673,7 @@
             "description": "Bookingmood invoices list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33685,7 +33685,7 @@
             "description": "Bookingmood invoices delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33697,7 +33697,7 @@
             "description": "Bookingmood payments list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33709,7 +33709,7 @@
             "description": "Bookingmood payments update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33721,7 +33721,7 @@
             "description": "Bookingmood payments delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33733,7 +33733,7 @@
             "description": "Bookingmood attributes list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33745,7 +33745,7 @@
             "description": "Bookingmood attributes update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33757,7 +33757,7 @@
             "description": "Bookingmood attributes delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33769,7 +33769,7 @@
             "description": "Bookingmood attributeOptions list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33781,7 +33781,7 @@
             "description": "Bookingmood attributeOptions update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33793,7 +33793,7 @@
             "description": "Bookingmood bookingDetails list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33805,7 +33805,7 @@
             "description": "Bookingmood bookingDetails update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33817,7 +33817,7 @@
             "description": "Bookingmood bookingDetails delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33829,7 +33829,7 @@
             "description": "Bookingmood bookingUpdates list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33841,7 +33841,7 @@
             "description": "Bookingmood calendarEventNotes list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33853,7 +33853,7 @@
             "description": "Bookingmood calendarEventNotes update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33865,7 +33865,7 @@
             "description": "Bookingmood calendarEventNotes delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33877,7 +33877,7 @@
             "description": "Bookingmood calendarEventUpdates list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33889,7 +33889,7 @@
             "description": "Bookingmood capacities list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33901,7 +33901,7 @@
             "description": "Bookingmood capacities update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33913,7 +33913,7 @@
             "description": "Bookingmood capacities delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33925,7 +33925,7 @@
             "description": "Bookingmood capacityGroupDeps list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33937,7 +33937,7 @@
             "description": "Bookingmood capacityGroupDeps update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33949,7 +33949,7 @@
             "description": "Bookingmood capacityGroupDeps delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33961,7 +33961,7 @@
             "description": "Bookingmood capacityGroups list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33973,7 +33973,7 @@
             "description": "Bookingmood capacityGroups update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33985,7 +33985,7 @@
             "description": "Bookingmood capacityGroups delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -33997,7 +33997,7 @@
             "description": "Bookingmood contactBookings list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34009,7 +34009,7 @@
             "description": "Bookingmood contactBookings update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34021,7 +34021,7 @@
             "description": "Bookingmood contactBookings delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34033,7 +34033,7 @@
             "description": "Bookingmood couponProducts list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34045,7 +34045,7 @@
             "description": "Bookingmood couponProducts update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34057,7 +34057,7 @@
             "description": "Bookingmood couponProducts delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34069,7 +34069,7 @@
             "description": "Bookingmood couponServices list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34081,7 +34081,7 @@
             "description": "Bookingmood couponServices update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34093,7 +34093,7 @@
             "description": "Bookingmood couponServices delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34105,7 +34105,7 @@
             "description": "Bookingmood couponUses list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34117,7 +34117,7 @@
             "description": "Bookingmood couponUses update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34129,7 +34129,7 @@
             "description": "Bookingmood couponUses delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34141,7 +34141,7 @@
             "description": "Bookingmood coupons list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34153,7 +34153,7 @@
             "description": "Bookingmood coupons update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34165,7 +34165,7 @@
             "description": "Bookingmood coupons delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34177,7 +34177,7 @@
             "description": "Bookingmood externalCalendars list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34189,7 +34189,7 @@
             "description": "Bookingmood externalCalendars update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34201,7 +34201,7 @@
             "description": "Bookingmood externalCalendars delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34213,7 +34213,7 @@
             "description": "Bookingmood lineItemTaxes list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34225,7 +34225,7 @@
             "description": "Bookingmood lineItemTaxes update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34237,7 +34237,7 @@
             "description": "Bookingmood lineItemTaxes delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34249,7 +34249,7 @@
             "description": "Bookingmood lineItems list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34261,7 +34261,7 @@
             "description": "Bookingmood lineItems update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34273,7 +34273,7 @@
             "description": "Bookingmood lineItems delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34285,7 +34285,7 @@
             "description": "Bookingmood paddleSubscriptions list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34297,7 +34297,7 @@
             "description": "Bookingmood permissions list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34309,7 +34309,7 @@
             "description": "Bookingmood permissions update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34321,7 +34321,7 @@
             "description": "Bookingmood permissions delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34333,7 +34333,7 @@
             "description": "Bookingmood pricingWidgets list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34345,7 +34345,7 @@
             "description": "Bookingmood pricingWidgets update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34357,7 +34357,7 @@
             "description": "Bookingmood pricingWidgets delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34369,7 +34369,7 @@
             "description": "Bookingmood productAttrOptions list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34381,7 +34381,7 @@
             "description": "Bookingmood productAttrOptions update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34393,7 +34393,7 @@
             "description": "Bookingmood productAttrOptions delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34405,7 +34405,7 @@
             "description": "Bookingmood productCalendarLogs list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34417,7 +34417,7 @@
             "description": "Bookingmood productReplyAddrs list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34429,7 +34429,7 @@
             "description": "Bookingmood productReplyAddrs update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34441,7 +34441,7 @@
             "description": "Bookingmood productReplyAddrs delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34453,7 +34453,7 @@
             "description": "Bookingmood productServices list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34465,7 +34465,7 @@
             "description": "Bookingmood productServices update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34477,7 +34477,7 @@
             "description": "Bookingmood productServices delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34489,7 +34489,7 @@
             "description": "Bookingmood replyToAddresses list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34501,7 +34501,7 @@
             "description": "Bookingmood replyToAddresses update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34513,7 +34513,7 @@
             "description": "Bookingmood replyToAddresses delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34525,7 +34525,7 @@
             "description": "Bookingmood reviewProducts list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34537,7 +34537,7 @@
             "description": "Bookingmood reviewProducts update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34549,7 +34549,7 @@
             "description": "Bookingmood reviewProducts delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34561,7 +34561,7 @@
             "description": "Bookingmood reviewWidgetListings list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34573,7 +34573,7 @@
             "description": "Bookingmood reviewWidgetListings update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34585,7 +34585,7 @@
             "description": "Bookingmood reviewWidgetListings delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34597,7 +34597,7 @@
             "description": "Bookingmood reviewWidgets list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34609,7 +34609,7 @@
             "description": "Bookingmood reviewWidgets update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34621,7 +34621,7 @@
             "description": "Bookingmood reviews list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34633,7 +34633,7 @@
             "description": "Bookingmood reviews update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34645,7 +34645,7 @@
             "description": "Bookingmood reviews delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34657,7 +34657,7 @@
             "description": "Bookingmood seasons list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34669,7 +34669,7 @@
             "description": "Bookingmood services list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34681,7 +34681,7 @@
             "description": "Bookingmood services update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34693,7 +34693,7 @@
             "description": "Bookingmood services delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34705,7 +34705,7 @@
             "description": "Bookingmood siteListings list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34717,7 +34717,7 @@
             "description": "Bookingmood siteListings update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34729,7 +34729,7 @@
             "description": "Bookingmood sitePages list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34741,7 +34741,7 @@
             "description": "Bookingmood sitePages create",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34753,7 +34753,7 @@
             "description": "Bookingmood sitePages update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34765,7 +34765,7 @@
             "description": "Bookingmood sitePages delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34777,7 +34777,7 @@
             "description": "Bookingmood siteViews list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34789,7 +34789,7 @@
             "description": "Bookingmood sites list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34801,7 +34801,7 @@
             "description": "Bookingmood sites update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34813,7 +34813,7 @@
             "description": "Bookingmood taxes list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34825,7 +34825,7 @@
             "description": "Bookingmood taxes update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34837,7 +34837,7 @@
             "description": "Bookingmood taxes delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34849,7 +34849,7 @@
             "description": "Bookingmood userProfiles list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34861,7 +34861,7 @@
             "description": "Bookingmood userProfiles update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34873,7 +34873,7 @@
             "description": "Bookingmood webhookNotifications list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34885,7 +34885,7 @@
             "description": "Bookingmood webhooks list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34897,7 +34897,7 @@
             "description": "Bookingmood webhooks update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34909,7 +34909,7 @@
             "description": "Bookingmood webhooks delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34921,7 +34921,7 @@
             "description": "Bookingmood widgetAnalytics list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34933,7 +34933,7 @@
             "description": "Bookingmood widgetListings list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34945,7 +34945,7 @@
             "description": "Bookingmood widgetListings update",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34957,7 +34957,7 @@
             "description": "Bookingmood widgetListings delete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34969,7 +34969,7 @@
             "description": "Bookingmood availability query",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -34981,7 +34981,7 @@
             "description": "Bookingmood search availability",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/bookingmood.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -35637,7 +35637,7 @@
         "label": "Botsonic",
         "description": "Botsonic",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/botsonic.svg",
         "listType": null,
         "actions": [
           {
@@ -35647,7 +35647,7 @@
             "description": "Generate a response from a Botsonic chatbot",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/botsonic.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -35659,7 +35659,7 @@
             "description": "Retrieve all FAQs for a Botsonic bot",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/botsonic.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -37452,7 +37452,7 @@
         "label": "Browserless",
         "description": "Browserless",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/browserless.svg",
         "listType": null,
         "actions": [
           {
@@ -37462,7 +37462,7 @@
             "description": "POST /content — fully rendered HTML after JavaScript execution",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/browserless.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -37474,7 +37474,7 @@
             "description": "POST /screenshot — PNG, JPEG, or WebP of a page",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/browserless.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -37486,7 +37486,7 @@
             "description": "POST /pdf — Chrome print-engine PDF of a page",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/browserless.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -37498,7 +37498,7 @@
             "description": "POST /scrape — structured JSON via CSS selectors",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/browserless.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -37510,7 +37510,7 @@
             "description": "POST /function — run custom Puppeteer code in one session",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/browserless.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -37522,7 +37522,7 @@
             "description": "POST /unblock — bypass bot detection and return content/cookies/screenshot",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/browserless.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -37534,7 +37534,7 @@
             "description": "POST /download — return files Chrome downloaded during Puppeteer code",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/browserless.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -49827,7 +49827,7 @@
         "label": "Devinmcp",
         "description": "DevinMcp",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/devinmcp.svg",
         "listType": null,
         "actions": [
           {
@@ -49837,7 +49837,7 @@
             "description": "Create a new Devin session to start working on a task",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/devinmcp.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -49849,7 +49849,7 @@
             "description": "Get details and status of an existing Devin session",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/devinmcp.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -49861,7 +49861,7 @@
             "description": "List Devin sessions",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/devinmcp.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -49873,7 +49873,7 @@
             "description": "Send a follow-up message to an existing Devin session",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/devinmcp.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54216,7 +54216,7 @@
         "label": "Faraday",
         "description": "Faraday",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/faraday.svg",
         "listType": null,
         "actions": [
           {
@@ -54226,7 +54226,7 @@
             "description": "List Faraday accounts",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54238,7 +54238,7 @@
             "description": "Retrieve a Faraday account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54250,7 +54250,7 @@
             "description": "Create a Faraday subaccount",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54262,7 +54262,7 @@
             "description": "Update a Faraday account (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54274,7 +54274,7 @@
             "description": "Delete a Faraday account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54286,7 +54286,7 @@
             "description": "Retrieve the current Faraday account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54298,7 +54298,7 @@
             "description": "Get billing for the current Faraday account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54310,7 +54310,7 @@
             "description": "Get billing for a Faraday account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54322,7 +54322,7 @@
             "description": "Get Faraday account usage stats",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54334,7 +54334,7 @@
             "description": "Retrieve the Faraday resource dependency graph",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54346,7 +54346,7 @@
             "description": "List Faraday attributes",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54358,7 +54358,7 @@
             "description": "List Faraday feature stores",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54370,7 +54370,7 @@
             "description": "List Faraday recommenders",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54382,7 +54382,7 @@
             "description": "List Faraday market opportunity analyses",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54394,7 +54394,7 @@
             "description": "List Faraday cohorts",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54406,7 +54406,7 @@
             "description": "Retrieve a Faraday cohort",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54418,7 +54418,7 @@
             "description": "Create a Faraday cohort",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54430,7 +54430,7 @@
             "description": "Update a Faraday cohort (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54442,7 +54442,7 @@
             "description": "Delete a Faraday cohort",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54454,7 +54454,7 @@
             "description": "Archive a Faraday cohort",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54466,7 +54466,7 @@
             "description": "Force update a Faraday cohort",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54478,7 +54478,7 @@
             "description": "Unarchive a Faraday cohort",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54490,7 +54490,7 @@
             "description": "Get Faraday cohort membership analysis",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54502,7 +54502,7 @@
             "description": "List Faraday datasets",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54514,7 +54514,7 @@
             "description": "Retrieve a Faraday dataset",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54526,7 +54526,7 @@
             "description": "Create a Faraday dataset",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54538,7 +54538,7 @@
             "description": "Update a Faraday dataset (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54550,7 +54550,7 @@
             "description": "Delete a Faraday dataset",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54562,7 +54562,7 @@
             "description": "Archive a Faraday dataset",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54574,7 +54574,7 @@
             "description": "Force update a Faraday dataset",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54586,7 +54586,7 @@
             "description": "Unarchive a Faraday dataset",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54598,7 +54598,7 @@
             "description": "Get Faraday dataset ingress logs",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54610,7 +54610,7 @@
             "description": "List Faraday streams",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54622,7 +54622,7 @@
             "description": "Retrieve a Faraday stream",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54634,7 +54634,7 @@
             "description": "Create a Faraday stream",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54646,7 +54646,7 @@
             "description": "Update a Faraday stream (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54658,7 +54658,7 @@
             "description": "Delete a Faraday stream",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54670,7 +54670,7 @@
             "description": "Archive a Faraday stream",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54682,7 +54682,7 @@
             "description": "Force update a Faraday stream",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54694,7 +54694,7 @@
             "description": "Unarchive a Faraday stream",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54706,7 +54706,7 @@
             "description": "Get Faraday stream event analysis",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54718,7 +54718,7 @@
             "description": "List Faraday outcomes",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54730,7 +54730,7 @@
             "description": "Retrieve a Faraday outcome",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54742,7 +54742,7 @@
             "description": "Create a Faraday outcome",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54754,7 +54754,7 @@
             "description": "Update a Faraday outcome (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54766,7 +54766,7 @@
             "description": "Delete a Faraday outcome",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54778,7 +54778,7 @@
             "description": "Archive a Faraday outcome",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54790,7 +54790,7 @@
             "description": "Force update a Faraday outcome",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54802,7 +54802,7 @@
             "description": "Unarchive a Faraday outcome",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54814,7 +54814,7 @@
             "description": "List Faraday persona sets",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54826,7 +54826,7 @@
             "description": "Retrieve a Faraday persona set",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54838,7 +54838,7 @@
             "description": "Create a Faraday persona set",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54850,7 +54850,7 @@
             "description": "Update a Faraday persona set (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54862,7 +54862,7 @@
             "description": "Delete a Faraday persona set",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54874,7 +54874,7 @@
             "description": "Archive a Faraday persona set",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54886,7 +54886,7 @@
             "description": "Force update a Faraday persona set",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54898,7 +54898,7 @@
             "description": "Unarchive a Faraday persona set",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54910,7 +54910,7 @@
             "description": "Get Faraday persona set dimension analysis",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54922,7 +54922,7 @@
             "description": "Get Faraday persona set flow analysis",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54934,7 +54934,7 @@
             "description": "List Faraday places",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54946,7 +54946,7 @@
             "description": "Retrieve a Faraday place",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54958,7 +54958,7 @@
             "description": "Create a Faraday place",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54970,7 +54970,7 @@
             "description": "Update a Faraday place (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54982,7 +54982,7 @@
             "description": "Delete a Faraday place",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -54994,7 +54994,7 @@
             "description": "Archive a Faraday place",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55006,7 +55006,7 @@
             "description": "Force update a Faraday place",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55018,7 +55018,7 @@
             "description": "Unarchive a Faraday place",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55030,7 +55030,7 @@
             "description": "List Faraday scopes",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55042,7 +55042,7 @@
             "description": "Retrieve a Faraday scope",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55054,7 +55054,7 @@
             "description": "Create a Faraday scope",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55066,7 +55066,7 @@
             "description": "Update a Faraday scope (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55078,7 +55078,7 @@
             "description": "Delete a Faraday scope",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55090,7 +55090,7 @@
             "description": "Archive a Faraday scope",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55102,7 +55102,7 @@
             "description": "Force update a Faraday scope",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55114,7 +55114,7 @@
             "description": "Unarchive a Faraday scope",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55126,7 +55126,7 @@
             "description": "Get Faraday scope analysis",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55138,7 +55138,7 @@
             "description": "List datasets for a Faraday scope",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55150,7 +55150,7 @@
             "description": "Get Faraday scope efficacy",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55162,7 +55162,7 @@
             "description": "Get Faraday scope payload cohorts",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55174,7 +55174,7 @@
             "description": "Get Faraday scope payload outcomes",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55186,7 +55186,7 @@
             "description": "Get Faraday scope payload persona sets",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55198,7 +55198,7 @@
             "description": "Get Faraday scope payload recommenders",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55210,7 +55210,7 @@
             "description": "Get Faraday scope population cohorts",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55222,7 +55222,7 @@
             "description": "Get Faraday scope population exclusion cohorts",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55234,7 +55234,7 @@
             "description": "Get Faraday scope targets",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55246,7 +55246,7 @@
             "description": "List Faraday targets",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55258,7 +55258,7 @@
             "description": "Retrieve a Faraday target",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55270,7 +55270,7 @@
             "description": "Create a Faraday target",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55282,7 +55282,7 @@
             "description": "Update a Faraday target (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55294,7 +55294,7 @@
             "description": "Delete a Faraday target",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55306,7 +55306,7 @@
             "description": "Archive a Faraday target",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55318,7 +55318,7 @@
             "description": "Force update a Faraday target",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55330,7 +55330,7 @@
             "description": "Get Faraday target analysis",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55342,7 +55342,7 @@
             "description": "Start a Faraday target preview delivery",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55354,7 +55354,7 @@
             "description": "List Faraday traits",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55366,7 +55366,7 @@
             "description": "Retrieve a Faraday trait",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55378,7 +55378,7 @@
             "description": "Create a Faraday trait",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55390,7 +55390,7 @@
             "description": "Update a Faraday trait (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55402,7 +55402,7 @@
             "description": "Delete a Faraday trait",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55414,7 +55414,7 @@
             "description": "Archive a Faraday trait",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55426,7 +55426,7 @@
             "description": "Force update a Faraday trait",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55438,7 +55438,7 @@
             "description": "Unarchive a Faraday trait",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55450,7 +55450,7 @@
             "description": "Delete all orphaned Faraday traits",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55462,7 +55462,7 @@
             "description": "Download Faraday traits as CSV",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55474,7 +55474,7 @@
             "description": "Get Faraday trait dimension analysis",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55486,7 +55486,7 @@
             "description": "List Faraday connections",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55498,7 +55498,7 @@
             "description": "Update a Faraday connection (JSON Merge Patch)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55510,7 +55510,7 @@
             "description": "Delete a Faraday connection",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55522,7 +55522,7 @@
             "description": "Archive a Faraday connection",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55534,7 +55534,7 @@
             "description": "Force update a Faraday connection",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55546,7 +55546,7 @@
             "description": "List datasets for a Faraday connection",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55558,7 +55558,7 @@
             "description": "List targets for a Faraday connection",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55570,7 +55570,7 @@
             "description": "List Faraday uploaded files",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55582,7 +55582,7 @@
             "description": "Download a Faraday uploaded file",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55594,7 +55594,7 @@
             "description": "Delete a Faraday uploaded file",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55606,7 +55606,7 @@
             "description": "List Faraday webhook endpoints",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55618,7 +55618,7 @@
             "description": "Retrieve a Faraday webhook endpoint",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55630,7 +55630,7 @@
             "description": "Create a Faraday webhook endpoint",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55642,7 +55642,7 @@
             "description": "Update a Faraday webhook endpoint",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -55654,7 +55654,7 @@
             "description": "Delete a Faraday webhook endpoint",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/faraday.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62613,7 +62613,7 @@
         "label": "Hackernews",
         "description": "Hacker news",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/hackernews.svg",
         "listType": null,
         "actions": [
           {
@@ -62623,7 +62623,7 @@
             "description": "Get a HackerNews item by numeric ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62635,7 +62635,7 @@
             "description": "Get a HackerNews item with nested comments",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62647,7 +62647,7 @@
             "description": "Get the current maximum item ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62659,7 +62659,7 @@
             "description": "Get top HackerNews story IDs",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62671,7 +62671,7 @@
             "description": "Get best HackerNews story IDs",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62683,7 +62683,7 @@
             "description": "Get newest HackerNews story IDs",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62695,7 +62695,7 @@
             "description": "Get Ask HN story IDs",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62707,7 +62707,7 @@
             "description": "Get Show HN story IDs",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62719,7 +62719,7 @@
             "description": "Get HackerNews job story IDs",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62731,7 +62731,7 @@
             "description": "Get a HackerNews user profile via Algolia",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62743,7 +62743,7 @@
             "description": "Get a HackerNews user profile via Firebase",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62755,7 +62755,7 @@
             "description": "Full-text search HackerNews posts",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62767,7 +62767,7 @@
             "description": "Get latest HackerNews posts",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62779,7 +62779,7 @@
             "description": "Get current HackerNews frontpage posts",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62791,7 +62791,7 @@
             "description": "Get today's HackerNews posts",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62803,7 +62803,7 @@
             "description": "Get recently changed HackerNews items and profiles",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/hackernews.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62814,7 +62814,7 @@
         "label": "Harvest",
         "description": "Harvest",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/harvest.svg",
         "listType": null,
         "actions": [
           {
@@ -62824,7 +62824,7 @@
             "description": "List clients",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62836,7 +62836,7 @@
             "description": "Get a client by id",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62848,7 +62848,7 @@
             "description": "Create a client",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62860,7 +62860,7 @@
             "description": "Update a client",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62872,7 +62872,7 @@
             "description": "Delete a client",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62884,7 +62884,7 @@
             "description": "List client contacts",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62896,7 +62896,7 @@
             "description": "Create a client contact",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62908,7 +62908,7 @@
             "description": "Update a client contact",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62920,7 +62920,7 @@
             "description": "Delete a client contact",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62932,7 +62932,7 @@
             "description": "Get company settings",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62944,7 +62944,7 @@
             "description": "Update the writable company settings",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62956,7 +62956,7 @@
             "description": "List projects",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62968,7 +62968,7 @@
             "description": "Get a project by id",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62980,7 +62980,7 @@
             "description": "Create a project",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -62992,7 +62992,7 @@
             "description": "Update a project",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63004,7 +63004,7 @@
             "description": "Delete a project and its time entries and expenses",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63016,7 +63016,7 @@
             "description": "List tasks",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63028,7 +63028,7 @@
             "description": "Get a task by id",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63040,7 +63040,7 @@
             "description": "Create a task",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63052,7 +63052,7 @@
             "description": "Update a task",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63064,7 +63064,7 @@
             "description": "Delete a task",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63076,7 +63076,7 @@
             "description": "List time entries",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63088,7 +63088,7 @@
             "description": "Get a time entry by id",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63100,7 +63100,7 @@
             "description": "Log time against a project and task",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63112,7 +63112,7 @@
             "description": "Update a time entry",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63124,7 +63124,7 @@
             "description": "Delete a time entry",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63136,7 +63136,7 @@
             "description": "List team members",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63148,7 +63148,7 @@
             "description": "Get a team member by id",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63160,7 +63160,7 @@
             "description": "Create a team member and email them an invitation",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63172,7 +63172,7 @@
             "description": "Update a team member",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63184,7 +63184,7 @@
             "description": "Delete a team member",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63196,7 +63196,7 @@
             "description": "Record an expense against a project",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63208,7 +63208,7 @@
             "description": "Update an expense",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63220,7 +63220,7 @@
             "description": "List expense categories",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63232,7 +63232,7 @@
             "description": "List invoices",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63244,7 +63244,7 @@
             "description": "Get an invoice by id",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63256,7 +63256,7 @@
             "description": "Create a draft invoice",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63268,7 +63268,7 @@
             "description": "Update an invoice",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63280,7 +63280,7 @@
             "description": "Delete an invoice",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63292,7 +63292,7 @@
             "description": "List the messages recorded against an invoice",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63304,7 +63304,7 @@
             "description": "Create an invoice message; event_type \"send\" emails the client",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63316,7 +63316,7 @@
             "description": "Delete an invoice message",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63328,7 +63328,7 @@
             "description": "List payments recorded against an invoice",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63340,7 +63340,7 @@
             "description": "Record a payment against an invoice",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63352,7 +63352,7 @@
             "description": "Delete a recorded payment",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63364,7 +63364,7 @@
             "description": "List invoice item categories",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63376,7 +63376,7 @@
             "description": "Create an invoice item category",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63388,7 +63388,7 @@
             "description": "Delete an unused invoice item category",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63400,7 +63400,7 @@
             "description": "Get an estimate by id",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63412,7 +63412,7 @@
             "description": "Create a draft estimate",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63424,7 +63424,7 @@
             "description": "Update an estimate",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63436,7 +63436,7 @@
             "description": "Delete an estimate",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63448,7 +63448,7 @@
             "description": "List the messages recorded against an estimate",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63460,7 +63460,7 @@
             "description": "Create an estimate message; event_type \"send\" emails the client",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63472,7 +63472,7 @@
             "description": "Delete an estimate message",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63484,7 +63484,7 @@
             "description": "Create an estimate item category",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -63496,7 +63496,7 @@
             "description": "Rename an estimate item category",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/harvest.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -76863,7 +76863,7 @@
         "label": "Onepassword",
         "description": "OnePassword",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/onepassword.svg",
         "listType": null,
         "actions": [
           {
@@ -76873,7 +76873,7 @@
             "description": "List all vaults the integration can access",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/onepassword.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -76885,7 +76885,7 @@
             "description": "Get details of a specific vault by ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/onepassword.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -76897,7 +76897,7 @@
             "description": "List all items inside a specific vault",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/onepassword.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -76909,7 +76909,7 @@
             "description": "Get details of a vault item (e.g. login credentials, notes)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/onepassword.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -76921,7 +76921,7 @@
             "description": "Create a new item in a vault",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/onepassword.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -76933,7 +76933,7 @@
             "description": "Update details of an existing vault item",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/onepassword.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -76945,7 +76945,7 @@
             "description": "Delete an item from a vault [DESTRUCTIVE]",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/onepassword.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -78678,7 +78678,7 @@
         "label": "Openweathermap",
         "description": "Openweathermap",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/openweathermap.svg",
         "listType": null,
         "actions": [
           {
@@ -78688,7 +78688,7 @@
             "description": "Get current weather, minutely/hourly/daily forecasts, and weather alerts for a location",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/openweathermap.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -78700,7 +78700,7 @@
             "description": "Get historical weather data for a specific timestamp (available from 1979-01-01)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/openweathermap.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -78712,7 +78712,7 @@
             "description": "Get aggregated weather summary for a specific date (temperature, wind, precipitation)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/openweathermap.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -78724,7 +78724,7 @@
             "description": "Get a human-readable weather overview text for a location and date",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/openweathermap.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79362,7 +79362,7 @@
         "label": "Pdfmonkey",
         "description": "PDFMonkey",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/pdfmonkey.svg",
         "listType": null,
         "actions": [
           {
@@ -79372,7 +79372,7 @@
             "description": "List template cards for a workspace",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79384,7 +79384,7 @@
             "description": "Get a template by ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79396,7 +79396,7 @@
             "description": "Create a new document template",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79408,7 +79408,7 @@
             "description": "Update an existing template",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79420,7 +79420,7 @@
             "description": "Delete a template [DESTRUCTIVE · IRREVERSIBLE]",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79432,7 +79432,7 @@
             "description": "Create a document and queue it for PDF generation",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79444,7 +79444,7 @@
             "description": "Create a document and wait for generation to complete",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79456,7 +79456,7 @@
             "description": "Get a document card with status and download URL",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79468,7 +79468,7 @@
             "description": "List document cards with pagination and filters",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79480,7 +79480,7 @@
             "description": "Get a full document including payload and generation logs",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79492,7 +79492,7 @@
             "description": "Update a document's payload, metadata, or template",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -79504,7 +79504,7 @@
             "description": "Delete a document [DESTRUCTIVE · IRREVERSIBLE]",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/pdfmonkey.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89412,7 +89412,7 @@
         "label": "Tally",
         "description": "Tally",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/tally.svg",
         "listType": null,
         "actions": [
           {
@@ -89422,7 +89422,7 @@
             "description": "List all forms with optional pagination and workspace filter",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89434,7 +89434,7 @@
             "description": "Create a new form",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89446,7 +89446,7 @@
             "description": "Retrieve a form by ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89458,7 +89458,7 @@
             "description": "Update an existing form",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89470,7 +89470,7 @@
             "description": "Delete a form [DESTRUCTIVE]",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89482,7 +89482,7 @@
             "description": "List all questions for a form",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89494,7 +89494,7 @@
             "description": "List form submissions with optional filters",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89506,7 +89506,7 @@
             "description": "Retrieve a specific form submission",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89518,7 +89518,7 @@
             "description": "Delete a form submission [DESTRUCTIVE]",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89530,7 +89530,7 @@
             "description": "Retrieve the current authenticated user",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89542,7 +89542,7 @@
             "description": "List all users in an organization",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89554,7 +89554,7 @@
             "description": "Remove a user from an organization [DESTRUCTIVE]",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89566,7 +89566,7 @@
             "description": "List pending invites for an organization",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89578,7 +89578,7 @@
             "description": "Invite users to an organization",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89590,7 +89590,7 @@
             "description": "Cancel a pending organization invite [DESTRUCTIVE]",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89602,7 +89602,7 @@
             "description": "List all workspaces",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89614,7 +89614,7 @@
             "description": "Create a new workspace (Pro subscription required)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89626,7 +89626,7 @@
             "description": "Retrieve a workspace by ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89638,7 +89638,7 @@
             "description": "Update a workspace name",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89650,7 +89650,7 @@
             "description": "Delete a workspace [DESTRUCTIVE]",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89662,7 +89662,7 @@
             "description": "List all webhooks",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89674,7 +89674,7 @@
             "description": "Create a new webhook subscription",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89686,7 +89686,7 @@
             "description": "Update a webhook subscription",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89698,7 +89698,7 @@
             "description": "Delete a webhook subscription [DESTRUCTIVE]",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89710,7 +89710,7 @@
             "description": "List delivery events for a webhook",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -89722,7 +89722,7 @@
             "description": "Retry a failed webhook event delivery",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/tally.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92691,7 +92691,7 @@
         "label": "Twitterapiio",
         "description": "TwitterAPI.io",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/twitterapiio.svg",
         "listType": null,
         "actions": [
           {
@@ -92701,7 +92701,7 @@
             "description": "Fetch tweets by their IDs",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92713,7 +92713,7 @@
             "description": "Search tweets with a raw query string",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92725,7 +92725,7 @@
             "description": "Search tweets using structured operators (keywords, users, dates, engagement thresholds, media filters, etc.)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92737,7 +92737,7 @@
             "description": "Retrieve a user's tweet timeline by user ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92749,7 +92749,7 @@
             "description": "Retrieve a user's most recent tweets by username",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92761,7 +92761,7 @@
             "description": "Get tweets that mention a user",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92773,7 +92773,7 @@
             "description": "Get quote tweets for a tweet",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92785,7 +92785,7 @@
             "description": "Get users who retweeted a tweet",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92797,7 +92797,7 @@
             "description": "Get the full thread context for a tweet",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92809,7 +92809,7 @@
             "description": "Post a new tweet or reply",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92821,7 +92821,7 @@
             "description": "Delete a tweet",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92833,7 +92833,7 @@
             "description": "Like a tweet",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92845,7 +92845,7 @@
             "description": "Remove a like from a tweet",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92857,7 +92857,7 @@
             "description": "Retweet a tweet",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92869,7 +92869,7 @@
             "description": "Get replies to a tweet, paginated by time range — stored independently in the replies table so engagement changes are tracked per reply",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92881,7 +92881,7 @@
             "description": "Get replies to a tweet (v2) with sort order control (Relevance, Latest, Likes) — stored independently in the replies table so engagement changes are tracked per reply",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92893,7 +92893,7 @@
             "description": "Get user profile by username",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92905,7 +92905,7 @@
             "description": "Batch fetch user profiles by user IDs",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92917,7 +92917,7 @@
             "description": "Search users by keyword",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92929,7 +92929,7 @@
             "description": "Get a user's followers",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92941,7 +92941,7 @@
             "description": "Get a user's verified (blue-check) followers",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92953,7 +92953,7 @@
             "description": "Get users that a user is following",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92965,7 +92965,7 @@
             "description": "Check if two users follow each other",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92977,7 +92977,7 @@
             "description": "Follow a user",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -92989,7 +92989,7 @@
             "description": "Unfollow a user",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93001,7 +93001,7 @@
             "description": "Get the authenticated account info",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93013,7 +93013,7 @@
             "description": "Authenticate a Twitter account via credentials and obtain a login cookie for v2 endpoints",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93025,7 +93025,7 @@
             "description": "Add a Twitter user to the real-time tweet monitor stream",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93037,7 +93037,7 @@
             "description": "Remove a Twitter user from the real-time tweet monitor stream",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93049,7 +93049,7 @@
             "description": "List all Twitter users currently in the monitor stream",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93061,7 +93061,7 @@
             "description": "Create a new tweet filter rule for the webhook stream (inactive by default — call updateRule to activate)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93073,7 +93073,7 @@
             "description": "List all existing tweet filter rules",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93085,7 +93085,7 @@
             "description": "Update a tweet filter rule, including activating or deactivating it",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93097,7 +93097,7 @@
             "description": "Permanently delete a tweet filter rule",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93109,7 +93109,7 @@
             "description": "Get followers of a Twitter list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93121,7 +93121,7 @@
             "description": "Get members of a Twitter list",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93133,7 +93133,7 @@
             "description": "Get tweets from a Twitter list timeline",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93145,7 +93145,7 @@
             "description": "Get community info by ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93157,7 +93157,7 @@
             "description": "Get members of a community",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93169,7 +93169,7 @@
             "description": "Get moderators of a community",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93181,7 +93181,7 @@
             "description": "Get tweets posted in a community",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93193,7 +93193,7 @@
             "description": "Search tweets across all communities",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93205,7 +93205,7 @@
             "description": "Create a new Twitter community",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93217,7 +93217,7 @@
             "description": "Delete a Twitter community",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93229,7 +93229,7 @@
             "description": "Join a Twitter community",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93241,7 +93241,7 @@
             "description": "Leave a Twitter community",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -93253,7 +93253,7 @@
             "description": "Get trending topics by location (woeid)",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/twitterapiio.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97182,7 +97182,7 @@
         "label": "Xquik",
         "description": "Search tweets, inspect users, manage Xquik webhooks, upload media, and run X actions from Corsair",
         "icon": null,
-        "img": null,
+        "img": "/brand-img/xquik.svg",
         "listType": null,
         "actions": [
           {
@@ -97192,7 +97192,7 @@
             "description": "Download images and videos from one or more tweets",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97204,7 +97204,7 @@
             "description": "Upload public media URLs for use in Xquik tweet creation",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97216,7 +97216,7 @@
             "description": "Get trending X topics by WOEID region",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97228,7 +97228,7 @@
             "description": "Fetch up to 100 tweets by ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97240,7 +97240,7 @@
             "description": "Create a tweet or reply from a connected X account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97252,7 +97252,7 @@
             "description": "Delete a tweet from a connected X account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97264,7 +97264,7 @@
             "description": "Get a tweet with full text, author, metrics, and media",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97276,7 +97276,7 @@
             "description": "Like a tweet from a connected X account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97288,7 +97288,7 @@
             "description": "Retweet a tweet from a connected X account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97300,7 +97300,7 @@
             "description": "Search tweets with X query operators and pagination",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97312,7 +97312,7 @@
             "description": "Remove a like from a connected X account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97324,7 +97324,7 @@
             "description": "Look up up to 100 X users by ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97336,7 +97336,7 @@
             "description": "Follow an X user from a connected account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97348,7 +97348,7 @@
             "description": "List followers of an X user",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97360,7 +97360,7 @@
             "description": "List accounts an X user follows",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97372,7 +97372,7 @@
             "description": "Get an X user profile by username or user ID",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97384,7 +97384,7 @@
             "description": "Search X users by name or username",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97396,7 +97396,7 @@
             "description": "List recent tweets posted by an X user",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97408,7 +97408,7 @@
             "description": "Unfollow an X user from a connected account",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97420,7 +97420,7 @@
             "description": "Create an Xquik webhook endpoint subscription",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97432,7 +97432,7 @@
             "description": "Deactivate an Xquik webhook endpoint",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97444,7 +97444,7 @@
             "description": "List delivery attempts for an Xquik webhook endpoint",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97456,7 +97456,7 @@
             "description": "List configured Xquik webhook endpoints",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97468,7 +97468,7 @@
             "description": "Send a test delivery to an Xquik webhook endpoint",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97480,7 +97480,7 @@
             "description": "Update a Xquik webhook URL, event types, or active state",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]
@@ -97492,7 +97492,7 @@
             "description": "Check the status of a pending Xquik write action",
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
-            "img": null,
+            "img": "/brand-img/xquik.svg",
             "supportedPlatforms": [
               "cloud"
             ]

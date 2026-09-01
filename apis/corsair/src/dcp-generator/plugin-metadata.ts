@@ -173,6 +173,26 @@ export const DEFAULT_ICON_MAP: Record<string, string> = {
   resend: "/brand-img/resend.svg",
   notion: "/brand-img/notion.svg",
   nextdns: "/brand-img/nextdns.svg",
+  // --- Icons fetched from official pages / other open libraries ---
+  ably: "/brand-img/ably.svg",
+  addresszen: "/brand-img/addresszen.svg",
+  alttextai: "/brand-img/alttextai.svg",
+  apify: "/brand-img/apify.svg",
+  ayrshare: "/brand-img/ayrshare.svg",
+  boloforms: "/brand-img/boloforms.svg",
+  bookingmood: "/brand-img/bookingmood.svg",
+  botsonic: "/brand-img/botsonic.svg",
+  browserless: "/brand-img/browserless.svg",
+  devinmcp: "/brand-img/devinmcp.svg",
+  faraday: "/brand-img/faraday.svg",
+  hackernews: "/brand-img/hackernews.svg",
+  harvest: "/brand-img/harvest.svg",
+  onepassword: "/brand-img/onepassword.svg",
+  openweathermap: "/brand-img/openweathermap.svg",
+  pdfmonkey: "/brand-img/pdfmonkey.svg",
+  tally: "/brand-img/tally.svg",
+  twitterapiio: "/brand-img/twitterapiio.svg",
+  xquik: "/brand-img/xquik.svg",
 };
 
 /** Default base URLs for OpenAPI spec generation. */
