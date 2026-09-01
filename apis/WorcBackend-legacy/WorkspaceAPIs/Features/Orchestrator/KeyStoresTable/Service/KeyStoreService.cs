@@ -297,12 +297,19 @@ public class KeyStoreService : IKeyStoreService
 
             var fetchAllAccessibleKeys = !normalizedKeys.Any();
 
-            // Fetch the key store values based on the provided keys
+            // Ignore the global space filter and hand-write the space condition so callers
+            // scoped to a space (e.g. the runner executing a space-scoped flow) also see
+            // Central (SpaceId == null) keys; a space key and a Central key sharing a name
+            // both match, with the caller resolving the collision.
+            var currentSpaceId = _currentTenantService.CurrentSpaceId;
             var keyValuePairs = await _unitOfWork.KeyStoreRepo
                 .GetByConditionAsync(w =>
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.EnvType == _currentTenantService.CurrentEnvType &&
+                    (w.SpaceId == null || w.SpaceId == currentSpaceId) &&
                     (fetchAllAccessibleKeys || normalizedKeys.Contains(w.Name))
                     && (w.IsTenantWideAccess || w.CreatedByUserId == _userId || accessibleResourceIds.Contains(w.Id)))
+                .IgnoreQueryFilters()
                 .Select(w => new ConfigKeyValueDto { Key = w.Name, Value = w.Value })
                 .ToListAsync();
 
