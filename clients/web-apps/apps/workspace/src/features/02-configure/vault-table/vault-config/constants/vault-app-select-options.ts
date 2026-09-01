@@ -74,7 +74,6 @@ export const vaultAppsSelectOptions: Record<VaultAppsEnum, { label: string; valu
   [VaultAppsEnum.Galadriel]: { label: "Galadriel", value: "Galadriel" },
   [VaultAppsEnum.Gdc]: { label: "Gdc", value: "Gdc" },
   [VaultAppsEnum.Gigachat]: { label: "Gigachat", value: "Gigachat" },
-  [VaultAppsEnum.Github]: { label: "Github", value: "Github" },
   [VaultAppsEnum.GithubCopilot]: { label: "GithubCopilot", value: "GithubCopilot" },
   [VaultAppsEnum.GradientAi]: { label: "GradientAi", value: "GradientAi" },
   [VaultAppsEnum.Helicone]: { label: "Helicone", value: "Helicone" },

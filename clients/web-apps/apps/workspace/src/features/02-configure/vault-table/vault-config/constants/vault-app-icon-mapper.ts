@@ -74,7 +74,6 @@ export const vaultAppIconMapper: Record<VaultAppsEnum, string> = {
   [VaultAppsEnum.Galadriel]: "/brand-img/default-provider.svg",
   [VaultAppsEnum.Gdc]: "/brand-img/default-provider.svg",
   [VaultAppsEnum.Gigachat]: "/brand-img/gigachat.png",
-  [VaultAppsEnum.Github]: "/brand-img/github.svg",
   [VaultAppsEnum.GithubCopilot]: "/brand-img/github-copilot.svg",
   [VaultAppsEnum.GradientAi]: "/brand-img/gradient.png",
   [VaultAppsEnum.Helicone]: "/brand-img/helicone.png",
