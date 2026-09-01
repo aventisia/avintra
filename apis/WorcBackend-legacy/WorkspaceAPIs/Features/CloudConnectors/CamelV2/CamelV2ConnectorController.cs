@@ -27,19 +27,13 @@ public class CamelV2ConnectorController : BaseApiController
 {
     private readonly ICamelV2ConnectorService _service;
     private readonly WorkspaceDbContext _dbContext;
-    private readonly ICurrentTenantService _currentTenantService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public CamelV2ConnectorController(
         ICamelV2ConnectorService service,
-        WorkspaceDbContext dbContext,
-        ICurrentTenantService currentTenantService,
-        IHttpContextAccessor httpContextAccessor)
+        WorkspaceDbContext dbContext)
     {
         _service = service;
         _dbContext = dbContext;
-        _currentTenantService = currentTenantService;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     [HttpPost("invoke")]
@@ -76,12 +70,10 @@ public class CamelV2ConnectorController : BaseApiController
     }
 
     [HttpPost("refresh")]
-    [Authorize(Roles = "SA,TA")]
+    [Authorize(Roles = "SA")]
     public async Task<ActionResult<ServiceResponse<int>>> Refresh()
     {
-        var tenantId = _currentTenantService.CurrentTenantId;
-        var userId = Guid.Parse(_httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
-        var generated = await _service.RefreshAsync(_dbContext, tenantId, userId);
+        var generated = await _service.RefreshAsync(_dbContext);
         return ResultHelper(new ServiceResponse<int>
         {
             Data = generated,

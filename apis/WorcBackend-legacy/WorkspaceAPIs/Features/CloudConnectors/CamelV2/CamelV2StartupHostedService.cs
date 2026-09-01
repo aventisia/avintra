@@ -106,7 +106,7 @@ public class CamelV2StartupHostedService : BackgroundService
             return false;
         }
 
-        var seeded = await seeder.SeedAsync(dbContext, admin.Value.TenantId, admin.Value.UserId, cancellationToken);
+        var seeded = await seeder.SeedAsync(dbContext, cancellationToken);
         var generated = await generator.GenerateAsync(cancellationToken);
 
         _logger.LogInformation(
