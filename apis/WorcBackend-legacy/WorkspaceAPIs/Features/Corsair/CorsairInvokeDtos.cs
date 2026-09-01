@@ -44,4 +44,13 @@ public class CorsairInvokeResDto
     public string? AuthType { get; set; }
     public bool ApprovalRequired { get; set; }
     public string? Message { get; set; }
+
+    /// <summary>Normalized error category: auth_failed, rate_limited, provider_outage, provider_error, network_error, invalid_input.</summary>
+    public string? ErrorType { get; set; }
+
+    /// <summary>True when the caller may safely retry the operation.</summary>
+    public bool Retryable { get; set; }
+
+    /// <summary>Provider-suggested retry delay in milliseconds (rate_limited only).</summary>
+    public long? RetryAfterMs { get; set; }
 }

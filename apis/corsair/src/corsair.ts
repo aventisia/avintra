@@ -53,7 +53,11 @@ export const corsair = createCorsair({
   kek: process.env.CORSAIR_KEK!,
   manual: {
     baseUrl: `${process.env.APP_URL}/connect`,
-    redirectUri: `${process.env.APP_URL}/api/oauth/callback`,
+    // The OAuth callback is proxied through the Workspace API, so the redirect
+    // URI must point at the public proxy path (never the internal sidecar).
+    redirectUri:
+      process.env.CORSAIR_REDIRECT_URI ??
+      `${process.env.APP_URL}/api/oauth/callback`,
   },
 });
 

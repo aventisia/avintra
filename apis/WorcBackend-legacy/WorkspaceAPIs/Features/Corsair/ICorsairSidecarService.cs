@@ -65,6 +65,28 @@ public interface ICorsairSidecarService
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The invocation result.</returns>
     Task<CorsairInvokeResult> InvokeAsync(Guid connectionId, string plugin, string action, object? payload, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Proxies the browser-facing OAuth consent page. The provider redirects the
+    /// browser here with a signed <c>state</c>; the sidecar resolves it to the
+    /// provider's authorization URL and redirects the browser onward.
+    /// </summary>
+    /// <param name="state">Signed connect state from the minted connect link.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The provider OAuth authorization URL to redirect the browser to.</returns>
+    Task<string?> ResolveConnectAsync(string state, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Proxies the provider OAuth callback. The provider redirects the browser
+    /// here with <c>code</c> + <c>state</c>; the sidecar exchanges the code for
+    /// tokens, stores them per tenant, and returns the redirect URL that sends
+    /// the browser back to the workspace app with the result.
+    /// </summary>
+    /// <param name="code">OAuth authorization code.</param>
+    /// <param name="state">Signed connect state.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The workspace-app redirect URL (success or error), or <c>null</c> on failure.</returns>
+    Task<string?> ProcessOAuthCallbackAsync(string code, string state, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -81,6 +103,9 @@ public sealed class CorsairInvokeResult
     public string? AuthType { get; set; }
     public bool ApprovalRequired { get; set; }
     public string? Message { get; set; }
+    public string? ErrorType { get; set; }
+    public bool Retryable { get; set; }
+    public long? RetryAfterMs { get; set; }
 }
 
 /// <summary>

@@ -144,10 +144,13 @@ public class CorsairInvokeService : ICorsairInvokeService
                 Plugin = result.Plugin,
                 AuthType = result.AuthType,
                 ApprovalRequired = result.ApprovalRequired,
-                Message = result.Message
+                Message = result.Message,
+                ErrorType = result.ErrorType,
+                Retryable = result.Retryable,
+                RetryAfterMs = result.RetryAfterMs
             };
 
-            serviceResponse.StatusCode = result.Success ? 200 : 400;
+            serviceResponse.StatusCode = result.Success ? 200 : (result.ErrorType == "rate_limited" ? 429 : 400);
             serviceResponse.Message = result.Success ? "Integration operation invoked successfully." : (result.Error ?? "Integration operation failed.");
         }
         catch (Exception ex)

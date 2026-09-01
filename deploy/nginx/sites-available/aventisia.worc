@@ -68,15 +68,6 @@ server
 		include /etc/nginx/conf.d/common_api_config.conf;
 	}
 
-	# ----------------- /integration (internal Corsair sidecar proxy) -----------------
-	# The Corsair sidecar is internal-only. This generic /integration path hides the
-	# internal service name from browser URLs while proxying OAuth consent/callback
-	# and backend-only endpoints to the sidecar.
-	location /integration/ {
-		proxy_pass http://corsair:3456/;
-		include /etc/nginx/conf.d/common_api_config.conf;
-	}
-
 	# ----------------- /workspace -----------------
 	location ~ ^/workspace/api/(app-secret) {
         gzip off;

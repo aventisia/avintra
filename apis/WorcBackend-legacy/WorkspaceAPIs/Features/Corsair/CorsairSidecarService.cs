@@ -45,7 +45,9 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
 
             var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
             using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
-            var response = await _httpClient.PostAsync("/credentials", content, cancellationToken);
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/credentials") { Content = content };
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             _logger.LogInformation(
@@ -83,7 +85,9 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
 
             var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
             using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
-            var response = await _httpClient.SendAsync(new HttpRequestMessage(HttpMethod.Delete, "/credentials") { Content = content }, cancellationToken);
+            using var request = new HttpRequestMessage(HttpMethod.Delete, "/credentials") { Content = content };
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             _logger.LogInformation(
@@ -124,7 +128,9 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
 
             var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
             using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
-            var response = await _httpClient.PostAsync("/integration-keys", content, cancellationToken);
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/integration-keys") { Content = content };
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             _logger.LogInformation(
@@ -162,12 +168,13 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
 
             var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
             using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
-            var response = await _httpClient.PostAsync("/connect/link", content, cancellationToken);
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/connect/link") { Content = content };
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             var rawBody = await response.Content.ReadAsStringAsync(cancellationToken);
             _logger.LogInformation(
-                "Corsair /connect/link status {Status} body: {Body}",
-                (int)response.StatusCode,
-                rawBody);
+                "Corsair /connect/link status {Status}",
+                (int)response.StatusCode);
             response.EnsureSuccessStatusCode();
 
             var payload = System.Text.Json.JsonSerializer.Deserialize<CorsairConnectLinkResponse>(rawBody, JsonSerializerOptions.Web);
@@ -218,7 +225,9 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
 
             var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
             using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
-            var response = await _httpClient.PostAsync("/connect/status", content, cancellationToken);
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/connect/status") { Content = content };
+
+            var response = await _httpClient.SendAsync(request, cancellationToken);
             response.EnsureSuccessStatusCode();
 
             await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
@@ -271,10 +280,11 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
 
             var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
             using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
-            using var request = new HttpRequestMessage(HttpMethod.Post, "/corsair/invoke")
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/v1/corsair/invoke")
             {
                 Content = content
             };
+
 
             var response = await _httpClient.SendAsync(request, cancellationToken);
             var rawBody = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -282,12 +292,11 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning(
-                    "Corsair /corsair/invoke status {Status} for plugin {Plugin} action {Action} tenant {ConnectionId}. Body: {Body}",
+                    "Corsair /v1/corsair/invoke status {Status} for plugin {Plugin} action {Action} tenant {ConnectionId}.",
                     (int)response.StatusCode,
                     plugin,
                     action,
-                    connectionId,
-                    rawBody);
+                    connectionId);
             }
 
             var payloadResult = System.Text.Json.JsonSerializer.Deserialize<CorsairInvokeResponse>(rawBody, JsonSerializerOptions.Web);
@@ -306,7 +315,10 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
                 Plugin = payloadResult.Plugin,
                 AuthType = payloadResult.AuthType,
                 ApprovalRequired = payloadResult.ApprovalRequired,
-                Message = payloadResult.Message
+                Message = payloadResult.Message,
+                ErrorType = payloadResult.ErrorType,
+                Retryable = payloadResult.Retryable,
+                RetryAfterMs = payloadResult.RetryAfterMs
             };
         }
         catch (Exception ex)
@@ -319,6 +331,82 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
                 connectionId);
             return new CorsairInvokeResult { Success = false, Error = ex.Message };
         }
+    }
+
+    /// <inheritdoc />
+    public async Task<string?> ResolveConnectAsync(string state, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(state))
+        {
+            return null;
+        }
+
+        try
+        {
+            using var request = new HttpRequestMessage(HttpMethod.Get, $"/connect?state={Uri.EscapeDataString(state)}");
+            return await GetRedirectTargetAsync(request, "connect resolve", cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to resolve Corsair connect state.");
+            return null;
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task<string?> ProcessOAuthCallbackAsync(string code, string state, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(code) || string.IsNullOrWhiteSpace(state))
+        {
+            return null;
+        }
+
+        try
+        {
+            using var request = new HttpRequestMessage(
+                HttpMethod.Get,
+                $"/api/oauth/callback?code={Uri.EscapeDataString(code)}&state={Uri.EscapeDataString(state)}");
+            return await GetRedirectTargetAsync(request, "oauth callback", cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to process Corsair OAuth callback.");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Sends a request to the sidecar and returns the redirect target from the
+    /// <c>Location</c> header. The sidecar's OAuth endpoints respond with a 3xx
+    /// redirect carrying the next URL in <c>Location</c>; automatic redirect
+    /// following is disabled so we can read that header and forward the browser
+    /// onward ourselves.
+    /// </summary>
+    /// <param name="request">The request to send (must be a GET).</param>
+    /// <param name="operation">Short label for logging, e.g. "connect resolve".</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>The redirect target URL, or <c>null</c> when the sidecar did not return a redirect.</returns>
+    private async Task<string?> GetRedirectTargetAsync(HttpRequestMessage request, string operation, CancellationToken cancellationToken)
+    {
+        var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+
+        // The sidecar's OAuth endpoints are expected to respond with a redirect
+        // (3xx) carrying the next URL in the Location header.
+        var status = (int)response.StatusCode;
+        if (status is < 300 or >= 400)
+        {
+            _logger.LogWarning("Corsair /{Operation} returned status {Status} instead of a redirect.", operation, status);
+            return null;
+        }
+
+        var target = response.Headers.Location?.ToString();
+        if (string.IsNullOrWhiteSpace(target))
+        {
+            _logger.LogWarning("Corsair /{Operation} returned a redirect without a Location header.", operation);
+            return null;
+        }
+
+        return target;
     }
 
     private sealed class CorsairConnectLinkResponse
@@ -373,5 +461,14 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
 
         [JsonPropertyName("message")]
         public string? Message { get; set; }
+
+        [JsonPropertyName("errorType")]
+        public string? ErrorType { get; set; }
+
+        [JsonPropertyName("retryable")]
+        public bool Retryable { get; set; }
+
+        [JsonPropertyName("retryAfterMs")]
+        public long? RetryAfterMs { get; set; }
     }
 }
