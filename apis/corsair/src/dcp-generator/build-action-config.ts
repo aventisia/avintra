@@ -28,7 +28,12 @@ export function actionToLabel(action: string): string {
   return action
     .split(".")
     .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
-    .join(" ");
+    // Split camelCase segments into space-separated words, e.g.
+    // "GetServiceTime" -> "Get Service Time".
+    .map((p) => p.replace(/([a-z0-9])([A-Z])/g, "$1 $2"))
+    .join(" ")
+    // Add a colon after the first word, e.g. "Application: Get Service Time".
+    .replace(/^(\S+)(\s)/, "$1: ");
 }
 
 /** Build the credential-select field for a plugin. */

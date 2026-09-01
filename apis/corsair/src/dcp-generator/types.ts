@@ -60,6 +60,8 @@ export type ActionSelectorCategory = {
   img: string | null;
   listType: string | null;
   actions: ActionSelectorAction[];
+  /** Visibility rules (absence = visible everywhere). */
+  doNotRenderIf?: ("production" | "commercial" | "enterprise")[];
 };
 
 /** An L1 primary category (we merge into the existing "App Integrations"). */
