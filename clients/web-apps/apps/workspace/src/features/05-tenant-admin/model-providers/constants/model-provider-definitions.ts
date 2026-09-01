@@ -381,9 +381,9 @@ export const modelProviderDefinitions: ModelProviderDefinition[] = [
   },
   {
     value: ModelProviderEnum.Github,
-    label: "Github",
-    vaultType: VaultAppsEnum.Github,
-    description: "Enable github models.",
+    label: "GitHub",
+    vaultType: VaultAppsEnum.GitHub,
+    description: "Enable GitHub models.",
   },
   {
     value: ModelProviderEnum.GithubCopilot,

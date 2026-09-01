@@ -74,7 +74,6 @@ export const appToCredentialNameMapper: Record<VaultAppsEnum, string> = {
   [VaultAppsEnum.Galadriel]: "galadriel_credentials",
   [VaultAppsEnum.Gdc]: "gdc_credentials",
   [VaultAppsEnum.Gigachat]: "gigachat_credentials",
-  [VaultAppsEnum.Github]: "github_credentials",
   [VaultAppsEnum.GithubCopilot]: "github_copilot_credentials",
   [VaultAppsEnum.GradientAi]: "gradient_ai_credentials",
   [VaultAppsEnum.Helicone]: "helicone_credentials",

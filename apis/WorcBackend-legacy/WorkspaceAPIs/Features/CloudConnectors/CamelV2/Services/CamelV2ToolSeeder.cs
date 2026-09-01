@@ -156,7 +156,6 @@ public class CamelV2ToolSeeder
                         BaseUrl = baseUrl,
                         OpenApiSpec = openApiJson,
                         ParsedSchema = parsedSchema,
-                        CredentialName = credentialFieldName,
                         AuthenticationType = ToolAuthenticationTypeEnum.Bearer,
                         IsTenantWideAccess = true,
                         IsActive = true,
@@ -174,7 +173,6 @@ public class CamelV2ToolSeeder
                     existing.BaseUrl = baseUrl;
                     existing.OpenApiSpec = openApiJson;
                     existing.ParsedSchema = parsedSchema;
-                    existing.CredentialName = credentialFieldName;
                     existing.AuthenticationType = ToolAuthenticationTypeEnum.Bearer;
                     existing.IsTenantWideAccess = true;
                     existing.IsActive = true;

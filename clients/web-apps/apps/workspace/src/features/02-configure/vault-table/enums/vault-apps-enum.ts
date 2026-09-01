@@ -72,7 +72,6 @@ export enum VaultAppsEnum {
   Galadriel,
   Gdc,
   Gigachat,
-  Github,
   GithubCopilot,
   GradientAi,
   Helicone,
