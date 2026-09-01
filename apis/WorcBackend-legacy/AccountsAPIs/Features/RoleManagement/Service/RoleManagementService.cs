@@ -40,6 +40,9 @@ public class RoleManagementService : IRoleManagementService
                 .AsNoTracking()
                 .ToListAsync();
 
+            // Restrict to workspace-app roles so CRM placeholder roles never surface here
+            roleList = roleList.Where(w => w.AppCode == PlatformAppsEnum.Workspace.ToAppCode()).ToList();
+
             if (tenantId.HasValue)
             {
                 roleList = roleList.Where(w => w.TenantId == tenantId).ToList();
