@@ -492,3 +492,6 @@ wwwroot/
 TO-DELETE-*
 sample-*
 test-*
+
+# Generated Corsair connector configs (re-generated from apis/corsair)
+Features/CloudConnectors/ConfigFiles/Corsair/**

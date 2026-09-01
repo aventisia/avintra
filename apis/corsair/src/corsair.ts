@@ -1,16 +1,7 @@
 import dotenv from "dotenv";
 import pg from "pg";
 import { createCorsair, setupCorsair } from "corsair";
-import { github } from "@corsair-dev/github";
-import { resend } from "@corsair-dev/resend";
-import { tavily } from "@corsair-dev/tavily";
-import { slack } from "@corsair-dev/slack";
-import { stripe } from "@corsair-dev/stripe";
-import { twilio } from "@corsair-dev/twilio";
-import { notion } from "@corsair-dev/notion";
-import { hubspot } from "@corsair-dev/hubspot";
-import { openweathermap } from "@corsair-dev/openweathermap";
-import { outlook } from "@corsair-dev/outlook";
+import { plugins as registeredPlugins } from "./plugins.js";
 
 // Load defaults first, then allow .env.local to override with real local values.
 dotenv.config({ path: ".env" });
@@ -33,18 +24,7 @@ export const pool = new Pool({
 // For now the sidecar is backend-only and private to the deployment network;
 // the Workspace API is the authorization boundary.
 
-export const plugins = [
-  github(),
-  resend(),
-  tavily(),
-  slack(),
-  stripe(),
-  twilio(),
-  notion(),
-  hubspot(),
-  openweathermap(),
-  outlook(),
-] as const;
+export const plugins = registeredPlugins;
 
 export const corsair = createCorsair({
   multiTenancy: true,

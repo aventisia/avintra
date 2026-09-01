@@ -13,30 +13,8 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { createCorsair } from "corsair";
-import { github } from "@corsair-dev/github";
-import { resend } from "@corsair-dev/resend";
-import { tavily } from "@corsair-dev/tavily";
-import { slack } from "@corsair-dev/slack";
-import { stripe } from "@corsair-dev/stripe";
-import { twilio } from "@corsair-dev/twilio";
-import { notion } from "@corsair-dev/notion";
-import { hubspot } from "@corsair-dev/hubspot";
-import { openweathermap } from "@corsair-dev/openweathermap";
-import { outlook } from "@corsair-dev/outlook";
+import { plugins } from "../plugins.js";
 import { generateDcpFiles } from "./index.js";
-
-const plugins = [
-  github(),
-  resend(),
-  tavily(),
-  slack(),
-  stripe(),
-  twilio(),
-  notion(),
-  hubspot(),
-  openweathermap(),
-  outlook(),
-] as const;
 
 const corsair = createCorsair({
   multiTenancy: true,
