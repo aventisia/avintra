@@ -40,11 +40,6 @@ export interface FlowsTableDto {
   description?: string;
 
   /**
-   * Gets or sets the number of flow comments associated with the flow record.
-   */
-  flowCommentCount?: number;
-
-  /**
    * Gets or sets a flag indicating whether the flow record is disabled.
    *
    * Not making it required because same DTO is used for insert and update.

@@ -49,7 +49,6 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
       description: "",
       thumbnail: "",
       isDisabled: false,
-      flowCommentCount: 0,
       createdBy: userSession?.firstName + " " + userSession?.lastName,
       createdOn: new Date(),
       lastModifiedBy: userSession?.firstName + " " + userSession?.lastName,
@@ -87,7 +86,6 @@ export const useDefineFlowForm = ({ rowId, crudAction }: UseDefineFlowFormOption
       thumbnail: flowData?.thumbnail ?? "",
       isDisabled: flowData?.isDisabled ?? false,
       // Read (view) only fields
-      flowCommentCount: flowData?.flowCommentCount ?? 0,
       createdBy: flowData?.createdBy ?? userSession?.firstName + " " + userSession?.lastName,
       createdOn: flowData?.createdOn ? new Date(flowData?.createdOn) : new Date(),
       lastModifiedBy:

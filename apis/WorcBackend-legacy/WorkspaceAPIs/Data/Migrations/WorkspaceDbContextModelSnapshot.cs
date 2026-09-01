@@ -506,59 +506,14 @@ namespace WorkspaceAPIs.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedByUserId");
+
                     b.HasIndex("LastModifiedByUserId");
 
-                    b.HasIndex("CreatedByUserId", "Name")
+                    b.HasIndex("TenantId", "Name")
                         .IsUnique();
 
                     b.ToTable("Flows");
-                });
-
-            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowComment", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Comment")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<DateTimeOffset>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("FlowId")
-                        .HasColumnType("uuid");
-
-                    b.Property<bool>("IsDisabled")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsEdited")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset>("LastModifiedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<uint>("Version")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("xid")
-                        .HasColumnName("xmin");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("FlowId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("FlowComment");
                 });
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowLog", b =>
@@ -3318,25 +3273,6 @@ namespace WorkspaceAPIs.Data.Migrations
                     b.Navigation("LastModifiedByUser");
                 });
 
-            modelBuilder.Entity("WorkspaceAPIs.Entities.FlowComment", b =>
-                {
-                    b.HasOne("WorkspaceAPIs.Entities.Flow", "Flow")
-                        .WithMany("FlowComments")
-                        .HasForeignKey("FlowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("WorkspaceAPIs.Entities.WorkspaceUser", "User")
-                        .WithMany("FlowComments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Flow");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("WorkspaceAPIs.Entities.FlowLog", b =>
                 {
                     b.HasOne("WorkspaceAPIs.Entities.Flow", "Flow")
@@ -4176,8 +4112,6 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.Flow", b =>
                 {
-                    b.Navigation("FlowComments");
-
                     b.Navigation("FlowLog");
 
                     b.Navigation("FlowUsers");
@@ -4279,8 +4213,6 @@ namespace WorkspaceAPIs.Data.Migrations
 
             modelBuilder.Entity("WorkspaceAPIs.Entities.WorkspaceUser", b =>
                 {
-                    b.Navigation("FlowComments");
-
                     b.Navigation("Machines");
 
                     b.Navigation("NotificationUsers");

@@ -37,11 +37,6 @@ public class FlowsTableDto
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets the flow comments count which are associated with the flow.
-    /// </summary>
-    public int? FlowCommentCount { get; set; }
-
-    /// <summary>
     /// Gets or sets the version number of a last flow version record
     /// </summary>
     public int VersionNumber { get; set; }

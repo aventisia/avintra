@@ -12,7 +12,6 @@ import { PresenceAvatars } from "@/features/collaboration/components/PresenceAva
 import { releasePublishActionIfActive } from "@/features/collaboration/hooks/useCollaboration";
 import { ExecuteFlow } from "@/features/execute-flow";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
-import { FlowComments } from "@/features/flow-comments/components/FlowComments";
 import { SettingsTrigger } from "@/features/flow-settings/components/SettingsTrigger";
 import { FlowVersions } from "@/features/flow-versions/components";
 import SaveFlow from "@/features/react-flow/components/save-flow/SaveFlow";
@@ -113,7 +112,6 @@ const AppHeader: React.FC = () => {
               {import.meta.env.MODE !== "production" ? <SettingsTrigger /> : null}
 
               <StudioPreferences className="mt-0 mlg:mt-4" />
-              <FlowComments className="mt-0 mlg:mt-4" />
               <Chat className="mt-0 mlg:mt-4" />
             </div>
             <SaveFlow />

@@ -102,19 +102,6 @@ export const flowsTableColumns = (isSharedTab: boolean): ColumnDef<FlowsTableDto
     },
   },
   {
-    accessorKey: "flowCommentCount",
-    header: ({ column }) => (
-      <DTColumnHeader
-        tableKey={TABLE_KEY}
-        column={column}
-        title={getColumnName("flowCommentCount")}
-      />
-    ),
-    cell: ({ row }) => (
-      <div className="w-auto truncate font-medium">{row.getValue("flowCommentCount")}</div>
-    ),
-  },
-  {
     accessorKey: "createdBy",
     header: ({ column }) => (
       <DTColumnHeader tableKey={TABLE_KEY} column={column} title={getColumnName("createdBy")} />
