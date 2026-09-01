@@ -31,9 +31,9 @@ public class AccountRoleService : IAccountRoleService
 
         try
         {
-            //Try to get roles
+            //Try to get roles of the workspace app so CRM placeholder roles never surface here
             var roles = await _unitOfWork.AccountRoleRepo
-            .GetByConditionAsync(s => s.IsDisabled == false)
+            .GetByConditionAsync(s => s.IsDisabled == false && s.AppCode == PlatformAppsEnum.Workspace.ToAppCode())
             .OrderByDescending(o => o.Id).ToListAsync();
 
             // Task successful

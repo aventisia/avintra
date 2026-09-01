@@ -24,6 +24,13 @@ public class AccountRole : IdentityRole<Guid>
     public string? Description { get; set; }
 
     /// <summary>
+    /// Gets or sets the stable code of the platform app this role belongs to (lowercase name of PlatformAppsEnum, e.g. "workspace").
+    /// Roles are scoped per app so each app's user-management role picker only lists its own roles.
+    /// </summary>
+    [MaxLength(50)]
+    public string AppCode { get; set; } = PlatformAppsEnum.Workspace.ToAppCode();
+
+    /// <summary>
     /// Gets or sets a value indicating whether this instance is the default option.
     /// The default value is <c>false</c>.
     /// </summary>
