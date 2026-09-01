@@ -8,6 +8,8 @@ import { memo, useEffect } from "react";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNodeOverlay";
+import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useGroupToggle } from "@/features/react-flow/hooks/useGroupToggle";
 import { useNodeHover } from "@/hooks/useNodeHover";
@@ -25,6 +27,9 @@ export const AINode = memo(
   ({ data, selected, sourcePosition, targetPosition, id }: NodeProps<AINode>) => {
     const { toggleGroupExpand } = useGroupToggle();
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
+
+    // Collaboration: a node locked by another user is non-interactive and shows an overlay.
+    const { lockedByOther } = useNodeLockedByOther(id);
 
     const { updateNodeData, updateNode, getNodes } = useReactFlow();
 
@@ -73,6 +78,7 @@ export const AINode = memo(
             data?.isDisabled && "opacity-50",
             data?.isCut && "border-red-400 opacity-60",
             isExecutionLog && "border-0 ring-0",
+            lockedByOther && "pointer-events-none opacity-70",
           )}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
@@ -108,6 +114,7 @@ export const AINode = memo(
               </div>
             </div>
           </OpenNodeConfig>
+          {lockedByOther && <LockedNodeOverlay nodeId={id} />}
         </div>
         <NodeToolbar offset={5} isVisible={isHovered} position={Position.Top}>
           {data?.isGroupHead && (

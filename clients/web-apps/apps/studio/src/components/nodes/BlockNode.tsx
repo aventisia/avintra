@@ -17,6 +17,8 @@ import { useShallow } from "zustand/react/shallow";
 
 import { InputHandle } from "@/components/handles/InputHandle";
 import { OutputHandle } from "@/components/handles/OutputHandle";
+import { LockedNodeOverlay } from "@/features/collaboration/components/LockedNodeOverlay";
+import { useNodeLockedByOther } from "@/features/collaboration/hooks/useNodeLockedByOther";
 import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execution-store";
 import { buildSubFlowNavigationParams } from "@/features/execute-flow/utils/sub-flow-navigation";
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
@@ -54,6 +56,9 @@ export const BlockNode = memo(
 
     const { toggleGroupExpand } = useGroupToggle();
     const { isHovered, onMouseEnter, onMouseLeave } = useNodeHover();
+
+    // Collaboration: a node locked by another user is non-interactive and shows an overlay.
+    const { lockedByOther } = useNodeLockedByOther(id);
 
     const isExecutionLog = useIsExecutionLogsRoute();
     const isAgentHistory = useIsVersionHistoryRoute();
@@ -138,6 +143,7 @@ export const BlockNode = memo(
             data?.isDisabled && "opacity-50",
             data?.isCut && "border-red-400 opacity-60",
             isExecutionLog && "border-0 ring-0",
+            lockedByOther && "pointer-events-none opacity-70",
           )}
           onMouseEnter={onMouseEnter}
           onMouseLeave={onMouseLeave}
@@ -152,6 +158,8 @@ export const BlockNode = memo(
               <OutputHandle position={sourcePosition} />
             </div>
           </OpenNodeConfig>
+
+          {lockedByOther && <LockedNodeOverlay nodeId={id} className="rounded-full" />}
 
           {liveStatus === "running" && (
             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-[#1E1B4B]/80">

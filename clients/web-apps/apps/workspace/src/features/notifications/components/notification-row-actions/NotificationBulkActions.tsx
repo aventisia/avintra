@@ -1,5 +1,6 @@
 import { Separator } from "@avplatform/ui";
 import { DTBulkActions, DTBulkDeleteAction, DTSelectionInfo } from "@avplatform/ui/data-table";
+import { NotificationStatusEnum } from "@avplatform/ui/enums";
 import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
 import { useShowAlertHandler } from "@avplatform/ui/hooks";
 import { Table } from "@tanstack/react-table";
@@ -16,10 +17,11 @@ export function NotificationBulkActions({ table }: NotificationBulkActionsProps)
   // Get showAlert handler
   const { showCustomAlertDialog } = useShowAlertHandler();
 
-  // Get rowIds of selected rows
+  // Get rowIds of selected rows, excluding sent notifications (they are immutable and cannot be deleted)
   const selectedRowIds = table
     .getFilteredSelectedRowModel()
-    .rows.map((row) => row.original.id)
+    .rows.filter((row) => row.original.status !== NotificationStatusEnum.Sent)
+    .map((row) => row.original.id)
     .filter((id): id is string => id !== undefined);
 
   // Construct entity name for alert dialog
