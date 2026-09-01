@@ -48,8 +48,6 @@ public class CamelV2ToolSeeder
     /// </summary>
     public async Task<int> SeedAsync(
         WorkspaceDbContext dbContext,
-        Guid tenantId,
-        Guid userId,
         CancellationToken cancellationToken = default)
     {
         var now = DateTimeOffset.UtcNow;
@@ -84,7 +82,7 @@ public class CamelV2ToolSeeder
                         var tool = new Tool
                         {
                             Id = toolId,
-                            TenantId = tenantId,
+                            TenantId = Guid.Empty, // Platform tools are not tenant-scoped
                             SpaceId = null, // Central space
                             EnvType = ConfigureEnvironmentType.Dev,
                             Name = toolName,
@@ -97,8 +95,6 @@ public class CamelV2ToolSeeder
                             IsTenantWideAccess = true,
                             IsActive = true,
                             IsVerified = true,
-                            CreatedByUserId = userId,
-                            LastModifiedByUserId = userId,
                             CreatedOn = now,
                             LastModifiedOn = now,
                         };
@@ -108,7 +104,7 @@ public class CamelV2ToolSeeder
                     {
                         existing.Name = toolName;
                         existing.Description = $"Apache Camel {connector} connector (platform tool, seeded from the Camel harness catalog).";
-                        existing.TenantId = tenantId;
+                        existing.TenantId = Guid.Empty; // Platform tools are not tenant-scoped
                         existing.BaseUrl = baseUrl;
                         existing.OpenApiSpec = openApiJson;
                         existing.ParsedSchema = parsedSchema;
@@ -116,7 +112,6 @@ public class CamelV2ToolSeeder
                         existing.IsTenantWideAccess = true;
                         existing.IsActive = true;
                         existing.IsVerified = true;
-                        existing.LastModifiedByUserId = userId;
                         existing.LastModifiedOn = now;
                     }
 
@@ -152,7 +147,7 @@ public class CamelV2ToolSeeder
                     var tool = new Tool
                     {
                         Id = toolId,
-                        TenantId = tenantId,
+                        TenantId = Guid.Empty, // Platform tools are not tenant-scoped
                         SpaceId = null, // Central space
                         EnvType = ConfigureEnvironmentType.Dev,
                         Name = toolName,
@@ -166,8 +161,6 @@ public class CamelV2ToolSeeder
                         IsTenantWideAccess = true,
                         IsActive = true,
                         IsVerified = true,
-                        CreatedByUserId = userId,
-                        LastModifiedByUserId = userId,
                         CreatedOn = now,
                         LastModifiedOn = now,
                     };
@@ -177,7 +170,7 @@ public class CamelV2ToolSeeder
                 {
                     existing.Name = toolName;
                     existing.Description = $"Apache Camel {displayName} connector (platform tool).";
-                    existing.TenantId = tenantId;
+                    existing.TenantId = Guid.Empty; // Platform tools are not tenant-scoped
                     existing.BaseUrl = baseUrl;
                     existing.OpenApiSpec = openApiJson;
                     existing.ParsedSchema = parsedSchema;
@@ -186,7 +179,6 @@ public class CamelV2ToolSeeder
                     existing.IsTenantWideAccess = true;
                     existing.IsActive = true;
                     existing.IsVerified = true;
-                    existing.LastModifiedByUserId = userId;
                     existing.LastModifiedOn = now;
                 }
 

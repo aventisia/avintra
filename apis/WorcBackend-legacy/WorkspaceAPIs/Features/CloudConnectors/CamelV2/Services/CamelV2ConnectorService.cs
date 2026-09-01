@@ -88,12 +88,10 @@ public class CamelV2ConnectorService : ICamelV2ConnectorService
     /// <inheritdoc />
     public async Task<int> RefreshAsync(
         WorkspaceDbContext dbContext,
-        Guid tenantId,
-        Guid userId,
         CancellationToken cancellationToken = default)
     {
         _catalogClient.InvalidateCache();
-        var seeded = await _toolSeeder.SeedAsync(dbContext, tenantId, userId, cancellationToken);
+        var seeded = await _toolSeeder.SeedAsync(dbContext, cancellationToken);
         var generated = await _nodeGenerator.GenerateAsync(cancellationToken);
         _logger.LogInformation("CamelV2 refresh complete: {Seeded} tools seeded, {Generated} node configs generated.",
             seeded, generated);

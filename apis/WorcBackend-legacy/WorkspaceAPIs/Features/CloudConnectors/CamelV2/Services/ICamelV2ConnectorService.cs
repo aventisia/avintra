@@ -35,7 +35,5 @@ public interface ICamelV2ConnectorService
     /// </summary>
     Task<int> RefreshAsync(
         WorkspaceDbContext dbContext,
-        Guid tenantId,
-        Guid userId,
         CancellationToken cancellationToken = default);
 }
