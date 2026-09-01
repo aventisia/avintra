@@ -102,6 +102,9 @@ public partial class AccountsDbContext : IdentityDbContext<
         builder.Entity<AccountRole>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<AccountRole>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
 
+        // Keep the AppCode column default in sync with the AddAppCodeToRoles migration (defaultValue: "workspace")
+        builder.Entity<AccountRole>().Property(e => e.AppCode).HasDefaultValue(PlatformAppsEnum.Workspace.ToAppCode());
+
         // Configure One-to-One relationship between Tenant and AccountUser
         builder.Entity<Tenant>().HasOne(one => one.CreatedByUser).WithMany().HasForeignKey(f => f.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<Tenant>().HasOne(one => one.LastModifiedByUser).WithMany().HasForeignKey(f => f.LastModifiedByUserId).OnDelete(DeleteBehavior.Restrict);
