@@ -64,21 +64,14 @@ public class SpaceSummaryService : ISpaceSummaryService
                 })
                 .ToListAsync();
 
-            // Count machines per space.
-            var machineData = await _workspaceInternalDbContext.Machine
-                .Where(w => w.TenantId == _tenantId)
-                .GroupBy(g => g.SpaceId)
-                .Select(s => new
-                {
-                    SpaceId = s.Key,
-                    Count = s.Count()
-                })
-                .ToListAsync();
+            // Machines are a tenant-global pool (not scoped by space); every space summary
+            // reports the tenant-wide machine count.
+            var totalMachines = await _workspaceInternalDbContext.Machine
+                .CountAsync(w => w.TenantId == _tenantId);
 
             // Build the unified list of space IDs across all datasets.
             var spaceIds = publishedAgentData.Select(x => x.SpaceId)
                 .Concat(executionData.Select(x => x.SpaceId))
-                .Concat(machineData.Select(x => x.SpaceId))
                 .Distinct()
                 .ToList();
 
@@ -88,14 +81,13 @@ public class SpaceSummaryService : ISpaceSummaryService
                 {
                     var published = publishedAgentData.FirstOrDefault(x => x.SpaceId == spaceId);
                     var execution = executionData.FirstOrDefault(x => x.SpaceId == spaceId);
-                    var machines = machineData.FirstOrDefault(x => x.SpaceId == spaceId);
 
                     return new SpaceSummaryDto
                     {
                         SpaceId = spaceId,
                         TotalPublishedAgents = published?.Count ?? 0,
                         TotalExecutionTime = execution?.ExecutionTime ?? 0,
-                        TotalMachinesAttached = machines?.Count ?? 0
+                        TotalMachinesAttached = totalMachines
                     };
                 })
                 .ToList();
