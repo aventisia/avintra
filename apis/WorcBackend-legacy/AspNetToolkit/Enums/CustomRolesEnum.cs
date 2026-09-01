@@ -42,4 +42,36 @@ public enum CustomRolesEnum
     /// </summary>
     [Description("4; User; This role is for users who interact with and utilize automation agents, but do not have permissions to develop or manage workflows.")]
     TU,
+
+    // ---------------------------------- CRM APP ROLES --------------------------------
+
+    // NOTE: Sequence is per app. The workspace roles above start at 0 and the CRM roles
+    // below restart at 0. Each app has its own privilege hierarchy where 0 is the highest
+    // privilege. The CRM roles are seeded with AppCode "crm" (see PlatformAppRoleMap) so
+    // the workspace user management never lists them.
+
+    /// <summary>
+    /// CRM Super Admin. This role has full access to all features of the CRM app.
+    /// </summary>
+    [Description("0; Super admin; This role has full access to all features of the CRM app.")]
+    CSA,
+
+
+    /// <summary>
+    /// CRM Tenant Admin. This role manages users, settings, and data for one specific tenant in the CRM app.
+    /// </summary>
+    [Description("1; Tenant admin; This role manages users, settings, and data for one specific tenant in the CRM app.")]
+    CTA,
+
+    /// <summary>
+    /// CRM Sales Representative. This role is for users who manage CRM records such as leads, deals, and customers.
+    /// </summary>
+    [Description("2; Sales representative; This role is for users who manage CRM records such as leads, deals, and customers.")]
+    CSR,
+
+    /// <summary>
+    /// CRM Referral Partner. This role is for partners who refer customers to the CRM app.
+    /// </summary>
+    [Description("3; Referral partner; This role is for partners who refer customers to the CRM app.")]
+    CRP,
 }
