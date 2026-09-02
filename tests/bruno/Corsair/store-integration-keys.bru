@@ -1,0 +1,26 @@
+meta {
+  name: Store Integration Keys
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{CORSAIR_SIDECAR_URL}}/integration-keys
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "plugin": "outlook",
+    "tenantId": "{{CORSAIR_CONNECTION_ID}}",
+    "clientId": "{{CORSAIR_OUTLOOK_CLIENT_ID}}",
+    "clientSecret": "{{CORSAIR_OUTLOOK_CLIENT_SECRET}}",
+    "redirectUrl": "{{CORSAIR_REDIRECT_URI}}"
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains "success"
+}

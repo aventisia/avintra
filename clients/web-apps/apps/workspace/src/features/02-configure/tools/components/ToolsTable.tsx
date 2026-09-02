@@ -6,7 +6,6 @@ import {
   getDataTablePreferences,
 } from "@avplatform/ui/data-table";
 import { useDataTable, useDocumentTitle } from "@avplatform/ui/hooks";
-import { formatDate } from "@avplatform/ui/utils";
 import { useMemo } from "react";
 import { NavLink } from "react-router-dom";
 
@@ -21,8 +20,10 @@ import {
   TABLE_TAB_QUERY_PARAM,
   TABLE_VIEW_TABS,
 } from "../constants/tools-table.constants";
+import { getToolIcon } from "../constants/tool-icon-mapper";
 import { useFetchTools } from "../hooks/useFetchTools.hook";
 import { useTableTab } from "../hooks/useTableTab.hook";
+import { getToolDisplayName } from "../utils/tool-name-formatter";
 import { toolsTableColumns } from "./ToolsTableColumns";
 import { ToolsTableSkeleton } from "./ToolsTableSkeleton";
 import { ToolRowActions } from "./tool-row-actions/ToolRowActions";
@@ -45,6 +46,7 @@ export const ToolsTable = () => {
   const table = useDataTable(tableColumns, data?.data || [], columnVisibility, sortState, true);
 
   const isReadOnlyTab = isReadOnly;
+  const basePath = import.meta.env.VITE_WORKSPACE_PATH?.replace(/\/$/, "") || "";
 
   return (
     <>
@@ -72,12 +74,25 @@ export const ToolsTable = () => {
                   key={row.id}
                   to={`/configure/tools/${row.original.id}?tool=${encodeURIComponent(row.getValue("name"))}&${TABLE_TAB_QUERY_PARAM}=${currentTab}`}
                 >
-                  <div className="flex flex-col cursor-pointer h-36 justify-between rounded-lg border bg-background p-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
-                    <div className="flex flex-1 flex-col">
-                      <div className="flex justify-between items-center">
-                        <div className="flex max-w-80 items-center gap-3">
-                          <div className="w-auto truncate text-sm font-medium">
-                            {row.getValue("name")}
+                  <div className="flex cursor-pointer items-center justify-between rounded-lg border bg-background px-3.5 py-2.5 shadow-sm transition-shadow hover:border-primary-200 hover:ring-1 hover:ring-primary-200">
+                    {/* Left: Icon with centered content */}
+                    <div className="flex items-center space-x-4">
+                      <div className="flex-shrink-0">
+                        <img
+                          src={basePath + getToolIcon(row.getValue("name") as string)}
+                          alt={row.getValue("name") as string}
+                          className="h-6 w-6 object-contain"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = basePath + "/brand-img/default-provider.svg";
+                          }}
+                        />
+                      </div>
+
+                      {/* Middle: Name and Description */}
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-3">
+                          <div className="text-sm font-medium">
+                            {getToolDisplayName(row.getValue("name") as string)}
                           </div>
                           {isShared && (
                             <span className="bg-muted border px-1 text-2xs leading-none h-[1.4rem] flex items-center justify-center text-primary rounded-full">
@@ -85,23 +100,20 @@ export const ToolsTable = () => {
                             </span>
                           )}
                         </div>
-                        <ToolRowActions
-                          rowId={row.original.id ?? ""}
-                          name={row.original.name}
-                          accessLevel={row.original.accessLevel}
-                          isTenantWideAccess={row.original.isTenantWideAccess}
-                          isLibrary={isLibrary}
-                        />
+                        <span className="text-xs text-muted-foreground line-clamp-2">
+                          {row.getValue("description") as string}
+                        </span>
                       </div>
-                      <span className="text-xs text-muted-foreground line-clamp-3">
-                        {row.getValue("description") as string}
-                      </span>
                     </div>
-                    <div className="border-t py-2.5 h-7 w-full">
-                      <p className="text-xs text-muted-foreground">
-                        Created on {formatDate(row.getValue("createdOn"))}
-                      </p>
-                    </div>
+
+                    {/* Right: Actions */}
+                    <ToolRowActions
+                      rowId={row.original.id ?? ""}
+                      name={row.original.name}
+                      accessLevel={row.original.accessLevel}
+                      isTenantWideAccess={row.original.isTenantWideAccess}
+                      isLibrary={isLibrary}
+                    />
                   </div>
                 </NavLink>
               ))}

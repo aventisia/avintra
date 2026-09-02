@@ -352,14 +352,71 @@ public class NodeProcessor : INodeProcessor
     }
 
     /// <summary>
+    /// Transforms Corsair connector inputs into (Plugin, Action, CredentialName, Payload)
+    /// and routes execution to ProcessCorsairRequestNode.
+    /// </summary>
+    private static (string, List<ReactFlowNodeInput>) PreprocessCorsairNode(
+        string rawName,
+        List<ReactFlowNodeInput> inputs,
+        FlowExecutionContext context)
+    {
+        // rawName format: "Corsair/{plugin}/{action}Connector" e.g. "Corsair/GitHub/IssuesCreateConnector"
+        // The trailing "Connector" suffix is required by Studio's DCP naming convention.
+        var segments = rawName.Split('/');
+        var plugin = segments.Length >= 2 ? segments[1] : string.Empty;
+        var action = segments.Length >= 3 ? segments[2] : string.Empty;
+
+        var newInputs = new List<ReactFlowNodeInput>
+        {
+            new() { Key = "Plugin", Value = plugin },
+            new() { Key = "Action", Value = action },
+        };
+
+        var payloadDict = new Dictionary<string, object?>();
+
+        foreach (var input in inputs)
+        {
+            if (string.IsNullOrEmpty(input.Value?.ToString())) continue;
+            if (IsSystemInput(input.Key)) continue;
+
+            if (input.Key.Contains("__CredentialName__"))
+            {
+                newInputs.Add(new ReactFlowNodeInput { Key = "CredentialName", Value = input.Value });
+                continue;
+            }
+
+            // Resolve any template variables before embedding into the payload JSON
+            var resolvedValue = context.ResolveTemplateObject(input.Value);
+            payloadDict[input.Key] = resolvedValue;
+        }
+
+        newInputs.Add(new ReactFlowNodeInput
+        {
+            Key = "Payload",
+            Value = JsonSerializer.Serialize(payloadDict)
+        });
+
+        return ("ProcessCorsairRequestNode", newInputs);
+    }
+
+    /// <summary>
     /// Transforms cloudConnectorNode inputs into (Provider, Action, CredentialName, Payload)
     /// and routes execution to ProcessConnectorRequestNode.
+    ///
+    /// Corsair connectors (rawName "Corsair/{Plugin}/{Action}Connector") are routed to
+    /// ProcessCorsairRequestNode with (Plugin, Action, CredentialName, Payload) inputs.
     /// </summary>
     private static (string, List<ReactFlowNodeInput>) PreprocessCloudConnectorNode(
         string rawName,
         List<ReactFlowNodeInput> inputs,
         FlowExecutionContext context)
     {
+        // Corsair connectors are cloudConnectorNode type but invoke the Corsair sidecar.
+        if (rawName.StartsWith("Corsair/", StringComparison.OrdinalIgnoreCase))
+        {
+            return PreprocessCorsairNode(rawName, inputs, context);
+        }
+
         // rawName format: "{provider}/{actionConnector}" e.g. "Google/SendEmailConnector"
         var segments = rawName.Split('/');
         var provider = string.Join("/", segments.Take(segments.Length - 1));

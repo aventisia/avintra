@@ -4,6 +4,10 @@ import importlib
 from app.features.llm_providers.llm_providers_schemas import LLMRequest
 from app.features.auth.authenticated_user import User
 from app.core.logger import logger
+from app.features.llm_providers.services.corsair_sidecar_service import (
+    invoke_corsair_tool,
+    is_corsair_tool,
+)
 
 
 class ToolExecutionService:
@@ -49,6 +53,16 @@ class ToolExecutionService:
     ):
 
         try:
+
+            # Route Corsair dotted tool names (e.g. "github.issues.create")
+            # to the Corsair sidecar instead of the legacy executor modules.
+            if is_corsair_tool(tool_name):
+                return await invoke_corsair_tool(
+                    tool_name=tool_name,
+                    arguments=arguments,
+                    llm_request=llm_request,
+                    user=user,
+                )
 
             # gmail_send_email
             parts = tool_name.split("_", 1)

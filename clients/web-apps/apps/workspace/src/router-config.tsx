@@ -11,6 +11,7 @@ import GALayout from "./features/07-global-admin/on-prem-tenant/components/GALay
 import { FlowsPage } from "./pages/01-build/FlowsPage";
 import { LibraryPage } from "./pages/01-build/LibraryPage";
 import { KeystorePage } from "./pages/02-configure/KeystorePage";
+import { OAuthCallbackPage } from "./pages/02-configure/OAuthCallbackPage";
 import { VaultPage } from "./pages/02-configure/VaultPage";
 import { KnowledgeBaseDetailsPage } from "./pages/02-configure/knowledge-bases/KnowledgeBaseDetailsPage";
 import { KnowledgeBasePage } from "./pages/02-configure/knowledge-bases/KnowledgeBasePage";
@@ -400,6 +401,11 @@ const routerConfig: RouteObject[] = [
         element: <NotFoundPage />,
       },
     ],
+  },
+  {
+    path: "/configure/vault/oauth-callback",
+    element: <OAuthCallbackPage />,
+    errorElement: <AppErrorPage />,
   },
   {
     path: "/redirect",

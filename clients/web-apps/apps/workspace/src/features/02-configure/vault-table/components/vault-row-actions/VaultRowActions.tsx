@@ -7,12 +7,15 @@ import { ResourceAccessTypeEnum } from "@/features/resource-share/enums/resource
 import { ResourceTypeEnum } from "@/features/resource-share/enums/resource-type-enum";
 import { getResourceAccessActions } from "@/features/resource-share/utils/resource-access-actions";
 
+import { isOAuthCredentialType } from "../../vault-config/constants/oauth-credential-types";
 import { useTableTab } from "../../hooks/useTableTab";
 import { VaultRowDeleteAction } from "./VaultRowDeleteAction";
+import { VaultRowReconnectAction } from "./VaultRowReconnectAction";
 
 interface VaultRowActionsProps {
   rowId: string;
   name: string;
+  type?: string;
   accessLevel?: ResourceAccessTypeEnum;
   isTenantWideAccess: boolean;
 }
@@ -20,6 +23,7 @@ interface VaultRowActionsProps {
 export const VaultRowActions = ({
   rowId,
   name,
+  type,
   accessLevel = ResourceAccessTypeEnum.View,
   isTenantWideAccess,
 }: VaultRowActionsProps) => {
@@ -43,6 +47,9 @@ export const VaultRowActions = ({
           resourceName={name}
         />
       )}
+
+      {/* Reconnect OAuth for OAuth-capable credentials */}
+      {actions?.update && isOAuthCredentialType(type) && <VaultRowReconnectAction rowId={rowId} />}
 
       {/* DropdownMenuSeparator component */}
       <DropdownMenuSeparator />
