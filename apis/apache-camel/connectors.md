@@ -1,4 +1,4 @@
-# Apache Camel Connector Harness — Supported Connectors
+﻿# Apache Camel Connector Harness — Supported Connectors
 
 This document describes the Camel connector harness. The harness can dispatch to **any Apache Camel component** whose starter is on the classpath. For components without a hand-written configurer, a generic configurer builds a URI from `configuration` fields and injects `auth` options.
 
@@ -12,14 +12,70 @@ For each hand-written connector you will find:
 - Error response format
 - Connector-specific notes and limitations
 
-## JSON Schema Endpoint
+## Minimal Contract Endpoints
 
-The harness exposes JSON Schema endpoints so clients can discover the expected payload for each connector at runtime.
+The recommended contract returns only consumer-relevant fields. Camel-internal
+metadata, endpoint URIs, class names, and verbose execution details are excluded.
 
 | Endpoint | Description |
 |---|---|
-| `GET /connectors/{connector}/schema` | JSON Schema for a single connector family |
-| `GET /connectors/schemas` | JSON object mapping every connector family to its JSON Schema |
+| `GET /connectors/` | List every available connector family (`id`, `name`, optional `description`) |
+| `GET /connectors/{connector}/operations` | List the operations for a connector (`id`, `name`, optional `description`) |
+| `GET /connectors/{connector}/operations/{operation}/schema` | Minimal request schema for a single operation (only `name`, `type`, `required`, `description` per field) |
+| `POST /connectors/{connector}/operations/{operation}/execute` | Execute an operation; the request body is exactly the schema fields (flat JSON object) |
+
+Example — list connectors:
+
+```bash
+curl http://localhost:4005/api/connectors/
+```
+
+Example — list operations for a connector:
+
+```bash
+curl http://localhost:4005/api/connectors/aws2-s3/operations
+```
+
+Example — fetch the minimal request schema for one operation:
+
+```bash
+curl http://localhost:4005/api/connectors/http/operations/GET/schema
+```
+
+The schema response is a flat field list:
+
+```json
+{
+  "connector": "http",
+  "operation": "GET",
+  "fields": [
+    { "name": "operation", "type": "string", "required": true, "description": "Operation to execute (pinned to GET)" },
+    { "name": "host", "type": "string", "required": true, "description": "Required: host" },
+    { "name": "payload", "type": "any", "required": false, "description": "Request body or component-specific payload" }
+  ]
+}
+```
+
+Example — execute an operation with exactly the schema fields:
+
+```bash
+curl -X POST http://localhost:4005/api/connectors/log/operations/info/execute \
+  -H "Content-Type: application/json" \
+  -d '{"body":"hello from minimal execute"}'
+```
+
+The execute request body is a flat JSON object whose fields match the schema.
+An optional nested `auth` object and a `payload` field are supported; everything
+else is treated as connector configuration.
+
+## Legacy JSON Schema Endpoint
+
+The harness also exposes full JSON Schema endpoints for backward compatibility.
+
+| Endpoint | Description |
+|---|---|
+| `GET /connectors/{connector}/schema` | Full JSON Schema for a single connector family |
+| `GET /connectors/schemas` | JSON object mapping every connector family to its full JSON Schema |
 
 Example:
 
@@ -42,22 +98,21 @@ generic request:
 
 ```json
 {
-  "connector": "github",
-  "operation": "branch.list",
+  "connector": "http",
+  "operation": "GET",
   "authentication": {
-    "type": "accessToken",
+    "type": "bearer",
     "credential": {
-      "name": "GitHubCredential",
-      "value": { "token": "ghp_secret" }
+      "name": "HttpCredential",
+      "value": { "token": "secret" }
     }
   },
   "parameters": {
-    "owner": "acme",
-    "repo": "widgets"
+    "host": "localhost:8081",
+    "path": "echo"
   },
   "query": {
-    "per_page": 20,
-    "page": 1
+    "item": 42
   },
   "headers": {},
   "body": null,
@@ -104,9 +159,9 @@ Every connector request uses the following JSON envelope. Legacy aliases (`targe
 | `none` | — | file, http (public endpoints) |
 | `basic` | `username`, `password` | http, ftp, mail, jms |
 | `bearer` | `token` | http, kafka |
-| `apiKey` | `apiKey`, `apiKeyHeader` | http, github |
-| `accessToken` | `token` | github (GitHub PATs) |
-| `oauth2` | `clientId`, `clientSecret`, `refreshToken`, `tokenUrl`, `authorizationUrl`, `scopes` | github |
+| `apiKey` | `apiKey`, `apiKeyHeader` | http |
+| `accessToken` | `token` | http (bearer-style APIs) |
+| `oauth2` | `clientId`, `clientSecret`, `refreshToken`, `tokenUrl`, `authorizationUrl`, `scopes` | http |
 | `database` | `properties.url`, `properties.username`, `properties.password` | sql, jdbc |
 
 For `database` auth, `properties.username`/`properties.password` are optional
@@ -173,9 +228,9 @@ Sensitive credential information is never included in the response.
 ### Authentication
 
 Optional. Use `auth.type`:
-- `basic` → `username`, `password`
-- `bearer` → `token`
-- `apiKey` → `apiKey`, optional `apiKeyHeader`
+- `basic` â†’ `username`, `password`
+- `bearer` â†’ `token`
+- `apiKey` â†’ `apiKey`, optional `apiKeyHeader`
 
 ### Sample request
 
@@ -263,7 +318,7 @@ are extracted when `username`/`password` are not supplied separately. The
 userinfo is split on the last `@`, so passwords containing `@` are supported.
 
 Percent-encoded characters in the URL userinfo are decoded before the driver
-receives them (e.g. `%40` → `@`, `%25` → `%`). This lets you embed credentials
+receives them (e.g. `%40` â†’ `@`, `%25` â†’ `%`). This lets you embed credentials
 that contain reserved characters without breaking the URL:
 
 ```json
@@ -791,357 +846,16 @@ Optional. Use `auth.type=basic` with `username` and `password`.
 
 ---
 
-## GitHub
-
-- **Connector name:** `github`
-- **Camel URI scheme:** `github` (routes are `direct:github.<service>.<action>`)
-- **Supported operations:** `repository.*`, `branch.*`, `commit.*`, `file.*`, `pullrequest.*`, `pullrequest.review.*`, `issue.*`, `issue.label.*`, `issue.comment.*`, `release.*`, `release.asset.*`, `tag.*`, `workflow.*`, `workflow.run.*`, `organization.*`, `user.*`, `webhook.*`, `webhook.event.*`, `search.*`, `notification.*` (see `GET /connectors/github/schema` for the full list)
-
-### Request format
-
-The `operation` is the dotted service + action, e.g. `repository.create` or `pullrequest.merge`. Path parameters are supplied in `configuration`:
-
-```json
-{
-  "connector": "github",
-  "operation": "repository.create",
-  "configuration": {
-    "baseUrl": "https://api.github.com",
-    "name": "my-new-repo",
-    "description": "Created via harness",
-    "private": true
-  },
-  "auth": { "type": "accessToken", "token": "{{GITHUB_TOKEN}}" },
-  "payload": { "name": "my-new-repo", "description": "Created via harness", "private": true }
-}
-```
-
-For actions with path parameters, provide them in `configuration`:
-
-```json
-{
-  "connector": "github",
-  "operation": "pullrequest.review.submit-review",
-  "configuration": { "owner": "acme", "repo": "demo", "number": "42" },
-  "auth": { "type": "accessToken", "token": "{{GITHUB_TOKEN}}" },
-  "payload": { "body": "Looks good", "event": "APPROVE" }
-}
-```
-
-### Authentication
-
-Required for most actions (public read-only endpoints work unauthenticated). Use `auth.type`:
-
-- `accessToken` → `token` (GitHub PAT / fine-grained token)
-- `apiKey` → `apiKey`, optional `apiKeyHeader` (defaults to `Authorization: Bearer`)
-- `oauth2` → `clientId`, `clientSecret`; optional `refreshToken`, `authorizationUrl`, `tokenUrl`, `scopes`. Access tokens are acquired from the token endpoint, cached, and refreshed automatically on expiry or 401.
-
-Credentials may also be supplied via application properties/environment (`github.auth.token`, `github.auth.client-id`, `github.auth.client-secret`, `github.auth.refresh-token`, `github.base-url`, `github.webhook.secret`). Secrets are never echoed in responses or logs.
-
-### Configuration
-
-| Field | Description |
-|---|---|
-| `baseUrl` | Overrides the default `https://api.github.com` (GitHub Enterprise) |
-| `owner`, `repo`, `branch`, `number`, `ref`, `base`, `head`, `path`, `org`, `username`, `tag`, `name`, `commentId`, `reviewId`, `deliveryId`, `assetId`, `attemptNumber`, `workflowId`, `runId`, `releaseId`, `hookId` | Path parameters used by the target operation |
-| `q` | Search query (search operations) |
-| `per_page`, `page`, `since`, `until`, `milestone` | Query parameters honored by the target operation |
-| `maxPages` | Cap for automatic pagination aggregation (default 5) |
-| `contentType` | Override the `Content-Type` header when sending a payload |
-
-`file.delete` resolves the file's current `sha` automatically (it fetches the file via the contents API first), so the `sha` in the payload is optional — supply it only if you want to override, e.g. to delete a specific blob version. `commit.list-files` fetches the commit and extracts its `files` array automatically (GitHub has no dedicated "list files for commit" endpoint).
-
-### Sample response
-
-```json
-{
-  "ok": true,
-  "connector": "github",
-  "targetUri": "direct:github.repository.create",
-  "body": { "id": 123, "full_name": "acme/demo", "private": false },
-  "headers": { "Github-Status": 201 }
-}
-```
-
-### Error response
-
-```json
-{
-  "ok": false,
-  "connector": "github",
-  "targetUri": "direct:github.repository.get",
-  "error": "GitHub API error HTTP 404: Not Found",
-  "type": "GithubApiException"
-}
-```
-
-HTTP status is preserved (401 auth failure, 404 not found, 429 rate limit, etc.). Rate-limit responses include the retry hint.
-
-### Notes
-
-- Every action is exposed as a `direct:github.<service>.<action>` route, auto-registered from the action descriptor registry ([GithubActions.java](src/main/java/camel/harness/connectors/github/GithubActions.java)).
-- Adding a new action is a one-liner in the descriptor registry; routes, schema, and tests derive from it.
-- `webhook.event.*` actions are local: `receive` accepts a delivery, `verify` validates `X-Hub-Signature-256` (HMAC-SHA256), and `route-event` dispatches by the `X-GitHub-Event` header. The harness does not host an inbound listener.
-
----
-
-## Microsoft 365 / Microsoft Graph
-
-- **Connector name:** `m365`
-- **Camel URI scheme:** `m365` (routes are `direct:m365.<service>.<action>`)
-- **Supported operations:** `auth.*`, `user.*`, `group.*`, `mail.*`, `mailfolder.*`, `mailattachment.*`, `calendar.*`, `calendarevent.*`, `calendarattendee.*`, `contact.*`, `drive.*`, `drivefile.*`, `drivepermission.*`, `sharepointsite.*`, `sharepointlist.*`, `sharepointlistitem.*`, `sharepointdrive.*`, `teams.*`, `teamschannel.*`, `teamsmember.*`, `teamsmessage.*`, `teamschat.*`, `teamschatmember.*`, `teamsmeeting.*`, `teamscall.*`, `onedrive.*`, `directory.*`, `organization.*`, `device.*`, `application.*`, `serviceprincipal.*`, `presence.*`, `planner.*`, `todo.*`, `search.*`, `notification.*`, `subscription.*`, `auditreport.*` (see `GET /connectors/m365/schema` for the full list)
-
-### Get an access token (app-only, no user)
-
-`auth.get-token` obtains a Microsoft Graph access token via the OAuth 2.0 `client_credentials` grant — app-only, with **no user id, no user context, and no delegated permissions** required. This is ideal for background/service workloads that act on behalf of the application rather than a user.
-
-Credentials are supplied through the `auth` block (preferred) or via `configuration` (`tenantId`, `clientId`, `clientSecret`, optional `tokenUrl`/`scopes`); environment properties (`m365.auth.*`) are used as fallback:
-
-```json
-{
-  "connector": "m365",
-  "operation": "auth.get-token",
-  "configuration": { "baseUrl": "{{M365_BASE_URL}}" },
-  "auth": {
-    "type": "client_credentials",
-    "tenantId": "{{M365_TENANT_ID}}",
-    "clientId": "{{M365_CLIENT_ID}}",
-    "clientSecret": "{{M365_CLIENT_SECRET}}",
-    "tokenUrl": "{{M365_TOKEN_URL}}",
-    "scopes": "{{M365_SCOPES}}"
-  },
-  "payload": null
-}
-```
-
-The response returns the safe token fields only (never the client secret): `access_token`, `token_type`, `expires_in`, `scope`, `cached` (whether the token came from the in-memory cache), and `grant`. Tokens are cached per client identity and refreshed on expiry, exactly like the OAuth used by the other M365 actions.
-
-### All authentication flows
-
-The `auth` service family exposes every supported Microsoft identity / OAuth 2.0 token-generation flow as a connector operation. Each returns the safe token fields (`access_token`, `token_type`, `expires_in`, `scope`, `cached`, `grant`) and never echoes the client secret:
-
-| Operation | Flow | Key `auth` fields |
-|---|---|---|
-| `auth.get-token` | `client_credentials` (app-only, no user) | `tenantId`, `clientId`, `clientSecret`, `tokenUrl`, `scopes` |
-| `auth.authorization-code` | `authorization_code` (user consent via redirect) | `clientId`, `clientSecret`, `authorizationCode`, `redirectUri`, `tokenUrl`, `scopes` |
-| `auth.refresh-token` | `refresh_token` (rotate a refresh token) | `clientId`, `clientSecret`, `refreshToken`, `tokenUrl`, `scopes` |
-| `auth.device-code-start` | `device_code` (start; returns `user_code` + `verification_uri`) | `clientId`, `tokenUrl`, `scopes` |
-| `auth.device-code-poll` | `device_code` (poll until the user signs in) | `clientId`, `deviceCode`, `tokenUrl` |
-| `auth.on-behalf-of` | `on_behalf_of` / OBO (exchange a caller JWT) | `clientId`, `clientSecret`, `assertion`, `tokenUrl`, `scopes` |
-
-Example — authorization-code grant:
-
-```json
-{
-  "connector": "m365",
-  "operation": "auth.authorization-code",
-  "configuration": { "baseUrl": "{{M365_BASE_URL}}" },
-  "auth": {
-    "type": "authorization_code",
-    "tenantId": "{{M365_TENANT_ID}}",
-    "clientId": "{{M365_CLIENT_ID}}",
-    "clientSecret": "{{M365_CLIENT_SECRET}}",
-    "authorizationCode": "{{M365_AUTHORIZATION_CODE}}",
-    "redirectUri": "{{M365_REDIRECT_URI}}",
-    "tokenUrl": "{{M365_TOKEN_URL}}",
-    "scopes": "{{M365_SCOPES}}"
-  },
-  "payload": null
-}
-```
-
-Example — device-code flow (two steps):
-
-```json
-{
-  "connector": "m365",
-  "operation": "auth.device-code-start",
-  "configuration": { "baseUrl": "{{M365_BASE_URL}}" },
-  "auth": {
-    "type": "device_code",
-    "tenantId": "{{M365_TENANT_ID}}",
-    "clientId": "{{M365_CLIENT_ID}}",
-    "tokenUrl": "{{M365_TOKEN_URL}}",
-    "scopes": "{{M365_SCOPES}}"
-  },
-  "payload": null
-}
-```
-
-`auth.device-code-start` returns `device_code`, `user_code`, `verification_uri`, `expires_in`, and `interval`. The caller shows the user the code/URI, then polls `auth.device-code-poll` (passing `deviceCode` in `configuration` or `auth.deviceCode`) until the token is issued. While the user has not yet signed in, the poll returns a sanitized `authorization_pending` error so the caller can retry after `interval` seconds.
-
-Example — On-Behalf-Of (OBO):
-
-```json
-{
-  "connector": "m365",
-  "operation": "auth.on-behalf-of",
-  "configuration": { "baseUrl": "{{M365_BASE_URL}}" },
-  "auth": {
-    "type": "on_behalf_of",
-    "tenantId": "{{M365_TENANT_ID}}",
-    "clientId": "{{M365_CLIENT_ID}}",
-    "clientSecret": "{{M365_CLIENT_SECRET}}",
-    "assertion": "{{M365_ASSERTION}}",
-    "tokenUrl": "{{M365_TOKEN_URL}}",
-    "scopes": "{{M365_SCOPES}}"
-  },
-  "payload": null
-}
-```
-
-The same flows are available as `auth.type` on **any** M365 action (e.g. `user.get` with `auth.type=authorization_code`), so a token obtained by one flow can be reused across the whole collection. The Bruno collection ships a ready-to-use example for every flow under `M365/Auth/`.
-
-### Request format
-
-The `operation` is the dotted service + action, e.g. `user.get` or `mail.send`. Path parameters are supplied in `configuration`:
-
-```json
-{
-  "connector": "m365",
-  "operation": "user.get",
-  "configuration": { "userId": "alex@contoso.com", "$select": "id,displayName,mail" },
-  "auth": { "type": "accessToken", "token": "{{M365_TOKEN}}" },
-  "payload": null
-}
-```
-
-Create/update/action operations use `payload` for the Graph request body:
-
-```json
-{
-  "connector": "m365",
-  "operation": "calendarevent.create",
-  "configuration": { "userId": "alex@contoso.com" },
-  "auth": { "type": "accessToken", "token": "{{M365_TOKEN}}" },
-  "payload": {
-    "subject": "Planning",
-    "start": { "dateTime": "2026-09-01T09:00:00", "timeZone": "UTC" },
-    "end": { "dateTime": "2026-09-01T10:00:00", "timeZone": "UTC" }
-  }
-}
-```
-
-### Authentication
-
-Required for all actions (Microsoft Graph has no anonymous access). Use `auth.type`:
-
-- `accessToken` (or `bearer`) → `token` — a pre-generated Microsoft Graph bearer token.
-- `oauth2` → `tenantId`, `clientId`, `clientSecret`; optional `refreshToken`, `tokenUrl`, `scopes`. Acquires/refreshes a token from the Microsoft Entra ID token endpoint, caches it, and refreshes on expiry or 401.
-- `client_credentials` → `tenantId`, `clientId`, `clientSecret` — app-only access (uses `.default` scope unless `scopes` is set).
-- `authorization_code` → `clientId`, `clientSecret`, `authorizationCode`, `redirectUri` — OAuth 2.0 authorization-code grant.
-- `refresh_token` → `clientId`, `clientSecret`, `refreshToken` — OAuth 2.0 refresh-token grant.
-- `device_code` → `clientId`, `deviceCode` — OAuth 2.0 device-code flow (start with `auth.device-code-start`, then poll `auth.device-code-poll`).
-- `on_behalf_of` → `clientId`, `clientSecret`, `assertion` — OAuth 2.0 On-Behalf-Of (OBO) flow.
-- `apiKey` → only supported against an optional API-key gateway proxy (`apiKey`, `apiKeyHeader`). Microsoft Graph itself does not accept API keys.
-
-Credentials may also be supplied via application properties/environment (`m365.auth.token`, `m365.auth.client-id`, `m365.auth.client-secret`, `m365.auth.tenant-id`, `m365.auth.refresh-token`, `m365.auth.authorization-code`, `m365.auth.redirect-uri`, `m365.auth.device-code`, `m365.auth.assertion`, `m365.auth.token-url`, `m365.base-url`). Secrets are never echoed in responses or logs.
-
-### Configuration
-
-| Field | Description |
-|---|---|
-| `baseUrl` | Overrides the default `https://graph.microsoft.com/v1.0` (e.g. national/test clouds) |
-| `userId`, `userPrincipalName` | The user whose mailbox/calendar/tasks to operate on. `userPrincipalName` is an accepted alias for `userId` (e.g. an email address). For user-scoped operations (`mail.*`, `calendarevent.*`, `todo.*`, `contact.*`, ...) with a **delegated (user) token**, both may be omitted and the connector targets `/me`; with a **client-credentials (app-only) token** at least one is required because app tokens have no user context. |
-| `groupId`, `messageId`, `mailFolderId`, `attachmentId`, `calendarId`, `eventId`, `contactId`, `driveId`, `itemId`, `parentId`, `filename`, `permissionId`, `siteId`, `listId`, `teamId`, `channelId`, `membershipId`, `chatId`, `meetingId`, `callId`, `applicationId`, `servicePrincipalId`, `deviceId`, `organizationId`, `planId`, `taskId`, `subscriptionId`, `appRoleAssignmentId`, `q`, `period`, `query` | Path parameters used by the target operation |
-| `authorizationCode`, `redirectUri`, `deviceCode`, `assertion` | OAuth flow inputs for the `auth.*` operations (also accepted in the `auth` block) |
-| `$filter`, `$select`, `$expand`, `$orderby`, `$top`, `$skiptoken`, `$search` | OData system query options passed through to Graph |
-| `maxPages` | Cap for automatic `@odata.nextLink` pagination (default 5) |
-| `autoPaginate` | Set `true` to follow `@odata.nextLink` for list operations |
-| `contentType` | Override the `Content-Type` header when sending a payload |
-
-### Sample response
-
-```json
-{
-  "ok": true,
-  "connector": "m365",
-  "targetUri": "direct:m365.user.get",
-  "body": { "id": "u1", "displayName": "Alex", "userPrincipalName": "alex@contoso.com" },
-  "headers": { "M365-Status": 200 }
-}
-```
-
-### Error response
-
-```json
-{
-  "ok": false,
-  "connector": "m365",
-  "targetUri": "direct:m365.user.get",
-  "error": "User not found",
-  "type": "M365ApiException",
-  "errorType": "not_found",
-  "graphCode": "Request_ResourceNotFound"
-}
-```
-
-Every failure carries a **canonical `errorType`** (stable, snake_case) in addition
-to the Graph HTTP status and provider message. The taxonomy:
-
-| `errorType` | Meaning | Typical HTTP |
-| ----------- | ------- | ------------ |
-| `invalid_input` | Request failed validation before reaching Graph | 400 |
-| `missing_parameter` | A required path/configuration parameter was not supplied | 400 |
-| `authentication_failed` | Token missing, expired, or invalid | 401 |
-| `insufficient_permissions` | Token valid but lacks the required permission | 403 |
-| `not_found` | The requested resource does not exist | 404 |
-| `conflict` | The operation conflicts with current state | 409/412 |
-| `rate_limited` | Graph throttling (honors `Retry-After`) | 429/503 |
-| `provider_error` | Graph returned a non-success error body | 4xx/5xx |
-| `network_error` | Connect/DNS/TLS failure | — |
-| `timeout` | Operation exceeded its allowed time | — |
-| `unsupported_operation` | Operation not implemented by this connector | — |
-| `unknown` | Anything not otherwise classified | — |
-
-When available the envelope also includes `graphCode` (Microsoft Graph
-`error.code`) and `retryAfterSeconds` (for `rate_limited`). HTTP status is
-preserved (401 auth failure, 404 not found, 403 insufficient permission, 409
-conflict, 412 precondition, 429 throttling, 5xx transient, etc.). Throttling
-(429/503) is retried with backoff honoring `Retry-After`; transient 500/502/504
-are retried with exponential backoff. Credentials and tokens are never echoed.
-
-### Capability matrix & action reference
-
-The full, auto-generated capability matrix (every action with method + path,
-inputs, outputs, and required Graph permission scopes) and per-service action
-references are generated from the action registry:
-
-- **Capability matrix:** [docs/m365/capability-matrix.md](docs/m365/capability-matrix.md)
-- **Per-service references:** [`docs/m365/actions-<service>.md`](docs/m365/)
-- **Capability audit (Camel component inventory + gap analysis):**
-  [docs/m365-capabilities-audit.md](docs/m365-capabilities-audit.md)
-
-Regenerate them after changing the action catalog:
-
-```
-mvnw exec:java -Dexec.mainClass=camel.harness.connectors.m365.tool.M365DocsGenerator
-```
-
-### Notes
-
-- Every action is exposed as a `direct:m365.<service>.<action>` route, auto-registered from the action descriptor registry ([M365Actions.java](src/main/java/camel/harness/connectors/m365/M365Actions.java)).
-- The `operations:` list in this file is **generated** from `M365Actions` by
-  [M365CatalogGenerator.java](src/main/java/camel/harness/connectors/m365/tool/M365CatalogGenerator.java);
-  a consistency test fails if the two ever drift.
-- All routes funnel through the shared `M365Client` ([M365Client.java](src/main/java/camel/harness/connectors/m365/M365Client.java)); authentication is centralized in `M365AuthService` — no per-route auth logic.
-- Complex multi-step operations (e.g. `user.assign-license`, `mail.send`, `mailattachment.add`, `calendarattendee.add/update/remove`, `search.*`) delegate to thin domain services.
-- `$select`/`$expand`/`$filter` etc. are passed through as query parameters from `configuration`.
-- Binary endpoints (`mailattachment.download`, `drivefile.download`, `onedrive.download`) return base64-encoded content in the envelope.
-- The harness does not host webhook/change-notification delivery; `subscription.*` covers subscription lifecycle only.
-
----
-
 ## Supporting All ~350 Apache Camel Components
 
 The harness is designed so any Camel component can be used, not only the hand-written ones below.
 
 ### How it works
 
-1. **Camel Catalog loader** ([CamelCatalogMetadataLoader.java](src/main/java/camel/harness/CamelCatalogMetadataLoader.java)) reads the official Apache Camel Catalog and exposes metadata for every published component.
-2. **Metadata merge** ([ConnectorMetadataRegistry.java](src/main/java/camel/harness/ConnectorMetadataRegistry.java)) merges hand-written YAML entries with catalog-derived metadata; YAML overrides catalog entries for fields like `operations` and auth requirements.
-3. **Generic configurer** ([GenericConfigurer.java](src/main/java/camel/harness/GenericConfigurer.java)) handles any component that does not have a hand-written configurer, building a URI from `configuration` fields and `auth` properties.
-4. **Schema generator** ([ConnectorSchemaGenerator.java](src/main/java/camel/harness/ConnectorSchemaGenerator.java)) generates a JSON Schema for every known component on demand.
+1. **Camel Catalog loader** ([CamelCatalogMetadataLoader.java](src/main/java/camel/harness/core/CamelCatalogMetadataLoader.java)) reads the official Apache Camel Catalog and exposes metadata for every published component.
+2. **Metadata merge** ([ConnectorMetadataRegistry.java](src/main/java/camel/harness/core/ConnectorMetadataRegistry.java)) merges hand-written YAML entries with catalog-derived metadata; YAML overrides catalog entries for fields like `operations` and auth requirements.
+3. **Generic configurer** ([GenericConfigurer.java](src/main/java/camel/harness/core/GenericConfigurer.java)) handles any component that does not have a hand-written configurer, building a URI from `configuration` fields and `auth` properties.
+4. **Schema generator** ([ConnectorSchemaGenerator.java](src/main/java/camel/harness/core/ConnectorSchemaGenerator.java)) generates a JSON Schema for every known component on demand.
 
 ### Build-time dependency model
 
@@ -1169,21 +883,4 @@ Some components are normally consumers (`timer`, `scheduler`, `direct`, `seda`, 
 5. Run `./mvnw.cmd clean verify` to compile and test.
 
 The harness will automatically discover the new configurer via Spring and route matching requests through it.
-
----
-
-## JSON Schema
-
-The harness exposes JSON Schema endpoints so clients can discover the expected payload for each connector at runtime.
-
-| Endpoint | Description |
-|---|---|
-| `GET /connectors/{connector}/schema` | JSON Schema for a single connector family |
-| `GET /connectors/schemas` | JSON object mapping every connector family to its JSON Schema |
-
-Example:
-
-```bash
-curl http://localhost:4005/api/connectors/http/schema
-```
 

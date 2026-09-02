@@ -1,0 +1,34 @@
+meta {
+  name: List connectors - every available connector family
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{APACHE_CAMEL_BASE_URL}}/connectors/
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response is a non-empty array of connectors", function() {
+    expect(Array.isArray(res.body)).to.equal(true);
+    expect(res.body.length).to.be.greaterThan(0);
+  });
+
+  test("each connector has only id, name, and optional description", function() {
+    for (const connector of res.body) {
+      expect(connector).to.have.property("id");
+      expect(connector).to.have.property("name");
+      // Minimal payload: no internal config, schemes, or operations lists.
+      expect(connector).to.not.have.property("schemes");
+      expect(connector).to.not.have.property("operations");
+      expect(connector).to.not.have.property("requiredConfig");
+      expect(connector).to.not.have.property("optionalConfig");
+    }
+  });
+}
