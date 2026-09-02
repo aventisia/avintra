@@ -256,6 +256,9 @@ public class FlowProcessor
             case "branchEndNode":
                 var (branchEndNext, loopContinuationLog) = ProcessBranchEndNode(node, flow, flowExecutionContext, conditionalStates, loopStates);
                 var branchEndEdge = string.IsNullOrWhiteSpace(branchEndNext) ? null : FindNextEdge(flow, node.Id, branchEndNext);
+                // Log the branchEnd first so it stays keyed to the iteration that just
+                // finished; the loop continuation log then opens the next iteration.
+                CompleteSupportNode(node, logs, onNodeCompleted);
                 if (loopContinuationLog is not null)
                 {
                     var parentLoopNodeId = node.Data?.CustomParentId;
@@ -268,7 +271,6 @@ public class FlowProcessor
                         }
                     }
                 }
-                CompleteSupportNode(node, logs, onNodeCompleted);
                 return (branchEndEdge?.Id, branchEndNext, null);
 
             case "forLoopNode":
