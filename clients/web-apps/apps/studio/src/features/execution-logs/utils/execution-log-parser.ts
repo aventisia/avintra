@@ -83,9 +83,10 @@ export const mapLogsToFlow = (
   // repeated executions of the same node can be keyed by the iteration that produced them.
   const stack: { id: string; idx: number }[] = [];
   const iterationStarted: Record<string, boolean> = {};
-  // Loops whose context was pushed during the current log entry must not have their
-  // iteration marked as started by the end-of-entry pass; otherwise the first body-start
-  // node would immediately advance to iteration 1 instead of staying at iteration 0.
+  // Loops that entered or advanced during the current log entry must not have their
+  // iteration marked as started by the end-of-entry pass; the body-start log of the new
+  // iteration comes later and would otherwise advance the iteration a second time
+  // (double-increment), which halves/alternates the visible logs and inflates the total.
   const justPushedLoops = new Set<string>();
 
   const updateLoopTotal = (loopId: string, idx: number) => {
@@ -133,15 +134,18 @@ export const mapLogsToFlow = (
           top.idx++;
         } else {
           stack.push({ id: nodeId, idx: 0 });
-          justPushedLoops.add(nodeId);
         }
+        // A loop log means the new iteration has not produced any body logs yet — guard it
+        // so the end-of-entry pass does not mark it as started (that would cause the next
+        // body-start log to advance the iteration again).
+        justPushedLoops.add(nodeId);
         iterationStarted[nodeId] = false;
         updateLoopTotal(nodeId, stack[stack.length - 1].idx);
       }
     }
 
     // --- LOOP BODY RE-ENTRY PROCESSING ---
-    // Current backend data logs the loop node only once. When the body-start node appears
+    // Legacy backend data logs the loop node only once. When the body-start node appears
     // again after its merge node, it signals a new iteration. We also handle the case where
     // the loop node log is omitted entirely by pushing the loop context from the body start.
     const reenteredLoopId = bodyStartToLoopId[nodeId];
@@ -150,15 +154,15 @@ export const mapLogsToFlow = (
       if (top?.id === reenteredLoopId) {
         if (iterationStarted[reenteredLoopId]) {
           top.idx++;
-          iterationStarted[reenteredLoopId] = false;
           updateLoopTotal(reenteredLoopId, top.idx);
         }
       } else {
         stack.push({ id: reenteredLoopId, idx: 0 });
-        iterationStarted[reenteredLoopId] = false;
-        justPushedLoops.add(reenteredLoopId);
         updateLoopTotal(reenteredLoopId, 0);
       }
+      // The new iteration's body logs follow this entry — guard against double-increment.
+      justPushedLoops.add(reenteredLoopId);
+      iterationStarted[reenteredLoopId] = false;
     }
 
     // Resolve the parent loops for this node. The active loop itself is not its own parent.
