@@ -210,7 +210,7 @@ The script updates:
 - `clients/web-apps/apps/desktop-app/src-tauri/tauri.conf.json` — `version` + `userAgent`
 - `clients/web-apps/apps/desktop-app/package.json` — `version`
 
-The Tauri build (`01-tauri-build.bat`) runs the release script automatically before `npx tauri build`. The RunnerApp `publish-ci.sh` already reads `<Version>` from the `.csproj` to name its artifact. The same tag is intended to tag future self-hosted Docker images.
+The desktop-app publish scripts run the release script automatically before `npx tauri build`. The RunnerApp `publish-ci.sh` already reads `<Version>` from the `.csproj` to name its artifact. The same tag is intended to tag future self-hosted Docker images.
 
 ### Usage going forward
 
@@ -224,8 +224,10 @@ git tag v0.1.87
 ./scripts/release-version.sh            # Linux/macOS
 .\scripts\release-version.ps1           # Windows
 
-# 3. Build the Desktop app (runs the release script automatically)
-#    Windows: run clients/web-apps/apps/desktop-app/01-tauri-build.bat
+# 3. Build/publish the Desktop app (runs the release script automatically)
+#    macOS:   ./clients/web-apps/apps/desktop-app/scripts/publish-and-upload-macos.sh
+#    Windows: .\clients\web-apps\apps\desktop-app\scripts\publish-and-upload-windows.ps1
+#    Linux:   ./clients/web-apps/apps/desktop-app/scripts/publish-and-upload-linux.sh
 
 # 4. Build/publish the Runner app (reads <Version> from the .csproj)
 bash clients/RunnerApp/RunnerApp.Linux/publish-ci.sh   # produces AvintraRunnerApp_<ver>_linux-x64.zip
@@ -238,7 +240,7 @@ git push origin v0.1.87
 
 1. **Tag first** — the tag is the single source of truth. Use `v<X.Y.Z>` (e.g. `v0.1.87`).
 2. **Run the release script** — it writes the version into `RunnerApp.Windows.csproj` (and `RunnerApp.Linux.csproj` / `RunnerApp.macOS.csproj`), `Cargo.toml`, `Cargo.lock`, `tauri.conf.json`, and `desktop-app/package.json`.
-3. **Build the Desktop app** — `01-tauri-build.bat` already calls the release script before `npx tauri build`, so this step is automatic.
+3. **Build the Desktop app** — the desktop-app publish scripts (`clients/web-apps/apps/desktop-app/scripts/`) already call the release script before `npx tauri build`, so this step is automatic.
 4. **Publish the Runner app** — `RunnerApp.Linux/publish-ci.sh` derives the artifact name from `<Version>` in the `.csproj`.
 5. **Push the tag** — so the version is recorded and CI can build from it.
 
