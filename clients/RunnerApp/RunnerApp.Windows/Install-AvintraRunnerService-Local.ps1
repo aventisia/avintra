@@ -74,7 +74,7 @@
     Use a specific local archive:
 
         .\Install-AvintraRunnerService-Local.ps1 `
-            -RunnerZipPath "..\artifacts\AvintraRunnerService_0.2.22_win-x64.zip" `
+            -RunnerZipPath "..\artifacts\AvintraRunnerService_0.2.23_win-x64.zip" `
             -AppBaseUrl "https://api.avintra.com" `
             -ApiKey "my-api-key" `
             -TenantId "00000000-0000-0000-0000-000000000000" `
