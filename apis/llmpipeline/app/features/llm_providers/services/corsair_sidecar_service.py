@@ -81,7 +81,7 @@ def to_sidecar_action(action: str) -> str:
     """Convert a tool action to the sidecar action path.
 
     Tool names include the ``api`` root exposed by the sidecar (e.g.
-    ``github.api.issues.list``), but ``/corsair/invoke`` resolves
+    ``github.api.issues.list``), but ``/api/corsair/invoke`` resolves
     ``tenant.github.api`` first and then walks the remaining segments. Strip
     the leading ``api.`` so the sidecar receives ``issues.list``.
     """
@@ -255,7 +255,7 @@ async def invoke_corsair_tool(
     llm_request: LLMRequest,
     user: User,
 ) -> dict[str, Any]:
-    """Call the Corsair sidecar ``POST /corsair/invoke`` for a tool.
+    """Call the Corsair sidecar ``POST /api/corsair/invoke`` for a tool.
 
     The sidecar expects::
 
@@ -281,7 +281,7 @@ async def invoke_corsair_tool(
             f"No credential configured for Corsair tool {tool_name}"
         )
 
-    endpoint = f"{base_url}/corsair/invoke"
+    endpoint = f"{base_url}/api/corsair/invoke"
     payload = {
         "connectionId": credential_id,
         "plugin": plugin,

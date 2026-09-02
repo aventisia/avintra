@@ -84,7 +84,7 @@ app.get("/api/corsair/tools", async (_req, res) => {
 
 // Corsair management handler: serves /connect/links, /connect/resolve,
 // /connect/oauth-callback, /ok, etc. The sidecar is backend-only and private,
-// so a shared-secret header is required as defense-in-depth.
+// relying on network isolation (no auth layer).
 app.use("/api/corsair", toExpressHandler(corsair, { basePath: "/api/corsair" }));
 
 // --- Connect page (manual.baseUrl) ---
@@ -292,9 +292,8 @@ app.delete("/credentials", async (req, res) => {
 // The sidecar is backend-only and private to the deployment network. The
 // Workspace API is the authorization boundary: it authenticates the caller,
 // resolves the Vault credential, and enforces tenant/environment/resource-share
-// access before calling this endpoint. A shared-secret header is still required
-// as defense-in-depth.
-app.post("/v1/corsair/invoke", async (req, res) => {
+// access before calling this endpoint.
+app.post("/api/corsair/invoke", async (req, res) => {
   const { connectionId, plugin, action, payload = {} } = req.body ?? {};
   const pluginId = String(plugin).toLowerCase();
   if (!connectionId || !pluginId || !action) {

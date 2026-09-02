@@ -183,6 +183,7 @@ export const getToolIcon = (toolName?: string): string => {
     
   if (!toolName) return toolIconMapper.default;
   const lowerName = toolName.toLowerCase();
-  console.log("getToolIcon: toolName:", toolName, "lowerName:", lowerName, "icon:", toolIconMapper[lowerName] || toolIconMapper.default);
-  return toolIconMapper[lowerName] || toolIconMapper.default;
+  const shortName = lowerName.replace(/^corsair\s+/, "");
+  
+  return toolIconMapper[shortName] || toolIconMapper.default;
 };

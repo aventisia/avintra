@@ -4,7 +4,7 @@
  * This is the single source of truth for the sidecar's plugin set. It is
  * consumed by:
  *   - src/corsair.ts        (runtime registration + provisioning)
- *   - src/generate-dcp.ts   (Studio Cloud Connector DCP generation)
+ *   - src/generate-corsair-configs.ts (generates Corsair action configs, mappings, and OpenAPI specs)
  *   - src/dcp-generator/generator.test.ts (DCP generator validation)
  *
  * Each plugin package (@corsair-dev/<id>) exports a factory function named

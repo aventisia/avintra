@@ -164,10 +164,13 @@ public class ToolService : IToolService
         try
         {
             // Fetch the requested tool.
+            // Bypass global tenant/space filters so platform (library) tools with
+            // TenantId = Guid.Empty are visible to every tenant.
             var tool = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w => w.Id == toolId && w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
+                .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
             if (tool == null)
@@ -227,12 +230,15 @@ public class ToolService : IToolService
             var normalizedName = toolName.Trim().ToLowerInvariant();
 
             // Fetch the requested tool by name within the current environment.
+            // Bypass global tenant/space filters so platform (library) tools with
+            // TenantId = Guid.Empty are visible to every tenant.
             var tool = await _unitOfWork.ToolRepo
                 .GetByConditionAsync(w =>
                     w.Name.ToLower() == normalizedName &&
                     w.EnvType == _currentTenantService.CurrentEnvType)
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
+                .IgnoreQueryFilters()
                 .SingleOrDefaultAsync();
 
             if (tool == null)

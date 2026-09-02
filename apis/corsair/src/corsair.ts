@@ -9,7 +9,7 @@ dotenv.config({ path: ".env.local", override: true });
 
 const { Pool } = pg;
 
-const POSTGRESQL_DATABASE = "CorsairDb";
+const POSTGRESQL_DATABASE = process.env.POSTGRESQL_DATABASE || "CorsairDb";
 
 export const pool = new Pool({
   host: process.env.POSTGRESQL_HOST,

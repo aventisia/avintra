@@ -7,7 +7,7 @@ dotenv.config({ path: ".env.local", override: true });
 
 const { Client } = pg;
 
-const POSTGRESQL_DATABASE = "CorsairDb";
+const POSTGRESQL_DATABASE = process.env.POSTGRESQL_DATABASE || "CorsairDb";
 
 const baseConfig = {
   host: process.env.POSTGRESQL_HOST,

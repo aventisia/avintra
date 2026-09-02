@@ -280,7 +280,7 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
 
             var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
             using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
-            using var request = new HttpRequestMessage(HttpMethod.Post, "/v1/corsair/invoke")
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/api/corsair/invoke")
             {
                 Content = content
             };
@@ -292,7 +292,7 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
             if (!response.IsSuccessStatusCode)
             {
                 _logger.LogWarning(
-                    "Corsair /v1/corsair/invoke status {Status} for plugin {Plugin} action {Action} tenant {ConnectionId}.",
+                    "Corsair /api/corsair/invoke status {Status} for plugin {Plugin} action {Action} tenant {ConnectionId}.",
                     (int)response.StatusCode,
                     plugin,
                     action,

@@ -19,14 +19,6 @@ import { actionToLabel, actionToNodeName } from "./build-action-config.js";
 /** The L1 category label Corsair actions live under. */
 export const APP_INTEGRATIONS_LABEL = "App Integrations";
 
-/**
- * Prefix applied to Corsair action labels and L2 category labels so they can
- * be identified as Corsair nodes in local/dev environments. These nodes are
- * not yet production-ready, so the prefix is stripped from user-facing text in
- * production (where the whole Corsair category is hidden anyway).
- */
-export const CORSAIR_LABEL_PREFIX = "(Corsair) ";
-
 /** Build a single action-selector entry for a Corsair action. */
 export function buildActionSelectorAction(
   plugin: PluginMetadata,
@@ -51,9 +43,11 @@ export function buildPluginCategory(
   plugin: PluginMetadata,
   actions: ActionSelectorAction[],
 ): ActionSelectorCategory {
+  if(plugin.providerName.includes("open")) {
+    console.log("plugin:", plugin);
+  }
   return {
-    // TODO: Remove the Corsair label prefix once the nodes are production-ready.
-    label: `${CORSAIR_LABEL_PREFIX}${plugin.providerName}`,
+    label: plugin.providerName,
     // Remove internal "Corsair" branding from user-facing description.
     // This ensures users only see the integration provider name, not the
     // backend infrastructure used to power it.
