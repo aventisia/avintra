@@ -2,6 +2,8 @@ import { axiosInstance } from "@avplatform/ui/lib";
 import { useMutation } from "@tanstack/react-query";
 import { useRef } from "react";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { ToolProvider } from "../constants/tools-provider-enum";
 
 type ExecuteToolPayload = {
@@ -28,6 +30,7 @@ export function useToolExecutionMutation({ provider }: Props) {
 
       const response = await axiosInstance.post(`${baseAPIURL}/${provider}/invoke`, data, {
         signal: abortControllerRef.current.signal,
+        headers: getStudioSpaceHeaders(),
       });
 
       return response.data;

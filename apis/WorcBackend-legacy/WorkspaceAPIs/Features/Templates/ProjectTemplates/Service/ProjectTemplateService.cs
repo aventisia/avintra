@@ -17,6 +17,7 @@ namespace WorkspaceAPIs.Services
             ILogger<ProjectTemplateService> logger,
             IUnitOfWork unitOfWork,
             IHttpContextAccessor httpContextAccessor,
+            ICurrentTenantService currentTenantService,
             IAutoNotificationService autoNotificationService,
             IUserManagementGuardService userManagementGuardService,
             ILLMDataExtractionService llmDataExtractionService,
@@ -25,7 +26,9 @@ namespace WorkspaceAPIs.Services
             // Set _userId
             _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
             _tenantId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("tntid") ?? Guid.Empty.ToString());
-            _spaceId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("spid") ?? Guid.Empty.ToString());
+            // Resolve space from CurrentTenantService (X-Space-Id header > spid claim > Guid.Empty/Central)
+            // instead of reading the spid claim directly, so frontend header-only callers are scoped correctly.
+            _spaceId = currentTenantService.CurrentSpaceId;
 
             _jwt = httpContextAccessor.HttpContext?.Request.Cookies["AccessToken"] ?? httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString().Replace("Bearer ", "") ?? "";
             _logger = logger;

@@ -1,6 +1,8 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { PromptTemplateDto } from "../dto/prompt-template-dto";
 
 // Base API URL for all prompt-template related endpoints
@@ -14,7 +16,9 @@ const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/project-template`
  */
 const postSaveAsTemplate = (templateData: PromptTemplateDto) => {
   return axiosInstance
-    .post<IHttpResponse<PromptTemplateDto>>(`${baseAPIURL}/publish`, templateData)
+    .post<IHttpResponse<PromptTemplateDto>>(`${baseAPIURL}/publish`, templateData, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -26,7 +30,9 @@ const postSaveAsTemplate = (templateData: PromptTemplateDto) => {
  */
 const updateTemplate = (templateData: PromptTemplateDto) => {
   return axiosInstance
-    .put<IHttpResponse<PromptTemplateDto>>(`${baseAPIURL}`, templateData)
+    .put<IHttpResponse<PromptTemplateDto>>(`${baseAPIURL}`, templateData, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -38,13 +44,17 @@ const updateTemplate = (templateData: PromptTemplateDto) => {
  */
 const getTemplateById = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<PromptTemplateDto>>(`${baseAPIURL}/${id}`)
+    .get<IHttpResponse<PromptTemplateDto>>(`${baseAPIURL}/${id}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
 const getTemplatesList = (type: string = "Prompt") => {
   return axiosInstance
-    .get<IHttpResponse<PromptTemplateDto[]>>(`${baseAPIURL}/list?type=${type}`)
+    .get<IHttpResponse<PromptTemplateDto[]>>(`${baseAPIURL}/list?type=${type}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -56,7 +66,9 @@ const getTemplatesList = (type: string = "Prompt") => {
  */
 const deleteTemplate = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
