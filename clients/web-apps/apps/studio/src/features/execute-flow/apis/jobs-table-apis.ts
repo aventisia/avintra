@@ -20,7 +20,9 @@ export const insertJob = (newJob: JobDetailsDto) => {
 
 export const updateJobData = (data: JobDetailsDto) => {
   return axiosInstance
-    .put<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}`, data)
+    .put<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}`, data, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -29,6 +31,12 @@ export const updateJobData = (data: JobDetailsDto) => {
  */
 export const abortJobExecution = (id: string) => {
   return axiosInstance
-    .post<IHttpResponse<JobDetailsDto>>(`${baseAPIURL}/abort`, { id })
+    .post<IHttpResponse<JobDetailsDto>>(
+      `${baseAPIURL}/abort`,
+      { id },
+      {
+        headers: getStudioSpaceHeaders(),
+      },
+    )
     .then((res) => res.data);
 };

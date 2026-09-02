@@ -4,6 +4,8 @@ import { CheckAvailabilityDto } from "@avplatform/ui/dtos";
 import { TrueFalseResultDto } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { FlowsTableDto } from "../dtos/flows-table-dto";
 
 /* Note: File name is flows-table-apis.ts instead of flows-popover-apis.ts because 
@@ -19,7 +21,9 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow`;
  */
 const getFlows = () => {
   return axiosInstance
-    .get<IHttpResponse<FlowsTableDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<FlowsTableDto[]>>(`${baseAPIURL}/list`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -28,7 +32,9 @@ const getFlows = () => {
  */
 const isFlowNameAvailable = (postObj: CheckAvailabilityDto) => {
   return axiosInstance
-    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj)
+    .post<IHttpResponse<TrueFalseResultDto>>(`${baseAPIURL}/is-available`, postObj, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -37,7 +43,9 @@ const isFlowNameAvailable = (postObj: CheckAvailabilityDto) => {
  */
 const insertFlow = (newFlow: FlowsTableDto) => {
   return axiosInstance
-    .post<IHttpResponse<FlowsTableDto>>(`${baseAPIURL}`, newFlow)
+    .post<IHttpResponse<FlowsTableDto>>(`${baseAPIURL}`, newFlow, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -46,7 +54,9 @@ const insertFlow = (newFlow: FlowsTableDto) => {
  */
 const updateFlow = (updatedFlow: FlowsTableDto) => {
   return axiosInstance
-    .put<IHttpResponse<FlowsTableDto>>(`${baseAPIURL}`, updatedFlow)
+    .put<IHttpResponse<FlowsTableDto>>(`${baseAPIURL}`, updatedFlow, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -55,7 +65,9 @@ const updateFlow = (updatedFlow: FlowsTableDto) => {
  */
 const deleteFlow = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -64,7 +76,9 @@ const deleteFlow = (id: string) => {
  */
 const deleteFlows = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids)
+    .post<IHttpResponse<boolean>>(`${baseAPIURL}/delete-multiple`, ids, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

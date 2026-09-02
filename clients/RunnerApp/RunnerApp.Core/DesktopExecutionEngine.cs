@@ -11,12 +11,21 @@ public class DesktopExecutionEngine : IExecutionEngine
     private readonly string _accessToken;
     private readonly string _appBaseUrl;
     private readonly IBackendClient _backendClient;
+    private readonly MachineTokenManager? _tokenManager;
 
     public DesktopExecutionEngine(string accessToken, string appBaseUrl, IBackendClient backendClient)
+        : this(accessToken, appBaseUrl, backendClient, null)
+    {
+    }
+
+    // When a token manager is supplied, nodes reading CallerContext.AccessToken get the
+    // freshest machine JWT at read time instead of the token captured at engine creation.
+    public DesktopExecutionEngine(string accessToken, string appBaseUrl, IBackendClient backendClient, MachineTokenManager? tokenManager)
     {
         _accessToken = accessToken;
         _appBaseUrl = appBaseUrl;
         _backendClient = backendClient;
+        _tokenManager = tokenManager;
     }
 
     public async Task<FlowExecutionResult> ExecuteAsync(
@@ -49,13 +58,7 @@ public class DesktopExecutionEngine : IExecutionEngine
                 Id = graph.FlowVersionId,
                 Name = graph.FlowName
             },
-            ["_caller"] = new CallerContext
-            {
-                TenantId = graph.TenantId,
-                AccessToken = _accessToken,
-                AppBaseUrl = _appBaseUrl,
-                EnvType = graph.EnvType
-            },
+            ["_caller"] = CreateCallerContext(graph),
             ["_job"] = new JobContext
             {
                 Id = graph.JobId,
@@ -226,6 +229,29 @@ public class DesktopExecutionEngine : IExecutionEngine
             Interlocked.Exchange(ref _isRunning, 0);
             _signal.Set();
         }
+    }
+
+    // Seeds the CallerContext nodes read for tenant/token/base-url. With a token manager the
+    // access token resolves lazily on every read so long-running flows pick up refreshes.
+    private CallerContext CreateCallerContext(ExecutionGraphDto graph)
+    {
+        var caller = new CallerContext
+        {
+            TenantId = graph.TenantId,
+            AccessToken = _accessToken,
+            AppBaseUrl = _appBaseUrl,
+            EnvType = graph.EnvType
+        };
+
+        if (_tokenManager is not null)
+        {
+            // Task.Run escapes the STA SynchronizationContext: a direct sync-over-async call on
+            // the flow's STA thread would deadlock against it. Continuations stay on the pool.
+            caller.AccessTokenProvider = () =>
+                Task.Run(() => _tokenManager.GetValidTokenAsync()).GetAwaiter().GetResult();
+        }
+
+        return caller;
     }
 
     private static JsonNode? ParseInputArguments(string? json)

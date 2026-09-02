@@ -9,6 +9,7 @@
  * A single `fetch` POST with `stream: true` enables real-time token streaming,
  * tool events, and follow-up suggestions — matching modern AI chat UX.
  */
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/assist/chats/stream`;
 
@@ -73,6 +74,7 @@ export async function* streamChatCompletion(
     headers: {
       "Content-Type": "application/json",
       Accept: "text/event-stream",
+      ...getStudioSpaceHeaders(),
     },
     credentials: "include", // forward the JWT cookie for auth
     body: JSON.stringify(request),

@@ -34,7 +34,7 @@ public sealed class WorkerProcessManager : IAsyncDisposable
     /// <summary>
     /// Starts the worker process for the given job.
     /// </summary>
-    public Process StartWorker(Guid jobId, string appBaseUrl, string? machineJwt)
+    public Process StartWorker(Guid jobId, string appBaseUrl, string? machineJwt, string? registrationUsername = null)
     {
         lock (_lock)
         {
@@ -55,7 +55,7 @@ public sealed class WorkerProcessManager : IAsyncDisposable
             };
 
             DebugLog.Info($"WorkerProcessManager starting worker for job {jobId} (unattended={_unattended}).");
-            _workerProcess = WorkerProcessLauncher.LaunchWorker(_executablePath, options, machineJwt);
+            _workerProcess = WorkerProcessLauncher.LaunchWorker(_executablePath, options, machineJwt, registrationUsername);
             return _workerProcess;
         }
     }
@@ -139,11 +139,11 @@ public sealed class WorkerProcessManager : IAsyncDisposable
         return new WorkerExitResult(exitCode, status, summary, stdout, stderr);
     }
 
-    public async ValueTask DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         lock (_lock)
         {
-            if (_disposed) return;
+            if (_disposed) return ValueTask.CompletedTask;
             _disposed = true;
         }
 
@@ -160,8 +160,8 @@ public sealed class WorkerProcessManager : IAsyncDisposable
             }
         }
 
-        await Task.CompletedTask;
         GC.SuppressFinalize(this);
+        return ValueTask.CompletedTask;
     }
 }
 

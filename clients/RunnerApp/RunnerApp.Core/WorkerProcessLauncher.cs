@@ -99,39 +99,45 @@ public static class WorkerProcessLauncher
     /// Launches the worker process. Interactive sessions are tried first when not unattended.
     /// Falls back to launching in the current (session 0) process when unattended or when no
     /// interactive session is available.
+    /// <paramref name="registrationUsername"/> is the OS username the machine was registered
+    /// under (the service account for service mode); the worker needs it to renew its machine
+    /// JWT via machine-auth/validate because its own process identity may be the interactive
+    /// user instead.
     /// </summary>
     public static Process LaunchWorker(
         string executablePath,
         RunnerAppOptions workerOptions,
-        string? machineJwt)
+        string? machineJwt,
+        string? registrationUsername = null)
     {
         if (workerOptions.Unattended)
         {
             DebugLog.Info($"Launching worker for job {workerOptions.JobId} in unattended session-0 mode.");
-            return LaunchInCurrentSession(executablePath, workerOptions, machineJwt);
+            return LaunchInCurrentSession(executablePath, workerOptions, machineJwt, registrationUsername);
         }
 
         var activeSessionId = WTSGetActiveConsoleSessionId();
         if (activeSessionId == unchecked((uint)-1))
         {
             DebugLog.Warn($"No active console session for job {workerOptions.JobId}; falling back to session-0 (service account).");
-            return LaunchInCurrentSession(executablePath, workerOptions, machineJwt);
+            return LaunchInCurrentSession(executablePath, workerOptions, machineJwt, registrationUsername);
         }
 
         DebugLog.Info($"Launching worker for job {workerOptions.JobId} in active session {activeSessionId}.");
-        return LaunchInSession(executablePath, workerOptions, machineJwt, (int)activeSessionId);
+        return LaunchInSession(executablePath, workerOptions, machineJwt, (int)activeSessionId, registrationUsername);
     }
 
     private static Process LaunchInSession(
         string executablePath,
         RunnerAppOptions workerOptions,
         string? machineJwt,
-        int sessionId)
+        int sessionId,
+        string? registrationUsername)
     {
         if (!OperatingSystem.IsWindows())
         {
             // Non-Windows platforms do not support session switching; run in current session.
-            return LaunchInCurrentSession(executablePath, workerOptions, machineJwt);
+            return LaunchInCurrentSession(executablePath, workerOptions, machineJwt, registrationUsername);
         }
 
         if (!WTSQueryUserToken(sessionId, out var userToken))
@@ -141,7 +147,7 @@ public static class WorkerProcessLauncher
                 ? $"Cannot query user token for session {sessionId}: the session is not interactive or the caller lacks permission."
                 : $"WTSQueryUserToken failed for session {sessionId} (win32 error {error}).";
             DebugLog.Warn($"{message} Falling back to session-0 launch for job {workerOptions.JobId}.");
-            return LaunchInCurrentSession(executablePath, workerOptions, machineJwt);
+            return LaunchInCurrentSession(executablePath, workerOptions, machineJwt, registrationUsername);
         }
 
         try
@@ -167,7 +173,7 @@ public static class WorkerProcessLauncher
             var sessionUsername = GetUsernameFromToken(userToken) ?? MachineIdentity.Username;
             DebugLog.Info($"Launching worker for job {workerOptions.JobId} as user '{sessionUsername}' in session {sessionId}.");
 
-            var environment = BuildEnvironmentBlockFromToken(userToken, machineJwt, sessionUsername);
+            var environment = BuildEnvironmentBlockFromToken(userToken, machineJwt, sessionUsername, registrationUsername);
             var envPtr = environment;
 
             try
@@ -287,7 +293,8 @@ public static class WorkerProcessLauncher
     public static Process LaunchInCurrentSession(
         string executablePath,
         RunnerAppOptions workerOptions,
-        string? machineJwt)
+        string? machineJwt,
+        string? registrationUsername = null)
     {
         var psi = new ProcessStartInfo
         {
@@ -307,6 +314,11 @@ public static class WorkerProcessLauncher
         // Pass the interactive username so MachineIdentity.Username resolves correctly
         // even when the worker is launched from a Windows service process.
         psi.EnvironmentVariables["AVINTRA_INTERACTIVE_USERNAME"] = MachineIdentity.Username;
+
+        if (!string.IsNullOrWhiteSpace(registrationUsername))
+        {
+            psi.EnvironmentVariables["AVINTRA_REGISTRATION_USERNAME"] = registrationUsername;
+        }
 
         var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
         process.Start();
@@ -351,7 +363,7 @@ public static class WorkerProcessLauncher
         return sb.ToString();
     }
 
-    private static IntPtr BuildEnvironmentBlockFromToken(IntPtr token, string? machineJwt, string interactiveUsername)
+    private static IntPtr BuildEnvironmentBlockFromToken(IntPtr token, string? machineJwt, string interactiveUsername, string? registrationUsername)
     {
         if (!OperatingSystem.IsWindows())
             return IntPtr.Zero;
@@ -393,6 +405,14 @@ public static class WorkerProcessLauncher
 
             entries["AVINTRA_INTERACTIVE_USERNAME"] = interactiveUsername;
             entries["USERNAME"] = interactiveUsername;
+
+            // The worker's own identity is the interactive user, but the machine was
+            // registered under the service account; machine-auth/validate needs the
+            // registration username to resolve the machine record.
+            if (!string.IsNullOrWhiteSpace(registrationUsername))
+            {
+                entries["AVINTRA_REGISTRATION_USERNAME"] = registrationUsername;
+            }
 
             var sb = new System.Text.StringBuilder();
             foreach (var kvp in entries)

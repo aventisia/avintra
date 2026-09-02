@@ -135,8 +135,31 @@ public class MachineAuthService : IMachineAuthService
             var osId = machineAuthReqDto.OsID.Trim().ToLowerInvariant();
             var username = machineAuthReqDto.Username.Trim().ToLowerInvariant();
 
-            // Look for a registered machine with the same OS ID and username in the tenant
-            var machine = await _workspaceDbContext.Machines
+            // Prefer the machine linked to the JWT's uid claim: the validate caller is JWT
+            // authenticated, so the claim is trusted identity and removes the dependency on
+            // the request's username matching the registration identity (e.g. a worker process
+            // running as the interactive user while the machine was registered under a
+            // service account).
+            Guid? jwtUserId = null;
+            if (_httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated == true &&
+                Guid.TryParse(_httpContextAccessor.HttpContext.User.FindFirstValue("uid"), out var uidClaim))
+            {
+                jwtUserId = uidClaim;
+            }
+
+            Machine? machine = null;
+            if (jwtUserId.HasValue)
+            {
+                machine = await _workspaceDbContext.Machines
+                    .FirstOrDefaultAsync(m =>
+                        m.TenantId == tenantId &&
+                        m.OsID.ToLower() == osId &&
+                        m.UserId == jwtUserId.Value);
+            }
+
+            // Fall back to the legacy (OsID, Username) lookup for API-key callers and older
+            // clients that authenticate with a username only.
+            machine ??= await _workspaceDbContext.Machines
                 .FirstOrDefaultAsync(m =>
                     m.TenantId == tenantId &&
                     m.OsID.ToLower() == osId &&

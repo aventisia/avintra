@@ -12,10 +12,12 @@ namespace WorkspaceAPIs.Services;
 public class NodeExecutionLogService : INodeExecutionLogService
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ICurrentTenantService _currentTenantService;
 
-    public NodeExecutionLogService(IUnitOfWork unitOfWork)
+    public NodeExecutionLogService(IUnitOfWork unitOfWork, ICurrentTenantService currentTenantService)
     {
         _unitOfWork = unitOfWork;
+        _currentTenantService = currentTenantService;
     }
 
     // Inserts a batch of node execution logs for the specified job.
@@ -26,9 +28,12 @@ public class NodeExecutionLogService : INodeExecutionLogService
         if (logs == null || logs.Count == 0)
             return serviceResponse.Update("No logs provided.", 400);
 
-        // Resolve job metadata (tenant isolation is enforced by the job entity query filter).
+        // Ignore the global space filter: this is called by the runner (no space context)
+        // and by the browser's crash-log recovery, which may run in a different space than
+        // the job's. Tenant is checked explicitly instead.
         var jobMeta = await _unitOfWork.JobRepo
-            .GetByConditionAsync(j => j.Id == jobId)
+            .GetByConditionAsync(j => j.Id == jobId && j.TenantId == _currentTenantService.CurrentTenantId)
+            .IgnoreQueryFilters()
             .Select(j => new { j.Id, j.TenantId })
             .SingleOrDefaultAsync();
 

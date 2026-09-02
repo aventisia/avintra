@@ -1,6 +1,8 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { GenerateInstructionRequestDto } from "../dto/genereate-instruction-request-dto";
 import { SaveAsTemplateDto } from "../dto/save-as-template";
 import { ValidateTemplateDto } from "../dto/validate-template-dto";
@@ -16,7 +18,9 @@ const baseAPIURL = `${import.meta.env.VITE_WORKSPACE_API_PATH}/project-template`
  */
 const postSaveAsTemplate = (templateData: SaveAsTemplateDto) => {
   return axiosInstance
-    .post<IHttpResponse<SaveAsTemplateDto>>(`${baseAPIURL}/publish`, templateData)
+    .post<IHttpResponse<SaveAsTemplateDto>>(`${baseAPIURL}/publish`, templateData, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -29,7 +33,9 @@ const postSaveAsTemplate = (templateData: SaveAsTemplateDto) => {
  */
 const validateTemplate = (templateData: ValidateTemplateDto[]) => {
   return axiosInstance
-    .post<IHttpResponse<ValidateTemplateDto[]>>(`${baseAPIURL}/validate-access`, templateData)
+    .post<IHttpResponse<ValidateTemplateDto[]>>(`${baseAPIURL}/validate-access`, templateData, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -44,7 +50,7 @@ const generateTemplateInstruction = (postObj: GenerateInstructionRequestDto) => 
     .post<IHttpResponse<string>>(
       `${baseAPIURL}/generate`,
       postObj,
-      { timeout: 5 * 60000 }, // Allow long-running generation (up to 5min)
+      { headers: getStudioSpaceHeaders(), timeout: 5 * 60000 }, // Allow long-running generation (up to 5min)
     )
     .then((res) => res.data);
 };
@@ -57,7 +63,9 @@ const generateTemplateInstruction = (postObj: GenerateInstructionRequestDto) => 
  */
 const updateTemplate = (templateData: SaveAsTemplateDto) => {
   return axiosInstance
-    .put<IHttpResponse<SaveAsTemplateDto>>(`${baseAPIURL}`, templateData)
+    .put<IHttpResponse<SaveAsTemplateDto>>(`${baseAPIURL}`, templateData, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -69,7 +77,9 @@ const updateTemplate = (templateData: SaveAsTemplateDto) => {
  */
 const getTemplateByRefId = (id: string) => {
   return axiosInstance
-    .get<IHttpResponse<SaveAsTemplateDto>>(`${baseAPIURL}/reference/${id}`)
+    .get<IHttpResponse<SaveAsTemplateDto>>(`${baseAPIURL}/reference/${id}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -81,7 +91,9 @@ const getTemplateByRefId = (id: string) => {
  */
 const deleteTemplate = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

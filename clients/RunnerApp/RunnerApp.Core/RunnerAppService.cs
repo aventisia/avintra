@@ -18,6 +18,11 @@ public class RunnerAppService : BackgroundService
     // Process manager for the current worker; null when no job is running.
     private WorkerProcessManager? _workerManager;
 
+    // Machine JWT manager (service/hub listener modes) and the OS username the machine was
+    // registered under, which workers need to renew their own JWTs.
+    private MachineTokenManager? _tokenManager;
+    private string? _registrationUsername;
+
     public RunnerAppService(
         RunnerAppOptions options,
         ILogger<RunnerAppService> logger,
@@ -67,15 +72,39 @@ public class RunnerAppService : BackgroundService
         using var registerHttpClient = new HttpClient { BaseAddress = new Uri(_options.AppBaseUrl) };
         var registerClient = new BackendHttpClient(registerHttpClient, _options.AccessToken);
 
-        var registration = await RegisterMachineAsync(registerClient, cancellationToken);
+        // Service mode has no reliable interactive session; use the service account username
+        // (e.g. THINKPAD$) so the backend machine lookup stays stable.
+        var registrationUsername = _options.IsServiceMode
+            ? MachineIdentity.ServiceAccountUsername
+            : MachineIdentity.Username;
+        _registrationUsername = registrationUsername;
+
+        var registration = await RegisterMachineAsync(registerClient, registrationUsername, cancellationToken);
         var accessToken = registration?.Jwt ?? _options.AccessToken;
         if (registration != null)
             _logger.LogInformation("Registered as machine {MachineId}.", registration.MachineId);
         else
             _logger.LogWarning("Machine registration failed. Continuing with the provided token.");
 
+        // The token manager keeps the machine JWT fresh: every backend call and hub connect
+        // asks it for a token, which triggers a refresh when the token is expired or expires
+        // within the refresh threshold. Without it the JWT expires after JwtValidityInMinutes
+        // and a later reconnect is rejected with 401, leaving the machine Offline until the
+        // service is restarted.
+        MachineTokenManager? tokenManager = null;
+        if (registration is not null)
+        {
+            tokenManager = new MachineTokenManager(
+                registration,
+                (currentJwt, ct) => RefreshMachineTokenAsync(registerClient, currentJwt, registrationUsername, ct),
+                _logger);
+            _tokenManager = tokenManager;
+        }
+
         using var httpClient = new HttpClient { BaseAddress = new Uri(_options.AppBaseUrl) };
-        var backendClient = new BackendHttpClient(httpClient, accessToken);
+        var backendClient = tokenManager is not null
+            ? new BackendHttpClient(httpClient, tokenManager)
+            : new BackendHttpClient(httpClient, accessToken);
 
         var hubLogger = _loggerFactory.CreateLogger<OrchestratorHubClient>();
 
@@ -85,11 +114,9 @@ public class RunnerAppService : BackgroundService
             ? MachineIdentity.ServiceAccountUsername
             : null;
 
-        await using var hubClient = new OrchestratorHubClient(
-            _options.AppBaseUrl,
-            accessToken,
-            hubLogger,
-            hubUsername);
+        await using var hubClient = tokenManager is not null
+            ? new OrchestratorHubClient(_options.AppBaseUrl, tokenManager, hubLogger, hubUsername)
+            : new OrchestratorHubClient(_options.AppBaseUrl, accessToken, hubLogger, hubUsername);
 
         var commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>(TaskCreationOptions.RunContinuationsAsynchronously);
 
@@ -148,8 +175,34 @@ public class RunnerAppService : BackgroundService
         // Service mode: keep listening for commands and execute each assigned job.
         // Also poll periodically for pending work so missed SignalR events and new
         // time-trigger jobs do not sit idle.
+        var lastTokenVersion = tokenManager?.Version ?? 0;
         while (!cancellationToken.IsCancellationRequested)
         {
+            // When the token manager refreshed the JWT (e.g. during the pending-job poll) and
+            // no job is running, rebuild the hub connection so the handshake Authorization
+            // header carries the new token. This must never happen mid-job: the backend kills
+            // Running jobs when a machine reconnects to the hub.
+            if (tokenManager is not null
+                && tokenManager.Version != lastTokenVersion
+                && _workerManager?.HasRunningWorker != true)
+            {
+                lastTokenVersion = tokenManager.Version;
+                _logger.LogInformation("Machine JWT was refreshed; rebuilding the OrchestratorHub connection with the new token.");
+                DebugLog.Info("Machine JWT was refreshed; rebuilding the OrchestratorHub connection.");
+                try
+                {
+                    await ConnectHubWithRetryAsync(hubClient, cancellationToken);
+                }
+                catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+                {
+                    // A failed rebuild must not stop the service: ConnectAsync disposed the old
+                    // connection, and the reconnect loop in WaitForCommandAsync rebuilds with a
+                    // fresh handshake token on the next iteration.
+                    _logger.LogWarning(ex, "Hub rebuild after JWT refresh failed; the reconnect loop will retry.");
+                    DebugLog.Warn($"Hub rebuild after JWT refresh failed: {ex.Message}");
+                }
+            }
+
             var command = await WaitForCommandAsync(commandReceived, hubClient, TimeSpan.FromSeconds(30), cancellationToken);
             if (command == null)
             {
@@ -213,14 +266,24 @@ public class RunnerAppService : BackgroundService
         }
     }
 
-    private async Task<MachineRegistrationResult?> RegisterMachineAsync(BackendHttpClient registerClient, CancellationToken cancellationToken)
+    // Refresh path for the token manager. Service mode re-registers with the tenant API key
+    // (the key is installed with the service and never leaves this process); other modes
+    // renew the still-valid machine JWT via machine-auth/validate, which needs no secret.
+    private async Task<MachineRegistrationResult?> RefreshMachineTokenAsync(
+        BackendHttpClient registerClient,
+        string currentJwt,
+        string registrationUsername,
+        CancellationToken cancellationToken)
     {
-        // Service mode has no reliable interactive session; use the service account username
-        // (e.g. THINKPAD$) so the backend machine lookup stays stable.
-        var registrationUsername = _options.IsServiceMode
-            ? MachineIdentity.ServiceAccountUsername
-            : MachineIdentity.Username;
+        if (_options.IsServiceMode)
+            return await RegisterMachineAsync(registerClient, registrationUsername, cancellationToken);
 
+        return await registerClient.ValidateMachineAsync(
+            currentJwt, MachineIdentity.OsId, registrationUsername, cancellationToken);
+    }
+
+    private async Task<MachineRegistrationResult?> RegisterMachineAsync(BackendHttpClient registerClient, string registrationUsername, CancellationToken cancellationToken)
+    {
         if (_options.IsServiceMode)
         {
             // Long-lived registration using the tenant API key. Refreshed each cycle.
@@ -344,7 +407,12 @@ public class RunnerAppService : BackgroundService
             manager = new WorkerProcessManager(executablePath, _options.Unattended);
             _workerManager = manager;
             jobLog.Info($"Starting worker process for job {targetJobId}.");
-            manager.StartWorker(targetJobId, _options.AppBaseUrl, accessToken);
+            // Hand the worker a freshly-checked token so jobs longer than the JWT lifetime
+            // keep authenticating; the worker renews it itself via machine-auth/validate.
+            var workerToken = _tokenManager is not null
+                ? await _tokenManager.GetValidTokenAsync(cancellationToken)
+                : accessToken;
+            manager.StartWorker(targetJobId, _options.AppBaseUrl, workerToken, _registrationUsername);
 
             var outcome = "Completed";
             string? outcomeMessage = null;

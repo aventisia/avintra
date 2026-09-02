@@ -1,6 +1,8 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { TenantModelProviderDto } from "../dtos/tenant-model-provider-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tenant-model-provider`;
@@ -12,6 +14,8 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/tenant-mo
  */
 export const getTenantModelProviders = () => {
   return axiosInstance
-    .get<IHttpResponse<TenantModelProviderDto[]>>(`${baseAPIURL}/list`)
+    .get<IHttpResponse<TenantModelProviderDto[]>>(`${baseAPIURL}/list`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
