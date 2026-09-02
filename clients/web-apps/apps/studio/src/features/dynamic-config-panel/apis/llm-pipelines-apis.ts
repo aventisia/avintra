@@ -2,7 +2,7 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 import { ISelectOption } from "@avplatform/ui/types";
 
-import { getStudioConfigHeaders } from "@/utils/space-headers";
+import { getStudioConfigHeaders, getStudioSpaceHeaders } from "@/utils/space-headers";
 
 import { LLMRequestDto, LLMResponseDto } from "../dtos/llm-providers-dto";
 import { STTRequestDto, STTResponseDto } from "../dtos/stt-model-dto";
@@ -21,6 +21,7 @@ const getProviderModels = (provider: string, credentialName: string) => {
   return axiosInstance
     .get<IHttpResponse<ISelectOption[]>>(
       `${import.meta.env.VITE_WORKSPACE_API_PATH}/llm-provider/models/select-option?providerType=${provider}&credentialName=${credentialName}`,
+      { headers: getStudioSpaceHeaders() },
     )
     .then((res) => res.data);
 };

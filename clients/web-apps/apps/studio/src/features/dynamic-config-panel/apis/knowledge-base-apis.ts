@@ -2,6 +2,8 @@ import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 import { ISelectOption } from "@avplatform/ui/types";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/knowledge-base`;
 
 /**
@@ -9,6 +11,8 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/knowledge
  */
 export const getKnowledgeBaseSelectOptions = () => {
   return axiosInstance
-    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/kb-to-select`)
+    .get<IHttpResponse<ISelectOption[]>>(`${baseAPIURL}/kb-to-select`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };

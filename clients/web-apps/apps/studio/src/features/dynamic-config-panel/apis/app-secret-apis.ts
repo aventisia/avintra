@@ -1,6 +1,8 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { CredSelectDto } from "../dtos/cred-select-dto.ts.ts";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/app-secret`;
@@ -10,7 +12,9 @@ const getCredSelectOptions = (query?: string) => {
   const queryURL = query ? `option-to-select?type=${query}` : `option-to-select`;
 
   return axiosInstance
-    .get<IHttpResponse<CredSelectDto[]>>(`${baseAPIURL}/${queryURL}`)
+    .get<IHttpResponse<CredSelectDto[]>>(`${baseAPIURL}/${queryURL}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

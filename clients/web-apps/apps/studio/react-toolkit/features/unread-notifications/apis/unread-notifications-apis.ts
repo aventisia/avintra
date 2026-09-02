@@ -3,6 +3,7 @@ import { axiosInstance } from "@avplatform/ui/lib";
 
 import { NotificationHistoryListDto } from "@/react-toolkit/features/unread-notifications/dtos/notification-history.dto";
 import { UnreadNotificationDto } from "@/react-toolkit/features/unread-notifications/dtos/unread-notification-dto";
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/notification/unread`;
 const historyAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/notification/history`;
@@ -10,13 +11,19 @@ const historyAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/notifi
 /** Get list of unread notifications for the user */
 const getUnreadNotifications = () => {
   return axiosInstance
-    .get<IHttpResponse<UnreadNotificationDto[]>>(`${baseAPIURL}`)
+    .get<IHttpResponse<UnreadNotificationDto[]>>(`${baseAPIURL}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
 /** Mark notification as read for the user */
 const markNotificationAsRead = (id: string) => {
-  return axiosInstance.put<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`).then((res) => res.data);
+  return axiosInstance
+    .put<IHttpResponse<boolean>>(`${baseAPIURL}/${id}`, undefined, {
+      headers: getStudioSpaceHeaders(),
+    })
+    .then((res) => res.data);
 };
 
 /** Query params for the notification history endpoint */
@@ -37,7 +44,10 @@ interface NotificationHistoryParams {
 /** Get the notification history for the user with optional filters */
 const getNotificationHistory = (params?: NotificationHistoryParams) => {
   return axiosInstance
-    .get<IHttpResponse<NotificationHistoryListDto>>(`${historyAPIURL}`, { params })
+    .get<IHttpResponse<NotificationHistoryListDto>>(`${historyAPIURL}`, {
+      params,
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

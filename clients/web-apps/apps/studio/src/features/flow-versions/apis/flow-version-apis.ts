@@ -1,6 +1,8 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { FlowVersionDto } from "../dtos/flow-version-dto";
 
 const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/flow-version`;
@@ -14,7 +16,9 @@ const getFlowVersions = (FlowId?: string) => {
 
   // Fetch flows from API
   return axiosInstance
-    .get<IHttpResponse<FlowVersionDto[]>>(`${baseAPIURL}/list/${FlowId}`)
+    .get<IHttpResponse<FlowVersionDto[]>>(`${baseAPIURL}/list/${FlowId}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -23,7 +27,9 @@ const getFlowVersions = (FlowId?: string) => {
  */
 const insertFlowVersion = (newFlowVersion: FlowVersionDto) => {
   return axiosInstance
-    .post<IHttpResponse<FlowVersionDto>>(`${baseAPIURL}/create`, newFlowVersion)
+    .post<IHttpResponse<FlowVersionDto>>(`${baseAPIURL}/create`, newFlowVersion, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -32,7 +38,9 @@ const insertFlowVersion = (newFlowVersion: FlowVersionDto) => {
  */
 const deleteFlowVersion = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/delete/${id}`)
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/delete/${id}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

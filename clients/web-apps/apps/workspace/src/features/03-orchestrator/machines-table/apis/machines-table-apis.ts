@@ -1,6 +1,7 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
+import { getSpaceHeaders } from "@/utils/space-headers";
 
 import type { MachineRecordDto } from "../dtos/machine-record.dto";
 import { MachinesTableRowDto } from "../dtos/machines-table-row-dto";
@@ -19,10 +20,16 @@ const getMachines = () => {
 
 /**
  * Retrieve machine by its ID.
+ *
+ * NOTE: We need to pass the X-Space-Id so that we can filter the flow version
+ * those belongs to current space only. to see other space's linked flow version
+ * user has to switch the space
  */
 const getMachine = (machineId: string) => {
   return axiosInstance
-    .get<IHttpResponse<MachineRecordDto>>(`${baseAPIURL}/${machineId}`)
+    .get<IHttpResponse<MachineRecordDto>>(`${baseAPIURL}/${machineId}`, {
+      headers: getSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

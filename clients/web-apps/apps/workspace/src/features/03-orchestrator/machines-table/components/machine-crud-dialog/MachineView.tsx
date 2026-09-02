@@ -15,8 +15,10 @@ import { cn } from "@avplatform/ui/lib";
 import { formatDate } from "@avplatform/ui/utils";
 import { useQuery } from "@tanstack/react-query";
 import { BanIcon, CheckCircleIcon, MonitorCogIcon, MonitorIcon, NetworkIcon } from "lucide-react";
+import { useShallow } from "zustand/react/shallow";
 
 import NewAgentIcon from "@/components/NewAgentIcon";
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { getMachine } from "../../apis/machines-table-apis";
 import { statusColor } from "../../constants/column-display-names";
@@ -38,9 +40,18 @@ interface MachineViewProps {
 }
 
 export const MachineView = ({ rowId }: MachineViewProps) => {
+  // Get the currently selected space so the query refetches when the space changes
+  // (query key includes the space id — without it the cached agents list from the
+  // previous space is served after a space switch).
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
+
   // Fetch the machine data from the API
   const { data: response, isLoading } = useQuery({
-    queryKey: ["machine", rowId],
+    queryKey: ["machine", rowId, currentSpace?.id ?? ""],
     queryFn: () => getMachine(rowId),
     enabled: !!rowId,
   });
