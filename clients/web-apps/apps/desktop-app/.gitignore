@@ -3,5 +3,5 @@ dist
 src-tauri/target
 src-tauri/gen
 
-# Local build/push helper scripts (contain signing keys)
-*.bat
+# Signing secrets for build/push scripts (see scripts/.env.local.example)
+scripts/.env.local

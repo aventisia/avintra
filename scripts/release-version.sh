@@ -27,7 +27,7 @@ die() { echo "error: $*" >&2; exit 1; }
 replace() {
   local file="$1" regex="$2" repl="$3"
   [[ -f "$file" ]] || die "file not found: $file"
-  perl -0pi -e "s{$regex}{$repl}g" "$file"
+  perl -0pi -e "s#$regex#$repl#g" "$file"
 }
 
 validate_version() {

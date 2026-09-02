@@ -34,7 +34,56 @@ cd clients/web-apps/apps/desktop-app
 npm run tauri build
 ```
 
-Build artifacts (including the NSIS installer) are placed in `src-tauri/target/release/bundle/`. The `.bat` scripts in this folder (`01-tauri-build.bat`, `02-tauri-non-prod-push.bat`, `03-tauri-prod-push.bat`) automate the build, code-signing, and `scp` push to the dev/uat/prod servers.
+Build artifacts are placed in `src-tauri/target/release/bundle/`. To build **and** push installers to the uat/prod servers, use the per-platform publish scripts in `scripts/<platform>/` — they handle version sync, signing, and upload interactively:
+
+```sh
+# macOS (developer machine) — DMG + auto-update artifacts
+./scripts/publish-and-upload-macos.sh --target-servers uat
+
+# Windows (Windows developer machine) — NSIS installer + EV code-signing on prod
+.\scripts\publish-and-upload-windows.ps1 -TargetServers uat
+
+# Linux (Linux developer machine) — AppImage (+ optional deb)
+./scripts/publish-and-upload-linux.sh --target-servers uat
+```
+
+### Target server options
+
+The scripts prompt interactively when `--target-servers` / `-TargetServers` is omitted:
+
+1. `uat` → `avuat.aventisia.com`
+2. `prod` → `avweb1.aventisia.com` + `avweb2.aventisia.com`
+
+All scripts upload installers and updater signatures to `/var/www/aventisia.com/files/binaries/` (via `ssh admin@<host>`).
+
+### Signing secrets
+
+The scripts load signing configuration from `scripts/.env.local` (gitignored). Copy the template and fill it in once per machine:
+
+```sh
+cp scripts/.env.local.example scripts/.env.local
+```
+
+Required keys: `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` (all platforms — generate updater `.sig` files). Windows prod additionally needs `WINDOWS_SIGNTOOL_PATH`, `WINDOWS_CERT_PATH`, `WINDOWS_KMS_KEYRING` (EV code-signing via Google Cloud KMS).
+
+### What each platform produces
+
+| Platform | End-user installer                                                    | Auto-update artifacts                                 |
+| -------- | --------------------------------------------------------------------- | ----------------------------------------------------- |
+| Windows  | `AvintraDesktopApp_<ver>-x64-setup.exe` (NSIS)                        | `.exe.sig`                                            |
+| macOS    | `AvintraDesktopApp_<ver>_<arch>.dmg` (drag-to-Applications)           | `.app.tar.gz` + `.app.tar.gz.sig`                     |
+| Linux    | `AvintraDesktopApp_<ver>_linux-x64.AppImage` (chmod +x, double-click) | `.AppImage.sig` (optional `.deb` via `--include-deb`) |
+
+### Common flags
+
+| Flag                                            | Effect                                            |
+| ----------------------------------------------- | ------------------------------------------------- |
+| `--target-servers uat\|prod` / `-TargetServers` | Skip the interactive server prompt                |
+| `--dry-run` / `-WhatIf`                         | Print the plan without building/uploading         |
+| `--skip-upload` / `-SkipUpload`                 | Build only                                        |
+| `--no-sync-version` / `-NoSyncVersion`          | Skip the `scripts/release-version.*` git-tag sync |
+| `--include-deb` (Linux)                         | Also upload the `.deb` package                    |
+| `-SkipSign` (Windows prod)                      | Skip EV code-signing (not recommended for prod)   |
 
 ## Available Scripts
 
