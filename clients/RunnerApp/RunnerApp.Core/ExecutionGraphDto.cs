@@ -4,6 +4,13 @@ public class ExecutionGraphDto
 {
     public Guid JobId { get; set; }
     public Guid TenantId { get; set; }
+
+    /// <summary>
+    /// Space of the executed flow, resolved server-side from the job. Echoed back as
+    /// "X-Space-Id" on the key-store fetch so space-scoped config keys resolve; null when
+    /// the flow lives in Central.
+    /// </summary>
+    public Guid? SpaceId { get; set; }
     public Guid FlowVersionId { get; set; }
     public string FlowName { get; set; } = string.Empty;
     public string? InputArgumentsJson { get; set; }

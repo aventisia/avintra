@@ -643,9 +643,11 @@ public class JobsTableService : IJobsTableService
 
         try
         {
-            // Retrieve the record
+            // Ignore the global space filter: the runner authenticates without space
+            // context, so a space-scoped job would be invisible. Tenant is checked explicitly.
             var job = await _unitOfWork.JobRepo
-                        .GetByConditionAsync(w => w.Id == jobStartDto.Id)
+                        .GetByConditionAsync(w => w.Id == jobStartDto.Id && w.TenantId == _currentTenantService.CurrentTenantId)
+                        .IgnoreQueryFilters()
                         .Include(i => i.FlowVersion)
                             .ThenInclude(i2 => i2.Flow)
                         .Include(i => i.Machine)
@@ -701,9 +703,11 @@ public class JobsTableService : IJobsTableService
             if (!jobCloseDto.ClosingStatus.IsTerminal())
                 return serviceResponse.Update("Closing status must be a terminal status.", 400);
 
-            // Retrieve the record including related flow data for credit attribution.
+            // Ignore the global space filter: the runner authenticates without space
+            // context, so a space-scoped job would be invisible. Tenant is checked explicitly.
             var job = await _unitOfWork.JobRepo
-                        .GetByConditionAsync(w => w.Id == jobCloseDto.Id)
+                        .GetByConditionAsync(w => w.Id == jobCloseDto.Id && w.TenantId == _currentTenantService.CurrentTenantId)
+                        .IgnoreQueryFilters()
                         .Include(i => i.FlowVersion)
                             .ThenInclude(i2 => i2.Flow)
                         .Include(i => i.Machine)
@@ -873,7 +877,7 @@ public class JobsTableService : IJobsTableService
                 return serviceResponse.Update("Machine not found.", 404);
 
             var flowVersionIds = await _unitOfWork.Machine_FlowVersionRepo
-                .GetByConditionAsync(w => w.MachineId == machineId && w.TenantId == machine.TenantId)
+                .GetByConditionAsync(w => w.MachineId == machineId && w.TenantId == _currentTenantService.CurrentTenantId)
                 .Select(s => s.FlowVersionId)
                 .ToListAsync();
 
@@ -881,12 +885,17 @@ public class JobsTableService : IJobsTableService
                 return serviceResponse.Update(null, 200, null);
 
             // Find the oldest unassigned or already-assigned Created job for this machine.
+            // Machines are space-free (TenantId-only scoping), so the global space filter is
+            // ignored here to let one machine pull pending jobs across all spaces. Tenant is
+            // taken from the authenticated caller, not from the machine row, so this does not
+            // depend on the Machine global filter staying in place.
             var nextJob = await _unitOfWork.JobRepo
                 .GetByConditionAsync(w =>
-                    w.TenantId == machine.TenantId &&
+                    w.TenantId == _currentTenantService.CurrentTenantId &&
                     w.Status == JobStatusEnum.Created &&
                     flowVersionIds.Contains(w.FlowVersionId) &&
                     (w.MachineId == null || w.MachineId == machineId))
+                .IgnoreQueryFilters()
                 .Include(i => i.FlowVersion)
                     .ThenInclude(i2 => i2!.Flow)
                 .OrderByDescending(o => o.CreatedOn)
@@ -929,9 +938,11 @@ public class JobsTableService : IJobsTableService
                 return serviceResponse.Update("Job ID cannot be empty.", 400);
             }
 
-            // Retrieve the job details based on the provided Job ID.
+            // Ignore the global space filter: the runner authenticates without space
+            // context, so a space-scoped job would be invisible. Tenant is checked explicitly.
             var job = await _unitOfWork.JobRepo
-                .GetByConditionAsync(w => w.Id == jobAbortRequestDto.Id)
+                .GetByConditionAsync(w => w.Id == jobAbortRequestDto.Id && w.TenantId == _currentTenantService.CurrentTenantId)
+                .IgnoreQueryFilters()
                 .FirstOrDefaultAsync();
 
             if (job == null)

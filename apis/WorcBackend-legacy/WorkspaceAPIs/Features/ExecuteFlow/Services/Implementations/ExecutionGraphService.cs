@@ -36,8 +36,12 @@ public class ExecutionGraphService : IExecutionGraphService
         {
             var currentTenantId = _currentTenantService.CurrentTenantId;
 
+            // Ignore the global space filter: the runner authenticates without space
+            // context, so a space-scoped job would be invisible. TenantId is checked
+            // explicitly above.
             var job = await _unitOfWork.JobRepo
                 .GetByConditionAsync(j => j.Id == jobId && j.TenantId == currentTenantId)
+                .IgnoreQueryFilters()
                 .Include(i => i.FlowVersion)
                     .ThenInclude(fv => fv.Flow)
                 .SingleOrDefaultAsync();
@@ -63,6 +67,7 @@ public class ExecutionGraphService : IExecutionGraphService
             {
                 JobId = job.Id,
                 TenantId = job.TenantId,
+                SpaceId = job.SpaceId,
                 FlowVersionId = flowVersion.Id,
                 FlowName = flowVersion.Flow?.Name ?? string.Empty,
                 InputArgumentsJson = job.InputArgumentsJson,

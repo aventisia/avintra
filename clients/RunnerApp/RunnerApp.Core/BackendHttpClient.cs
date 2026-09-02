@@ -9,6 +9,12 @@ public class BackendHttpClient : IBackendClient
     private readonly HttpClient _httpClient;
     private readonly string _accessToken;
 
+    // Space of the last-fetched execution graph. The backend derives it from the job, and
+    // we echo it as "X-Space-Id" on the key-store fetch (which carries no jobId) so
+    // space-scoped config keys resolve. Null for Central flows; graph is always fetched
+    // before any key-store call.
+    private Guid? _graphSpaceId;
+
     public BackendHttpClient(HttpClient httpClient, string accessToken)
     {
         _httpClient = httpClient;
@@ -21,12 +27,22 @@ public class BackendHttpClient : IBackendClient
     {
         var response = await _httpClient.GetAsync($"workspace/api/execution/graph/{jobId}", ct);
         var wrapper = await EnsureServiceSuccessAsync<ExecutionGraphDto>(response, ct);
+        _graphSpaceId = wrapper?.Data?.SpaceId;
         return wrapper?.Data;
     }
 
     public async Task<IReadOnlyDictionary<string, string>> FetchConfigKeyValuePairsAsync(IEnumerable<string> keys, CancellationToken ct = default)
     {
-        var response = await _httpClient.PostAsJsonAsync("workspace/api/key-store/fetch", keys, ct);
+        var request = new HttpRequestMessage(HttpMethod.Post, "workspace/api/key-store/fetch")
+        {
+            Content = JsonContent.Create(keys)
+        };
+        if (_graphSpaceId.HasValue)
+        {
+            request.Headers.Add("X-Space-Id", _graphSpaceId.Value.ToString());
+        }
+
+        var response = await _httpClient.SendAsync(request, ct);
         var wrapper = await EnsureServiceSuccessAsync<IEnumerable<ConfigKeyValueDto>>(response, ct);
 
         return wrapper?.Data?.ToDictionary(kvp => kvp.Key, kvp => kvp.Value, StringComparer.OrdinalIgnoreCase)
