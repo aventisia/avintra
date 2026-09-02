@@ -170,3 +170,7 @@ Available in the dev environment:
 - .NET SDK 8.0.129
 - Node 22.18.0 / npm 10.9.3
 - Python 3.12.3
+
+## Reporting
+
+- When reporting information to me, be extremely consise and sacrifice grammar for the sake of concision

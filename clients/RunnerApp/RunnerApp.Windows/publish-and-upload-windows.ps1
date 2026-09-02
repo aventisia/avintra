@@ -16,8 +16,8 @@
     from RunnerApp.Windows.csproj.
 
 .PARAMETER TargetServers
-    Server combination to upload to: dev | uat | dev+uat | prod (the aliases
-    1=dev, 2=uat, 3=dev_uat/dev+uat, 4=prod are also accepted in the prompt).
+    Server combination to upload to: uat | prod (the aliases
+    1=uat, 2=prod are also accepted in the prompt).
     If omitted, the script prompts interactively.
 
 .PARAMETER WhatIf
@@ -42,7 +42,7 @@ param (
     [string] $Version = "",
 
     [Parameter(Mandatory = $false)]
-    [ValidateSet("dev", "uat", "dev+uat", "dev_uat", "prod", "1", "2", "3", "4")]
+    [ValidateSet("uat", "prod", "1", "2")]
     [string] $TargetServers = "",
 
     [Parameter(Mandatory = $false)]
@@ -83,17 +83,12 @@ $Version = $Version.Trim()
 function Resolve-Servers {
     param ([string] $Choice)
     $normalized = switch ($Choice) {
-        "1" { "dev" }
-        "2" { "uat" }
-        "3" { "dev+uat" }
-        "dev_uat" { "dev+uat" }
-        "4" { "prod" }
+        "1" { "uat" }
+        "2" { "prod" }
         default { $_ }
     }
     switch ($normalized) {
-        "dev" { return @("avdev.aventisia.com") }
         "uat" { return @("avuat.aventisia.com") }
-        "dev+uat" { return @("avdev.aventisia.com", "avuat.aventisia.com") }
         "prod" { return @("avweb1.aventisia.com", "avweb2.aventisia.com") }
         default { throw "Unsupported server combination: $Choice" }
     }
@@ -102,11 +97,9 @@ function Resolve-Servers {
 if ([string]::IsNullOrWhiteSpace($TargetServers)) {
     if ($Host.UI.RawUI -and ($WhatIf -eq $false)) {
         Write-Host "Select target server(s):"
-        Write-Host "  1) dev"
-        Write-Host "  2) uat"
-        Write-Host "  3) dev+uat"
-        Write-Host "  4) prod"
-        $TargetServers = Read-Host "Enter 1-4 or name (dev/uat/dev+uat/prod)"
+        Write-Host "  1) uat"
+        Write-Host "  2) prod"
+        $TargetServers = Read-Host "Enter 1-2 or name (uat/prod)"
     }
     else {
         throw "-TargetServers is required when running non-interactively or with -WhatIf"
