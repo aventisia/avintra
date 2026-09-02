@@ -71,7 +71,9 @@ public class WorkspaceDbContext : DbContext
         modelBuilder.Entity<Machine>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<Job>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Conversation>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
-        modelBuilder.Entity<ApiKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
+        // API keys are tenant-global credentials (not scoped by space): authorization is
+        // permission-based, and key-authenticated callers (RunnerApp, webhooks) send no space context.
+        modelBuilder.Entity<ApiKey>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId);
         modelBuilder.Entity<TimeTrigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
         modelBuilder.Entity<Trigger>().HasQueryFilter(qf => qf.TenantId == CurrentTenantId && (CurrentSpaceId == Guid.Empty ? qf.SpaceId == null : qf.SpaceId == CurrentSpaceId));
 
