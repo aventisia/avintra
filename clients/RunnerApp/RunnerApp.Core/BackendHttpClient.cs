@@ -8,6 +8,7 @@ public class BackendHttpClient : IBackendClient
 {
     private readonly HttpClient _httpClient;
     private readonly string _accessToken;
+    private readonly MachineTokenManager? _tokenManager;
 
     // Space of the last-fetched execution graph. The backend derives it from the job, and
     // we echo it as "X-Space-Id" on the key-store fetch (which carries no jobId) so
@@ -19,13 +20,20 @@ public class BackendHttpClient : IBackendClient
     {
         _httpClient = httpClient;
         _accessToken = accessToken;
-        _httpClient.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+        _tokenManager = null;
+    }
+
+    public BackendHttpClient(HttpClient httpClient, MachineTokenManager tokenManager)
+    {
+        _httpClient = httpClient;
+        _accessToken = string.Empty;
+        _tokenManager = tokenManager;
     }
 
     public async Task<ExecutionGraphDto?> GetExecutionGraphAsync(Guid jobId, CancellationToken ct = default)
     {
-        var response = await _httpClient.GetAsync($"workspace/api/execution/graph/{jobId}", ct);
+        using var request = await CreateRequestAsync(HttpMethod.Get, $"workspace/api/execution/graph/{jobId}", ct);
+        var response = await _httpClient.SendAsync(request, ct);
         var wrapper = await EnsureServiceSuccessAsync<ExecutionGraphDto>(response, ct);
         _graphSpaceId = wrapper?.Data?.SpaceId;
         return wrapper?.Data;
@@ -33,10 +41,8 @@ public class BackendHttpClient : IBackendClient
 
     public async Task<IReadOnlyDictionary<string, string>> FetchConfigKeyValuePairsAsync(IEnumerable<string> keys, CancellationToken ct = default)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, "workspace/api/key-store/fetch")
-        {
-            Content = JsonContent.Create(keys)
-        };
+        using var request = await CreateRequestAsync(HttpMethod.Post, "workspace/api/key-store/fetch", ct);
+        request.Content = JsonContent.Create(keys);
         if (_graphSpaceId.HasValue)
         {
             request.Headers.Add("X-Space-Id", _graphSpaceId.Value.ToString());
@@ -51,13 +57,16 @@ public class BackendHttpClient : IBackendClient
 
     public async Task StartJobAsync(Guid jobId, CancellationToken ct = default)
     {
-        var response = await _httpClient.PostAsJsonAsync($"workspace/api/execution/job/{jobId}/start", new { }, ct);
+        using var request = await CreateRequestAsync(HttpMethod.Post, $"workspace/api/execution/job/{jobId}/start", ct);
+        request.Content = JsonContent.Create(new { });
+        var response = await _httpClient.SendAsync(request, ct);
         await EnsureServiceSuccessAsync<object>(response, ct);
     }
 
     public async Task<Guid?> GetNextPendingJobAsync(Guid machineId, CancellationToken ct = default)
     {
-        var response = await _httpClient.GetAsync($"workspace/api/execution/machine/{machineId}/next-pending-job", ct);
+        using var request = await CreateRequestAsync(HttpMethod.Get, $"workspace/api/execution/machine/{machineId}/next-pending-job", ct);
+        var response = await _httpClient.SendAsync(request, ct);
         var wrapper = await EnsureServiceSuccessAsync<NextPendingJobDto>(response, ct);
         return wrapper?.Data?.JobId;
     }
@@ -73,8 +82,113 @@ public class BackendHttpClient : IBackendClient
             remarks,
         };
 
-        var response = await _httpClient.PostAsJsonAsync($"workspace/api/execution/job/{jobId}/close", payload, ct);
+        using var request = await CreateRequestAsync(HttpMethod.Post, $"workspace/api/execution/job/{jobId}/close", ct);
+        request.Content = JsonContent.Create(payload);
+        var response = await _httpClient.SendAsync(request, ct);
         await EnsureServiceSuccessAsync<object>(response, ct);
+    }
+
+    public async Task<MachineRegistrationResult?> RegisterMachineAsync(string operatingSystem, string osId, string username, string hostname, CancellationToken ct = default)
+    {
+        if (_tokenManager is not null)
+        {
+            throw new InvalidOperationException(
+                "RegisterMachineAsync requires the fixed-token constructor; construct the registration client with the linked-user JWT.");
+        }
+
+        var payload = new
+        {
+            operatingSystem,
+            osID = osId,
+            username,
+            hostname,
+            serviceAccountUsername = MachineIdentity.ServiceAccountUsername,
+            linkedUserAccountId = GetLinkedUserAccountId(),
+        };
+
+        // Registration uses the linked-user JWT it was constructed with; it is the source of
+        // machine tokens and must never route through the token manager (recursion).
+        using var request = new HttpRequestMessage(HttpMethod.Post, "workspace/api/machine-auth/register")
+        {
+            Content = JsonContent.Create(payload)
+        };
+        if (!string.IsNullOrWhiteSpace(_accessToken))
+        {
+            request.Headers.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _accessToken);
+        }
+
+        var response = await _httpClient.SendAsync(request, ct);
+        var wrapper = await EnsureServiceSuccessAsync<MachineAuthResponseDto>(response, ct);
+        if (wrapper?.Data is null)
+            return null;
+
+        return new MachineRegistrationResult(wrapper.Data.MachineId, wrapper.Data.Jwt, wrapper.Data.ExpiresOn);
+    }
+
+    public async Task<MachineRegistrationResult?> RegisterMachineWithApiKeyAsync(string operatingSystem, string osId, string username, string hostname, string tenantId, string apiKey, string linkedUsername, CancellationToken ct = default)
+    {
+        var payload = new
+        {
+            operatingSystem,
+            osID = osId,
+            username,
+            hostname,
+            serviceAccountUsername = MachineIdentity.ServiceAccountUsername,
+            linkedUserAccountId = linkedUsername,
+        };
+
+        // API-key authenticated registration: the key and tenant header let the backend
+        // resolve the tenant without a user JWT, and the linked username resolves the user.
+        using var request = new HttpRequestMessage(HttpMethod.Post, "workspace/api/machine-auth/register")
+        {
+            Content = JsonContent.Create(payload)
+        };
+        request.Headers.Add("X-API-KEY", apiKey);
+        request.Headers.Add("X-TENANT-ID", tenantId);
+
+        var response = await _httpClient.SendAsync(request, ct);
+        var wrapper = await EnsureServiceSuccessAsync<MachineAuthResponseDto>(response, ct);
+        if (wrapper?.Data is null)
+            return null;
+
+        return new MachineRegistrationResult(wrapper.Data.MachineId, wrapper.Data.Jwt, wrapper.Data.ExpiresOn);
+    }
+
+    /// <summary>
+    /// Renews a still-valid machine JWT via machine-auth/validate (JWT auth allowed) and
+    /// returns the freshly minted token. Used by worker processes, which hold no tenant API
+    /// key. The token must be passed explicitly (never via the token manager) because this is
+    /// the refresh path itself.
+    /// </summary>
+    public async Task<MachineRegistrationResult?> ValidateMachineAsync(string machineJwt, string osId, string username, CancellationToken ct = default)
+    {
+        var payload = new
+        {
+            operatingSystem = OperatingSystem.IsWindows() ? "Windows" : "Linux",
+            osID = osId,
+            username,
+            hostname = MachineIdentity.Hostname,
+            serviceAccountUsername = MachineIdentity.ServiceAccountUsername,
+            linkedUserAccountId = JwtUtils.GetClaim(machineJwt, "uname"),
+        };
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, "workspace/api/machine-auth/validate")
+        {
+            Content = JsonContent.Create(payload)
+        };
+        if (!string.IsNullOrWhiteSpace(machineJwt))
+        {
+            request.Headers.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", machineJwt);
+        }
+
+        var response = await _httpClient.SendAsync(request, ct);
+        var wrapper = await EnsureServiceSuccessAsync<MachineAuthResponseDto>(response, ct);
+        if (wrapper?.Data is null)
+            return null;
+
+        return new MachineRegistrationResult(wrapper.Data.MachineId, wrapper.Data.Jwt, wrapper.Data.ExpiresOn);
     }
 
     /// <summary>
@@ -98,53 +212,24 @@ public class BackendHttpClient : IBackendClient
         return "Flow execution failed.";
     }
 
-    public async Task<MachineRegistrationResult?> RegisterMachineAsync(string operatingSystem, string osId, string username, string hostname, CancellationToken ct = default)
+    // Builds a request with the freshest available bearer token: the token manager's current
+    // token when present (refreshing it first if it is near expiry), otherwise the fixed
+    // access token. Per-request headers keep refreshed tokens flowing without mutating
+    // DefaultRequestHeaders mid-flight.
+    private async Task<HttpRequestMessage> CreateRequestAsync(HttpMethod method, string url, CancellationToken ct)
     {
-        var payload = new
+        var token = _tokenManager is not null
+            ? await _tokenManager.GetValidTokenAsync(ct)
+            : _accessToken;
+
+        var request = new HttpRequestMessage(method, url);
+        if (!string.IsNullOrWhiteSpace(token))
         {
-            operatingSystem,
-            osID = osId,
-            username,
-            hostname,
-            serviceAccountUsername = MachineIdentity.ServiceAccountUsername,
-            linkedUserAccountId = GetLinkedUserAccountId(),
-        };
+            request.Headers.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
 
-        var response = await _httpClient.PostAsJsonAsync("workspace/api/machine-auth/register", payload, ct);
-        var wrapper = await EnsureServiceSuccessAsync<MachineAuthResponseDto>(response, ct);
-        if (wrapper?.Data is null)
-            return null;
-
-        return new MachineRegistrationResult(wrapper.Data.MachineId, wrapper.Data.Jwt, wrapper.Data.ExpiresOn);
-    }
-
-    public async Task<MachineRegistrationResult?> RegisterMachineWithApiKeyAsync(string operatingSystem, string osId, string username, string hostname, string tenantId, string apiKey, string linkedUsername, CancellationToken ct = default)
-    {
-        var payload = new
-        {
-            operatingSystem,
-            osID = osId,
-            username,
-            hostname,
-            serviceAccountUsername = MachineIdentity.ServiceAccountUsername,
-            linkedUserAccountId = linkedUsername,
-        };
-
-        // API-key authenticated registration: the key and tenant header let the backend
-        // resolve the tenant without a user JWT, and the linked username resolves the user.
-        var request = new HttpRequestMessage(HttpMethod.Post, "workspace/api/machine-auth/register")
-        {
-            Content = JsonContent.Create(payload)
-        };
-        request.Headers.Add("X-API-KEY", apiKey);
-        request.Headers.Add("X-TENANT-ID", tenantId);
-
-        var response = await _httpClient.SendAsync(request, ct);
-        var wrapper = await EnsureServiceSuccessAsync<MachineAuthResponseDto>(response, ct);
-        if (wrapper?.Data is null)
-            return null;
-
-        return new MachineRegistrationResult(wrapper.Data.MachineId, wrapper.Data.Jwt, wrapper.Data.ExpiresOn);
+        return request;
     }
 
     private static List<NodeExecutionLogDto> MapLogsToDtos(List<NodeExecutionLog> logs)
@@ -180,38 +265,10 @@ public class BackendHttpClient : IBackendClient
         return wrapper;
     }
 
-    // Extracts the "uid" claim from the JWT access token; it identifies the linked user account.
+    // Extracts the "uid" claim from the fixed access token; it identifies the linked user account.
     private string GetLinkedUserAccountId()
     {
-        try
-        {
-            // Access token is a JWT: header.payload.signature
-            var parts = _accessToken.Split('.');
-            if (parts.Length != 3)
-                return string.Empty;
-
-            var payload = System.Text.Json.JsonDocument.Parse(Base64UrlDecode(parts[1]));
-            if (payload.RootElement.TryGetProperty("uid", out var uid))
-                return uid.GetString() ?? string.Empty;
-        }
-        catch
-        {
-            // Fall through to empty; the backend will reject the registration.
-        }
-
-        return string.Empty;
-    }
-
-    private static string Base64UrlDecode(string input)
-    {
-        var padded = input.Replace('-', '+').Replace('_', '/');
-        switch (padded.Length % 4)
-        {
-            case 2: padded += "=="; break;
-            case 3: padded += "="; break;
-        }
-
-        return System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(padded));
+        return JwtUtils.GetClaim(_accessToken, "uid");
     }
 
     private class ServiceResponseWrapper<T>
