@@ -274,7 +274,7 @@ $env:AVINTRA_LINKED_USERNAME = "gaurav@aventisia.com"
 You can also point it at a specific zip:
 
 ```powershell
-.\Install-AvintraRunnerService-Local.ps1 -RunnerZipPath "..\artifacts\AvintraRunnerService_0.2.22_win-x64.zip"
+.\Install-AvintraRunnerService-Local.ps1 -RunnerZipPath "..\artifacts\AvintraRunnerService_0.2.23_win-x64.zip"
 ```
 
 ### Manual install
