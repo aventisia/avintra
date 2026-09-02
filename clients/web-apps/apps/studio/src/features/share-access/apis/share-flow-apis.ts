@@ -1,6 +1,8 @@
 import { IHttpResponse } from "@avplatform/ui/dtos";
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { FlowUserDto } from "../dtos/flow-user-dto";
 import { WorkspaceUserDto } from "../dtos/workspace-user-dto";
 
@@ -12,7 +14,9 @@ const workspaceUserApiUrl: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/
  */
 const getSearchUser = (value?: string) => {
   return axiosInstance
-    .get<IHttpResponse<WorkspaceUserDto[]>>(`${workspaceUserApiUrl}/search/${value}`)
+    .get<IHttpResponse<WorkspaceUserDto[]>>(`${workspaceUserApiUrl}/search/${value}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -21,7 +25,9 @@ const getSearchUser = (value?: string) => {
  */
 const getFlowUser = (FlowId?: string) => {
   return axiosInstance
-    .get<IHttpResponse<FlowUserDto[]>>(`${flowUserApiUrl}/list/${FlowId}`)
+    .get<IHttpResponse<FlowUserDto[]>>(`${flowUserApiUrl}/list/${FlowId}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -30,7 +36,9 @@ const getFlowUser = (FlowId?: string) => {
  */
 const insertFlowUser = (newFlowUser: FlowUserDto) => {
   return axiosInstance
-    .post<IHttpResponse<FlowUserDto>>(`${flowUserApiUrl}`, newFlowUser)
+    .post<IHttpResponse<FlowUserDto>>(`${flowUserApiUrl}`, newFlowUser, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -39,7 +47,9 @@ const insertFlowUser = (newFlowUser: FlowUserDto) => {
  */
 const updateFlowUser = (newFlowUser: FlowUserDto) => {
   return axiosInstance
-    .put<IHttpResponse<FlowUserDto>>(`${flowUserApiUrl}`, newFlowUser)
+    .put<IHttpResponse<FlowUserDto>>(`${flowUserApiUrl}`, newFlowUser, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 
@@ -48,7 +58,9 @@ const updateFlowUser = (newFlowUser: FlowUserDto) => {
  */
 const deleteFlowUser = (id: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${flowUserApiUrl}/${id}`)
+    .delete<IHttpResponse<boolean>>(`${flowUserApiUrl}/${id}`, {
+      headers: getStudioSpaceHeaders(),
+    })
     .then((res) => res.data);
 };
 

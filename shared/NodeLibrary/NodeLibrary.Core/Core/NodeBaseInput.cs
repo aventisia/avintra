@@ -16,7 +16,24 @@ public class CallerContext
 {
     public Guid TenantId { get; set; } = Guid.Empty;
     public Guid? UserId { get; set; }
-    public string? AccessToken { get; set; }
+
+    private string? _accessToken;
+
+    /// <summary>
+    /// The bearer token nodes use for outbound backend calls. When <see cref="AccessTokenProvider"/>
+    /// is set, reads resolve through it so long-running flows pick up refreshed machine JWTs.
+    /// </summary>
+    public string? AccessToken
+    {
+        get => AccessTokenProvider is not null ? AccessTokenProvider() : _accessToken;
+        set => _accessToken = value;
+    }
+
+    /// <summary>
+    /// Optional callback invoked on each AccessToken read so runners can supply a fresh token
+    /// (e.g. after a machine JWT refresh) without reseeding the execution context.
+    /// </summary>
+    public Func<string?>? AccessTokenProvider { get; set; }
 
     /// <summary>
     /// The resolved application base URL (e.g., avintra.aventisia.com) supplied by the runner.

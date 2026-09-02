@@ -1,7 +1,6 @@
 import type { IHttpResponse } from "@avplatform/ui/dtos";
 
 import { axiosInstance } from "@/react-toolkit/lib/axios-instance";
-import { getSpaceHeaders } from "@/utils/space-headers";
 
 import type { ApiKeyDto } from "../dtos/api-key.dto";
 import type { CreateApiKeyReqDto } from "../dtos/create-api-key-req.dto";
@@ -15,7 +14,7 @@ const baseAPIURL: string = `${import.meta.env.VITE_WORKSPACE_API_PATH}/api-keys`
  */
 const getApiKeys = () => {
   return axiosInstance
-    .get<IHttpResponse<ApiKeyDto[]>>(`${baseAPIURL}/list`, { headers: getSpaceHeaders() })
+    .get<IHttpResponse<ApiKeyDto[]>>(`${baseAPIURL}/list`)
     .then((res) => res.data);
 };
 
@@ -24,7 +23,7 @@ const getApiKeys = () => {
  */
 const getApiKey = (apiKeyId: string) => {
   return axiosInstance
-    .get<IHttpResponse<ApiKeyDto>>(`${baseAPIURL}/${apiKeyId}`, { headers: getSpaceHeaders() })
+    .get<IHttpResponse<ApiKeyDto>>(`${baseAPIURL}/${apiKeyId}`)
     .then((res) => res.data);
 };
 
@@ -33,9 +32,7 @@ const getApiKey = (apiKeyId: string) => {
  */
 const createApiKey = (createApiKeyReqDto: CreateApiKeyReqDto) => {
   return axiosInstance
-    .post<IHttpResponse<CreateApiKeyResDto>>(`${baseAPIURL}`, createApiKeyReqDto, {
-      headers: getSpaceHeaders(),
-    })
+    .post<IHttpResponse<CreateApiKeyResDto>>(`${baseAPIURL}`, createApiKeyReqDto)
     .then((res) => res.data);
 };
 
@@ -44,9 +41,7 @@ const createApiKey = (createApiKeyReqDto: CreateApiKeyReqDto) => {
  */
 const updateApiKey = (updateApiKeyDto: UpdateApiKeyDto) => {
   return axiosInstance
-    .put<IHttpResponse<ApiKeyDto>>(`${baseAPIURL}`, updateApiKeyDto, {
-      headers: getSpaceHeaders(),
-    })
+    .put<IHttpResponse<ApiKeyDto>>(`${baseAPIURL}`, updateApiKeyDto)
     .then((res) => res.data);
 };
 
@@ -55,9 +50,7 @@ const updateApiKey = (updateApiKeyDto: UpdateApiKeyDto) => {
  */
 const deleteApiKey = (apiKeyId: string) => {
   return axiosInstance
-    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${apiKeyId}`, {
-      headers: getSpaceHeaders(),
-    })
+    .delete<IHttpResponse<boolean>>(`${baseAPIURL}/${apiKeyId}`)
     .then((res) => res.data);
 };
 
@@ -66,9 +59,7 @@ const deleteApiKey = (apiKeyId: string) => {
  */
 const deleteApiKeys = (ids: string[]) => {
   return axiosInstance
-    .post<IHttpResponse<number>>(`${baseAPIURL}/delete-multiple`, ids, {
-      headers: getSpaceHeaders(),
-    })
+    .post<IHttpResponse<number>>(`${baseAPIURL}/delete-multiple`, ids)
     .then((res) => res.data);
 };
 

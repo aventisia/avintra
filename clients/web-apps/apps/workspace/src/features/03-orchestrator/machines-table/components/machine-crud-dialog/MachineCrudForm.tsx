@@ -6,8 +6,10 @@ import { useTableRowOptimisticMutation } from "@avplatform/ui/hooks";
 import { ISelectOption } from "@avplatform/ui/types";
 import { useEffect } from "react";
 import { z } from "zod";
+import { useShallow } from "zustand/react/shallow";
 
 import { searchFlowVersions } from "@/features/search-by-query/apis/search-flow-version.api";
+import { useCurrentSpaceStore } from "@/stores/current-space-store";
 
 import { updateMachine } from "../../apis/machines-table-apis";
 import { DATA_QUERY_KEY } from "../../constants";
@@ -28,6 +30,15 @@ interface MachineCrudFormProps {
 
 export const MachineCrudForm = ({ rowId }: MachineCrudFormProps) => {
   const { onCloseConfirmed } = useCrudDialogDirty();
+
+  // Get the currently selected space so the agent select refetches when the space
+  // changes (query key includes the space id — without it the cached flow-version
+  // options from the previous space are served after a space switch).
+  const { currentSpace } = useCurrentSpaceStore(
+    useShallow((state) => ({
+      currentSpace: state.currentSpace,
+    })),
+  );
 
   // Define machine form
   const { form, isDirty, isValid } = useDefineMachineForm({ rowId });
@@ -86,7 +97,7 @@ export const MachineCrudForm = ({ rowId }: MachineCrudFormProps) => {
         fetcher={(query) => searchFlowVersions(query).then((res) => res.data ?? [])}
         name="flowVersionIds"
         label="Machine Agents"
-        queryKeyBase={["machine-form-flow-versions", rowId]}
+        queryKeyBase={["machine-form-flow-versions", rowId, currentSpace?.id ?? ""]}
         getItemId={(item) => item.value}
         getItemLabel={(item) => item.label}
         filters={undefined}

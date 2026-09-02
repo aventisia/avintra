@@ -1,5 +1,7 @@
 import { axiosInstance } from "@avplatform/ui/lib";
 
+import { getStudioSpaceHeaders } from "@/utils/space-headers";
+
 import { FileUploadDto } from "../dtos/file-upload-dto";
 
 export interface UploadResponse {
@@ -20,6 +22,7 @@ export const uploadFile = async (
   const response = await axiosInstance.post(`${baseAPIURL}/upload/single`, formData, {
     signal: controller.signal,
     headers: {
+      ...getStudioSpaceHeaders(),
       "Content-Type": "multipart/form-data",
       ...(isPublic && { "X-Tenant-Scope": "Scope1" }),
     },
@@ -42,6 +45,7 @@ export const deleteFile = async (file: FileUploadDto, isPublic?: boolean): Promi
     `${baseAPIURL}/delete?fileUrl=${file.path}`,
     {
       headers: {
+        ...getStudioSpaceHeaders(),
         ...(isPublic && { "X-Tenant-Scope": "Scope1" }),
       },
     },

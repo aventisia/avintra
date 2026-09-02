@@ -34,6 +34,47 @@ This repository contains the source code, shared libraries, clients, and deploym
     └── nginx/                  # Nginx reverse proxy / static file server
 ```
 
+## Custom HTTP Headers
+
+The platform uses a set of custom `X-...` HTTP request/response headers to carry cross-cutting context
+(app identity, tenant/space/env scoping, auth, client attribution, correlation, and streaming behavior)
+between clients, the reverse proxy, and the backend services. This is the single reference for what each
+header means and where it is set and read, so you don't have to grep across the .NET APIs, the Python LLM
+Pipeline, nginx, Apache Camel, and the web apps.
+
+> Scope: this table covers **platform-defined** custom headers only. Third-party provider headers
+> (e.g. `X-GitHub-*`, `X-Hub-Signature-256`, `X-Razorpay-Signature`), reverse-proxy headers
+> (`X-Forwarded-For`, `X-Forwarded-Proto`), and standard security headers
+> (`Strict-Transport-Security`, `X-Content-Type-Options`, `X-Frame-Options`, ...) are defined elsewhere and are **not** listed here.
+
+| Header                                        | Direction | Purpose                                                                                                                                               | Set / read in                                                                                                                                                                                                                             |
+| --------------------------------------------- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `X-App-Context`                               | Request   | Identifies which frontend app (workspace, studio, etc.) the request comes from so role/app scoping applies.                                           | Set: `clients/web-apps/apps/workspace/react-toolkit/lib/axios-instance.ts`. Read: `apis/WorcBackend-legacy/AccountsAPIs/Helpers/PlatformAppHeaderUtil.cs`.                                                                                |
+| `X-Space-Id`                                  | Request   | Space scoping for multi-space tenants. Omitted/"Central" for the central space.                                                                       | Resolve: `apis/WorcBackend-legacy/AspNetToolkit/Middleware/TenantResolver.cs`. Set: `*/src/utils/space-headers.ts` (workspace, studio), `clients/RunnerApp/RunnerApp.Core/BackendHttpClient.cs`.                                          |
+| `X-Env-Type`                                  | Request   | Deployment env scoping (`dev`/`prod`) for config, vault/credential lookups, and LLM resource resolution.                                              | Resolve: `AspNetToolkit/Middleware/TenantResolver.cs`. Helper: `shared/NodeLibrary/NodeLibrary.Core/Helpers/NodeHttpHeaders.cs`.                                                                                                          |
+| `X-TENANT-ID` / `X-Tenant-Id`                 | Request   | Tenant identification for SuperAdmin/API-key/webhook endpoints where no user JWT is present. Canonical spelling: `X-TENANT-ID`.                       | Read: `AspNetToolkit/Middleware/TenantResolver.cs`, `WorkspaceAPIs/Features/MachineAuth/Service/MachineAuthService.cs`, `WorkspaceAPIs/.../WebhookController.cs`. Set: `AccountsAPIs/.../ManageTenantService.cs`, `BackendHttpClient.cs`. |
+| `X-API-KEY`                                   | Request   | API-key **internal** auth for machine/webhook-protected service endpoints.                                                                            | Read: `AspNetToolkit/Attributes/CustomAuthorizeAttribute.cs`, `WorkspaceAPIs/Attributes/ApiKeyAuthorizeAttribute.cs`. Set: `BackendHttpClient.cs`, Bruno collections.                                                                     |
+| `X-Api-Key`                                   | Request   | API-key for **outbound connector/webhook** calls (Apache Camel cloud connectors and webhook-triggered flows). A different auth path than `X-API-KEY`. | Read/set: `apis/apache-camel/src/.../connectors/http/HttpConfigurer.java`, `WorkspaceAPIs/.../WebhookController.cs`.                                                                                                                      |
+| `X-OnPrem-Tenant-Id`, `X-OnPrem-Instance-Key` | Request   | On-prem instance validation / metadata handshake for GlobalAdmin flows.                                                                               | Set: `AccountsAPIs/Setup/Services/InstanceService.cs`, `AspNetToolkit/Extensions/EnvironmentConfigurationExtension.cs`.                                                                                                                   |
+| `X-Client-Type`, `X-Client-Version`           | Request   | Attribute job execution to the desktop client type/version (complements `User-Agent`). Only sent under Tauri (`IS_TAURI`).                            | Set: `clients/web-apps/packages/ui/src/lib/axios-instance.ts`. Read: `WorkspaceAPIs/Helpers/ClientContextResolver.cs`.                                                                                                                    |
+| `X-Tenant-Scope`                              | Request   | Opts into tenant-less/"central" uploads of public files and templates (value `"Scope1"`).                                                             | Read: `AspNetToolkit/Services/Implementions/UploadFileService.cs`. Set: file-upload & template `.apis.ts` in studio/workspace.                                                                                                            |
+| `X-Database-Name`                             | Request   | Tenant/database selection in the vector-store layer (LLM Pipeline only); required by `database.py`.                                                   | Read: `apis/llmpipeline/app/core/database.py`.                                                                                                                                                                                            |
+| `X-Request-Id` / `x-request-id`               | Both      | Request correlation/tracing across the LLM Pipeline (echoed on responses; generated when absent).                                                     | `apis/llmpipeline/app/main.py`.                                                                                                                                                                                                           |
+| `X-Job-Id`                                    | Response  | Correlates an SSE streaming response (LLM/STT/TTS) to a job.                                                                                          | Set: `apis/llmpipeline/app/features/{litellm,llm_providers,stt_providers,tts_providers}/.../routes.py`.                                                                                                                                   |
+| `X-Accel-Buffering`                           | Response  | Disables nginx proxy buffering for SSE streaming chat (nginx directive echo).                                                                         | Set: `WorkspaceAPIs/Features/Chats/StreamingChat/StreamingChatController.cs`.                                                                                                                                                             |
+
+### Notes
+
+- **Case-insensitivity**: HTTP header names are case-insensitive, but source code spells some of them
+  inconsistently (`X-TENANT-ID` vs `X-Tenant-Id`; `X-API-KEY` vs `X-Api-Key`). The canonical spellings above
+  are what new code should use.
+- **`X-API-KEY` vs `X-Api-Key`** are two distinct auth paths (internal machine/webhook auth vs outbound
+  connector API keys) — do not conflate them.
+- **Conditional headers**: `X-Client-Type`/`X-Client-Version` are only sent from the desktop app (Tauri).
+  `X-Database-Name` is LLM-Pipeline-only. `X-Accel-Buffering` is nginx-specific.
+- Canonical resolvers: `AspNetToolkit/Middleware/TenantResolver.cs` (space/env/tenant), and the outbound
+  helper `shared/NodeLibrary/NodeLibrary.Core/Helpers/NodeHttpHeaders.cs`.
+
 ## Quick Start
 
 ### Prerequisites
