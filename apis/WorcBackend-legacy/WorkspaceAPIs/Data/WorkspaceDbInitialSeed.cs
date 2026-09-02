@@ -1,5 +1,4 @@
 // For more info on How to seed data, watch YT video: https://www.youtube.com/watch?v=0B7QjRSvcGI
-using System.Text.Json;
 using AspNetToolkit.Config;
 using AspNetToolkit.Data;
 using WorkspaceAPIs.Entities;
@@ -60,10 +59,6 @@ public static class WorkspaceDbInitialSeed
             // the generated compact OpenAPI specs (Q10=A).
             await SeedDefaultCamelToolsAsync(_workspaceDbContext, platformAdmin.Value, _logger);
 
-            // Corsair is an optional provider of extra nodes/tools and is owned by the
-            // Corsair deployment pipeline. Do not seed it as part of the core app bootstrap.
-            // The main app will consume generated Corsair artifacts only when they are
-            // present in the deployed config bundle.
             return app;
         }
     }
@@ -456,35 +451,4 @@ public static class WorkspaceDbInitialSeed
         var hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
         return new Guid(hash);
     }
-
-    /// <summary>
-    /// Extracts the first server base URL from a flattened OpenAPI spec document.
-    /// The Corsair DCP generator embeds the provider base URL in servers[0].url.
-    /// Returns <c>null</c> when the spec has no servers array or no URL.
-    /// </summary>
-    private static string? ExtractServerBaseUrl(JsonDocument parsedSchema)
-    {
-        try
-        {
-            if (parsedSchema.RootElement.TryGetProperty("servers", out var servers) &&
-                servers.ValueKind == JsonValueKind.Array)
-            {
-                foreach (var server in servers.EnumerateArray())
-                {
-                    if (server.TryGetProperty("url", out var url) &&
-                        url.ValueKind == JsonValueKind.String &&
-                        !string.IsNullOrWhiteSpace(url.GetString()))
-                    {
-                        return url.GetString();
-                    }
-                }
-            }
-        }
-        catch
-        {
-            // ignore malformed servers; caller falls back to a placeholder
-        }
-        return null;
-    }
-
 }
