@@ -764,15 +764,6 @@
     ]
   },
   {
-    "label": "Apache Camel Connectors",
-    "description": "Connect Apache Camel with external systems and services.",
-    "icon": "IntegrationIcon",
-    "img": "/brand-img/camel.svg",
-    "actionCategories": [
-      
-    ]
-  },
-  {
     "label": "AI Integrations",
     "description": "Integrate AI for smarter automation, improving efficiency and intelligence.",
     "icon": "IntelligentAutomationIcon",

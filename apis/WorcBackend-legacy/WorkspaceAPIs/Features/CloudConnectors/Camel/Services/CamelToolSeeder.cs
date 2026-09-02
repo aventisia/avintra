@@ -3,39 +3,40 @@ using System.Text.Json.Nodes;
 using AspNetToolkit.Enums;
 using WorkspaceAPIs.Entities;
 using WorkspaceAPIs.Enums;
-using WorkspaceAPIs.Features.CloudConnectors.CamelV2.Helpers;
-using WorkspaceAPIs.Features.CloudConnectors.CamelV2.Models;
-using WorkspaceAPIs.Features.CloudConnectors.CamelV2.Services;
+using WorkspaceAPIs.Features.CloudConnectors.Camel.Helpers;
+using WorkspaceAPIs.Features.CloudConnectors.Camel.Models;
 
-namespace WorkspaceAPIs.Features.CloudConnectors.CamelV2.Services;
+namespace WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 
 /// <summary>
-/// Seeds every Apache Camel connector (and the non-catalog scaffold families)
-/// into the <c>ws_Tools</c> table as a platform tool.
+/// Seeds every Apache Camel connector from the harness catalog into the
+/// <c>ws_Tools</c> table as a platform tool.
 ///
 /// Connectors are fetched from the harness catalog
 /// (<c>GET /api/connectors/schemas</c>). Each connector becomes one
 /// <see cref="Tool"/> row matched by a deterministic id so re-seeding is
-/// idempotent.
+/// idempotent. Nothing is hardcoded — the connector list always comes from the
+/// harness.
 ///
 /// The stored <c>OpenApiSpec</c>/<c>ParsedSchema</c> is an OpenAPI-shaped
 /// document whose <c>paths</c> section enumerates every supported operation
 /// (operationId + HTTP method + path + parameters), so downstream consumers
 /// (the Tools UI operation list and LLM custom-tool loader) can enumerate the
-/// connector's operations. Per-operation schemas are used for rich connectors
-/// (github, m365); a single generic operation entry is emitted for catalog
-/// components without an operation enum.
+/// connector's operations. The supported operations and configuration
+/// parameters always come from the harness family schema — a single generic
+/// operation entry is emitted for catalog components without an operation
+/// enum. Nothing is hardcoded per family.
 /// </summary>
-public class CamelV2ToolSeeder
+public class CamelToolSeeder
 {
-    private readonly ILogger<CamelV2ToolSeeder> _logger;
+    private readonly ILogger<CamelToolSeeder> _logger;
     private readonly IConfiguration _configuration;
-    private readonly CamelV2CatalogClient _catalogClient;
+    private readonly CamelCatalogClient _catalogClient;
 
-    public CamelV2ToolSeeder(
-        ILogger<CamelV2ToolSeeder> logger,
+    public CamelToolSeeder(
+        ILogger<CamelToolSeeder> logger,
         IConfiguration configuration,
-        CamelV2CatalogClient catalogClient)
+        CamelCatalogClient catalogClient)
     {
         _logger = logger;
         _configuration = configuration;
@@ -43,8 +44,8 @@ public class CamelV2ToolSeeder
     }
 
     /// <summary>
-    /// Seeds all Camel connectors from the harness catalog (plus the scaffold
-    /// families) into <c>ws_Tools</c>. Returns the number of tools upserted.
+    /// Seeds all Camel connectors from the harness catalog into <c>ws_Tools</c>.
+    /// Returns the number of tools upserted.
     /// </summary>
     public async Task<int> SeedAsync(
         WorkspaceDbContext dbContext,
@@ -56,7 +57,7 @@ public class CamelV2ToolSeeder
         var catalog = await _catalogClient.GetCatalogAsync(cancellationToken);
         if (catalog.Count == 0)
         {
-            _logger.LogWarning("Camel catalog is empty; skipping CamelV2 tool seeding.");
+            _logger.LogWarning("Camel catalog is empty; skipping Camel tool seeding.");
         }
         else
         {
@@ -64,11 +65,11 @@ public class CamelV2ToolSeeder
             {
                 try
                 {
-                    var toolId = DeterministicGuid("camelv2-tool-" + connector);
+                    var toolId = DeterministicGuid("camel-tool-" + connector);
                     var toolName = CamelNodeNaming.ToFamilyDisplay(connector);
                     var baseUrl = ResolveBaseUrl(connector);
                     var authType = InferAuthenticationType(schema);
-                    var openApi = await BuildOpenApiDocumentAsync(connector, schema, baseUrl, cancellationToken);
+                    var openApi = BuildOpenApiDocument(connector, schema, baseUrl);
                     var openApiJson = openApi.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
                     var parsedSchema = JsonDocument.Parse(openApiJson);
 
@@ -76,7 +77,7 @@ public class CamelV2ToolSeeder
                         .Where(w => w.Type == ComponentTypeEnum.Platform)
                         .IgnoreQueryFilters()
                         .FirstOrDefaultAsync(f => f.Name == toolName, cancellationToken);
-                    
+
                     if (existing is null)
                     {
                         var tool = new Tool
@@ -119,77 +120,13 @@ public class CamelV2ToolSeeder
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error seeding CamelV2 tool for connector '{Connector}'.", connector);
+                    _logger.LogError(ex, "Error seeding Camel tool for connector '{Connector}'.", connector);
                 }
-            }
-        }
-
-        // Scaffold families (not in the harness catalog) are also part of the
-        // connector library, so they get seeded too.
-        foreach (var (family, displayName, credentialFieldName) in CamelV2NodeGenerator.ScaffoldFamilies)
-        {
-            try
-            {
-                var toolId = DeterministicGuid("camelv2-tool-" + family);
-                var toolName = displayName;
-                var baseUrl = ResolveBaseUrl(family);
-                var openApi = BuildScaffoldOpenApiDocument(family, displayName, baseUrl);
-                var openApiJson = openApi.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
-                var parsedSchema = JsonDocument.Parse(openApiJson);
-
-                var existing = await dbContext.Tools
-                    .Where(w => w.Type == ComponentTypeEnum.Platform)
-                    .IgnoreQueryFilters()
-                    .FirstOrDefaultAsync(f => f.Name == toolName, cancellationToken);
-
-                if (existing is null)
-                {
-                    var tool = new Tool
-                    {
-                        Id = toolId,
-                        TenantId = Guid.Empty, // Platform tools are not tenant-scoped
-                        SpaceId = null, // Central space
-                        EnvType = ConfigureEnvironmentType.Dev,
-                        Name = toolName,
-                        Description = $"Apache Camel {displayName} connector (platform tool).",
-                        Type = ComponentTypeEnum.Platform,
-                        BaseUrl = baseUrl,
-                        OpenApiSpec = openApiJson,
-                        ParsedSchema = parsedSchema,
-                        AuthenticationType = ToolAuthenticationTypeEnum.Bearer,
-                        IsTenantWideAccess = true,
-                        IsActive = true,
-                        IsVerified = true,
-                        CreatedOn = now,
-                        LastModifiedOn = now,
-                    };
-                    await dbContext.Tools.AddAsync(tool, cancellationToken);
-                }
-                else
-                {
-                    existing.Name = toolName;
-                    existing.Description = $"Apache Camel {displayName} connector (platform tool).";
-                    existing.TenantId = Guid.Empty; // Platform tools are not tenant-scoped
-                    existing.BaseUrl = baseUrl;
-                    existing.OpenApiSpec = openApiJson;
-                    existing.ParsedSchema = parsedSchema;
-                    existing.AuthenticationType = ToolAuthenticationTypeEnum.Bearer;
-                    existing.IsTenantWideAccess = true;
-                    existing.IsActive = true;
-                    existing.IsVerified = true;
-                    existing.LastModifiedOn = now;
-                }
-
-                seeded++;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error seeding scaffold CamelV2 tool for family '{Family}'.", family);
             }
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
-        _logger.LogInformation("Seeded {Seeded} CamelV2 platform tools (catalog + scaffold) into ws_Tools.", seeded);
+        _logger.LogInformation("Seeded {Seeded} Camel platform tools into ws_Tools.", seeded);
         return seeded;
     }
 
@@ -201,16 +138,19 @@ public class CamelV2ToolSeeder
     ///     summary, parameters}</c>. This is the PRIMARY representation used by
     ///     the Tools UI (<c>normalizeToolOperations</c> reads <c>operations</c>
     ///     first) and is collision-free (multiple operations may share a path +
-    ///     HTTP method, e.g. github repository.update/archive).
+    ///     HTTP method).
     ///   - <c>paths</c>: a standard OpenAPI <c>paths</c> map for compatibility.
     ///     When two operations map to the same path+method the first is kept and
     ///     the rest remain available via the <c>operations</c> array.
+    ///
+    /// Everything (the supported operations and the configuration parameters) is
+    /// driven by the harness family schema returned by
+    /// <c>GET /api/connectors/schemas</c> — nothing is hardcoded per family.
     /// </summary>
-    private async Task<JsonObject> BuildOpenApiDocumentAsync(
+    private static JsonObject BuildOpenApiDocument(
         string connector,
-        CamelV2ConnectorSchema schema,
-        string baseUrl,
-        CancellationToken cancellationToken)
+        CamelConnectorSchema schema,
+        string baseUrl)
     {
         var familyDisplay = CamelNodeNaming.ToFamilyDisplay(connector);
         var operationsArray = new JsonArray();
@@ -233,8 +173,26 @@ public class CamelV2ToolSeeder
             ["paths"] = paths,
         };
 
-        var operations = schema.Operations();
+        // Configuration parameters come from the harness family schema (required
+        // config first, then optional config), shared by every operation.
+        var parameters = new JsonArray();
+        var configuration = schema.Configuration();
+        if (configuration?.NestedProperties is { Count: > 0 } configProps)
+        {
+            var required = configuration.Required ?? new List<string>();
+            foreach (var (name, _) in configProps)
+            {
+                parameters.Add(new JsonObject
+                {
+                    ["name"] = name,
+                    ["in"] = "query",
+                    ["required"] = required.Contains(name),
+                    ["schema"] = new JsonObject { ["type"] = "string" },
+                });
+            }
+        }
 
+        var operations = schema.Operations();
         if (operations.Count == 0)
         {
             var action = CamelNodeNaming.ToActionName(connector);
@@ -242,78 +200,20 @@ public class CamelV2ToolSeeder
             {
                 action = "invoke";
             }
-            AddOperation(doc, paths, operationsArray, "/invoke", "POST", action, "Invoke " + familyDisplay, null);
+            AddOperation(doc, paths, operationsArray, "/invoke", "POST", action, "Invoke " + familyDisplay, parameters);
             return doc;
         }
 
-        // Rich connectors expose per-operation schemas with method/path/params.
-        var operationSchemas = (connector.Equals("github", StringComparison.OrdinalIgnoreCase)
-            || connector.Equals("m365", StringComparison.OrdinalIgnoreCase))
-            ? await _catalogClient.GetOperationSchemasAsync(connector, cancellationToken)
-            : new Dictionary<string, CamelV2ConnectorSchema>();
-
         foreach (var operation in operations)
         {
-            var pathTemplate = "/invoke";
-            var method = "POST";
-            var parameters = new JsonArray();
-
-            if (operationSchemas.TryGetValue(operation, out var opSchema))
-            {
-                var methodProp = opSchema.Method()?.DefaultValue ?? "POST";
-                var pathProp = opSchema.Path()?.DefaultValue;
-                if (!string.IsNullOrWhiteSpace(pathProp))
-                {
-                    pathTemplate = pathProp;
-                }
-                method = methodProp;
-
-                var paramProps = opSchema.Parameters();
-                if (paramProps?.NestedProperties is { Count: > 0 } pp)
-                {
-                    var required = new HashSet<string>(paramProps.Required ?? new List<string>());
-                    foreach (var (name, _) in pp)
-                    {
-                        parameters.Add(new JsonObject
-                        {
-                            ["name"] = name,
-                            ["in"] = "path",
-                            ["required"] = required.Contains(name),
-                            ["schema"] = new JsonObject { ["type"] = "string" },
-                        });
-                    }
-                }
-                var queryProps = opSchema.Query();
-                if (queryProps?.NestedProperties is { Count: > 0 } qp)
-                {
-                    foreach (var (name, _) in qp)
-                    {
-                        parameters.Add(new JsonObject
-                        {
-                            ["name"] = name,
-                            ["in"] = "query",
-                            ["required"] = false,
-                            ["schema"] = new JsonObject { ["type"] = "string" },
-                        });
-                    }
-                }
-                var inputProps = opSchema.InputFields();
-                if (inputProps?.NestedProperties is { Count: > 0 } ip)
-                {
-                    foreach (var (name, _) in ip)
-                    {
-                        parameters.Add(new JsonObject
-                        {
-                            ["name"] = name,
-                            ["in"] = "query",
-                            ["required"] = false,
-                            ["schema"] = new JsonObject { ["type"] = "string" },
-                        });
-                    }
-                }
-            }
-
-            AddOperation(doc, paths, operationsArray, pathTemplate, method, operation, operation, parameters);
+            // A JsonArray node can only have ONE parent. The same shared
+            // `parameters` array cannot be attached to every operation's entry
+            // (the second AddOperation would throw "The node already has a
+            // parent"), which otherwise aborts seeding of every connector that
+            // exposes more than one operation. Clone it per operation so all
+            // connectors are seeded.
+            var clonedParameters = (parameters.DeepClone() as JsonArray) ?? new JsonArray();
+            AddOperation(doc, paths, operationsArray, "/invoke", "POST", operation, operation, clonedParameters);
         }
 
         return doc;
@@ -420,7 +320,7 @@ public class CamelV2ToolSeeder
     ///   - <c>apiKey</c> → <see cref="ToolAuthenticationTypeEnum.ApiKeyHeader"/>
     ///   - otherwise → <see cref="ToolAuthenticationTypeEnum.None"/>
     /// </summary>
-    private static ToolAuthenticationTypeEnum InferAuthenticationType(CamelV2ConnectorSchema schema)
+    private static ToolAuthenticationTypeEnum InferAuthenticationType(CamelConnectorSchema schema)
     {
         var auth = schema.Auth();
         if (auth?.NestedProperties is not { Count: > 0 } props)

@@ -35,6 +35,7 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- Core platform: Spring Boot + Camel + HTTP REST -->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-spring-boot-starter</artifactId>
@@ -43,6 +44,15 @@
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-platform-http-starter</artifactId>
         </dependency>
+
+        <!--
+            Camel component starters.
+            A starter puts the component on the classpath, so the harness can both
+            discover it from the Camel Catalog and execute it. Components listed
+            here are the ones the harness currently exposes for execution.
+        -->
+
+        <!-- Hand-written / reference connectors -->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-http-starter</artifactId>
@@ -75,7 +85,8 @@
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-mail-starter</artifactId>
         </dependency>
-        <!-- Additional connector families (CamelV2 full-catalog support) -->
+
+        <!-- AWS -->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-aws2-s3-starter</artifactId>
@@ -156,6 +167,8 @@
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-aws2-textract-starter</artifactId>
         </dependency>
+
+        <!-- Azure -->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-azure-storage-blob-starter</artifactId>
@@ -172,6 +185,8 @@
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-azure-cosmosdb-starter</artifactId>
         </dependency>
+
+        <!-- Google Cloud -->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-google-storage-starter</artifactId>
@@ -200,6 +215,8 @@
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-google-pubsub-starter</artifactId>
         </dependency>
+
+        <!-- Data / enterprise -->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-mongodb-starter</artifactId>
@@ -224,6 +241,8 @@
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-splunk-starter</artifactId>
         </dependency>
+
+        <!-- SaaS / messaging -->
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-twilio-starter</artifactId>
@@ -252,6 +271,8 @@
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-dropbox-starter</artifactId>
         </dependency>
+
+        <!-- Client libraries used by connectors above -->
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>artemis-jakarta-client</artifactId>
@@ -266,15 +287,21 @@
             <artifactId>postgresql</artifactId>
             <version>42.7.13</version>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-        </dependency>
+
+        <!-- Metadata discovery: Camel Catalog reads component descriptors at runtime -->
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-catalog</artifactId>
             <version>${camel.version}</version>
         </dependency>
+
+        <!-- Serialization -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
+        </dependency>
+
+        <!-- Test -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

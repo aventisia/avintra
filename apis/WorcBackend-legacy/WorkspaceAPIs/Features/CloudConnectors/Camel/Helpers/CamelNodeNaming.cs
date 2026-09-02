@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace WorkspaceAPIs.Features.CloudConnectors.CamelV2.Helpers;
+namespace WorkspaceAPIs.Features.CloudConnectors.Camel.Helpers;
 
 /// <summary>
 /// Shared naming conventions for Camel Cloud Connector action nodes.
@@ -479,11 +479,9 @@ public static class CamelNodeNaming
     }
 
     /// <summary>
-    /// Brand asset path for a CamelV2 family (e.g. <c>github</c> → <c>/brand-img/github.svg</c>,
-    /// <c>aws2-s3</c> → <c>/assets/AWS.svg</c>). Mirrors the <c>FAMILY_ICON</c> map in
-    /// <c>scripts/generate-camel-connectors/generate_camelv2_selector.py</c> so the
-    /// runtime-generated action-selector mapping matches the script output. Falls back
-    /// to the Camel brand icon when no specific asset is known.
+    /// Brand asset path for a Camel family (e.g. <c>github</c> → <c>/brand-img/github.svg</c>,
+    /// <c>aws2-s3</c> → <c>/assets/AWS.svg</c>). Falls back to the Camel brand icon
+    /// when no specific asset is known.
     /// </summary>
     public static string ToFamilyIcon(string family)
     {
@@ -527,8 +525,8 @@ public static class CamelNodeNaming
     public const string DefaultFamilyIcon = "/function.png";
 
     /// <summary>
-    /// Family-prefix → asset path map (mirrors <c>FAMILY_ICON</c> in the generator script).
-    /// Keys are lowercase family names; <c>*</c>-suffixed keys are wildcard prefixes.
+    /// Family-prefix → asset path map. Keys are lowercase family names;
+    /// <c>*</c>-suffixed keys are wildcard prefixes.
     /// </summary>
     private static readonly Dictionary<string, string> FamilyIcons = new(StringComparer.OrdinalIgnoreCase)
     {

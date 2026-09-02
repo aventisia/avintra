@@ -54,7 +54,7 @@ public static class WorkspaceDbInitialSeed
             // Seed default platform skills from the llmpipeline skills folder.
             await SeedDefaultSkillsAsync(_workspaceDbContext, _configuration, platformAdmin.Value, _logger);
 
-            // NOTE: Camel tool seeding is now handled by the CamelV2StartupHostedService
+            // NOTE: Camel tool seeding is now handled by the CamelStartupHostedService
             // (independent of the DB seed process). It seeds ALL connectors from the
             // harness catalog, superseding the old github/m365-only OpenAPI seeding.
 

@@ -1,36 +1,37 @@
 using AspNetToolkit.Config;
 using AspNetToolkit.Data;
 using Microsoft.EntityFrameworkCore;
-using WorkspaceAPIs.Features.CloudConnectors.CamelV2.Services;
+using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 
-namespace WorkspaceAPIs.Features.CloudConnectors.CamelV2;
+namespace WorkspaceAPIs.Features.CloudConnectors.Camel;
 
 /// <summary>
-/// Background hosted service that runs the CamelV2 catalog-driven seeding and
+/// Background hosted service that runs the Camel catalog-driven seeding and
 /// node generation at startup, independent of the DB seed process.
 ///
 /// On start it:
 ///   1. Restores the Cloud-Connector mapping files if they were deleted
-///      (action-selector mapping, CamelActionMapping, github/m365 openapi specs).
+///      (action-selector mapping, CamelActionMapping).
 ///   2. Resolves the platform admin user (from <c>EnvironmentConfig.OnPremAdminEmail</c>).
 ///   3. Fetches the connector catalog from the harness.
 ///   4. Seeds every connector into <c>ws_Tools</c>.
-///   5. Generates the <c>ConfigFiles/CamelV2/&lt;Family&gt;/&lt;Action&gt;Connector.json</c> nodes.
+///   5. Generates the <c>ConfigFiles/Camel/&lt;Family&gt;/&lt;Action&gt;Connector.json</c> nodes
+///      and registers them into <c>CloudConnectorActionSelectorMappingFile.json</c>.
 ///
 /// If the harness is unreachable at startup, it retries with backoff so the
 /// catalog is eventually loaded once the harness comes up. The mapping-file
 /// restore runs before the retry loop so the frontend selector is never
 /// missing even when catalog seeding is temporarily skipped.
 /// </summary>
-public class CamelV2StartupHostedService : BackgroundService
+public class CamelStartupHostedService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ILogger<CamelV2StartupHostedService> _logger;
+    private readonly ILogger<CamelStartupHostedService> _logger;
     private readonly EnvironmentConfig _environmentConfig;
 
-    public CamelV2StartupHostedService(
+    public CamelStartupHostedService(
         IServiceProvider serviceProvider,
-        ILogger<CamelV2StartupHostedService> logger,
+        ILogger<CamelStartupHostedService> logger,
         EnvironmentConfig environmentConfig)
     {
         _serviceProvider = serviceProvider;
@@ -49,7 +50,7 @@ public class CamelV2StartupHostedService : BackgroundService
         {
             using (var scope = _serviceProvider.CreateScope())
             {
-                var mappingGenerator = scope.ServiceProvider.GetRequiredService<CamelV2MappingFilesGenerator>();
+                var mappingGenerator = scope.ServiceProvider.GetRequiredService<CamelMappingFilesGenerator>();
                 var restored = mappingGenerator.RestoreMissing();
                 if (restored > 0)
                 {
@@ -62,7 +63,7 @@ public class CamelV2StartupHostedService : BackgroundService
             _logger.LogError(ex, "Failed to restore Cloud-Connector mapping files at startup.");
         }
 
-        var maxAttempts = 5;
+        var maxAttempts = 3;
         for (var attempt = 1; attempt <= maxAttempts && !stoppingToken.IsCancellationRequested; attempt++)
         {
             try
@@ -75,19 +76,19 @@ public class CamelV2StartupHostedService : BackgroundService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "CamelV2 startup seeding attempt {Attempt} failed.", attempt);
+                _logger.LogError(ex, "Camel startup seeding attempt {Attempt} failed.", attempt);
             }
 
             if (attempt < maxAttempts)
             {
                 var delay = TimeSpan.FromSeconds(10 * attempt);
-                _logger.LogInformation("Retrying CamelV2 startup seeding in {DelaySeconds}s (attempt {Attempt}/{MaxAttempts}).",
+                _logger.LogInformation("Retrying Camel startup seeding in {DelaySeconds}s (attempt {Attempt}/{MaxAttempts}).",
                     delay.TotalSeconds, attempt + 1, maxAttempts);
                 await Task.Delay(delay, stoppingToken);
             }
         }
 
-        _logger.LogWarning("CamelV2 startup seeding did not complete after {MaxAttempts} attempts.", maxAttempts);
+        _logger.LogWarning("Camel startup seeding did not complete after {MaxAttempts} attempts.", maxAttempts);
     }
 
     private async Task<bool> RunOnceAsync(CancellationToken cancellationToken)
@@ -95,23 +96,44 @@ public class CamelV2StartupHostedService : BackgroundService
         using var scope = _serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<WorkspaceDbContext>();
         var tenantDbContext = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
-        var seeder = scope.ServiceProvider.GetRequiredService<CamelV2ToolSeeder>();
-        var generator = scope.ServiceProvider.GetRequiredService<CamelV2NodeGenerator>();
+        var seeder = scope.ServiceProvider.GetRequiredService<CamelToolSeeder>();
+        var generator = scope.ServiceProvider.GetRequiredService<CamelNodeGenerator>();
+        var catalogClient = scope.ServiceProvider.GetRequiredService<CamelCatalogClient>();
 
-        // Resolve the platform admin user that owns platform tools.
-        var admin = await ResolvePlatformAdminUserAsync(dbContext, tenantDbContext, cancellationToken);
-        if (admin is null)
+        // Resolve the platform admin user that owns platform tools. This mirrors
+        // the DB seed logic and is required before tools can be linked to a
+        // tenant/space context.
+        var user = await ResolvePlatformAdminUserAsync(dbContext, tenantDbContext, cancellationToken);
+        if (user is null)
         {
-            _logger.LogWarning("No platform admin user resolved; skipping CamelV2 seeding.");
+            _logger.LogWarning("No platform admin user resolved; skipping Camel seeding.");
             return false;
         }
+
+        // Fetch the catalog once up-front. When the harness is unreachable the
+        // catalog comes back empty and is NOT cached, so a later retry attempt
+        // re-queries it once the harness is up.
+        var catalog = await catalogClient.GetCatalogAsync(cancellationToken);
 
         var seeded = await seeder.SeedAsync(dbContext, cancellationToken);
         var generated = await generator.GenerateAsync(cancellationToken);
 
         _logger.LogInformation(
-            "CamelV2 startup complete: {Seeded} tools seeded, {Generated} node configs generated.",
-            seeded, generated);
+            "Camel startup: {Seeded} tools seeded, {Generated} node configs generated, {CatalogCount} connectors in catalog.",
+            seeded, generated, catalog.Count);
+
+        // If the harness was unreachable (empty catalog), do NOT report this
+        // attempt as handled: the retry loop backs off and tries again so the
+        // full catalog is generated once the harness comes up. Only the scaffold
+        // families (never the catalog connectors) are produced on this attempt,
+        // which is why the app would otherwise settle for just the 14 scaffolds.
+        if (catalog.Count == 0)
+        {
+            _logger.LogWarning(
+                "Camel harness catalog is empty (harness unreachable); retrying so the full connector catalog is generated once it is up.");
+            return false;
+        }
+
         return true;
     }
 
