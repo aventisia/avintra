@@ -4,6 +4,7 @@ public class ExecutionGraphDto
 {
     public Guid JobId { get; set; }
     public Guid TenantId { get; set; }
+    public Guid? SpaceId { get; set; }
     public Guid FlowVersionId { get; set; }
     public string FlowName { get; set; } = string.Empty;
     public string? InputArgumentsJson { get; set; }
