@@ -17,6 +17,7 @@ export interface ExecutionState {
   loopRegistry: Record<string, { total: number }>;
   nodeToParentStack: Record<string, string[]>; // IDs of loops wrapping a node
   activeIteration: Record<string, number>; // Selected index for each loop ID
+  nodeTypes: Record<string, string>; // nodeId -> React Flow node type
 
   // O(1) Inference Maps
   routerConfig: Record<string, { defaultId: string; conditionals: string[] }>;

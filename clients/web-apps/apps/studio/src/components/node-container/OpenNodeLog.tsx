@@ -6,7 +6,6 @@ import { useLiveExecutionStore } from "@/features/execute-flow/stores/live-execu
 import { useIsExecutionLogsRoute } from "@/features/execution-logs/hooks/useIsExecutionLogsRoute";
 import { useExecutionStore } from "@/features/execution-logs/stores/execution-log-store";
 import { useNodePopoverStore } from "@/features/execution-logs/stores/node-popover-store";
-import { NodeDataType } from "@/types/node-data-type";
 
 interface OpenNodeLogProps {
   nodeId: string;
@@ -51,12 +50,8 @@ export default function OpenNodeLog({
 
   const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const getAttemptLabel = (retryAttempt: number) => {
-    return retryAttempt <= 0 ? "Default Attempt" : `Auto-Retry Attempt ${retryAttempt}`;
-  };
-
   // Attempt history for the currently active execution, ordered by retry sequence.
-  // Shared by the popover (attempt-by-attempt output breakdown) and the retry badge count below.
+  // Used only for the retry badge count; the popover resolves its data reactively.
   const attemptsForSameExecution = log
     ? pathHistory
         .filter((entry) => entry.nodeExecutionId === log.nodeExecutionId)
@@ -69,32 +64,12 @@ export default function OpenNodeLog({
       ? attemptsForSameExecution.length - 1
       : 0;
 
-  const getPopoverNodeData = () => {
-    if (!log) return null;
-
-    const outputByAttempt =
-      attemptsForSameExecution.length > 1
-        ? Object.fromEntries(
-            attemptsForSameExecution.map((entry) => [
-              getAttemptLabel(entry.retryAttempt),
-              entry.outputs,
-            ]),
-          )
-        : log.outputs;
-
-    return {
-      ...log,
-      outputs: outputByAttempt,
-    } as unknown as NodeDataType;
-  };
-
   const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isExecutionLog) return;
     const rect = e.currentTarget.getBoundingClientRect();
     hoverTimeout.current = setTimeout(() => {
-      const popoverNodeData = getPopoverNodeData();
-      if (!popoverNodeData) return;
-      openPopover(nodeId, popoverNodeData, rect);
+      if (!executionMap[nodeId]?.[pathKey]) return;
+      openPopover(nodeId, rect);
     }, 200);
   };
 
