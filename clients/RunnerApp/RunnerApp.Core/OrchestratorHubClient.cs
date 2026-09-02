@@ -6,6 +6,7 @@ public class OrchestratorHubClient : IOrchestratorHubClient
 {
     private readonly string _hubUrl;
     private readonly string _accessToken;
+    private readonly MachineTokenManager? _tokenManager;
     private readonly ILogger<OrchestratorHubClient> _logger;
     private HubConnection? _connection;
     private bool _disposed;
@@ -15,7 +16,24 @@ public class OrchestratorHubClient : IOrchestratorHubClient
         string accessToken,
         ILogger<OrchestratorHubClient> logger,
         string? usernameOverride = null)
+        : this(appBaseUrl, logger, usernameOverride)
     {
+        _accessToken = accessToken;
+    }
+
+    public OrchestratorHubClient(
+        string appBaseUrl,
+        MachineTokenManager tokenManager,
+        ILogger<OrchestratorHubClient> logger,
+        string? usernameOverride = null)
+        : this(appBaseUrl, logger, usernameOverride)
+    {
+        _tokenManager = tokenManager;
+    }
+
+    private OrchestratorHubClient(string appBaseUrl, ILogger<OrchestratorHubClient> logger, string? usernameOverride)
+    {
+        _accessToken = string.Empty;
         // The backend reads the client identity from the query string (OrchestratorHub.OnConnectedAsync),
         // not from headers, so the identity is passed as query parameters.
         var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
@@ -39,7 +57,6 @@ public class OrchestratorHubClient : IOrchestratorHubClient
         query["machineName"] = machineName;
 
         _hubUrl = $"{appBaseUrl.TrimEnd('/')}/workspace/api/orchestrator-hub?{query}";
-        _accessToken = accessToken;
         _logger = logger;
     }
 
@@ -51,11 +68,40 @@ public class OrchestratorHubClient : IOrchestratorHubClient
 
     public async Task ConnectAsync(CancellationToken ct = default)
     {
+        // Dispose any previous connection first so manual reconnects (e.g. after the automatic
+        // retry policy is exhausted) never leak HubConnections and their event handlers.
+        if (_connection is not null)
+        {
+            _connection.Closed -= OnConnectionClosed;
+            _connection.Reconnected -= OnReconnected;
+            try
+            {
+                await _connection.StopAsync(CancellationToken.None);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogDebug(ex, "Stopping the previous OrchestratorHub connection failed; disposing it anyway.");
+            }
+            await _connection.DisposeAsync();
+            _connection = null;
+        }
+
+        // The Authorization header is baked into the connection options at build time (the
+        // backend authenticates the WebSocket handshake from headers, not the query string),
+        // so it must always carry the freshest token. Callers that refresh the machine JWT
+        // rebuild the connection (RunnerAppService watches MachineTokenManager.Version); the
+        // manual reconnect loop in WaitForCommandAsync covers any drop that happens in
+        // between. AccessTokenProvider additionally re-resolves the token from the manager so
+        // negotiate requests during automatic reconnects also use a fresh token.
+        var handshakeToken = _tokenManager is not null
+            ? await _tokenManager.GetValidTokenAsync(ct)
+            : _accessToken;
+
         _connection = new HubConnectionBuilder()
             .WithUrl(_hubUrl, options =>
             {
-                options.AccessTokenProvider = () => Task.FromResult(_accessToken)!;
-                options.Headers["Authorization"] = $"Bearer {_accessToken}";
+                options.AccessTokenProvider = ResolveAccessTokenAsync;
+                options.Headers["Authorization"] = $"Bearer {handshakeToken}";
             })
             .WithAutomaticReconnect(new RetryPolicy())
             .Build();
@@ -81,6 +127,14 @@ public class OrchestratorHubClient : IOrchestratorHubClient
             MachineIdentity.OsId,
             MachineIdentity.Username);
         DebugLog.Info($"Connected to OrchestratorHub as machine {MachineIdentity.OsId}/{MachineIdentity.Username}");
+    }
+
+    private async Task<string?> ResolveAccessTokenAsync()
+    {
+        if (_tokenManager is null)
+            return _accessToken;
+
+        return await _tokenManager.GetValidTokenAsync();
     }
 
     public async Task DisconnectAsync()
@@ -210,18 +264,18 @@ public class OrchestratorHubClient : IOrchestratorHubClient
         return Guid.Empty;
     }
 
-    private async Task OnConnectionClosed(Exception? exception)
+    private Task OnConnectionClosed(Exception? exception)
     {
         _logger.LogWarning(exception, "OrchestratorHub connection closed.");
         Disconnected?.Invoke(this, exception?.Message ?? "Connection closed");
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
-    private async Task OnReconnected(string? connectionId)
+    private Task OnReconnected(string? connectionId)
     {
         _logger.LogInformation("Reconnected to OrchestratorHub with connection {ConnectionId}.", connectionId);
         Reconnected?.Invoke(this, EventArgs.Empty);
-        await Task.CompletedTask;
+        return Task.CompletedTask;
     }
 
     private class RetryPolicy : IRetryPolicy

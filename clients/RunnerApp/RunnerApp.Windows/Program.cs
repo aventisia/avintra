@@ -165,9 +165,11 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         else
             Console.WriteLine("Warning: Machine registration failed. Continuing with the provided token.");
 
-        // Use the machine JWT (if any) for subsequent backend + hub calls.
-        backendClient = new BackendHttpClient(httpClient, accessToken);
-        engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl, backendClient);
+        // Use the machine JWT (if any) for subsequent backend + hub calls, and wire the same
+        // refresh plumbing as worker mode so long console runs keep presenting a fresh token.
+        var runnerClients = RunnerClientFactory.Create(httpClient, accessToken);
+        backendClient = runnerClients.BackendClient;
+        engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl, backendClient, runnerClients.TokenManager);
 
         var commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>();
 
@@ -447,8 +449,22 @@ static async Task<int> RunWorkerAsync(RunnerAppOptions options)
         }
 
         using var httpClient = new HttpClient { BaseAddress = new Uri(options.AppBaseUrl) };
-        var backendClient = new BackendHttpClient(httpClient, accessToken);
-        var engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl, backendClient);
+
+        // Workers hold no tenant API key, so they renew their machine JWT via
+        // machine-auth/validate. The registration username (the service account in service
+        // mode) is passed by the launcher because the worker's own identity is the
+        // interactive user.
+        var envRegistrationUsername = Environment.GetEnvironmentVariable("AVINTRA_REGISTRATION_USERNAME");
+        var registrationUsername = !string.IsNullOrWhiteSpace(envRegistrationUsername)
+            ? envRegistrationUsername
+            : MachineIdentity.Username;
+
+        var runnerClients = RunnerClientFactory.Create(httpClient, accessToken, registrationUsername);
+        var backendClient = runnerClients.BackendClient;
+
+        // The engine resolves the token through the token manager when nodes read
+        // CallerContext.AccessToken, so long flows pick up refreshes instead of the snapshot.
+        var engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl, backendClient, runnerClients.TokenManager);
         logSession.Info($"Created execution engine with AppBaseUrl={options.AppBaseUrl}.");
 
         var cts = new CancellationTokenSource();
