@@ -102,26 +102,24 @@ The runner is published per platform. Jenkins (Ubuntu agent) only builds the **L
 ```sh
 ./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh
 # non-interactive usage
-./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers dev
-./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers 3   # dev+uat
+./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers uat
+./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers prod
 # preview only
-./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers dev --dry-run
+./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers uat --dry-run
 ```
 
 Target server options (`--target-servers` or interactive prompt):
 
-1. `dev` → `avdev.aventisia.com`
-2. `uat` → `avuat.aventisia.com`
-3. `dev+uat` → `avdev.aventisia.com` + `avuat.aventisia.com`
-4. `prod` → `avweb1.aventisia.com` + `avweb2.aventisia.com`
+1. `uat` → `avuat.aventisia.com`
+2. `prod` → `avweb1.aventisia.com` + `avweb2.aventisia.com`
 
 ### macOS (developer machine)
 
 `publish-and-upload-macos.sh` builds `RunnerApp.macOS.csproj` for `osx-x64` and uploads `artifacts/AvintraRunnerApp_<version>_osx-x64.zip`.
 
 ```sh
-./clients/RunnerApp/RunnerApp.macOS/publish-and-upload-macos.sh --target-servers dev+uat
-./clients/RunnerApp/RunnerApp.macOS/publish-and-upload-macos.sh --target-servers 1       # dev
+./clients/RunnerApp/RunnerApp.macOS/publish-and-upload-macos.sh --target-servers prod
+./clients/RunnerApp/RunnerApp.macOS/publish-and-upload-macos.sh --target-servers 1       # uat
 ```
 
 ### Windows (developer machine)
@@ -129,10 +127,10 @@ Target server options (`--target-servers` or interactive prompt):
 `publish-and-upload-windows.ps1` builds `RunnerApp.Windows.csproj` as a **self-contained** `win-x64` executable (the .NET 8 runtime is embedded), renames it to `AvintraRunnerService.exe`, and uploads `artifacts/AvintraRunnerService_<version>_win-x64.zip` plus `Install-AvintraRunnerService.ps1` to the selected server(s).
 
 ```powershell
-.\clients\RunnerApp\RunnerApp.Windows\publish-and-upload-windows.ps1 -TargetServers dev
-.\clients\RunnerApp\RunnerApp.Windows\publish-and-upload-windows.ps1 -TargetServers 2   # uat
+.\clients\RunnerApp\RunnerApp.Windows\publish-and-upload-windows.ps1 -TargetServers uat
+.\clients\RunnerApp\RunnerApp.Windows\publish-and-upload-windows.ps1 -TargetServers 1   # uat
 # preview only
-.\clients\RunnerApp\RunnerApp.Windows\publish-and-upload-windows.ps1 -TargetServers dev -WhatIf
+.\clients\RunnerApp\RunnerApp.Windows\publish-and-upload-windows.ps1 -TargetServers uat -WhatIf
 ```
 
 ### Jenkins (CI)
@@ -141,7 +139,7 @@ Jenkins runs on an Ubuntu agent and can no longer build the Windows runner
 because `RunnerApp.Windows` targets `net8.0-windows`. The `Runner App` stage now
 calls `publish-ci.sh` to produce the **Linux** runner and uploads
 `AvintraRunnerApp_*.zip` to the server(s) mapped from the branch
-(`dev` → avdev, `uat` → avuat, `main` → avweb1 + avweb2).
+(`uat` → avuat, `main` → avweb1 + avweb2).
 
 All upload scripts place platform-specific zips in `/var/www/aventisia.com/files/binaries/`. Windows uploads also place `Install-AvintraRunnerService.ps1` in `/var/www/aventisia.com/files/scripts/`. Linux/macOS zips are framework-dependent, so the target machine must have the matching .NET 8 runtime installed.
 
@@ -162,7 +160,7 @@ dotnet run --project clients/RunnerApp/RunnerApp.Windows/RunnerApp.Windows.cspro
 
 | Argument          | Required | Description                                               |
 | ----------------- | -------- | --------------------------------------------------------- |
-| `--appBaseUrl`    | Yes      | Backend API base URL (e.g. `https://avdev.aventisia.com`) |
+| `--appBaseUrl`    | Yes      | Backend API base URL (e.g. `https://avuat.aventisia.com`) |
 | `--accessToken`   | Yes      | JWT access token for authentication                       |
 | `--jobId`         | Yes      | Job ID to execute                                         |
 | `--websocketPort` | No       | Local Tauri WebSocket port for progress + abort control   |
@@ -261,10 +259,10 @@ If you don't pass `-RunnerZipPath`, the script automatically picks the most rece
 cd clients\RunnerApp\RunnerApp.Windows
 
 # 1) Build the local archive (no upload)
-.\publish-and-upload-windows.ps1 -TargetServers dev -SkipUpload
+.\publish-and-upload-windows.ps1 -TargetServers uat -SkipUpload
 
 # 2) Install directly from the built archive
-$env:AVINTRA_APP_BASE_URL = "https://dev-avintra.aventisia.com"
+$env:AVINTRA_APP_BASE_URL = "https://uat-avintra.aventisia.com"
 $env:AVINTRA_API_KEY      = "..."
 $env:AVINTRA_TENANT_ID    = "..."
 $env:AVINTRA_LINKED_USERNAME = "gaurav@aventisia.com"

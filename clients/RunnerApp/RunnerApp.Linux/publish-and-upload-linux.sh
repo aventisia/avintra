@@ -2,12 +2,12 @@
 # Publishes the RunnerApp Linux binary and uploads it to the selected server(s).
 #
 # Usage:
-#   ./publish-and-upload-linux.sh [--version <ver>] [--target-servers dev|uat|dev+uat|prod]
+#   ./publish-and-upload-linux.sh [--version <ver>] [--target-servers uat|prod]
 #                                 [--dry-run] [--skip-upload]
 #
 # Defaults:
 #   --version        reads the <Version> from RunnerApp.Windows.csproj (the single source of truth)
-#   --target-servers prompts interactively if not provided (1=dev, 2=uat, 3=dev+uat, 4=prod)
+#   --target-servers prompts interactively if not provided (1=uat, 2=prod)
 #   --dry-run        print the publish and upload plan without executing uploads
 #   --skip-upload    publish only; do not upload
 #
@@ -48,7 +48,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     *)
       echo "error: unknown argument: $1" >&2
-      echo "usage: $0 [--version <ver>] [--target-servers dev|uat|dev+uat|prod] [--dry-run] [--skip-upload]" >&2
+      echo "usage: $0 [--version <ver>] [--target-servers uat|prod] [--dry-run] [--skip-upload]" >&2
       exit 1
       ;;
   esac
@@ -73,10 +73,8 @@ fi
 resolve_servers() {
   local choice="$1"
   case "$choice" in
-    dev|1)            echo "avdev.aventisia.com" ;;
-    uat|2)            echo "avuat.aventisia.com" ;;
-    dev_uat|dev+uat|3) echo "avdev.aventisia.com avuat.aventisia.com" ;;
-    prod|4)           echo "avweb1.aventisia.com avweb2.aventisia.com" ;;
+    uat|1)            echo "avuat.aventisia.com" ;;
+    prod|2)           echo "avweb1.aventisia.com avweb2.aventisia.com" ;;
     *)                echo "error: unsupported server combination: $choice" >&2; exit 1 ;;
   esac
 }
@@ -84,11 +82,9 @@ resolve_servers() {
 if [[ -z "$TARGET_SERVERS" ]]; then
   if [[ -t 0 ]]; then
     echo "Select target server(s):"
-    echo "  1) dev"
-    echo "  2) uat"
-    echo "  3) dev+uat"
-    echo "  4) prod"
-    read -r -p "Enter 1-4 or name (dev/uat/dev+uat/prod): " TARGET_SERVERS
+    echo "  1) uat"
+    echo "  2) prod"
+    read -r -p "Enter 1-2 or name (uat/prod): " TARGET_SERVERS
   else
     echo "error: --target-servers is required when running non-interactively" >&2
     exit 1
