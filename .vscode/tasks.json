@@ -123,12 +123,21 @@
       "isBackground": true
     },
     {
+      "label": "corsair",
+      "type": "shell",
+      "command": "npm run dev",
+      "options": {
+        "cwd": "${workspaceFolder}/apis/corsair"
+      },
+      "isBackground": true
+    },
+    {
       "label": "Run Frontends",
       "dependsOn": ["accounts", "workspace", "studio", "atlas"]
     },
     {
       "label": "Run Backends",
-      "dependsOn": ["accounts_apis", "workspace_apis", "llmpipeline_apis", "apache_camel_apis"]
+      "dependsOn": ["accounts_apis", "workspace_apis", "llmpipeline_apis", "apache_camel_apis", "corsair"]
     },
     {
       "label": "Run All",

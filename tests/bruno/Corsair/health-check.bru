@@ -1,0 +1,16 @@
+meta {
+  name: Health Check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{CORSAIR_SIDECAR_URL}}/api/corsair/ok
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains "ok"
+}

@@ -1,0 +1,16 @@
+meta {
+  name: List Tools
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{CORSAIR_SIDECAR_URL}}/api/corsair/tools
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains "tools"
+}

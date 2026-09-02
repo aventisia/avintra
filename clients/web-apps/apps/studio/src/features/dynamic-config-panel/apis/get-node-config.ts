@@ -47,7 +47,9 @@ export const getNodeConfig = async (nodeUniqueName: string, nodeType?: string) =
   }
 
   if (nodeUniqueName.length > 9 && nodeUniqueName.slice(-9) === "Connector") {
-    // For Cloud Connectors, fetch the config from the WorkspaceAPIs server
+    // For Cloud Connectors (including Corsair connectors, which are named
+    // "Corsair/{Plugin}/{Action}Connector"), fetch the config from the
+    // WorkspaceAPIs server.
     try {
       const connectorConfig = await axiosInstance
         .get(

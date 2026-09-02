@@ -1,0 +1,25 @@
+meta {
+  name: Invoke Tool
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{CORSAIR_SIDECAR_URL}}/api/corsair/invoke
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "connectionId": "73bd9857-bac7-4b97-8b7f-4ab261d39b7e",
+    "plugin": "outlook",
+    "action": "messages.list",
+    "payload": {}
+  }
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains "success"
+}

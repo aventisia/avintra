@@ -59,6 +59,16 @@ builder.Services.AddQuartzJobs();
 builder.Services.AddStringEncryptionService();
 builder.Services.AddUploadFileService();
 builder.Services.AddHttpClient();
+builder.Services.AddHttpClient("Corsair", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+}).ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    // The sidecar returns 302 redirects for the OAuth connect/callback flow.
+    // We must read the Location header ourselves (to proxy the browser onward),
+    // so disable automatic redirect following.
+    AllowAutoRedirect = false
+});
 builder.Services.AddAzureBlobStorageService();
 /*--Configure the HTTP request pipeline.--*/
 var app = builder.Build();
