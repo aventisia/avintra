@@ -58,6 +58,14 @@ public class GenericConfigurer implements ConnectorConfigurer {
             baseUri += (baseUri.contains("?") ? "&" : "?") + queryString;
         }
 
+        // Inject the operation into the endpoint URI using the catalog's
+        // operation option name (e.g. aws2-s3?operation=copyObject,
+        // salesforce?operationName=getSObject) so producer operations dispatch.
+        String operation = request.operationName();
+        if (operation != null && !operation.isBlank() && metadata.operationOption() != null) {
+            baseUri += (baseUri.contains("?") ? "&" : "?") + metadata.operationOption() + "=" + escape(operation);
+        }
+
         return applyAuth(baseUri, request.auth());
     }
 

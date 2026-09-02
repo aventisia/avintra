@@ -13,8 +13,7 @@ public record ConnectorSchema(
         String title,
         String description,
         List<String> required,
-        Map<String, ConnectorSchemaProperty> properties,
-        Map<String, ConnectorSchemaDefinition> $defs) {
+        Map<String, ConnectorSchemaProperty> properties) {
 
     public static ConnectorSchema base() {
         return new ConnectorSchema(
@@ -23,24 +22,17 @@ public record ConnectorSchema(
                 "ConnectorRequest",
                 "Request payload for the Camel connector harness",
                 List.of("connector", "operation", "configuration"),
-                new LinkedHashMap<>(),
                 new LinkedHashMap<>());
     }
 
     public ConnectorSchema withProperty(String name, ConnectorSchemaProperty property) {
         Map<String, ConnectorSchemaProperty> updated = new LinkedHashMap<>(properties);
         updated.put(name, property);
-        return new ConnectorSchema($schema, type, title, description, required, updated, $defs);
-    }
-
-    public ConnectorSchema withDef(String name, ConnectorSchemaDefinition def) {
-        Map<String, ConnectorSchemaDefinition> updated = new LinkedHashMap<>($defs);
-        updated.put(name, def);
-        return new ConnectorSchema($schema, type, title, description, required, properties, updated);
+        return new ConnectorSchema($schema, type, title, description, required, updated);
     }
 
     public static ConnectorSchemaProperty stringProperty(String description, String defaultValue, List<String> enumValues) {
-        return new ConnectorSchemaProperty("string", description, null, null, defaultValue, enumValues, null, null);
+        return new ConnectorSchemaProperty("string", description, null, null, defaultValue, enumValues);
     }
 
     public static ConnectorSchemaProperty stringProperty(String description) {
@@ -48,18 +40,6 @@ public record ConnectorSchema(
     }
 
     public static ConnectorSchemaProperty anyProperty(String description) {
-        return new ConnectorSchemaProperty(null, description, null, null, null, null, null, null);
-    }
-
-    public static ConnectorSchemaProperty booleanProperty(String description, Boolean defaultValue) {
-        return new ConnectorSchemaProperty("boolean", description, null, null, null, null, defaultValue, null);
-    }
-
-    public static ConnectorSchemaProperty integerProperty(String description) {
-        return new ConnectorSchemaProperty("integer", description, null, null, null, null, null, null);
-    }
-
-    public static ConnectorSchemaProperty arrayProperty(String description, ConnectorSchemaProperty items) {
-        return new ConnectorSchemaProperty("array", description, null, null, null, null, null, items);
+        return new ConnectorSchemaProperty(null, description, null, null, null, null);
     }
 }

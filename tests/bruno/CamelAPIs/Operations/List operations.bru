@@ -1,0 +1,32 @@
+meta {
+  name: List operations - for a connector
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{APACHE_CAMEL_BASE_URL}}/connectors/aws2-s3/operations
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+
+  test("response is an array of operations", function() {
+    expect(Array.isArray(res.body)).to.equal(true);
+    expect(res.body.length).to.be.greaterThan(0);
+  });
+
+  test("each operation has only id and name", function() {
+    for (const op of res.body) {
+      expect(op).to.have.property("id");
+      expect(op).to.have.property("name");
+      // Minimal payload: no Camel-internal fields.
+      expect(op).to.not.have.property("uri");
+      expect(op).to.not.have.property("scheme");
+    }
+  });
+}
