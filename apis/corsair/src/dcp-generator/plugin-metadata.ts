@@ -492,7 +492,7 @@ export function toPluginMetadata(
     id,
     providerName,
     description,
-    img: iconMap[id] ?? null,
+    img: iconMap[id] ?? "/function.png",
     authType,
     actionDescriptions,
   };
