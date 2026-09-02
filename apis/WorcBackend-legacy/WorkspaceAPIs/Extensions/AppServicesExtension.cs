@@ -1,7 +1,6 @@
 using WorkspaceAPIs.Features.CloudConnectors.Azure;
 using WorkspaceAPIs.Features.CloudConnectors.Camel;
-using WorkspaceAPIs.Features.CloudConnectors.CamelV2;
-using WorkspaceAPIs.Features.CloudConnectors.CamelV2.Services;
+using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 using WorkspaceAPIs.Features.CloudConnectors.Email;
 using WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
 using WorkspaceAPIs.Features.CloudConnectors.M365.SharePoint;
@@ -198,16 +197,16 @@ public static class AppServicesExtension
 
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
-        // Generic configuration-driven Camel connector service (all families)
+        // Generic catalog-driven Camel connector service (all families): config
+        // resolution, catalog client, node generation, tool seeding, startup seeding.
         services.AddSingleton<CamelConnectorsConfigRepository>();
+        services.AddSingleton<CamelCatalogClient>();
         services.AddScoped<CamelConnectorService>();
-        // CamelV2: catalog-driven full-catalog support (seeding, node generation, generic invoke)
-        services.AddSingleton<CamelV2CatalogClient>();
-        services.AddScoped<CamelV2ToolSeeder>();
-        services.AddScoped<CamelV2NodeGenerator>();
-        services.AddScoped<ICamelV2ConnectorService, CamelV2ConnectorService>();
-        services.AddScoped<CamelV2MappingFilesGenerator>();
-        services.AddHostedService<CamelV2StartupHostedService>();
+        services.AddScoped<ICamelConnectorService, CamelConnectorService>();
+        services.AddScoped<CamelToolSeeder>();
+        services.AddScoped<CamelNodeGenerator>();
+        services.AddScoped<CamelMappingFilesGenerator>();
+        services.AddHostedService<CamelStartupHostedService>();
         services.AddScoped<IM365ConnectorsService, M365ConnectorsService>();
         services.AddScoped<IM365ExcelConnectorsService, M365ExcelConnectorsService>();
         services.AddScoped<ISendGridConnectorsService, SendGridConnectorsService>();

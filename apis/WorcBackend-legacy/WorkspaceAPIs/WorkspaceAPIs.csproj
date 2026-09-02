@@ -72,9 +72,7 @@
   -->
   <ItemGroup>
     <EmbeddedResource Include="Features\CloudConnectors\ConfigFiles\CloudConnectorActionSelectorMappingFile.json" LogicalName="CloudConnectorActionSelectorMappingFile.json" />
-    <EmbeddedResource Include="Features\CloudConnectors\CamelV2\Helpers\CamelActionMapping.json" LogicalName="CamelV2.CamelActionMapping.json" />
-    <EmbeddedResource Include="Features\CloudConnectors\CamelV2\openapi\github.openapi.json" LogicalName="CamelV2.openapi.github.openapi.json" />
-    <EmbeddedResource Include="Features\CloudConnectors\CamelV2\openapi\m365.openapi.json" LogicalName="CamelV2.openapi.m365.openapi.json" />
+    <EmbeddedResource Include="Features\CloudConnectors\Camel\Helpers\CamelActionMapping.json" LogicalName="Camel.CamelActionMapping.json" />
   </ItemGroup>
 
 </Project>

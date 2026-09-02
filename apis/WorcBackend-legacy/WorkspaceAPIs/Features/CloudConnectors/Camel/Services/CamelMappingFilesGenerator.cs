@@ -1,30 +1,28 @@
 using System.Reflection;
 using System.Text;
 
-namespace WorkspaceAPIs.Features.CloudConnectors.CamelV2.Services;
+namespace WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 
 /// <summary>
 /// Ensures the Cloud-Connector mapping files exist on disk at startup.
 ///
 /// The following artifacts are NOT derivable from the harness catalog at
 /// runtime (they are curated: hand-coded selector groups, family labels/icons,
-/// operation->action name spellings), so they are embedded in the assembly and
+/// operation-&gt;action name spellings), so they are embedded in the assembly and
 /// restored verbatim when missing:
 ///   - <c>ConfigFiles/CloudConnectorActionSelectorMappingFile.json</c> (node selector)
-///   - <c>CamelV2/Helpers/CamelActionMapping.json</c> (action -> operation mapping)
-///   - <c>CamelV2/openapi/github.openapi.json</c>
-///   - <c>CamelV2/openapi/m365.openapi.json</c>
+///   - <c>Camel/Helpers/CamelActionMapping.json</c> (action -&gt; operation mapping)
 ///
 /// Restoration is idempotent: existing files are never overwritten, so the
 /// committed on-disk files remain the source of truth once present.
 /// </summary>
-public class CamelV2MappingFilesGenerator
+public class CamelMappingFilesGenerator
 {
-    private readonly ILogger<CamelV2MappingFilesGenerator> _logger;
+    private readonly ILogger<CamelMappingFilesGenerator> _logger;
     private readonly IWebHostEnvironment _env;
 
-    public CamelV2MappingFilesGenerator(
-        ILogger<CamelV2MappingFilesGenerator> logger,
+    public CamelMappingFilesGenerator(
+        ILogger<CamelMappingFilesGenerator> logger,
         IWebHostEnvironment env)
     {
         _logger = logger;
@@ -38,9 +36,7 @@ public class CamelV2MappingFilesGenerator
     private static readonly (string ResourceName, string RelativePath)[] MappingFiles =
     {
         ("CloudConnectorActionSelectorMappingFile.json", Path.Combine("ConfigFiles", "CloudConnectorActionSelectorMappingFile.json")),
-        ("CamelV2.CamelActionMapping.json", Path.Combine("CamelV2", "Helpers", "CamelActionMapping.json")),
-        ("CamelV2.openapi.github.openapi.json", Path.Combine("CamelV2", "openapi", "github.openapi.json")),
-        ("CamelV2.openapi.m365.openapi.json", Path.Combine("CamelV2", "openapi", "m365.openapi.json")),
+        ("Camel.CamelActionMapping.json", Path.Combine("Camel", "Helpers", "CamelActionMapping.json")),
     };
 
     /// <summary>
