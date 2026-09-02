@@ -79,6 +79,7 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
     corsair,
     iconMap = DEFAULT_ICON_MAP,
     baseUrlMap = DEFAULT_BASE_URL_MAP,
+    globalMappingFile,
   } = options;
 
   if (!corsair) {
@@ -90,7 +91,12 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
 
   const configRoot = path.join(outputDir, "Corsair");
   const corsairMappingFile = path.join(outputDir, "CorsairActionSelectorMappingFile.json");
-  const globalMappingFile = path.join(outputDir, "CloudConnectorActionSelectorMappingFile.json");
+  // The global mapping is owned by the Workspace API codebase. When Corsair
+  // configs are written to a shared path (CORSAIR_CONFIG_DIR), the global
+  // mapping still lives in the Workspace API codebase, so cleanup must target
+  // that file. Defaults to outputDir/CloudConnectorActionSelectorMappingFile.json.
+  const globalMappingFileResolved = globalMappingFile
+    ?? path.join(outputDir, "CloudConnectorActionSelectorMappingFile.json");
   const actionMapFile = path.join(outputDir, "CorsairActionMap.json");
   const openApiDir = path.join(configRoot, "openapi");
 
@@ -145,9 +151,9 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
 
   // Strip any previously merged Corsair entries from the global mapping so the
   // two files never drift out of sync.
-  const existingGlobal = loadExistingMapping(globalMappingFile);
+  const existingGlobal = loadExistingMapping(globalMappingFileResolved);
   const cleanedGlobal = cleanCorsairFromGlobalMapping(existingGlobal);
-  writeJson(globalMappingFile, cleanedGlobal);
+  writeJson(globalMappingFileResolved, cleanedGlobal);
 
   // Write the backend invocation map. This is the single source of truth for
   // resolving dotted sidecar actions from Studio node names.

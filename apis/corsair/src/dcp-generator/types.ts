@@ -96,4 +96,12 @@ export type GenerateDcpOptions = {
   iconMap?: Record<string, string>;
   /** Base URL map: plugin id → provider base URL (for OpenAPI specs). */
   baseUrlMap?: Record<string, string>;
+  /**
+   * Absolute path to the global Cloud Connector action-selector mapping file
+   * (owned by the Workspace API codebase). When Corsair configs are written to
+   * a shared path (CORSAIR_CONFIG_DIR), the global mapping still lives in the
+   * Workspace API codebase, so the cleanup must target that file. Defaults to
+   * <c>outputDir/CloudConnectorActionSelectorMappingFile.json</c>.
+   */
+  globalMappingFile?: string;
 };

@@ -42,7 +42,7 @@ def hasChangesInPath(path) {
 pipeline {
     agent any
     parameters {
-        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,apachecamel_api,docs,web_apps,runner_app). web_apps covers accounts, workspace, and studio apps (desktop-app excluded).')
+        string(name: 'REPOS_TO_BUILD', defaultValue: '', description: 'Comma-separated list of repo names to build on manual build (e.g., accounts_api,workspace_api,llmpipeline_api,apachecamel_api,corsair,docs,web_apps,runner_app). web_apps covers accounts, workspace, and studio apps (desktop-app excluded).')
     }
     stages {
         stage('Detect Changes') {
@@ -63,6 +63,7 @@ pipeline {
                         env.BUILD_DOCS_CLIENT = reposToBuild.contains('docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = (reposToBuild.contains('web_apps') || reposToBuild.contains('accounts') || reposToBuild.contains('workspace') || reposToBuild.contains('studio') || reposToBuild.contains('atlas')) ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = reposToBuild.contains('runner_app') ? 'true' : 'false'
+                        env.BUILD_CORSAIR = reposToBuild.contains('corsair') ? 'true' : 'false'
                     } else {
                         echo 'Automatic build - detecting changes...'
                         
@@ -77,6 +78,7 @@ pipeline {
                         env.BUILD_DOCS_CLIENT = hasChangesInPath('clients/docs') ? 'true' : 'false'
                         env.BUILD_WEB_APPS = hasChangesInPath('clients/web-apps') ? 'true' : 'false'
                         env.BUILD_RUNNER_APP = hasChangesInPath('clients/RunnerApp') ? 'true' : 'false'
+                        env.BUILD_CORSAIR = hasChangesInPath('apis/corsair') ? 'true' : 'false'
                     }
                     
                     echo """
@@ -88,6 +90,7 @@ pipeline {
                     - Docs Client: ${env.BUILD_DOCS_CLIENT}
                     - Web Apps: ${env.BUILD_WEB_APPS}
                     - Runner App: ${env.BUILD_RUNNER_APP}
+                    - Corsair: ${env.BUILD_CORSAIR}
                     """.stripIndent()
                 }
             }
@@ -167,6 +170,84 @@ pipeline {
             }
         }
         
+        // ======================
+        // Corsair Sidecar Build Stage
+        // ======================
+        // Corsair is an optional provider sidecar. It owns its own metadata
+        // generation and tool registry seeding. Config artifacts are written to
+        // a dedicated shared path (<UploadDirectory>/config/corsair) on each
+        // server, NOT into the Workspace API codebase, so a Corsair change does
+        // not force a main app rebuild. The Workspace API reads the configs from
+        // that shared path at runtime.
+        
+        stage('Corsair Sidecar') {
+            when {
+                expression { env.BUILD_CORSAIR == 'true' }
+            }
+            agent any
+            tools {
+                nodejs 'NodeJS 22.18.0'
+            }
+            stages {
+                stage('Generate - Corsair Configs') {
+                    steps {
+                        dir('apis/corsair') {
+                            echo 'Installing Corsair dependencies...'
+                            sh 'npm ci'
+                            echo 'Generating Corsair config artifacts...'
+                            // Write to a local staging dir; the deploy stage rsyncs
+                            // it to the shared path on each server.
+                            sh 'CORSAIR_CONFIG_DIR=${WORKSPACE}/corsair-configs npm run generate:configs'
+                        }
+                    }
+                }
+                stage('Build - Corsair Image') {
+                    steps {
+                        dir('apis/corsair') {
+                            echo 'Building Corsair Docker image...'
+                            sh 'docker build -t aventisia/corsair:${BUILD_NUMBER} .'
+                        }
+                    }
+                }
+                stage('Deploy - Corsair Container') {
+                    steps {
+                        script {
+                            sshagent(credentials: ['aventisia_vps_ssh']) {
+                                def targetServers = getTargetServers(env.BRANCH_NAME)
+                                echo "Deploying Corsair to ${targetServers.size()} server(s)..."
+                                targetServers.each { server ->
+                                    // Copy generated configs to the shared path on the server.
+                                    sh "ssh admin@${server} 'mkdir -p /var/www/aventisia.com/files/config/corsair'"
+                                    sh "rsync -avz --delete ${WORKSPACE}/corsair-configs/ admin@${server}:/var/www/aventisia.com/files/config/corsair/"
+
+                                    sh "ssh admin@${server} 'docker pull aventisia/corsair:${BUILD_NUMBER} && docker stop corsair || true && docker rm corsair || true && docker run -d --name corsair --restart unless-stopped --env-file /var/www/aventisia.com/apis/corsair/.env -p 3456:3456 aventisia/corsair:${BUILD_NUMBER}'"
+                                    echo "Successfully deployed Corsair to ${server}"
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('Seed - Corsair Tools') {
+                    steps {
+                        script {
+                            // Corsair owns its tool registry seeding. The config files are
+                            // generated above, so the tool metadata is ready now. The seed
+                            // script runs inside the Corsair container (compiled dist +
+                            // node_modules + env) and is idempotent.
+                            sshagent(credentials: ['aventisia_vps_ssh']) {
+                                def targetServers = getTargetServers(env.BRANCH_NAME)
+                                echo "Seeding Corsair tools into Workspace database on ${targetServers.size()} server(s)..."
+                                targetServers.each { server ->
+                                    sh "ssh admin@${server} 'docker exec corsair sh -c \"WORKSPACE_ENV_TYPE=${getBuildMode(env.BRANCH_NAME) == 'production' ? 'prod' : 'dev'} node dist/seed-corsair-tools.js\"'"
+                                    echo "Successfully seeded Corsair tools on ${server}"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // ======================
         // .NET APIs Build Stages
         // ======================
