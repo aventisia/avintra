@@ -18,7 +18,7 @@ export interface JobExecutionLogDetailDto {
   reactFlowObject: string;
   flowVariablesObject: string;
   inputOutputObject: string;
-  nodeExecutionLogs: string;
+  nodeExecutionLogs: unknown[];
 
   type: string;
 }

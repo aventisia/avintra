@@ -5,9 +5,9 @@ import { NodeDetail } from "@/features/execution-logs/components/NodeDetails";
 import { useNodePopoverStore } from "../../stores/node-popover-store";
 
 export const NodePopover = () => {
-  const { nodeData, anchorRect, closePopover, setHoveringPopover } = useNodePopoverStore();
+  const { openNodeId, anchorRect, closePopover, setHoveringPopover } = useNodePopoverStore();
 
-  if (!nodeData || !anchorRect) return null;
+  if (!openNodeId || !anchorRect) return null;
 
   const VIEWPORT_PADDING = 8;
   const GAP = 8;
@@ -46,7 +46,7 @@ export const NodePopover = () => {
           closePopover();
         }}
       >
-        <NodeDetail nodeData={nodeData} />
+        <NodeDetail nodeId={openNodeId} />
       </PopoverContent>
     </Popover>
   );

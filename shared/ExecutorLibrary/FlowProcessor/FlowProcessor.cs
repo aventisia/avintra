@@ -254,15 +254,27 @@ public class FlowProcessor
                 return (conditionalEdge?.Id, conditionalNext, null);
 
             case "branchEndNode":
-                var branchEndNext = ProcessBranchEndNode(node, flow, flowExecutionContext, conditionalStates, loopStates);
+                var (branchEndNext, loopContinuationLog) = ProcessBranchEndNode(node, flow, flowExecutionContext, conditionalStates, loopStates);
                 var branchEndEdge = string.IsNullOrWhiteSpace(branchEndNext) ? null : FindNextEdge(flow, node.Id, branchEndNext);
+                if (loopContinuationLog is not null)
+                {
+                    var parentLoopNodeId = node.Data?.CustomParentId;
+                    if (!string.IsNullOrWhiteSpace(parentLoopNodeId))
+                    {
+                        var parentLoopNode = flow.Nodes.FirstOrDefault(n => n.Id == parentLoopNodeId);
+                        if (parentLoopNode is not null)
+                        {
+                            CompleteSupportNode(parentLoopNode, logs, onNodeCompleted, loopContinuationLog);
+                        }
+                    }
+                }
                 CompleteSupportNode(node, logs, onNodeCompleted);
                 return (branchEndEdge?.Id, branchEndNext, null);
 
             case "forLoopNode":
-                var loopNext = ProcessForLoopNode(node, flow, flowExecutionContext, loopStates);
+                var (loopNext, loopLog) = ProcessForLoopNode(node, flow, flowExecutionContext, loopStates);
                 var loopEdge = string.IsNullOrWhiteSpace(loopNext) ? null : FindNextEdge(flow, node.Id, loopNext);
-                CompleteSupportNode(node, logs, onNodeCompleted);
+                CompleteSupportNode(node, logs, onNodeCompleted, loopLog);
                 return (loopEdge?.Id, loopNext, null);
 
             case "callAgentNode":
@@ -821,7 +833,7 @@ public class FlowProcessor
         return ConditionEvaluator.Evaluate(conditionGroups);
     }
 
-    private string? ProcessBranchEndNode(
+    private (string? NextNodeId, NodeExecutionLog? LoopLog) ProcessBranchEndNode(
         ReactFlowNodeModel node,
         ReactFlowDataModel flow,
         FlowExecutionContext flowExecutionContext,
@@ -831,7 +843,7 @@ public class FlowProcessor
         var parentNodeId = node.Data.CustomParentId;
         if (string.IsNullOrWhiteSpace(parentNodeId))
         {
-            return FindNextEdgeTarget(flow, node.Id);
+            return (FindNextEdgeTarget(flow, node.Id), null);
         }
 
         var parentNode = flow.Nodes.FirstOrDefault(n => n.Id == parentNodeId)
@@ -847,11 +859,11 @@ public class FlowProcessor
             if (conditionalState.RemainingBranches.Count > 0)
             {
                 conditionalState.ExecutedBranchesCount++;
-                return conditionalState.RemainingBranches.Dequeue();
+                return (conditionalState.RemainingBranches.Dequeue(), null);
             }
 
             conditionalStates.Remove(parentNodeId);
-            return conditionalState.MergeBranchesNodeId;
+            return (conditionalState.MergeBranchesNodeId, null);
         }
 
         if (string.Equals(parentNode.Type, "forLoopNode", StringComparison.OrdinalIgnoreCase))
@@ -878,11 +890,11 @@ public class FlowProcessor
                                 flowExecutionContext.Set(loopState.ItemIndexVariableName, loopState.CurrentIndex);
                         }
                     }
-                    return loopState.LoopBodyStartNodeId;
+                    return (loopState.LoopBodyStartNodeId, CreateLoopLog(parentNode, loopState, "continue", true));
                 }
 
                 loopStates.Remove(parentNodeId);
-                return loopState.MergeBranchesNodeId;
+                return (loopState.MergeBranchesNodeId, CreateLoopLog(parentNode, loopState, "exit", false));
             }
 
             loopState.CurrentIteration++;
@@ -896,17 +908,17 @@ public class FlowProcessor
             // the condition becomes false (or is missing/empty).
             if (EvaluateLoopCondition(parentNode, flowExecutionContext))
             {
-                return loopState.LoopBodyStartNodeId;
+                return (loopState.LoopBodyStartNodeId, CreateLoopLog(parentNode, loopState, "continue", true));
             }
 
             loopStates.Remove(parentNodeId);
-            return loopState.MergeBranchesNodeId;
+            return (loopState.MergeBranchesNodeId, CreateLoopLog(parentNode, loopState, "exit", false));
         }
 
-        return FindNextEdgeTarget(flow, node.Id);
+        return (FindNextEdgeTarget(flow, node.Id), null);
     }
 
-    private string ProcessForLoopNode(
+    private (string NextNodeId, NodeExecutionLog LoopLog) ProcessForLoopNode(
         ReactFlowNodeModel node,
         ReactFlowDataModel flow,
         FlowExecutionContext flowExecutionContext,
@@ -915,7 +927,7 @@ public class FlowProcessor
         if (loopStates.TryGetValue(node.Id, out var existing))
         {
             // Already initialized: only re-enter the body if the loop has not been closed.
-            return existing.LoopBodyStartNodeId;
+            return (existing.LoopBodyStartNodeId, CreateLoopLog(node, existing, "continue", true));
         }
 
         var mergeNodeId = node.Data.MergeBranchesNodeId;
@@ -973,10 +985,10 @@ public class FlowProcessor
             if (totalCount == 0)
             {
                 loopStates.Remove(node.Id);
-                return mergeNodeId;
+                return (mergeNodeId, CreateLoopLog(node, forEachState, "skip", false));
             }
 
-            return bodyStartNodeId;
+            return (bodyStartNodeId, CreateLoopLog(node, forEachState, "enter", true));
         }
 
         // ConditionalLoop (while mode): the body runs while the configured condition
@@ -999,10 +1011,48 @@ public class FlowProcessor
         if (!conditionMet)
         {
             loopStates.Remove(node.Id);
-            return mergeNodeId;
+            return (mergeNodeId, CreateLoopLog(node, whileState, "skip", false));
         }
 
-        return bodyStartNodeId;
+        return (bodyStartNodeId, CreateLoopLog(node, whileState, "enter", true));
+    }
+
+    /// <summary>
+    /// Builds a support-node log for a loop node that carries explicit iteration metadata.
+    /// The frontend uses LoopStatus, IterationIndex, TotalCount, and ConditionsResult to
+    /// reconstruct loop context without relying solely on log order.
+    /// </summary>
+    private static NodeExecutionLog CreateLoopLog(
+        ReactFlowNodeModel node,
+        LoopState loopState,
+        string loopStatus,
+        bool conditionResult)
+    {
+        var outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["LoopStatus"] = loopStatus,
+            ["LoopType"] = loopState.LoopType,
+            ["IterationIndex"] = loopState.CurrentIndex.ToString(),
+            ["CurrentIteration"] = loopState.CurrentIteration.ToString(),
+            ["ConditionsResult"] = conditionResult ? "True" : "False",
+        };
+
+        if (loopState.TotalCount > 0)
+        {
+            outputs["TotalCount"] = loopState.TotalCount.ToString();
+        }
+
+        return new NodeExecutionLog
+        {
+            NodeId = node.Id,
+            NodeName = string.IsNullOrWhiteSpace(node.Data?.Label) ? node.Type : node.Data.Label,
+            NodeUniqueName = node.Data?.Name ?? node.Type,
+            IsSuccess = true,
+            Duration = 0,
+            Inputs = node.Data?.Inputs?.ToDictionary(i => i.Key, i => i.Value?.ToString() ?? string.Empty, StringComparer.OrdinalIgnoreCase)
+                ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
+            Outputs = outputs,
+        };
     }
 
     /// <summary>

@@ -95,11 +95,11 @@ export const useReactFlowViewData = () => {
       setEdges(flow?.edges);
 
       if (data.nodeExecutionLogs) {
-        initLogs(
-          deepParse(data.nodeExecutionLogs) as unknown as NodeExecutionLogType[],
-          flow?.nodes,
-          flow?.edges,
-        );
+        const parsedLogs = Array.isArray(data.nodeExecutionLogs)
+          ? data.nodeExecutionLogs
+          : (deepParse(data.nodeExecutionLogs) as unknown as NodeExecutionLogType[]);
+
+        initLogs(parsedLogs as NodeExecutionLogType[], flow?.nodes, flow?.edges);
       }
 
       setFlowVariablesObject(flowVarObjs || []);

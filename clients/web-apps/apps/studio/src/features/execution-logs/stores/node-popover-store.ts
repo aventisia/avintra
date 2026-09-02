@@ -1,15 +1,12 @@
 // stores/useNodePopoverStore.ts
 import { create } from "zustand";
 
-import { NodeDataType } from "@/types/node-data-type";
-
 interface NodePopoverState {
   openNodeId: string | null;
-  nodeData: NodeDataType | null;
   anchorRect: DOMRect | null;
   isHoveringPopover: boolean;
 
-  openPopover: (nodeId: string, data: NodeDataType, rect: DOMRect) => void;
+  openPopover: (nodeId: string, rect: DOMRect) => void;
   closePopover: () => void;
 
   setHoveringPopover: (val: boolean) => void;
@@ -17,21 +14,18 @@ interface NodePopoverState {
 
 export const useNodePopoverStore = create<NodePopoverState>((set) => ({
   openNodeId: null,
-  nodeData: null,
   anchorRect: null,
   isHoveringPopover: false,
 
-  openPopover: (nodeId, data, rect) =>
+  openPopover: (nodeId, rect) =>
     set({
       openNodeId: nodeId,
-      nodeData: data,
       anchorRect: rect,
     }),
 
   closePopover: () =>
     set({
       openNodeId: null,
-      nodeData: null,
       anchorRect: null,
       isHoveringPopover: false,
     }),

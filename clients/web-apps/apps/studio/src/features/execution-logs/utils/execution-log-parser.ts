@@ -19,6 +19,15 @@ export const mapLogsToFlow = (
   const routerVisits: Record<string, Set<string>> = {};
   const routerTruePaths: Record<string, Set<string>> = {};
 
+  // Loop metadata derived from the flow graph so we can detect iterations even when the
+  // runner only logs the loop node once (the current backend behavior).
+  const loopMergeNode: Record<string, string> = {};
+  const loopBodyStart: Record<string, string> = {};
+  const bodyStartToLoopId: Record<string, string> = {};
+
+  const stringEquals = (a: string, b: string) =>
+    a.localeCompare(b, undefined, { sensitivity: "accent" }) === 0;
+
   // 1. Map Structure (Purely via React Flow properties, ignoring user-editable names)
   flowNodes?.forEach((n) => {
     if (n.type === "conditionalNode") {
@@ -34,6 +43,23 @@ export const mapLogsToFlow = (
       [defaultId, ...conditionals]?.forEach((bid) => {
         branchToRouterMap[bid] = n.id;
       });
+    }
+
+    if (n.type === "forLoopNode") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const d = n.data as any;
+      const mergeId = d?.mergeBranchesNodeId;
+      if (mergeId) {
+        loopMergeNode[n.id] = mergeId;
+        const bodyEdge = flowEdges?.find(
+          (e) =>
+            e.source === n.id && e.target !== mergeId && !stringEquals(e.type ?? "", "loopBack"),
+        );
+        if (bodyEdge) {
+          loopBodyStart[n.id] = bodyEdge.target;
+          bodyStartToLoopId[bodyEdge.target] = n.id;
+        }
+      }
     }
   });
 
@@ -53,37 +79,91 @@ export const mapLogsToFlow = (
   });
 
   // 2. Process Logs
+  // Each entry walks through the flow. We maintain a stack of active loop contexts so that
+  // repeated executions of the same node can be keyed by the iteration that produced them.
   const stack: { id: string; idx: number }[] = [];
+  const iterationStarted: Record<string, boolean> = {};
+  // Loops whose context was pushed during the current log entry must not have their
+  // iteration marked as started by the end-of-entry pass; otherwise the first body-start
+  // node would immediately advance to iteration 1 instead of staying at iteration 0.
+  const justPushedLoops = new Set<string>();
+
+  const updateLoopTotal = (loopId: string, idx: number) => {
+    if (!loopRegistry[loopId]) loopRegistry[loopId] = { total: 0 };
+    loopRegistry[loopId].total = Math.max(loopRegistry[loopId].total, idx + 1);
+  };
 
   logs.forEach((entry) => {
     const { nodeId, outputs } = entry; // nodeName completely ignored
     const node = flowNodes?.find((n) => n.id === nodeId);
     if (!node) return;
 
-    // --- LOOP PROCESSING ---
-    if (node.type === "forLoopNode") {
-      // Loop exits purely determined by Output Engine Status, unaffected by UI node renames
-      const isExiting =
-        outputs?.ConditionsResult === "False" ||
-        (typeof outputs?.Status === "string" && outputs.Status.includes("No more items"));
-
-      if (isExiting) {
+    // --- LOOP EXIT PROCESSING ---
+    // Pop any loops whose merge node is the current node. This handles both the legacy
+    // pattern (loop node logged once, body repeats) and future explicit loop-exit logs.
+    while (stack.length > 0) {
+      const top = stack[stack.length - 1];
+      if (loopMergeNode[top.id] === nodeId) {
         stack.pop();
+        iterationStarted[top.id] = false;
       } else {
-        const top = stack[stack.length - 1];
-        if (top?.id === nodeId) top.idx++;
-        else stack.push({ id: nodeId, idx: 0 });
-
-        if (!loopRegistry[nodeId]) loopRegistry[nodeId] = { total: 0 };
-        loopRegistry[nodeId].total = Math.max(
-          loopRegistry[nodeId].total,
-          stack[stack.length - 1].idx + 1,
-        );
+        break;
       }
     }
 
-    const parentLoops =
-      stack.length > 0 && stack[stack.length - 1].id === nodeId ? stack.slice(0, -1) : stack;
+    // --- LOOP NODE PROCESSING ---
+    if (node.type === "forLoopNode") {
+      const loopStatus = outputs?.LoopStatus;
+      const isExplicitExit = loopStatus === "exit" || loopStatus === "skip";
+      const legacyExit =
+        outputs?.ConditionsResult === "False" ||
+        (typeof outputs?.Status === "string" && outputs.Status.includes("No more items"));
+
+      if (isExplicitExit || legacyExit) {
+        // Exit the loop if it is currently on top of the stack.
+        if (stack.length > 0 && stack[stack.length - 1].id === nodeId) {
+          stack.pop();
+          iterationStarted[nodeId] = false;
+        }
+      } else {
+        // Enter or continue the loop. If the loop is already active, advance to the next
+        // iteration; otherwise start the first iteration.
+        const top = stack[stack.length - 1];
+        if (top?.id === nodeId) {
+          top.idx++;
+        } else {
+          stack.push({ id: nodeId, idx: 0 });
+          justPushedLoops.add(nodeId);
+        }
+        iterationStarted[nodeId] = false;
+        updateLoopTotal(nodeId, stack[stack.length - 1].idx);
+      }
+    }
+
+    // --- LOOP BODY RE-ENTRY PROCESSING ---
+    // Current backend data logs the loop node only once. When the body-start node appears
+    // again after its merge node, it signals a new iteration. We also handle the case where
+    // the loop node log is omitted entirely by pushing the loop context from the body start.
+    const reenteredLoopId = bodyStartToLoopId[nodeId];
+    if (reenteredLoopId) {
+      const top = stack[stack.length - 1];
+      if (top?.id === reenteredLoopId) {
+        if (iterationStarted[reenteredLoopId]) {
+          top.idx++;
+          iterationStarted[reenteredLoopId] = false;
+          updateLoopTotal(reenteredLoopId, top.idx);
+        }
+      } else {
+        stack.push({ id: reenteredLoopId, idx: 0 });
+        iterationStarted[reenteredLoopId] = false;
+        justPushedLoops.add(reenteredLoopId);
+        updateLoopTotal(reenteredLoopId, 0);
+      }
+    }
+
+    // Resolve the parent loops for this node. The active loop itself is not its own parent.
+    const activeLoopId = stack.length > 0 ? stack[stack.length - 1].id : null;
+    const parentLoops = activeLoopId === nodeId ? stack.slice(0, -1) : stack;
 
     const pathKey = parentLoops.length > 0 ? parentLoops.map((s) => s.idx).join("-") : "global";
 
@@ -97,6 +177,15 @@ export const mapLogsToFlow = (
     if (parentLoops.length > 0) {
       nodeToParentStack[nodeId] = parentLoops.map((s) => s.id);
     }
+
+    // Mark every active loop as having started its current iteration, except loops that
+    // were just pushed during this same entry (their body-start node comes next).
+    stack.forEach((s) => {
+      if (!justPushedLoops.has(s.id)) {
+        iterationStarted[s.id] = true;
+      }
+    });
+    justPushedLoops.clear();
 
     // --- ROUTER INFERENCE ---
     const routerId = branchToRouterMap[nodeId];

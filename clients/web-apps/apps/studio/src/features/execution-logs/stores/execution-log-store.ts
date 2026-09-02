@@ -10,6 +10,7 @@ export const useExecutionStore = create<ExecutionState & ExecutionActions>((set)
   loopRegistry: {},
   nodeToParentStack: {},
   activeIteration: {},
+  nodeTypes: {},
   routerConfig: {},
   routerVisits: {},
   routerTruePaths: {},
@@ -18,7 +19,13 @@ export const useExecutionStore = create<ExecutionState & ExecutionActions>((set)
     const data = mapLogsToFlow(logs, nodes, edges);
     const indices: Record<string, number> = {};
     Object.keys(data.loopRegistry).forEach((id) => (indices[id] = 0));
-    set({ ...data, activeIteration: indices });
+
+    const nodeTypes: Record<string, string> = {};
+    nodes?.forEach((n) => {
+      nodeTypes[n.id] = n.type ?? "";
+    });
+
+    set({ ...data, activeIteration: indices, nodeTypes });
   },
 
   setIteration: (id, idx) =>
