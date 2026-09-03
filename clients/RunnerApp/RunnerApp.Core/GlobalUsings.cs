@@ -6,3 +6,4 @@ global using Microsoft.Extensions.Hosting;
 global using Microsoft.Extensions.Logging;
 global using RunnerApp.Services;
 global using System.Text.Json;
+global using System.Threading.Channels;

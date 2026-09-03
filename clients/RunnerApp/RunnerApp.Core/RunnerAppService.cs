@@ -18,6 +18,14 @@ public class RunnerAppService : BackgroundService
     // Process manager for the current worker; null when no job is running.
     private WorkerProcessManager? _workerManager;
 
+    // Queue of Initiate commands received from the OrchestratorHub. A channel (instead of a
+    // one-shot TaskCompletionSource) guarantees that commands arriving while a job executes,
+    // while pending jobs are drained, or across hub reconnects are never dropped: they wait
+    // here until the main loop consumes them.
+    private readonly Channel<ExecutorCommandReceivedEventArgs> _commandChannel =
+        Channel.CreateUnbounded<ExecutorCommandReceivedEventArgs>(
+            new UnboundedChannelOptions { SingleReader = true });
+
     // Machine JWT manager (service/hub listener modes) and the OS username the machine was
     // registered under, which workers need to renew their own JWTs.
     private MachineTokenManager? _tokenManager;
@@ -118,19 +126,19 @@ public class RunnerAppService : BackgroundService
             ? new OrchestratorHubClient(_options.AppBaseUrl, tokenManager, hubLogger, hubUsername)
             : new OrchestratorHubClient(_options.AppBaseUrl, accessToken, hubLogger, hubUsername);
 
-        var commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>(TaskCreationOptions.RunContinuationsAsynchronously);
-
         hubClient.CommandReceived += (_, e) =>
         {
             if (e.Command == ExecutorCommand.Initiate)
             {
-                commandReceived.TrySetResult(e);
+                // Queue the command; the main loop consumes it. Commands that arrive while a
+                // job is executing or while the hub is reconnecting are preserved instead of
+                // being written to a completed one-shot source and silently lost.
+                _commandChannel.Writer.TryWrite(e);
             }
             else if (e.Command == ExecutorCommand.Abort || e.Command == ExecutorCommand.Killed)
             {
                 _activeJobCts?.Cancel();
                 _workerManager?.KillWorker();
-                commandReceived.TrySetResult(null);
             }
             else if (e.Command == ExecutorCommand.Pause)
             {
@@ -152,7 +160,6 @@ public class RunnerAppService : BackgroundService
         {
             _logger.LogWarning("Service is OFFLINE — SignalR disconnected: {Reason}.", reason);
             DebugLog.Warn($"SignalR disconnected: {reason}");
-            commandReceived.TrySetResult(null);
         };
 
         await ConnectHubWithRetryAsync(hubClient, cancellationToken);
@@ -225,17 +232,31 @@ public class RunnerAppService : BackgroundService
                 }
             }
 
-            var command = await WaitForCommandAsync(commandReceived, hubClient, TimeSpan.FromSeconds(30), cancellationToken);
+            // Wait up to 30s for a queued Initiate command; on timeout, fall through to the
+            // pending-job drain so jobs created while offline (or whose SignalR push was
+            // missed) are still picked up after the hub reconnects.
+            ExecutorCommandReceivedEventArgs? command = null;
+            try
+            {
+                command = await _commandChannel.Reader.ReadAsync(cancellationToken)
+                    .AsTask()
+                    .WaitAsync(TimeSpan.FromSeconds(30), cancellationToken);
+            }
+            catch (TimeoutException)
+            {
+                // Poll interval elapsed with no command; drain pending jobs below.
+            }
+            catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                // Unexpected cancellation of the wait itself; treat as an empty poll.
+            }
+
             if (command == null)
             {
                 _logger.LogInformation("No job request received; polling for pending jobs.");
                 await DrainPendingJobsAsync(backendClient, hubClient, machineId, accessToken, cancellationToken);
                 continue;
             }
-
-            // Reset the command source before executing so that any new Initiate
-            // commands received during execution are captured for the next loop.
-            commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>(TaskCreationOptions.RunContinuationsAsynchronously);
 
             _logger.LogInformation("Job request received: {JobId}. Starting execution...", command.JobId);
             DebugLog.Info($"Job request received: {command.JobId}. Starting execution...");
@@ -337,54 +358,6 @@ public class RunnerAppService : BackgroundService
                 await Task.Delay(TimeSpan.FromSeconds(5 * attempt), cancellationToken);
             }
         }
-    }
-
-    private async Task<ExecutorCommandReceivedEventArgs?> WaitForCommandAsync(
-        TaskCompletionSource<ExecutorCommandReceivedEventArgs?> commandReceived,
-        IOrchestratorHubClient hubClient,
-        TimeSpan pollInterval,
-        CancellationToken cancellationToken)
-    {
-        _logger.LogInformation("Service ONLINE and waiting for a job request from the OrchestratorHub...");
-
-        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        timeoutCts.CancelAfter(pollInterval);
-
-        ExecutorCommandReceivedEventArgs? command;
-        try
-        {
-            command = await commandReceived.Task.WaitAsync(timeoutCts.Token);
-        }
-        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
-        {
-            // Polling interval elapsed with no command; return null so the caller can drain.
-            return null;
-        }
-
-        // If the hub disconnected before a command arrived, attempt to reconnect. Add a short
-        // delay between attempts so we do not hammer the backend when the hub is persistently
-        // offline or the network is still coming up.
-        while (command is null && hubClient.ConnectionState == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Disconnected)
-        {
-            _logger.LogInformation("Hub disconnected while waiting for a command. Reconnecting...");
-            DebugLog.Info("Hub disconnected while waiting for a command. Reconnecting...");
-            try
-            {
-                await hubClient.ConnectAsync(cancellationToken);
-            }
-            catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
-            {
-                _logger.LogWarning(ex, "Reconnect failed. Retrying in 10 seconds.");
-                DebugLog.Warn($"Reconnect failed: {ex.Message}. Retrying in 10 seconds.");
-                await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
-                continue;
-            }
-
-            commandReceived = new TaskCompletionSource<ExecutorCommandReceivedEventArgs?>(TaskCreationOptions.RunContinuationsAsynchronously);
-            command = await commandReceived.Task.WaitAsync(cancellationToken);
-        }
-
-        return command;
     }
 
     private async Task ExecuteJobAsync(
