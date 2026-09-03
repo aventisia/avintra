@@ -20,7 +20,9 @@ public class NodeExecutionLogService : INodeExecutionLogService
         _currentTenantService = currentTenantService;
     }
 
-    // Inserts a batch of node execution logs for the specified job.
+    // Inserts a batch of node execution logs for the specified job. Logs already persisted
+    // for the job (same NodeExecutionId + RetryAttempt) are skipped so the runner's periodic
+    // batch flush and the final close payload can both send the full list safely.
     public async Task<ServiceResponse<bool>> InsertNodeExecutionLogsAsync(Guid jobId, List<NodeExecutionLogDto> logs)
     {
         var serviceResponse = ServiceResponse<bool>.Create("Failed to insert node execution logs.", 500);
@@ -40,8 +42,44 @@ public class NodeExecutionLogService : INodeExecutionLogService
         if (jobMeta == null)
             return serviceResponse.Update("Job not found.", 404);
 
-        // Map DTOs to entities with compressed payloads.
-        var entities = logs.Select(dto => MapDtoToEntity(dto, jobId, jobMeta.TenantId)).ToList();
+        // Skip logs already persisted for this job so the close-job payload and the
+        // runner's periodic batch flush can overlap without inserting duplicates.
+        // Backfill sentinel rows (NodeExecutionId == "") are excluded from the comparison.
+        var incomingKeys = logs
+            .Where(l => !string.IsNullOrEmpty(l.NodeExecutionId))
+            .Select(l => (l.NodeExecutionId, l.RetryAttempt))
+            .ToHashSet();
+
+        List<JobNodeExecutionLog> entities;
+        if (incomingKeys.Count == 0)
+        {
+            // All sentinel-style logs (no execution id); nothing to dedupe against.
+            entities = logs.Select(dto => MapDtoToEntity(dto, jobId, jobMeta.TenantId)).ToList();
+        }
+        else
+        {
+            var incomingNodeExecutionIds = incomingKeys.Select(k => k.Item1).ToList();
+            var existingKeys = await _unitOfWork.JobNodeExecutionLogRepo
+                .GetByConditionAsync(n =>
+                    n.JobId == jobId &&
+                    incomingNodeExecutionIds.Contains(n.NodeExecutionId))
+                .Select(n => new { n.NodeExecutionId, n.RetryAttempt })
+                .ToListAsync();
+
+            var existingKeySet = existingKeys
+                .Select(k => (k.NodeExecutionId, k.RetryAttempt))
+                .ToHashSet();
+
+            entities = logs
+                .Where(dto => !existingKeySet.Contains((dto.NodeExecutionId, dto.RetryAttempt)))
+                .Select(dto => MapDtoToEntity(dto, jobId, jobMeta.TenantId))
+                .ToList();
+        }
+
+        if (entities.Count == 0)
+        {
+            return serviceResponse.Update("Node execution logs already exist.", 200, true);
+        }
 
         await _unitOfWork.JobNodeExecutionLogRepo.InsertAsync(entities);
 
@@ -135,7 +173,10 @@ public class NodeExecutionLogService : INodeExecutionLogService
             OutputsJsonCompressed = NodeExecutionLogCompressionHelpers.CompressJson(outputsJson),
             InputsJsonLength = inputsJson.Length,
             OutputsJsonLength = outputsJson.Length,
-            ExecutedAt = DateTimeOffset.UtcNow
+            // Prefer the executor-captured timestamp so read ordering reflects true node
+            // execution order across batched uploads; fall back to insert time for legacy
+            // payloads that predate the field.
+            ExecutedAt = dto.ExecutedAt ?? DateTimeOffset.UtcNow
         };
     }
 
@@ -154,6 +195,7 @@ public class NodeExecutionLogService : INodeExecutionLogService
             NodeUniqueName = entity.NodeUniqueName,
             IsSuccess = entity.IsSuccess,
             Duration = entity.Duration,
+            ExecutedAt = entity.ExecutedAt,
             Inputs = DeserializeDictionary(inputsJson),
             Outputs = DeserializeDictionary(outputsJson)
         };

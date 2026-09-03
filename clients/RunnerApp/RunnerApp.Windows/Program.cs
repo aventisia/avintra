@@ -238,6 +238,11 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         return 1;
     }
 
+    // Periodically upload node logs while the flow runs so a crash mid-run does not lose
+    // the whole execution log. The close-job payload remains the final copy; the backend
+    // deduplicates by (NodeExecutionId, RetryAttempt).
+    await using var logFlusher = new NodeLogBatchFlusher(targetJobId, backendClient, msg => logSession.Info(msg));
+
     var parsedFlow = ReactFlowHelper.Parse(graph.ReactFlowObject)
         ?? throw new InvalidOperationException("Failed to parse execution graph ReactFlow object.");
 
@@ -298,6 +303,9 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
         // right away instead of waiting for the whole flow to finish.
         nodeLog =>
         {
+            // Batch-upload for crash resilience; also mirrors to the local WS below.
+            logFlusher.Enqueue(nodeLog);
+
             if (localWs is not null)
             {
                 var status = nodeLog.IsSuccess ? "success" : "failed";
@@ -356,6 +364,10 @@ static async Task<int> RunConsoleAsync(RunnerAppOptions options)
             NodeLogs = []
         };
     }
+
+    // Upload any logs accumulated after the last periodic flush before closing the job;
+    // the close payload still dedupes against what the flusher already uploaded.
+    await logFlusher.StopAsync();
 
     var jobStatus = result.Status switch
     {
@@ -467,6 +479,11 @@ static async Task<int> RunWorkerAsync(RunnerAppOptions options)
         var engine = new DesktopExecutionEngine(accessToken, options.AppBaseUrl, backendClient, runnerClients.TokenManager);
         logSession.Info($"Created execution engine with AppBaseUrl={options.AppBaseUrl}.");
 
+        // Periodically upload node logs while the flow runs so a crash mid-run does not
+        // lose the whole execution log. The close-job payload remains the final copy;
+        // the backend deduplicates by (NodeExecutionId, RetryAttempt).
+        await using var logFlusher = new NodeLogBatchFlusher(targetJobId, backendClient, msg => logSession.Info(msg));
+
         var cts = new CancellationTokenSource();
 
         // The service is the only SignalR participant. The worker is a headless executor:
@@ -514,6 +531,9 @@ static async Task<int> RunWorkerAsync(RunnerAppOptions options)
             result = await engine.ExecuteAsync(graph, cts.Token, nodeId =>
             {
                 logSession.Info($"Worker node progress (running): {nodeId}");
+            }, nodeLog =>
+            {
+                logFlusher.Enqueue(nodeLog);
             });
             logSession.Info($"Execution engine completed with status {result.Status}.");
         }
@@ -542,6 +562,12 @@ static async Task<int> RunWorkerAsync(RunnerAppOptions options)
                 ErrorMessage = ex.ToString(),
                 NodeLogs = []
             };
+        }
+        finally
+        {
+            // Upload the tail that accumulated after the last periodic flush before the
+            // result file is written; the service's close payload still dedupes against it.
+            await logFlusher.StopAsync();
         }
 
         if (!string.IsNullOrWhiteSpace(result.ErrorMessage))

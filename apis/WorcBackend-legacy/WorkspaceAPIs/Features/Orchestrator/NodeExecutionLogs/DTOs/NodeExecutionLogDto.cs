@@ -42,6 +42,12 @@ public class NodeExecutionLogDto
     public double Duration { get; set; }
 
     /// <summary>
+    /// Gets or sets the UTC timestamp captured by the executor when the node finished.
+    /// Null on legacy payloads; the server falls back to insert time.
+    /// </summary>
+    public DateTimeOffset? ExecutedAt { get; set; }
+
+    /// <summary>
     /// Gets or sets the node input values as key/value pairs.
     /// </summary>
     public Dictionary<string, string> Inputs { get; set; } = new();

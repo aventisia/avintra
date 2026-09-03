@@ -574,7 +574,8 @@ public class ExecuteFlowStep2Service : IExecuteFlowStep2Service
             OutputsJsonCompressed = NodeExecutionLogCompressionHelpers.CompressJson(outputsJson),
             InputsJsonLength = inputsJson.Length,
             OutputsJsonLength = outputsJson.Length,
-            ExecutedAt = DateTimeOffset.UtcNow
+            // Prefer the executor-captured timestamp; fall back to insert time for legacy logs.
+            ExecutedAt = log.ExecutedAt == default ? DateTimeOffset.UtcNow : log.ExecutedAt
         };
     }
 

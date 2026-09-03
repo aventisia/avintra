@@ -13,23 +13,20 @@ public class FlowProcessor
 {
     private const int DefaultMaxExecutedNodeVisits = 10_000;
     private const int DefaultMaxLoopIterations = 1_000;
-    private const int DefaultMaxNodeExecutionLogs = 1_000;
     private static readonly TimeSpan DefaultExecutionTimeout = TimeSpan.FromMinutes(10);
 
     private readonly INodeProcessor _nodeProcessor;
     private readonly IFlowGraphProvider? _flowGraphProvider;
     private readonly int _maxExecutedNodeVisits;
     private readonly int _maxLoopIterations;
-    private readonly int _maxNodeExecutionLogs;
     private readonly TimeSpan _executionTimeout;
 
     public FlowProcessor(
         INodeProcessor nodeProcessor,
         int maxExecutedNodeVisits = DefaultMaxExecutedNodeVisits,
         int maxLoopIterations = DefaultMaxLoopIterations,
-        int maxNodeExecutionLogs = DefaultMaxNodeExecutionLogs,
         TimeSpan? executionTimeout = null)
-        : this(nodeProcessor, null, maxExecutedNodeVisits, maxLoopIterations, maxNodeExecutionLogs, executionTimeout)
+        : this(nodeProcessor, null, maxExecutedNodeVisits, maxLoopIterations, executionTimeout)
     {
     }
 
@@ -38,14 +35,12 @@ public class FlowProcessor
         IFlowGraphProvider? flowGraphProvider,
         int maxExecutedNodeVisits = DefaultMaxExecutedNodeVisits,
         int maxLoopIterations = DefaultMaxLoopIterations,
-        int maxNodeExecutionLogs = DefaultMaxNodeExecutionLogs,
         TimeSpan? executionTimeout = null)
     {
         _nodeProcessor = nodeProcessor;
         _flowGraphProvider = flowGraphProvider;
         _maxExecutedNodeVisits = maxExecutedNodeVisits;
         _maxLoopIterations = maxLoopIterations;
-        _maxNodeExecutionLogs = maxNodeExecutionLogs;
         _executionTimeout = executionTimeout ?? DefaultExecutionTimeout;
     }
 
@@ -168,7 +163,8 @@ public class FlowProcessor
                                         ?? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase),
                                     Outputs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                                 };
-                                logs.EnqueueBounded(callerLog, _maxNodeExecutionLogs);
+                                callerLog.ExecutedAt = DateTimeOffset.UtcNow;
+                                logs.Add(callerLog);
                                 onNodeCompleted?.Invoke(callerLog);
                             }
                         }
@@ -340,7 +336,8 @@ public class FlowProcessor
         log.NodeName = string.IsNullOrWhiteSpace(node.Data?.Label) ? node.Type : node.Data.Label;
         log.NodeUniqueName = node.Data?.Name ?? node.Type;
 
-        logs.EnqueueBounded(log, DefaultMaxNodeExecutionLogs);
+        log.ExecutedAt = DateTimeOffset.UtcNow;
+        logs.Add(log);
         onNodeCompleted?.Invoke(log);
     }
 
@@ -604,10 +601,8 @@ public class FlowProcessor
 
         if (result.NodeLog is not null)
         {
-            // Keep the log list bounded so the final CloseJobAsync payload does not grow
-            // unbounded on long-running flows. Oldest entries are dropped once the limit is
-            // reached, preserving recent failure context.
-            logs.EnqueueBounded(result.NodeLog, _maxNodeExecutionLogs);
+            result.NodeLog.ExecutedAt = DateTimeOffset.UtcNow;
+            logs.Add(result.NodeLog);
         }
 
         // Report per-node completion immediately so consumers (e.g. the local WS progress
