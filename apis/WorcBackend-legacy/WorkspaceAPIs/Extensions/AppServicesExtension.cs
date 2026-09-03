@@ -1,5 +1,7 @@
 using WorkspaceAPIs.Features.CloudConnectors.Azure;
 using WorkspaceAPIs.Features.CloudConnectors.Camel;
+using WorkspaceAPIs.Features.CloudConnectors.Camel.Helpers;
+using WorkspaceAPIs.Features.CloudConnectors.Camel.Models;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 using WorkspaceAPIs.Features.CloudConnectors.Email;
 using WorkspaceAPIs.Features.CloudConnectors.LLMProvider;
@@ -198,13 +200,15 @@ public static class AppServicesExtension
         // Cloud Connectors feature
         services.AddScoped<ICloudConnectorsVaultService, CloudConnectorsVaultService>();
         // Generic catalog-driven Camel connector service (all families): config
-        // resolution, catalog client, node generation, tool seeding, startup seeding.
+        // resolution, catalog client, unified seeding, startup seeding.
         services.AddSingleton<CamelConnectorsConfigRepository>();
         services.AddSingleton<CamelCatalogClient>();
         services.AddScoped<CamelConnectorService>();
         services.AddScoped<ICamelConnectorService, CamelConnectorService>();
-        services.AddScoped<CamelToolSeeder>();
-        services.AddScoped<CamelNodeGenerator>();
+        services.AddSingleton<CamelConnectorCatalogRepository>();
+        services.AddSingleton<CorsairIntegrationCatalogRepository>();
+        services.AddSingleton<CamelConfigPaths>();
+        services.AddScoped<ICamelSeedingService, CamelSeedingService>();
         services.AddScoped<CamelMappingFilesGenerator>();
         services.AddHostedService<CamelStartupHostedService>();
         services.AddScoped<IM365ConnectorsService, M365ConnectorsService>();

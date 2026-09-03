@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <svg width="74" height="100" viewBox="0 0 74 100" fill="none" xmlns="http://www.w3.org/2000/svg">
 <mask id="mask0_1:52" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="1" y="1" width="71" height="98">
 <path d="M45.398 1.43036H7.86688C4.22415 1.43036 1.24374 4.41077 1.24374 8.0535V91.9465C1.24374 95.5893 4.22415 98.5697 7.86688 98.5697H65.2674C68.9101 98.5697 71.8905 95.5893 71.8905 91.9465V27.9229L45.398 1.43036Z" fill="white"/>
@@ -53,3 +54,6 @@
 </radialGradient>
 </defs>
 </svg>
+=======
+<svg fill="#34A853" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Google Sheets</title><path d="M11.318 12.545H7.91v-1.909h3.41v1.91zM14.728 0v6h6l-6-6zm1.363 10.636h-3.41v1.91h3.41v-1.91zm0 3.273h-3.41v1.91h3.41v-1.91zM20.727 6.5v15.864c0 .904-.732 1.636-1.636 1.636H4.909a1.636 1.636 0 0 1-1.636-1.636V1.636C3.273.732 4.005 0 4.909 0h9.318v6.5h6.5zm-3.273 2.773H6.545v7.909h10.91v-7.91zm-6.136 4.636H7.91v1.91h3.41v-1.91z"/></svg>
+>>>>>>> d7ed8533b (refactor: Add new brand images and support for SQL in CodeEditor)

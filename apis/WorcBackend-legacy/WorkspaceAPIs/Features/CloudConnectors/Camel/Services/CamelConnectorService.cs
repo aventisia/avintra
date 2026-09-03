@@ -1,62 +1,37 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using AspNetToolkit.Config;
+using WorkspaceAPIs.Features.CloudConnectors.Camel.Helpers;
 using WorkspaceAPIs.Features.CloudConnectors.Camel.Models;
 
 namespace WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 
-/// <summary>
-/// Single, generic Apache Camel connector service.
-///
-/// This is the consolidated implementation (previously split between the
-/// config-driven <c>CamelConnectorService</c> and the catalog-driven
-/// <c>CamelV2ConnectorService</c>). It works for every Camel connector family:
-///   <list type="number">
-///     <item>
-///       <description>
-///         Config-driven path: loads the generated connector config JSON (the
-///         single source of truth) under <c>ConfigFiles/Camel/&lt;Family&gt;/</c>,
-///         validates the request, retrieves and decodes the credential, maps
-///         user-provided field values to the appropriate Camel request locations
-///         using each field's <c>camel</c> block, and builds a generic structured
-///         request sent to the harness <c>/api/connectors/execute</c>.
-///       </description>
-///     </item>
-///     <item>
-///       <description>
-///         Schema-driven fallback: for catalog components without a config file,
-///         resolve the operation from the harness schema and build the same
-///         structured request directly from the payload.
-///       </description>
-///     </item>
-///   </list>
-///
-/// No connector-specific request-building logic lives here — everything is driven
-/// by the connector configuration and/or the harness catalog schema.
-/// </summary>
 public class CamelConnectorService : ICamelConnectorService
 {
     private readonly ILogger<CamelConnectorService> _logger;
     private readonly EnvironmentConfig _environmentConfig;
-    private readonly ICloudConnectorsVaultService _cloudConnectorsVaultService;
+    private readonly IAppSecretService _appSecretService;
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly CamelConnectorsConfigRepository _configRepository;
     private readonly CamelCatalogClient _catalogClient;
+    private readonly CamelConfigPaths _paths;
 
     public CamelConnectorService(
         ILogger<CamelConnectorService> logger,
         EnvironmentConfig environmentConfig,
-        ICloudConnectorsVaultService cloudConnectorsVaultService,
+        IAppSecretService appSecretService  ,
         IHttpClientFactory httpClientFactory,
         CamelConnectorsConfigRepository configRepository,
-        CamelCatalogClient catalogClient)
+        CamelCatalogClient catalogClient,
+        CamelConfigPaths paths)
     {
         _logger = logger;
         _environmentConfig = environmentConfig;
-        _cloudConnectorsVaultService = cloudConnectorsVaultService;
+        _appSecretService = appSecretService;
         _httpClientFactory = httpClientFactory;
         _configRepository = configRepository;
         _catalogClient = catalogClient;
+        _paths = paths;
     }
 
     /// <inheritdoc />
@@ -397,8 +372,8 @@ public class CamelConnectorService : ICamelConnectorService
         return string.IsNullOrWhiteSpace(action) ? null : action;
     }
 
-    private static Dictionary<string, object?>? _actionMappingCache;
-    private static readonly object _actionMappingGate = new();
+    private Dictionary<string, object?>? _actionMappingCache;
+    private readonly object _actionMappingGate = new();
 
     private Dictionary<string, object?>? LoadActionMapping()
     {
@@ -408,17 +383,17 @@ public class CamelConnectorService : ICamelConnectorService
             {
                 return _actionMappingCache;
             }
+
             try
             {
-                var path = Path.Combine(
-                    AppContext.BaseDirectory,
-                    "Features", "CloudConnectors", "Camel", "Helpers", "CamelActionMapping.json");
+                var path = _paths.ActionMapping;
                 if (!System.IO.File.Exists(path))
                 {
                     _logger.LogWarning("CamelActionMapping.json not found at {Path}.", path);
                     _actionMappingCache = new Dictionary<string, object?>();
                     return null;
                 }
+
                 var json = System.IO.File.ReadAllText(path);
                 _actionMappingCache = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object?>>(json);
                 return _actionMappingCache;
@@ -535,13 +510,21 @@ public class CamelConnectorService : ICamelConnectorService
         };
     }
 
-    private async Task<VaultCredentialObj?> GetCredentialAsync(string? credentialName)
+    private async Task<AppSecretDto?> GetCredentialAsync(string? credentialName)
     {
         if (string.IsNullOrWhiteSpace(credentialName))
         {
             return null;
         }
-        return await _cloudConnectorsVaultService.GetCredentialFromVaultAsync(credentialName);
+
+        var response = await _appSecretService.GetAppSecretDetailByNameAsync(credentialName);
+        if (response.StatusCode != 200 || response.Data == null)
+        {
+            _logger.LogWarning("Unable to resolve Camel credential '{CredentialName}': {Message}", credentialName, response.Message);
+            return null;
+        }
+
+        return response.Data;
     }
 
     // ---------------------------------------------------------------------
