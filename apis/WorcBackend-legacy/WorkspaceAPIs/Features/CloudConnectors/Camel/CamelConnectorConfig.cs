@@ -52,6 +52,15 @@ public class CamelConnectorConfig
     // config files that have not yet been regenerated.
     [JsonPropertyName("camel")]
     public CamelMeta? Camel { get; set; }
+
+    /// <summary>
+    /// Comment included in generated connector JSON files for future use.
+    /// Records the source connector name and available catalog properties so
+    /// consumers can later load the local catalog and read descriptions by
+    /// property name.
+    /// </summary>
+    [JsonPropertyName("comment")]
+    public CamelConnectorConfigComment? Comment { get; set; }
 }
 
 /// <summary>Connector identity and authentication type.</summary>
@@ -65,6 +74,15 @@ public class CamelConnectorMeta
 
     [JsonPropertyName("authType")]
     public string? AuthType { get; set; }
+
+    /// <summary>
+    /// Credential field name for the connector family (e.g. <c>__CredentialName__Log</c>).
+    /// This matches the value in <see cref="CamelCredentialsMeta.FieldName"/> and the
+    /// credentials-select field so consumers can resolve credentials without relying on a
+    /// separate icon path.
+    /// </summary>
+    [JsonPropertyName("credentialName")]
+    public string? CredentialName { get; set; }
 }
 
 /// <summary>Credential requirement for the connector operation.</summary>
@@ -110,6 +128,29 @@ public class CamelConnectorField
     /// <summary>Field-level Camel mapping (location + Camel-side name).</summary>
     [JsonPropertyName("camel")]
     public CamelFieldMapping? Camel { get; set; }
+}
+
+/// <summary>Comment included in generated connector JSON files for future use.</summary>
+public class CamelConnectorConfigComment
+{
+    /// <summary>
+    /// Gets or sets the connector name used to look up metadata in the local
+    /// catalog.
+    /// </summary>
+    [JsonPropertyName("connector")]
+    public string? Connector { get; set; }
+
+    /// <summary>
+    /// Gets or sets the catalog property names available for the connector.
+    /// </summary>
+    [JsonPropertyName("availableProperties")]
+    public List<string>? AvailableProperties { get; set; }
+
+    /// <summary>
+    /// Gets or sets the human-readable note explaining the source of metadata.
+    /// </summary>
+    [JsonPropertyName("note")]
+    public string? Note { get; set; }
 }
 
 /// <summary>Where and under what name a field value is sent to the harness.</summary>

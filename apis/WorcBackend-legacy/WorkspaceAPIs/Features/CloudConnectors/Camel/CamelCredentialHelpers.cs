@@ -1,10 +1,13 @@
+using System.Text.Json;
+using WorkspaceAPIs.DTOs;
+
 namespace WorkspaceAPIs.Features.CloudConnectors.Camel;
 
 /// <summary>
-/// Builds <see cref="CamelAuthResult"/> instances from a decrypted vault
+/// Builds <see cref="CamelAuthResult"/> instances from a decrypted app secret
 /// credential for the supported Camel authentication types.
 ///
-/// Credential key conventions (matching the existing cloud-connector vault
+/// Credential key conventions (matching the existing cloud-connector app secret
 /// usage):
 ///   - accessToken:      <c>AccessToken</c>
 ///   - basic:            <c>Username</c>, <c>Password</c>
@@ -29,7 +32,7 @@ public static class CamelCredentialHelpers
     /// Access-token authentication (e.g. GitHub PATs). Reads the <c>AccessToken</c>
     /// key from the credential data.
     /// </summary>
-    public static CamelAuthResult AccessToken(VaultCredentialObj credential)
+    public static CamelAuthResult AccessToken(AppSecretDto credential)
     {
         var token = GetString(credential, "AccessToken");
         if (string.IsNullOrWhiteSpace(token))
@@ -50,7 +53,7 @@ public static class CamelCredentialHelpers
     /// are passed through as auth properties when present.
     /// </summary>
     public static CamelAuthResult Basic(
-        VaultCredentialObj credential,
+        AppSecretDto credential,
         Dictionary<string, object> payload,
         string family,
         params string[] extraKeys)
@@ -96,7 +99,7 @@ public static class CamelCredentialHelpers
     /// the credential's <c>Username</c>/<c>Password</c> keys.
     /// </summary>
     public static CamelAuthResult Database(
-        VaultCredentialObj credential,
+        AppSecretDto credential,
         Dictionary<string, object> payload,
         string family)
     {
@@ -136,7 +139,7 @@ public static class CamelCredentialHelpers
     /// Client-credentials authentication (e.g. Microsoft 365). Reads
     /// <c>AzureTenantId</c>, <c>ClientId</c> and <c>ClientSecret</c>.
     /// </summary>
-    public static CamelAuthResult ClientCredentials(VaultCredentialObj credential)
+    public static CamelAuthResult ClientCredentials(AppSecretDto credential)
     {
         var tenantId = GetString(credential, "AzureTenantId");
         var clientId = GetString(credential, "ClientId");
@@ -159,19 +162,47 @@ public static class CamelCredentialHelpers
         });
     }
 
-    private static string? GetString(VaultCredentialObj credential, string key)
+    private static string? GetString(AppSecretDto credential, string key)
     {
         if (credential.Data == null)
         {
             return null;
         }
-        foreach (var kv in credential.Data)
+
+        if (credential.Data is Dictionary<string, object?> dict)
         {
-            if (string.Equals(kv.Key, key, StringComparison.OrdinalIgnoreCase) && kv.Value != null)
+            foreach (var kv in dict)
             {
-                return Convert.ToString(kv.Value);
+                if (string.Equals(kv.Key, key, StringComparison.OrdinalIgnoreCase) && kv.Value != null)
+                {
+                    return Convert.ToString(kv.Value);
+                }
+            }
+            return null;
+        }
+
+        if (credential.Data is JsonElement element)
+        {
+            if (element.ValueKind == JsonValueKind.Object && element.TryGetProperty(key, out var prop))
+            {
+                return prop.ValueKind == JsonValueKind.Null ? null : prop.ToString();
+            }
+            return null;
+        }
+
+        // Fallback: Newtonsoft JObject-style dictionary or other generic dictionary
+        var dataType = credential.Data.GetType();
+        if (dataType.IsGenericType && dataType.GetGenericTypeDefinition() == typeof(Dictionary<,>))
+        {
+            foreach (dynamic kv in (System.Collections.IEnumerable)credential.Data)
+            {
+                if (string.Equals(Convert.ToString(kv.Key), key, StringComparison.OrdinalIgnoreCase) && kv.Value != null)
+                {
+                    return Convert.ToString(kv.Value);
+                }
             }
         }
+
         return null;
     }
 

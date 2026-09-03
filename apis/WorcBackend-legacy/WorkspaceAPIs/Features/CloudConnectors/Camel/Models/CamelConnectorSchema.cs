@@ -66,6 +66,23 @@ public class CamelConnectorSchemaProperty
 }
 
 /// <summary>
+/// A single entry from <c>GET /api/connectors/</c> — the authoritative Apache
+/// Camel component summary with the real component description (the schemas
+/// endpoint only returns the generic connector request description).
+/// </summary>
+public class CamelConnectorListItem
+{
+    [JsonPropertyName("id")]
+    public string? Id { get; set; }
+
+    [JsonPropertyName("name")]
+    public string? Name { get; set; }
+
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+}
+
+/// <summary>
 /// A reusable definition within a connector schema. Mirrors
 /// <c>camel.harness.core.ConnectorSchemaDefinition</c>.
 /// </summary>
@@ -169,4 +186,64 @@ public static class CamelSchemaExtensions
     /// </summary>
     public static string? ConnectorName(this CamelConnectorSchema schema)
         => schema.Connector()?.DefaultValue;
+
+    /// <summary>
+    /// Classifies the authentication shape declared by the schema's <c>auth</c>
+    /// section so callers can map it to their own auth type vocabulary.
+    ///
+    /// The harness's <c>auth.required</c> list is the authoritative signal: when
+    /// it is empty the connector does not require authentication (the generic
+    /// auth schema always lists every possible property, so property presence
+    /// alone must not be used to infer a required auth type).
+    /// </summary>
+    public static CamelAuthKind AuthKind(this CamelConnectorSchema? schema)
+    {
+        var auth = schema?.Auth();
+        if (auth?.NestedProperties is not { Count: > 0 } props)
+        {
+            return CamelAuthKind.None;
+        }
+
+        var required = auth.Required ?? new List<string>();
+        if (required.Count == 0)
+        {
+            return CamelAuthKind.None;
+        }
+
+        // Database auth is declared by the harness as required url/username
+        // (with optional password) — e.g. sql, jdbc, sql-stored.
+        if (required.Contains("url") || props.ContainsKey("url"))
+        {
+            return CamelAuthKind.Database;
+        }
+        if (required.Contains("token") || required.Contains("accessToken") || required.Contains("bearer"))
+        {
+            return CamelAuthKind.Token;
+        }
+        if (required.Contains("apiKey"))
+        {
+            return CamelAuthKind.ApiKey;
+        }
+        if (required.Contains("username") || required.Contains("password"))
+        {
+            return CamelAuthKind.Basic;
+        }
+        if (required.Contains("clientId") || required.Contains("clientSecret"))
+        {
+            return CamelAuthKind.ClientCredentials;
+        }
+
+        return CamelAuthKind.None;
+    }
+}
+
+/// <summary>Classification of the authentication shape in a Camel schema.</summary>
+public enum CamelAuthKind
+{
+    None,
+    Token,
+    ApiKey,
+    Basic,
+    ClientCredentials,
+    Database,
 }

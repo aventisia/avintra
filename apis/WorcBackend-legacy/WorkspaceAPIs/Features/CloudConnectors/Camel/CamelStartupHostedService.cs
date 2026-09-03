@@ -6,17 +6,16 @@ using WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 namespace WorkspaceAPIs.Features.CloudConnectors.Camel;
 
 /// <summary>
-/// Background hosted service that runs the Camel catalog-driven seeding and
-/// node generation at startup, independent of the DB seed process.
+/// Background hosted service that runs the unified Camel connector seeding
+/// workflow at startup, independent of the DB seed process.
 ///
 /// On start it:
 ///   1. Restores the Cloud-Connector mapping files if they were deleted
 ///      (action-selector mapping, CamelActionMapping).
 ///   2. Resolves the platform admin user (from <c>EnvironmentConfig.OnPremAdminEmail</c>).
-///   3. Fetches the connector catalog from the harness.
-///   4. Seeds every connector into <c>ws_Tools</c>.
-///   5. Generates the <c>ConfigFiles/Camel/&lt;Family&gt;/&lt;Action&gt;Connector.json</c> nodes
-///      and registers them into <c>CloudConnectorActionSelectorMappingFile.json</c>.
+///   3. Runs the unified <see cref="CamelSeedingService"/> workflow, which
+///      seeds platform tools, generates connector JSON files, and regenerates
+///      the action-selector mapping in a single pass.
 ///
 /// If the harness is unreachable at startup, it retries with backoff so the
 /// catalog is eventually loaded once the harness comes up. The mapping-file
@@ -41,6 +40,13 @@ public class CamelStartupHostedService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Skip Camel startup seeding on localhost to avoid unnecessary harness calls.
+        if (_serviceProvider.GetRequiredService<IHostEnvironment>().IsEnvironment("Localhost"))
+        {
+            _logger.LogInformation("Skipping Camel startup seeding on localhost.");
+            return;
+        }
+
         // Small delay so the app finishes startup and the DB seed completes first.
         await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
 
@@ -95,42 +101,28 @@ public class CamelStartupHostedService : BackgroundService
     {
         using var scope = _serviceProvider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<WorkspaceDbContext>();
-        var tenantDbContext = scope.ServiceProvider.GetRequiredService<TenantDbContext>();
-        var seeder = scope.ServiceProvider.GetRequiredService<CamelToolSeeder>();
-        var generator = scope.ServiceProvider.GetRequiredService<CamelNodeGenerator>();
+        var seedingService = scope.ServiceProvider.GetRequiredService<ICamelSeedingService>();
         var catalogClient = scope.ServiceProvider.GetRequiredService<CamelCatalogClient>();
 
-        // Resolve the platform admin user that owns platform tools. This mirrors
-        // the DB seed logic and is required before tools can be linked to a
-        // tenant/space context.
-        var user = await ResolvePlatformAdminUserAsync(dbContext, tenantDbContext, cancellationToken);
-        if (user is null)
-        {
-            _logger.LogWarning("No platform admin user resolved; skipping Camel seeding.");
-            return false;
-        }
-
-        // Fetch the catalog once up-front. When the harness is unreachable the
-        // catalog comes back empty and is NOT cached, so a later retry attempt
+        // Fetch the API connector list up-front. When the harness is unreachable
+        // the list comes back empty and is NOT cached, so a later retry attempt
         // re-queries it once the harness is up.
-        var catalog = await catalogClient.GetCatalogAsync(cancellationToken);
+        var connectorList = await catalogClient.GetConnectorListAsync(cancellationToken);
 
-        var seeded = await seeder.SeedAsync(dbContext, cancellationToken);
-        var generated = await generator.GenerateAsync(cancellationToken);
+        // Run the unified seeding workflow: tools + connector JSON + mapping.
+        var seeded = await seedingService.SeedAsync(dbContext, cancellationToken);
 
         _logger.LogInformation(
-            "Camel startup: {Seeded} tools seeded, {Generated} node configs generated, {CatalogCount} connectors in catalog.",
-            seeded, generated, catalog.Count);
+            "Camel startup: {Seeded} connectors seeded, {ConnectorCount} connectors available from the harness.",
+            seeded, connectorList.Count);
 
-        // If the harness was unreachable (empty catalog), do NOT report this
-        // attempt as handled: the retry loop backs off and tries again so the
-        // full catalog is generated once the harness comes up. Only the scaffold
-        // families (never the catalog connectors) are produced on this attempt,
-        // which is why the app would otherwise settle for just the 14 scaffolds.
-        if (catalog.Count == 0)
+        // If the harness was unreachable (empty connector list), do NOT report
+        // this attempt as handled: the retry loop backs off and tries again so
+        // the full catalog is seeded once the harness comes up.
+        if (connectorList.Count == 0)
         {
             _logger.LogWarning(
-                "Camel harness catalog is empty (harness unreachable); retrying so the full connector catalog is generated once it is up.");
+                "Camel harness connector list is empty (harness unreachable); retrying so the full connector catalog is seeded once it is up.");
             return false;
         }
 
