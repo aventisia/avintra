@@ -82,11 +82,6 @@ app.get("/api/corsair/tools", async (_req, res) => {
   }
 });
 
-// Corsair management handler: serves /connect/links, /connect/resolve,
-// /connect/oauth-callback, /ok, etc. The sidecar is backend-only and private,
-// relying on network isolation (no auth layer).
-app.use("/api/corsair", toExpressHandler(corsair, { basePath: "/api/corsair" }));
-
 // --- Connect page (manual.baseUrl) ---
 // Browser lands here with ?state=... after createLink. Resolve to the OAuth URL
 // and render a minimal consent page before sending the user to the provider.
@@ -386,6 +381,11 @@ app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
 // --- Status ---
 app.get("/dashboard", (_req, res) => res.send("Connected. See /api/corsair/ok for health."));
+
+// Corsair management handler: serves /connect/links, /connect/resolve,
+// /connect/oauth-callback, /ok, etc. Keep this catch-all after the explicit
+// routes above so it cannot intercept the custom invoke endpoint.
+app.use("/api/corsair", toExpressHandler(corsair, { basePath: "/api/corsair" }));
 
 app.listen(port, async () => {
   await provision();
