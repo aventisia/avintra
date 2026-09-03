@@ -178,6 +178,28 @@ public class RunnerAppService : BackgroundService
         var lastTokenVersion = tokenManager?.Version ?? 0;
         while (!cancellationToken.IsCancellationRequested)
         {
+            // If the hub is disconnected (including the case where the initial startup connect
+            // failed) and no worker is running, try to reconnect now. This prevents the service
+            // from appearing Offline in the frontend for hours while it is still draining jobs
+            // via REST, because the only other reconnect trigger is the JWT refresh timer.
+            if (hubClient.ConnectionState == HubConnectionState.Disconnected
+                && _workerManager?.HasRunningWorker != true)
+            {
+                _logger.LogInformation("OrchestratorHub is disconnected; attempting to reconnect before polling for work.");
+                DebugLog.Info("OrchestratorHub is disconnected; attempting to reconnect before polling for work.");
+                try
+                {
+                    await ConnectHubWithRetryAsync(hubClient, cancellationToken);
+                    _logger.LogInformation("Service is ONLINE — reconnected to OrchestratorHub.");
+                    DebugLog.Info("Service is ONLINE — reconnected to OrchestratorHub.");
+                }
+                catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
+                {
+                    _logger.LogWarning(ex, "Failed to reconnect to OrchestratorHub before polling; will retry via REST job drain.");
+                    DebugLog.Warn($"Failed to reconnect to OrchestratorHub before polling: {ex.Message}");
+                }
+            }
+
             // When the token manager refreshed the JWT (e.g. during the pending-job poll) and
             // no job is running, rebuild the hub connection so the handshake Authorization
             // header carries the new token. This must never happen mid-job: the backend kills
@@ -339,10 +361,13 @@ public class RunnerAppService : BackgroundService
             return null;
         }
 
-        // If the hub disconnected before a command arrived, attempt to reconnect.
+        // If the hub disconnected before a command arrived, attempt to reconnect. Add a short
+        // delay between attempts so we do not hammer the backend when the hub is persistently
+        // offline or the network is still coming up.
         while (command is null && hubClient.ConnectionState == Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Disconnected)
         {
             _logger.LogInformation("Hub disconnected while waiting for a command. Reconnecting...");
+            DebugLog.Info("Hub disconnected while waiting for a command. Reconnecting...");
             try
             {
                 await hubClient.ConnectAsync(cancellationToken);
@@ -350,6 +375,7 @@ public class RunnerAppService : BackgroundService
             catch (Exception ex) when (!cancellationToken.IsCancellationRequested)
             {
                 _logger.LogWarning(ex, "Reconnect failed. Retrying in 10 seconds.");
+                DebugLog.Warn($"Reconnect failed: {ex.Message}. Retrying in 10 seconds.");
                 await Task.Delay(TimeSpan.FromSeconds(10), cancellationToken);
                 continue;
             }
