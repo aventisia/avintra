@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "tenant_external_id",
+    "label": "Tenant_external_id",
+    "description": "Tenant_external_id for Bettercontact.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import { updateVault } from "../../apis/vaults-table-apis";
 import { type VaultsTableDto } from "../../dtos/vaults-table-dto";
 import { useTableTab } from "../../hooks/useTableTab";
+import { isOAuthCredentialType } from "../constants/oauth-credential-types";
 import { useOAuthConnect } from "./useOAuthConnect";
 
 export const useUpdateCredMutation = () => {
@@ -28,10 +29,12 @@ export const useUpdateCredMutation = () => {
       setIsComplete(true);
       toast.error(error.toString());
     },
-    onSuccess: async (httpResponse) => {
+    onSuccess: async (httpResponse, payload) => {
       toast.success(httpResponse?.message, {
         className: "sonner-toaster-sm",
       });
+
+      const isOAuth = isOAuthCredentialType(payload?.type);
 
       // If the credential is OAuth-capable, navigate the already-open popup to
       // the connect URL and poll status until consent completes.
@@ -46,7 +49,7 @@ export const useUpdateCredMutation = () => {
         response?.oauthConnectUrl ??
         response?.OAuthConnectUrl;
       const appSecretId = responseData?.id;
-      if (oauthUrl && appSecretId) {
+      if (isOAuth && oauthUrl && appSecretId) {
         oauthPopupRef.current = navigateOAuthPopup(oauthPopupRef.current, oauthUrl);
         const connected = await pollOAuthStatus(appSecretId, oauthPopupRef.current);
         if (connected) {
@@ -58,7 +61,7 @@ export const useUpdateCredMutation = () => {
             className: "sonner-toaster-sm",
           });
         }
-      } else if (responseData?.type === "M365") {
+      } else if (isOAuth) {
         oauthPopupRef.current?.close();
         toast.error("OAuth connection URL was not returned by the server.", {
           className: "sonner-toaster-sm",
@@ -73,12 +76,9 @@ export const useUpdateCredMutation = () => {
     },
   });
 
-  // Trigger the mutation. The popup is opened synchronously here inside the
-  // user gesture, then navigated to the OAuth connect URL in onSuccess once the
-  // backend returns it. This avoids browser popup blockers.
   const mutate = (payload: Parameters<typeof mutation.mutate>[0]) => {
     setIsComplete(false);
-    oauthPopupRef.current = openOAuthPopup();
+    oauthPopupRef.current = isOAuthCredentialType(payload?.type) ? openOAuthPopup() : null;
     mutation.mutate(payload);
   };
 

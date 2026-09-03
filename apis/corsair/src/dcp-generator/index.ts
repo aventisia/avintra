@@ -11,6 +11,7 @@
  */
 import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { listOperations, getStructuredSchema } from "corsair";
 import type {
   ActionSelectorCategory,
@@ -31,6 +32,9 @@ import {
   loadExistingMapping,
 } from "./build-mapping.js";
 import { buildOpenApiSpec } from "./build-openapi.js";
+import { buildIntegrationCatalog, buildVaultConfigs } from "./integration-catalog.js";
+
+const moduleDir = path.dirname(fileURLToPath(import.meta.url));
 
 /** A tool descriptor derived from the corsair instance in-process. */
 type CorsairTool = {
@@ -67,6 +71,18 @@ function writeJson(filePath: string, data: unknown): void {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2) + "\n");
 }
 
+/** Generate only new vault forms; reviewed legacy forms remain authoritative. */
+function writeMissingVaultConfigs(configs: ReturnType<typeof buildVaultConfigs>): void {
+  const vaultConfigDir = process.env.CORSAIR_VAULT_CONFIG_DIR
+    ? path.resolve(process.env.CORSAIR_VAULT_CONFIG_DIR)
+    : path.resolve(moduleDir, "../../../../clients/web-apps/apps/workspace/src/features/dynamic-config-panel/constants/config-json");
+
+  for (const config of configs) {
+    const filePath = path.join(vaultConfigDir, config.vaultType + ".json");
+    if (!fs.existsSync(filePath)) writeJson(filePath, config.fields);
+  }
+}
+
 /**
  * Generate all required files from the registered Corsair plugins.
  *
@@ -98,6 +114,11 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   const globalMappingFileResolved = globalMappingFile
     ?? path.join(outputDir, "CloudConnectorActionSelectorMappingFile.json");
   const actionMapFile = path.join(outputDir, "CorsairActionMap.json");
+  const integrationCatalogFile = path.join(outputDir, "CorsairIntegrationCatalog.json");
+  const frontendCatalogFile = path.resolve(
+    moduleDir,
+    "../../../../clients/web-apps/apps/workspace/src/features/02-configure/vault-table/vault-config/constants/corsair-integration-catalog.json",
+  );
   const openApiDir = path.join(configRoot, "openapi");
 
   const categories: ActionSelectorCategory[] = [];
@@ -159,6 +180,12 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   // resolving dotted sidecar actions from Studio node names.
   writeJson(actionMapFile, invocations);
 
+  // Write the credential mapping consumed by vault and backend integrations.
+  const integrationCatalog = buildIntegrationCatalog(pluginMetas);
+  writeJson(integrationCatalogFile, integrationCatalog);
+  writeJson(frontendCatalogFile, integrationCatalog);
+  writeMissingVaultConfigs(buildVaultConfigs(integrationCatalog));
+
   // Write per-plugin OpenAPI specs.
   for (const [pluginId, spec] of Object.entries(openApiByPlugin)) {
     writeJson(path.join(openApiDir, `${pluginId}.openapi.json`), spec);
@@ -170,5 +197,6 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   console.log(`Configs: ${configRoot}`);
   console.log(`Corsair mapping: ${corsairMappingFile}`);
   console.log(`Action map: ${actionMapFile}`);
+  console.log(`Integration catalog: ${integrationCatalogFile}`);
   console.log(`OpenAPI specs: ${openApiDir}`);
 }

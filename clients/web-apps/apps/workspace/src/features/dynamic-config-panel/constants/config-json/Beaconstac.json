@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "organization_id",
+    "label": "Organization_id",
+    "description": "Organization_id for Beaconstac.",
+    "defaultValue": "",
+    "required": true
+  }
+]

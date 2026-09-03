@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "applicationKey",
+    "label": "Application Key",
+    "description": "Application Key for Ambientweather.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "api_secret",
+    "label": "Api_secret",
+    "description": "Api_secret for Cloudinary.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "cloud_name",
+    "label": "Cloud_name",
+    "description": "Cloud_name for Cloudinary.",
+    "defaultValue": "",
+    "required": true
+  }
+]
