@@ -1,3 +1,5 @@
+using WorkspaceAPIs.Features.Corsair;
+
 namespace WorkspaceAPIs.Services;
 
 public class AppSecretService : IAppSecretService
@@ -6,6 +8,7 @@ public class AppSecretService : IAppSecretService
     private readonly ILogger<AppSecretService> _logger;
     private readonly IStringEncryptionService _encryptionService;
     private readonly ICorsairSidecarService _corsairSidecarService;
+    private readonly CorsairConfigRepository _corsairConfigRepository;
     private readonly EnvironmentConfig _environmentConfig;
     private readonly Guid _userId;
     private readonly IResourceShareService _resourceShareService;
@@ -18,7 +21,8 @@ public class AppSecretService : IAppSecretService
         IResourceShareService resourceShareService,
         ICurrentTenantService currentTenantService,
         ICorsairSidecarService corsairSidecarService,
-        EnvironmentConfig environmentConfig
+        EnvironmentConfig environmentConfig,
+        CorsairConfigRepository corsairConfigRepository
     )
     {
         _unitOfWork = unitOfWork;
@@ -26,6 +30,7 @@ public class AppSecretService : IAppSecretService
         _encryptionService = encryptionService;
         _corsairSidecarService = corsairSidecarService;
         _environmentConfig = environmentConfig;
+        _corsairConfigRepository = corsairConfigRepository;
 
         // Extract user ID from the HTTP context, if available
         _userId = Guid.Parse(httpContextAccessor.HttpContext?.User?.FindFirstValue("uid") ?? Guid.Empty.ToString());
@@ -110,6 +115,14 @@ public class AppSecretService : IAppSecretService
                     var plugin = MapAppSecretTypeToCorsairOAuthPlugin(dto.Type)!;
                     var status = await _corsairSidecarService.GetConnectionStatusAsync(dto.Id, plugin);
                     dto.OAuthConnected = status?.Connected ?? false;
+                    dto.CorsairStatus = status?.Connected == true
+                        ? "Connected"
+                        : status?.State.Equals("expired", StringComparison.OrdinalIgnoreCase) == true
+                            ? "Expired"
+                            : status?.State.Contains("fail", StringComparison.OrdinalIgnoreCase) == true
+                                ? "Failed"
+                                : status is not null ? "Pending" : "Unknown";
+                    dto.CorsairStatusReason = status?.State;
                 })
                 .ToList();
 
@@ -1085,6 +1098,42 @@ public class AppSecretService : IAppSecretService
         return serviceResponse;
     }
 
+    public async Task<ServiceResponse<CorsairCredentialTestResult>> TestCorsairCredentialAsync(Guid appSecretId)
+    {
+        var serviceResponse = new ServiceResponse<CorsairCredentialTestResult>
+        {
+            Data = null,
+            Message = "Connection test unavailable."
+        };
+
+        var appSecret = await _unitOfWork.AppSecretRepo
+            .GetByConditionAsync(secret => secret.Id == appSecretId)
+            .SingleOrDefaultAsync();
+        if (appSecret == null)
+        {
+            serviceResponse.Message = "Credential not found.";
+            return serviceResponse;
+        }
+
+        var plugin = MapAppSecretTypeToCorsairPlugin(appSecret.Type);
+        if (string.IsNullOrWhiteSpace(plugin))
+        {
+            serviceResponse.Message = "This credential is not mapped to Corsair.";
+            return serviceResponse;
+        }
+
+        var result = await _corsairSidecarService.TestCredentialAsync(appSecret.Id, plugin);
+        if (result == null)
+        {
+            return serviceResponse;
+        }
+
+        serviceResponse.Data = result;
+        serviceResponse.StatusCode = 200;
+        serviceResponse.Message = "Connection test completed.";
+        return serviceResponse;
+    }
+
     /// <summary>
     /// Mints a Corsair OAuth connect link for an App Secret so the user can complete consent.
     /// </summary>
@@ -1200,6 +1249,12 @@ public class AppSecretService : IAppSecretService
 
         // Serialize the input object to a JSON string
         var rawJson = System.Text.Json.JsonSerializer.Serialize(data, jsonOptions);
+
+        // Generated Corsair forms use metadata-defined fields rather than dedicated DTOs.
+        if (_corsairConfigRepository.GetPluginIdForVaultType(type.ToString()) is not null)
+        {
+            return ValidateGeneratedCorsairData(rawJson, jsonOptions);
+        }
 
         // Switch statement based on the type of credential
         switch (type)
@@ -3891,14 +3946,52 @@ public class AppSecretService : IAppSecretService
         return validationResult;
     }
 
+    private CredentialValidationResult ValidateGeneratedCorsairData(string rawJson, JsonSerializerOptions jsonOptions)
+    {
+        var result = new CredentialValidationResult();
+        using var document = System.Text.Json.JsonDocument.Parse(rawJson);
+        if (document.RootElement.ValueKind != JsonValueKind.Object)
+        {
+            result.Remark = "Invalid Corsair credentials: expected an object.";
+            return result;
+        }
+
+        var sanitized = new Dictionary<string, object?>();
+        foreach (var property in document.RootElement.EnumerateObject())
+        {
+            if (property.Value.ValueKind == JsonValueKind.String)
+            {
+                var value = property.Value.GetString() ?? string.Empty;
+                if (value.Length > 0)
+                {
+                    result.EncryptedValues[property.Name] = _encryptionService.EncryptString(value);
+                }
+                sanitized[property.Name] = string.Empty;
+            }
+            else
+            {
+                sanitized[property.Name] = property.Value.Clone();
+            }
+        }
+
+        if (result.EncryptedValues.Count == 0)
+        {
+            result.Remark = "Invalid Corsair credentials: at least one credential value is required.";
+            return result;
+        }
+
+        result.SanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(sanitized, jsonOptions);
+        return result;
+    }
+
     /// <summary>
     /// Maps an <see cref="AppSecretTypesEnum"/> to the corresponding Corsair plugin identifier.
     /// Returns <c>null</c> when the type does not correspond to a Corsair-supported API-key plugin
     /// that is currently registered in the sidecar and verified.
     /// </summary>
-    private static string? MapAppSecretTypeToCorsairPlugin(AppSecretTypesEnum type)
+    private string? MapAppSecretTypeToCorsairPlugin(AppSecretTypesEnum type)
     {
-        return type switch
+        var mappedPlugin = type switch
         {
             AppSecretTypesEnum.OpenAI => "openai",
             AppSecretTypesEnum.GoogleGemini => "gemini",
@@ -3916,6 +4009,8 @@ public class AppSecretService : IAppSecretService
             AppSecretTypesEnum.Twilio => null,
             _ => null
         };
+
+        return mappedPlugin ?? _corsairConfigRepository.GetPluginIdForVaultType(type.ToString());
     }
 
     /// <summary>
@@ -3980,12 +4075,16 @@ public class AppSecretService : IAppSecretService
     private async Task UnmirrorCredentialFromCorsairAsync(Guid appSecretId, AppSecretTypesEnum type)
     {
         var plugin = MapAppSecretTypeToCorsairPlugin(type);
-        if (string.IsNullOrWhiteSpace(plugin))
+        var plugins = _corsairConfigRepository.GetPluginIdsForVaultType(type.ToString());
+        if (string.IsNullOrWhiteSpace(plugin) && plugins.Count == 0)
         {
             return;
         }
 
-        await _corsairSidecarService.DeleteCredentialAsync(appSecretId, plugin);
+        foreach (var pluginId in plugins.Count > 0 ? plugins : new[] { plugin! })
+        {
+            await _corsairSidecarService.DeleteCredentialAsync(appSecretId, pluginId);
+        }
     }
 
     /// <summary>
@@ -3995,7 +4094,8 @@ public class AppSecretService : IAppSecretService
     private async Task MirrorCredentialToCorsairAsync(AppSecret appSecret, Dictionary<string, string> encryptedValues)
     {
         var plugin = MapAppSecretTypeToCorsairPlugin(appSecret.Type);
-        if (string.IsNullOrWhiteSpace(plugin))
+        var plugins = _corsairConfigRepository.GetPluginIdsForVaultType(appSecret.Type.ToString());
+        if (string.IsNullOrWhiteSpace(plugin) && plugins.Count == 0)
         {
             return;
         }
@@ -4004,18 +4104,19 @@ public class AppSecretService : IAppSecretService
             kv => kv.Key,
             kv => _encryptionService.DecryptString(kv.Value));
 
-        var apiKey = GetCorsairApiKeyForPlugin(plugin, decryptedValues);
-
-        if (string.IsNullOrWhiteSpace(apiKey))
+        if (decryptedValues.Count == 0)
         {
             _logger.LogInformation(
-                "Skipping Corsair mirror for credential {AppSecretId}: no API key value found for plugin {Plugin}.",
+                "Skipping Corsair mirror for credential {AppSecretId}: no credential values found for plugin {Plugin}.",
                 appSecret.Id,
                 plugin);
             return;
         }
 
-        await _corsairSidecarService.MirrorCredentialAsync(appSecret.Id, plugin, apiKey);
+        foreach (var pluginId in plugins.Count > 0 ? plugins : new[] { plugin! })
+        {
+            await _corsairSidecarService.MirrorCredentialAsync(appSecret.Id, pluginId, decryptedValues);
+        }
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 import { VaultAppsEnum } from "../../enums/vault-apps-enum";
+import catalog from "./corsair-integration-catalog.json";
 
-export const vaultAppsSelectOptions: Record<VaultAppsEnum, { label: string; value: string }> = {
+export const vaultAppsSelectOptions: Record<string, { label: string; value: string }> = {
   [VaultAppsEnum.OpenAI]: { label: "OpenAI", value: "OpenAI" },
   [VaultAppsEnum.AWS]: { label: "AWS", value: "AWS" },
   [VaultAppsEnum.Twilio]: { label: "Twilio", value: "Twilio" },
@@ -165,3 +166,23 @@ export const vaultAppsSelectOptions: Record<VaultAppsEnum, { label: string; valu
   [VaultAppsEnum.Xinference]: { label: "Xinference", value: "Xinference" },
   [VaultAppsEnum.Zai]: { label: "Zai", value: "Zai" },
 };
+
+for (const integration of catalog) {
+  if (!(integration.vaultType in vaultAppsSelectOptions)) {
+    vaultAppsSelectOptions[integration.vaultType] = {
+      label: integration.providerName,
+      value: integration.vaultType,
+    };
+  }
+}
+
+export function getDistinctVaultAppSelectOptions(): Array<{ label: string; value: string }> {
+  const seenProviders = new Set<string>();
+
+  return Object.values(vaultAppsSelectOptions).filter((option) => {
+    const providerKey = option.value.toLowerCase();
+    if (seenProviders.has(providerKey)) return false;
+    seenProviders.add(providerKey);
+    return true;
+  });
+}

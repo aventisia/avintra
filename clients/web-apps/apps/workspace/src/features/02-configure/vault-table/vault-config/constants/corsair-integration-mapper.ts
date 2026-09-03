@@ -1,4 +1,5 @@
 import catalog from "./corsair-integration-catalog.json";
+import { appToCredentialNameMapper } from "./app-to-credential-name-mapper";
 
 type CorsairIntegration = (typeof catalog)[number];
 
@@ -6,6 +7,10 @@ const integrations = catalog as CorsairIntegration[];
 
 export function getCorsairIntegration(type: string | undefined): CorsairIntegration | undefined {
   return integrations.find((integration) => integration.vaultType === type);
+}
+
+export function isCorsairCredentialType(type: string | undefined): boolean {
+  return Boolean(getCorsairIntegration(type));
 }
 
 export function getCorsairPluginIcon(pluginId: string | undefined): string | undefined {
@@ -25,5 +30,7 @@ export function getCorsairVaultIcon(type: string | undefined): string | undefine
 
 export function getCorsairCredentialName(type: string | undefined): string | undefined {
   const integration = getCorsairIntegration(type);
-  return integration ? `${integration.vaultType.toLowerCase()}_credentials` : undefined;
+  return integration
+    ? appToCredentialNameMapper[integration.vaultType] ?? `${integration.vaultType.toLowerCase()}_credentials`
+    : undefined;
 }

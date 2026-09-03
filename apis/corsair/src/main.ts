@@ -241,9 +241,9 @@ app.post("/integration-keys", async (req, res) => {
 
 // --- Mirror an API-key credential into Corsair (vault already owns the copy) ---
 app.post("/credentials", async (req, res) => {
-  const { connectionId, plugin, apiKey: keyValue } = req.body ?? {};
-  if (!connectionId || !plugin || !keyValue) {
-    return res.status(400).json({ error: "connectionId, plugin, and apiKey required" });
+  const { connectionId, plugin, credentials } = req.body ?? {};
+  if (!connectionId || !plugin || !credentials || typeof credentials !== "object") {
+    return res.status(400).json({ error: "connectionId, plugin, and credentials required" });
   }
   const pluginId = String(plugin).toLowerCase();
   const pluginNames = plugins.map((p) => (p as any).id as string);
@@ -252,10 +252,48 @@ app.post("/credentials", async (req, res) => {
   }
   try {
     const tenant = corsair.withTenant(connectionId) as any;
-    await tenant[pluginId].keys.set_api_key(keyValue);
+    const keyManager = tenant[pluginId].keys as Record<string, (value: string) => Promise<void>>;
+    for (const [field, value] of Object.entries(credentials as Record<string, unknown>)) {
+      if (typeof value !== "string" || value.length === 0) continue;
+      const normalizedField = {
+        ApiKey: "api_key",
+        AccessToken: "access_token",
+        ApiToken: "api_token",
+        ClientId: "client_id",
+        ClientSecret: "client_secret",
+        RedirectUrl: "redirect_url",
+      }[field] ?? field;
+      const setter = keyManager[`set_${normalizedField}`];
+      if (typeof setter !== "function") {
+        return res.status(400).json({ error: `Unsupported credential field: ${field}` });
+      }
+      await setter(value);
+    }
     res.json({ success: true, connectionId, plugin: pluginId });
   } catch (err: any) {
     res.status(500).json({ success: false, error: err?.message ?? String(err) });
+  }
+});
+
+app.post("/credentials/test", async (req, res) => {
+  const { connectionId, plugin } = req.body ?? {};
+  if (!connectionId || !plugin) {
+    return res.status(400).json({ status: "Unknown", reason: "connectionId and plugin required" });
+  }
+
+  const pluginId = String(plugin).toLowerCase();
+  if (!plugins.some((registered) => (registered as any).id === pluginId)) {
+    return res.status(400).json({ status: "Unknown", reason: `Unsupported plugin: ${plugin}` });
+  }
+
+  try {
+    const status = await corsair.manage.connectionStatus.get({ tenantId: String(connectionId) });
+    const state = String(status[pluginId] ?? "not_connected");
+    if (state === "connected") return res.json({ status: "Connected" });
+    if (state === "expired") return res.json({ status: "Expired", reason: "Credential expired." });
+    return res.json({ status: "NotTestable", reason: "No safe provider health check is configured." });
+  } catch {
+    return res.json({ status: "Unknown", reason: "Connection test unavailable." });
   }
 });
 

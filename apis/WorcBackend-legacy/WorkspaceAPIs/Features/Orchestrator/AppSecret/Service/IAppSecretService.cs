@@ -115,4 +115,5 @@ public interface IAppSecretService
     /// <param name="appSecretId">The App Secret Id (used as the Corsair tenant).</param>
     /// <returns>A service response containing the connection status.</returns>
     Task<ServiceResponse<CorsairConnectionStatus>> GetOAuthConnectionStatusAsync(Guid appSecretId);
+    Task<ServiceResponse<CorsairCredentialTestResult>> TestCorsairCredentialAsync(Guid appSecretId);
 }

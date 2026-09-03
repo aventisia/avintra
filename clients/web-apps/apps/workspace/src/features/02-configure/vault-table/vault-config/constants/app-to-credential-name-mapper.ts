@@ -1,6 +1,7 @@
 import { VaultAppsEnum } from "../../enums/vault-apps-enum";
+import catalog from "./corsair-integration-catalog.json";
 
-export const appToCredentialNameMapper: Record<VaultAppsEnum, string> = {
+export const appToCredentialNameMapper: Record<string, string> = {
   [VaultAppsEnum.OpenAI]: "openai_api_key",
   [VaultAppsEnum.AWS]: "aws_access_key",
   [VaultAppsEnum.Twilio]: "twilio_auth_token",
@@ -165,3 +166,9 @@ export const appToCredentialNameMapper: Record<VaultAppsEnum, string> = {
   [VaultAppsEnum.Xinference]: "xinference_credentials",
   [VaultAppsEnum.Zai]: "zai_credentials",
 };
+
+for (const integration of catalog) {
+  if (!(integration.vaultType in appToCredentialNameMapper)) {
+    appToCredentialNameMapper[integration.vaultType] = `${integration.vaultType.toLowerCase()}_credentials`;
+  }
+}

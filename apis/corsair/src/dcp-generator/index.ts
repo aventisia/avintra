@@ -79,7 +79,19 @@ function writeMissingVaultConfigs(configs: ReturnType<typeof buildVaultConfigs>)
 
   for (const config of configs) {
     const filePath = path.join(vaultConfigDir, config.vaultType + ".json");
-    if (!fs.existsSync(filePath)) writeJson(filePath, config.fields);
+    if (!fs.existsSync(filePath)) {
+      writeJson(filePath, config.fields);
+      continue;
+    }
+
+    try {
+      const existing = JSON.parse(fs.readFileSync(filePath, "utf8"));
+      if (Array.isArray(existing) && existing.length === 0) {
+        writeJson(filePath, config.fields);
+      }
+    } catch {
+      // Leave malformed or manually maintained files for explicit review.
+    }
   }
 }
 
@@ -115,6 +127,7 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
     ?? path.join(outputDir, "CloudConnectorActionSelectorMappingFile.json");
   const actionMapFile = path.join(outputDir, "CorsairActionMap.json");
   const integrationCatalogFile = path.join(outputDir, "CorsairIntegrationCatalog.json");
+  const vaultTypeMapFile = path.join(outputDir, "CorsairVaultTypeToPluginId.json");
   const frontendCatalogFile = path.resolve(
     moduleDir,
     "../../../../clients/web-apps/apps/workspace/src/features/02-configure/vault-table/vault-config/constants/corsair-integration-catalog.json",
@@ -183,6 +196,13 @@ export async function generateDcpFiles(options: GenerateDcpOptions): Promise<voi
   // Write the credential mapping consumed by vault and backend integrations.
   const integrationCatalog = buildIntegrationCatalog(pluginMetas);
   writeJson(integrationCatalogFile, integrationCatalog);
+  const vaultTypeToPluginId = Object.fromEntries(
+    integrationCatalog.reduce<Map<string, string>>((map, entry) => {
+      if (!map.has(entry.vaultType)) map.set(entry.vaultType, entry.pluginId);
+      return map;
+    }, new Map()),
+  );
+  writeJson(vaultTypeMapFile, vaultTypeToPluginId);
   writeJson(frontendCatalogFile, integrationCatalog);
   writeMissingVaultConfigs(buildVaultConfigs(integrationCatalog));
 

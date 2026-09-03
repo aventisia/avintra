@@ -109,7 +109,10 @@ public class CorsairInvokeService : ICorsairInvokeService
 
             // Validate the requested plugin/action against the credential type.
             var plugin = MapAppSecretTypeToCorsairPlugin(appSecret.Type);
-            if (string.IsNullOrWhiteSpace(plugin) || !string.Equals(plugin, request.Plugin, StringComparison.OrdinalIgnoreCase))
+            var supportedPlugins = _configRepository.GetPluginIdsForVaultType(appSecret.Type.ToString());
+            if (string.IsNullOrWhiteSpace(plugin) ||
+                (supportedPlugins.Count > 0 && !supportedPlugins.Contains(request.Plugin, StringComparer.OrdinalIgnoreCase)) ||
+                (supportedPlugins.Count == 0 && !string.Equals(plugin, request.Plugin, StringComparison.OrdinalIgnoreCase)))
             {
                 serviceResponse.Message = $"Credential type does not support plugin '{request.Plugin}'.";
                 return serviceResponse;
@@ -165,7 +168,7 @@ public class CorsairInvokeService : ICorsairInvokeService
     /// Maps an <see cref="AppSecretTypesEnum"/> to the corresponding Corsair plugin identifier.
     /// Returns <c>null</c> when the type does not correspond to a Corsair-supported plugin.
     /// </summary>
-    private static string? MapAppSecretTypeToCorsairPlugin(AppSecretTypesEnum type)
+    private string? MapAppSecretTypeToCorsairPlugin(AppSecretTypesEnum type)
     {
         return type switch
         {
@@ -173,7 +176,7 @@ public class CorsairInvokeService : ICorsairInvokeService
             AppSecretTypesEnum.M365 => "outlook",
             AppSecretTypesEnum.SendGrid => "resend",
             AppSecretTypesEnum.Twilio => "twilio",
-            _ => null
+            _ => _configRepository.GetPluginIdForVaultType(type.ToString())
         };
     }
 }
