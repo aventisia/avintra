@@ -88,6 +88,19 @@ public class BackendHttpClient : IBackendClient
         await EnsureServiceSuccessAsync<object>(response, ct);
     }
 
+    public async Task InsertNodeExecutionLogsAsync(Guid jobId, IReadOnlyList<NodeExecutionLog> logs, CancellationToken ct = default)
+    {
+        if (logs.Count == 0)
+        {
+            return;
+        }
+
+        using var request = await CreateRequestAsync(HttpMethod.Post, $"workspace/api/job/{jobId}/node-execution-logs", ct);
+        request.Content = JsonContent.Create(MapLogsToDtos(logs));
+        var response = await _httpClient.SendAsync(request, ct);
+        await EnsureServiceSuccessAsync<bool>(response, ct);
+    }
+
     public async Task<MachineRegistrationResult?> RegisterMachineAsync(string operatingSystem, string osId, string username, string hostname, CancellationToken ct = default)
     {
         if (_tokenManager is not null)
@@ -232,7 +245,7 @@ public class BackendHttpClient : IBackendClient
         return request;
     }
 
-    private static List<NodeExecutionLogDto> MapLogsToDtos(List<NodeExecutionLog> logs)
+    private static List<NodeExecutionLogDto> MapLogsToDtos(IEnumerable<NodeExecutionLog> logs)
     {
         return logs.Select(l => new NodeExecutionLogDto
         {
@@ -242,6 +255,7 @@ public class BackendHttpClient : IBackendClient
             NodeUniqueName = l.NodeUniqueName,
             IsSuccess = l.IsSuccess,
             Duration = l.Duration,
+            ExecutedAt = l.ExecutedAt == default ? null : l.ExecutedAt,
             Inputs = l.Inputs,
             Outputs = l.Outputs,
         }).ToList();
@@ -323,6 +337,9 @@ public class BackendHttpClient : IBackendClient
 
         [JsonPropertyName("duration")]
         public double Duration { get; set; }
+
+        [JsonPropertyName("executedAt")]
+        public DateTimeOffset? ExecutedAt { get; set; }
 
         [JsonPropertyName("inputs")]
         public Dictionary<string, string> Inputs { get; set; } = new();

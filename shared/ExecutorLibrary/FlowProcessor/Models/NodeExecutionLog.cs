@@ -18,6 +18,14 @@ public class NodeExecutionLog
     public double Duration { get; set; }
 
     /// <summary>
+    /// UTC timestamp captured on the executor the moment the node finished. Set by
+    /// FlowProcessor at log creation; the backend falls back to insert time when absent.
+    /// Preserves true execution order across batched log uploads.
+    /// </summary>
+    [JsonPropertyName("executedAt")]
+    public DateTimeOffset ExecutedAt { get; set; }
+
+    /// <summary>
     /// A unique identifier for this specific execution instance of the node.
     /// Distinguishes repeated executions of the same node (e.g. inside a loop).
     /// </summary>
