@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "one",
+    "label": "One",
+    "description": "One for Here.",
+    "defaultValue": "",
+    "required": true
+  }
+]

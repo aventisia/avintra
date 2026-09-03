@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "one",
+    "label": "One",
+    "description": "One for Xquik.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "webhook_signature",
+    "label": "Webhook_signature",
+    "description": "Webhook_signature for Xquik.",
+    "defaultValue": "",
+    "required": true
+  }
+]

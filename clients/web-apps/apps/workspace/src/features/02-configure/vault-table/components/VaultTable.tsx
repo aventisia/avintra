@@ -20,6 +20,7 @@ import { VaultAppsEnum } from "../enums/vault-apps-enum";
 import { useFetchVaults } from "../hooks/useFetchVaults";
 import { useTableTab } from "../hooks/useTableTab";
 import { vaultAppIconMapper } from "../vault-config/constants/vault-app-icon-mapper";
+import { getCorsairVaultIcon } from "../vault-config/constants/corsair-integration-mapper";
 import { isOAuthCredentialType } from "../vault-config/constants/oauth-credential-types";
 import { VaultTableSkeleton } from "./VaultTableSkeleton";
 import { vaultsTableColumns } from "./VaultsTableColumns";
@@ -91,11 +92,12 @@ export const VaultTable = () => {
                       <img
                         src={
                           basePath +
-                          vaultAppIconMapper[
-                          VaultAppsEnum[
-                          row.getValue("type") as keyof typeof VaultAppsEnum
-                          ] as VaultAppsEnum
-                          ]
+                          (getCorsairVaultIcon(String(row.getValue("type"))) ??
+                            vaultAppIconMapper[
+                              VaultAppsEnum[
+                                row.getValue("type") as keyof typeof VaultAppsEnum
+                              ] as VaultAppsEnum
+                            ])
                         }
                         alt="icon"
                         className="size-6"

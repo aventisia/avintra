@@ -1,4 +1,5 @@
 import { VaultAppsEnum } from "../../enums/vault-apps-enum";
+import catalog from "./corsair-integration-catalog.json";
 
 /**
  * Credential types that require OAuth consent after the credential is saved.
@@ -8,6 +9,9 @@ import { VaultAppsEnum } from "../../enums/vault-apps-enum";
 export const OAUTH_CREDENTIAL_TYPES: Set<string> = new Set([
   VaultAppsEnum[VaultAppsEnum.M365],
   VaultAppsEnum[VaultAppsEnum.GoogleWorkspace],
+  ...catalog
+    .filter((integration) => integration.authModes.some(({ mode }) => mode === "oauth_2"))
+    .map((integration) => integration.vaultType),
 ]);
 
 /**

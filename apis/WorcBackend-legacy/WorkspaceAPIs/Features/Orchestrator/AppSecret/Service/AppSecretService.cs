@@ -3900,6 +3900,13 @@ public class AppSecretService : IAppSecretService
     {
         return type switch
         {
+            AppSecretTypesEnum.OpenAI => "openai",
+            AppSecretTypesEnum.GoogleGemini => "gemini",
+            AppSecretTypesEnum.OpenRouter => "openrouter",
+            AppSecretTypesEnum.Anthropic => "anthropicadministrator",
+            AppSecretTypesEnum.ElevenLabs => "elevenlabs",
+            AppSecretTypesEnum.Groq => "groqcloud",
+            AppSecretTypesEnum.Mistral => "mistral",
             AppSecretTypesEnum.GitHub => "github",
             // SendGrid is mapped to the existing resend plugin because a public @corsair-dev/sendgrid
             // package was not found. If a dedicated SendGrid plugin is added later, change this mapping.
@@ -3929,6 +3936,9 @@ public class AppSecretService : IAppSecretService
         {
             // M365 credentials carry ClientId/ClientSecret and map to the Corsair Outlook plugin.
             AppSecretTypesEnum.M365 => "outlook",
+            // Google Workspace credentials use the shared Google OAuth account family. Gmail is
+            // the OAuth entry point; the resulting account can be used by the other Google plugins.
+            AppSecretTypesEnum.GoogleWorkspace => "gmail",
             _ => null
         };
     }
@@ -3941,10 +3951,26 @@ public class AppSecretService : IAppSecretService
     {
         return plugin switch
         {
-            "github" => decryptedValues.GetValueOrDefault("AccessToken"),
-            "resend" => decryptedValues.GetValueOrDefault("ApiKey"),
-            _ => null
+            "github" => GetFirstCredentialValue(decryptedValues, "AccessToken", "ApiKey"),
+            "resend" => GetFirstCredentialValue(decryptedValues, "ApiKey", "AccessToken"),
+            _ => GetFirstCredentialValue(decryptedValues, "ApiKey", "AccessToken", "ApiToken", "Token"),
         };
+    }
+
+    private static string? GetFirstCredentialValue(
+        Dictionary<string, string> decryptedValues,
+        params string[] keys)
+    {
+        foreach (var key in keys)
+        {
+            var value = decryptedValues.GetValueOrDefault(key);
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return value;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>

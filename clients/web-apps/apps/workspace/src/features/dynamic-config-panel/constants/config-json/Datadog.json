@@ -1,0 +1,20 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "app_key",
+    "label": "App_key",
+    "description": "App_key for Datadog.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "site",
+    "label": "Site",
+    "description": "Site for Datadog.",
+    "defaultValue": "",
+    "required": true
+  }
+]

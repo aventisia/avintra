@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "grafana_url",
+    "label": "Grafana_url",
+    "description": "Grafana_url for Grafana.",
+    "defaultValue": "",
+    "required": true
+  }
+]

@@ -35,7 +35,9 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/SendGrid.svg",
-            "supportedPlatforms": ["cloud"]
+            "supportedPlatforms": [
+              "cloud"
+            ]
           }
         ]
       },
@@ -54,7 +56,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           }
         ]
       },
@@ -73,7 +78,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -83,7 +91,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -93,7 +104,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -103,7 +117,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -113,7 +130,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -123,7 +143,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -133,7 +156,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -143,7 +169,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -153,7 +182,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           }
         ]
       },
@@ -172,7 +204,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Twilio.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -182,7 +217,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Twilio.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -192,7 +230,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Twilio.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           }
         ]
       },
@@ -211,7 +252,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Email.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -221,7 +265,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Email.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -231,7 +278,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Email.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           }
         ]
       },
@@ -250,7 +300,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Azure.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -260,7 +313,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Azure.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -270,7 +326,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Azure.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -280,7 +339,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Azure.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -290,7 +352,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/Azure.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           }
         ]
       },
@@ -308,7 +373,10 @@
             "description": "Send an email message from a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -317,7 +385,10 @@
             "description": "Create a draft email message in a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -326,7 +397,10 @@
             "description": "Update an existing draft email in a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -335,7 +409,10 @@
             "description": "Delete an existing draft email from a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -344,7 +421,10 @@
             "description": "Send an existing draft email from a Microsoft 365 Outlook mailbox using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -353,7 +433,10 @@
             "description": "Retrieve a list of email messages from a mailbox with optional filtering, sorting, or pagination.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -362,7 +445,10 @@
             "description": "Retrieve detailed information about a specific email message using its unique Message ID.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -371,7 +457,10 @@
             "description": "Retrieve email messages from a specified mail folder within a mailbox.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -380,7 +469,10 @@
             "description": "Move an email message to a different mail folder within the same mailbox.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -389,7 +481,10 @@
             "description": "Update email properties such as read/unread status, flag status, categories, and importance level.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -398,7 +493,10 @@
             "description": "Retrieve all mail folders in a mailbox, with an option to include hidden folders.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -407,7 +505,10 @@
             "description": "Retrieve detailed information about a specific mail folder using its display name.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -416,7 +517,10 @@
             "description": "Create a new mail folder within a Microsoft 365 Outlook mailbox.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -425,7 +529,10 @@
             "description": "Rename an existing mail folder and optionally update its visibility settings.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -434,7 +541,10 @@
             "description": "Delete a mail folder from a Microsoft 365 Outlook mailbox.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -443,7 +553,10 @@
             "description": "Forward an existing email message to one or more recipients using Microsoft 365 Outlook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -452,7 +565,10 @@
             "description": "Reply to an existing email message, either to the sender only or to all recipients, using Microsoft 365 Outlook.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           }
         ]
       },
@@ -470,7 +586,10 @@
             "description": "Retrieve all SharePoint sites available to the authenticated user through Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -479,7 +598,10 @@
             "description": "Search SharePoint sites by keyword and retrieve matching site collections using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -488,7 +610,10 @@
             "description": "Retrieve detailed information about a specific SharePoint site using its unique Site ID.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -497,7 +622,10 @@
             "description": "Retrieve a SharePoint site using its full site path (hostname and relative path).",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -506,7 +634,10 @@
             "description": "Retrieve files and folders from a specified SharePoint document library or folder.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -515,7 +646,10 @@
             "description": "Retrieve file metadata and details from a SharePoint document library using its full file path.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -524,7 +658,10 @@
             "description": "Download a file from a SharePoint document library using Microsoft Graph API.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -533,7 +670,10 @@
             "description": "Upload a new file to a SharePoint document library or folder.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -542,7 +682,10 @@
             "description": "Update file properties such as name or metadata in a SharePoint document library.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -551,7 +694,10 @@
             "description": "Create a copy of a file within the same document library or move it to another location.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -560,7 +706,10 @@
             "description": "Move a file to a different folder or document library within SharePoint.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -569,7 +718,10 @@
             "description": "Permanently delete a file from a SharePoint document library.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -578,7 +730,10 @@
             "description": "Check out a file to prevent others from editing it until it is checked back in.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -587,7 +742,10 @@
             "description": "Check in a file after editing, optionally including a version comment and check-in type.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           },
           {
             "type": "cloudConnectorNode",
@@ -596,7 +754,10 @@
             "description": "Retrieve version history details of a SharePoint file, including version ID, modified date, and check-in comments.",
             "docsLink": "https://docs.aventisia.com",
             "img": "/assets/M365.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           }
         ]
       },
@@ -6134,7 +6295,10 @@
             "docsLink": "https://docs.aventisia.com",
             "icon": null,
             "img": "/assets/VectorStore.svg",
-            "supportedPlatforms": ["cloud", "windows"]
+            "supportedPlatforms": [
+              "cloud",
+              "windows"
+            ]
           }
         ]
       }

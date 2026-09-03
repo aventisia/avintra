@@ -1,0 +1,11 @@
+[
+  {
+    "direction": "Input",
+    "type": "password",
+    "name": "api_secret",
+    "label": "Api_secret",
+    "description": "Api_secret for Bonsai.",
+    "defaultValue": "",
+    "required": true
+  }
+]

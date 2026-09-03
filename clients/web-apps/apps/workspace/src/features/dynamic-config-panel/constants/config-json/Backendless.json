@@ -1,0 +1,29 @@
+[
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "application_id",
+    "label": "Application_id",
+    "description": "Application_id for Backendless.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "base_url",
+    "label": "Base_url",
+    "description": "Base_url for Backendless.",
+    "defaultValue": "",
+    "required": true
+  },
+  {
+    "direction": "Input",
+    "type": "text",
+    "name": "user_token",
+    "label": "User_token",
+    "description": "User_token for Backendless.",
+    "defaultValue": "",
+    "required": true
+  }
+]
