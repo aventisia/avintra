@@ -1850,15 +1850,19 @@
     "icon": "/brand-img/salesforce.svg",
     "credentialName": "__CredentialName__Salesforce",
     "operations": [
-      "getSObject",
+      "oauth2Token",
       "createSObject",
+      "getSObject",
       "updateSObject",
+      "upsertSObject",
       "deleteSObject",
+      "undeleteSObject",
       "query",
+      "queryAll",
       "search",
+      "describeSObject",
       "composite",
-      "bulk2CreateJob",
-      "apexCall"
+      "batch"
     ],
     "authTypes": [
       "OAuth2",
@@ -10013,9 +10017,14 @@
     "icon": "/brand-img/sap.svg",
     "credentialName": "__CredentialName__SAPNetWeaver",
     "operations": [
-      "url",
-      "username",
-      "password"
+      "statelessRfc",
+      "statefulBapi",
+      "commit",
+      "rollback",
+      "readTable",
+      "sendIdoc",
+      "receiveIdoc",
+      "repositoryLookup"
     ],
     "authTypes": [
       "Basic Auth",
