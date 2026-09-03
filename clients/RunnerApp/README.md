@@ -104,14 +104,25 @@ The runner is published per platform. Jenkins (Ubuntu agent) only builds the **L
 # non-interactive usage
 ./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers uat
 ./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers prod
+# publish only (no upload)
+./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --mode publish
+# upload only (no build; requires the artifacts zip to exist)
+./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --mode upload --target-servers uat
 # preview only
 ./clients/RunnerApp/RunnerApp.Linux/publish-and-upload-linux.sh --target-servers uat --dry-run
 ```
+
+Operation mode options (`--mode` or interactive prompt):
+
+1. `both` — publish and upload (default)
+2. `publish` — build only, no upload; the server prompt is skipped entirely
+3. `upload` — no build; upload the existing `artifacts/` archive for the configured version
 
 Target server options (`--target-servers` or interactive prompt):
 
 1. `uat` → `avuat.aventisia.com`
 2. `prod` → `avweb1.aventisia.com` + `avweb2.aventisia.com`
+3. `both` → uat + prod
 
 ### macOS (developer machine)
 
@@ -259,7 +270,7 @@ If you don't pass `-RunnerZipPath`, the script automatically picks the most rece
 cd clients\RunnerApp\RunnerApp.Windows
 
 # 1) Build the local archive (no upload)
-.\publish-and-upload-windows.ps1 -TargetServers uat -SkipUpload
+.\publish-and-upload-windows.ps1 -TargetServers uat -Mode publish
 
 # 2) Install directly from the built archive
 $env:AVINTRA_APP_BASE_URL = "https://uat-avintra.aventisia.com"

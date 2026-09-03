@@ -3,8 +3,9 @@
 # selected server(s).
 #
 # Usage:
-#   ./publish-and-upload-macos.sh [--version <ver>] [--target-servers uat|prod]
-#                                 [--dry-run] [--skip-upload] [--no-sync-version]
+#   ./publish-and-upload-macos.sh [--version <ver>] [--target-servers uat|prod|both]
+#                                 [--mode both|publish|upload] [--dry-run]
+#                                 [--no-sync-version]
 #
 # What it builds (macOS):
 #   - DMG          (bundle/dmg/AvintraDesktopApp_<version>_<arch>.dmg)
@@ -18,7 +19,9 @@
 #   --version         reads version from src-tauri/tauri.conf.json
 #   --target-servers  prompts interactively if not provided (1=uat, 2=prod)
 #   --dry-run         print the plan without building/uploading
-#   --skip-upload     build only; do not upload
+#   --mode both       build and upload (default)
+#   --mode publish    build only; do not upload
+#   --mode upload     no build; upload the existing v<version> artifacts
 #   --no-sync-version skip the release-version.sh sync step
 #
 # Output:
@@ -37,8 +40,8 @@ SECRETS_FILE="$DESKTOP_APP_DIR/scripts/.env.local"
 
 VERSION=""
 TARGET_SERVERS=""
+MODE=""
 DRY_RUN=false
-SKIP_UPLOAD=false
 SYNC_VERSION=true
 
 # --- Parse arguments -----------------------------------------------------------
@@ -56,9 +59,9 @@ while [[ $# -gt 0 ]]; do
       DRY_RUN=true
       shift
       ;;
-    --skip-upload)
-      SKIP_UPLOAD=true
-      shift
+    --mode)
+      MODE="$2"
+      shift 2
       ;;
     --no-sync-version)
       SYNC_VERSION=false
@@ -66,7 +69,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     *)
       echo "error: unknown argument: $1" >&2
-      echo "usage: $0 [--version <ver>] [--target-servers uat|prod] [--dry-run] [--skip-upload] [--no-sync-version]" >&2
+      echo "usage: $0 [--version <ver>] [--target-servers uat|prod|both] [--mode both|publish|upload] [--dry-run] [--no-sync-version]" >&2
       exit 1
       ;;
   esac
@@ -109,32 +112,69 @@ if [[ -z "$VERSION" ]]; then
   exit 1
 fi
 
+# --- Resolve operation mode -----------------------------------------------------
+resolve_mode() {
+  local choice="$1"
+  case "$choice" in
+    both|1)      echo "both" ;;
+    publish|2)   echo "publish" ;;
+    upload|3)    echo "upload" ;;
+    *)           echo "error: unsupported mode: $choice (use both | publish | upload)" >&2; exit 1 ;;
+  esac
+}
+
+if [[ -z "$MODE" ]]; then
+  if [[ -t 0 ]]; then
+    echo "Select operation mode:"
+    echo "  1) publish and upload"
+    echo "  2) publish only (no upload)"
+    echo "  3) upload only (use existing artifacts, no build)"
+    read -r -p "Enter 1-3 or name (both/publish/upload): " MODE
+  else
+    MODE="both"
+  fi
+fi
+
+MODE="$(resolve_mode "$MODE")"
+
 # --- Resolve target servers ----------------------------------------------------
 resolve_servers() {
   local choice="$1"
   case "$choice" in
     uat|1)            echo "avuat.aventisia.com" ;;
     prod|2)           echo "avweb1.aventisia.com avweb2.aventisia.com" ;;
+    both|3)           echo "avuat.aventisia.com avweb1.aventisia.com avweb2.aventisia.com" ;;
     *)                echo "error: unsupported server combination: $choice" >&2; exit 1 ;;
   esac
 }
 
-if [[ -z "$TARGET_SERVERS" ]]; then
-  if [[ -t 0 ]]; then
-    echo "Select target server(s):"
-    echo "  1) uat"
-    echo "  2) prod"
-    read -r -p "Enter 1-2 or name (uat/prod): " TARGET_SERVERS
-  else
-    echo "error: --target-servers is required when running non-interactively" >&2
-    exit 1
+# Publish-only mode has no upload target, so server selection is skipped.
+if [[ "$MODE" == "publish" ]]; then
+  if [[ -n "$TARGET_SERVERS" ]]; then
+    echo "note: --target-servers is ignored in publish-only mode (no upload)."
   fi
+  SERVER_LIST=""
+else
+  if [[ -z "$TARGET_SERVERS" ]]; then
+    if [[ -t 0 ]]; then
+      echo "Select target server(s):"
+      echo "  1) uat"
+      echo "  2) prod"
+      echo "  3) both (uat + prod)"
+      read -r -p "Enter 1-3 or name (uat/prod/both): " TARGET_SERVERS
+    else
+      echo "error: --target-servers is required when running non-interactively" >&2
+      exit 1
+    fi
+  fi
+
+  SERVER_LIST="$(resolve_servers "$TARGET_SERVERS")"
 fi
 
-SERVER_LIST="$(resolve_servers "$TARGET_SERVERS")"
-
 # --- Sync version from git tag ---------------------------------------------------
-if [[ "$SYNC_VERSION" == true && "$DRY_RUN" == false ]]; then
+# Skipped in upload-only mode: it would rewrite version files for artifacts
+# that were already built.
+if [[ "$SYNC_VERSION" == true && "$DRY_RUN" == false && "$MODE" != "upload" ]]; then
   echo "Syncing release version from git tag into tauri.conf.json / package.json / Cargo.toml ..."
   "$REPO_ROOT/scripts/release-version.sh"
 fi
@@ -144,23 +184,36 @@ BUNDLE_DIR="$DESKTOP_APP_DIR/src-tauri/target/release/bundle"
 DMG_DIR="$BUNDLE_DIR/dmg"
 MACOS_DIR="$BUNDLE_DIR/macos"
 
-# Clean previous artifacts so stale files are never uploaded.
-rm -rf "$DMG_DIR"
-rm -f "$MACOS_DIR"/AvintraDesktopApp.app.tar.gz "$MACOS_DIR"/AvintraDesktopApp.app.tar.gz.sig
+# Clean previous artifacts so stale files are never uploaded. Skipped in
+# upload-only mode so existing build outputs can be re-used.
+if [[ "$MODE" != "upload" ]]; then
+  rm -rf "$DMG_DIR"
+  rm -f "$MACOS_DIR"/AvintraDesktopApp.app.tar.gz "$MACOS_DIR"/AvintraDesktopApp.app.tar.gz.sig
+fi
 
 load_secrets
 
-echo "Building AvintraDesktopApp (dmg + app.tar.gz) v$VERSION ..."
-
-if [[ "$DRY_RUN" == true ]]; then
-  echo "[dry-run] (cd $DESKTOP_APP_DIR && npx tauri build)"
+if [[ "$MODE" == "upload" ]]; then
+  echo "Upload-only mode: skipping build, using existing artifacts for v$VERSION ..."
 else
-  (cd "$DESKTOP_APP_DIR" && npx tauri build)
+  echo "Building AvintraDesktopApp (dmg + app.tar.gz) v$VERSION ..."
+
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "[dry-run] (cd $DESKTOP_APP_DIR && npx tauri build)"
+  else
+    (cd "$DESKTOP_APP_DIR" && npx tauri build)
+  fi
 fi
 
 # --- Collect artifacts -----------------------------------------------------------
 # DMG: primary end-user install artifact. .app.tar.gz(+.sig): updater artifacts.
-DMG_PATH="$(ls "$DMG_DIR"/AvintraDesktopApp_*.dmg 2>/dev/null | head -n1 || true)"
+# Upload-only mode matches the configured version explicitly so a stale build
+# from a different version is never uploaded.
+if [[ "$MODE" == "upload" ]]; then
+  DMG_PATH="$(ls "$DMG_DIR"/AvintraDesktopApp_"${VERSION}"_*.dmg 2>/dev/null | head -n1 || true)"
+else
+  DMG_PATH="$(ls "$DMG_DIR"/AvintraDesktopApp_*.dmg 2>/dev/null | head -n1 || true)"
+fi
 APP_TARGZ="$MACOS_DIR/AvintraDesktopApp.app.tar.gz"
 APP_TARGZ_SIG="$MACOS_DIR/AvintraDesktopApp.app.tar.gz.sig"
 
@@ -172,7 +225,11 @@ if [[ "$DRY_RUN" == true ]]; then
   echo "[dry-run]   $APP_TARGZ_SIG"
 else
   if [[ -z "$DMG_PATH" ]]; then
-    echo "error: no DMG found in $DMG_DIR after build." >&2
+    if [[ "$MODE" == "upload" ]]; then
+      echo "error: no DMG for v$VERSION found in $DMG_DIR. Build one first with --mode publish or both, or pass --version matching an existing build." >&2
+    else
+      echo "error: no DMG found in $DMG_DIR after build." >&2
+    fi
     exit 1
   fi
   if [[ ! -f "$APP_TARGZ" || ! -f "$APP_TARGZ_SIG" ]]; then
@@ -188,8 +245,8 @@ if [[ "$DRY_RUN" == false ]]; then
 fi
 
 # --- Upload -----------------------------------------------------------------------
-if [[ "$SKIP_UPLOAD" == true ]]; then
-  echo "Upload skipped (--skip-upload)."
+if [[ "$MODE" == "publish" ]]; then
+  echo "Upload skipped (mode: publish only)."
   exit 0
 fi
 

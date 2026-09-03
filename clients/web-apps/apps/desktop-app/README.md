@@ -49,10 +49,24 @@ Build artifacts are placed in `src-tauri/target/release/bundle/`. To build **and
 
 ### Target server options
 
-The scripts prompt interactively when `--target-servers` / `-TargetServers` is omitted:
+The scripts prompt for the operation mode and target server(s) when
+`--mode` / `-Mode` or `--target-servers` / `-TargetServers` are omitted:
+
+Operation modes (`--mode` / `-Mode`):
+
+1. `both` — publish and upload (default)
+2. `publish` — build only, no upload; the server prompt is skipped entirely
+3. `upload` — no build; upload the existing artifacts for the configured version
+
+Choosing `publish` skips server selection — nothing is uploaded. On Windows
+prod, EV code-signing is applied at upload time (upload-only signs the
+installer if it is not already signed).
+
+Target servers (`--target-servers` / `-TargetServers`):
 
 1. `uat` → `avuat.aventisia.com`
 2. `prod` → `avweb1.aventisia.com` + `avweb2.aventisia.com`
+3. `both` → uat + prod
 
 All scripts upload installers and updater signatures to `/var/www/aventisia.com/files/binaries/` (via `ssh admin@<host>`).
 
@@ -76,14 +90,14 @@ Required keys: `TAURI_SIGNING_PRIVATE_KEY`, `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
 
 ### Common flags
 
-| Flag                                            | Effect                                            |
-| ----------------------------------------------- | ------------------------------------------------- |
-| `--target-servers uat\|prod` / `-TargetServers` | Skip the interactive server prompt                |
-| `--dry-run` / `-WhatIf`                         | Print the plan without building/uploading         |
-| `--skip-upload` / `-SkipUpload`                 | Build only                                        |
-| `--no-sync-version` / `-NoSyncVersion`          | Skip the `scripts/release-version.*` git-tag sync |
-| `--include-deb` (Linux)                         | Also upload the `.deb` package                    |
-| `-SkipSign` (Windows prod)                      | Skip EV code-signing (not recommended for prod)   |
+| Flag                                                  | Effect                                            |
+| ----------------------------------------------------- | ------------------------------------------------- |
+| `--mode both\|publish\|upload` / `-Mode`              | Publish+upload / publish only / upload only       |
+| `--target-servers uat\|prod\|both` / `-TargetServers` | Skip the interactive server prompt                |
+| `--dry-run` / `-WhatIf`                               | Print the plan without building/uploading         |
+| `--no-sync-version` / `-NoSyncVersion`                | Skip the `scripts/release-version.*` git-tag sync |
+| `--include-deb` (Linux)                               | Also upload the `.deb` package                    |
+| `-SkipSign` (Windows prod)                            | Skip EV code-signing (not recommended for prod)   |
 
 ## Available Scripts
 

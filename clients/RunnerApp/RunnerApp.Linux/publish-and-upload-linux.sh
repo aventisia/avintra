@@ -2,14 +2,14 @@
 # Publishes the RunnerApp Linux binary and uploads it to the selected server(s).
 #
 # Usage:
-#   ./publish-and-upload-linux.sh [--version <ver>] [--target-servers uat|prod]
-#                                 [--dry-run] [--skip-upload]
+#   ./publish-and-upload-linux.sh [--version <ver>] [--target-servers uat|prod|both]
+#                                 [--mode both|publish|upload] [--dry-run]
 #
 # Defaults:
 #   --version        reads the <Version> from RunnerApp.Windows.csproj (the single source of truth)
-#   --target-servers prompts interactively if not provided (1=uat, 2=prod)
+#   --target-servers prompts interactively if not provided (1=uat, 2=prod, 3=both)
+#   --mode           prompts interactively if not provided (1=both, 2=publish, 3=upload)
 #   --dry-run        print the publish and upload plan without executing uploads
-#   --skip-upload    publish only; do not upload
 #
 # Output:
 #   ./artifacts/AvintraRunnerApp_<version>_linux-x64.zip
@@ -24,8 +24,8 @@ CSPROJ="$SCRIPT_DIR/RunnerApp.Linux.csproj"
 
 VERSION=""
 TARGET_SERVERS=""
+MODE=""
 DRY_RUN=false
-SKIP_UPLOAD=false
 
 # --- Parse arguments -----------------------------------------------------------
 while [[ $# -gt 0 ]]; do
@@ -42,13 +42,13 @@ while [[ $# -gt 0 ]]; do
       DRY_RUN=true
       shift
       ;;
-    --skip-upload)
-      SKIP_UPLOAD=true
-      shift
+    --mode)
+      MODE="$2"
+      shift 2
       ;;
     *)
       echo "error: unknown argument: $1" >&2
-      echo "usage: $0 [--version <ver>] [--target-servers uat|prod] [--dry-run] [--skip-upload]" >&2
+      echo "usage: $0 [--version <ver>] [--target-servers uat|prod|both] [--mode both|publish|upload] [--dry-run]" >&2
       exit 1
       ;;
   esac
@@ -69,29 +69,64 @@ if [[ -z "$VERSION" ]]; then
   exit 1
 fi
 
+# --- Resolve operation mode -----------------------------------------------------
+resolve_mode() {
+  local choice="$1"
+  case "$choice" in
+    both|1)      echo "both" ;;
+    publish|2)   echo "publish" ;;
+    upload|3)    echo "upload" ;;
+    *)           echo "error: unsupported mode: $choice (use both | publish | upload)" >&2; exit 1 ;;
+  esac
+}
+
+if [[ -z "$MODE" ]]; then
+  if [[ -t 0 ]]; then
+    echo "Select operation mode:"
+    echo "  1) publish and upload"
+    echo "  2) publish only (no upload)"
+    echo "  3) upload only (use existing artifacts, no build)"
+    read -r -p "Enter 1-3 or name (both/publish/upload): " MODE
+  else
+    MODE="both"
+  fi
+fi
+
+MODE="$(resolve_mode "$MODE")"
+
 # --- Resolve target servers ----------------------------------------------------
 resolve_servers() {
   local choice="$1"
   case "$choice" in
     uat|1)            echo "avuat.aventisia.com" ;;
     prod|2)           echo "avweb1.aventisia.com avweb2.aventisia.com" ;;
+    both|3)           echo "avuat.aventisia.com avweb1.aventisia.com avweb2.aventisia.com" ;;
     *)                echo "error: unsupported server combination: $choice" >&2; exit 1 ;;
   esac
 }
 
-if [[ -z "$TARGET_SERVERS" ]]; then
-  if [[ -t 0 ]]; then
-    echo "Select target server(s):"
-    echo "  1) uat"
-    echo "  2) prod"
-    read -r -p "Enter 1-2 or name (uat/prod): " TARGET_SERVERS
-  else
-    echo "error: --target-servers is required when running non-interactively" >&2
-    exit 1
+# Publish-only mode has no upload target, so server selection is skipped.
+if [[ "$MODE" == "publish" ]]; then
+  if [[ -n "$TARGET_SERVERS" ]]; then
+    echo "note: --target-servers is ignored in publish-only mode (no upload)."
   fi
-fi
+  SERVER_LIST=""
+else
+  if [[ -z "$TARGET_SERVERS" ]]; then
+    if [[ -t 0 ]]; then
+      echo "Select target server(s):"
+      echo "  1) uat"
+      echo "  2) prod"
+      echo "  3) both (uat + prod)"
+      read -r -p "Enter 1-3 or name (uat/prod/both): " TARGET_SERVERS
+    else
+      echo "error: --target-servers is required when running non-interactively" >&2
+      exit 1
+    fi
+  fi
 
-SERVER_LIST="$(resolve_servers "$TARGET_SERVERS")"
+  SERVER_LIST="$(resolve_servers "$TARGET_SERVERS")"
+fi
 
 # --- Publish ------------------------------------------------------------------
 OUTPUT_DIR="$SCRIPT_DIR/../artifacts"
@@ -101,17 +136,24 @@ OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
 PUBLISH_DIR="$(mktemp -d)"
 trap 'rm -rf "$PUBLISH_DIR"' EXIT
 
-echo "Publishing RunnerApp (linux-x64, framework-dependent) v$VERSION ..."
-
-if [[ "$DRY_RUN" == true ]]; then
-  echo "[dry-run] dotnet publish $CSPROJ -c Release -r linux-x64 --self-contained false -p:PublishSingleFile=true -o $PUBLISH_DIR"
+if [[ "$MODE" == "upload" ]]; then
+  echo "Upload-only mode: skipping publish, using existing artifacts for v$VERSION ..."
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "[dry-run] locate $OUTPUT_DIR/AvintraRunnerApp_${VERSION}_linux-x64.zip"
+  fi
 else
-  dotnet publish "$CSPROJ" \
-    -c Release \
-    -r linux-x64 \
-    --self-contained false \
-    -p:PublishSingleFile=true \
-    -o "$PUBLISH_DIR"
+  echo "Publishing RunnerApp (linux-x64, framework-dependent) v$VERSION ..."
+
+  if [[ "$DRY_RUN" == true ]]; then
+    echo "[dry-run] dotnet publish $CSPROJ -c Release -r linux-x64 --self-contained false -p:PublishSingleFile=true -o $PUBLISH_DIR"
+  else
+    dotnet publish "$CSPROJ" \
+      -c Release \
+      -r linux-x64 \
+      --self-contained false \
+      -p:PublishSingleFile=true \
+      -o "$PUBLISH_DIR"
+  fi
 fi
 
 # Rename the published executable to AvintraRunnerApp.
@@ -120,7 +162,13 @@ RENAMED_EXE="$PUBLISH_DIR/AvintraRunnerApp"
 ZIP_NAME="AvintraRunnerApp_${VERSION}_linux-x64.zip"
 ZIP_PATH="$OUTPUT_DIR/$ZIP_NAME"
 
-if [[ "$DRY_RUN" == true ]]; then
+if [[ "$MODE" == "upload" ]]; then
+  # Upload-only: locate the previously published archive for this version.
+  if [[ ! -f "$ZIP_PATH" ]]; then
+    echo "error: archive for v$VERSION not found at $ZIP_PATH. Publish first with --mode publish or both, or pass --version matching an existing archive." >&2
+    exit 1
+  fi
+elif [[ "$DRY_RUN" == true ]]; then
   echo "[dry-run] mv $PUBLISHED_EXE $RENAMED_EXE"
   echo "[dry-run] zip $ZIP_PATH from $PUBLISH_DIR"
 else
@@ -143,13 +191,13 @@ else
 fi
 
 echo "Published to $ZIP_PATH"
-if [[ "$DRY_RUN" == false ]]; then
+if [[ "$DRY_RUN" == false && "$MODE" != "upload" ]]; then
   ls -lh "$ZIP_PATH"
 fi
 
 # --- Upload --------------------------------------------------------------------
-if [[ "$SKIP_UPLOAD" == true ]]; then
-  echo "Upload skipped (--skip-upload)."
+if [[ "$MODE" == "publish" ]]; then
+  echo "Upload skipped (mode: publish only)."
   exit 0
 fi
 
