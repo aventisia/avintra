@@ -40,12 +40,12 @@ public class CamelStartupHostedService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // Skip Camel startup seeding on localhost to avoid unnecessary harness calls.
-        if (_serviceProvider.GetRequiredService<IHostEnvironment>().IsEnvironment("Localhost"))
-        {
-            _logger.LogInformation("Skipping Camel startup seeding on localhost.");
-            return;
-        }
+        // // Skip Camel startup seeding on localhost to avoid unnecessary harness calls.
+        // if (_serviceProvider.GetRequiredService<IHostEnvironment>().IsEnvironment("Localhost"))
+        // {
+        //     _logger.LogInformation("Skipping Camel startup seeding on localhost.");
+        //     return;
+        // }
 
         // Small delay so the app finishes startup and the DB seed completes first.
         await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);

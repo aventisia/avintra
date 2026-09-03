@@ -645,7 +645,7 @@ public class CamelSeedingService : ICamelSeedingService
             "basic auth" or "basic" => "basic",
             "bearer token" or "bearer" => "accessToken",
             "api key" or "apikey" => "apiKey",
-            "oauth2" or "oauth" => "client_credentials",
+            "oauth2" or "oauth" => "oauth2",
             "connection string" or "database" or "db" => "database",
             "aws access/secret key" or "aws" => "aws",
             "service account/json key" or "gcp" => "gcp",

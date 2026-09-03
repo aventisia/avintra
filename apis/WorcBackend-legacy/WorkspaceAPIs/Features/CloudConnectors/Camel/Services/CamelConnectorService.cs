@@ -506,6 +506,7 @@ public class CamelConnectorService : ICamelConnectorService
             "basic" => CamelCredentialHelpers.Basic(credential, payload, credentialName ?? "unknown"),
             "database" or "db" => CamelCredentialHelpers.Database(credential, payload, credentialName ?? "unknown"),
             "clientcredentials" or "client_credentials" => CamelCredentialHelpers.ClientCredentials(credential),
+            "oauth2" or "oauth" => CamelCredentialHelpers.OAuth2(credential),
             _ => CamelAuthResult.Failure(400, $"Unsupported authentication type '{authType}' for Camel connector.")
         };
     }

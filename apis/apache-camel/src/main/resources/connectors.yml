@@ -210,3 +210,83 @@
     - "Use auth.type=basic with username and password."
     - "For send operations, use headers.To/Subject/From or configuration equivalents."
 
+- name: salesforce
+  description: Salesforce REST, Bulk, and Composite API operations.
+  schemes:
+    - salesforce
+  operations:
+    - oauth2Token
+    - createSObject
+    - getSObject
+    - updateSObject
+    - upsertSObject
+    - deleteSObject
+    - undeleteSObject
+    - query
+    - queryAll
+    - search
+    - describeSObject
+    - composite
+    - batch
+  requiredConfig:
+    - loginUrl
+    - clientId
+    - clientSecret
+  optionalConfig:
+    - apiVersion
+    - objectName
+    - sObjectId
+    - externalIdFieldName
+    - externalIdValue
+    - soql
+    - sosl
+    - batchRequests
+    - compositeRequests
+  requiredAuth: []
+  optionalAuth:
+    - accessToken
+    - refreshToken
+    - tokenUrl
+  notes:
+    - "Use auth.type=oauth2 or auth.type=accessToken; tokens are never stored in connector configuration."
+    - "Use soql for query/queryAll, sosl for search, and payload for Salesforce records or composite/batch requests."
+    - "createSObject, getSObject, updateSObject, upsertSObject, deleteSObject, undeleteSObject, and describeSObject use objectName."
+
+- name: sap-netweaver
+  description: SAP NetWeaver RFC, BAPI, table, IDoc, and repository operations.
+  schemes:
+    - sap-netweaver
+  operations:
+    - statelessRfc
+    - statefulBapi
+    - commit
+    - rollback
+    - readTable
+    - sendIdoc
+    - receiveIdoc
+    - repositoryLookup
+  requiredConfig:
+    - url
+    - username
+    - password
+  optionalConfig:
+    - client
+    - language
+    - functionName
+    - bapiName
+    - tableName
+    - fields
+    - where
+    - idocType
+    - idocData
+    - repositoryObject
+  requiredAuth: []
+  optionalAuth:
+    - keyStoreLocation
+    - keyStorePassword
+    - trustStoreLocation
+    - trustStorePassword
+  notes:
+    - "The SAP NetWeaver component transports requests through the configured SAP HTTP/OData endpoint; RFC/JCo availability is supplied by the target SAP gateway."
+    - "Use payload for RFC/BAPI parameters, table extraction options, IDoc data, and repository lookup criteria."
+

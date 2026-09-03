@@ -162,6 +162,20 @@ public static class CamelCredentialHelpers
         });
     }
 
+    /// <summary>OAuth2 credentials used by Salesforce and similar providers.</summary>
+    public static CamelAuthResult OAuth2(AppSecretDto credential)
+    {
+        var auth = new Dictionary<string, object?> { ["type"] = "oauth2" };
+        AddCredentialValue(auth, credential, "ClientId", "clientId");
+        AddCredentialValue(auth, credential, "ClientSecret", "clientSecret");
+        AddCredentialValue(auth, credential, "AccessToken", "token");
+        AddCredentialValue(auth, credential, "RefreshToken", "refreshToken");
+        AddCredentialValue(auth, credential, "TokenUrl", "tokenUrl");
+        return auth.Count == 1
+            ? CamelAuthResult.Failure(400, $"Credential '{credential.Name}' has no OAuth2 values.")
+            : CamelAuthResult.Success(auth);
+    }
+
     private static string? GetString(AppSecretDto credential, string key)
     {
         if (credential.Data == null)
@@ -204,6 +218,19 @@ public static class CamelCredentialHelpers
         }
 
         return null;
+    }
+
+    private static void AddCredentialValue(
+        Dictionary<string, object?> auth,
+        AppSecretDto credential,
+        string credentialKey,
+        string authKey)
+    {
+        var value = GetString(credential, credentialKey);
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            auth[authKey] = value;
+        }
     }
 
     private static string? GetPayloadString(Dictionary<string, object> payload, string key)

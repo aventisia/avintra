@@ -111,6 +111,15 @@ public class GenericConfigurer implements ConnectorConfigurer {
                 appendOption(options, "clientId", auth.clientId());
                 appendOption(options, "clientSecret", auth.clientSecret());
             }
+            case OAUTH2 -> {
+                appendOption(options, "clientId", auth.clientId());
+                appendOption(options, "clientSecret", auth.clientSecret());
+                appendOption(options, "accessToken", auth.token());
+                appendOption(options, "refreshToken", auth.refreshToken());
+                appendOption(options, "tokenUrl", auth.tokenUrl());
+                appendOption(options, "authorizationUrl", auth.authorizationUrl());
+                appendOption(options, "scopes", auth.scopes());
+            }
             case AWS -> {
                 appendOption(options, "accessKey", auth.accessKey());
                 appendOption(options, "secretKey", auth.secretKey());
