@@ -34,7 +34,8 @@ export function buildActionSelectorAction(
     docsLink: "https://docs.aventisia.com",
     icon: null,
     img: plugin.img,
-    supportedPlatforms: ["cloud"],
+    // Runtime is a platform-agnostic backend call (ProcessCorsairRequestNode), so desktop can run it too.
+    supportedPlatforms: ["cloud", "windows"],
   };
 }
 

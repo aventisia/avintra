@@ -81,7 +81,8 @@ export function buildActionConfig(
     description: description || actionToLabel(action),
     version: "1.0.0",
     author: "@aventisia",
-    supportedPlatforms: ["cloud"],
+    // Runtime is a platform-agnostic backend call (ProcessCorsairRequestNode), so desktop can run it too.
+    supportedPlatforms: ["cloud", "windows"],
     errorHandling: "standard",
     testScreenType: "standard",
     fields: [credentialField, ...inputFields, ...outputFields],

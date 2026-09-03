@@ -279,7 +279,12 @@ public class CorsairConfigRepository
 
     private string? ResolveActionMapPath()
     {
+        // The generator writes CorsairActionMap.json directly under the ConfigFiles
+        // root (sibling of the Corsair/ plugin folder), not inside the Corsair/
+        // subfolder. ResolveConfigRoot() returns the Corsair/ subfolder, so step up
+        // one level to locate the action map.
         var root = ResolveConfigRoot();
-        return Path.Combine(root, "CorsairActionMap.json");
+        var parent = Path.GetDirectoryName(root);
+        return parent == null ? null : Path.Combine(parent, "CorsairActionMap.json");
     }
 }
