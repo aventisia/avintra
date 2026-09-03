@@ -202,8 +202,13 @@
       "agentmail"
     ],
     "providerName": "Agentmail",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/agentmail.png",
     "vaultType": "Agentmail",
     "configFile": "Agentmail.json"
@@ -214,8 +219,13 @@
       "agentql"
     ],
     "providerName": "Agentql",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/agentql.png",
     "vaultType": "Agentql",
     "configFile": "Agentql.json"
@@ -300,8 +310,13 @@
       "airtable"
     ],
     "providerName": "Airtable",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "oauthConfig": {
       "providerName": "Airtable",
       "authUrl": "https://airtable.com/oauth2/v1/authorize",
@@ -526,8 +541,13 @@
       "amplitude"
     ],
     "providerName": "Amplitude",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/amplitude.svg",
     "vaultType": "Amplitude",
     "configFile": "Amplitude.json"
@@ -1253,8 +1273,13 @@
       "bitwarden"
     ],
     "providerName": "Bitwarden",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/bitwarden.svg",
     "vaultType": "Bitwarden",
     "configFile": "Bitwarden.json"
@@ -1453,8 +1478,13 @@
       "box"
     ],
     "providerName": "Box",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/box.svg",
     "vaultType": "Box",
     "configFile": "Box.json"
@@ -1600,8 +1630,13 @@
       "cal"
     ],
     "providerName": "Cal",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/cal.svg",
     "vaultType": "Cal",
     "configFile": "Cal.json"
@@ -1612,8 +1647,13 @@
       "calendly"
     ],
     "providerName": "Calendly",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/calendly.svg",
     "vaultType": "Calendly",
     "configFile": "Calendly.json"
@@ -1778,8 +1818,13 @@
       "cloudflare"
     ],
     "providerName": "Cloudflare",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/cloudflare.svg",
     "vaultType": "Cloudflare",
     "configFile": "Cloudflare.json"
@@ -1923,8 +1968,13 @@
       "cursor"
     ],
     "providerName": "Cursor",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/cursor.svg",
     "vaultType": "Cursor",
     "configFile": "Cursor.json"
@@ -2071,8 +2121,13 @@
       "discord"
     ],
     "providerName": "Discord",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/discord.svg",
     "vaultType": "Discord",
     "configFile": "Discord.json"
@@ -2102,8 +2157,13 @@
       "dodopayments"
     ],
     "providerName": "Dodopayments",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/dodopayments.svg",
     "vaultType": "Dodopayments",
     "configFile": "Dodopayments.json"
@@ -2231,8 +2291,13 @@
       "exa"
     ],
     "providerName": "Exa",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/exa.svg",
     "vaultType": "Exa",
     "configFile": "Exa.json"
@@ -2299,8 +2364,13 @@
       "figma"
     ],
     "providerName": "Figma",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/figma.svg",
     "vaultType": "Figma",
     "configFile": "Figma.json"
@@ -2311,8 +2381,13 @@
       "firecrawl"
     ],
     "providerName": "Firecrawl",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/firecrawl.svg",
     "vaultType": "Firecrawl",
     "configFile": "Firecrawl.json"
@@ -2323,8 +2398,13 @@
       "fireflies"
     ],
     "providerName": "Fireflies",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/fireflies.png",
     "vaultType": "Fireflies",
     "configFile": "Fireflies.json"
@@ -2890,8 +2970,13 @@
       "hackernews"
     ],
     "providerName": "Hackernews",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/hackernews.svg",
     "vaultType": "Hackernews",
     "configFile": "Hackernews.json"
@@ -3139,8 +3224,13 @@
       "intercom"
     ],
     "providerName": "Intercom",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/intercom.svg",
     "vaultType": "Intercom",
     "configFile": "Intercom.json"
@@ -3398,8 +3488,13 @@
       "monday"
     ],
     "providerName": "Monday",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/monday.svg",
     "vaultType": "Monday",
     "configFile": "Monday.json"
@@ -3585,8 +3680,13 @@
       "onepassword"
     ],
     "providerName": "Onepassword",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/onepassword.svg",
     "vaultType": "Onepassword",
     "configFile": "Onepassword.json"
@@ -3614,8 +3714,13 @@
       "openrouter"
     ],
     "providerName": "Openrouter",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/openrouter.svg",
     "vaultType": "Openrouter",
     "configFile": "Openrouter.json"
@@ -3626,8 +3731,13 @@
       "openweathermap"
     ],
     "providerName": "Openweathermap",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/openweathermap.svg",
     "vaultType": "Openweathermap",
     "configFile": "Openweathermap.json"
@@ -3638,8 +3748,13 @@
       "oura"
     ],
     "providerName": "Oura",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/oura.png",
     "vaultType": "Oura",
     "configFile": "Oura.json"
@@ -3689,8 +3804,13 @@
       "pagerduty"
     ],
     "providerName": "Pagerduty",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/pagerduty.svg",
     "vaultType": "Pagerduty",
     "configFile": "Pagerduty.json"
@@ -3758,8 +3878,13 @@
       "posthog"
     ],
     "providerName": "Posthog",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/posthog.svg",
     "vaultType": "Posthog",
     "configFile": "Posthog.json"
@@ -3770,8 +3895,13 @@
       "razorpay"
     ],
     "providerName": "Razorpay",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/razorpay.svg",
     "vaultType": "Razorpay",
     "configFile": "Razorpay.json"
@@ -3782,8 +3912,13 @@
       "reddit"
     ],
     "providerName": "Reddit",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/reddit.svg",
     "vaultType": "Reddit",
     "configFile": "Reddit.json"
@@ -3794,8 +3929,13 @@
       "resend"
     ],
     "providerName": "Resend",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/resend.svg",
     "vaultType": "SendGrid",
     "configFile": "SendGrid.json"
@@ -3886,8 +4026,13 @@
       "sentry"
     ],
     "providerName": "Sentry",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/sentry.svg",
     "vaultType": "Sentry",
     "configFile": "Sentry.json"
@@ -4034,8 +4179,13 @@
       "spotify"
     ],
     "providerName": "Spotify",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
     "oauthConfig": {
       "providerName": "Spotify",
       "authUrl": "https://accounts.spotify.com/authorize",
@@ -4072,8 +4222,13 @@
       "strava"
     ],
     "providerName": "Strava",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/strava.svg",
     "vaultType": "Strava",
     "configFile": "Strava.json"
@@ -4204,8 +4359,13 @@
       "tally"
     ],
     "providerName": "Tally",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/tally.svg",
     "vaultType": "Tally",
     "configFile": "Tally.json"
@@ -4216,8 +4376,13 @@
       "tavily"
     ],
     "providerName": "Tavily",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/tavily.svg",
     "vaultType": "Tavily",
     "configFile": "Tavily.json"
@@ -4388,8 +4553,13 @@
       "todoist"
     ],
     "providerName": "Todoist",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/todoist.svg",
     "vaultType": "Todoist",
     "configFile": "Todoist.json"
@@ -4419,8 +4589,13 @@
       "trello"
     ],
     "providerName": "Trello",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/trello.svg",
     "vaultType": "Trello",
     "configFile": "Trello.json"
@@ -4467,8 +4642,13 @@
       "twitter"
     ],
     "providerName": "Twitter",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/twitter.svg",
     "vaultType": "Twitter",
     "configFile": "Twitter.json"
@@ -4479,8 +4659,13 @@
       "twitterapiio"
     ],
     "providerName": "Twitterapiio",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/twitterapiio.svg",
     "vaultType": "Twitterapiio",
     "configFile": "Twitterapiio.json"
@@ -4508,8 +4693,13 @@
       "typeform"
     ],
     "providerName": "Typeform",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/typeform.svg",
     "vaultType": "Typeform",
     "configFile": "Typeform.json"
@@ -4558,8 +4748,13 @@
       "vapi"
     ],
     "providerName": "Vapi",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/vapi.svg",
     "vaultType": "Vapi",
     "configFile": "Vapi.json"
@@ -4570,8 +4765,13 @@
       "vercel"
     ],
     "providerName": "Vercel",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "api_key",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "api_key",
     "icon": "/brand-img/vercel.svg",
     "vaultType": "Vercel",
     "configFile": "Vercel.json"
@@ -4814,8 +5014,13 @@
       "youtube"
     ],
     "providerName": "Youtube",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/youtube.svg",
     "vaultType": "Youtube",
     "configFile": "Youtube.json"
@@ -4885,8 +5090,13 @@
       "zoom"
     ],
     "providerName": "Zoom",
-    "authModes": [],
-    "defaultAuthMode": "none",
+    "authModes": [
+      {
+        "mode": "oauth_2",
+        "accountFields": []
+      }
+    ],
+    "defaultAuthMode": "oauth_2",
     "icon": "/brand-img/zoom.svg",
     "vaultType": "Zoom",
     "configFile": "Zoom.json"

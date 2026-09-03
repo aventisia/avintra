@@ -148,6 +148,84 @@ public class CorsairConfigRepository
         }
     }
 
+    public string? GetPluginIdForVaultType(string vaultType)
+    {
+        if (string.IsNullOrWhiteSpace(vaultType))
+        {
+            return null;
+        }
+
+        var configRoot = ResolveConfigRoot();
+        var mapPath = ResolveArtifactPath(configRoot, "CorsairVaultTypeToPluginId.json");
+        if (mapPath == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            var map = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, string>>(
+                File.ReadAllText(mapPath),
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return map?.GetValueOrDefault(vaultType);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to parse Corsair vault type map at {Path}.", mapPath);
+            return null;
+        }
+    }
+
+    public IReadOnlyList<string> GetPluginIdsForVaultType(string vaultType)
+    {
+        if (string.IsNullOrWhiteSpace(vaultType))
+        {
+            return Array.Empty<string>();
+        }
+
+        var configRoot = ResolveConfigRoot();
+        var catalogPath = ResolveArtifactPath(configRoot, "CorsairIntegrationCatalog.json");
+        if (catalogPath == null)
+        {
+            return Array.Empty<string>();
+        }
+
+        try
+        {
+            var catalog = System.Text.Json.JsonSerializer.Deserialize<List<CorsairIntegrationCatalogEntry>>(
+                File.ReadAllText(catalogPath),
+                new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            return catalog?
+                .Where(entry => string.Equals(entry.VaultType, vaultType, StringComparison.OrdinalIgnoreCase))
+                .Select(entry => entry.PluginId)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .OrderBy(plugin => plugin, StringComparer.OrdinalIgnoreCase)
+                .ToArray() ?? Array.Empty<string>();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to parse Corsair integration catalog at {Path}.", catalogPath);
+            return Array.Empty<string>();
+        }
+    }
+
+    private static string? ResolveArtifactPath(string configRoot, string fileName)
+    {
+        var candidates = new[]
+        {
+            Path.Combine(configRoot, fileName),
+            Path.Combine(Directory.GetParent(configRoot)?.FullName ?? configRoot, fileName),
+        };
+
+        return candidates.FirstOrDefault(File.Exists);
+    }
+
+    private sealed class CorsairIntegrationCatalogEntry
+    {
+        public string PluginId { get; set; } = string.Empty;
+        public string VaultType { get; set; } = string.Empty;
+    }
+
     /// <summary>
     /// Resolves the Corsair config root. Prefers the dedicated shared path
     /// (<c>&lt;UploadDirectory&gt;/config/corsair</c>) written by the Corsair

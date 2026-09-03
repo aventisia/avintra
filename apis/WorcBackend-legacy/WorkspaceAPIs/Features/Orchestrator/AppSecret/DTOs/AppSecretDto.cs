@@ -85,4 +85,8 @@ public class AppSecretDto
     /// </summary>
     [System.Text.Json.Serialization.JsonPropertyName("oauthConnected")]
     public bool OAuthConnected { get; set; }
+
+    public string? CorsairStatus { get; set; }
+
+    public string? CorsairStatusReason { get; set; }
 }

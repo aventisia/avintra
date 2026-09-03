@@ -544,6 +544,7 @@ function readPackageDescription(pluginId: string): string | undefined {
 type RawPlugin = {
   id?: string;
   oauthConfig?: PluginOAuthConfig;
+  options?: { authType?: string };
   endpointMeta?: Record<string, { description?: string }>;
   authConfig?: Record<string, { account?: unknown }>;
 };
@@ -583,6 +584,9 @@ export function toPluginMetadata(
   }
 
   const authModes = normalizeAuthModes(raw.authConfig);
+  if (authModes.length === 0 && raw.options?.authType) {
+    authModes.push({ mode: raw.options.authType, accountFields: [] });
+  }
   const authType = authModes.some(({ mode }) => mode === "oauth_2")
     ? "oauth_2"
     : authModes[0]?.mode ?? "none";

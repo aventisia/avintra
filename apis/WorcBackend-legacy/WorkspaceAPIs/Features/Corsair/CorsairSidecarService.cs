@@ -27,9 +27,9 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
     }
 
     /// <inheritdoc />
-    public async Task<bool> MirrorCredentialAsync(Guid connectionId, string plugin, string apiKey, CancellationToken cancellationToken = default)
+    public async Task<bool> MirrorCredentialAsync(Guid connectionId, string plugin, IReadOnlyDictionary<string, string> credentials, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(plugin) || string.IsNullOrWhiteSpace(apiKey))
+        if (string.IsNullOrWhiteSpace(plugin) || credentials.Count == 0)
         {
             return false;
         }
@@ -40,7 +40,7 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
             {
                 connectionId = connectionId.ToString(),
                 plugin = plugin.ToLowerInvariant(),
-                apiKey
+                credentials
             };
 
             var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
@@ -104,6 +104,27 @@ public sealed class CorsairSidecarService : ICorsairSidecarService
                 connectionId,
                 plugin);
             return false;
+        }
+    }
+
+    public async Task<CorsairCredentialTestResult?> TestCredentialAsync(Guid connectionId, string plugin, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(plugin)) return null;
+
+        try
+        {
+            var body = new { connectionId = connectionId.ToString(), plugin = plugin.ToLowerInvariant() };
+            var json = System.Text.Json.JsonSerializer.Serialize(body, JsonSerializerOptions.Web);
+            using var content = new StringContent(json, Encoding.UTF8, MediaTypeHeaderValue.Parse("application/json"));
+            using var request = new HttpRequestMessage(HttpMethod.Post, "/credentials/test") { Content = content };
+            var response = await _httpClient.SendAsync(request, cancellationToken);
+            var result = await response.Content.ReadFromJsonAsync<CorsairCredentialTestResult>(JsonSerializerOptions.Web, cancellationToken);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to test Corsair credential {ConnectionId} for plugin {Plugin}.", connectionId, plugin);
+            return new CorsairCredentialTestResult { Status = "Unknown", Reason = "Connection test unavailable." };
         }
     }
 

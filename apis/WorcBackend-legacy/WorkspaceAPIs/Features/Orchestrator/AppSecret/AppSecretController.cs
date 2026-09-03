@@ -109,4 +109,10 @@ public class AppSecretController : BaseApiController
     {
         return ResultHelper(await _appSecretService.GetOAuthConnectionStatusAsync(appSecretId));
     }
+
+    [HttpPost("{appSecretId}/connection-test")]
+    public async Task<ActionResult<ServiceResponse<CorsairCredentialTestResult>>> TestCorsairCredential(Guid appSecretId)
+    {
+        return ResultHelper(await _appSecretService.TestCorsairCredentialAsync(appSecretId));
+    }
 }
