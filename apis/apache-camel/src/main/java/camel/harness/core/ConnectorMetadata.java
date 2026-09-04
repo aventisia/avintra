@@ -14,7 +14,22 @@ public record ConnectorMetadata(
         List<String> optionalConfig,
         List<String> requiredAuth,
         List<String> optionalAuth,
-        List<String> notes) {
+        List<String> notes,
+        String operationOption) {
+
+    public ConnectorMetadata(
+            String name,
+            String description,
+            List<String> schemes,
+            List<String> operations,
+            List<String> requiredConfig,
+            List<String> optionalConfig,
+            List<String> requiredAuth,
+            List<String> optionalAuth,
+            List<String> notes) {
+        this(name, description, schemes, operations, requiredConfig, optionalConfig,
+                requiredAuth, optionalAuth, notes, null);
+    }
 
     public Set<String> schemeSet() {
         return schemes == null ? Collections.emptySet() : Set.copyOf(schemes);

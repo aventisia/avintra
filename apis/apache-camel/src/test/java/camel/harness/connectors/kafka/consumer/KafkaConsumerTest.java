@@ -23,7 +23,7 @@ class KafkaConsumerTest {
     @Test
     void pollBuildsUriWithGroupId() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "kafka", "poll",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "kafka", "poll",
             Map.of("topic", "events", "brokers", "localhost:9092", "groupId", "harness-group"),
             null, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);
@@ -34,7 +34,7 @@ class KafkaConsumerTest {
     @Test
     void fetchBuildsUriWithOffset() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "kafka", "fetch",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "kafka", "fetch",
             Map.of("topic", "events", "brokers", "localhost:9092", "groupId", "harness-group",
                 "offset", "earliest"),
             null, null, null, null, null);

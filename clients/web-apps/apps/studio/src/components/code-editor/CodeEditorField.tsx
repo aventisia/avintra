@@ -31,6 +31,7 @@ const SUPPORTED_LANGUAGES: SupportedLanguage[] = [
   "vb",
   "powershell",
   "cmd",
+  "sql",
 ];
 
 const CodeEditorField = ({

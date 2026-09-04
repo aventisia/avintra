@@ -15,29 +15,27 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.stereotype.Component;
 
-import camel.harness.connectors.github.client.GithubRoutes;
-import camel.harness.connectors.github.error.GithubException;
-import camel.harness.connectors.github.util.GithubSecretSanitizer;
-import camel.harness.connectors.m365.client.M365Routes;
-import camel.harness.connectors.m365.error.M365ApiException;
-import camel.harness.connectors.m365.error.M365Exception;
-import camel.harness.connectors.m365.util.M365SecretSanitizer;
-
 @Component
 public class ConnectorApiRoute extends RouteBuilder {
     private final ObjectMapper objectMapper;
     private final ConnectorMetadataRegistry metadataRegistry;
     private final ConnectorSchemaGenerator schemaGenerator;
+    private final ConnectorOperationSchemaGenerator operationSchemaGenerator;
     private final List<ConnectorConfigurer> configurers;
+    private final CamelRequestBuilder requestBuilder;
 
     public ConnectorApiRoute(ObjectMapper objectMapper,
                               ConnectorMetadataRegistry metadataRegistry,
                               ConnectorSchemaGenerator schemaGenerator,
-                              List<ConnectorConfigurer> configurers) {
+                              ConnectorOperationSchemaGenerator operationSchemaGenerator,
+                              List<ConnectorConfigurer> configurers,
+                              CamelRequestBuilder requestBuilder) {
         this.objectMapper = objectMapper;
         this.metadataRegistry = metadataRegistry;
         this.schemaGenerator = schemaGenerator;
+        this.operationSchemaGenerator = operationSchemaGenerator;
         this.configurers = configurers;
+        this.requestBuilder = requestBuilder;
     }
 
     @Override
@@ -51,6 +49,16 @@ public class ConnectorApiRoute extends RouteBuilder {
             .bindingMode(RestBindingMode.off);
 
         rest("/connectors")
+            .get("/")
+            .produces("application/json")
+            .to("direct:connector-list");
+
+        rest("/connectors")
+            .post("/execute")
+            .produces("application/json")
+            .to("direct:connector-execute");
+
+        rest("/connectors")
             .post("/{connector}")
             .produces("application/json")
             .to("direct:connector");
@@ -61,9 +69,36 @@ public class ConnectorApiRoute extends RouteBuilder {
             .to("direct:connector-schema");
 
         rest("/connectors")
+            .get("/{connector}/operations")
+            .produces("application/json")
+            .to("direct:connector-operations");
+
+        rest("/connectors")
+            .get("/{connector}/operations/{operation}/schema")
+            .produces("application/json")
+            .to("direct:connector-operation-schema");
+
+        rest("/connectors")
+            .post("/{connector}/operations/{operation}/execute")
+            .produces("application/json")
+            .to("direct:connector-operation-execute");
+
+        rest("/connectors")
             .get("/schemas")
             .produces("application/json")
             .to("direct:connector-schemas");
+
+        from("direct:connector-list")
+            .process(connectorList());
+
+        from("direct:connector-execute")
+            .process(prepareExecuteRequest())
+            .choice()
+                .when(exchangeProperty("consumerHandled").isEqualTo(true))
+                    .process(successResponse())
+                .otherwise()
+                    .toD("${exchangeProperty.targetUri}")
+                    .process(successResponse());
 
         from("direct:connector")
             .process(prepareRequest())
@@ -77,8 +112,154 @@ public class ConnectorApiRoute extends RouteBuilder {
         from("direct:connector-schema")
             .process(connectorSchema());
 
+        from("direct:connector-operations")
+            .process(connectorOperations());
+
+        from("direct:connector-operation-schema")
+            .process(connectorOperationSchema());
+
+        from("direct:connector-operation-execute")
+            .process(prepareFlatExecuteRequest())
+            .choice()
+                .when(exchangeProperty("consumerHandled").isEqualTo(true))
+                    .process(successResponse())
+                .otherwise()
+                    .toD("${exchangeProperty.targetUri}")
+                    .process(successResponse());
+
         from("direct:connector-schemas")
             .process(allConnectorSchemas());
+    }
+
+    /**
+     * Converts the structured {@link ConnectorExecuteRequest} into the internal
+     * flat {@link ConnectorRequest} envelope and reuses the standard
+     * {@link #prepareRequest()} dispatch flow.
+     */
+    private Processor prepareExecuteRequest() {
+        return exchange -> {
+            ConnectorExecuteRequest execute = objectMapper.readValue(
+                exchange.getMessage().getBody(String.class), ConnectorExecuteRequest.class);
+            if (execute == null || execute.connector() == null || execute.connector().isBlank()) {
+                throw new IllegalArgumentException("connector is required in the execute request");
+            }
+            ConnectorRequest request = requestBuilder.build(execute);
+            exchange.getMessage().setBody(objectMapper.writeValueAsString(request));
+            prepareRequest().process(exchange);
+        };
+    }
+
+    /**
+     * Converts a flat operation-execute request body (exactly the fields defined
+     * by the minimal operation schema) into the internal {@link ConnectorRequest}
+     * envelope and reuses the standard {@link #prepareRequest()} dispatch flow.
+     *
+     * <p>The connector and operation come from the REST path variables. The body
+     * is a flat JSON object whose fields map to the connector configuration; an
+     * optional nested {@code auth} object and {@code payload} field are extracted
+     * so auth and body shaping work unchanged.</p>
+     */
+    private Processor prepareFlatExecuteRequest() {
+        return exchange -> {
+            String connector = exchange.getMessage().getHeader("connector", String.class);
+            String operation = exchange.getMessage().getHeader("operation", String.class);
+            if (connector == null || connector.isBlank() || operation == null || operation.isBlank()) {
+                String[] parts = operationPathParts(
+                    exchange.getMessage().getHeader(Exchange.HTTP_PATH, String.class));
+                if (parts != null) {
+                    if (connector == null || connector.isBlank()) {
+                        connector = parts[0];
+                    }
+                    if (operation == null || operation.isBlank()) {
+                        operation = parts[1];
+                    }
+                }
+            }
+            if (connector == null || connector.isBlank()) {
+                throw new IllegalArgumentException("connector is required");
+            }
+            if (operation == null || operation.isBlank()) {
+                throw new IllegalArgumentException("operation is required");
+            }
+
+            @SuppressWarnings("unchecked")
+            Map<String, Object> body = objectMapper.readValue(
+                exchange.getMessage().getBody(String.class), Map.class);
+            if (body == null) {
+                body = new LinkedHashMap<>();
+            }
+
+            Map<String, Object> configuration = new LinkedHashMap<>();
+            Object payload = null;
+            AuthConfiguration auth = null;
+            for (Map.Entry<String, Object> entry : body.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                if ("auth".equals(key) && value instanceof Map<?, ?> authMap) {
+                    auth = authFromMap(authMap);
+                } else if ("payload".equals(key) || "body".equals(key)) {
+                    // payload and body are aliases for the exchange body; they
+                    // must not be injected as URI query parameters.
+                    payload = value;
+                } else {
+                    configuration.put(key, value);
+                }
+            }
+
+            ConnectorRequest request = new ConnectorRequest(
+                null, null, connector, operation, configuration, auth,
+                null, payload, null, null, null, null, null, null,
+                null, null, null, null, null);
+            exchange.getMessage().setBody(objectMapper.writeValueAsString(request));
+            prepareRequest().process(exchange);
+        };
+    }
+
+    /**
+     * Builds an {@link AuthConfiguration} from a flat auth map. The map may use
+     * either the legacy {@code type} key or the flat {@code authtype} key.
+     */
+    @SuppressWarnings("unchecked")
+    private static AuthConfiguration authFromMap(Map<?, ?> authMap) {
+        String type = stringValue(authMap.get("type"));
+        if (type == null || type.isBlank()) {
+            type = stringValue(authMap.get("authtype"));
+        }
+        Map<String, String> properties = new LinkedHashMap<>();
+        for (Map.Entry<?, ?> entry : authMap.entrySet()) {
+            String key = entry.getKey() == null ? null : entry.getKey().toString();
+            if (key == null || "type".equals(key) || "authtype".equals(key)) {
+                continue;
+            }
+            Object value = entry.getValue();
+            if (value != null) {
+                properties.put(key, value.toString());
+            }
+        }
+        return new AuthConfiguration(
+            type,
+            stringValue(authMap.get("username")),
+            stringValue(authMap.get("password")),
+            stringValue(authMap.get("token")),
+            stringValue(authMap.get("accessKey")),
+            stringValue(authMap.get("secretKey")),
+            stringValue(authMap.get("clientId")),
+            stringValue(authMap.get("clientSecret")),
+            stringValue(authMap.get("apiKey")),
+            stringValue(authMap.get("apiKeyHeader")),
+            stringValue(authMap.get("region")),
+            stringValue(authMap.get("tenantId")),
+            stringValue(authMap.get("subscriptionId")),
+            stringValue(authMap.get("projectId")),
+            stringValue(authMap.get("refreshToken")),
+            stringValue(authMap.get("authorizationUrl")),
+            stringValue(authMap.get("tokenUrl")),
+            stringValue(authMap.get("scopes")),
+            properties);
+    }
+
+    private static String stringValue(Object value) {
+        return value == null ? null : value.toString();
     }
 
     private Processor prepareRequest() {
@@ -136,8 +317,19 @@ public class ConnectorApiRoute extends RouteBuilder {
 
             exchange.setProperty("targetUri", targetUri);
             exchange.setProperty("connector", connector);
+            exchange.setProperty("operation", request.operationName());
             Object body = request.payload();
-            exchange.getMessage().setBody(normalizeBody(body));
+            // SQL/JDBC connectors bind named parameters (:#name) from a structured
+            // body (java.util.Map) or from message headers. normalizeBody() would
+            // JSON-stringify a Map/List payload, which breaks named-parameter
+            // resolution in camel-sql ("Cannot find key ..." / "bad SQL grammar").
+            // Keep the structured payload for the sql/jdbc family; all other
+            // connectors keep the existing stringified-body behavior.
+            if (isSqlFamily(connector)) {
+                exchange.getMessage().setBody(body);
+            } else {
+                exchange.getMessage().setBody(normalizeBody(body));
+            }
 
             // Consumer-style operations (read/list/delete/check) are handled here
             // with a one-shot PollingConsumer instead of the producer toD dispatch.
@@ -420,7 +612,7 @@ public class ConnectorApiRoute extends RouteBuilder {
     private ConnectorMetadata defaultMetadata(String connector) {
         return new ConnectorMetadata(connector, "Generic Camel component",
             List.of(connector), List.of(), List.of(), List.of(), List.of(), List.of(),
-            List.of("No hand-written metadata available; dispatching generically."));
+            List.of("No hand-written metadata available; dispatching generically."), null);
     }
 
     private Object normalizeBody(Object body) throws Exception {
@@ -430,32 +622,69 @@ public class ConnectorApiRoute extends RouteBuilder {
         return body;
     }
 
+    /**
+     * Determines whether the connector resolves to a JDBC-backed {@code sql:}
+     * endpoint whose parameters must be bound from a structured payload/headers.
+     * {@code sql} and {@code jdbc} both route through {@link AbstractSqlConfigurer}.
+     */
+    private static boolean isSqlFamily(String connector) {
+        if (connector == null) {
+            return false;
+        }
+        String name = connector.trim().toLowerCase();
+        return "sql".equals(name) || "jdbc".equals(name);
+    }
+
     private Processor successResponse() {
         return exchange -> {
-            // If a connector route already produced an error envelope (e.g. the
-            // GitHub or M365 routes handle their own exceptions), do not re-wrap.
-            if (Boolean.TRUE.equals(exchange.getProperty(GithubRoutes.PROP_ERROR_HANDLED))
-                    || Boolean.TRUE.equals(exchange.getProperty(M365Routes.PROP_ERROR_HANDLED))) {
-                return;
-            }
             Map<String, Object> response = new LinkedHashMap<>();
-            response.put("ok", true);
+            response.put("success", true);
             response.put("connector", exchange.getProperty("connector"));
-            response.put("targetUri", exchange.getProperty("targetUri"));
+            response.put("operation", exchange.getProperty("operation"));
             Object body = exchange.getMessage().getBody();
             Object responseBody = body instanceof java.io.InputStream
                 ? exchange.getMessage().getBody(String.class) : body;
-            response.put("body", jsonBody(responseBody));
-            Map<String, Object> headers = new LinkedHashMap<>();
-            exchange.getMessage().getHeaders().forEach((name, value) -> {
-                if (value == null || value instanceof String || value instanceof Number
-                    || value instanceof Boolean || value instanceof Character) {
-                    headers.put(name, value);
-                }
-            });
-            response.put("headers", headers);
+            response.put("data", jsonBody(responseBody));
+            response.put("error", null);
+            exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, 200);
             exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, "application/json");
             exchange.getMessage().setBody(objectMapper.writeValueAsString(response));
+        };
+    }
+
+    private Processor connectorList() {
+        return exchange -> {
+            List<ConnectorListItem> connectors = new ArrayList<>();
+            metadataRegistry.all().forEach((name, metadata) ->
+                connectors.add(ConnectorListItem.from(metadata)));
+            exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, "application/json");
+            exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, 200);
+            exchange.getMessage().setBody(objectMapper.writeValueAsString(connectors));
+        };
+    }
+
+    private Processor connectorOperations() {
+        return exchange -> {
+            String connector = exchange.getMessage().getHeader("connector", String.class);
+            if (connector == null || connector.isBlank()) {
+                connector = connectorFromPath(exchange.getMessage().getHeader(Exchange.HTTP_PATH, String.class));
+            }
+            if (connector == null || connector.isBlank()) {
+                throw new IllegalArgumentException("connector is required");
+            }
+            ConnectorMetadata metadata = metadataRegistry.forConnector(connector);
+            if (metadata == null) {
+                throw new IllegalArgumentException("Unknown connector: " + connector);
+            }
+            List<ConnectorOperationItem> operations = new ArrayList<>();
+            if (metadata.operations() != null) {
+                for (String operation : metadata.operations()) {
+                    operations.add(ConnectorOperationItem.from(operation));
+                }
+            }
+            exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, "application/json");
+            exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, 200);
+            exchange.getMessage().setBody(objectMapper.writeValueAsString(operations));
         };
     }
 
@@ -478,42 +707,79 @@ public class ConnectorApiRoute extends RouteBuilder {
         };
     }
 
+    private Processor connectorOperationSchema() {
+        return exchange -> {
+            String connector = exchange.getMessage().getHeader("connector", String.class);
+            String operation = exchange.getMessage().getHeader("operation", String.class);
+            // Fall back to parsing the HTTP path when the REST DSL did not
+            // populate the path-variable headers (platform-http).
+            if (connector == null || connector.isBlank() || operation == null || operation.isBlank()) {
+                String[] parts = operationPathParts(
+                    exchange.getMessage().getHeader(Exchange.HTTP_PATH, String.class));
+                if (parts != null) {
+                    if (connector == null || connector.isBlank()) {
+                        connector = parts[0];
+                    }
+                    if (operation == null || operation.isBlank()) {
+                        operation = parts[1];
+                    }
+                }
+            }
+            if (connector == null || connector.isBlank()) {
+                throw new IllegalArgumentException("connector is required");
+            }
+            if (operation == null || operation.isBlank()) {
+                throw new IllegalArgumentException("operation is required");
+            }
+            MinimalOperationSchema schema = operationSchemaGenerator.generateMinimal(connector, operation);
+            exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, "application/json");
+            exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, 200);
+            exchange.getMessage().setBody(objectMapper.writeValueAsString(schema));
+        };
+    }
+
+    /**
+     * Extracts {@code [connector, operation]} from a path shaped like
+     * {@code /connectors/{connector}/operations/{operation}/schema}. Returns
+     * {@code null} when the path does not match that shape.
+     */
+    private static String[] operationPathParts(String path) {
+        if (path == null || path.isBlank()) {
+            return null;
+        }
+        String[] segments = path.split("/");
+        for (int i = 0; i < segments.length; i++) {
+            if ("operations".equals(segments[i]) && i >= 1 && i + 1 < segments.length) {
+                String connector = segments[i - 1];
+                String operation = segments[i + 1];
+                if (!connector.isBlank() && !operation.isBlank()) {
+                    return new String[] { connector, operation };
+                }
+            }
+        }
+        return null;
+    }
+
     private Processor errorResponse() {
         return exchange -> {
             Throwable failure = exchange.getProperty(Exchange.EXCEPTION_CAUGHT, Throwable.class);
             Map<String, Object> response = new LinkedHashMap<>();
-            response.put("ok", false);
+            response.put("success", false);
             response.put("connector", exchange.getProperty("connector"));
-            response.put("targetUri", exchange.getProperty("targetUri"));
+            response.put("operation", exchange.getProperty("operation"));
+            response.put("data", null);
             int status = 502;
             String message = "Unknown connector failure";
-            String type = "Exception";
-            if (failure instanceof GithubException github) {
-                // GitHub failures carry their own HTTP status and sanitized message.
-                status = github.statusCode();
-                type = github.getClass().getSimpleName();
-                message = GithubSecretSanitizer.sanitize(github.getMessage());
-            } else if (failure instanceof M365Exception m365) {
-                // M365 failures carry their own HTTP status and sanitized message.
-                status = m365.statusCode();
-                type = m365.getClass().getSimpleName();
-                message = M365SecretSanitizer.sanitize(m365.getMessage());
-                // Surface the canonical M365 error type when present.
-                String canonical = m365.errorType() != null ? m365.errorType().code() : null;
-                if (canonical != null && !canonical.isBlank()) {
-                    response.put("errorType", canonical);
-                }
-                if (m365 instanceof M365ApiException api
-                        && api.code() != null) {
-                    response.put("graphCode", api.code());
-                }
-            } else if (failure != null) {
-                type = failure.getClass().getName();
-                message = GithubSecretSanitizer.sanitize(failure.getMessage() != null
-                    ? failure.getMessage() : type);
+            String code = "CONNECTOR_FAILURE";
+            if (failure != null) {
+                code = "CONNECTOR_FAILURE";
+                message = failure.getMessage() != null
+                    ? failure.getMessage() : failure.getClass().getName();
             }
-            response.put("error", message);
-            response.put("type", type);
+            Map<String, Object> error = new LinkedHashMap<>();
+            error.put("code", code);
+            error.put("message", message);
+            response.put("error", error);
             exchange.getMessage().setHeader(Exchange.HTTP_RESPONSE_CODE, status);
             exchange.getMessage().setHeader(Exchange.CONTENT_TYPE, "application/json");
             exchange.getMessage().setBody(objectMapper.writeValueAsString(response));

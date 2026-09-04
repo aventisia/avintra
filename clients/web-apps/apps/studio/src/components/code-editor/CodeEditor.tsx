@@ -2,6 +2,7 @@ import { cn } from "@avplatform/ui/lib";
 // Language Modules
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
+import { sql } from "@codemirror/lang-sql";
 import { StreamLanguage } from "@codemirror/language";
 import { csharp } from "@codemirror/legacy-modes/mode/clike";
 import { powerShell } from "@codemirror/legacy-modes/mode/powershell";
@@ -12,7 +13,14 @@ import CodeMirror from "@uiw/react-codemirror";
 import React, { useMemo } from "react";
 
 // Note: Keep in sync with SUPPORTED_LANGUAGES in CodeEditorField.tsx
-export type SupportedLanguage = "javascript" | "python" | "csharp" | "vb" | "powershell" | "cmd";
+export type SupportedLanguage =
+  | "javascript"
+  | "python"
+  | "csharp"
+  | "vb"
+  | "powershell"
+  | "cmd"
+  | "sql";
 
 interface CodeEditorProps {
   value?: string;
@@ -38,6 +46,8 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
         return [javascript({ jsx: true, typescript: true })];
       case "python":
         return [python()];
+      case "sql":
+        return [sql()];
       case "csharp":
         return [StreamLanguage.define(csharp)];
       case "vb":

@@ -1,5 +1,6 @@
 package camel.harness.core;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,28 +21,84 @@ public class ConnectorSchemaGenerator {
         if (metadata == null) {
             throw new IllegalArgumentException("Unknown connector: " + connector);
         }
-        return build(metadata);
+        return build(metadata, null);
+    }
+
+    /**
+     * Generates a minimal request schema for a single operation. The returned
+     * schema contains only the fields needed to build a valid request body for
+     * {@code POST /connectors/{connector}/operations/{operation}/execute}.
+     * Camel-internal metadata and legacy fields are excluded.
+     */
+    public MinimalOperationSchema generateMinimal(String connector, String operation) {
+        ConnectorMetadata metadata = metadataRegistry.forConnector(connector);
+        if (metadata == null) {
+            throw new IllegalArgumentException("Unknown connector: " + connector);
+        }
+        if (operation != null && !operation.isBlank() && !metadata.supportsOperation(operation)) {
+            throw new IllegalArgumentException(
+                "Unsupported operation '" + operation + "' for connector '" + connector + "'");
+        }
+        return new MinimalOperationSchema(connector, operation, buildMinimalFields(metadata, operation));
+    }
+
+    private List<ConnectorOperationField> buildMinimalFields(ConnectorMetadata metadata, String operation) {
+        List<ConnectorOperationField> fields = new ArrayList<>();
+
+        // Pinned operation field. The execute endpoint reads the operation from
+        // the path, so this is informational; it is still listed as required so
+        // consumers can see which operation the schema describes.
+        fields.add(new ConnectorOperationField("operation", "string", true,
+            operation != null && !operation.isBlank()
+                ? "Operation to execute (pinned to " + operation + ")"
+                : "Operation to execute"));
+
+        for (String key : metadata.requiredConfig()) {
+            fields.add(new ConnectorOperationField(key, "string", true, "Required: " + key));
+        }
+        for (String key : metadata.optionalConfig()) {
+            fields.add(new ConnectorOperationField(key, "string", false, "Optional: " + key));
+        }
+
+        boolean hasRequiredAuth = metadata.requiredAuth() != null && !metadata.requiredAuth().isEmpty();
+        boolean hasOptionalAuth = metadata.optionalAuth() != null && !metadata.optionalAuth().isEmpty();
+        if (hasRequiredAuth || hasOptionalAuth) {
+            StringBuilder description = new StringBuilder("Authentication configuration");
+            if (hasRequiredAuth) {
+                description.append("; required: ").append(String.join(", ", metadata.requiredAuth()));
+            }
+            if (hasOptionalAuth) {
+                description.append("; optional: ").append(String.join(", ", metadata.optionalAuth()));
+            }
+            fields.add(new ConnectorOperationField("auth", "object", hasRequiredAuth, description.toString()));
+        }
+
+        // Optional body for operations that carry a payload.
+        fields.add(new ConnectorOperationField("payload", "any", false,
+            "Request body or component-specific payload"));
+        return fields;
     }
 
     public Map<String, ConnectorSchema> generateAll() {
         Map<String, ConnectorSchema> result = new LinkedHashMap<>();
-        metadataRegistry.all().forEach((name, metadata) -> result.put(name, build(metadata)));
+        metadataRegistry.all().forEach((name, metadata) -> result.put(name, build(metadata, null)));
         return result;
     }
 
-    public boolean canGenerate(String connector) {
-        return metadataRegistry.forConnector(connector) != null;
-    }
-
-    private ConnectorSchema build(ConnectorMetadata metadata) {
+    private ConnectorSchema build(ConnectorMetadata metadata, String operation) {
         ConnectorSchema schema = ConnectorSchema.base();
         schema = schema.withProperty("connector",
             ConnectorSchema.stringProperty("Connector family name", metadata.name(), metadata.schemes()));
         List<String> operations = metadata.operations();
-        schema = schema.withProperty("operation",
-            operations == null || operations.isEmpty()
-                ? ConnectorSchema.stringProperty("Operation to execute")
-                : ConnectorSchema.stringProperty("Operation to execute", null, operations));
+        if (operation != null && !operation.isBlank()) {
+            schema = schema.withProperty("operation",
+                ConnectorSchema.stringProperty("Operation to execute", null, List.of(operation)));
+        } else {
+            schema = schema.withProperty("operation",
+                operations == null || operations.isEmpty()
+                    ? ConnectorSchema.stringProperty("Operation to execute")
+                    : ConnectorSchema.stringProperty("Operation to execute", null, operations));
+        }
         schema = schema.withProperty("configuration", configurationSchema(metadata));
         schema = schema.withProperty("auth", authSchema(metadata));
         schema = schema.withProperty("headers", ConnectorSchemaProperty.objectProperty(

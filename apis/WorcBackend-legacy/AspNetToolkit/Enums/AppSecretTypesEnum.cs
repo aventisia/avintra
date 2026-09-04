@@ -13,7 +13,7 @@ public enum AppSecretTypesEnum
     Twilio,
     [Description("SendGrid API Key")]
     SendGrid,
-    [Description("GitHub API Key")]
+    [Description("github Credentials")]
     GitHub,
     [Description("M365 Credentials")]
     M365,
@@ -153,8 +153,6 @@ public enum AppSecretTypesEnum
     Gdc,
     [Description("gigachat Credentials")]
     Gigachat,
-    [Description("github Credentials")]
-    Github,
     [Description("github_copilot Credentials")]
     GithubCopilot,
     [Description("gradient_ai Credentials")]

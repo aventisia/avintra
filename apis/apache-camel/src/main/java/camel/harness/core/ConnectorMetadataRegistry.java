@@ -81,6 +81,7 @@ public class ConnectorMetadataRegistry {
                 (List<String>) entry.getOrDefault("optionalConfig", Collections.emptyList()),
                 (List<String>) entry.getOrDefault("requiredAuth", Collections.emptyList()),
                 (List<String>) entry.getOrDefault("optionalAuth", Collections.emptyList()),
-                (List<String>) entry.getOrDefault("notes", Collections.emptyList()));
+                (List<String>) entry.getOrDefault("notes", Collections.emptyList()),
+                (String) entry.get("operationOption"));
     }
 }

@@ -62,7 +62,11 @@ public abstract class AbstractSqlConfigurer implements ConnectorConfigurer {
         StringBuilder encoded = new StringBuilder(bytes.length);
         for (byte b : bytes) {
             int c = b & 0xFF;
-            if (c == ' ' || c == '+' || c == '?' || c == '&' || c == '#' || c == '%') {
+            // Percent-encode characters that would be parsed as URI option
+            // separators or break path parsing (space, plus, ?, &, #, %), plus
+            // any non-ASCII byte so multi-byte UTF-8 (e.g. 日本語) survives the
+            // URI round-trip instead of being rejected by the endpoint parser.
+            if (c == ' ' || c == '+' || c == '?' || c == '&' || c == '#' || c == '%' || c > 127) {
                 encoded.append(String.format("%%%02X", c));
             } else {
                 encoded.append((char) c);
