@@ -1,0 +1,17 @@
+meta {
+  name: Single schema - for one connector
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{APACHE_CAMEL_BASE_URL}}/connectors/salesforce/schema
+  body: none
+  auth: none
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+}

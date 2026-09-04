@@ -167,7 +167,7 @@ public class ToolService : IToolService
             // Bypass global tenant/space filters so platform (library) tools with
             // TenantId = Guid.Empty are visible to every tenant.
             var tool = await _unitOfWork.ToolRepo
-                .GetByConditionAsync(w => w.Id == toolId && w.EnvType == _currentTenantService.CurrentEnvType)
+                .GetByConditionAsync(w => w.Id == toolId && w.EnvType == _currentTenantService.CurrentEnvType && (w.TenantId == _currentTenantService.CurrentTenantId || w.TenantId == Guid.Empty))
                 .Include(i => i.CreatedByUser)
                 .Include(i => i.LastModifiedByUser)
                 .IgnoreQueryFilters()
@@ -183,7 +183,7 @@ public class ToolService : IToolService
                 _currentUserId,
                 tool.Id,
                 ResourceTypeEnum.Tool,
-                tool.CreatedByUserId,
+                tool.CreatedByUserId ?? Guid.Empty,
                 tool.IsTenantWideAccess,
                 new[]
                 {
@@ -251,7 +251,7 @@ public class ToolService : IToolService
                 _currentUserId,
                 tool.Id,
                 ResourceTypeEnum.Tool,
-                tool.CreatedByUserId,
+                tool.CreatedByUserId ?? Guid.Empty,
                 tool.IsTenantWideAccess,
                 new[]
                 {
@@ -309,6 +309,8 @@ public class ToolService : IToolService
             toolToCreate.EnvType = _currentTenantService.CurrentEnvType;
             toolToCreate.CreatedByUserId = _currentUserId;
             toolToCreate.LastModifiedByUserId = _currentUserId;
+            toolToCreate.CreatedOn = DateTimeOffset.UtcNow;
+            toolToCreate.LastModifiedOn = DateTimeOffset.UtcNow;
 
             // Parse OpenAPI spec into an LLM-friendly schema when provided.
             if (!string.IsNullOrWhiteSpace(toolDto.OpenApiSpec))
@@ -373,7 +375,7 @@ public class ToolService : IToolService
                 _currentUserId,
                 toolToUpdate.Id,
                 ResourceTypeEnum.Tool,
-                toolToUpdate.CreatedByUserId,
+                toolToUpdate.CreatedByUserId ?? Guid.Empty,
                 false,
                 new[]
                 {
@@ -407,6 +409,7 @@ public class ToolService : IToolService
             toolToUpdate.CredentialName = toolDto.CredentialName;
             toolToUpdate.IsTenantWideAccess = toolDto.IsTenantWideAccess;
             toolToUpdate.LastModifiedByUserId = _currentUserId;
+            toolToUpdate.LastModifiedOn = DateTimeOffset.UtcNow;
 
             if (toolDto.IsDisabled.HasValue)
             {
@@ -483,7 +486,7 @@ public class ToolService : IToolService
                 _currentUserId,
                 toolToDelete.Id,
                 ResourceTypeEnum.Tool,
-                toolToDelete.CreatedByUserId,
+                toolToDelete.CreatedByUserId ?? Guid.Empty,
                 false,
                 new[] { ResourceAccessTypeEnum.Owner });
 
@@ -541,7 +544,7 @@ public class ToolService : IToolService
                     _currentUserId,
                     tool.Id,
                     ResourceTypeEnum.Tool,
-                    tool.CreatedByUserId,
+                    tool.CreatedByUserId ?? Guid.Empty,
                     false,
                     new[] { ResourceAccessTypeEnum.Owner });
 
@@ -623,7 +626,7 @@ public class ToolService : IToolService
                 _currentUserId,
                 tool.Id,
                 ResourceTypeEnum.Tool,
-                tool.CreatedByUserId,
+                tool.CreatedByUserId ?? Guid.Empty,
                 tool.IsTenantWideAccess,
                 new[]
                 {
@@ -695,6 +698,7 @@ public class ToolService : IToolService
             {
                 tool.IsVerified = true;
                 tool.LastModifiedByUserId = _currentUserId;
+                tool.LastModifiedOn = DateTimeOffset.UtcNow;
                 _unitOfWork.ToolRepo.Update(tool);
                 await _unitOfWork.SaveAsync();
             }
@@ -737,7 +741,7 @@ public class ToolService : IToolService
                 _currentUserId,
                 toolToUpdate.Id,
                 ResourceTypeEnum.Tool,
-                toolToUpdate.CreatedByUserId,
+                toolToUpdate.CreatedByUserId ?? Guid.Empty,
                 false,
                 new[]
                 {
@@ -753,6 +757,7 @@ public class ToolService : IToolService
             // Update the active state and record the modifier.
             toolToUpdate.IsActive = isActive;
             toolToUpdate.LastModifiedByUserId = _currentUserId;
+            toolToUpdate.LastModifiedOn = DateTimeOffset.UtcNow;
             _unitOfWork.ToolRepo.Update(toolToUpdate);
 
             if (!await _unitOfWork.SaveAsync())

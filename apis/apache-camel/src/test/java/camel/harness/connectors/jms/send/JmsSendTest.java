@@ -26,7 +26,7 @@ class JmsSendTest {
     @Test
     void buildsJmsUriWithDestination() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "jms", "send",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "jms", "send",
             Map.of("destinationName", "orders"), null, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);
         assertTrue(uri.startsWith("jms:orders?connectionFactory=#jmsConnectionFactory_"));
@@ -37,7 +37,7 @@ class JmsSendTest {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
         AuthConfiguration auth = new AuthConfiguration("basic", "camel", "camel", null, null, null,
             null, null, null, null, null, null, null, null, null, null, null, null, null);
-        ConnectorRequest request = new ConnectorRequest(null, null, "jms", "send",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "jms", "send",
             Map.of("destinationName", "orders"), auth, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);
         assertTrue(uri.startsWith("jms:orders?connectionFactory=#jmsConnectionFactory_"));
@@ -47,7 +47,7 @@ class JmsSendTest {
     @Test
     void missingDestinationThrows() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "jms", "send",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "jms", "send",
             Map.of(), null, null, null, null, null);
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
             () -> configurer.resolveEndpoint(exchange, request, null));

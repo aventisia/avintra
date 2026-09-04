@@ -1,3 +1,5 @@
+using WorkspaceAPIs.Features.CloudConnectors.Camel.Helpers;
+
 namespace WorkspaceAPIs.Features.CloudConnectors.Camel;
 
 /// <summary>
@@ -13,16 +15,16 @@ namespace WorkspaceAPIs.Features.CloudConnectors.Camel;
 public class CamelConnectorsConfigRepository
 {
     private readonly ILogger<CamelConnectorsConfigRepository> _logger;
-    private readonly IWebHostEnvironment _env;
+    private readonly CamelConfigPaths _paths;
     private readonly Dictionary<string, CamelConnectorConfig> _cache = new(StringComparer.OrdinalIgnoreCase);
     private readonly object _gate = new();
 
     public CamelConnectorsConfigRepository(
         ILogger<CamelConnectorsConfigRepository> logger,
-        IWebHostEnvironment env)
+        CamelConfigPaths paths)
     {
         _logger = logger;
-        _env = env;
+        _paths = paths;
     }
 
     /// <summary>
@@ -77,16 +79,6 @@ public class CamelConnectorsConfigRepository
 
     private string? ResolvePath(string family, string action)
     {
-        string root;
-        try
-        {
-            root = Path.Combine(_env.ContentRootPath, "Features", "CloudConnectors", "ConfigFiles", "Camel");
-        }
-        catch
-        {
-            // Fall back to the app base directory (published output).
-            root = Path.Combine(AppContext.BaseDirectory, "Features", "CloudConnectors", "ConfigFiles", "Camel");
-        }
-        return Path.Combine(root, family, $"{action}Connector.json");
+        return _paths.ActionConfigFile(family, action);
     }
 }

@@ -1354,9 +1354,7 @@ public class AppSecretService : IAppSecretService
 
                         validationResult.EncryptedValues["AccessToken"] = _encryptionService.EncryptString(gitHubCredentials.AccessToken);
                         gitHubCredentials.AccessToken = string.Empty;
-                        gitHubCredentials.Server = string.Empty;
-                        gitHubCredentials.User = string.Empty;
-
+                    
                         sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(gitHubCredentials, jsonOptions);
                     }
                     else
@@ -2499,22 +2497,6 @@ public class AppSecretService : IAppSecretService
                     else
                     {
                         validationResult.Remark = "Invalid gigachat credentials: required fields missing or format incorrect.";
-                    }
-                    break;
-                }
-            case AppSecretTypesEnum.Github:
-                {
-                    var dto = System.Text.Json.JsonSerializer.Deserialize<GithubCredentialsDto>(rawJson, jsonOptions);
-                    if (dto != null)
-                    {
-                        validationResult.EncryptedValues["ApiKey"] = _encryptionService.EncryptString(dto.ApiKey);
-                        dto.ApiKey = string.Empty;
-                        sanitizedDataJson = System.Text.Json.JsonSerializer.Serialize(dto, jsonOptions);
-
-                    }
-                    else
-                    {
-                        validationResult.Remark = "Invalid github credentials: required fields missing or format incorrect.";
                     }
                     break;
                 }

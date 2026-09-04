@@ -1,0 +1,44 @@
+meta {
+  name: 11 - Delete - remove user
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{WORKSPACE_APIS_BASE_URL}}/cloud-connector/camel/invoke
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{ACCESS_TOKEN}}
+}
+
+body:json {
+  {
+    "agentId": "00000000-0000-0000-0000-000000000000",
+    "agentName": "USER_E2E",
+    "provider": "sql",
+    "action": "Delete",
+    "credentialName": "{{SQL_CREDENTIAL_NAME}}",
+    "payload": {
+      "query_sql": "DELETE FROM users WHERE user_name = 'josé@example.com'",
+      "payload": {}
+    }
+  }
+}
+
+vars:pre-request {
+  SQL_CREDENTIAL_NAME: Apache_Camel
+}
+
+tests {
+  test("status code is 200", function() {
+    expect(res.status).to.equal(200);
+  });
+  
+  test("delete user succeeded", function() {
+    expect(res.body.success).to.equal(true);
+    expect(res.body.data.action).to.equal("Delete");
+  });
+}

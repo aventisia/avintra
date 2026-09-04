@@ -27,7 +27,7 @@ class HttpGetTest {
     }
 
     private String resolve(Map<String, Object> config) {
-        ConnectorRequest request = new ConnectorRequest(null, null, "http", "GET", config,
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "http", "GET", config,
             null, null, null, null, null);
         return configurer.resolveEndpoint(exchange(), request, metadata());
     }

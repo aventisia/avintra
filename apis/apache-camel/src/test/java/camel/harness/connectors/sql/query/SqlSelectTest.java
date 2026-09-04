@@ -26,7 +26,7 @@ class SqlSelectTest {
     @Test
     void buildsSqlUriFromQuery() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "sql", "select",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "sql", "select",
             Map.of("query", "SELECT * FROM users"), null, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);
         assertEquals("sql:SELECT%20*%20FROM%20users", uri);
@@ -35,7 +35,7 @@ class SqlSelectTest {
     @Test
     void missingQueryThrows() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "sql", "select",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "sql", "select",
             Map.of(), null, null, null, null, null);
         IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
             () -> configurer.resolveEndpoint(exchange, request, null));
@@ -45,7 +45,7 @@ class SqlSelectTest {
     @Test
     void encodesReservedCharacters() {
         Exchange exchange = new DefaultExchange(new DefaultCamelContext());
-        ConnectorRequest request = new ConnectorRequest(null, null, "sql", "select",
+        ConnectorRequest request = ConnectorRequest.legacy(null, null, "sql", "select",
             Map.of("query", "SELECT * FROM users WHERE id = ? AND name = 'a b'"),
             null, null, null, null, null);
         String uri = configurer.resolveEndpoint(exchange, request, null);

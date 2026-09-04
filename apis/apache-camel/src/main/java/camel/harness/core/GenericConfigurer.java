@@ -58,6 +58,14 @@ public class GenericConfigurer implements ConnectorConfigurer {
             baseUri += (baseUri.contains("?") ? "&" : "?") + queryString;
         }
 
+        // Inject the operation into the endpoint URI using the catalog's
+        // operation option name (e.g. aws2-s3?operation=copyObject,
+        // salesforce?operationName=getSObject) so producer operations dispatch.
+        String operation = request.operationName();
+        if (operation != null && !operation.isBlank() && metadata.operationOption() != null) {
+            baseUri += (baseUri.contains("?") ? "&" : "?") + metadata.operationOption() + "=" + escape(operation);
+        }
+
         return applyAuth(baseUri, request.auth());
     }
 
@@ -102,6 +110,15 @@ public class GenericConfigurer implements ConnectorConfigurer {
             case CLIENT_CREDENTIALS -> {
                 appendOption(options, "clientId", auth.clientId());
                 appendOption(options, "clientSecret", auth.clientSecret());
+            }
+            case OAUTH2 -> {
+                appendOption(options, "clientId", auth.clientId());
+                appendOption(options, "clientSecret", auth.clientSecret());
+                appendOption(options, "accessToken", auth.token());
+                appendOption(options, "refreshToken", auth.refreshToken());
+                appendOption(options, "tokenUrl", auth.tokenUrl());
+                appendOption(options, "authorizationUrl", auth.authorizationUrl());
+                appendOption(options, "scopes", auth.scopes());
             }
             case AWS -> {
                 appendOption(options, "accessKey", auth.accessKey());

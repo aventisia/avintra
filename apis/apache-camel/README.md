@@ -1,8 +1,13 @@
 # Camel Connector Harness
 
-A standalone Spring Boot application for exercising one Apache Camel component at a time through a REST request. The harness accepts a target component URI, request headers, and a body, then dispatches the exchange with Camel `toD` and returns the downstream body and headers.
+A standalone Spring Boot application that exposes **every Apache Camel component on the classpath** as a generic, catalog-driven connector. The harness:
 
-Camel component connectors on the classpath:
+1. **Discovers connector metadata** from the Apache Camel Catalog (~350 components) and exposes it as JSON Schema.
+2. **Executes any component operation** from a single structured request (`connector` + `operation` + `parameters`) using Camel's dynamic `toD` dispatch.
+
+No hand-written route is needed per component. Adding a Camel Spring Boot starter to `pom.xml` makes that component immediately discoverable and executable.
+
+Camel component starters on the classpath include:
 
 - `sql`, `jdbc` — PostgreSQL (per-request datasource pooling via HikariCP)
 - `http`, `https` — HTTP/HTTPS client
@@ -10,8 +15,7 @@ Camel component connectors on the classpath:
 - `file`, `ftp` — local and remote file systems
 - `kafka` — Kafka producer
 - `mail` — SMTP/SMTPS
-
-The harness can also dispatch to any other Camel component whose Spring Boot starter is added to `pom.xml`. Hand-written service connectors (GitHub, Microsoft 365) are not yet fully integrated and are intentionally omitted from this document.
+- AWS, Azure, Google, MongoDB, Elasticsearch, Salesforce, and many more
 
 ## Table of contents
 
@@ -21,7 +25,6 @@ The harness can also dispatch to any other Camel component whose Spring Boot sta
 - [REST API](#rest-api)
 - [Request format](#request-format)
 - [Worked examples](#worked-examples)
-- [JBang YAML runtime](#jbang-yaml-runtime)
 - [Add another Camel component](#add-another-camel-component)
 - [Connector code layout](#connector-code-layout)
 - [Architecture and limitations](#architecture-and-limitations)
@@ -189,11 +192,25 @@ The `{connector}` path segment must match the URI scheme in `targetUri` (e.g. `s
 
 ## REST API
 
-| Endpoint                             | Method | Description                                                   |
-| ------------------------------------ | ------ | ------------------------------------------------------------- |
-| `/api/connectors/{connector}`        | `POST` | Dispatch a request to the target Camel component              |
-| `/api/connectors/{connector}/schema` | `GET`  | JSON Schema for a single connector family                     |
-| `/api/connectors/schemas`            | `GET`  | JSON object mapping every connector family to its JSON Schema |
+### Minimal contract (recommended)
+
+| Endpoint                                                       | Method | Description                                                       |
+| -------------------------------------------------------------- | ------ | ----------------------------------------------------------------- |
+| `/api/connectors/`                                             | `GET`  | List every available connector family (`id`, `name`, optional `description`) |
+| `/api/connectors/{connector}/operations`                       | `GET`  | List the operations for a connector (`id`, `name`, optional `description`) |
+| `/api/connectors/{connector}/operations/{operation}/schema`    | `GET`  | Minimal request schema for a single operation (only `name`, `type`, `required`, `description` per field) |
+| `/api/connectors/{connector}/operations/{operation}/execute`   | `POST` | Execute an operation; the request body is exactly the schema fields (flat JSON object) |
+
+The minimal contract returns only consumer-relevant fields. Camel-internal metadata, endpoint URIs, class names, and verbose execution details are excluded.
+
+### Legacy contract (still accepted)
+
+| Endpoint                                                       | Method | Description                                                       |
+| -------------------------------------------------------------- | ------ | ----------------------------------------------------------------- |
+| `/api/connectors/schemas`                                      | `GET`  | JSON object mapping every connector family to its full JSON Schema |
+| `/api/connectors/{connector}/schema`                           | `GET`  | Full JSON Schema for a single connector family                    |
+| `/api/connectors/execute`                                      | `POST` | Execute a connector operation from a structured request            |
+| `/api/connectors/{connector}`                                  | `POST` | Dispatch a request to the target Camel component (legacy envelope) |
 
 The full schema endpoint and the canonical request envelope are documented in [connectors.md](connectors.md). The sections below use the legacy envelope, which is still accepted.
 
@@ -251,6 +268,28 @@ For a database query, put the SQL statement and datasource reference in `targetU
   "body": null
 }
 ```
+
+## Minimal contract example
+
+Discover a connector, list its operations, fetch the request schema, then execute:
+
+```powershell
+# 1. List connectors (minimal: id, name, optional description)
+curl.exe http://localhost:4005/api/connectors/
+
+# 2. List operations for a connector
+curl.exe http://localhost:4005/api/connectors/aws2-s3/operations
+
+# 3. Fetch the minimal request schema for one operation
+curl.exe http://localhost:4005/api/connectors/http/operations/GET/schema
+
+# 4. Execute the operation with exactly the schema fields (flat JSON body)
+curl.exe -X POST http://localhost:4005/api/connectors/log/operations/info/execute `
+  -H "Content-Type: application/json" `
+  -d '{"body":"hello from minimal execute"}'
+```
+
+The execute request body is a flat JSON object whose fields match the schema. An optional nested `auth` object and a `payload` field are supported; everything else is treated as connector configuration.
 
 ## Worked examples
 
@@ -342,20 +381,6 @@ curl.exe -X POST http://localhost:4005/api/connectors/mail `
 
 For Gmail, use an App Password, not the normal account password. An object without `content`, such as `"body":{"message":"hello"}`, is still treated as JSON text. Do not send the HTML file itself as the JSON request.
 
-## JBang YAML runtime
-
-For a lightweight route-only runtime, [rest-dispatch.camel.yaml](rest-dispatch.camel.yaml) provides the dynamic dispatch shape using Camel JBang. It reads the canonical `uri` and `body` fields and loads connector libraries at launch. The current YAML route does not apply arbitrary header maps; use the Spring Boot runtime when request headers or dynamic datasource beans are required:
-
-```powershell
-camel run .\rest-dispatch.camel.yaml `
-  --dep=org.apache.camel:camel-sql:4.18.4 `
-  --dep=org.apache.camel:camel-http:4.18.4 `
-  --dep=org.apache.camel:camel-jackson:4.18.4 `
-  --dep=org.postgresql:postgresql:42.7.4
-```
-
-Use the Spring Boot runtime when you need the built-in JSON response envelope, request-scoped datasource pooling, or the local Artemis bean. Use the JBang route for stateless producer calls where the required component dependencies can be supplied at startup. File, FTP, Kafka, and Mail requests still require a reachable destination or server; adding the starter only makes the Camel scheme available.
-
 ## Add another Camel component
 
 1. Add its Spring Boot starter to `pom.xml`, using the same Camel BOM version.
@@ -370,31 +395,30 @@ Use the Spring Boot runtime when you need the built-in JSON response envelope, r
 4. Send a request to `/connectors/{connector}` with the component-specific URI and payload.
 5. Verify the real side effect, such as a row, message, file, or remote response.
 
-The harness does not need a new route for each component. `toD("${exchangeProperty.targetUri}")` selects the endpoint at runtime.
+The harness does not need a new route for each component. `toD("${exchangeProperty.targetUri}")` selects the endpoint at runtime, and the Camel Catalog loader makes the component's metadata (required/optional options, operation enum) available to the schema endpoints automatically.
 
 ## Connector code layout
 
-Every connector follows the same **Connector → Configurer** layout across implementation and tests:
+Most connectors need **no code at all** — the generic configurer builds the endpoint URI from the request `configuration` and injects `auth` options. Hand-written configurers exist only where a component needs auth/body shaping the generic path cannot express:
 
 ```
 src/main/java/camel/harness/
 ├── core/                              # shared framework (dispatch, metadata, schema, auth model)
 └── connectors/
-    └── <connector>/
-        └── <Connector>Configurer.java  # normalizes configuration and resolves the target URI
-src/test/java/camel/harness/
-└── connectors/
-    └── <connector>/
-        └── <Connector>ConfigurerTest.java
+    ├── <connector>/
+    │   └── <Connector>Configurer.java  # optional: normalizes configuration and resolves the target URI
+    └── ...
 ```
 
 - Framework classes (routing, request model, metadata registry, schema, auth types, generic configurer) live in `core`.
-- Each Camel component keeps its configurer inside `connectors/<name>`.
-- Tests mirror the same hierarchy so adding a connector means adding its configurer and test together.
+- `CamelCatalogMetadataLoader` reads the Camel Catalog so every component on the classpath is discoverable without a hand-written entry.
+- `GenericConfigurer` is the fallback for any component without a dedicated configurer.
+- Hand-written configurers (`http`, `sql`, `jdbc`, `ftp`, `jms`, `kafka`, `mail`) are kept only where they add real value. The `file` connector needs no configurer — `GenericConfigurer` builds its URI from `configuration.directoryName`/`fileName`.
 
 ## Architecture and limitations
 
-- `ConnectorApiRoute` owns one REST DSL route and normalizes the JSON request before dynamic dispatch.
+- `ConnectorApiRoute` owns the REST DSL routes and normalizes the JSON request before dynamic dispatch.
+- `CamelCatalogMetadataLoader` + `ConnectorMetadataRegistry` provide metadata for every Camel component on the classpath.
 - `BackendConfiguration` provides the local Artemis connection factory; `DynamicDatabaseRegistry` creates pooled datasources from each request's `db` block.
 - `docker-compose.yml` provides ActiveMQ Artemis and WireMock. Add a narrowly scoped service when a new connector needs one.
 - The endpoint intentionally permits dynamic component URIs. Run it only on a trusted local network; do not expose it as an unprotected production API.
