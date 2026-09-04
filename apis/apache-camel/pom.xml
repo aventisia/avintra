@@ -109,6 +109,23 @@
             <artifactId>camel-ftp-starter</artifactId>
         </dependency>
 
+        <!-- SQL runtime component: SqlConfigurer/JdbcConfigurer build `sql:` URIs and
+             bind per-request Hikari datasources via `dataSource=#requestDataSource_*`.
+             Without this starter, any `sql:`/`jdbc:` dispatch fails with
+             "No endpoint could be found for: sql://...". -->
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-sql-starter</artifactId>
+        </dependency>
+
+        <!-- PostgreSQL JDBC driver used by the per-request Hikari pools in
+             DynamicDatabaseRegistry when connecting to Postgres databases. -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- JSON/YAML serialization -->
         <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>

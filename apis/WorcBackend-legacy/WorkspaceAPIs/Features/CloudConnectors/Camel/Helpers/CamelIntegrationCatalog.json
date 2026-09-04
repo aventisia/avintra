@@ -1356,173 +1356,6 @@
     "supportLevel": "Stable"
   },
   {
-    "name": "google-bigquery",
-    "artifactId": "camel-google-bigquery",
-    "title": "Google BigQuery",
-    "description": "Access Google Cloud BigQuery data warehouse.",
-    "label": "cloud,bigdata",
-    "syntax": "google-bigquery:projectId:datasetId:tableId",
-    "icon": "/brand-img/googlebigquery.svg",
-    "credentialName": "__CredentialName__GoogleBigQuery",
-    "operations": [
-      "insertAll",
-      "query",
-      "getTable",
-      "listTables",
-      "createTable"
-    ],
-    "authTypes": [
-      "Service Account/JSON Key",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Service Account/JSON Key": {
-        "serviceAccountKey": "YOUR_SERVICE_ACCOUNT_JSON_OR_PATH"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "google-bigquery-sql",
-    "artifactId": "camel-google-bigquery",
-    "title": "Google BigQuery Standard SQL",
-    "description": "Execute standard SQL queries against Google BigQuery.",
-    "label": "cloud,bigdata",
-    "syntax": "google-bigquery-sql:projectId:queryString",
-    "icon": "/brand-img/googlebigquery.svg",
-    "credentialName": "__CredentialName__GoogleBigQueryStandardSQL",
-    "operations": [
-      "query",
-      "insert"
-    ],
-    "authTypes": [
-      "Service Account/JSON Key",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Service Account/JSON Key": {
-        "serviceAccountKey": "YOUR_SERVICE_ACCOUNT_JSON_OR_PATH"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "google-calendar",
-    "artifactId": "camel-google-calendar",
-    "title": "Google Calendar",
-    "description": "Perform operations on Google Calendar via Calendar API.",
-    "label": "cloud,api",
-    "syntax": "google-calendar:apiName/methodName",
-    "icon": "/brand-img/googlecalendar.svg",
-    "credentialName": "__CredentialName__GoogleCalendar",
-    "operations": [
-      "acl",
-      "calendarList",
-      "calendars",
-      "channels",
-      "colors",
-      "events",
-      "freebusy",
-      "settings"
-    ],
-    "authTypes": [
-      "Service Account/JSON Key",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Service Account/JSON Key": {
-        "serviceAccountKey": "YOUR_SERVICE_ACCOUNT_JSON_OR_PATH"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "google-calendar-stream",
-    "artifactId": "camel-google-calendar",
-    "title": "Google Calendar Stream",
-    "description": "Stream events and updates from Google Calendar.",
-    "label": "cloud,api",
-    "syntax": "google-calendar-stream:index",
-    "icon": "/brand-img/googlecalendar.svg",
-    "credentialName": "__CredentialName__GoogleCalendarStream",
-    "operations": [
-      "consume",
-      "filter"
-    ],
-    "authTypes": [
-      "Service Account/JSON Key",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Service Account/JSON Key": {
-        "serviceAccountKey": "YOUR_SERVICE_ACCOUNT_JSON_OR_PATH"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "google-drive",
-    "artifactId": "camel-google-drive",
-    "title": "Google Drive",
-    "description": "Manage files and folders in Google Drive.",
-    "label": "cloud,file,api",
-    "syntax": "google-drive:apiName/methodName",
-    "icon": "/brand-img/googledrive.svg",
-    "credentialName": "__CredentialName__GoogleDrive",
-    "operations": [
-      "about",
-      "apps",
-      "changes",
-      "channels",
-      "children",
-      "comments",
-      "drives",
-      "files",
-      "permissions",
-      "replies"
-    ],
-    "authTypes": [
-      "Service Account/JSON Key",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Service Account/JSON Key": {
-        "serviceAccountKey": "YOUR_SERVICE_ACCOUNT_JSON_OR_PATH"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
     "name": "google-mail",
     "artifactId": "camel-google-mail",
     "title": "Google Mail",
@@ -1600,66 +1433,6 @@
       "acknowledge",
       "modifyAckDeadline",
       "pull"
-    ],
-    "authTypes": [
-      "Service Account/JSON Key",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Service Account/JSON Key": {
-        "serviceAccountKey": "YOUR_SERVICE_ACCOUNT_JSON_OR_PATH"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "google-sheets",
-    "artifactId": "camel-google-sheets",
-    "title": "Google Sheets",
-    "description": "Read and write data in Google Sheets spreadsheets.",
-    "label": "cloud,sheets,api",
-    "syntax": "google-sheets:apiName/methodName",
-    "icon": "/brand-img/googlesheets.svg",
-    "credentialName": "__CredentialName__GoogleSheets",
-    "operations": [
-      "spreadsheets",
-      "data"
-    ],
-    "authTypes": [
-      "Service Account/JSON Key",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Service Account/JSON Key": {
-        "serviceAccountKey": "YOUR_SERVICE_ACCOUNT_JSON_OR_PATH"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "google-sheets-stream",
-    "artifactId": "camel-google-sheets",
-    "title": "Google Sheets Stream",
-    "description": "Stream data updates and appended rows from Google Sheets.",
-    "label": "cloud,sheets,api",
-    "syntax": "google-sheets-stream:apiName",
-    "icon": "/brand-img/googlesheets.svg",
-    "credentialName": "__CredentialName__GoogleSheetsStream",
-    "operations": [
-      "consume",
-      "pollRange"
     ],
     "authTypes": [
       "Service Account/JSON Key",
@@ -1841,55 +1614,13 @@
     "supportLevel": "Stable"
   },
   {
-    "name": "salesforce",
-    "artifactId": "camel-salesforce",
-    "title": "Salesforce",
-    "description": "Integrate with Salesforce CRM platform using REST, Bulk, and Streaming APIs.",
-    "label": "cloud,saas,crm",
-    "syntax": "salesforce:topicName",
-    "icon": "/brand-img/salesforce.svg",
-    "credentialName": "__CredentialName__Salesforce",
-    "operations": [
-      "oauth2Token",
-      "createSObject",
-      "getSObject",
-      "updateSObject",
-      "upsertSObject",
-      "deleteSObject",
-      "undeleteSObject",
-      "query",
-      "queryAll",
-      "search",
-      "describeSObject",
-      "composite",
-      "batch"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "Basic Auth"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "Basic Auth": {
-        "username": "YOUR_USERNAME",
-        "password": "YOUR_PASSWORD"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
     "name": "servicenow",
     "artifactId": "camel-servicenow",
     "title": "ServiceNow",
     "description": "Integrate with ServiceNow IT Service Management platform.",
     "label": "cloud,saas,itsm",
     "syntax": "servicenow:instanceName",
-    "icon": "/brand-img/servicenow.svg",
+    "icon": "/assets/ServiceNow.svg",
     "credentialName": "__CredentialName__ServiceNow",
     "operations": [
       "table",
@@ -1912,189 +1643,6 @@
         "clientSecret": "YOUR_CLIENT_SECRET",
         "accessToken": "YOUR_ACCESS_TOKEN",
         "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "zendesk",
-    "artifactId": "camel-zendesk",
-    "title": "Zendesk",
-    "description": "Manage support tickets, users, and organizations in Zendesk.",
-    "label": "cloud,saas,support",
-    "syntax": "zendesk:methodName",
-    "icon": "/brand-img/zendesk.svg",
-    "credentialName": "__CredentialName__Zendesk",
-    "operations": [
-      "createTicket",
-      "getTicket",
-      "updateTicket",
-      "deleteTicket",
-      "listTickets",
-      "search",
-      "getUsers",
-      "createOrganization"
-    ],
-    "authTypes": [
-      "Basic Auth",
-      "OAuth2",
-      "API Key"
-    ],
-    "sampleAuth": {
-      "Basic Auth": {
-        "username": "YOUR_USERNAME",
-        "password": "YOUR_PASSWORD"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "slack",
-    "artifactId": "camel-slack",
-    "title": "Slack",
-    "description": "Send and receive messages, files, and updates in Slack channels.",
-    "label": "cloud,saas,chat",
-    "syntax": "slack:channel",
-    "icon": "/brand-img/camel.svg",
-    "credentialName": "__CredentialName__Slack",
-    "operations": [
-      "sendMessage",
-      "listChannels",
-      "uploadFile",
-      "getHistory",
-      "setTopic"
-    ],
-    "authTypes": [
-      "Bearer Token",
-      "OAuth2",
-      "API Key"
-    ],
-    "sampleAuth": {
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "jira",
-    "artifactId": "camel-jira",
-    "title": "Jira",
-    "description": "Manage Jira issues, projects, comments, and attachments.",
-    "label": "cloud,saas,project-management",
-    "syntax": "jira:type",
-    "icon": "/brand-img/jira.svg",
-    "credentialName": "__CredentialName__Jira",
-    "operations": [
-      "newIssue",
-      "newComment",
-      "watchIssues",
-      "addComment",
-      "attachFile",
-      "updateIssue",
-      "transitionIssue"
-    ],
-    "authTypes": [
-      "Basic Auth",
-      "Bearer Token",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Basic Auth": {
-        "username": "YOUR_USERNAME",
-        "password": "YOUR_PASSWORD"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "twilio",
-    "artifactId": "camel-twilio",
-    "title": "Twilio",
-    "description": "Send SMS, make voice calls, and manage telephony via Twilio API.",
-    "label": "cloud,saas,telephony",
-    "syntax": "twilio:apiName/methodName",
-    "icon": "/brand-img/twilio.svg",
-    "credentialName": "__CredentialName__Twilio",
-    "operations": [
-      "account",
-      "call",
-      "message",
-      "recording",
-      "sipDomain",
-      "usageRecord"
-    ],
-    "authTypes": [
-      "Basic Auth",
-      "API Key"
-    ],
-    "sampleAuth": {
-      "Basic Auth": {
-        "username": "YOUR_USERNAME",
-        "password": "YOUR_PASSWORD"
-      },
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "stripe",
-    "artifactId": "camel-stripe",
-    "title": "Stripe",
-    "description": "Process payments, subscriptions, charges, and invoices via Stripe API.",
-    "label": "cloud,saas,payment",
-    "syntax": "stripe:apiName/methodName",
-    "icon": "/brand-img/stripe.svg",
-    "credentialName": "__CredentialName__Stripe",
-    "operations": [
-      "charge",
-      "customer",
-      "invoice",
-      "paymentIntent",
-      "payout",
-      "refund",
-      "subscription",
-      "token"
-    ],
-    "authTypes": [
-      "API Key",
-      "Bearer Token"
-    ],
-    "sampleAuth": {
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
       }
     },
     "supportLevel": "Stable"
@@ -2143,164 +1691,6 @@
       "postEvent",
       "postMetrics",
       "postRaw"
-    ],
-    "authTypes": [
-      "Bearer Token",
-      "API Key"
-    ],
-    "sampleAuth": {
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      },
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "box",
-    "artifactId": "camel-box",
-    "title": "Box",
-    "description": "Manage files, folders, collaborations, and comments in Box enterprise cloud storage.",
-    "label": "cloud,saas,file",
-    "syntax": "box:apiName/methodName",
-    "icon": "/brand-img/box.svg",
-    "credentialName": "__CredentialName__Box",
-    "operations": [
-      "collaborations",
-      "comments",
-      "events",
-      "files",
-      "folders",
-      "groups",
-      "search",
-      "users"
-    ],
-    "authTypes": [
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "dropbox",
-    "artifactId": "camel-dropbox",
-    "title": "Dropbox",
-    "description": "Upload, download, search, and manage files in Dropbox cloud storage.",
-    "label": "cloud,saas,file",
-    "syntax": "dropbox:operation",
-    "icon": "/brand-img/dropbox.svg",
-    "credentialName": "__CredentialName__Dropbox",
-    "operations": [
-      "put",
-      "get",
-      "del",
-      "move",
-      "search"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "Bearer Token"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "mailchimp",
-    "artifactId": "camel-mailchimp",
-    "title": "Mailchimp",
-    "description": "Manage marketing campaigns, subscribers, and lists via Mailchimp API.",
-    "label": "cloud,saas,marketing",
-    "syntax": "mailchimp:collection",
-    "icon": "/brand-img/camel.svg",
-    "credentialName": "__CredentialName__Mailchimp",
-    "operations": [
-      "getLists",
-      "addMember",
-      "updateMember",
-      "getCampaigns",
-      "sendCampaign"
-    ],
-    "authTypes": [
-      "API Key",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "telegram",
-    "artifactId": "camel-telegram",
-    "title": "Telegram",
-    "description": "Send and receive messages, media, and location in Telegram bot channels.",
-    "label": "cloud,saas,chat",
-    "syntax": "telegram:type",
-    "icon": "/brand-img/telegram.svg",
-    "credentialName": "__CredentialName__Telegram",
-    "operations": [
-      "sendMessage",
-      "sendPhoto",
-      "sendAudio",
-      "sendVideo",
-      "sendDocument",
-      "sendLocation",
-      "editMessageLiveLocation"
-    ],
-    "authTypes": [
-      "Bearer Token",
-      "API Key"
-    ],
-    "sampleAuth": {
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      },
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "whatsapp",
-    "artifactId": "camel-whatsapp",
-    "title": "WhatsApp Business",
-    "description": "Send messages, templates, and media via WhatsApp Cloud API.",
-    "label": "cloud,saas,chat",
-    "syntax": "whatsapp:phoneNumberId",
-    "icon": "/brand-img/whatsapp.svg",
-    "credentialName": "__CredentialName__WhatsAppBusiness",
-    "operations": [
-      "sendMessage",
-      "sendTemplateMessage",
-      "sendMediaMessage"
     ],
     "authTypes": [
       "Bearer Token",
@@ -2372,107 +1762,6 @@
         "clientSecret": "YOUR_CLIENT_SECRET",
         "accessToken": "YOUR_ACCESS_TOKEN",
         "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "asana",
-    "artifactId": "camel-asana",
-    "title": "Asana",
-    "description": "Manage tasks, projects, and workspaces in Asana project management.",
-    "label": "cloud,saas,project-management",
-    "syntax": "asana:apiName/methodName",
-    "icon": "/brand-img/camel.svg",
-    "credentialName": "__CredentialName__Asana",
-    "operations": [
-      "tasks",
-      "projects",
-      "stories",
-      "tags",
-      "workspaces",
-      "users"
-    ],
-    "authTypes": [
-      "Bearer Token",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "github",
-    "artifactId": "camel-github",
-    "title": "GitHub",
-    "description": "Interact with GitHub issues, pull requests, commits, and webhooks.",
-    "label": "cloud,saas,devops",
-    "syntax": "github:type/branchName",
-    "icon": "/brand-img/github.svg",
-    "credentialName": "__CredentialName__GitHub",
-    "operations": [
-      "pullRequest",
-      "pullRequestComment",
-      "commit",
-      "createIssue",
-      "closeIssue",
-      "getCommitCheckRun"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "Bearer Token"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "gitlab",
-    "artifactId": "camel-gitlab",
-    "title": "GitLab",
-    "description": "Interact with GitLab repositories, merge requests, tags, and projects.",
-    "label": "cloud,saas,devops",
-    "syntax": "gitlab:type",
-    "icon": "/brand-img/git.svg",
-    "credentialName": "__CredentialName__GitLab",
-    "operations": [
-      "getProject",
-      "createMergeRequest",
-      "listIssues",
-      "createIssue",
-      "listMergeRequests"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "Bearer Token"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
       }
     },
     "supportLevel": "Stable"
@@ -2553,7 +1842,7 @@
     "description": "Query, monitor, and manage Kubernetes Pods.",
     "label": "cloud,containers",
     "syntax": "kubernetes-pods:masterUrl",
-    "icon": "/brand-img/kubernetespods-generated.svg",
+    "icon": "/brand-img/kubernetes.svg",
     "credentialName": "__CredentialName__KubernetesPods",
     "operations": [
       "listPods",
@@ -2870,7 +2159,7 @@
     "description": "Manage and launch batch jobs in Kubernetes.",
     "label": "cloud,containers",
     "syntax": "kubernetes-job:masterUrl",
-    "icon": "/brand-img/kubernetesjob-generated.svg",
+    "icon": "/brand-img/kubernetes.svg",
     "credentialName": "__CredentialName__KubernetesJob",
     "operations": [
       "listJobs",
@@ -2906,7 +2195,7 @@
     "description": "Manage Horizontal Pod Autoscalers in Kubernetes.",
     "label": "cloud,containers",
     "syntax": "kubernetes-hpa:masterUrl",
-    "icon": "/brand-img/kuberneteshpa.svg",
+    "icon": "/brand-img/kubernetes.svg",
     "credentialName": "__CredentialName__KubernetesHPA",
     "operations": [
       "listHPA",
@@ -2977,7 +2266,7 @@
     "description": "Manage build pipelines in Red Hat OpenShift cluster.",
     "label": "cloud,containers",
     "syntax": "openshift-builds:masterUrl",
-    "icon": "/brand-img/openshiftbuilds.svg",
+    "icon": "/brand-img/openshift.png",
     "credentialName": "__CredentialName__OpenShiftBuilds",
     "operations": [
       "listBuilds",
@@ -3007,7 +2296,7 @@
     "description": "Manage DeploymentConfigs in Red Hat OpenShift.",
     "label": "cloud,containers",
     "syntax": "openshift-deploymentconfigs:masterUrl",
-    "icon": "/brand-img/openshiftbuilds.svg",
+    "icon": "/brand-img/openshift.png",
     "credentialName": "__CredentialName__OpenShiftDeploymentConfigs",
     "operations": [
       "listDeploymentConfigs",
@@ -3037,7 +2326,7 @@
     "description": "Sent and receive messages to/from Apache Kafka brokers.",
     "label": "messaging",
     "syntax": "kafka:topic",
-    "icon": "/brand-img/apachekafka.svg",
+    "icon": "/brand-img/camel-kafka.svg",
     "credentialName": "__CredentialName__Kafka",
     "operations": [
       "brokers",
@@ -3146,7 +2435,7 @@
     "description": "Send and receive messages to/from Apache ActiveMQ 5.x broker.",
     "label": "messaging",
     "syntax": "activemq:destinationType:destinationName",
-    "icon": "/brand-img/activemq5x.svg",
+    "icon": "/brand-img/activemq5x.png",
     "credentialName": "__CredentialName__ActiveMQ5.x",
     "operations": [
       "brokerURL",
@@ -3557,7 +2846,7 @@
     "description": "Send and receive messages from IronMQ hosted message queue.",
     "label": "cloud,messaging",
     "syntax": "ironmq:queueName",
-    "icon": "/brand-img/ironmq.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__IronMQ",
     "operations": [
       "projectId",
@@ -3620,7 +2909,7 @@
     "description": "Send and receive messages to/from Apache Kafka using Vert.x Kafka client.",
     "label": "messaging",
     "syntax": "vertx-kafka:topic",
-    "icon": "/brand-img/apachekafka.svg",
+    "icon": "/brand-img/camel-kafka.svg",
     "credentialName": "__CredentialName__Vert.xKafka",
     "operations": [
       "bootstrapServers",
@@ -4759,7 +4048,7 @@
     "description": "Send HTTP/HTTPS requests asynchronously using Vert.x Web Client.",
     "label": "http",
     "syntax": "vertx-http:httpUri",
-    "icon": "/brand-img/vertxhttpclient.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__Vert.xHTTPClient",
     "operations": [
       "method",
@@ -4901,7 +4190,7 @@
     "description": "Call and expose Apache Thrift services over binary protocol.",
     "label": "rpc",
     "syntax": "thrift:host:port/service",
-    "icon": "/brand-img/thrift.svg",
+    "icon": "/brand-img/thrift.png",
     "credentialName": "__CredentialName__Thrift",
     "operations": [
       "method",
@@ -5931,7 +5220,7 @@
     "description": "Perform in-memory cache operations on Apache Ignite cluster.",
     "label": "cache,database",
     "syntax": "ignite-cache:cacheName",
-    "icon": "/brand-img/apacheignitecache.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__ApacheIgniteCache",
     "operations": [
       "operation",
@@ -5959,7 +5248,7 @@
     "description": "Run distributed compute grid tasks on Apache Ignite cluster.",
     "label": "compute",
     "syntax": "ignite-compute:endpointId",
-    "icon": "/brand-img/apacheignitecache.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__ApacheIgniteCompute",
     "operations": [
       "computeAlgorithm",
@@ -5981,7 +5270,7 @@
     "description": "Send and receive messages on Apache Ignite distributed topics.",
     "label": "messaging",
     "syntax": "ignite-messaging:topic",
-    "icon": "/brand-img/apacheignitecache.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__ApacheIgniteMessaging",
     "operations": [
       "sendMode",
@@ -6002,7 +5291,7 @@
     "description": "Subscribe to lifecycle and cluster events on Apache Ignite cluster.",
     "label": "events",
     "syntax": "ignite-events:endpointId",
-    "icon": "/brand-img/apacheignitecache.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__ApacheIgniteEvents",
     "operations": [
       "events",
@@ -6023,7 +5312,7 @@
     "description": "Generate unique distributed IDs from Apache Ignite cluster.",
     "label": "clustering",
     "syntax": "ignite-idgen:name",
-    "icon": "/brand-img/apacheignitecache.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__ApacheIgniteIDGenerator",
     "operations": [
       "operation",
@@ -6045,7 +5334,7 @@
     "description": "Produce and consume from distributed in-memory queues on Apache Ignite.",
     "label": "messaging",
     "syntax": "ignite-queue:name",
-    "icon": "/brand-img/apacheignitecache.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__ApacheIgniteQueue",
     "operations": [
       "operation",
@@ -6067,7 +5356,7 @@
     "description": "Produce and consume messages from Hazelcast distributed queue.",
     "label": "cache,messaging",
     "syntax": "hazelcast-queue:cacheName",
-    "icon": "/brand-img/hazelcastinstance.svg",
+    "icon": "/brand-img/hazelcast.png",
     "credentialName": "__CredentialName__HazelcastQueue",
     "operations": [
       "defaultOperation",
@@ -6094,7 +5383,7 @@
     "description": "Publish and consume messages from Hazelcast distributed topic.",
     "label": "cache,messaging",
     "syntax": "hazelcast-topic:cacheName",
-    "icon": "/brand-img/hazelcastinstance.svg",
+    "icon": "/brand-img/hazelcast.png",
     "credentialName": "__CredentialName__HazelcastTopic",
     "operations": [
       "defaultOperation",
@@ -6121,7 +5410,7 @@
     "description": "Store and query key-value pairs in Hazelcast distributed map.",
     "label": "cache,database",
     "syntax": "hazelcast-map:cacheName",
-    "icon": "/brand-img/hazelcastinstance.svg",
+    "icon": "/brand-img/hazelcast.png",
     "credentialName": "__CredentialName__HazelcastMap",
     "operations": [
       "defaultOperation",
@@ -6148,7 +5437,7 @@
     "description": "Store multiple values per key in Hazelcast distributed multimap.",
     "label": "cache,database",
     "syntax": "hazelcast-multimap:cacheName",
-    "icon": "/brand-img/hazelcastinstance.svg",
+    "icon": "/brand-img/hazelcast.png",
     "credentialName": "__CredentialName__HazelcastMultimap",
     "operations": [
       "defaultOperation"
@@ -6174,7 +5463,7 @@
     "description": "Store data in fully replicated Hazelcast in-memory map.",
     "label": "cache,database",
     "syntax": "hazelcast-replicatedmap:cacheName",
-    "icon": "/brand-img/hazelcastinstance.svg",
+    "icon": "/brand-img/hazelcast.png",
     "credentialName": "__CredentialName__HazelcastReplicatedMap",
     "operations": [
       "defaultOperation"
@@ -6200,7 +5489,7 @@
     "description": "Produce and consume items from Hazelcast ringbuffer.",
     "label": "cache,messaging",
     "syntax": "hazelcast-ringbuffer:cacheName",
-    "icon": "/brand-img/hazelcastinstance.svg",
+    "icon": "/brand-img/hazelcast.png",
     "credentialName": "__CredentialName__HazelcastRingbuffer",
     "operations": [
       "defaultOperation"
@@ -6226,7 +5515,7 @@
     "description": "Manage distributed atomic numbers on Hazelcast cluster.",
     "label": "cache,clustering",
     "syntax": "hazelcast-atomicnumber:cacheName",
-    "icon": "/brand-img/hazelcastinstance.svg",
+    "icon": "/brand-img/hazelcast.png",
     "credentialName": "__CredentialName__HazelcastAtomicNumber",
     "operations": [
       "defaultOperation"
@@ -6252,7 +5541,7 @@
     "description": "Manage distributed lists on Hazelcast in-memory cluster.",
     "label": "cache",
     "syntax": "hazelcast-list:cacheName",
-    "icon": "/brand-img/hazelcastinstance.svg",
+    "icon": "/brand-img/hazelcast.png",
     "credentialName": "__CredentialName__HazelcastList",
     "operations": [
       "defaultOperation"
@@ -6278,7 +5567,7 @@
     "description": "Asynchronously pass messages across JVMs using Hazelcast ringbuffer or queue.",
     "label": "cache,clustering",
     "syntax": "hazelcast-seda:cacheName",
-    "icon": "/brand-img/hazelcastinstance.svg",
+    "icon": "/brand-img/hazelcast.png",
     "credentialName": "__CredentialName__HazelcastSEDA",
     "operations": [
       "concurrentConsumers",
@@ -6305,7 +5594,7 @@
     "description": "Consume lifecycle events from Hazelcast cluster instance.",
     "label": "cache,clustering",
     "syntax": "hazelcast-instance:cacheName",
-    "icon": "/brand-img/hazelcastinstance.svg",
+    "icon": "/brand-img/hazelcast.png",
     "credentialName": "__CredentialName__HazelcastInstance",
     "operations": [
       "defaultOperation"
@@ -6433,7 +5722,7 @@
     "description": "Capture Change Data Capture (CDC) events from Microsoft SQL Server.",
     "label": "database,cdc",
     "syntax": "debezium-sqlserver:name",
-    "icon": "/brand-img/debeziumsqlserverconnector.svg",
+    "icon": "/brand-img/debeziumsqlserverconnector.png",
     "credentialName": "__CredentialName__DebeziumSQLServerConnector",
     "operations": [
       "databaseHostname",
@@ -6467,7 +5756,7 @@
     "description": "Capture Change Data Capture (CDC) events from Oracle database redo logs.",
     "label": "database,cdc",
     "syntax": "debezium-oracle:name",
-    "icon": "/brand-img/oracle.png",
+    "icon": "/brand-img/oracle.webp",
     "credentialName": "__CredentialName__DebeziumOracleConnector",
     "operations": [
       "databaseHostname",
@@ -7126,33 +6415,6 @@
     "supportLevel": "Experimental"
   },
   {
-    "name": "ollama",
-    "artifactId": "camel-ollama",
-    "title": "Ollama",
-    "description": "Run and interact with local open-source LLMs through Ollama REST API.",
-    "label": "ai",
-    "syntax": "ollama:modelId",
-    "icon": "/brand-img/camel.svg",
-    "credentialName": "__CredentialName__Ollama",
-    "operations": [
-      "model",
-      "operation",
-      "format",
-      "host"
-    ],
-    "authTypes": [
-      "Not applicable",
-      "Bearer Token"
-    ],
-    "sampleAuth": {
-      "Not applicable": {},
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      }
-    },
-    "supportLevel": "Experimental"
-  },
-  {
     "name": "milvus",
     "artifactId": "camel-milvus",
     "title": "Milvus",
@@ -7217,35 +6479,6 @@
         "token": "YOUR_BEARER_TOKEN"
       },
       "Not applicable": {}
-    },
-    "supportLevel": "Preview"
-  },
-  {
-    "name": "pinecone",
-    "artifactId": "camel-pinecone",
-    "title": "Pinecone",
-    "description": "Perform vector indexing and nearest-neighbor vector search in Pinecone.",
-    "label": "database,ai",
-    "syntax": "pinecone:indexName",
-    "icon": "/brand-img/camel.svg",
-    "credentialName": "__CredentialName__Pinecone",
-    "operations": [
-      "indexName",
-      "operation",
-      "apiKey",
-      "environment"
-    ],
-    "authTypes": [
-      "API Key",
-      "Bearer Token"
-    ],
-    "sampleAuth": {
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      }
     },
     "supportLevel": "Preview"
   },
@@ -7848,7 +7081,7 @@
     "description": "Generate templated responses and messages using Apache FreeMarker template engine.",
     "label": "transformation",
     "syntax": "freemarker:resourceUri",
-    "icon": "/brand-img/freemarker.svg",
+    "icon": "/brand-img/freemarker.png",
     "credentialName": "__CredentialName__Freemarker",
     "operations": [
       "configuration",
@@ -7997,7 +7230,7 @@
     "description": "Transform JSON message payloads using JSONata query and transformation language.",
     "label": "transformation",
     "syntax": "jsonata:resourceUri",
-    "icon": "/brand-img/jsonata.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__JSONata",
     "operations": [
       "outputType",
@@ -8061,7 +7294,7 @@
     "description": "Detect and extract metadata and structured text from documents using Apache Tika.",
     "label": "document,transformation",
     "syntax": "tika:operation",
-    "icon": "/brand-img/apachetika.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__ApacheTika",
     "operations": [
       "operation",
@@ -8152,7 +7385,7 @@
     "description": "Collect route runtime metrics using Micrometer framework.",
     "label": "monitoring",
     "syntax": "micrometer:metricsType:metricsName",
-    "icon": "/brand-img/micrometer.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__Micrometer",
     "operations": [
       "action",
@@ -8175,7 +7408,7 @@
     "description": "Expose Camel route execution statistics in Prometheus scrapable format.",
     "label": "monitoring",
     "syntax": "prometheus:name",
-    "icon": "/brand-img/micrometer.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__Prometheus",
     "operations": [
       "metricsCollector"
@@ -8446,7 +7679,7 @@
     "description": "Schedule jobs and trigger routes using Quartz Scheduler with cron and calendar support.",
     "label": "scheduling",
     "syntax": "quartz:groupName/triggerName",
-    "icon": "/brand-img/quartz.svg",
+    "icon": "/brand-img/quartz.png",
     "credentialName": "__CredentialName__Quartz",
     "operations": [
       "cron",
@@ -8804,7 +8037,7 @@
     "description": "Exchange healthcare data adhering to HL7 FHIR (Fast Healthcare Interoperability Resources).",
     "label": "health,api",
     "syntax": "fhir:apiName/methodName",
-    "icon": "/brand-img/fhir.svg",
+    "icon": "/brand-img/fhir.png",
     "credentialName": "__CredentialName__FHIR",
     "operations": [
       "capabilities",
@@ -8892,7 +8125,7 @@
     "description": "Communicate directly with Industrial Programmable Logic Controllers (PLCs).",
     "label": "iot,industrial",
     "syntax": "plc4x:driver",
-    "icon": "/brand-img/plc4x.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__PLC4X",
     "operations": [
       "driver",
@@ -8990,151 +8223,6 @@
     "supportLevel": "Stable"
   },
   {
-    "name": "salesforce-upsert",
-    "artifactId": "camel-salesforce",
-    "title": "Salesforce Upsert",
-    "description": "Upsert records into Salesforce using External IDs.",
-    "label": "cloud,saas",
-    "syntax": "salesforce-upsert:sObjectIdName",
-    "icon": "/brand-img/salesforce.svg",
-    "credentialName": "__CredentialName__SalesforceUpsert",
-    "operations": [
-      "sObjectIdValue",
-      "sObject"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "Basic Auth"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "Basic Auth": {
-        "username": "YOUR_USERNAME",
-        "password": "YOUR_PASSWORD"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "box-streaming",
-    "artifactId": "camel-box",
-    "title": "Box Streaming",
-    "description": "Stream events and file notifications from Box cloud storage.",
-    "label": "cloud,saas",
-    "syntax": "box-streaming:endpoint",
-    "icon": "/brand-img/box.svg",
-    "credentialName": "__CredentialName__BoxStreaming",
-    "operations": [
-      "events",
-      "pollInterval"
-    ],
-    "authTypes": [
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "dropbox-streaming",
-    "artifactId": "camel-dropbox",
-    "title": "Dropbox Streaming",
-    "description": "Stream folder updates from Dropbox.",
-    "label": "cloud,saas",
-    "syntax": "dropbox-streaming:path",
-    "icon": "/brand-img/dropbox.svg",
-    "credentialName": "__CredentialName__DropboxStreaming",
-    "operations": [
-      "path",
-      "query"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "Bearer Token"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "facebook",
-    "artifactId": "camel-facebook",
-    "title": "Facebook",
-    "description": "Interact with Facebook social graph API.",
-    "label": "cloud,saas,social",
-    "syntax": "facebook:reading",
-    "icon": "/brand-img/camel.svg",
-    "credentialName": "__CredentialName__Facebook",
-    "operations": [
-      "reading",
-      "userId",
-      "post"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "API Key"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "linkedin",
-    "artifactId": "camel-linkedin",
-    "title": "LinkedIn",
-    "description": "Interact with LinkedIn social platform API.",
-    "label": "cloud,saas,social",
-    "syntax": "linkedin:apiName/methodName",
-    "icon": "/brand-img/camel.svg",
-    "credentialName": "__CredentialName__LinkedIn",
-    "operations": [
-      "companies",
-      "people",
-      "posts"
-    ],
-    "authTypes": [
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
     "name": "yammer",
     "artifactId": "camel-yammer",
     "title": "Yammer",
@@ -9161,68 +8249,6 @@
       },
       "Bearer Token": {
         "token": "YOUR_BEARER_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "google-sheets-data",
-    "artifactId": "camel-google-sheets",
-    "title": "Google Sheets Data",
-    "description": "Read and write tabular cells and data models in Google Sheets.",
-    "label": "cloud,sheets",
-    "syntax": "google-sheets-data:spreadsheetId",
-    "icon": "/brand-img/googlesheets.svg",
-    "credentialName": "__CredentialName__GoogleSheetsData",
-    "operations": [
-      "spreadsheetId",
-      "range",
-      "valueInputOption"
-    ],
-    "authTypes": [
-      "Service Account/JSON Key",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Service Account/JSON Key": {
-        "serviceAccountKey": "YOUR_SERVICE_ACCOUNT_JSON_OR_PATH"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "google-drive-files",
-    "artifactId": "camel-google-drive",
-    "title": "Google Drive Files",
-    "description": "Direct file upload, download, and permission management in Google Drive.",
-    "label": "cloud,file",
-    "syntax": "google-drive-files:fileId",
-    "icon": "/brand-img/googledrive.svg",
-    "credentialName": "__CredentialName__GoogleDriveFiles",
-    "operations": [
-      "fileId",
-      "mimeType",
-      "fields"
-    ],
-    "authTypes": [
-      "Service Account/JSON Key",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Service Account/JSON Key": {
-        "serviceAccountKey": "YOUR_SERVICE_ACCOUNT_JSON_OR_PATH"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
       }
     },
     "supportLevel": "Stable"
@@ -9540,7 +8566,7 @@
     "description": "Low-latency change data capture from SQL Server transactions.",
     "label": "database,cdc",
     "syntax": "debezium-sqlserver-cdc:name",
-    "icon": "/brand-img/debeziumsqlserverconnector.svg",
+    "icon": "/brand-img/debeziumsqlserverconnector.png",
     "credentialName": "__CredentialName__DebeziumSQLServerCDCEngine",
     "operations": [
       "databaseHostname",
@@ -9571,7 +8597,7 @@
     "description": "Continuous database changes streaming from Oracle LogMiner.",
     "label": "database,cdc",
     "syntax": "debezium-oracle-cdc:name",
-    "icon": "/brand-img/oracle.png",
+    "icon": "/brand-img/oracle.webp",
     "credentialName": "__CredentialName__DebeziumOracleCDCEngine",
     "operations": [
       "databaseHostname",
@@ -9795,37 +8821,6 @@
     "supportLevel": "Stable"
   },
   {
-    "name": "digitalocean",
-    "artifactId": "camel-digitalocean",
-    "title": "DigitalOcean",
-    "description": "Manage Droplets, floating IPs, block storage, and SSH keys in DigitalOcean.",
-    "label": "cloud,management",
-    "syntax": "digitalocean:operation",
-    "icon": "/brand-img/digitalocean.svg",
-    "credentialName": "__CredentialName__DigitalOcean",
-    "operations": [
-      "operation",
-      "oAuthToken",
-      "dropletId"
-    ],
-    "authTypes": [
-      "Bearer Token",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
     "name": "fastly",
     "artifactId": "camel-fastly",
     "title": "Fastly",
@@ -9849,97 +8844,6 @@
       },
       "Bearer Token": {
         "token": "YOUR_BEARER_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "cloudflare",
-    "artifactId": "camel-cloudflare",
-    "title": "Cloudflare",
-    "description": "Manage DNS records, cache purging, and zones in Cloudflare.",
-    "label": "cloud,cdn",
-    "syntax": "cloudflare:apiName",
-    "icon": "/brand-img/camel.svg",
-    "credentialName": "__CredentialName__Cloudflare",
-    "operations": [
-      "apiToken",
-      "zoneId",
-      "operation"
-    ],
-    "authTypes": [
-      "API Key",
-      "Bearer Token"
-    ],
-    "sampleAuth": {
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "twilio-sip",
-    "artifactId": "camel-twilio",
-    "title": "Twilio SIP",
-    "description": "Initiate and control programmable SIP voice calls via Twilio.",
-    "label": "cloud,telephony",
-    "syntax": "twilio-sip:domain",
-    "icon": "/brand-img/twilio.svg",
-    "credentialName": "__CredentialName__TwilioSIP",
-    "operations": [
-      "domain",
-      "operation"
-    ],
-    "authTypes": [
-      "Basic Auth",
-      "API Key"
-    ],
-    "sampleAuth": {
-      "Basic Auth": {
-        "username": "YOUR_USERNAME",
-        "password": "YOUR_PASSWORD"
-      },
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "zendesk-tickets",
-    "artifactId": "camel-zendesk",
-    "title": "Zendesk Tickets",
-    "description": "High-throughput ticketing API integration for Zendesk.",
-    "label": "cloud,saas,support",
-    "syntax": "zendesk-tickets:method",
-    "icon": "/brand-img/zendesk.svg",
-    "credentialName": "__CredentialName__ZendeskTickets",
-    "operations": [
-      "ticketId",
-      "operation"
-    ],
-    "authTypes": [
-      "Basic Auth",
-      "OAuth2",
-      "API Key"
-    ],
-    "sampleAuth": {
-      "Basic Auth": {
-        "username": "YOUR_USERNAME",
-        "password": "YOUR_PASSWORD"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
       }
     },
     "supportLevel": "Stable"
@@ -9971,38 +8875,6 @@
       },
       "API Key": {
         "apiKey": "YOUR_API_KEY"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "workday",
-    "artifactId": "camel-workday",
-    "title": "Workday",
-    "description": "Execute financial management and human capital queries against Workday.",
-    "label": "cloud,saas,erp",
-    "syntax": "workday:entity:action",
-    "icon": "/brand-img/camel.svg",
-    "credentialName": "__CredentialName__Workday",
-    "operations": [
-      "host",
-      "tenant",
-      "clientId"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "Basic Auth"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "Basic Auth": {
-        "username": "YOUR_USERNAME",
-        "password": "YOUR_PASSWORD"
       }
     },
     "supportLevel": "Stable"
@@ -10044,41 +8916,6 @@
     "supportLevel": "Stable"
   },
   {
-    "name": "hubspot",
-    "artifactId": "camel-hubspot",
-    "title": "HubSpot",
-    "description": "Manage contacts, deals, companies, and CRM pipelines in HubSpot.",
-    "label": "cloud,saas,crm",
-    "syntax": "hubspot:apiName",
-    "icon": "/brand-img/camel.svg",
-    "credentialName": "__CredentialName__HubSpot",
-    "operations": [
-      "accessToken",
-      "portalId",
-      "operation"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "Bearer Token",
-      "API Key"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      },
-      "API Key": {
-        "apiKey": "YOUR_API_KEY"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
     "name": "quickbooks",
     "artifactId": "camel-quickbooks",
     "title": "QuickBooks Online",
@@ -10100,102 +8937,6 @@
         "clientSecret": "YOUR_CLIENT_SECRET",
         "accessToken": "YOUR_ACCESS_TOKEN",
         "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "jira-updates",
-    "artifactId": "camel-jira",
-    "title": "Jira Updates",
-    "description": "Receive real-time notifications on Jira issue status changes.",
-    "label": "cloud,saas,project-management",
-    "syntax": "jira-updates:type",
-    "icon": "/brand-img/jira.svg",
-    "credentialName": "__CredentialName__JiraUpdates",
-    "operations": [
-      "jql",
-      "delay"
-    ],
-    "authTypes": [
-      "Basic Auth",
-      "Bearer Token",
-      "OAuth2"
-    ],
-    "sampleAuth": {
-      "Basic Auth": {
-        "username": "YOUR_USERNAME",
-        "password": "YOUR_PASSWORD"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      },
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "github-events",
-    "artifactId": "camel-github",
-    "title": "GitHub Events",
-    "description": "Listen to repository events, stars, and releases from GitHub.",
-    "label": "cloud,saas,devops",
-    "syntax": "github-events:repo",
-    "icon": "/brand-img/github.svg",
-    "credentialName": "__CredentialName__GitHubEvents",
-    "operations": [
-      "repoName",
-      "repoOwner",
-      "event"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "Bearer Token"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
-      }
-    },
-    "supportLevel": "Stable"
-  },
-  {
-    "name": "gitlab-events",
-    "artifactId": "camel-gitlab",
-    "title": "GitLab Events",
-    "description": "Listen to repository webhooks, pipelines, and commits from GitLab.",
-    "label": "cloud,saas,devops",
-    "syntax": "gitlab-events:project",
-    "icon": "/brand-img/git.svg",
-    "credentialName": "__CredentialName__GitLabEvents",
-    "operations": [
-      "projectId",
-      "event"
-    ],
-    "authTypes": [
-      "OAuth2",
-      "Bearer Token"
-    ],
-    "sampleAuth": {
-      "OAuth2": {
-        "clientId": "YOUR_CLIENT_ID",
-        "clientSecret": "YOUR_CLIENT_SECRET",
-        "accessToken": "YOUR_ACCESS_TOKEN",
-        "refreshToken": "YOUR_REFRESH_TOKEN"
-      },
-      "Bearer Token": {
-        "token": "YOUR_BEARER_TOKEN"
       }
     },
     "supportLevel": "Stable"
@@ -10536,7 +9277,7 @@
     "description": "Connect to next-generation Apache ActiveMQ Artemis multi-protocol broker.",
     "label": "messaging",
     "syntax": "activemq-artemis:destinationName",
-    "icon": "/brand-img/activemq5x.svg",
+    "icon": "/brand-img/activemq5x.png",
     "credentialName": "__CredentialName__ActiveMQArtemis",
     "operations": [
       "brokerURL",
@@ -10627,7 +9368,7 @@
     "description": "Stream background cloud tasks from IronMQ message queues.",
     "label": "cloud,messaging",
     "syntax": "ironmq-streaming:queueName",
-    "icon": "/brand-img/ironmq.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__IronMQStreaming",
     "operations": [
       "projectId",
@@ -10789,7 +9530,7 @@
     "description": "Framed non-blocking Apache Thrift RPC transport.",
     "label": "rpc",
     "syntax": "thrift-framed:host:port/service",
-    "icon": "/brand-img/thrift.svg",
+    "icon": "/brand-img/thrift.png",
     "credentialName": "__CredentialName__ThriftFramedTransport",
     "operations": [
       "method",
@@ -11481,7 +10222,7 @@
     "description": "Collect application runtime counters, meters, and histograms using Dropwizard Metrics.",
     "label": "monitoring",
     "syntax": "metrics:metricsType:metricsName",
-    "icon": "/brand-img/micrometer.svg",
+    "icon": "/function.png",
     "credentialName": "__CredentialName__DropwizardMetrics",
     "operations": [
       "action",

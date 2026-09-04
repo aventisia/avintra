@@ -66,23 +66,6 @@ public class CamelConnectorSchemaProperty
 }
 
 /// <summary>
-/// A single entry from <c>GET /api/connectors/</c> — the authoritative Apache
-/// Camel component summary with the real component description (the schemas
-/// endpoint only returns the generic connector request description).
-/// </summary>
-public class CamelConnectorListItem
-{
-    [JsonPropertyName("id")]
-    public string? Id { get; set; }
-
-    [JsonPropertyName("name")]
-    public string? Name { get; set; }
-
-    [JsonPropertyName("description")]
-    public string? Description { get; set; }
-}
-
-/// <summary>
 /// A reusable definition within a connector schema. Mirrors
 /// <c>camel.harness.core.ConnectorSchemaDefinition</c>.
 /// </summary>

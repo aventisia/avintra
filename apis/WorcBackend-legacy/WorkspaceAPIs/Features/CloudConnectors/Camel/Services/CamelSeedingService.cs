@@ -37,17 +37,17 @@ public static class CamelSerializerOptions
 /// <summary>
 /// Unified Apache Camel connector seeding workflow.
 ///
-/// Loads the connector list from the Camel harness API, merges display metadata
-/// (label, description, credential name) from the local
-/// <c>CamelIntegrationCatalog.json</c>, filters out excluded connectors and
-/// Corsair-managed integrations, and performs three actions in a single pass:
+/// Loads the connector list from the local <c>CamelIntegrationCatalog.json</c>
+/// (no API call is made to retrieve or verify the initial connector list),
+/// filters out excluded connectors and Corsair-managed integrations, and
+/// performs three actions in a single pass:
 ///   1. Creates/upserts a platform <see cref="Tool"/> for each connector.
 ///   2. Generates connector operation JSON files under
 ///      <c>ConfigFiles/Camel/&lt;Family&gt;/&lt;Action&gt;Connector.json</c>.
 ///   3. Regenerates the Camel section of the action-selector mapping.
 ///
-/// Everything is driven by the DTO loaded from the harness API and the local
-/// catalog.
+/// Operations and properties (schema) are fetched dynamically from the Camel
+/// harness API per connector and merged into the tool payload.
 /// </summary>
 public class CamelSeedingService : ICamelSeedingService
 {
@@ -86,19 +86,21 @@ public class CamelSeedingService : ICamelSeedingService
         var seeded = 0;
         var generatedFiles = 0;
 
-        var connectorList = await _catalogClient.GetConnectorListAsync(cancellationToken);
-        if (connectorList.Count == 0)
+        // The connector list is sourced entirely from the local
+        // CamelIntegrationCatalog.json. No API call is made to retrieve or
+        // verify the initial connector list.
+        var localCatalog = _catalogRepository.GetCatalog();
+        if (localCatalog.Count == 0)
         {
-            _logger.LogWarning("Camel harness connector list is empty; skipping Camel seeding.");
+            _logger.LogWarning("Local Camel connector catalog is empty; skipping Camel seeding.");
             return 0;
         }
 
-        var localCatalog = _catalogRepository.GetCatalog();
         var harnessOperations = new Dictionary<string, IReadOnlyList<string>>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var item in connectorList)
+        foreach (var catalogEntry in localCatalog.Values)
         {
-            var connector = item.Name ?? item.Id;
+            var connector = catalogEntry.Name;
             if (string.IsNullOrWhiteSpace(connector))
             {
                 continue;
@@ -112,24 +114,20 @@ public class CamelSeedingService : ICamelSeedingService
 
             try
             {
-                var catalogEntry = localCatalog.TryGetValue(connector.ToLowerInvariant(), out var entry) ? entry : null;
-                var displayLabel = catalogEntry?.GetDisplayLabel() ?? CamelNodeNaming.ToFamilyDisplay(connector);
-                var description = catalogEntry?.GetDescription() ?? item.Description ?? string.Empty;
-                var credentialName = string.IsNullOrEmpty(catalogEntry?.CredentialName) ? ResolveCredentialName(catalogEntry, connector) : catalogEntry.CredentialName;
+                var displayLabel = catalogEntry.GetDisplayLabel();
+                var description = catalogEntry.GetDescription();
+                var credentialName = string.IsNullOrEmpty(catalogEntry.CredentialName) ? ResolveCredentialName(catalogEntry, connector) : catalogEntry.CredentialName;
 
                 var schema = await _catalogClient.GetConnectorAsync(connector, cancellationToken);
                 var apiOperations = await _catalogClient.GetConnectorOperationsAsync(connector, cancellationToken);
 
+                // Operations are fetched dynamically from the harness API only;
+                // the local catalog's operations list is not used.
                 var operationNames = apiOperations
                     .Select(o => o.Id)
                     .Where(id => !string.IsNullOrWhiteSpace(id))
                     .OfType<string>()
                     .ToList();
-
-                if (operationNames.Count == 0 && catalogEntry?.GetOperations().Count > 0)
-                {
-                    operationNames = catalogEntry.GetOperations().ToList();
-                }
 
                 // Record the harness operation list so the mapping regenerator
                 // builds actions that match the generated config files exactly.
@@ -158,9 +156,9 @@ public class CamelSeedingService : ICamelSeedingService
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
-        // 3. Regenerate the action-selector mapping from the harness connector list.
+        // 3. Regenerate the action-selector mapping from the local catalog.
         var mappingRegenerator = new CamelMappingRegenerator(_paths, _logger, IsExcluded);
-        await mappingRegenerator.RegenerateAsync(connectorList, localCatalog, harnessOperations);
+        await mappingRegenerator.RegenerateAsync(localCatalog, harnessOperations);
 
         _logger.LogInformation(
             "Seeded {Seeded} Camel connectors ({GeneratedFiles} config files) into ws_Tools.",

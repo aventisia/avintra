@@ -253,9 +253,12 @@ public class CamelConnectorService : ICamelConnectorService
         if (!response.IsSuccessStatusCode)
         {
             serviceResponse.StatusCode = (int)response.StatusCode;
-            serviceResponse.Message = $"Camel connector '{family}' returned {response.StatusCode}.";
+            var errorMessage = TryParseErrorMessage(responseBody);
+            serviceResponse.Message = !string.IsNullOrWhiteSpace(errorMessage)
+                ? errorMessage
+                : $"Camel connector '{family}' returned {response.StatusCode}.";
             serviceResponse.Data.Response = TryParseError(responseBody) ?? responseBody;
-            return serviceResponse;
+        return serviceResponse;
         }
 
         // Normalize the harness response { success, connector, operation, data, error }.
@@ -796,5 +799,25 @@ public class CamelConnectorService : ICamelConnectorService
             // ignore
         }
         return null;
+    }
+    private static string? TryParseErrorMessage(string responseBody)
+    {
+        try
+        {
+            using var document = JsonDocument.Parse(responseBody);
+
+            return document.RootElement
+                .GetProperty("error")
+                .GetProperty("message")
+                .GetString();
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return null;
+        }
+        catch (KeyNotFoundException)
+        {
+            return null;
+        }
     }
 }

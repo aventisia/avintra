@@ -7,7 +7,7 @@ namespace WorkspaceAPIs.Features.CloudConnectors.Camel.Services;
 
 /// <summary>
 /// Rebuilds the Camel connector category entries inside the <c>App Integrations</c>
-/// group of the action-selector mapping from the harness connector list.
+/// group of the action-selector mapping from the local Camel connector catalog.
 /// </summary>
 public sealed class CamelMappingRegenerator
 {
@@ -32,7 +32,6 @@ public sealed class CamelMappingRegenerator
     /// removing user-curated entries.
     /// </summary>
     public Task RegenerateAsync(
-        IReadOnlyList<CamelConnectorListItem> connectorList,
         IReadOnlyDictionary<string, CamelConnectorCatalogEntry> localCatalog,
         IReadOnlyDictionary<string, IReadOnlyList<string>>? harnessOperations = null)
     {
@@ -43,7 +42,7 @@ public sealed class CamelMappingRegenerator
             return Task.CompletedTask;
         }
 
-        var categories = BuildCategories(connectorList, localCatalog, harnessOperations);
+        var categories = BuildCategories(localCatalog, harnessOperations);
         if (categories.Count == 0)
         {
             _logger.LogInformation("No Camel connector categories to regenerate.");
@@ -73,15 +72,14 @@ public sealed class CamelMappingRegenerator
     }
 
     private List<JsonObject> BuildCategories(
-        IReadOnlyList<CamelConnectorListItem> connectorList,
         IReadOnlyDictionary<string, CamelConnectorCatalogEntry> localCatalog,
         IReadOnlyDictionary<string, IReadOnlyList<string>>? harnessOperations)
     {
         var categories = new List<JsonObject>();
 
-        foreach (var item in connectorList)
+        foreach (var catalogEntry in localCatalog.Values)
         {
-            var connector = item.Name ?? item.Id;
+            var connector = catalogEntry.Name;
             if (string.IsNullOrWhiteSpace(connector) || _isExcluded(connector))
             {
                 continue;
@@ -90,8 +88,7 @@ public sealed class CamelMappingRegenerator
             try
             {
                 var family = connector.ToLowerInvariant();
-                var catalogEntry = localCatalog.TryGetValue(family, out var entry) ? entry : null;
-                var familyDisplay = catalogEntry?.GetDisplayLabel() ?? CamelNodeNaming.ToFamilyDisplay(family);
+                var familyDisplay = catalogEntry.GetDisplayLabel();
                 var actions = BuildActions(family, catalogEntry, familyDisplay, harnessOperations);
 
                 if (actions.Count == 0)
@@ -102,9 +99,9 @@ public sealed class CamelMappingRegenerator
                 categories.Add(new JsonObject
                 {
                     ["label"] = familyDisplay,
-                    ["description"] = catalogEntry?.GetDescription() ?? $"{familyDisplay} through the Camel connector.",
+                    ["description"] = catalogEntry.GetDescription() ?? $"{familyDisplay} through the Camel connector.",
                     ["icon"] = null,
-                    ["img"] = string.IsNullOrWhiteSpace(catalogEntry?.Icon) ? DefaultIconPath : catalogEntry.Icon,
+                    ["img"] = string.IsNullOrWhiteSpace(catalogEntry.Icon) ? DefaultIconPath : catalogEntry.Icon,
                     ["listType"] = null,
                     ["doNotRenderIf"] = new JsonArray("production"),
                     ["actions"] = actions,
@@ -128,15 +125,15 @@ public sealed class CamelMappingRegenerator
         var actions = new JsonArray();
         var familyIcon = string.IsNullOrEmpty(catalogEntry?.Icon) ? DefaultIconPath : catalogEntry.Icon;
 
-        // Prefer the harness operation list (the same list used to generate the
-        // per-operation config files) so the selector actions always match the
-        // config files. Fall back to the catalog operations when the harness
-        // reported none.
+        // Operations come only from the harness API (the same list used to
+        // generate the per-operation config files) so the selector actions
+        // always match the config files. The local catalog's operations list
+        // is not used.
         var operationNames = harnessOperations != null
             && harnessOperations.TryGetValue(family, out var ops)
             && ops.Count > 0
                 ? ops.ToList()
-                : (catalogEntry?.GetOperations().ToList() ?? new List<string>());
+                : new List<string>();
 
         if (operationNames.Count == 0)
         {

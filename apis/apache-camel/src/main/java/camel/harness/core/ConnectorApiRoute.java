@@ -319,7 +319,17 @@ public class ConnectorApiRoute extends RouteBuilder {
             exchange.setProperty("connector", connector);
             exchange.setProperty("operation", request.operationName());
             Object body = request.payload();
-            exchange.getMessage().setBody(normalizeBody(body));
+            // SQL/JDBC connectors bind named parameters (:#name) from a structured
+            // body (java.util.Map) or from message headers. normalizeBody() would
+            // JSON-stringify a Map/List payload, which breaks named-parameter
+            // resolution in camel-sql ("Cannot find key ..." / "bad SQL grammar").
+            // Keep the structured payload for the sql/jdbc family; all other
+            // connectors keep the existing stringified-body behavior.
+            if (isSqlFamily(connector)) {
+                exchange.getMessage().setBody(body);
+            } else {
+                exchange.getMessage().setBody(normalizeBody(body));
+            }
 
             // Consumer-style operations (read/list/delete/check) are handled here
             // with a one-shot PollingConsumer instead of the producer toD dispatch.
@@ -610,6 +620,19 @@ public class ConnectorApiRoute extends RouteBuilder {
             return objectMapper.writeValueAsString(body);
         }
         return body;
+    }
+
+    /**
+     * Determines whether the connector resolves to a JDBC-backed {@code sql:}
+     * endpoint whose parameters must be bound from a structured payload/headers.
+     * {@code sql} and {@code jdbc} both route through {@link AbstractSqlConfigurer}.
+     */
+    private static boolean isSqlFamily(String connector) {
+        if (connector == null) {
+            return false;
+        }
+        String name = connector.trim().toLowerCase();
+        return "sql".equals(name) || "jdbc".equals(name);
     }
 
     private Processor successResponse() {
